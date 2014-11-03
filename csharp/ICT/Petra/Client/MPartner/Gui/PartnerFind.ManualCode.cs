@@ -469,7 +469,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         if (!UserHasPersonnelAccess())
                         {
-                            mniMaintainFamilyMembers.Enabled = false;
+                            mniMaintainPersonnelData.Enabled = false;
                         }
                     }
                 }
@@ -485,7 +485,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if ((IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMenuItemText)
                                 || (IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMembersMenuItemText)
                                 || (IndividualMenuItem.Text == MPartnerResourcestrings.StrPersonnelPersonMenuItemText)
-                                || (IndividualMenuItem.Text == mniMaintainWorkerField.Text))
+                                || (IndividualMenuItem.Text == mniMaintainGiftDestination.Text))
                             {
                                 if (IndividualMenuItem.Text != MPartnerResourcestrings.StrPersonnelPersonMenuItemText)
                                 {
@@ -507,7 +507,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         // Work on Maintain Menu
                         mniMaintainFamilyMembers.Enabled = false;
-                        mniMaintainWorkerField.Enabled = false;
+                        mniMaintainGiftDestination.Enabled = false;
                         mniMaintainPersonnelData.Text = MPartnerResourcestrings.StrPersonnelUnitMenuItemText;
 
                         if (!UserHasPersonnelAccess())
@@ -528,7 +528,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if ((IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMenuItemText)
                                 || (IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMembersMenuItemText)
                                 || (IndividualMenuItem.Text == mniMaintainPersonnelData.Text)
-                                || (IndividualMenuItem.Text == mniMaintainWorkerField.Text))
+                                || (IndividualMenuItem.Text == mniMaintainGiftDestination.Text))
                             {
                                 if (IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMenuItemText)
                                 {
@@ -548,7 +548,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText;
                         mniMaintainFamilyMembers.Enabled = false;
                         mniMaintainPersonnelData.Enabled = false;
-                        mniMaintainWorkerField.Enabled = false;
+                        mniMaintainGiftDestination.Enabled = false;
                     }
                 }
             }

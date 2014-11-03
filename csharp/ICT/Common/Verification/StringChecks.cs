@@ -63,8 +63,7 @@ namespace Ict.Common.Verification
         private static readonly string StrStringTooLong = Catalog.GetString(
             "The value you entered for {0} is too long - its maximum length is {1} characters, but you entered {2} characters.");
 
-        private static readonly string StrStringInvalidValue = Catalog.GetString(
-            "The value you entered for {0} is currently inactive.");
+        private static readonly string StrStringInactiveValue = Catalog.GetString("The code '{0}' is currently inactive.");
 
         #endregion
 
@@ -229,7 +228,7 @@ namespace Ict.Common.Verification
                     {
                         ReturnValue = new TVerificationResult(AResultContext,
                             ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDVALUE,
-                                StrStringInvalidValue, new string[] { AKeyValue }));
+                                StrStringInactiveValue, new string[] { AKeyValue }));
 
                         if (AResultColumn != null)
                         {

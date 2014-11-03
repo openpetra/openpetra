@@ -75,6 +75,21 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Public Methods
 
+        /// <summary>todoComment</summary>
+        public void PostInitUserControl(PartnerEditTDS AMainDS)
+        {
+            // exchanges instead of Icon=1 we get Icon=2
+            FMainDS.PPartnerLocation.ColumnIconForSort.Expression = "IIF(Icon = 1, 2, IIF(Icon = 2, 1, 3))";
+
+            // introduce sorting -> override DefaultView that was set in earlier methods
+            DataView myDataView = new DataView(FMainDS.PPartnerLocation, "",
+                PartnerEditTDSPPartnerLocationTable.GetIconForSortDBName() + " ASC, " +
+                PartnerEditTDSPPartnerLocationTable.GetDateEffectiveDBName() +
+                " DESC", DataViewRowState.CurrentRows);
+            myDataView.AllowNew = false;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+        }
+
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
         public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
         {
@@ -112,11 +127,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
-
-        private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
-        {
-            OnRecalculateScreenParts(e);
-        }
 
         /// <summary>
         /// Iterates through all PPartnerLocation DataRows and checks whether any has a
@@ -518,13 +528,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
                     "Address.ico", TIconCache.TIconSize.is16by16));
             FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
-                    "Address_Best.ico", TIconCache.TIconSize.is16by16));
-            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
                     "Address_Future.ico", TIconCache.TIconSize.is16by16));
             FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
-                    "Address_Future_Best.ico", TIconCache.TIconSize.is16by16));
-            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
                     "Address_Past.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "Address_Best.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "Address_Future_Best.ico", TIconCache.TIconSize.is16by16));
             FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
                     "Address_Past_Best.ico", TIconCache.TIconSize.is16by16));
             FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
@@ -880,8 +890,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRecord(System.Object sender, EventArgs e)
         {
-            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
-
             if (CreateNewPPartnerLocation())
             {
                 txtLocationLocality.Focus();
@@ -895,9 +903,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             SetAddressFieldOrder();
 
             // Fire OnRecalculateScreenParts event: reset counter in tab header
-            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+            DoRecalculateScreenParts();
         }
 
         /// <summary>

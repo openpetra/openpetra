@@ -218,9 +218,12 @@ namespace Ict.Petra.Client.CommonForms
             FResult = TResult.embrUndefined;
             FOptionSelected = AOptionSelected;
 
-            lblMessage.Text = AMessage;
-            lblMessage.BorderStyle = BorderStyle.FixedSingle;
-            lblMessage.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtMessage.Text = AMessage;
+            txtMessage.BorderStyle = BorderStyle.FixedSingle;
+            txtMessage.HideSelection = true;
+            txtMessage.SelectionStart = 0;
+            txtMessage.SelectionLength = 0;
+            txtMessage.Font = new System.Drawing.Font(txtMessage.Font, FontStyle.Regular);
 
             pnlLeftButtons.MinimumSize = new Size(btnHelp.Width + btnCopy.Width + 10, pnlLeftButtons.Height);
 
@@ -464,15 +467,30 @@ namespace Ict.Petra.Client.CommonForms
             }
 
             // Calculate the size required for the message, assuming the width is as it is
-            SizeF size = lblMessage.CreateGraphics().MeasureString(lblMessage.Text, lblMessage.Font, pnlMessage.Width - 20);
+            SizeF size = txtMessage.CreateGraphics().MeasureString(txtMessage.Text, txtMessage.Font, pnlMessage.Width - 20);
+
+            // Will it fit on the screen??
+            int screenHeight = Screen.PrimaryScreen.WorkingArea.Height;
+            int maxHeight = Convert.ToInt32(0.8 * screenHeight);
+
+            if (size.Height > maxHeight)
+            {
+                size.Height = Convert.ToInt32(0.75 * maxHeight);
+                this.txtMessage.ScrollBars = ScrollBars.Vertical;
+            }
 
             // Now set the height of the form based on allowing enough height for the message
+            Form myForm = this.FindForm();
             int checkBoxAllowance = (chkOption.Visible) ? chkOption.Height + 5 : 0;
-            this.FindForm().Size = new Size(this.FindForm().Width, Convert.ToInt32(size.Height) + pnlLeftButtons.Height + 120 + checkBoxAllowance);
+            myForm.Size = new Size(this.FindForm().Width, Convert.ToInt32(size.Height) + pnlLeftButtons.Height + 120 + checkBoxAllowance);
 
-            // Now center the message in its panel
-            lblMessage.Size = new Size(pnlMessage.Width - 20, pnlMessage.Height - 20);
-            lblMessage.Location = new Point((pnlMessage.Width - lblMessage.Width) / 2, (pnlMessage.Height - lblMessage.Height) / 2);
+            // Centre the form vertically
+            myForm.Location = new Point(myForm.Location.X, (screenHeight - myForm.Height) / 2);
+
+            // Now center the message in its panel and anchor it
+            txtMessage.Size = new Size(pnlMessage.Width - 20, pnlMessage.Height - 20);
+            txtMessage.Location = new Point((pnlMessage.Width - txtMessage.Width) / 2, (pnlMessage.Height - txtMessage.Height) / 2);
+            txtMessage.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
         }
 
         private void BtnYes_Click(Object Sender, EventArgs e)
@@ -520,7 +538,7 @@ namespace Ict.Petra.Client.CommonForms
 
         private void Message_CopyToClipboard(object sender, EventArgs e)
         {
-            Clipboard.SetText(lblMessage.Text);
+            Clipboard.SetText(txtMessage.Text);
 
             MessageBox.Show("The message text has been copied to clipboard.", MCommonResourcestrings.StrRecordDeletionTitle);
         }

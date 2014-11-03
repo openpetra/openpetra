@@ -32,10 +32,15 @@ RootNode:
                 Row0: [btnYes, btnYesToAll, btnNo, btnNoToAll, btnOK, btnCancel, btnApply]
 
         pnlMessage:
-            Controls: [lblMessage]
+            Controls: [txtMessage]
             Dock: Fill
 
-        lblMessage:
+        txtMessage:            
+            ReadOnly: true
+            Multiline: true
+            ScrollBars: None
+            NoLabel: true
+
         chkOption:
             CheckBoxAttachedLabel: right
             Dock: Bottom

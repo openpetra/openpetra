@@ -135,7 +135,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             out DateTime AStartDatePeriod,
             out DateTime AEndDatePeriod)
         {
-            if (FDelegateGetValidPostingDateRange != null)
+            if (FDelegateGetValidPeriodDates != null)
             {
                 return FDelegateGetValidPeriodDates(ALedgerNumber, AYearNumber, ADiffPeriod, APeriodNumber, out AStartDatePeriod, out AEndDatePeriod);
             }

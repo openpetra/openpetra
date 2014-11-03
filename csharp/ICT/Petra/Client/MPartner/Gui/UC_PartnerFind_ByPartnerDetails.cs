@@ -711,6 +711,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpAddresses);
             }
+            else if (ClickedMenuItemName == "mniMaintainContactDetails")
+            {
+                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpContactDetails);
+            }
             else if (ClickedMenuItemName == "mniMaintainPartnerDetails")
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpDetails);
@@ -755,7 +759,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpOfficeSpecific);
             }
-            else if (ClickedMenuItemName == "mniMaintainWorkerField")
+            else if (ClickedMenuItemName == "mniMaintainGiftDestination")
             {
                 if (FLogic.DetermineCurrentPartnerClass() == TPartnerClass.FAMILY.ToString())
                 {
@@ -798,10 +802,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPetraUtilsObject.GetForm());
             }
             else if (ClickedMenuItemName == "mniMaintainFinanceReports")
-            {
-                throw new NotImplementedException();
-            }
-            else if (ClickedMenuItemName == "mniMaintainBankAccounts")
             {
                 throw new NotImplementedException();
             }

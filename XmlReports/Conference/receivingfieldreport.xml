@@ -267,13 +267,21 @@
                             
                         FROM   PUB_p_partner,
                             PUB_p_person,
-                            PUB_p_family,
+                            PUB_p_family
+                                LEFT JOIN PUB.p_partner_gift_destination 
+                                ON PUB.p_partner_gift_destination.p_partner_key_n = PUB_p_family.p_partner_key_n
+                                AND PUB.p_partner_gift_destination.p_date_effective_d &lt;= {#param_today#}
+                                AND (PUB.p_partner_gift_destination.p_date_expires_d IS NULL
+                                OR (PUB.p_partner_gift_destination.p_date_expires_d &gt;= {#param_today#}
+                                AND PUB.p_partner_gift_destination.p_date_effective_d != PUB.p_partner_gift_destination.p_date_expires_d)),
                             PUB_p_unit,
                             PUB_p_unit AS ChargedUnit,
                             PUB_pc_attendee,
                             PUB_pc_conference,
                             PUB_pm_general_application,
                             PUB_pm_short_term_application
+                            
+                            
                     </value></queryDetail>
                     <queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
                         WHERE 
@@ -315,13 +323,9 @@
                     
                     <queryDetail><value>
                             AND PUB_p_family.p_partner_key_n = PUB_p_person.p_family_key_n
-<!-- p_field_key_n has gone:
-                            AND(    
-                                 PUB_p_person.p_field_key_n = {{ReceivingField}}
-                                OR ( PUB_p_person.p_field_key_n = 0
-                                    AND PUB_p_family.p_field_key_n = {{ReceivingField}})
-                                )
--->
+                            
+                            AND p_partner_gift_destination.p_field_key_n = {{ReceivingField}}
+                            
                             AND PUB_p_unit.p_partner_key_n = PUB_pc_attendee.pc_conference_key_n
                             AND ChargedUnit.p_partner_key_n = PUB_pm_short_term_application.pm_st_field_charged_n
                             AND PUB_pm_short_term_application.p_partner_key_n = PUB_pc_attendee.p_partner_key_n

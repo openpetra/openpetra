@@ -289,7 +289,15 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out DateTime AStartDatePeriod,
             out DateTime AEndDatePeriod)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            if ((AYearNumber < 0) || (APeriodNumber < 0))
+            {
+                AStartDatePeriod = DateTime.MinValue;
+                AEndDatePeriod = DateTime.MinValue;
+                return false;
+            }
+
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, Transaction);
 
@@ -302,7 +310,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             AStartDatePeriod = AStartDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
             AEndDatePeriod = AEndDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             return true;
         }
