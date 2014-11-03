@@ -256,17 +256,17 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                     SendMail.SendMessage(msg);
                 }
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
             }
             catch (Exception Exp)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
                 TLogging.Log(Exp.Message);
                 TLogging.Log(Exp.StackTrace);
 
                 throw;
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
         }
 

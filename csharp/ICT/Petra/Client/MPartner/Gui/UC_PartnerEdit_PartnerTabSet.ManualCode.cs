@@ -733,7 +733,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FUcoAddresses.RefreshRecordsAfterMerge();
-            
+
             FUcoContactDetails.RefreshRecordsAfterMerge();
 
             if (FUcoFinanceDetails != null)
@@ -876,7 +876,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContactDetails;
 
                     FUcoContactDetails.SpecialInitUserControl();
-                }                
+                }
                 else if (ATabPageEventArgs.Tab == tpgPartnerDetails)
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpDetails;
@@ -1036,7 +1036,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 CorrectDataGridWidthsAfterDataChange();
             }
         }
-        
+
         private void RecalculateTabHeaderCounters(System.Object sender, TRecalculateScreenPartsEventArgs e)
         {
             // MessageBox.Show('TUC_PartnerEdit_PartnerTabSet2.RecalculateTabHeaderCounters');
@@ -1103,7 +1103,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (FMainDS.Tables.Contains(PPartnerAttributeTable.GetTableName()))
                 {
                     Calculations.CalculateTabCountsPartnerContactDetails(FMainDS.PPartnerAttribute, out CountAll, out CountActive);
-                    tpgContactDetails.Text = String.Format(StrContactDetailsTabHeader + " ({0})", CountActive);                                            
+                    tpgContactDetails.Text = String.Format(StrContactDetailsTabHeader + " ({0})", CountActive);
                 }
                 else
                 {

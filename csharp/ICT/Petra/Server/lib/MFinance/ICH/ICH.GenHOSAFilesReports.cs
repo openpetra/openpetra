@@ -75,38 +75,21 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="APeriodNumber">Period number</param>
         /// <param name="AIchNumber">ICH number</param>
         /// <param name="ACostCentre">Cost Centre</param>
-        /// <param name="ACurrency">Currency 0 = base 1 = intl</param>
+        /// <param name="ACurrencySelect">Currency: B = base I = intl</param>
         /// <param name="AFileName">File name</param>
         /// <param name="AVerificationResult">Error messaging</param>
-        /// <returns>Successful or not</returns>
+        /// <returns>True if successful</returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool GenerateHOSAFiles(int ALedgerNumber,
             int APeriodNumber,
             int AIchNumber,
             string ACostCentre,
-            int ACurrency,
+            String ACurrencySelect,
             string AFileName,
             out TVerificationResultCollection AVerificationResult
             )
         {
             bool Successful = false;
-
-            string MonthName;
-            //int NumDecPl;
-            string StoreNumericFormat;
-            string Currency;
-            //bool FileChosen;
-            //string Directory;
-            //string FileName;
-            //int Separator;
-            string CurrencySelect;
-            decimal DebitTotal;  //FORMAT "->>>,>>>,>>>,>>9.99"
-            decimal CreditTotal;  //FORMAT "->>>,>>>,>>>,>>9.99"
-            int Choice;
-
-            string StandardCostCentre = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
-
-            DataTable TableForExport = new DataTable();
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -124,36 +107,22 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 /* Retrieve info on the ledger. */
                 ALedgerRow LedgerRow = (ALedgerRow)MainDS.ALedger.Rows[0];
+                String Currency = (ACurrencySelect == MFinanceConstants.CURRENCY_BASE) ? LedgerRow.BaseCurrency : LedgerRow.IntlCurrency;
 
-                if (ACurrency == 1)
-                {
-                    Currency = LedgerRow.BaseCurrency;
-                    CurrencySelect = MFinanceConstants.CURRENCY_BASE;
-                }
-                else
-                {
-                    Currency = LedgerRow.IntlCurrency;
-                    CurrencySelect = MFinanceConstants.CURRENCY_INTERNATIONAL;
-                }
-
-                StoreNumericFormat = "#" + CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator + "##0";
-
-                if (CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits > 0)
-                {
-                    string DecPls = new String('0', CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits);
-                    StoreNumericFormat += CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator + DecPls;
-                }
-
+/*              String StoreNumericFormat = "#" + CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator + "##0";
+ *
+ *              if (CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits > 0)
+ *              {
+ *                  string DecPls = new String('0', CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits);
+ *                  StoreNumericFormat += CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator + DecPls;
+ *              }
+ */
                 AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, DBTransaction);
-
                 AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-
-                /* Change expected number format if necessary - ensure ok to read in ICH */
-                //StoreNumericFormat = "";
-                //MonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(AccountingPeriodRow.PeriodEndDate.Month);
-                MonthName = AccountingPeriodRow.AccountingPeriodDesc;
+                String MonthName = AccountingPeriodRow.AccountingPeriodDesc;
 
                 //Create table definitions
+                DataTable TableForExport = new DataTable();
                 TableForExport.Columns.Add("CostCentre", typeof(string));
                 TableForExport.Columns.Add("Account", typeof(string));
                 TableForExport.Columns.Add("LedgerMonth", typeof(string));
@@ -164,7 +133,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 string TableForExportHeader = "/** Header **" + "," +
                                               APeriodNumber.ToString() + "," +
-                                              StandardCostCentre + "," +
+                                              TLedgerInfo.GetStandardCostCentre(ALedgerNumber) + "," +
                                               ACostCentre + "," +
                                               DateTime.Today.ToShortDateString() + "," +
                                               Currency;
@@ -209,7 +178,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             APeriodNumber,
                             PeriodStartDate,
                             PeriodEndDate,
-                            CurrencySelect,
+                            ACurrencySelect,
                             AIchNumber,
                             ref TableForExport,
                             ref AVerificationResult);
@@ -259,56 +228,43 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                     foreach (DataRow untypedTransactRow in TmpTransTable.Rows)
                     {
-                        DebitTotal = 0;
-                        CreditTotal = 0;
-                        Choice = ACurrency;
+                        Decimal DebitTotal = 0;
+                        Decimal CreditTotal = 0;
 
-                        bool Debit = Convert.ToBoolean(untypedTransactRow[13]);          //a_transaction.a_debit_credit_indicator_l
-                        bool SystemGenerated = Convert.ToBoolean(untypedTransactRow[11]);          //a_transaction.a_system_generated_l
-                        decimal AmountInBaseCurrency = Convert.ToDecimal(untypedTransactRow[8]);          //a_transaction.a_amount_in_base_currency_n
-                        decimal AmountInIntlCurrency = Convert.ToDecimal(untypedTransactRow[9]);          //a_transaction.a_amount_in_intl_currency_n
-                        string Narrative = untypedTransactRow[12].ToString();          //a_transaction.a_narrative_c
-                        DateTime TransactionDate = Convert.ToDateTime(untypedTransactRow[6]);          //a_transaction.a_transaction_date_d
+                        bool Debit = Convert.ToBoolean(untypedTransactRow[13]);             //a_transaction.a_debit_credit_indicator_l
+                        bool SystemGenerated = Convert.ToBoolean(untypedTransactRow[11]);   //a_transaction.a_system_generated_l
+                        string Narrative = untypedTransactRow[12].ToString();               //a_transaction.a_narrative_c
+                        DateTime TransactionDate = Convert.ToDateTime(untypedTransactRow[6]); //a_transaction.a_transaction_date_d
 
-                        // the following variables are not actually used anywhere at the moment
-                        // string TransAmount1;  //FORMAT "X(19)"
-                        // string TransAmount2;  //FORMAT "X(19)"
-
-                        if (Choice == 1)
+                        if (ACurrencySelect == MFinanceConstants.CURRENCY_BASE)
                         {
+                            decimal AmountInBaseCurrency = Convert.ToDecimal(untypedTransactRow[8]);  //a_transaction.a_amount_in_base_currency_n
+
                             /* find transaction amount and store as debit or credit */
                             if (Debit)
                             {
                                 DebitTotal += AmountInBaseCurrency;
-                                // TransAmount1 = AmountInBaseCurrency.ToString("#,##0.00");
-                                // TransAmount2 = " ";
                             }
                             else
                             {
                                 CreditTotal += AmountInBaseCurrency;
-                                // TransAmount2 = AmountInBaseCurrency.ToString("#,##0.00");
-                                // TransAmount1 = " ";
                             }
                         }
                         else
                         {
+                            decimal AmountInIntlCurrency = Convert.ToDecimal(untypedTransactRow[9]);   //a_transaction.a_amount_in_intl_currency_n
+
                             if (Debit)
                             {
                                 DebitTotal += AmountInIntlCurrency;
-                                // TransAmount1 = AmountInIntlCurrency.ToString("#,##0.00");
-                                // TransAmount2 = " ";
                             }
                             else
                             {
                                 CreditTotal += AmountInIntlCurrency;
-                                // TransAmount2 = AmountInIntlCurrency.ToString("#,##0.00");
-                                // TransAmount1 = " ";
                             }
                         }
 
-                        Choice = 0;
-
-                        TLogging.Log("HOSA-Narrative: " + Narrative);
+                        TLogging.LogAtLevel(4, "HOSA-Narrative: " + Narrative);
 
                         //Check for specific narrative strings
                         bool IsNarrativeGBGiftBatch = false;
@@ -348,8 +304,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 TableForExport.AcceptChanges();
 
-                //TODO: remove
-                TLogging.Log("HOSA-TableForExport: " + TableForExport.Rows.Count.ToString());
+                TLogging.LogAtLevel(4, "HOSA-TableForExport: " + TableForExport.Rows.Count.ToString());
 
                 //DataTables to XML to CSV
                 XmlDocument doc = TDataBase.DataTableToXml(TableForExport);
@@ -438,7 +393,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="APeriodNumber"></param>
         /// <param name="APeriodStartDate"></param>
         /// <param name="APeriodEndDate"></param>
-        /// <param name="ABase"></param>
+        /// <param name="ACurrencySelect"></param>
         /// <param name="AIchNumber"></param>
         /// <param name="AExportDataTable"></param>
         /// <param name="AVerificationResult"></param>
@@ -450,7 +405,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             int APeriodNumber,
             DateTime APeriodStartDate,
             DateTime APeriodEndDate,
-            string ABase,
+            string ACurrencySelect,
             int AIchNumber,
             ref DataTable AExportDataTable,
             ref TVerificationResultCollection AVerificationResult)
@@ -461,13 +416,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             string LastGroup = string.Empty;
             string LastDetail = string.Empty;
             string LastDetailDesc = string.Empty; //FORMAT "X(15)"
-            string Desc = string.Empty; //FORMAT "X(44)"
             // string CurrentYearTotals = string.Empty;
             decimal IndividualDebitTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
             decimal IndividualCreditTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
-
-            decimal GiftAmount = 0;
-            decimal IntlGiftAmount = 0;
 
             string ExportDescription = string.Empty;
             Int32 tmpLastRecipKey = 0;
@@ -515,16 +466,15 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 /* Print totals etc. found for last recipient */
                 /* Only do after first loop due to last recipient key check */
 
-                tmpLastRecipKey = Convert.ToInt32(untypedTransRow[8]);         //a_gift_detail.p_recipient_key_n
-                tmpLastGroup = untypedTransRow[6].ToString();         //a_motivation_detail.a_motivation_group_code_c
-                tmpLastDetail = untypedTransRow[7].ToString();         //a_motivation_detail.a_motivation_detail_code_c
+                tmpLastRecipKey = Convert.ToInt32(untypedTransRow[8]);  //a_gift_detail.p_recipient_key_n
+                tmpLastGroup = untypedTransRow[6].ToString();           //a_motivation_detail.a_motivation_group_code_c
+                tmpLastDetail = untypedTransRow[7].ToString();          //a_motivation_detail.a_motivation_detail_code_c
 
-                if ((FirstLoopFlag == false)
+                if (!FirstLoopFlag
                     && ((tmpLastRecipKey != LastRecipKey)
                         || (tmpLastGroup != LastGroup)
                         || (tmpLastDetail != LastDetail)
                         )
-
                     )
                 {
                     if ((IndividualCreditTotal != 0)
@@ -547,9 +497,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 DBTransaction);
                             AMotivationGroupRow MotivationGroupRow = (AMotivationGroupRow)MotivationGroupTable.Rows[0];
 
-                            Desc = MotivationGroupRow.MotivationGroupDescription.TrimEnd(new Char[] { (' ') }) + "," + LastDetailDesc;
-
-                            ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + Desc;
+                            ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" +
+                                                MotivationGroupRow.MotivationGroupDescription.TrimEnd(new Char[] { (' ') }) + "," + LastDetailDesc;
                         }
 
                         //Add data to export table
@@ -571,11 +520,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     }
                 }
 
-                GiftAmount = Convert.ToDecimal(untypedTransRow[4]);          //a_gift_detail.a_gift_amount_n
-                IntlGiftAmount = Convert.ToDecimal(untypedTransRow[5]);          //a_gift_detail.a_gift_amount_intl_n
-
-                if (ABase == MFinanceConstants.CURRENCY_BASE)
+                if (ACurrencySelect == MFinanceConstants.CURRENCY_BASE)
                 {
+                    Decimal GiftAmount = Convert.ToDecimal(untypedTransRow[4]);          //a_gift_detail.a_gift_amount_n
+
                     if (GiftAmount < 0)
                     {
                         IndividualDebitTotal -= GiftAmount;
@@ -587,6 +535,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
                 else
                 {
+                    Decimal IntlGiftAmount = Convert.ToDecimal(untypedTransRow[5]);          //a_gift_detail.a_gift_amount_intl_n
+
                     if (IntlGiftAmount < 0)
                     {
                         IndividualDebitTotal -= IntlGiftAmount;
@@ -603,48 +553,44 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 LastDetail = tmpLastDetail;
                 LastDetailDesc = Convert.ToString(untypedTransRow[10]);         //a_motivation_detail.a_motivation_detail_desc_c
                 FirstLoopFlag = false;
-            }
+            } // foreach
 
             /* Print totals etc. found for last recipient */
             /* Only do after first loop due to last recipient key check */
-            if (FirstLoopFlag == false)
+            if (!FirstLoopFlag && ((IndividualCreditTotal != 0) || (IndividualDebitTotal != 0)))
             {
-                if ((IndividualCreditTotal != 0)
-                    || (IndividualDebitTotal != 0))
+                if (LastRecipKey != 0)
                 {
-                    if (LastRecipKey != 0)
-                    {
-                        /* Find partner short name details */
-                        PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, DBTransaction);
-                        PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
+                    /* Find partner short name details */
+                    PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, DBTransaction);
+                    PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
 
-                        LastDetailDesc += ":" + PartnerRow.PartnerShortName;
+                    LastDetailDesc += ":" + PartnerRow.PartnerShortName;
 
-                        ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + LastDetailDesc;
-                    }
-                    else
-                    {
-                        AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadByPrimaryKey(ALedgerNumber, LastGroup, DBTransaction);
-                        AMotivationGroupRow MotivationGroupRow = (AMotivationGroupRow)MotivationGroupTable.Rows[0];
-
-                        Desc = MotivationGroupRow.MotivationGroupDescription.TrimEnd() + "," + LastDetailDesc;
-
-                        ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + Desc;
-                    }
-
-                    //Add rows to export table
-                    DataRow DR = (DataRow)AExportDataTable.NewRow();
-
-                    DR[0] = ACostCentre;
-                    DR[1] = ConvertAccount(AAcctCode);
-                    DR[2] = ExportDescription;
-                    DR[3] = "ICH-" + APeriodNumber.ToString("00");
-                    DR[4] = APeriodEndDate;;
-                    DR[5] = IndividualDebitTotal;
-                    DR[6] = IndividualCreditTotal;
-
-                    AExportDataTable.Rows.Add(DR);
+                    ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + LastDetailDesc;
                 }
+                else
+                {
+                    AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadByPrimaryKey(ALedgerNumber, LastGroup, DBTransaction);
+                    AMotivationGroupRow MotivationGroupRow = (AMotivationGroupRow)MotivationGroupTable.Rows[0];
+
+
+                    ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" +
+                                        MotivationGroupRow.MotivationGroupDescription.TrimEnd() + "," + LastDetailDesc;
+                }
+
+                //Add rows to export table
+                DataRow DR = (DataRow)AExportDataTable.NewRow();
+
+                DR[0] = ACostCentre;
+                DR[1] = ConvertAccount(AAcctCode);
+                DR[2] = ExportDescription;
+                DR[3] = "ICH-" + APeriodNumber.ToString("00");
+                DR[4] = APeriodEndDate;;
+                DR[5] = IndividualDebitTotal;
+                DR[6] = IndividualCreditTotal;
+
+                AExportDataTable.Rows.Add(DR);
             }
 
             if (NewTransaction)
@@ -687,18 +633,18 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
         /// <summary>
         /// Performs the ICH code to generate HOSA Files/Reports.
-        ///  Relates to gl2120-1.i
+        /// ** CLEARLY INCOMPLETE! **  Relates to gl2120-1.i
         /// </summary>
         /// <param name="ALedgerNumber">ICH Ledger number</param>
         /// <param name="APeriodNumber">Period number</param>
         /// <param name="AIchNumber">ICH number</param>
-        /// <param name="ACurrency">Currency</param>
+        /// <param name="ACurrencySelect">Currency: B=base, I=International</param>
         /// <param name="AVerificationResult">Error messaging</param>
         [RequireModulePermission("FINANCE-3")]
         public static void GenerateHOSAReports(int ALedgerNumber,
             int APeriodNumber,
             int AIchNumber,
-            string ACurrency,
+            string ACurrencySelect,
             out TVerificationResultCollection AVerificationResult
             )
         {
@@ -708,75 +654,76 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             bool NewTransaction = false;
 
             TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            GLPostingTDS PostingDS = new GLPostingTDS();
-            GLBatchTDS BatchDS = new GLBatchTDS();
-
-            //Load tables needed: AccountingPeriod, Ledger, Account, Cost Centre, Transaction, Gift Batch, ICHStewardship
-            ALedgerAccess.LoadByPrimaryKey(PostingDS, ALedgerNumber, DBTransaction);
-            //AAccountAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
-            ACostCentreAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
-            ATransactionAccess.LoadViaALedger(BatchDS, ALedgerNumber, DBTransaction);
-            //AIchStewardshipAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
-            //AAccountHierarchyAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
-            AJournalAccess.LoadViaALedger(BatchDS, ALedgerNumber, DBTransaction);
-
+            ALedgerTable ALedger = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, DBTransaction);
+            AJournalTable AJournal = new AJournalTable();
+            ATransactionTable ATransaction = new ATransactionTable();
+            ACostCentreTable ACostCentre = new ACostCentreTable();
 
             try
             {
 #if TODO
-                ALedgerRow LedgerRow = (ALedgerRow)PostingDS.ALedger.Rows[0];
-
+                ALedgerRow LedgerRow = PostingDS.ALedger[0];
                 //Find the Ledger Name = Partner Short Name
                 PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LedgerRow.PartnerKey, DBTransaction);
                 PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
-
                 string LedgerName = PartnerRow.PartnerShortName;
 #endif
 
+                //
+                // Load the Journals, and Transactions for this period:
+                String JournalQuery = "SELECT PUB_a_journal.* FROM PUB_a_batch, PUB_a_journal WHERE " +
+                                      "PUB_a_batch.a_ledger_number_i = " + ALedgerNumber +
+                                      " AND PUB_a_batch.a_batch_year_i = " + ALedger[0].CurrentFinancialYear +
+                                      " AND PUB_a_batch.a_batch_period_i = " + APeriodNumber +
+                                      " AND PUB_a_batch.a_batch_status_c = 'Posted'" +
+                                      " AND PUB_a_batch.a_ledger_number_i = PUB_a_journal.a_ledger_number_i" +
+                                      " AND PUB_a_batch.a_batch_number_i = PUB_a_journal.a_batch_number_i";
+
+                DataTable JournalTbl = DBAccess.GDBAccessObj.SelectDT(JournalQuery, "a_journal", DBTransaction);
+                AJournal.Merge(JournalTbl);
+
+                String TransactionQuery = "SELECT PUB_a_transaction.* FROM PUB_a_batch, PUB_a_transaction WHERE " +
+                                          "PUB_a_batch.a_ledger_number_i = " + ALedgerNumber +
+                                          " AND PUB_a_batch.a_batch_year_i = " + ALedger[0].CurrentFinancialYear +
+                                          " AND PUB_a_batch.a_batch_period_i = " + APeriodNumber +
+                                          " AND PUB_a_batch.a_batch_status_c = 'Posted'" +
+                                          " AND PUB_a_batch.a_ledger_number_i = PUB_a_transaction.a_ledger_number_i" +
+                                          " AND PUB_a_batch.a_batch_number_i = PUB_a_transaction.a_batch_number_i";
+
+                DataTable TransactionTbl = DBAccess.GDBAccessObj.SelectDT(TransactionQuery, "a_transaction", DBTransaction);
+                ATransaction.Merge(TransactionTbl);
+
+
+                String CostCentreQuery = "SELECT * FROM a_cost_centre WHERE " +
+                                         ACostCentreTable.GetLedgerNumberDBName() + " = " + ALedgerNumber +
+                                         " AND " + ACostCentreTable.GetPostingCostCentreFlagDBName() + " = True" +
+                                         " AND " + ACostCentreTable.GetCostCentreTypeDBName() + " LIKE '" + MFinanceConstants.FOREIGN_CC_TYPE + "'" +
+                                         " ORDER BY " + ACostCentreTable.GetCostCentreCodeDBName();
+
+                DataTable CCTbl = DBAccess.GDBAccessObj.SelectDT(CostCentreQuery, "a_cost_centre", DBTransaction);
+                ACostCentre.Merge(CCTbl);
+
                 //Iterate through the cost centres
-                string WhereClause = ACostCentreTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString() +
-                                     " AND " + ACostCentreTable.GetPostingCostCentreFlagDBName() + " = True" +
-                                     " AND " + ACostCentreTable.GetCostCentreTypeDBName() +
-                                     " LIKE '" + MFinanceConstants.FOREIGN_CC_TYPE + "'";
-
-                string OrderBy = ACostCentreTable.GetCostCentreCodeDBName();
-
-                DataRow[] FoundCCRows = PostingDS.ACostCentre.Select(WhereClause, OrderBy);
-
-                //AIchStewardshipTable IchStewardshipTable = new AIchStewardshipTable();
-
-                foreach (DataRow untypedCCRow in FoundCCRows)
+                foreach (ACostCentreRow CostCentreRow in ACostCentre.Rows)
                 {
-                    ACostCentreRow CostCentreRow = (ACostCentreRow)untypedCCRow;
-
-                    string CostCentreCode = CostCentreRow.CostCentreCode;
-
                     bool TransactionExists = false;
 
                     //Iterate through the journals
-                    WhereClause = AJournalTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString() +
-                                  " AND " + AJournalTable.GetJournalPeriodDBName() + " = " + APeriodNumber.ToString();
-
-                    DataRow[] FoundJnlRows = BatchDS.AJournal.Select(WhereClause);
-
-                    foreach (DataRow untypedJnlRow in FoundJnlRows)
+                    foreach (AJournalRow JournalRow in AJournal.Rows)
                     {
-                        AJournalRow JournalRow = (AJournalRow)untypedJnlRow;
-
                         int BatchNumber = JournalRow.BatchNumber;
                         int JournalNumber = JournalRow.JournalNumber;
 
-                        WhereClause = ATransactionTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString() +
-                                      " AND " + ATransactionTable.GetBatchNumberDBName() + " = " + BatchNumber.ToString() +
-                                      " AND " + ATransactionTable.GetJournalNumberDBName() + " = " + JournalNumber.ToString() +
-                                      " AND " + ATransactionTable.GetCostCentreCodeDBName() + " = '" + CostCentreCode + "'" +
-                                      " AND (" + ATransactionTable.GetIchNumberDBName() + " = 0" +
-                                      "      OR " + ATransactionTable.GetIchNumberDBName() + " = " + AIchNumber.ToString() +
-                                      ")";
+                        String TransFilter =
+                            ATransactionTable.GetBatchNumberDBName() + " = " + BatchNumber.ToString() +
+                            " AND " + ATransactionTable.GetJournalNumberDBName() + " = " + JournalNumber.ToString() +
+                            " AND " + ATransactionTable.GetCostCentreCodeDBName() + " = '" + CostCentreRow.CostCentreCode + "'" +
+                            " AND (" + ATransactionTable.GetIchNumberDBName() + " = 0" +
+                            "      OR " + ATransactionTable.GetIchNumberDBName() + " = " + AIchNumber.ToString() +
+                            ")";
 
 #if TODO
-                        DataRow[] FoundTransRows = BatchDS.ATransaction.Select(WhereClause);
+                        DataRow[] FoundTransRows = BatchDS.ATransaction.Select(TransFilter);
 
                         foreach (DataRow untypedTransRow in FoundTransRows)
                         {
@@ -788,7 +735,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                                  LedgerName + "," +
                                                  APeriodNumber.ToString() + "," +
                                                  APeriodNumber.ToString() + "," +
-                                                 CostCentreCode + "," +
+                                                 CostCentreRow.CostCentreCode + "," +
                                                  "" + "," +
                                                  "" + "," +
                                                  "" + "," +

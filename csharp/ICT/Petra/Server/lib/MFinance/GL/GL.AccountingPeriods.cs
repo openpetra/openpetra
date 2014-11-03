@@ -560,6 +560,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 DataRow resultRow = datTable.NewRow();
                 resultRow[0] = LedgerTable[0].CurrentFinancialYear;
                 resultRow[1] = currentYearEnd.ToString("yyyy");
+                resultRow[2] = currentYearEnd.ToString("dd-MMM-yyyy");
                 datTable.Rows.InsertAt(resultRow, 0);
             }
 
@@ -568,7 +569,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 DataRow resultRow = datTable.NewRow();
                 resultRow[0] = LedgerTable[0].CurrentFinancialYear + 1;
                 resultRow[1] = currentYearEnd.AddYears(1).ToString("yyyy");
-                datTable.Rows.Add(resultRow);
+                resultRow[2] = currentYearEnd.ToString("dd-MMM-yyyy");
+                datTable.Rows.InsertAt(resultRow, 0);
             }
 
             return datTable;

@@ -279,8 +279,9 @@ namespace Tests.MFinance.Server.ICH
             decimal GIFAfter = new TGet_GLM_Info(FLedgerNumber,
                 MFinanceConstants.ICH_ACCT_SETTLEMENT,
                 CostCentreGIF).YtdActual;
-            Assert.AreEqual(20.0m * 1.0m / 100.0m, GIFAfter - GIFBefore,
-                "GIF should get 1% of 20 Euro gift");
+
+            Assert.AreEqual(20.0m / 100.0m, GIFAfter - GIFBefore,
+                "GIF should get 1% of 20 Euro gift. Before: " + GIFBefore + ", After: " + GIFAfter);
 
             // Receiving field should get 20-1.60 = 18.40 => 7300/5601
             decimal RecipientAfter = new TGet_GLM_Info(FLedgerNumber,

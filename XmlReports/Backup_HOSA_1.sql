@@ -2,7 +2,7 @@ DELETE FROM s_report_template WHERE s_template_id_i=1;
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
 VALUES(1,'HOSA','OpenPetra default template','System',True,False,False,False,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="09/01/2014 10:04:01" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="10/24/2014 10:40:04" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -183,11 +183,11 @@ namespace FastReport
       <TextObject Name="Text20" Width="75.6" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
       <LineObject Name="Line1" Top="56.7" Width="718.2" Border.Width="2"/>
       <TextObject Name="Text88" Left="226.8" Top="18.9" Width="226.8" Height="18.9" Text="[param_ledger_name] " HorzAlign="Center"/>
-      <DataBand Name="GiftsReport" Top="70.15" Width="718.2" DataSource="a_costCentre">
-        <GroupHeaderBand Name="GiftsHeader" Top="74.15" Width="718.2" Height="18.9" Condition="[Gifts.accountcode]" SortOrder="None">
+      <DataBand Name="GiftsReport" Top="69.48" Width="718.2" DataSource="a_costCentre">
+        <GroupHeaderBand Name="GiftsHeader" Top="72.82" Width="718.2" Height="18.9" Condition="[Gifts.accountcode]" SortOrder="None">
           <TextObject Name="Text64" Width="75.6" Height="18.9" Text="[Gifts.costcentre]-[Gifts.accountcode]" AutoShrink="FontSize" AutoShrinkMinSize="7" Font="Arial, 10pt, style=Bold, Italic"/>
           <TextObject Name="Text65" Left="75.6" Width="642.6" Height="18.9" Text="[Gifts.a_account.a_account_code_long_desc_c], [a_costCentre.a_cost_centre_name_c]" WordWrap="false" Font="Arial, 10pt, style=Bold, Italic"/>
-          <DataBand Name="Data1" Top="97.05" Width="718.2" Height="18.9" DataSource="Gifts" Filter="[Gifts.costcentre]==[a_costCentre.a_cost_centre_code_c]">
+          <DataBand Name="Data1" Top="95.05" Width="718.2" Height="18.9" DataSource="Gifts" Filter="[Gifts.costcentre]==[a_costCentre.a_cost_centre_code_c]">
             <TextObject Name="Text66" Left="113.4" Width="113.4" Height="18.9" CanGrow="true" Text="[Gifts.Reference]"/>
             <TextObject Name="GiftCredits" Left="321.3" Width="94.5" Height="18.9" Text="[IIf([param_currency]==&quot;Base&quot;,IIf([Gifts.GiftBaseAmount] &gt; 0,[Gifts.GiftBaseAmount], 0),IIf([Gifts.GiftIntlAmount] &gt; 0,[Gifts.GiftIntlAmount], 0))]" HorzAlign="Right" WordWrap="false" Font="Arial, 10pt, style=Bold" Trimming="EllipsisCharacter">
               <Formats>
@@ -210,7 +210,7 @@ namespace FastReport
             </TextObject>
             <TextObject Name="Text3" Width="113.4" Height="18.9" Text=" "/>
           </DataBand>
-          <GroupFooterBand Name="GiftsFooter" Top="119.95" Width="718.2" Height="28.35">
+          <GroupFooterBand Name="GiftsFooter" Top="117.28" Width="718.2" Height="28.35">
             <TextObject Name="Text70" Left="321.3" Width="94.5" Height="18.9" Text="[GiftCreditsTotal]" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue" Trimming="EllipsisCharacter">
               <Formats>
                 <NumberFormat UseLocale="false" NegativePattern="1"/>
@@ -234,10 +234,10 @@ namespace FastReport
             <TextObject Name="Text84" Width="113.4" Height="18.9" Text=" "/>
           </GroupFooterBand>
         </GroupHeaderBand>
-        <GroupHeaderBand Name="TransHeader" Top="152.3" Width="718.2" Height="18.9" Condition="[a_transaction.a_account_code_c]">
+        <GroupHeaderBand Name="TransHeader" Top="148.97" Width="718.2" Height="18.9" Condition="[a_transaction.a_account_code_c]">
           <TextObject Name="Text72" Left="75.6" Width="633.15" Height="18.9" Text="[a_transaction.a_account.a_account_code_long_desc_c], [a_costCentre.a_cost_centre_name_c]" WordWrap="false" Font="Arial, 10pt, style=Bold, Italic"/>
           <TextObject Name="Text73" Width="75.6" Height="18.9" Text="[a_costCentre.a_cost_centre_code_c]-[a_transaction.a_account.a_account_code_c]" AutoShrink="FontSize" AutoShrinkMinSize="7" Font="Arial, 10pt, style=Bold, Italic"/>
-          <DataBand Name="Data3" Top="175.2" Width="718.2" Height="18.9" DataSource="a_transaction" Filter="[a_costCentre.a_cost_centre_code_c]==[a_transaction.a_cost_centre_code_c]">
+          <DataBand Name="Data3" Top="171.2" Width="718.2" Height="18.9" DataSource="a_transaction" Filter="[a_costCentre.a_cost_centre_code_c]==[a_transaction.a_cost_centre_code_c]">
             <TextObject Name="TransDate" Width="113.4" Height="18.9" Text="[OmDate([a_transaction.a_transaction_date_d])]"/>
             <TextObject Name="Text75" Left="415.8" Width="302.4" Height="18.9" CanGrow="true" Text="[a_transaction.a_narrative_c]"/>
             <TextObject Name="Text76" Left="113.4" Width="113.4" Height="18.9" CanGrow="true" Text="[a_transaction.a_reference_c]"/>
@@ -260,7 +260,7 @@ namespace FastReport
               </Highlight>
             </TextObject>
           </DataBand>
-          <GroupFooterBand Name="TransFooter" Top="198.1" Width="718.2" Height="28.35">
+          <GroupFooterBand Name="TransFooter" Top="193.43" Width="718.2" Height="28.35">
             <TextObject Name="Text79" Left="226.8" Width="94.5" Height="18.9" Text="[TransDebitsTotal]" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue" Trimming="EllipsisCharacter">
               <Formats>
                 <NumberFormat UseLocale="false" NegativePattern="1"/>
@@ -284,7 +284,7 @@ namespace FastReport
           </GroupFooterBand>
         </GroupHeaderBand>
       </DataBand>
-      <GroupFooterBand Name="PageFooter" Top="230.45" Width="718.2" Height="47.25">
+      <GroupFooterBand Name="PageFooter" Top="225.12" Width="718.2" Height="47.25">
         <TextObject Name="AllDebits" Left="226.8" Top="9.45" Width="94.5" Height="18.9" Text="[[AllGiftDebits]+[AllTransDebits]]" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue" Trimming="EllipsisCharacter">
           <Formats>
             <NumberFormat UseLocale="false" NegativePattern="1"/>
@@ -314,8 +314,7 @@ namespace FastReport
             <GeneralFormat/>
           </Formats>
           <Highlight>
-            <Condition Expression="Value &lt; 0.01" TextFill.Color="Blue"/>
-            <Condition Expression="Value &lt; 0" TextFill.Color="White"/>
+            <Condition Expression="Value &lt; 0" Border.Lines="All" TextFill.Color="White"/>
           </Highlight>
         </TextObject>
         <TextObject Name="Text2" Left="113.4" Top="9.45" Width="113.4" Height="18.9" Text="Grand Total :" HorzAlign="Right"/>

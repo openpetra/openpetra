@@ -23,7 +23,6 @@
                 PUB_p_person.p_gender_c AS Gender,
                 PUB_p_person.p_marital_status_c AS MaritalStatus,
                 PUB_p_person.p_date_of_birth_d AS DateOfBirth,
-                PUB_p_person.p_field_key_n AS p_field_key_n,
                 PUB_p_person.p_family_key_n AS FamilyKey,
                 PUB_p_person.p_title_c AS p_title,
                 PUB_p_person.p_first_name_c AS p_first_name,
