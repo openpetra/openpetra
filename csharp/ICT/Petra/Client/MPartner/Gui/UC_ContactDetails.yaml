@@ -139,3 +139,4 @@ RootNode:
             Enabled: false
 
         chkConfidential:
+            OnChange: HandleConfidentialFlagChanged

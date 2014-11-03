@@ -1605,15 +1605,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool PrimaryEmailAddressIsThisRecord = false;
             bool PrimaryPhoneNumberIsThisRecord = false;
             
+            // Ensure current Checked state is reflected in the DataRow
+            GetSelectedDetailRow().Current = chkCurrent.Checked;
+
             dtpNoLongerCurrentFrom.Enabled = !chkCurrent.Checked;
 
             if (!FRunningInsideShowDetails)
             {
                 if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS)
                 {
-                    // Ensure current Checked state is reflected in the DataRow
-                    GetSelectedDetailRow().Current = chkCurrent.Checked;
-                    
                     if (cmbPrimaryEMail.GetSelectedString() == txtValue.Text)
                     {
                         PrimaryEmailAddressIsThisRecord = true;
@@ -1625,10 +1625,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
                 {
                     if (RowHasPhoneAttributeType(GetSelectedDetailRow())) 
-                    {
-                        // Ensure current Checked state is reflected in the DataRow
-                        GetSelectedDetailRow().Current = chkCurrent.Checked;
-    
+                    {    
                         if (cmbPrimaryPhoneForContacting.GetSelectedString() == txtValue.Text)
                         {
                             PrimaryPhoneNumberIsThisRecord = true;
@@ -1679,6 +1676,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Ensure current Checked state is reflected in the DataRow
             GetSelectedDetailRow().Specialised = chkSpecialised.Checked;            
         }
+        
+        private void HandleConfidentialFlagChanged(Object sender, EventArgs e)
+        {
+            // Ensure current Checked state is reflected in the DataRow
+            GetSelectedDetailRow().Confidential = chkConfidential.Checked;   
+
+            // TODO Implement 'confidential functionality'
+        }        
         
         private void HandleValueLeave(Object sender, EventArgs e)
         {
