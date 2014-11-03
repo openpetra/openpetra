@@ -63,8 +63,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             FContactDR = ARow;
 
             ShowData(ARow);
-            
-            
+
+            if (FValidationControlsDict.Count == 0)
+            {
+                BuildValidationControlsDict();
+            }
             //txtPublicationCost.ReadOnly = true;
 
             FInitializationRunning = false;
@@ -115,14 +118,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ARow"></param>
         public void ValidateRowManual(PContactLogRow ARow)
         {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-            //if (ARow.ContactDate == DateTime.MinValue || ARow.ContactCode == "")
-            //{
-            //    throw new NotImplementedException();
-            //}
-
-            TSharedPartnerValidation_Partner.ValidateContactLogManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict);
         }
         
     }

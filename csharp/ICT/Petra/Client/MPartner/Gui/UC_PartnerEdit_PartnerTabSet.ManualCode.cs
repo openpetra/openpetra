@@ -474,6 +474,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucContacts))
+            {
+                TUC_Contacts UCContactLogs = (TUC_Contacts)FTabSetup[TDynamicLoadableUserControls.dlucContacts];
+
+                if (!UCContactLogs.ValidateAllData(AProcessAnyDataValidationErrors, false, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucContactDetails))
             {
                 TUC_ContactDetails UCContactDetails =

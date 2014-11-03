@@ -1843,27 +1843,12 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 return;
             }
 
-            
             ValidationColumn = ARow.Table.Columns[PContactLogTable.ColumnContactCodeId];
-
-           
             VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.ContactCode, Catalog.GetString("Contact Code"),
                 AContext, ValidationColumn);
 
             // Handle addition to/removal from TVerificationResultCollection
             VerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-
-            ValidationColumn = ARow.Table.Columns[PContactLogTable.ColumnContactDateId];
-            string dateStr = ARow.ContactDate == DateTime.MinValue ? null : ARow.ContactDate.ToString();
-            VerificationResult = TDateChecks.IsValidDateTime(dateStr, Catalog.GetString("Contact Date"),
-                AContext, ValidationColumn);
-
-
-            // Handle addition to/removal from TVerificationResultCollection
-            VerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-
-
-           
         }
     }
 }

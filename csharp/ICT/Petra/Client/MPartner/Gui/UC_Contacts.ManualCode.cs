@@ -188,7 +188,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
-            ValidateAllData(false, true);
         }
 
         private void ShowDetailsManual(PContactLogRow ARow)
@@ -266,12 +265,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ValidateDataDetailsManual(PContactLogRow ARow)
         {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-            
-            ucoDetails.ValidateRowManual(ARow);
-            
-            TSharedPartnerValidation_Partner.ValidateContactLogManual(this, ARow, ref VerificationResultCollection,
-                        FValidationControlsDict);
         }
 
         /// <summary>
