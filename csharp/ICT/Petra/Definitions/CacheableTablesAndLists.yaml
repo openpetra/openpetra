@@ -36,6 +36,8 @@ CachedTables:
                 DataLabelsForPartnerClassesList: {Comment="list of available DataLabels for PartnerClasses"}
                 ContactCategoryList: {Comment=list of Contact Categories (based on p_partner_attribute_category, IsStorableToDBTable=PPartnerAttributeCategory}
                 ContactTypeList: {Comment=list of Contact Types (based on p_partner_attribute_type, IsStorableToDBTable=PPartnerAttributeType}
+                PartnerAttributeSystemCategoryList: {Comment=list of Partner Attribute Categories that are System Categories (based on p_partner_attribute_category}
+                PartnerAttributeSystemCategoryTypeList: {Comment=list of Partner Attribute Types that are Types of System Categories (based on p_partner_attribute_type}
         Mailing:
             DatabaseTables:
                 PContactAttribute:

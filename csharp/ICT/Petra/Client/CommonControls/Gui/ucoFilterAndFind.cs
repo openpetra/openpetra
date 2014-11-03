@@ -1283,6 +1283,22 @@ namespace Ict.Petra.Client.CommonControls
             UpdateKeepFilterTurnedOnButtonDepressedState();
         }
 
+        /// <summary>
+        /// Switches the 'Keep Filter Turned On' Button to the 'on'/'depressed' state.
+        /// </summary>
+        /// <param name="AFilterContext">Filter Context in which to switch the Button on.</param>        
+        public void SwitchOnKeepFilterTurnedOn(FilterContext AFilterContext)
+        {
+            Control[] ControlsArray = pnlFilterControls.Controls.Find(BTN_KEEP_FILTER_TURNED_ON_NAME, false);
+
+            // If a 'Keep Filter Turned On' Button is shown: check whether it is checked
+            if (ControlsArray.Length != 0)
+            {                            
+                UpdateKeepFilterTurnedOnButtonDepressedState(AFilterContext);
+                FKeepFilterTurnedOnButtonDepressed = AFilterContext;
+            }
+        }
+        
         #endregion
 
         #region 'Filter Always Turned On' Label adding/removal
@@ -2326,22 +2342,21 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
-        private void UpdateKeepFilterTurnedOnButtonDepressedState()
+        private void UpdateKeepFilterTurnedOnButtonDepressedState(FilterContext? ADepressButton = null)
         {
-            Control[] ControlsArray = pnlFilterControls.Controls.Find(BTN_KEEP_FILTER_TURNED_ON_NAME, false);
-
+            Control[] ControlsArrayStdFltr = pnlFilterControls.Controls.Find(BTN_KEEP_FILTER_TURNED_ON_NAME, false);
+            Control[] ControlsArrayExtraFltr = pnlExtraFilterControls.Controls.Find(BTN_KEEP_FILTER_TURNED_ON_NAME, false);
+            
             FKeepFilterTurnedOnButtonDepressed = FilterContext.None;
 
             // If a 'Keep Filter Turned On' Button is shown: check whether it is checked
-            if (ControlsArray.Length != 0)
+            if (ControlsArrayStdFltr.Length != 0)
             {
-                if (((CheckBox)ControlsArray[0]).Checked)
+                if (((CheckBox)ControlsArrayStdFltr[0]).Checked)
                 {
-                    ControlsArray = pnlExtraFilterControls.Controls.Find(BTN_KEEP_FILTER_TURNED_ON_NAME, false);
-
-                    if (ControlsArray.Length != 0)
+                    if (ControlsArrayExtraFltr.Length != 0)
                     {
-                        if (((CheckBox)ControlsArray[0]).Checked)
+                        if (((CheckBox)ControlsArrayExtraFltr[0]).Checked)
                         {
                             FKeepFilterTurnedOnButtonDepressed = FilterContext.StandardAndExtraFilter;
 
@@ -2361,15 +2376,24 @@ namespace Ict.Petra.Client.CommonControls
                         return;
                     }
                 }
+                else
+                {
+                    if ((ADepressButton != null)
+                        && ((ADepressButton == FilterContext.StandardFilterOnly) 
+                            || (ADepressButton == FilterContext.StandardAndExtraFilter)))
+                    {
+                        ((CheckBox)ControlsArrayStdFltr[0]).Checked = true;
+                    }
+                }
             }
 
             // Now Check the Extra Filter Panel
-            ControlsArray = pnlExtraFilterControls.Controls.Find(BTN_KEEP_FILTER_TURNED_ON_NAME, false);
+            ControlsArrayExtraFltr = pnlExtraFilterControls.Controls.Find(BTN_KEEP_FILTER_TURNED_ON_NAME, false);
 
             // If a 'Keep Filter Turned On' Button is shown: check whether it is checked
-            if (ControlsArray.Length != 0)
+            if (ControlsArrayExtraFltr.Length != 0)
             {
-                if (((CheckBox)ControlsArray[0]).Checked)
+                if (((CheckBox)ControlsArrayExtraFltr[0]).Checked)
                 {
                     FKeepFilterTurnedOnButtonDepressed = FilterContext.ExtraFilterOnly;
 
@@ -2378,6 +2402,13 @@ namespace Ict.Petra.Client.CommonControls
                 else
                 {
                     FKeepFilterTurnedOnButtonDepressed = FilterContext.None;
+                 
+                    if ((ADepressButton != null)
+                        && ((ADepressButton == FilterContext.ExtraFilterOnly) 
+                            || (ADepressButton == FilterContext.StandardAndExtraFilter)))
+                    {
+                        ((CheckBox)ControlsArrayExtraFltr[0]).Checked = true;
+                    }
                 }
             }
         }
