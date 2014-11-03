@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 // Need to create our own view because the grid may be filtered
                 return new DataView(FMainDS.PPartnerAttributeType,
-                    PPartnerAttributeTypeTable.GetAttributeCategoryDBName() +
+                    PPartnerAttributeTypeTable.GetCategoryCodeDBName() +
                     " = '" + FContactCategory + "'",
                     "", DataViewRowState.CurrentRows).Count;
             }
@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // Before we start we set the defaultView RowFilter property to something unlikely.
             // The manual code gets a chance to populate the grid before we get our chance to set the correct rowFilter.
             // So this ensures that the grid does not flicker with the wrong rows before we put the right ones in.
-            string FilterStr = String.Format("{0}='@#~?!()'", FMainDS.PPartnerAttributeType.ColumnAttributeCategory.ColumnName);
+            string FilterStr = String.Format("{0}='@#~?!()'", FMainDS.PPartnerAttributeType.ColumnCategoryCode.ColumnName);
 
             FMainDS.PPartnerAttributeType.DefaultView.RowFilter = FilterStr;
 
@@ -140,9 +140,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 NewName += CountNewDetail.ToString();
             }
 
-            ARow.Code = NewName;
+            ARow.AttributeType = NewName;
             ARow.SpecialLabel = "PLEASE ENTER LABEL";
-            ARow.AttributeCategory = FContactCategory;
+            ARow.CategoryCode = FContactCategory;
             ARow.AttributeTypeValueKind = "CONTACTDETAIL_GENERAL";
             ARow.Deletable = true;  // all manually created Contact Types are deletable
 
@@ -264,7 +264,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // of the UserControl would fail as a 'Master' Row itself was newly added AND it wouldn't be in the DB yet!
             return TDeleteGridRows.MasterDetailFormsSpecialPreDeleteCheck(this.Count,
                 FPartnerAttributeCategoryDT, FMainDS.PPartnerAttributeType,
-                PPartnerAttributeCategoryTable.GetCategoryCodeDBName(), PPartnerAttributeTypeTable.GetAttributeCategoryDBName());
+                PPartnerAttributeCategoryTable.GetCategoryCodeDBName(), PPartnerAttributeTypeTable.GetCategoryCodeDBName());
         }
 
         private void PostDeleteManual(PPartnerAttributeTypeRow ARowToDelete,
@@ -326,7 +326,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             while (UpdateRowsDV.Count > 0)
             {
-                UpdateRowsDV[0][FMainDS.PPartnerAttributeType.ColumnAttributeCategory.Ordinal] = ANewCode;
+                UpdateRowsDV[0][FMainDS.PPartnerAttributeType.ColumnCategoryCode.Ordinal] = ANewCode;
             }
 
             FContactCategory = ANewCode;
@@ -342,7 +342,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// <param name="ACurrentRowIndex">The index of the Row that should get displayed (the 'current' Row).</param>
         private void FilterOnCode(string ANewCode, int ACurrentRowIndex)
         {
-            string FilterStr = String.Format("{0}='{1}'", PPartnerAttributeTypeTable.GetAttributeCategoryDBName(), ANewCode);
+            string FilterStr = String.Format("{0}='{1}'", PPartnerAttributeTypeTable.GetCategoryCodeDBName(), ANewCode);
 
             FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);
             FFilterAndFindObject.ApplyFilter();

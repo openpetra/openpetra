@@ -270,8 +270,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
             }
 
-            // TODO Other TabSets (Finance Data)
-
             FCurrentModuleTabGroup = AModuleTabGroup;
         }
 
@@ -322,8 +320,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
                     ucoPersonnelTabSet.SelectTabPage(ATabPage);
                     break;
-
-                    // TODO Other TabSets (Finance Data)
             }
         }
 
@@ -414,8 +410,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ucoPartnerTabSet.GetDataFromControls();
             ucoPersonnelTabSet.GetDataFromControls();
-
-            // TODO Other TabSets (Finance Data)
         }
 
         /// <summary>

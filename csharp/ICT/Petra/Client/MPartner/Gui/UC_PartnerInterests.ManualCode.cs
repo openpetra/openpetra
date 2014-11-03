@@ -66,11 +66,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
-        private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
-        {
-            OnRecalculateScreenParts(e);
-        }
-
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {
             if (HookupDataChange != null)
@@ -274,17 +269,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRecord(System.Object sender, EventArgs e)
         {
-            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
-
             if (CreateNewPPartnerInterest())
             {
                 cmbPPartnerInterestInterestCategory.Focus();
             }
 
             // Fire OnRecalculateScreenParts event: reset counter in tab header
-            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+            DoRecalculateScreenParts();
         }
 
         /// <summary>

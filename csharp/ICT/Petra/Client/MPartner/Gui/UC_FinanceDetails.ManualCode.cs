@@ -1173,7 +1173,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Adds validation for dtpTaxDeductibleValidFrom
         /// </summary>
         /// <returns>Returns false if validation error</returns>
-        public bool ValidateValidFromDate()
+        private bool ValidateValidFromDate()
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 

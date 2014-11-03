@@ -1,16 +1,19 @@
-Phone & Fax (Landline),Phone,Landline phone number,0,CONTACTDETAIL_GENERAL,?,Business Phone,false,?,false,?,?,?,?,?
-Phone & Fax (Landline),Assistant Phone,Phone number of secretary/personal assistant,1,CONTACTDETAIL_GENERAL,?,?,false,?,false,?,?,?,?,?
-Phone & Fax (Landline),Company Switchboard,Main phone number of company,2,CONTACTDETAIL_GENERAL,?,?,false,?,false,?,?,?,?,?
-Phone & Fax (Landline),Fax,Facsimile number,3,CONTACTDETAIL_GENERAL,?,Business Fax,false,?,false,?,?,?,?,?
-Mobile Phone & Pager,Mobile Phone,Mobile/cellular phone number,0,CONTACTDETAIL_GENERAL,?,Business Mobile Phone,false,?,false,?,?,?,?,?
-Mobile Phone & Pager,Pager,Pager number,1,CONTACTDETAIL_GENERAL,?,Business Pager,yes,1990-01-01,yes,?,?,?,?,?
+Phone,Mobile Phone,"Mobile/cellular phone number",0,CONTACTDETAIL_GENERAL,?,Business Mobile Phone,false,?,false,?,?,?,?,?
+Phone,Phone,Landline phone number,1,CONTACTDETAIL_GENERAL,?,Business Phone,false,?,false,?,?,?,?,?
+Phone,Fax,Facsimile number,2,CONTACTDETAIL_GENERAL,?,Business Fax,false,?,false,?,?,?,?,?
 E-Mail,E-Mail,E-Mail address,0,CONTACTDETAIL_EMAILADDRESS,?,Business E-Mail,false,?,false,?,?,?,?,?
 E-Mail,Secure E-Mail,Secure E-Mail address,1,CONTACTDETAIL_EMAILADDRESS,?,Business Secure E-Mail,false,?,false,?,?,?,?,?
-Internet Voice Comm. & IM,Skype,Skype ID,0,CONTACTDETAIL_SKYPEID,?,Business Skype,false,?,false,?,?,?,?,?
-Internet Voice Comm. & IM,IM Address,Internet Messaging Address,1,CONTACTDETAIL_GENERAL,?,Business IM Address,false,?,false,?,?,?,?,?
-Web Sites & Blogs,Web Site,Internet address of a Web Site,0,CONTACTDETAIL_HYPERLINK,?,Business Web Site,false,?,false,?,?,?,?,?
-Web Sites & Blogs,Blog,Internet address of a Blog,1,CONTACTDETAIL_HYPERLINK,?,Business Blog,false,?,false,?,?,?,?,?
-Social Networks,LinkedIn,LinkedIn user name,2,CONTACTDETAIL_HYPERLINK_WITHVALUE,?,LinkedIn (Business),false,?,false,?,?,?,?,?
-Social Networks,Twitter,Twitter user name,1,CONTACTDETAIL_HYPERLINK_WITHVALUE,http://www.twitter.com/{VALUE},Twitter (Business),false,?,false,?,?,?,?,?
-Social Networks,Facebook,Facebook user name,0,CONTACTDETAIL_HYPERLINK_WITHVALUE,https://www.facebook.com/{VALUE},Facebook (Business),false,?,false,?,?,?,?,?
-Social Networks,Xing,Xing user name,3,CONTACTDETAIL_HYPERLINK_WITHVALUE,http://www.xing.com/profile/{VALUE},Xing (Business),false,?,false,?,?,?,?,?
+Digital Media,Facebook,Facebook user name,0,CONTACTDETAIL_HYPERLINK_WITHVALUE,https://www.facebook.com/{VALUE},Facebook (Business),false,?,false,?,?,?,?,?
+Digital Media,Twitter,Twitter user name,1,CONTACTDETAIL_HYPERLINK_WITHVALUE,http://www.twitter.com/{VALUE},Twitter (Business),false,?,false,?,?,?,?,?
+Digital Media,LinkedIn,LinkedIn user name,2,CONTACTDETAIL_HYPERLINK,?,LinkedIn (Business),false,?,false,?,?,?,?,?
+Digital Media,Xing,Xing user name,3,CONTACTDETAIL_HYPERLINK_WITHVALUE,http://www.xing.com/profile/{VALUE},Xing (Business),false,?,false,?,?,?,?,?
+Digital Media,Instagram,Instagram user name,4,CONTACTDETAIL_HYPERLINK,?,Instagram (Business),false,?,false,?,?,?,?,?
+Digital Media,Pinterest,Pinterest user name,5,CONTACTDETAIL_HYPERLINK,?,Pinterest (Business),false,?,false,?,?,?,?,?
+Digital Media,Web Site,Internet address of a Web Site,6,CONTACTDETAIL_HYPERLINK,?,Business Web Site,false,?,false,?,?,?,?,?
+Digital Media,Blog,Internet address of a Blog,7,CONTACTDETAIL_HYPERLINK,?,Business Blog,false,?,false,?,?,?,?,?
+Instant Messaging & Chat,Skype,Skype ID,0,CONTACTDETAIL_SKYPEID,?,Skype (Business),false,?,false,?,?,?,?,?
+Instant Messaging & Chat,Lync,Lync ID,1,CONTACTDETAIL_GENERAL,?,Lync (Business),false,?,false,?,?,?,?,?
+Instant Messaging & Chat,WhatsApp,WhatsApp ID,2,CONTACTDETAIL_GENERAL,?,WhatsApp (Business),false,?,false,?,?,?,?,?
+Instant Messaging & Chat,Yahoo,Yahoo ID,3,CONTACTDETAIL_GENERAL,?,Yahoo (Business),false,?,false,?,?,?,?,?
+Instant Messaging & Chat,FaceTime,FaceTime ID,4,CONTACTDETAIL_GENERAL,?,FaceTime (Business),false,?,false,?,?,?,?,?
+PARTNERS_CONTACTDETAILS_SETTINGS,PARTNERS_PRIMARY_CONTACT_METHOD,"A Partners' Primary Contact Method",0,CONTACTDETAILSETTING,?,?,false,?,false,?,?,?,?,?

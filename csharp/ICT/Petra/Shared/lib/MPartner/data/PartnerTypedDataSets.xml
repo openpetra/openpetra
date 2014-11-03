@@ -30,7 +30,9 @@
     </Table>
     <Table sqltable="p_partner_attribute_category"/>
     <Table sqltable="p_partner_attribute_type"/>
-    <Table sqltable="p_partner_attribute"/>
+    <Table sqltable="p_partner_attribute">
+        <CustomField name="PartnerContactDetail" type="Boolean"/>
+    </Table>    
     <Table sqltable="p_family">
       <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
     </Table>
@@ -82,6 +84,8 @@
       <CustomField name="LastContactDate" type="DateTime"/>
       <CustomField name="ItemsCountAddresses" type="Int32"/>
       <CustomField name="ItemsCountAddressesActive" type="Int32"/>
+      <CustomField name="ItemsCountContactDetails" type="Int32"/>
+      <CustomField name="ItemsCountContactDetailsActive" type="Int32"/>
       <CustomField name="ItemsCountSubscriptions" type="Int32"/>
       <CustomField name="ItemsCountSubscriptionsActive" type="Int32"/>
       <CustomField name="ItemsCountPartnerTypes" type="Int32"/>
@@ -127,10 +131,10 @@
         createConstraints="false"/>
     <CustomRelation name="ContactDetails1"
         parentTable="PPartnerAttributeCategory" parentFields="CategoryCode"
-        childTable="PPartnerAttributeType" childFields="AttributeCategory"
+        childTable="PPartnerAttributeType" childFields="CategoryCode"
         createConstraints="false"/>        
     <CustomRelation name="ContactDetails2"
-        parentTable="PPartnerAttributeType" parentFields="Code"
+        parentTable="PPartnerAttributeType" parentFields="AttributeType"
         childTable="PPartnerAttribute" childFields="AttributeType"
         createConstraints="false"/>                
     <CustomRelation name="PartnerInterestCategory"

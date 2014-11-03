@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Specialized;
 using System.IO;
 using Ict.Common;
 
@@ -83,8 +84,8 @@ namespace Ict.Tools.DataDumpPetra2
                     }
                 }
 
-                string table = TAppSettingsManager.GetValue("table", "");
-
+                StringCollection tables = StringHelper.StrSplit(TAppSettingsManager.GetValue("table", ""), ",");
+                
                 // the upgrade process is split into two steps, to make testing quicker
 
                 // Step 1: dump from Progress Petra 2.3 to CSV files, write gz files to keep size of fulldump small
@@ -93,7 +94,18 @@ namespace Ict.Tools.DataDumpPetra2
                 if ((TAppSettingsManager.GetValue("operation", "dump23") == "dump23") && File.Exists("fulldump23.r"))
                 {
                     TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
-                    dumper.DumpTablesToCSV(table);
+                    
+                    if (tables.Count == 0) 
+                    {
+                        dumper.DumpTablesToCSV(String.Empty);
+                    }
+                    else
+                    {
+                        foreach (var ProcessTable in tables)
+                        {                    
+                            dumper.DumpTablesToCSV(ProcessTable);
+                        }
+                    }
                 }
 
                 // Step 2: produce one or several sql load files for PostgreSQL
@@ -103,14 +115,36 @@ namespace Ict.Tools.DataDumpPetra2
                 if (TAppSettingsManager.GetValue("operation", "load30") == "load30")
                 {
                     TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
-                    dumper.LoadTablesToPostgresql(table);
+                    
+                    if (tables.Count == 0) 
+                    {
+                        dumper.LoadTablesToPostgresql(String.Empty);
+                    }
+                    else
+                    {
+                        foreach (var ProcessTable in tables)
+                        {
+                            dumper.LoadTablesToPostgresql(ProcessTable);    
+                        }
+                    }
                 }
 
                 // Step 3: concatenate all existing sql.gz files into one load sql file, gzipped. in the correct order
                 if (TAppSettingsManager.GetValue("operation", "createSQL") == "createSQL")
                 {
                     TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
-                    dumper.CreateNewSQLFile(table);
+                    
+                    if (tables.Count == 0) 
+                    {
+                        dumper.CreateNewSQLFile(String.Empty);   
+                    }
+                    else
+                    {
+                        foreach (var ProcessTable in tables) 
+                        {                    
+                            dumper.CreateNewSQLFile(ProcessTable);
+                        }
+                    }
                 }
 
                 // TODO: also anonymize the names of the partners (use random names from external list of names)? what about amounts?

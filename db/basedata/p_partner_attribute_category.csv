@@ -1,6 +1,5 @@
-Phone & Fax (Landline),Landline numbers,0,yes,false,false,?,?,?,?,?
-Mobile Phone & Pager,"Mobile/cellular numbers, Pager numbers",1,yes,false,false,?,?,?,?,?
+Phone,Phone and Fax numbers,0,yes,false,false,?,?,?,?,?
 E-Mail,E-Mail addresses,2,yes,false,false,?,?,?,?,?
-Web Sites & Blogs,Internet addresses of Web Sites & Blogs,4,yes,false,false,?,?,?,?,?
-Social Networks,Social Networks on the Internet,5,yes,false,false,?,?,?,?,?
-Internet Voice Comm. & IM,"Internet Voice Communication, Instant Messaging",3,yes,false,false,?,?,?,?,?
+Digital Media,"Social Media, Web Sites & Blogs",3,yes,false,false,?,?,?,?,?
+Instant Messaging & Chat,"Instant Messaging, Internet Voice Communication",4,yes,false,false,?,?,?,?,?
+PARTNERS_CONTACTDETAILS_SETTINGS,"A Partners' Contact Details Settings",0,false,true,false,?,?,?,?,?
