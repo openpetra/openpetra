@@ -191,7 +191,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string FileContent = sr.ReadToEnd();
 
             FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
-            FileContent = FileContent.Replace("{thisyear}-01-01", DateTime.Today.AddMonths(2).ToString("yyyy-MM-dd"));
+            FileContent = FileContent.Replace("{thisyear}-01-01", DateTime.Today.AddMonths(1).ToString("yyyy-MM-dd"));
 
             sr.Close();
 
