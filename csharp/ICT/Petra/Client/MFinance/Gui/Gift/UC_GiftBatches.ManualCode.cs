@@ -542,7 +542,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             GetDataFromControls();
 
-            if (!TExWorkerAlert.CanContinueWithAnyExWorkers(TExWorkerAlert.GiftBatchAction.NEWBATCH, FMainDS, FPetraUtilsObject))
+            if (!TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(TExtraGiftBatchChecks.GiftBatchAction.NEWBATCH, FMainDS, FPetraUtilsObject))
             {
                 return;
             }
@@ -944,7 +944,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             txtDetailHashTotal.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(FPreviouslySelectedDetailRow.CurrencyCode);
 
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.Enabled =

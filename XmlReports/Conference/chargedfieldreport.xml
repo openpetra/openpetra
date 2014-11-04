@@ -138,7 +138,13 @@
                             
                         FROM   PUB_p_partner,
                             PUB_p_person,
-                            PUB_p_family,
+                            PUB_p_family
+                                LEFT JOIN PUB.p_partner_gift_destination 
+                                ON PUB.p_partner_gift_destination.p_partner_key_n = PUB_p_family.p_partner_key_n
+                                AND PUB.p_partner_gift_destination.p_date_effective_d &lt;= {#param_today#}
+                                AND (PUB.p_partner_gift_destination.p_date_expires_d IS NULL
+                                OR (PUB.p_partner_gift_destination.p_date_expires_d &gt;= {#param_today#}
+                                AND PUB.p_partner_gift_destination.p_date_effective_d != PUB.p_partner_gift_destination.p_date_expires_d)),
                             PUB_p_unit,
                             PUB_pc_attendee,
                             PUB_pc_conference,
@@ -200,13 +206,11 @@
                     <queryDetail condition="eq({param_cmbChargedFields}, charge Sending Field)"><value>
                                     AND PUB_pc_attendee.pc_home_office_key_n = {{ChargedOffice}}
                     </value></queryDetail>
+<!-- p_field_key_n has gone:
                     <queryDetail condition="eq({param_cmbChargedFields}, charge Receiving Field)"><value>
-                                    AND (   
-                                            ( PUB_p_person.p_field_key_n = {{ReceivingField}})        <!-- xxxxx -->
-                                            OR ( PUB_p_person.p_field_key_n = 0                       <!-- xxxxx -->
-                                                AND PUB_p_family.p_field_key_n = {{ReceivingField}})  <!-- xxxxx -->
-                                        )
+                                    AND p_partner_gift_destination.p_field_key_n = {{ReceivingField}}
                     </value></queryDetail>
+-->
                     <queryDetail condition="eq({param_cmbChargedFields}, charge Registering Field)"><value>
                                     AND PUB_pm_short_term_application.pm_registration_office_n = {{ChargedOffice}}
                     </value></queryDetail>

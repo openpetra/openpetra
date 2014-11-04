@@ -102,8 +102,9 @@ namespace Tests.MFinance.Server.Gift
             parameters.Add("NewLine", Environment.NewLine);
 
             TVerificationResultCollection VerificationResult = null;
+            GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
 
-            if (!importer.ImportGiftBatches(parameters, FileContent, out VerificationResult))
+            if (!importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult))
             {
                 Assert.Fail("Gift Batch was not imported: " + VerificationResult.BuildVerificationResultString());
             }

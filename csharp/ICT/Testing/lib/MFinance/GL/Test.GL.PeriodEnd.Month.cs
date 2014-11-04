@@ -191,7 +191,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string FileContent = sr.ReadToEnd();
 
             FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
-            FileContent = FileContent.Replace("{thisyear}-01-01", DateTime.Today.AddMonths(2).ToString("yyyy-MM-dd"));
+            FileContent = FileContent.Replace("{thisyear}-01-01", DateTime.Today.AddMonths(1).ToString("yyyy-MM-dd"));
 
             sr.Close();
 
@@ -203,8 +203,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             parameters.Add("NewLine", Environment.NewLine);
 
             TVerificationResultCollection VerificationResult;
+            GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
 
-            importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
+            importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult);
             Assert.True(TVerificationHelper.IsNullOrOnlyNonCritical(VerificationResult),
                 "Failed to import the test gift batch.  The file contains critical error(s).");
         }

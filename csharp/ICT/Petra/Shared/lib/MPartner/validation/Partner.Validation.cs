@@ -1662,48 +1662,48 @@ namespace Ict.Petra.Shared.MPartner.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
-            
+
             // Don't validate deleted DataRows
             if (ARow.RowState == DataRowState.Deleted)
             {
                 return;
             }
 
-            // If this record is about an E-Mail Contact Detail...            
-            if (AValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS) 
+            // If this record is about an E-Mail Contact Detail...
+            if (AValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS)
             {
                 // ...then the E-mail Address must be in a correct format
                 ValidationColumn = ARow.Table.Columns[PPartnerAttributeTable.ColumnValueId];
-    
+
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     VerificationResult = TStringChecks.ValidateEmail(ARow.Value, true,
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-    
+
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-                }                
+                }
             }
-            
+
             // 'No Longer Current From Date' must not be a future date if the 'Current' Flag is set to false
             ValidationColumn = ARow.Table.Columns[PPartnerAttributeTable.ColumnNoLongerCurrentFromId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = null;
-                
+
                 if (!ARow.Current)
                 {
-                    VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.NoLongerCurrentFrom, 
-                        ValidationControlsData.ValidationControlLabel, AContext, ValidationColumn, 
+                    VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.NoLongerCurrentFrom,
+                        ValidationControlsData.ValidationControlLabel, AContext, ValidationColumn,
                         ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }            
+            }
         }
-        
+
         /// <summary>
         /// Validates the Partner Interest Setup screen data.
         /// </summary>

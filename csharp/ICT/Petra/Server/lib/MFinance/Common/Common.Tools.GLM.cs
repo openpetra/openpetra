@@ -133,7 +133,6 @@ namespace Ict.Petra.Server.MFinance.Common
     public class TGet_GLM_Info
     {
         AGeneralLedgerMasterTable FGLMTbl;
-        int iPtr = 0;
 
         /// <summary>
         ///
@@ -169,8 +168,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
         /// <summary>
         /// THIS METHOD DOES NOT RETURN USEFUL VALUES because the Year is not specified.
-        /// It is only ever called from tests, and those tests will invariably pass,
-        /// if there's a previous financial year in the database,
+        /// It is only called from tests, and those tests pass,
+        /// because there's no previous financial year in the database,
         /// because the data returned by this method is from the earliest year in the ledger.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -192,6 +191,12 @@ namespace Ict.Petra.Server.MFinance.Common
                 GLMTemplateRow.AccountCode = AAccountCode;
                 GLMTemplateRow.CostCentreCode = ACostCentreCode;
                 FGLMTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, transaction);
+
+                if (FGLMTbl.Rows.Count == 0)
+                {
+                    TLogging.Log(String.Format("\nERROR: No TGet_GLM_Info row found for ({0}, {1}).\n",
+                            AAccountCode, ACostCentreCode));
+                }
             }
             finally
             {
@@ -209,12 +214,13 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                if (iPtr >= FGLMTbl.Rows.Count)
+                if ((FGLMTbl.Rows.Count == 0) || FGLMTbl[0].IsYtdActualBaseNull())
                 {
+                    TLogging.Log("TGet_GLM_Info.YtdActual not available.");
                     return 0;
                 }
 
-                return FGLMTbl[iPtr].IsYtdActualBaseNull() ? 0 : FGLMTbl[iPtr].YtdActualBase;
+                return FGLMTbl[0].YtdActualBase;
             }
         }
 
@@ -225,12 +231,13 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                if (iPtr >= FGLMTbl.Rows.Count)
+                if ((FGLMTbl.Rows.Count == 0) || FGLMTbl[0].IsYtdActualForeignNull())
                 {
+                    TLogging.Log("TGet_GLM_Info.YtdForeign not available.");
                     return 0;
                 }
 
-                return FGLMTbl[iPtr].IsYtdActualForeignNull() ? 0 : FGLMTbl[iPtr].YtdActualForeign;
+                return FGLMTbl[0].YtdActualForeign;
             }
         }
 
@@ -241,18 +248,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return FGLMTbl[iPtr].GlmSequence;
-            }
-        }
-
-        /// <summary>
-        /// ...
-        /// </summary>
-        public string CostCentreCode
-        {
-            get
-            {
-                return FGLMTbl[iPtr].CostCentreCode;
+                return FGLMTbl[0].GlmSequence;
             }
         }
     }  // TGet_GLM_Info

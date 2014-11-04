@@ -179,7 +179,7 @@
                     FROM PUB_a_gift_batch as batch, PUB_a_gift_detail AS detail, PUB_a_motivation_detail as motdetail,
                         PUB_a_cost_centre AS costcentre
                     WHERE batch.a_ledger_number_i = {{param_ledger_number_i}}
-                    AND batch.a_batch_status_c = &quot;Posted&quot;
+                    AND batch.a_batch_status_c = 'Posted'
                     
 </value>
         </queryDetail>

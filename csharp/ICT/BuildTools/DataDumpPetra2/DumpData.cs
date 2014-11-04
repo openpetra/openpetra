@@ -109,6 +109,7 @@ namespace Ict.Tools.DataDumpPetra2
         private void LoadTable(TTable newTable)
         {
             bool IgnoreFile = false;
+
             TLogging.Log(newTable.strName);
 
             string oldTableName = DataDefinitionDiff.GetOldTableName(newTable.strName);
@@ -140,7 +141,7 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 IgnoreFile = true;
             }
-            
+
             if (IgnoreFile || (info.Length == 0))
             {
                 TLogging.Log("ignoring " + dumpFile + ".d.gz");
@@ -175,7 +176,8 @@ namespace Ict.Tools.DataDumpPetra2
             // if this is a new table in OpenPetra, do not dump anything. the table will be empty in OpenPetra
             // (except p_postcode_region_range, a_budget_revision and p_partner_gift_destination which are populated here)
             if ((oldTable == null) && (newTable.strName != "p_postcode_region_range") && (newTable.strName != "a_budget_revision")
-                && (newTable.strName != "p_partner_gift_destination") && (newTable.strName != "p_partner_attribute_category") && (newTable.strName != "p_partner_attribute_type"))
+                && (newTable.strName != "p_partner_gift_destination") && (newTable.strName != "p_partner_attribute_category")
+                && (newTable.strName != "p_partner_attribute_type"))
             {
                 return;
             }
@@ -196,13 +198,13 @@ namespace Ict.Tools.DataDumpPetra2
             TParseProgressCSV Parser = null;
             try
             {
-                if (oldTable != null) 
+                if (oldTable != null)
                 {
                     Parser = new TParseProgressCSV(
-                                        dumpFile + ".d.gz",
-                                        oldTable.grpTableField.Count);                    
+                        dumpFile + ".d.gz",
+                        oldTable.grpTableField.Count);
                 }
-                
+
                 FileStream outStream = File.Create(NewFileName);
                 Stream gzoStream = new GZipOutputStream(outStream);
                 StreamWriter MyWriter = new StreamWriter(gzoStream, Encoding.UTF8);

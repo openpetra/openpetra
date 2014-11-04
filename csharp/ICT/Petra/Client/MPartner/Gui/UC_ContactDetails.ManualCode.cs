@@ -56,7 +56,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private readonly string StrFunctionKeysTip = Catalog.GetString(
             "  (Press <F5>-<F8> to change Contact Type; press <SHIFT>+any of those keys to choose alternative.)");
-        
+
         private readonly string StrPrimPhoneConsequence1 = Catalog.GetString(
             "Please select a current Phone Number from the available ones!");
 
@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             "The Primary Phone Number has been cleared as there is no other current Phone record.");
 
         private readonly string StrPrimPhoneMessageBoxTitle1 = Catalog.GetString("Primary Phone Number Needs Adjusting");
-        
+
         private readonly string StrPrimPhoneMessageBoxTitle2 = Catalog.GetString("Primary Phone Number Cleared");
 
         private readonly string StrPrimEmailConsequence1 = Catalog.GetString(
@@ -81,13 +81,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>Holds a reference to an ImageList containing Icons that can be shown in Grid Rows</summary>
         private ImageList FGridRowIconsImageList;
-        
+
         private TPartnerAttributeTypeValueKind FValueKind = TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL;
 
         System.Windows.Forms.Timer ShowMessageBoxTimer = new System.Windows.Forms.Timer();
 
-        private TTimerDrivenMessageBoxKind FTimerDrivenMessageBoxKind;        
-        
+        private TTimerDrivenMessageBoxKind FTimerDrivenMessageBoxKind;
+
         private bool FFilterInitialised = false;
 
         private bool FRunningInsideShowDetails = false;
@@ -99,21 +99,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool FSuppressOnContactTypeChangedEvent = false;
 
         private bool FPrimaryPhoneSelectedValueChangedEvent = false;
-        
+
         private bool FPrimaryEmailSelectedValueChangedEvent = false;
-        
+
         private int FSelectedRowIndexBeforeSaving = -1;
-        
+
         /// <summary>
-        /// Usage: see Methods <see cref="PreDeleteManual"/> and <see cref="PostDeleteManual"/>. 
+        /// Usage: see Methods <see cref="PreDeleteManual"/> and <see cref="PostDeleteManual"/>.
         /// </summary>
         private string FDeletedRowsAttributeType = String.Empty;
-        
+
         /// <summary>
-        /// Usage: see Methods <see cref="PreDeleteManual"/> and <see cref="PostDeleteManual"/>. 
+        /// Usage: see Methods <see cref="PreDeleteManual"/> and <see cref="PostDeleteManual"/>.
         /// </summary>
         private string FDeletedRowsValue = String.Empty;
-        
+
         /// <summary>
         /// Populated by Method <see cref="Calculations.DeterminePhonePartnerAttributeTypes"/>.
         /// </summary>
@@ -128,12 +128,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Populated by Method <see cref="Calculations.DeterminePhoneAttributes"/>.
         /// </summary>
         DataView FPhoneAttributesDV = null;
-        
+
         /// <summary>
         /// Populated by Method <see cref="Calculations.DetermineSystemCategoryAttributeTypes"/>.
         /// </summary>
         string FSystemCategoryAttrTypesConcatStr = String.Empty;
-        
+
         #region Properties
 
         #endregion
@@ -167,31 +167,31 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FRunningInsideDataSaving = true;
             PPartnerAttributeRow CurrentDetailDR = GetSelectedDetailRow();
-            
-            if (CurrentDetailDR != null) 
+
+            if (CurrentDetailDR != null)
             {
-                if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS) 
+                if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS)
                 {
-                    FValueWithSpecialMeaningChangedButUserDidntLeaveControl = 
+                    FValueWithSpecialMeaningChangedButUserDidntLeaveControl =
                         String.Compare(txtValue.Text, CurrentDetailDR.Value, StringComparison.InvariantCulture) != 0;
                 }
                 else if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
                 {
-                    if (RowHasPhoneAttributeType(CurrentDetailDR)) 
+                    if (RowHasPhoneAttributeType(CurrentDetailDR))
                     {
-                        FValueWithSpecialMeaningChangedButUserDidntLeaveControl = 
-                            String.Compare(txtValue.Text, CurrentDetailDR.Value, StringComparison.InvariantCulture) != 0;                    
+                        FValueWithSpecialMeaningChangedButUserDidntLeaveControl =
+                            String.Compare(txtValue.Text, CurrentDetailDR.Value, StringComparison.InvariantCulture) != 0;
                     }
-                }   
-                
+                }
+
                 // make sure latest screen modifications are saved to FMainDS
                 GetDataFromControls();
-    
+
                 // Refresh the ComboBox so it reflects any change in the email address!
                 UpdatePrimaryEmailComboItems(true);
                 UpdatePrimaryPhoneComboItems();
-    
-                FSelectedRowIndexBeforeSaving = grdDetails.GetFirstHighlightedRowIndex();                
+
+                FSelectedRowIndexBeforeSaving = grdDetails.GetFirstHighlightedRowIndex();
             }
             else
             {
@@ -203,7 +203,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FRunningInsideDataSaving = false;
         }
-        
+
         #region Public Methods
 
         /// <summary>todoComment</summary>
@@ -222,7 +222,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-            
+
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
@@ -232,7 +232,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MakeDetailsInvisible(true);
                 btnDelete.Enabled = false;
             }
-            
+
             // now changes to controls can trigger enabling of save button again
             FPetraUtilsObject.EnableDataChangedEvent();
 
@@ -271,13 +271,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Extra Tab initialisation on inital Tab 'activation'.
         /// </summary>
         public void SpecialInitUserControl()
-        {            
+        {
             // Set up special sort order of Rows in Grid:
             // PPartnerAttributeCategory.Index followed by PPartnerAttributeType.Index followed by PPartnerAttribute.Index!
             DataView gridView = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+
             gridView.Sort = "Parent_Parent_CategoryIndex ASC, Parent_AttributeIndex ASC, " +
                             PPartnerAttributeTable.GetIndexDBName() + " ASC";
-            
+
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
@@ -286,23 +287,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 MakeDetailsInvisible(true);
                 btnDelete.Enabled = false;
-            }                           
+            }
         }
-        
+
         void FilterToggledManual(bool AIsCollapsed)
         {
-            if (!AIsCollapsed) 
+            if (!AIsCollapsed)
             {
-                if (FFilterInitialised == false) 
+                if (FFilterInitialised == false)
                 {
                     FFilterAndFindObject.SwitchOnKeepFilterTurnedOn(TUcoFilterAndFind.FilterContext.StandardFilterOnly);
                     FFilterAndFindObject.ToggleFilter();
-                    
+
                     FFilterInitialised = true;
-                }                
+                }
             }
         }
-        
+
         /// <summary>
         /// Performs necessary actions to make the Merging of rows that were changed on
         /// the Server side into the Client-side DataSet possible.
@@ -349,7 +350,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.SelectRowInGrid(FSelectedRowIndexBeforeSaving);
             }
         }
-        
+
         /// <summary>
         /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
@@ -366,7 +367,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void InitializeManualCode()
         {
             String ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir", true);
-            
+
             // initialize Image List
             FGridRowIconsImageList = new System.Windows.Forms.ImageList();
             FGridRowIconsImageList.ImageSize = new System.Drawing.Size(16, 16);
@@ -377,7 +378,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
                     "Completeley_Empty.ico", TIconCache.TIconSize.is16by16));
             FGridRowIconsImageList.TransparentColor = System.Drawing.Color.Transparent;
-            
+
             if (!FMainDS.Tables.Contains(PPartnerAttributeTable.GetTableName()))
             {
                 FMainDS.Tables.Add(new PartnerEditTDSPPartnerAttributeTable());
@@ -442,9 +443,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.EnableRelation("ContactDetails2");
 
             FEmailAttributesConcatStr = Calculations.DetermineEmailPartnerAttributeTypes(FMainDS.PPartnerAttributeType);
-            FPhoneAttributesConcatStr = Calculations.DeterminePhonePartnerAttributeTypes(FMainDS.PPartnerAttributeType);            
+            FPhoneAttributesConcatStr = Calculations.DeterminePhonePartnerAttributeTypes(FMainDS.PPartnerAttributeType);
             FPhoneAttributesDV = Calculations.DeterminePhoneAttributes(FMainDS.PPartnerAttributeType);
-            
+
             FSystemCategoryAttrTypesConcatStr = Calculations.DetermineSystemCategoryAttributeTypes(
                 null, @TDataCache.GetCacheableDataTableFromCache);
 
@@ -462,9 +463,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             chkCurrent.Top = 7;
             dtpNoLongerCurrentFrom.Top = 8;
             lblNoLongerCurrentFrom.Top = 12;
-            
+
             // Move the Panel that groups the 'Value' Controls for layout purposes a bit up from it's automatically assigned position
-            pnlValueGrouping.Top = 29;            
+            pnlValueGrouping.Top = 29;
             txtValue.Top = 3;
             lblValue.Top = 9;
             btnLaunchHyperlinkFromValue.Top = 3;
@@ -514,7 +515,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
             // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
             FPetraUtilsObject.SetStatusBarText(txtValue,
-                Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about.  (Press F5-F7 to change Type!)"));
+                Catalog.GetString(
+                    "Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about.  (Press F5-F7 to change Type!)"));
 //            FPetraUtilsObject.SetStatusBarText(rtbValue, Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about.  (Press F5-F7 to change Type!)"));
 
             // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
@@ -531,19 +533,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void ShowDataManual()
         {
             FPrimaryEmailSelectedValueChangedEvent = true;
-            
+
             UpdatePrimaryEmailComboItems(false);
-            
+
             FPrimaryEmailSelectedValueChangedEvent = false;
-            
+
             FPrimaryPhoneSelectedValueChangedEvent = true;
-            
+
             UpdatePrimaryPhoneComboItems();
-            
+
             FPrimaryPhoneSelectedValueChangedEvent = false;
-            
-            
-            SelectPrimaryWayOfContactingComboItem();            
+
+
+            SelectPrimaryWayOfContactingComboItem();
         }
 
         private void ShowDetailsManual(PPartnerAttributeRow ARow)
@@ -561,7 +563,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             OnContactTypeChanged(null, null);
-            
+
             FRunningInsideShowDetails = false;
         }
 
@@ -572,18 +574,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         public bool GetOverallContactSettingsDataFromControls()
         {
             bool ReturnValue;
-            
+
             ReturnValue = UpdatePrimaryEmailAddressRecords(true);
 
-            if (ReturnValue) 
+            if (ReturnValue)
             {
                 ReturnValue = UpdatePrimaryPhoneNumberRecords(true);
             }
-            if (ReturnValue) 
+
+            if (ReturnValue)
             {
-                UpdatePrimaryWayOfContactingComboRecord();    
+                UpdatePrimaryWayOfContactingComboRecord();
             }
-            
+
             return ReturnValue;
         }
 
@@ -593,10 +596,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             string ThePrimaryPhoneNumber = String.Empty;
             DataView ElegiblePhoneNrsDV;
             string CurrentlySelectedPhoneNr = cmbPrimaryPhoneForContacting.GetSelectedString(-1);
-            
+
             // Determine all Partner Attributes that have a Partner Attribute Type that constitutes a Phone Number
             // and that are Current.
-            ElegiblePhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute, 
+            ElegiblePhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute,
                 FPhoneAttributesConcatStr, true, false);
 
             PrimaryPhoneNumbers = new object[ElegiblePhoneNrsDV.Count + 1];
@@ -622,19 +625,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ThePrimaryPhoneNumber != String.Empty)
             {
                 FPrimaryPhoneSelectedValueChangedEvent = true;
-                
+
                 cmbPrimaryPhoneForContacting.SetSelectedString(ThePrimaryPhoneNumber);
-                
+
                 FPrimaryPhoneSelectedValueChangedEvent = false;
             }
             else
             {
-                   CurrentlySelectedPhoneNr = ANewPhoneNumberValue ?? CurrentlySelectedPhoneNr;
+                CurrentlySelectedPhoneNr = ANewPhoneNumberValue ?? CurrentlySelectedPhoneNr;
 
-                cmbPrimaryPhoneForContacting.SetSelectedString(CurrentlySelectedPhoneNr);                
+                cmbPrimaryPhoneForContacting.SetSelectedString(CurrentlySelectedPhoneNr);
             }
         }
-        
+
         /// <summary>
         /// Updates the records to reflect the 'Primary Phone Number' setting.
         /// </summary>
@@ -647,7 +650,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool ReturnValue = true;
             string PrimaryPhoneChoice;
             bool PrimaryPhoneChoiceFoundAmongEligblePhoneNrs = false;
-            DataView ElegiblePhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute, 
+            DataView ElegiblePhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute,
                 FPhoneAttributesConcatStr, false, false);
 
             PrimaryPhoneChoice = cmbPrimaryPhoneForContacting.GetSelectedString();
@@ -688,53 +691,53 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
-    
-            if (ARunValidation) 
+
+            if (ARunValidation)
             {
-                DataView CurrentPhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute, 
+                DataView CurrentPhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute,
                     FPhoneAttributesConcatStr, true, false);
-                
+
                 if (CurrentPhoneNrsDV.Count != 0)
                 {
                     if (PrimaryPhoneChoice != String.Empty)
                     {
-                        for (int Counter3 = 0; Counter3 < ElegiblePhoneNrsDV.Count; Counter3++) 
+                        for (int Counter3 = 0; Counter3 < ElegiblePhoneNrsDV.Count; Counter3++)
                         {
                             var ThePhonePartnerAttributeRow = ((PPartnerAttributeRow)ElegiblePhoneNrsDV[Counter3].Row);
-                            
-                            if (ThePhonePartnerAttributeRow.Value == PrimaryPhoneChoice) 
+
+                            if (ThePhonePartnerAttributeRow.Value == PrimaryPhoneChoice)
                             {
                                 PrimaryPhoneChoiceFoundAmongEligblePhoneNrs = true;
-    
+
                                 if (!ThePhonePartnerAttributeRow.Current)
-                                {              
+                                {
                                     // This condition should not occur, unless the program code that runs when the 'Valid'
-                                    // CheckBox is disabled and which should clear all the Items from cmbPrimaryPhoneForContacting is 
-                                    // somehow not working correctly, or not run at all. This condition is therefore a 'back-stop' 
+                                    // CheckBox is disabled and which should clear all the Items from cmbPrimaryPhoneForContacting is
+                                    // somehow not working correctly, or not run at all. This condition is therefore a 'back-stop'
                                     // that will prevent invalid data going to the DB!
-                                    
+
                                     // Generate a Validation *Error*. The user cannot ignore this.
                                     ValidationPrimaryPhoneNrSetButItIsntCurrent();
-                                    
+
                                     UpdatePrimaryPhoneComboItems();
-                                    
-                                    ReturnValue = false;                                        
-                                }    
-                            }                        
-                        }    
-                        
-                        if (!PrimaryPhoneChoiceFoundAmongEligblePhoneNrs) 
+
+                                    ReturnValue = false;
+                                }
+                            }
+                        }
+
+                        if (!PrimaryPhoneChoiceFoundAmongEligblePhoneNrs)
                         {
-                            // This condition should not occur, unless various bits of program code are somehow 
-                            // not working correctly, or not run at all. This condition is therefore a 'back-stop' 
+                            // This condition should not occur, unless various bits of program code are somehow
+                            // not working correctly, or not run at all. This condition is therefore a 'back-stop'
                             // that will prevent invalid data going to the DB!
-                            
+
                             // Generate a Validation *Error*. The user cannot ignore this.
                             ValidationPrimaryPhoneNrSetButNotAmongEmailAddrs();
-                            
+
                             UpdatePrimaryPhoneComboItems();
-                            
-                            ReturnValue = false;                                                                    
+
+                            ReturnValue = false;
                         }
                     }
                 }
@@ -742,23 +745,23 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     if (PrimaryPhoneChoice != String.Empty)
                     {
-                        // This condition should not occur, unless various bits of program code are somehow 
-                        // not working correctly, or not run at all. This condition is therefore a 'back-stop' 
+                        // This condition should not occur, unless various bits of program code are somehow
+                        // not working correctly, or not run at all. This condition is therefore a 'back-stop'
                         // that will prevent invalid data going to the DB!
-    
+
                         // Generate a Validation *Error*. The user cannot ignore this.
                         ValidationPrimaryPhoneNrSetButNoPhoneNrAvailable();
-    
-                        UpdatePrimaryPhoneComboItems();                    
-                        
-                        ReturnValue = false;                    
+
+                        UpdatePrimaryPhoneComboItems();
+
+                        ReturnValue = false;
                     }
                 }
             }
-            
+
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Updates the records to reflect the 'Primary E-mail Address' setting.
         /// </summary>
@@ -771,7 +774,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool ReturnValue = true;
             string PrimaryEmailChoice;
             bool PrimaryEmailChoiceFoundAmongEligbleEmailAddr = false;
-            DataView ElegibleEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute, 
+            DataView ElegibleEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute,
                 FEmailAttributesConcatStr, false);
 
             PrimaryEmailChoice = cmbPrimaryEMail.GetSelectedString();
@@ -812,58 +815,58 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
-    
-            if (ARunValidation) 
+
+            if (ARunValidation)
             {
-                DataView CurrentEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute, 
+                DataView CurrentEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute,
                     FEmailAttributesConcatStr, true);
-                
+
                 if (CurrentEmailAddrsDV.Count != 0)
                 {
                     if (PrimaryEmailChoice == String.Empty)
                     {
                         // Generate a Validation *Warning*, not an error. The user can ignore this if (s)he chooses to do so!
-                        ValidationPrimaryEmailAddrNotSet();    
+                        ValidationPrimaryEmailAddrNotSet();
                     }
                     else
                     {
-                        for (int Counter3 = 0; Counter3 < ElegibleEmailAddrsDV.Count; Counter3++) 
+                        for (int Counter3 = 0; Counter3 < ElegibleEmailAddrsDV.Count; Counter3++)
                         {
                             var TheEmailPartnerAttributeRow = ((PPartnerAttributeRow)ElegibleEmailAddrsDV[Counter3].Row);
-                            
-                            if (TheEmailPartnerAttributeRow.Value == PrimaryEmailChoice) 
+
+                            if (TheEmailPartnerAttributeRow.Value == PrimaryEmailChoice)
                             {
                                 PrimaryEmailChoiceFoundAmongEligbleEmailAddr = true;
-    
+
                                 if (!TheEmailPartnerAttributeRow.Current)
-                                {              
+                                {
                                     // This condition should not occur, unless the program code that runs when the 'Valid'
-                                    // CheckBox is disabled and which should clear all the Items from cmbPrimaryEMail is 
-                                    // somehow not working correctly, or not run at all. This condition is therefore a 'back-stop' 
+                                    // CheckBox is disabled and which should clear all the Items from cmbPrimaryEMail is
+                                    // somehow not working correctly, or not run at all. This condition is therefore a 'back-stop'
                                     // that will prevent invalid data going to the DB!
-                                    
+
                                     // Generate a Validation *Error*. The user cannot ignore this.
                                     ValidationPrimaryEmailAddrSetButItIsntCurrent();
-                                    
+
                                     UpdatePrimaryEmailComboItems(false);
-                                    
-                                    ReturnValue = false;                                        
-                                }    
-                            }                        
-                        }    
-                        
-                        if (!PrimaryEmailChoiceFoundAmongEligbleEmailAddr) 
+
+                                    ReturnValue = false;
+                                }
+                            }
+                        }
+
+                        if (!PrimaryEmailChoiceFoundAmongEligbleEmailAddr)
                         {
-                            // This condition should not occur, unless various bits of program code are somehow 
-                            // not working correctly, or not run at all. This condition is therefore a 'back-stop' 
+                            // This condition should not occur, unless various bits of program code are somehow
+                            // not working correctly, or not run at all. This condition is therefore a 'back-stop'
                             // that will prevent invalid data going to the DB!
-                            
+
                             // Generate a Validation *Error*. The user cannot ignore this.
                             ValidationPrimaryEmailAddrSetButNotAmongEmailAddrs();
-                            
+
                             UpdatePrimaryEmailComboItems(true);
-                            
-                            ReturnValue = false;                                                                    
+
+                            ReturnValue = false;
                         }
                     }
                 }
@@ -871,23 +874,23 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     if (PrimaryEmailChoice != String.Empty)
                     {
-                        // This condition should not occur, unless various bits of program code are somehow 
-                        // not working correctly, or not run at all. This condition is therefore a 'back-stop' 
+                        // This condition should not occur, unless various bits of program code are somehow
+                        // not working correctly, or not run at all. This condition is therefore a 'back-stop'
                         // that will prevent invalid data going to the DB!
-    
+
                         // Generate a Validation *Error*. The user cannot ignore this.
                         ValidationPrimaryEmailAddrSetButNoEmailAddrAvailable();
-    
-                        UpdatePrimaryEmailComboItems(true);                    
-                        
-                        ReturnValue = false;                    
+
+                        UpdatePrimaryEmailComboItems(true);
+
+                        ReturnValue = false;
                     }
                 }
             }
-            
+
             return ReturnValue;
         }
-        
+
         private void UpdatePrimaryEmailComboItems(bool ASuppressMessages, string ANewEmailAddressValue = null)
         {
             object[] PrimaryEmailAddresses;
@@ -895,10 +898,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             DataView ElegibleEmailAddrsDV;
             DataView AllEmailAddrsDV;
             string CurrentlySelectedEmailAddr = cmbPrimaryEMail.GetSelectedString(-1);
-            
+
             // Determine all Partner Attributes that have a Partner Attribute Type that constitutes an E-Mail
             // and that are Current.
-            ElegibleEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute, 
+            ElegibleEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute,
                 FEmailAttributesConcatStr, true);
 
             PrimaryEmailAddresses = new object[ElegibleEmailAddrsDV.Count + 1];
@@ -924,18 +927,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ThePrimaryEmailAddress != String.Empty)
             {
                 FPrimaryEmailSelectedValueChangedEvent = true;
-                
+
                 cmbPrimaryEMail.SetSelectedString(ThePrimaryEmailAddress);
-                
+
                 FPrimaryEmailSelectedValueChangedEvent = false;
             }
             else
             {
-                CurrentlySelectedEmailAddr = ANewEmailAddressValue ?? CurrentlySelectedEmailAddr;    
+                CurrentlySelectedEmailAddr = ANewEmailAddressValue ?? CurrentlySelectedEmailAddr;
 
                 cmbPrimaryEMail.SetSelectedString(CurrentlySelectedEmailAddr);
-                
-                if (!ASuppressMessages) 
+
+                if (!ASuppressMessages)
                 {
                     if (ElegibleEmailAddrsDV.Count > 0)
                     {
@@ -944,19 +947,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                     else
                     {
-                        AllEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute, 
+                        AllEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute,
                             FEmailAttributesConcatStr, false);
-    
+
                         if (AllEmailAddrsDV.Count > 0)
                         {
                             FTimerDrivenMessageBoxKind = TTimerDrivenMessageBoxKind.tdmbkNoPrimaryEmailButNonCurrentAvailable;
                             ShowMessageBoxTimer.Start();
                         }
-                    }                    
+                    }
                 }
             }
         }
-        
+
         private void SelectPrimaryWayOfContactingComboItem()
         {
             DataView ElegibleSystemCategoryAttributesDV = Calculations.DeterminePartnerSystemCategoryAttributes(
@@ -964,62 +967,63 @@ namespace Ict.Petra.Client.MPartner.Gui
             PPartnerAttributeRow PartnerAttributeDR;
             string PrimaryContactMethod = String.Empty;
             int ComboBoxItemThatMatches;
-            
-            for (int Counter = 0; Counter < ElegibleSystemCategoryAttributesDV.Count; Counter++) 
+
+            for (int Counter = 0; Counter < ElegibleSystemCategoryAttributesDV.Count; Counter++)
             {
                 PartnerAttributeDR = (PPartnerAttributeRow)ElegibleSystemCategoryAttributesDV[Counter].Row;
-                
-                if(PartnerAttributeDR.AttributeType == ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD)
+
+                if (PartnerAttributeDR.AttributeType == ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD)
                 {
                     PrimaryContactMethod = PartnerAttributeDR.Value;
                 }
             }
-            
-            if (PrimaryContactMethod != String.Empty) 
+
+            if (PrimaryContactMethod != String.Empty)
             {
                 ComboBoxItemThatMatches = cmbPrimaryWayOfContacting.Items.IndexOf(PrimaryContactMethod);
-    
-                if (ComboBoxItemThatMatches != -1) 
+
+                if (ComboBoxItemThatMatches != -1)
                 {
                     cmbPrimaryWayOfContacting.SelectedIndex = ComboBoxItemThatMatches;
-                }                
+                }
             }
         }
-        
+
         private void UpdatePrimaryWayOfContactingComboRecord()
         {
             string CurrPrimaryWayOfContactingStr = cmbPrimaryWayOfContacting.GetSelectedString();
             string ExistingPrimContactMethStr = String.Empty;
+
             DataRow[] ExistingPrimContactMethArr = FMainDS.PPartnerAttribute.Select(
-                    PPartnerAttributeTable.GetAttributeTypeDBName() + " = '" + ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD + "'");                                
+                PPartnerAttributeTable.GetAttributeTypeDBName() + " = '" + ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD + "'");
             PPartnerAttributeRow NewAttributeRow;
-            
+
             // Check if a p_partner_attribute record exists which holds the information about this Partners' 'Primary Way of Contacting'
-            if (ExistingPrimContactMethArr.Length != 0) 
+            if (ExistingPrimContactMethArr.Length != 0)
             {
                 // There must always be only one such record, so we can simply pick the first record in the Array
                 ExistingPrimContactMethStr = ((PPartnerAttributeRow)ExistingPrimContactMethArr[0]).Value;
             }
-            
-            if (ExistingPrimContactMethStr != String.Empty) 
+
+            if (ExistingPrimContactMethStr != String.Empty)
             {
-                if (ExistingPrimContactMethStr != CurrPrimaryWayOfContactingStr) 
+                if (ExistingPrimContactMethStr != CurrPrimaryWayOfContactingStr)
                 {
-                    if (CurrPrimaryWayOfContactingStr != String.Empty) 
+                    if (CurrPrimaryWayOfContactingStr != String.Empty)
                     {
-                        // Update the existing record with the new 'Primary Way of Contacting' selection 
-                        ((PPartnerAttributeRow)ExistingPrimContactMethArr[0]).Value = CurrPrimaryWayOfContactingStr;    
+                        // Update the existing record with the new 'Primary Way of Contacting' selection
+                        ((PPartnerAttributeRow)ExistingPrimContactMethArr[0]).Value = CurrPrimaryWayOfContactingStr;
                     }
                     else
                     {
                         // If the user chose to clear the 'Primary Way of Contacting': delete the record
                         ExistingPrimContactMethArr[0].Delete();
                     }
-                }    
+                }
             }
             else
             {
-                if (CurrPrimaryWayOfContactingStr != String.Empty) 
+                if (CurrPrimaryWayOfContactingStr != String.Empty)
                 {
                     // We need to add a record that holds the 'Primary Way of Contacting' selection as there isn't one yet for this Partner
                     NewAttributeRow = FMainDS.PPartnerAttribute.NewRowTyped(true);
@@ -1029,8 +1033,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     NewAttributeRow.Index = 9999;
                     NewAttributeRow.Value = CurrPrimaryWayOfContactingStr;
                     NewAttributeRow.Current = true;
-                    
-                    FMainDS.PPartnerAttribute.Rows.Add(NewAttributeRow);                    
+
+                    FMainDS.PPartnerAttribute.Rows.Add(NewAttributeRow);
                 }
             }
         }
@@ -1038,7 +1042,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void BeforeShowDetailsManual(PPartnerAttributeRow ARow)
         {
             FRunningInsideShowDetails = true;
-            
+
             if (ARow != null)
             {
                 btnDelete.Enabled = true;
@@ -1074,17 +1078,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             /* Setup the DataGrid's visual appearance */
 //            SetupDataGridVisualAppearance();
-            
+
             string FilterStr = String.Format("{0}='{1}'", PartnerEditTDSPPartnerAttributeTable.GetPartnerContactDetailDBName(), true);
 
             FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);
-            FFilterAndFindObject.ApplyFilter();            
+            FFilterAndFindObject.ApplyFilter();
         }
-        
+
         private void GetDetailDataFromControlsManual(PPartnerAttributeRow ARow)
         {
         }
-        
+
         /// <summary>
         /// Event Handler for Grid Event
         /// </summary>
@@ -1132,7 +1136,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             int HighestIndex = 0;
             int ThisRow_Sequence = 0;
             int ThisRow_Index = 0;
-                 
+
             System.Data.DataRowVersion ThisRow_RowVersion;
             PPartnerAttributeTable ThisDT = (PPartnerAttributeTable)ARow.Table;
 
@@ -1151,7 +1155,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 ThisRow_Sequence = Convert.ToInt32(ThisDT.Rows[Counter][PPartnerAttributeTable.GetSequenceDBName(), ThisRow_RowVersion]);
- 
+
                 if (ThisRow_Sequence < LeastSequence)
                 {
                     LeastSequence = ThisRow_Sequence;
@@ -1188,11 +1192,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.Confidential = false;
             ARow.Current = true;
             ARow.PartnerContactDetail = true;
-         
+
             // If this is the first time the user created a new record then the Contact Type ComboBox
             // hasn't been filtered yet and would display all Contact Types of all Contact Categories.
             // To prevent that we need to initialise the Filter.
-            if (cmbContactType.Filter == null) 
+            if (cmbContactType.Filter == null)
             {
                 FilterContactTypeCombo(null, null);
             }
@@ -1229,15 +1233,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool PreDeleteManual(PPartnerAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
             // Those values are getting safed for use in the PostDeleteManual Method
-            // Trying to establish those values there doesn't work in case the Partner was new, 
-            // the Row was newly added, and then gets removed (DataRow has DataRowVersion.Detached in 
+            // Trying to establish those values there doesn't work in case the Partner was new,
+            // the Row was newly added, and then gets removed (DataRow has DataRowVersion.Detached in
             // this case, and no Original data that can be accessed!)
             FDeletedRowsAttributeType = ARowToDelete.AttributeType;
             FDeletedRowsValue = ARowToDelete.Value;
 
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete the following Contact Detail record?\r\n\r\n    Type: '{0}'\r\n    Value: '{1}'"),
-                ARowToDelete.AttributeType, ARowToDelete.Value);
-            
+            ADeletionQuestion =
+                String.Format(Catalog.GetString(
+                        "Are you sure you want to delete the following Contact Detail record?\r\n\r\n    Type: '{0}'\r\n    Value: '{1}'"),
+                    ARowToDelete.AttributeType, ARowToDelete.Value);
+
             return true;
         }
 
@@ -1289,65 +1295,65 @@ namespace Ict.Petra.Client.MPartner.Gui
             string PrimEmailMessageBoxTitle = StrPrimEmailMessageBoxTitle1;
             string PrimPhoneConsequence = StrPrimPhoneConsequence1;
             string PrimPhoneMessageBoxTitle = StrPrimPhoneMessageBoxTitle1;
-            
+
             if (ADeletionPerformed)
             {
                 StringCollection EmailAttrColl = StringHelper.StrSplit(FEmailAttributesConcatStr, ", ");
-            
-                if (EmailAttrColl.Contains("'" + FDeletedRowsAttributeType + "'")) 
+
+                if (EmailAttrColl.Contains("'" + FDeletedRowsAttributeType + "'"))
                 {
                     // User deleted an E-mail Contact Detail
-                    
-                    if (cmbPrimaryEMail.GetSelectedString(-1) == FDeletedRowsValue) 
+
+                    if (cmbPrimaryEMail.GetSelectedString(-1) == FDeletedRowsValue)
                     {
-                        DataView ElegibleEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute, 
+                        DataView ElegibleEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute,
                             FEmailAttributesConcatStr, true);
-                        
-                        if (ElegibleEmailAddrsDV.Count == 0) 
+
+                        if (ElegibleEmailAddrsDV.Count == 0)
                         {
                             NoEmailAddressesAvailableAnymore = true;
                             PrimEmailConsequence = StrPrimEmailConsequence2;
                             PrimEmailMessageBoxTitle = StrPrimEmailMessageBoxTitle2;
                         }
-                        
+
                         // User deleted the E-mail Contact Detail that was set as the 'Primary E-Mail Address':
-                        // Refresh the Primary E-Mail Address Combo (which upon that will no longer contain the E-mail 
+                        // Refresh the Primary E-Mail Address Combo (which upon that will no longer contain the E-mail
                         // Address of the deleted Contact Detail!) and notify the user that (s)he needs to take action.
-                        UpdatePrimaryEmailComboItems(true);                            
-                        
+                        UpdatePrimaryEmailComboItems(true);
+
                         MessageBox.Show(
                             String.Format(
                                 Catalog.GetString("You have deleted the Contact Detail that was set as the 'Primary E-Mail Address'.\r\n\r\n{0}"),
                                 PrimEmailConsequence),
-                            PrimEmailMessageBoxTitle, 
+                            PrimEmailMessageBoxTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Warning);
-    
+
                         if (!NoEmailAddressesAvailableAnymore)
                         {
-                            // Show the other current e-mail-Address(es) to the user                    
+                            // Show the other current e-mail-Address(es) to the user
                             cmbPrimaryEMail.DroppedDown = true;
-                        }                    
-                    }   
+                        }
+                    }
                     else
                     {
                         // User deleted a E-mail Contact Detail that was not set as the 'Primary E-Mail Address':
                         // Simply refresh the Primary E-Mail Address Combo
                         UpdatePrimaryEmailComboItems(true);
-                    }         
+                    }
                 }
-                
+
                 StringCollection PhoneAttrColl = StringHelper.StrSplit(FPhoneAttributesConcatStr, ", ");
-            
-                if (PhoneAttrColl.Contains("'" + FDeletedRowsAttributeType + "'")) 
+
+                if (PhoneAttrColl.Contains("'" + FDeletedRowsAttributeType + "'"))
                 {
                     // User deleted a Phone Contact Detail
-                    
-                    if (cmbPrimaryPhoneForContacting.GetSelectedString(-1) == FDeletedRowsValue) 
+
+                    if (cmbPrimaryPhoneForContacting.GetSelectedString(-1) == FDeletedRowsValue)
                     {
-                        DataView ElegiblePhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute, 
+                        DataView ElegiblePhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute,
                             FPhoneAttributesConcatStr, true, false);
-                        
-                        if (ElegiblePhoneNrsDV.Count == 0) 
+
+                        if (ElegiblePhoneNrsDV.Count == 0)
                         {
                             NoPhoneNumbersAvailableAnymore = true;
                             PrimPhoneConsequence = StrPrimPhoneConsequence2;
@@ -1355,31 +1361,31 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
 
                         // User deleted the Phone Contact Detail that was set as the 'Primary Phone':
-                        // Refresh the Primary Phone Combo (which upon that will no longer contain the Phone 
+                        // Refresh the Primary Phone Combo (which upon that will no longer contain the Phone
                         // Number of the deleted Contact Detail!) and notify the user that (s)he needs to take action.
-                        UpdatePrimaryPhoneComboItems();                      
+                        UpdatePrimaryPhoneComboItems();
 
                         MessageBox.Show(
                             String.Format(
                                 Catalog.GetString("You have deleted the Contact Detail that was set as the 'Primary Phone'.\r\n\r\n{0}"),
                                 PrimPhoneConsequence),
-                            PrimPhoneMessageBoxTitle, 
+                            PrimPhoneMessageBoxTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Warning);
-    
+
                         if (!NoPhoneNumbersAvailableAnymore)
                         {
-                            // Show the other current Phone Number(s) to the user                    
+                            // Show the other current Phone Number(s) to the user
                             cmbPrimaryPhoneForContacting.DroppedDown = true;
-                        }                    
-                    }   
+                        }
+                    }
                     else
                     {
                         // User deleted a Phone Contact Detail that was not set as the 'Primary Phone':
                         // Simply refresh the Primary Phone Combo
                         UpdatePrimaryPhoneComboItems();
-                    }         
+                    }
                 }
-                
+
                 DoRecalculateScreenParts();
 
                 if (grdDetails.Rows.Count <= 1)
@@ -1387,9 +1393,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // hide details part and disable buttons if no record in grid (first row for headings)
                     btnDelete.Enabled = false;
                     pnlDetails.Visible = false;
-                }                
+                }
             }
-            
+
             FDeletedRowsAttributeType = String.Empty;
             FDeletedRowsValue = String.Empty;
         }
@@ -1471,7 +1477,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FMainDS.PPartnerAttribute.Columns["ContactType"].Expression =
                 "IIF(" + PPartnerAttributeTable.GetSpecialisedDBName() + " = true, ISNULL(Parent." +
-                PPartnerAttributeTypeTable.GetSpecialLabelDBName() + ", Parent." + PPartnerAttributeTypeTable.GetAttributeTypeDBName() + "), Parent." +
+                PPartnerAttributeTypeTable.GetSpecialLabelDBName() + ", Parent." + PPartnerAttributeTypeTable.GetAttributeTypeDBName() +
+                "), Parent." +
                 PPartnerAttributeTypeTable.GetAttributeTypeDBName() + ")";
         }
 
@@ -1483,7 +1490,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // Get rid of the Columns as added per YAML file as we need to show calculated Columns!
             grdDetails.Columns.Clear();
-            
+
             grdDetails.AddImageColumn(@GetPrimaryIconForGridRow);
 
             //
@@ -1552,7 +1559,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // TODO Replace this 'quick solution' when the txtValue Control is replaced with the proper rtbValue Control!
             TRtbHyperlinks.DisplayHelper Launcher = new TRtbHyperlinks.DisplayHelper(new TRtbHyperlinks());
-            
+
             Launcher.LaunchHyperLink(cmbPrimaryEMail.GetSelectedString(), "||email||");
         }
 
@@ -1560,41 +1567,41 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // TODO Replace this 'quick solution' when the txtValue Control is replaced with the proper rtbValue Control!
             TRtbHyperlinks.DisplayHelper Launcher = new TRtbHyperlinks.DisplayHelper(new TRtbHyperlinks());
-            
+
             Launcher.LaunchHyperLink(cmbPrimaryEMail.GetSelectedString(), "||email||");
         }
 
         private void LaunchHyperlinkFromValue(object sender, EventArgs e)
         {
-            TRtbHyperlinks TempHyperlinkCtrl = new TRtbHyperlinks();            
+            TRtbHyperlinks TempHyperlinkCtrl = new TRtbHyperlinks();
             string LinkType = String.Empty;
-            
+
             // TODO Replace this 'quick solution' when the txtValue Control is replaced with the proper rtbValue Control!
             TRtbHyperlinks.DisplayHelper Launcher = new TRtbHyperlinks.DisplayHelper(TempHyperlinkCtrl);
-            
-            switch (FValueKind) 
+
+            switch (FValueKind)
             {
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:
                     LinkType = THyperLinkHandling.HYPERLINK_PREFIX_URLLINK;
                     break;
-                    
+
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE:
                     TempHyperlinkCtrl.BuildLinkWithValue = BuildLinkWithValue;
                     LinkType = THyperLinkHandling.HYPERLINK_PREFIX_URLWITHVALUELINK;
-                    break;                    
-                    
-                case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
-                    LinkType = THyperLinkHandling.HYPERLINK_PREFIX_EMAILLINK;                    
                     break;
-                    
+
+                case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
+                    LinkType = THyperLinkHandling.HYPERLINK_PREFIX_EMAILLINK;
+                    break;
+
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_SKYPEID:
-                    LinkType = THyperLinkHandling.HYPERLINK_PREFIX_SKYPELINK;                    
-                    break;                    
+                    LinkType = THyperLinkHandling.HYPERLINK_PREFIX_SKYPELINK;
+                    break;
             }
-            
+
             Launcher.LaunchHyperLink(txtValue.Text, LinkType);
         }
-        
+
         private void FilterCriteriaChanged(object sender, EventArgs e)
         {
             throw new NotImplementedException("Filtering is not implemented yet!");
@@ -1604,7 +1611,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             bool PrimaryEmailAddressIsThisRecord = false;
             bool PrimaryPhoneNumberIsThisRecord = false;
-            
+
             // Ensure current Checked state is reflected in the DataRow
             GetSelectedDetailRow().Current = chkCurrent.Checked;
 
@@ -1618,33 +1625,33 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         PrimaryEmailAddressIsThisRecord = true;
                     }
-                    
+
                     // Refresh the ComboBox so it shows only the 'current' E-Mail Address records (which could possibly be none!)
-                    UpdatePrimaryEmailComboItems(true);                
+                    UpdatePrimaryEmailComboItems(true);
                 }
                 else if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
                 {
-                    if (RowHasPhoneAttributeType(GetSelectedDetailRow())) 
-                    {    
+                    if (RowHasPhoneAttributeType(GetSelectedDetailRow()))
+                    {
                         if (cmbPrimaryPhoneForContacting.GetSelectedString() == txtValue.Text)
                         {
                             PrimaryPhoneNumberIsThisRecord = true;
                         }
-                        
+
                         // Refresh the ComboBox so it shows only the 'current' Phone Number records (which could possibly be none!)
                         UpdatePrimaryPhoneComboItems();
                     }
                 }
             }
-            
+
             if (!chkCurrent.Checked)
             {
-                if (!grdDetails.Focused) 
+                if (!grdDetails.Focused)
                 {
                     dtpNoLongerCurrentFrom.Date = DateTime.Now.Date;
-                    dtpNoLongerCurrentFrom.Focus();                    
+                    dtpNoLongerCurrentFrom.Focus();
                 }
-                
+
                 if (!FRunningInsideShowDetails)
                 {
                     if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS)
@@ -1653,7 +1660,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                     else if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
                     {
-                        if (RowHasPhoneAttributeType(GetSelectedDetailRow())) 
+                        if (RowHasPhoneAttributeType(GetSelectedDetailRow()))
                         {
                             CheckThatNonCurrentPhoneNrIsntPrimaryPhoneNr(PrimaryPhoneNumberIsThisRecord);
                         }
@@ -1664,27 +1671,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 dtpNoLongerCurrentFrom.Date = null;
             }
-            
-            if (!FRunningInsideShowDetails) 
+
+            if (!FRunningInsideShowDetails)
             {
-                DoRecalculateScreenParts();    
+                DoRecalculateScreenParts();
             }
         }
 
         private void HandleSpecialisedFlagChanged(Object sender, EventArgs e)
         {
             // Ensure current Checked state is reflected in the DataRow
-            GetSelectedDetailRow().Specialised = chkSpecialised.Checked;            
+            GetSelectedDetailRow().Specialised = chkSpecialised.Checked;
         }
-        
+
         private void HandleConfidentialFlagChanged(Object sender, EventArgs e)
         {
             // Ensure current Checked state is reflected in the DataRow
-            GetSelectedDetailRow().Confidential = chkConfidential.Checked;   
+            GetSelectedDetailRow().Confidential = chkConfidential.Checked;
 
             // TODO Implement 'confidential functionality'
-        }        
-        
+        }
+
         private void HandleValueLeave(Object sender, EventArgs e)
         {
             var SelectedDetailDR = GetSelectedDetailRow();
@@ -1696,39 +1703,39 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // Ensure current E-mail Address is reflected in the DataRow
                     SelectedDetailDR.Value = txtValue.Text;
-                    
+
                     // Refresh the ComboBox so it reflects any change in the E-mail Address!
-                    UpdatePrimaryEmailComboItems(true, 
+                    UpdatePrimaryEmailComboItems(true,
                         (
                             (cmbPrimaryEMail.SelectedIndex != 0)
                             && (
                                 FValueWithSpecialMeaningChangedButUserDidntLeaveControl || !FRunningInsideDataSaving
-                               ) 
+                                )
                         ) ? txtValue.Text : null);
-                    
+
                     UpdatePrimaryPhoneComboItems();
-                    
-        		    FValueWithSpecialMeaningChangedButUserDidntLeaveControl = false;
+
+                    FValueWithSpecialMeaningChangedButUserDidntLeaveControl = false;
                 }
                 else if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
                 {
-                    if (RowHasPhoneAttributeType(SelectedDetailDR)) 
+                    if (RowHasPhoneAttributeType(SelectedDetailDR))
                     {
                         // Ensure current Phone Number is reflected in the DataRow
                         SelectedDetailDR.Value = txtValue.Text;
-                        
+
                         // Refresh the ComboBox so it reflects any change in the Phone Number!
-                        UpdatePrimaryPhoneComboItems( 
+                        UpdatePrimaryPhoneComboItems(
                             (
                                 (cmbPrimaryPhoneForContacting.SelectedIndex != 0)
                                 && (
                                     FValueWithSpecialMeaningChangedButUserDidntLeaveControl || !FRunningInsideDataSaving
-                                   ) 
+                                    )
                             ) ? txtValue.Text : null);
-                        
+
                         UpdatePrimaryEmailComboItems(true);
-                        
-            		    FValueWithSpecialMeaningChangedButUserDidntLeaveControl = false;
+
+                        FValueWithSpecialMeaningChangedButUserDidntLeaveControl = false;
                     }
                 }
             }
@@ -1737,19 +1744,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool RowHasPhoneAttributeType(PPartnerAttributeRow ADetailRow)
         {
             bool ReturnValue = false;
-            
-            for (int Counter = 0; Counter < FPhoneAttributesDV.Count; Counter++) 
+
+            for (int Counter = 0; Counter < FPhoneAttributesDV.Count; Counter++)
             {
-                if (ADetailRow.AttributeType == ((PPartnerAttributeTypeRow)FPhoneAttributesDV[Counter].Row).AttributeType) 
+                if (ADetailRow.AttributeType == ((PPartnerAttributeTypeRow)FPhoneAttributesDV[Counter].Row).AttributeType)
                 {
                     ReturnValue = true;
                     break;
                 }
             }
-            
+
             return ReturnValue;
         }
-        
+
         private void HandlePrimaryPhoneSelectedValueChanged(object sender, EventArgs e)
         {
             if (!FPrimaryPhoneSelectedValueChangedEvent)
@@ -1765,38 +1772,39 @@ namespace Ict.Petra.Client.MPartner.Gui
                 UpdatePrimaryEmailAddressRecords(false);
             }
         }
-        
+
         private void CheckThatNonCurrentPhoneNrIsntPrimaryPhoneNr(bool APrimaryPhoneNumberIsThisRecord)
         {
             bool NoPhoneNumbersAvailableAnymore = false;
             string PrimPhoneConsequence = StrPrimPhoneConsequence1;
             string PrimPhoneMessageBoxTitle = StrPrimPhoneMessageBoxTitle1;
-            
-            if (APrimaryPhoneNumberIsThisRecord) 
+
+            if (APrimaryPhoneNumberIsThisRecord)
             {
-                DataView ElegiblePhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute, 
+                DataView ElegiblePhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute,
                     FPhoneAttributesConcatStr, true, false);
-                
-                if (ElegiblePhoneNrsDV.Count == 0) 
+
+                if (ElegiblePhoneNrsDV.Count == 0)
                 {
                     NoPhoneNumbersAvailableAnymore = true;
                     PrimPhoneConsequence = StrPrimPhoneConsequence2;
-                    PrimPhoneMessageBoxTitle = StrPrimPhoneMessageBoxTitle2;                                    
+                    PrimPhoneMessageBoxTitle = StrPrimPhoneMessageBoxTitle2;
                 }
 
                 // Select the 'empty' ComboBox Item
-                cmbPrimaryPhoneForContacting.SelectedIndex = 0;                        
-                
+                cmbPrimaryPhoneForContacting.SelectedIndex = 0;
+
                 MessageBox.Show(
                     String.Format(
-                        Catalog.GetString("You have made the Phone Number no longer current, but up till now it was set to be the Primary Phone.\r\n\r\n{0}"), 
-                        PrimPhoneConsequence), 
-                    PrimPhoneMessageBoxTitle, 
+                        Catalog.GetString(
+                            "You have made the Phone Number no longer current, but up till now it was set to be the Primary Phone.\r\n\r\n{0}"),
+                        PrimPhoneConsequence),
+                    PrimPhoneMessageBoxTitle,
                     MessageBoxButtons.OK, NoPhoneNumbersAvailableAnymore ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
-        
+
                 if (!NoPhoneNumbersAvailableAnymore)
                 {
-                    // Show the other current Phone Number(s) to the user                    
+                    // Show the other current Phone Number(s) to the user
                     cmbPrimaryPhoneForContacting.DroppedDown = true;
                 }
             }
@@ -1807,57 +1815,59 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool NoEmailAddressesAvailableAnymore = false;
             string PrimEmailConsequence = StrPrimEmailConsequence1;
             string PrimEmailMessageBoxTitle = StrPrimEmailMessageBoxTitle1;
-            
-            if (APrimaryEmailAddressIsThisRecord) 
+
+            if (APrimaryEmailAddressIsThisRecord)
             {
-                DataView ElegibleEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute, 
+                DataView ElegibleEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute,
                     FEmailAttributesConcatStr, true);
-                
-                if (ElegibleEmailAddrsDV.Count == 0) 
+
+                if (ElegibleEmailAddrsDV.Count == 0)
                 {
                     NoEmailAddressesAvailableAnymore = true;
                     PrimEmailConsequence = StrPrimEmailConsequence2;
-                        PrimEmailMessageBoxTitle = StrPrimEmailMessageBoxTitle2;
+                    PrimEmailMessageBoxTitle = StrPrimEmailMessageBoxTitle2;
                 }
 
                 // Select the 'empty' ComboBox Item
-                cmbPrimaryEMail.SelectedIndex = 0;                        
-                
+                cmbPrimaryEMail.SelectedIndex = 0;
+
                 MessageBox.Show(
                     String.Format(
-                        Catalog.GetString("You have made the E-Mail Address no longer current, but up till now it was set to be the Primary E-Mail Address.\r\n\r\n{0}"), 
-                        PrimEmailConsequence), 
-                    PrimEmailMessageBoxTitle, 
+                        Catalog.GetString(
+                            "You have made the E-Mail Address no longer current, but up till now it was set to be the Primary E-Mail Address.\r\n\r\n{0}"),
+                        PrimEmailConsequence),
+                    PrimEmailMessageBoxTitle,
                     MessageBoxButtons.OK, NoEmailAddressesAvailableAnymore ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
-        
+
                 if (!NoEmailAddressesAvailableAnymore)
                 {
-                    // Show the other current e-mail-Address(es) to the user                    
+                    // Show the other current e-mail-Address(es) to the user
                     cmbPrimaryEMail.DroppedDown = true;
                 }
             }
         }
-        
+
         private void FilterContactTypeCombo(Object sender, EventArgs e)
         {
-//            if (!FRunningInsideShowDetails) 
+//            if (!FRunningInsideShowDetails)
 //            {
-                if (cmbContactCategory.Text != String.Empty)
+            if (cmbContactCategory.Text != String.Empty)
+            {
+                FSuppressOnContactTypeChangedEvent = true;
+
+                cmbContactType.Filter = PPartnerAttributeTypeTable.GetCategoryCodeDBName() + " = '" + cmbContactCategory.Text + "'";
+
+                FSuppressOnContactTypeChangedEvent = false;
+
+                // Select the first item in the ComboBox
+                if (cmbContactType.Count > 0)
                 {
-                    FSuppressOnContactTypeChangedEvent = true;
-                    
-                    cmbContactType.Filter = PPartnerAttributeTypeTable.GetCategoryCodeDBName() + " = '" + cmbContactCategory.Text + "'";
-                    
-                    FSuppressOnContactTypeChangedEvent = false;
-    
-                    // Select the first item in the ComboBox
-                    if (cmbContactType.Count > 0)
-                    {
-                        cmbContactType.SelectedIndex = 0;
-                    }
-    
-                    OnContactTypeChanged(null, null);
-                }                                
+                    cmbContactType.SelectedIndex = 0;
+                }
+
+                OnContactTypeChanged(null, null);
+            }
+
 //            }
         }
 
@@ -1865,21 +1875,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             PPartnerAttributeTypeRow ContactTypeDR;
             TPartnerAttributeTypeValueKind PreviousValueKind = FValueKind;
-            TPartnerAttributeTypeValueKind ValueKind;  
-            
+            TPartnerAttributeTypeValueKind ValueKind;
+
             if ((!FSuppressOnContactTypeChangedEvent)
                 && (cmbContactType.Text != String.Empty))
             {
                 ContactTypeDR = (PPartnerAttributeTypeRow)cmbContactType.GetSelectedItemsDataRow();
-                
-                if (!FRunningInsideShowDetails) 
+
+                if (!FRunningInsideShowDetails)
                 {
-                    // If the user created a new Record and changes Attribute Types: Make sure that the change in the Attribute Type is effected 
-                    // in the Record immediately, and not just when the user leaves a Control that gets Validated. If this isn't done then the 
+                    // If the user created a new Record and changes Attribute Types: Make sure that the change in the Attribute Type is effected
+                    // in the Record immediately, and not just when the user leaves a Control that gets Validated. If this isn't done then the
                     // 'Overall Contact Settings' ComboBoxes whose Items are based on the rows' Attribute Types won't get updated immediately.
-                    GetSelectedDetailRow().AttributeType = cmbContactType.GetSelectedString();    
-                }                
-                
+                    GetSelectedDetailRow().AttributeType = cmbContactType.GetSelectedString();
+                }
+
                 SelectCorrespondingCategory(ContactTypeDR);
 
                 if (Enum.TryParse <TPartnerAttributeTypeValueKind>(ContactTypeDR.AttributeTypeValueKind, out ValueKind))
@@ -1892,21 +1902,22 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             btnLaunchHyperlinkFromValue.Visible = false;
                             txtValue.Width = 290;
-                            
+
                             break;
+
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE:
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_SKYPEID:
                             btnLaunchHyperlinkFromValue.Visible = true;
                             txtValue.Width = 256;
-                            
+
                             break;
-                                                    
+
                         default:
                             btnLaunchHyperlinkFromValue.Visible = false;
                             txtValue.Width = 270;
-                            
+
                             throw new Exception("Invalid value for TPartnerAttributeTypeValueKind");
                     }
                 }
@@ -1921,40 +1932,40 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (!FRunningInsideShowDetails)
                 {
                     if (PreviousValueKind != FValueKind)
-                    {                    
+                    {
                         if (GetSelectedDetailRow().Primary)
                         {
                             GetSelectedDetailRow().Primary = false;
-    
+
                             UpdatePrimaryEmailComboItems(true);
                             UpdatePrimaryPhoneComboItems();
-    
+
                             if (PreviousValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS)
                             {
                                 MessageBox.Show(Catalog.GetString(
-                                    "You have changed the Contact Type and the Contact Detail that was an E-Mail address is no longer one.\r\n" + 
-                                    "As a result, this Contact Detail can no longer be the Primary E-Mail address! It has therefore been removed from the Primary E-Mail choices."),
+                                        "You have changed the Contact Type and the Contact Detail that was an E-Mail address is no longer one.\r\n" +
+                                        "As a result, this Contact Detail can no longer be the Primary E-Mail address! It has therefore been removed from the Primary E-Mail choices."),
                                     Catalog.GetString("No Longer Primary E-Mail"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
                             else
                             {
                                 MessageBox.Show(Catalog.GetString(
-                                    "You have changed the Contact Type and the Contact Detail that was a Phone Number is no longer one.\r\n" + 
-                                    "As a result, this Contact Detail can no longer be the Primary Phone! It has therefore been removed from the Primary Phone choices."),
-                                    Catalog.GetString("No Longer Primary Phone"), MessageBoxButtons.OK, MessageBoxIcon.Warning);                            
+                                        "You have changed the Contact Type and the Contact Detail that was a Phone Number is no longer one.\r\n" +
+                                        "As a result, this Contact Detail can no longer be the Primary Phone! It has therefore been removed from the Primary Phone choices."),
+                                    Catalog.GetString("No Longer Primary Phone"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
                         }
                         else
                         {
                             UpdatePrimaryEmailComboItems(true);
-                            UpdatePrimaryPhoneComboItems();                        
+                            UpdatePrimaryPhoneComboItems();
                         }
                     }
                     else
-                    {                        
-                        // This might seem unnecessary as the 'PreviousValueKind' and 'FValueKind' are the same - 
-                        // However, it isn't, as 'Fax Numbers' are to be excluded from the 'Primary Phone' ComboBox but  
-                        // if a user changes between 'Phone' and 'Fax' there is no difference between 'PreviousValueKind' 
+                    {
+                        // This might seem unnecessary as the 'PreviousValueKind' and 'FValueKind' are the same -
+                        // However, it isn't, as 'Fax Numbers' are to be excluded from the 'Primary Phone' ComboBox but
+                        // if a user changes between 'Phone' and 'Fax' there is no difference between 'PreviousValueKind'
                         // and 'FValueKind' and yet we need to update the Combo!
                         UpdatePrimaryPhoneComboItems();
 
@@ -1981,18 +1992,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:
                     FPetraUtilsObject.SetStatusBarText(txtValue,
-                        Catalog.GetString("Enter whatever the Contact Type is about.") + 
-                        (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
+                    Catalog.GetString("Enter whatever the Contact Type is about.") +
+                    (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
 
                     // TODO UpdateValueManual / CONTACTDETAIL_GENERAL
                     break;
 
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:
                     FPetraUtilsObject.SetStatusBarText(txtValue,
-                        Catalog.GetString("Enter Hyperlink / URL.") + 
-                        (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
+                    Catalog.GetString("Enter Hyperlink / URL.") +
+                    (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
                     FPetraUtilsObject.SetStatusBarText(btnLaunchHyperlinkFromValue,
-                        Catalog.GetString("Click this button open the hyperlink in a web browser."));
+                    Catalog.GetString("Click this button open the hyperlink in a web browser."));
 
                     // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
                     // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
@@ -2002,11 +2013,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE:
                     FPetraUtilsObject.SetStatusBarText(txtValue,
-                        Catalog.GetString("Enter value that becomes part of the Hyperlink / URL.") + 
-                        (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
+                    Catalog.GetString("Enter value that becomes part of the Hyperlink / URL.") +
+                    (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
                     FPetraUtilsObject.SetStatusBarText(btnLaunchHyperlinkFromValue,
-                        Catalog.GetString("Click this button open the hyperlink in a web browser."));
-                    
+                    Catalog.GetString("Click this button open the hyperlink in a web browser."));
+
                     // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
                     // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
 //                    rtbValue.Helper.DisplayURLWithValue(Value);
@@ -2015,11 +2026,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
                     FPetraUtilsObject.SetStatusBarText(txtValue,
-                        Catalog.GetString("Enter E-Mail Address.") + 
-                        (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
+                    Catalog.GetString("Enter E-Mail Address.") +
+                    (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
                     FPetraUtilsObject.SetStatusBarText(btnLaunchHyperlinkFromValue,
-                        Catalog.GetString("Click this button to send an email to the E-mail address (with your standard e-mail program)."));
-                    
+                    Catalog.GetString("Click this button to send an email to the E-mail address (with your standard e-mail program)."));
+
                     // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
                     // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
 //                    rtbValue.Helper.DisplayEmailAddress(Value);
@@ -2028,11 +2039,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_SKYPEID:
                     FPetraUtilsObject.SetStatusBarText(txtValue,
-                        Catalog.GetString("Enter Skype ID.") + 
-                        (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
+                    Catalog.GetString("Enter Skype ID.") +
+                    (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
                     FPetraUtilsObject.SetStatusBarText(btnLaunchHyperlinkFromValue,
-                        Catalog.GetString("Click this button to initate a Skype call, calling the Skype ID."));
-                    
+                    Catalog.GetString("Click this button to initate a Skype call, calling the Skype ID."));
+
                     // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
                     // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
 //                    rtbValue.Helper.DisplaySkypeID(Value);
@@ -2132,7 +2143,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         MessageBox.Show(Catalog.GetString(
                             "No Primary Email Address has been chosen for this Partner, although the Partner has at least one current Email Address on record.\r\n\r\n"
                             +
-                            "IMPORTANT: OpenPetra can't send emails to this Partner in automated situations unless a Primary Email Address has been chosen!\r\n" 
+                            "IMPORTANT: OpenPetra can't send emails to this Partner in automated situations unless a Primary Email Address has been chosen!\r\n"
                             +
                             "Therefore, please choose an Email Address from the Primary Email Address setting,"),
                         Catalog.GetString("No Primary Email Address Set!"),
@@ -2144,17 +2155,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                         break;
 
                     case TUC_ContactDetails.TTimerDrivenMessageBoxKind.tdmbkNoPrimaryEmailButNonCurrentAvailable:
-                        // Adjust the Filter so that non-Valid records are shown, too, and expand the Filter Panel                        
-                        ((CheckBox)FFilterAndFindObject.FilterPanelControls.FStandardFilterPanels[0].PanelControl).CheckState = CheckState.Indeterminate;
+                        // Adjust the Filter so that non-Valid records are shown, too, and expand the Filter Panel
+                        ((CheckBox)FFilterAndFindObject.FilterPanelControls.FStandardFilterPanels[0].PanelControl).CheckState =
+                            CheckState.Indeterminate;
                         FFilterAndFindObject.ToggleFilter();
-                        
+
                         MessageBox.Show(Catalog.GetString(
                             "No Primary Email Address has been chosen for this Partner.\r\n\r\nThere are non-current Email Addresses on record - the Filter has been\r\n"
                             +
                             "set up for you so those can be seen. You might want to check whether a current email address is available for this Partner."),
                         Catalog.GetString("No Primary Email Address Set - No Current Email Address"),
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        
+
                         break;
 
                     default:
@@ -2164,9 +2176,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
-        
+
         #region Data Validation
-        
+
         /// <summary>
         /// Creates a Data Validation *Error* for cmbPrimaryPhoneForContacting.
         /// </summary>
@@ -2238,7 +2250,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 VerificationResultCollection.Add(VerificationResult);
             }
         }
-        
+
         /// <summary>
         /// Creates a Data Validation *Warning* for cmbPrimaryEmail.
         /// </summary>
@@ -2246,7 +2258,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             const string ResCont = "ContactDetails_PrimaryEmailAddress_Not_Set";
             TScreenVerificationResult VerificationResult;
-            
+
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             VerificationResult = new TScreenVerificationResult(
@@ -2334,8 +2346,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 VerificationResultCollection.Add(VerificationResult);
             }
-        }   
-        
+        }
+
         #endregion
 
         #region Menu and command key handlers for our user controls
@@ -2350,7 +2362,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (cmbContactCategory.Enabled)
             {
-                if ((keyData == (Keys.F5)
+                if (((keyData == (Keys.F5))
                      || (keyData == (Keys.F5 | Keys.Shift))))
                 {
                     if (keyData == (Keys.F5 | Keys.Shift))
@@ -2369,15 +2381,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Effect a Value-leave event to ensure that any change in the Value gets reflected everywhere
                     txtComment.Focus();
                     txtValue.Focus();
-                    
+
                     return true;
                 }
-                
-                if ((keyData == (Keys.F6)
+
+                if (((keyData == (Keys.F6))
                      || (keyData == (Keys.F6 | Keys.Shift))))
-                {                   
+                {
                     if (keyData == (Keys.F6 | Keys.Shift))
-                    {                
+                    {
                         // Select 'Secure E-Mail'
                         cmbContactCategory.cmbCombobox.SetSelectedString("E-Mail");
                         cmbContactType.cmbCombobox.SetSelectedString("Secure E-Mail");
@@ -2392,15 +2404,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Effect a Value-leave event to ensure that any change in the Value gets reflected everywhere
                     txtComment.Focus();
                     txtValue.Focus();
-                    
+
                     return true;
                 }
-                
-                if ((keyData == (Keys.F7)
+
+                if (((keyData == (Keys.F7))
                      || (keyData == (Keys.F7 | Keys.Shift))))
-                {                    
+                {
                     if (keyData == (Keys.F7 | Keys.Shift))
-                    {                
+                    {
                         // Select 'Twitter'
                         cmbContactCategory.cmbCombobox.SetSelectedString("Digital Media");
                         cmbContactType.cmbCombobox.SetSelectedString("Twitter");
@@ -2411,19 +2423,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                         cmbContactCategory.cmbCombobox.SetSelectedString("Digital Media");
                         cmbContactType.cmbCombobox.SetSelectedString("Web Site");
                     }
-                    
+
                     // Effect a Value-leave event to ensure that any change in the Value gets reflected everywhere
                     txtComment.Focus();
                     txtValue.Focus();
-                    
+
                     return true;
                 }
-    
-                if ((keyData == (Keys.F8)
+
+                if (((keyData == (Keys.F8))
                      || (keyData == (Keys.F8 | Keys.Shift))))
                 {
                     if (keyData == (Keys.F8 | Keys.Shift))
-                    {                
+                    {
                         // Select 'Lync'
                         cmbContactCategory.cmbCombobox.SetSelectedString("Instant Messaging & Chat");
                         cmbContactType.cmbCombobox.SetSelectedString("Lync");
@@ -2434,13 +2446,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                         cmbContactCategory.cmbCombobox.SetSelectedString("Instant Messaging & Chat");
                         cmbContactType.cmbCombobox.SetSelectedString("Skype");
                     }
-                    
+
                     // Effect a Value-leave event to ensure that any change in the Value gets reflected everywhere
                     txtComment.Focus();
                     txtValue.Focus();
-                    
+
                     return true;
-                }                
+                }
             }
 
             if (keyData == (Keys.F9))
@@ -2450,25 +2462,25 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (keyData == (Keys.F10))
             {
-                if (btnLaunchHyperlinkEMailWithinOrg.Visible) 
+                if (btnLaunchHyperlinkEMailWithinOrg.Visible)
                 {
-                    LaunchHyperlinkEMailWithinOrg(null, null);    
-                }                
+                    LaunchHyperlinkEMailWithinOrg(null, null);
+                }
             }
-            
+
             if (keyData == (Keys.F11))
             {
-                if (btnLaunchHyperlinkFromValue.Visible) 
+                if (btnLaunchHyperlinkFromValue.Visible)
                 {
-                    LaunchHyperlinkFromValue(null, null);    
-                }                
+                    LaunchHyperlinkFromValue(null, null);
+                }
             }
-            
+
             return false;
         }
 
         #endregion
-        
+
         /// <summary>
         /// Determines the Primary Icon (displayed in the first Column of the Grid).
         /// </summary>
@@ -2480,35 +2492,35 @@ namespace Ict.Petra.Client.MPartner.Gui
             PPartnerAttributeRow PartnerAttributeDR = null;
             DataRowView RowView;
             bool IsPrimaryPhone = false;
-            
-            if (FGridRowIconsImageList != null) 
+
+            if (FGridRowIconsImageList != null)
             {
                 RowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(ARow + 1);
-    
+
                 if (RowView != null)
                 {
                     PartnerAttributeDR = (PPartnerAttributeRow)(RowView.Row);
                 }
-    
+
                 if ((PartnerAttributeDR != null)
                     && (PartnerAttributeDR.RowState != DataRowState.Deleted)
                     && (PartnerAttributeDR.RowState != DataRowState.Detached))
                 {
                     if (PartnerAttributeDR.Primary)
                     {
-                        for (int Counter = 0; Counter < FPhoneAttributesDV.Count; Counter++) 
+                        for (int Counter = 0; Counter < FPhoneAttributesDV.Count; Counter++)
                         {
-                            if (PartnerAttributeDR.AttributeType == ((PPartnerAttributeTypeRow)FPhoneAttributesDV[Counter].Row).AttributeType) 
+                            if (PartnerAttributeDR.AttributeType == ((PPartnerAttributeTypeRow)FPhoneAttributesDV[Counter].Row).AttributeType)
                             {
                                 IsPrimaryPhone = true;
                                 break;
                             }
                         }
-                        
+
                         // One of the Primary Icons - either for Primary Phone or Primary Email
-                        if (IsPrimaryPhone) 
+                        if (IsPrimaryPhone)
                         {
-                            ReturnValue = FGridRowIconsImageList.Images[0];    
+                            ReturnValue = FGridRowIconsImageList.Images[0];
                         }
                         else
                         {
@@ -2527,9 +2539,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ReturnValue = FGridRowIconsImageList.Images[2];
                 }
             }
-            
+
             return ReturnValue;
-        }        
+        }
     }
 
     /// <summary>

@@ -124,14 +124,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return false;
                 }
 
-                bool CancelledDueToExWorker;
+                bool CancelledDueToExWorkerOrAnonDonor;
 
                 // save first, then post
-                if (!FMyForm.SaveChangesForPosting(BatchGiftDetails, out CancelledDueToExWorker))
+                if (!FMyForm.SaveChangesForPosting(BatchGiftDetails, out CancelledDueToExWorkerOrAnonDonor))
                 {
                     FMyForm.Cursor = Cursors.Default;
 
-                    if (!CancelledDueToExWorker)
+                    if (!CancelledDueToExWorkerOrAnonDonor)
                     {
                         // saving failed, therefore do not try to post
                         MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +

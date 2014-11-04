@@ -85,7 +85,7 @@ namespace Ict.Tools.DataDumpPetra2
                 }
 
                 StringCollection tables = StringHelper.StrSplit(TAppSettingsManager.GetValue("table", ""), ",");
-                
+
                 // the upgrade process is split into two steps, to make testing quicker
 
                 // Step 1: dump from Progress Petra 2.3 to CSV files, write gz files to keep size of fulldump small
@@ -94,15 +94,15 @@ namespace Ict.Tools.DataDumpPetra2
                 if ((TAppSettingsManager.GetValue("operation", "dump23") == "dump23") && File.Exists("fulldump23.r"))
                 {
                     TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
-                    
-                    if (tables.Count == 0) 
+
+                    if (tables.Count == 0)
                     {
                         dumper.DumpTablesToCSV(String.Empty);
                     }
                     else
                     {
                         foreach (var ProcessTable in tables)
-                        {                    
+                        {
                             dumper.DumpTablesToCSV(ProcessTable);
                         }
                     }
@@ -115,8 +115,8 @@ namespace Ict.Tools.DataDumpPetra2
                 if (TAppSettingsManager.GetValue("operation", "load30") == "load30")
                 {
                     TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
-                    
-                    if (tables.Count == 0) 
+
+                    if (tables.Count == 0)
                     {
                         dumper.LoadTablesToPostgresql(String.Empty);
                     }
@@ -124,7 +124,7 @@ namespace Ict.Tools.DataDumpPetra2
                     {
                         foreach (var ProcessTable in tables)
                         {
-                            dumper.LoadTablesToPostgresql(ProcessTable);    
+                            dumper.LoadTablesToPostgresql(ProcessTable);
                         }
                     }
                 }
@@ -133,15 +133,15 @@ namespace Ict.Tools.DataDumpPetra2
                 if (TAppSettingsManager.GetValue("operation", "createSQL") == "createSQL")
                 {
                     TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
-                    
-                    if (tables.Count == 0) 
+
+                    if (tables.Count == 0)
                     {
-                        dumper.CreateNewSQLFile(String.Empty);   
+                        dumper.CreateNewSQLFile(String.Empty);
                     }
                     else
                     {
-                        foreach (var ProcessTable in tables) 
-                        {                    
+                        foreach (var ProcessTable in tables)
+                        {
                             dumper.CreateNewSQLFile(ProcessTable);
                         }
                     }

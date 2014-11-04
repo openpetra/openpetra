@@ -2462,7 +2462,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String CostCentreFilter = "";
             String CostCentreOptions = AParameters["param_rgrCostCentres"].ToString();
 
-            if (CostCentreOptions == "SelectedCostCentres")
+            if (CostCentreOptions == "CostCentreList")
             {
                 String CostCentreList = AParameters["param_cost_centre_codes"].ToString();
                 CostCentreList = CostCentreList.Replace(",", "','");                             // SQL IN List items in single quotes
@@ -2472,7 +2472,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             if (CostCentreOptions == "CostCentreRange")
             {
                 CostCentreFilter = " AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_start"].ToString() +
-                                   "' AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
+                                   "' AND glm.a_cost_centre_code_c <='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
             }
 
             if (CostCentreOptions == "AllActiveCostCentres") // THIS IS NOT SET AT ALL!
@@ -2492,8 +2492,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             if (AccountCodeOptions == "AccountRange")
             {
-                CostCentreFilter = " AND glm.a_account_code_c >='" + AParameters["param_account_code_start"].ToString() +
-                                   "' AND glm.a_account_code_c >='" + AParameters["param_account_code_end"].ToString() + "'";
+                AccountCodeFilter = " AND glm.a_account_code_c >='" + AParameters["param_account_code_start"].ToString() +
+                                    "' AND glm.a_account_code_c <='" + AParameters["param_account_code_end"].ToString() + "'";
             }
 
             if (AccountCodeOptions == "AllActiveAccounts") // THIS IS NOT SET AT ALL

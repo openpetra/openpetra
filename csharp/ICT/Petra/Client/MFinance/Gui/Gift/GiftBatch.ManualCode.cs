@@ -129,19 +129,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if Save is successful</returns>
         public bool SaveChangesManual()
         {
-            return SaveChangesManual(TExWorkerAlert.GiftBatchAction.SAVING);
+            return SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction.SAVING);
         }
 
         /// <summary>
         /// Check for ExWorkers before saving or cancelling
         /// </summary>
         /// <returns>True if Save is successful</returns>
-        public bool SaveChangesManual(TExWorkerAlert.GiftBatchAction AAction)
+        public bool SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction AAction)
         {
             GetDataFromControls();
 
             // first alert the user to any recipients who are Ex-Workers
-            if (TExWorkerAlert.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
+            if (TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
             {
                 return SaveChanges();
             }
@@ -150,22 +150,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Check for Ex-Worker before saving and posting
+        /// Checks to be made before saving and posting
         /// </summary>
         /// <param name="APostingGiftDetails">GiftDetails for the batch that is to be posted</param>
-        /// <param name="ACancelledDueToExWorker">True if batch posting has been cancelled by the user because of an Ex-Worker recipient</param>
+        /// <param name="ACancelledDueToExWorkerOrAnonDonor">True if batch posting has been cancelled by the user because of an Ex-Worker recipient
+        /// or an anonymous donor for a gift that is not marked as confidential</param>
         /// <returns>True if Save is successful</returns>
-        public bool SaveChangesForPosting(DataTable APostingGiftDetails, out bool ACancelledDueToExWorker)
+        public bool SaveChangesForPosting(DataTable APostingGiftDetails, out bool ACancelledDueToExWorkerOrAnonDonor)
         {
             GetDataFromControls();
 
             // first alert the user to any recipients who are Ex-Workers
-            ACancelledDueToExWorker = !TExWorkerAlert.CanContinueWithAnyExWorkers(TExWorkerAlert.GiftBatchAction.POSTING,
+            ACancelledDueToExWorkerOrAnonDonor = !TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(TExtraGiftBatchChecks.GiftBatchAction.POSTING,
                 FMainDS,
                 FPetraUtilsObject,
                 APostingGiftDetails);
 
-            if (!ACancelledDueToExWorker)
+            // if save is continuing then alert the user to any gift that are not marked confidential but have an anonymous donor
+            if (!ACancelledDueToExWorkerOrAnonDonor)
+            {
+                ACancelledDueToExWorkerOrAnonDonor = !TExtraGiftBatchChecks.CanContinueWithAnyAnonymousDonors(FMainDS);
+            }
+
+            if (!ACancelledDueToExWorkerOrAnonDonor)
             {
                 ProcessRecipientCostCentreCodeUpdateErrors(false);
                 return SaveChanges();
