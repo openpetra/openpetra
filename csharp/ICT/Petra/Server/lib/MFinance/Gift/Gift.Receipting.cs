@@ -407,19 +407,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             try
             {
                 String SqlQuery = "SELECT DISTINCT " +
-                                  ALedgerNumber.ToString() + " As LedgerNumber," +
                                   "a_receipt_number_i AS ReceiptNumber," +
                                   "a_date_entered_d AS DateEntered," +
                                   "p_partner_short_name_c AS Donor," +
-                                  "p_donor_key_n AS DonorKey," +
-                                  "p_partner_class_c AS DonorClass," +
                                   "PUB_a_gift.a_batch_number_i AS BatchNumber," +
                                   "PUB_a_gift.a_gift_transaction_number_i AS TransactionNumber," +
-                                  "a_reference_c AS Reference, " +
-                                  "a_currency_code_c AS GiftCurrency " +
+                                  "a_reference_c AS Reference " +
                                   "FROM PUB_a_gift LEFT JOIN PUB_p_partner on PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n " +
-                                  "LEFT JOIN PUB_a_gift_batch ON PUB_a_gift.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i AND PUB_a_gift.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i "
-                                  +
                                   "WHERE PUB_a_gift.a_ledger_number_i=" + ALedgerNumber.ToString() +
                                   " AND a_receipt_printed_l=FALSE AND p_receipt_each_gift_l=TRUE " +
                                   "ORDER BY BatchNumber";
@@ -682,10 +676,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
         /// <summary>
         /// </summary>
+        /// <param name="ALedgerNumber"></param>
         /// <param name="AGiftTbl">Custom table from GetUnreceiptedGifts, above</param>
         /// <returns>One or more HTML documents in a single string</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static string PrintReceipts(DataTable AGiftTbl)
+        public static string PrintReceipts(int ALedgerNumber, DataTable AGiftTbl)
         {
             string HtmlDoc = "";
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -699,33 +694,46 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 foreach (DataRow Row in AGiftTbl.Rows)
                 {
-                    if (Row["Selected"].Equals(true))
+                    String SqlQuery = "SELECT DISTINCT " +
+	                      "a_date_entered_d AS DateEntered," +
+	                      "p_partner_short_name_c AS Donor," +
+	                      "p_donor_key_n AS DonorKey," +
+	                      "p_partner_class_c AS DonorClass," +
+	                      "a_reference_c AS Reference, " +
+	                      "a_currency_code_c AS GiftCurrency " +
+	                      "FROM PUB_a_gift LEFT JOIN PUB_p_partner on PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n " +
+	                      "LEFT JOIN PUB_a_gift_batch ON PUB_a_gift.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i AND PUB_a_gift.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i "
+	                      +
+	                      "WHERE PUB_a_gift.a_ledger_number_i=" + ALedgerNumber +
+                    	  " AND PUB_a_gift.a_batch_number_i=" + Row["BatchNumber"] +
+                    	  " AND PUB_a_gift.a_gift_transaction_number_i=" + Row["TransactionNumber"];
+
+                    DataRow TempRow = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction).Rows[0];
+
+                    Int64 DonorKey = Convert.ToInt64(TempRow["DonorKey"]);
+                    //
+                    // I need to merge any rows that have the same donor.
+                    //
+
+                    if (!GiftsPerDonor.ContainsKey(DonorKey))
                     {
-                        Int64 DonorKey = Convert.ToInt64(Row["DonorKey"]);
-                        //
-                        // I need to merge any rows that have the same donor.
-                        //
+                        GiftsPerDonor.Add(DonorKey, new AGiftTable());
+                        DonorInfo.Add(DonorKey, new TempDonorInfo());
+                    }
+                    
+                    TempDonorInfo DonorRow = DonorInfo[DonorKey];
+                    DonorRow.DonorShortName = TempRow["Donor"].ToString();
+                    DonorRow.DonorClass = SharedTypes.PartnerClassStringToEnum(TempRow["DonorClass"].ToString());
+                    DonorRow.GiftCurrency = TempRow["GiftCurrency"].ToString();
+                    DonorRow.DateEntered = Convert.ToDateTime(TempRow["DateEntered"]);
 
-                        if (!GiftsPerDonor.ContainsKey(DonorKey))
-                        {
-                            GiftsPerDonor.Add(DonorKey, new AGiftTable());
-                            DonorInfo.Add(DonorKey, new TempDonorInfo());
-                        }
-
-                        TempDonorInfo DonorRow = DonorInfo[DonorKey];
-                        DonorRow.DonorShortName = Row["Donor"].ToString();
-                        DonorRow.DonorClass = SharedTypes.PartnerClassStringToEnum(Row["DonorClass"].ToString());
-                        DonorRow.GiftCurrency = Row["GiftCurrency"].ToString();
-                        DonorRow.DateEntered = Convert.ToDateTime(Row["DateEntered"]);
-
-                        AGiftRow GiftRow = GiftsPerDonor[DonorKey].NewRowTyped();
-                        GiftRow.LedgerNumber = Convert.ToInt32(Row["LedgerNumber"]);
-                        GiftRow.BatchNumber = Convert.ToInt32(Row["BatchNumber"]);
-                        GiftRow.GiftTransactionNumber = Convert.ToInt32(Row["TransactionNumber"]);
-                        GiftRow.Reference = Row["Reference"].ToString();
-                        GiftRow.DateEntered = Convert.ToDateTime(Row["DateEntered"]);
-                        GiftsPerDonor[DonorKey].Rows.Add(GiftRow);
-                    } // if Selected
+                    AGiftRow GiftRow = GiftsPerDonor[DonorKey].NewRowTyped();
+                    GiftRow.LedgerNumber = ALedgerNumber;
+                    GiftRow.BatchNumber = Convert.ToInt32(Row["BatchNumber"]);
+                    GiftRow.GiftTransactionNumber = Convert.ToInt32(Row["TransactionNumber"]);
+                    GiftRow.Reference = TempRow["Reference"].ToString();
+                    GiftRow.DateEntered = Convert.ToDateTime(TempRow["DateEntered"]);
+                    GiftsPerDonor[DonorKey].Rows.Add(GiftRow);
 
                 } // foreach Row
 
@@ -787,25 +795,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>Mark selected gifts as receipted in the AGift table.</summary>
+        /// <param name="ALedgerNumber"></param>
         /// <param name="AGiftTbl">Custom DataTable from GetUnreceiptedGifts, above.
         /// For this method, only {bool}Selected, LedgerNumber, BatchNumber and TransactionNumber fields are needed.</param>
         /// <returns>True if successful</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static void MarkReceiptsPrinted(DataTable AGiftTbl)
+        public static void MarkReceiptsPrinted(int ALedgerNumber, DataTable AGiftTbl)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             AGiftTable Tbl = new AGiftTable();
 
             foreach (DataRow Row in AGiftTbl.Rows)
             {
-                if (Row["Selected"].Equals(true))
-                {
-                    Tbl.Merge(AGiftAccess.LoadByPrimaryKey(
-                            Convert.ToInt32(Row["LedgerNumber"]),
+                Tbl.Merge(AGiftAccess.LoadByPrimaryKey(
+                            ALedgerNumber,
                             Convert.ToInt32(Row["BatchNumber"]),
                             Convert.ToInt32(Row["TransactionNumber"]),
                             Transaction));
-                }
             }
 
             foreach (AGiftRow Row in Tbl.Rows)

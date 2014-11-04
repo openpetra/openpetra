@@ -9,22 +9,36 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [txtLedger,pnlDetails,pnlBtns]
-        txtLedger: {Label=Ledger, ReadOnly=true, Width=150}
+            Controls: [pnlHeading,pnlDetails,pnlBtns]
+        pnlHeading:
+            Dock: Top
+            Controls: [txtLedger]
         pnlDetails:
-            Controls: [grdDetails]
-            Height:400
-        grdDetails:
+            Controls: [pnlButtons, grdDetails]
             Dock: Fill
+        pnlButtons:
+            Controls: [btnPrint, btnRemove]
+            Dock: Bottom
+            ControlsOrientation: horizontal
         pnlBtns:
             Controls:
-                Row0: [btnPrint, btnRemove, btnRcptNumber, btnCloseForm]
+                Row0: [btnRcptNumber, btnCloseForm]
+            Dock: Bottom
+ 
+        grdDetails:
+            Dock: Fill
+
+        txtLedger: {Label=Ledger, ReadOnly=true, Width=150}
+
         btnPrint:
             ActionClick:OnBtnPrint
         btnRemove:
             ActionClick:OnBtnRemove
         btnRcptNumber:
             ActionClick:OnBtnRcptNumber
+            Align: right
+            Label: Receipt Number
         btnCloseForm:
             ActionClick:OnBtnClose
             Label:Close
+            Align: right
