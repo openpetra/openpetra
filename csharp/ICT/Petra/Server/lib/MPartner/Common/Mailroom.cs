@@ -79,11 +79,11 @@ namespace Ict.Petra.Server.MPartner.Common
                 ALastContactDate = DateTime.MinValue;
             }
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TMailroom.GetLastContactDate: committed own transaction.");
-                }
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+                TLogging.LogAtLevel(7, "TMailroom.GetLastContactDate: committed own transaction.");
+            }
         }
     }
 }

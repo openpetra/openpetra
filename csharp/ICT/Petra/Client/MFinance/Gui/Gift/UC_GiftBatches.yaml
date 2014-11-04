@@ -18,7 +18,6 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            #Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
             Controls: [pnlFilterAndFind, pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Dock: Fill

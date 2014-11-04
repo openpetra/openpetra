@@ -68,9 +68,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FFilterAllDetailsOfGift = string.Empty;
         private DataView FGiftDetailView = null;
 
-        // this should be updated each time txtDetailRecipientLedgerNumber is updated to prevent problems at validation
-        private Int64 FCorrespondingRecipientKeyToField = 0;
-
         /// <summary>
         /// The current Ledger number
         /// </summary>
@@ -192,6 +189,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void BeginEditMode(object sender, EventArgs e)
         {
+            bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
+
             FInEditMode = true;
             SetKeyMinistryTextBoxInvisible();
         }
@@ -248,11 +247,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void ReconcileKeyMinistryFromCombo()
         {
-            string KeyMinistry = string.Empty;
-            bool EmptyRow = (FPreviouslySelectedDetailRow == null);
-
             if (FInEditMode)
             {
+                string KeyMinistry = string.Empty;
+                bool EmptyRow = (FPreviouslySelectedDetailRow == null);
+
                 if (!EmptyRow && (cmbKeyMinistries.SelectedIndex > -1))
                 {
                     KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
@@ -267,14 +266,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void ReconcileKeyMinistryFromTextbox()
         {
-            string KeyMinistry = string.Empty;
-            bool EmptyRow = (FPreviouslySelectedDetailRow == null);
-
             if (FInEditMode)
             {
-                if (!EmptyRow && (txtDetailRecipientKeyMinistry.Text.Length > 0))
+                bool EmptyRow = (FPreviouslySelectedDetailRow == null);
+                string KeyMinistry = txtDetailRecipientKeyMinistry.Text;
+
+                if (!EmptyRow && (KeyMinistry.Length > 0))
                 {
-                    KeyMinistry = txtDetailRecipientKeyMinistry.Text;
                     cmbKeyMinistries.SetSelectedString(KeyMinistry);
                 }
                 else
@@ -321,6 +319,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 UpdateControlsProtection();
 
+                //TODO check if next line is needed.
                 SetTextBoxOverlayOnKeyMinistryCombo();
 
                 return false;
@@ -359,7 +358,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // otherwise we would overwrite transactions that have already been modified
             if (FMainDS.ARecurringGiftDetail.DefaultView.Count == 0)
             {
-                EnsureGiftDataPresent(ALedgerNumber, ABatchNumber);
+                LoadGiftDataForBatch(ALedgerNumber, ABatchNumber);
             }
 
             // Now we set the full filter
@@ -376,6 +375,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateTotals();
 
+            if ((FPreviouslySelectedDetailRow != null))
+            {
+                bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
+
+                if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmRecurringGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+                {
+                    FPetraUtilsObject.DisableSaveButton();
+                }
+            }
+
             FTransactionsLoaded = true;
             return true;
         }
@@ -386,24 +395,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <returns>If transactions exist</returns>
-        public Boolean EnsureGiftDataPresent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        private bool LoadGiftDataForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            DataView TransDV = new DataView(FMainDS.ARecurringGiftDetail);
+            bool RetVal = ((TFrmRecurringGiftBatch)ParentForm).EnsureGiftDataPresent(ALedgerNumber, ABatchNumber);
 
-            TransDV.RowFilter = String.Format("{0}={1}",
-                ARecurringGiftDetailTable.GetBatchNumberDBName(),
-                ABatchNumber);
+            UpdateAllRecipientDescriptions(ABatchNumber);
 
-            if (TransDV.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(ALedgerNumber, ABatchNumber));
+            ((TFrmRecurringGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
 
-                UpdateAllRecipientDescriptions(ABatchNumber);
-
-                ((TFrmRecurringGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-            }
-
-            return TransDV.Count > 0;
+            return RetVal;
         }
 
         private void UpdateAllRecipientDescriptions(Int32 ABatchNumber)
@@ -439,89 +439,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            string CurrentCostCentreCode = ARow.CostCentreCode;
-            string NewCostCentreCode = string.Empty;
+            string FailedUpdates = string.Empty;
 
-            Int64 RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
+            GiftBatchTDSARecurringGiftDetailTable TableARecurringGiftDetail = new GiftBatchTDSARecurringGiftDetailTable();
 
-            string MotivationGroup = ARow.MotivationGroupCode;
-            string MotivationDetail = ARow.MotivationDetailCode;
+            TableARecurringGiftDetail.ImportRow(ARow);
+            TableARecurringGiftDetail.AcceptChanges();
 
-            Int64 RecipientLedgerNumber = ARow.RecipientLedgerNumber;
+            string NewCostCentreCode = TRemote.MFinance.Gift.WebConnectors.UpdateRecurringCostCentreCodeForOneRecipient(FMainDS,
+                TableARecurringGiftDetail,
+                out FailedUpdates);
 
-            Int64 LedgerPartnerKey = FMainDS.ALedger[0].PartnerKey;
-
-            bool KeyMinIsActive = false;
-            bool KeyMinExists = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(APartnerKey, out KeyMinIsActive);
-
-            string ValidLedgerNumberCostCentreCode;
-
-            string errMsg = string.Empty;
-
-            if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, APartnerKey, RecipientField,
-                    out ValidLedgerNumberCostCentreCode)
-                || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, RecipientLedgerNumber,
-                    RecipientField,
-                    out ValidLedgerNumberCostCentreCode))
-            {
-                NewCostCentreCode = ValidLedgerNumberCostCentreCode;
-            }
-            else if ((RecipientLedgerNumber != LedgerPartnerKey) && ((MotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT) || KeyMinExists))
-            {
-                errMsg = String.Format(
-                    "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
-                    APartnerKey,
-                    FLedgerNumber,
-                    Environment.NewLine,
-                    RecipientLedgerNumber,
-                    LedgerPartnerKey);
-
-                if (AShowError)
-                {
-                    MessageBox.Show(errMsg,
-                        "Cost Centre Code Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-                }
-                else
-                {
-                    TLogging.Log("Cost Centre Code Error: " + errMsg);
-                }
-            }
-            else
-            {
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                    new object[] { FLedgerNumber, MotivationGroup, MotivationDetail });
-
-                if (motivationDetail != null)
-                {
-                    NewCostCentreCode = motivationDetail.CostCentreCode;
-                }
-                else
-                {
-                    errMsg = String.Format(
-                        "Error in extracting Cost Centre Code for Motivation Group: {0} and Motivation Detail: {1} in Ledger: {2}.",
-                        MotivationGroup,
-                        MotivationDetail,
-                        FLedgerNumber);
-
-                    if (AShowError)
-                    {
-                        MessageBox.Show(errMsg,
-                            "Cost Centre Code Error",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Exclamation);
-                    }
-                    else
-                    {
-                        TLogging.Log("Cost Centre Code Error: " + errMsg);
-                    }
-                }
-            }
-
-            if (CurrentCostCentreCode != NewCostCentreCode)
+            if (ARow.CostCentreCode != NewCostCentreCode)
             {
                 ARow.CostCentreCode = NewCostCentreCode;
+            }
+
+            if (txtDetailCostCentreCode.Text != NewCostCentreCode)
+            {
+                txtDetailCostCentreCode.Text = NewCostCentreCode;
             }
         }
 
@@ -541,9 +477,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                txtDetailRecipientKey.Text = APartnerKey.ToString();
-                FPreviouslySelectedDetailRow.RecipientKey = Convert.ToInt64(APartnerKey);
-                FCorrespondingRecipientKeyToField = Convert.ToInt64(APartnerKey);
+                FPreviouslySelectedDetailRow.RecipientKey = APartnerKey;
                 FPreviouslySelectedDetailRow.RecipientDescription = APartnerShortName;
 
                 if (!FMotivationDetailChangedFlag && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
@@ -597,6 +531,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FInRecipientKeyChanging = false;
                 ReconcileKeyMinistryFromCombo();
                 FPetraUtilsObject.SuppressChangeDetection = false;
+            }
+        }
+
+        private void RecipientLedgerNumberChanged(Int64 APartnerKey,
+            String APartnerShortName,
+            bool AValidSelection)
+        {
+            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RecipientLedgerNumber != APartnerKey))
+            {
+                FPreviouslySelectedDetailRow.RecipientLedgerNumber = APartnerKey;
             }
         }
 
@@ -954,159 +898,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RetrieveRecipientCostCentreCode(Int64 APartnerKey)
         {
-            //string FailedUpdates = string.Empty;
-
-            if (FInKeyMinistryChanging || (FPreviouslySelectedDetailRow == null))
+            if (FPreviouslySelectedDetailRow == null)
             {
                 return;
             }
 
-            //UpdateCostCentreCodeForRecipients(out FailedUpdates,
-            //    FPreviouslySelectedDetailRow.GiftTransactionNumber,
-            //    FPreviouslySelectedDetailRow.DetailNumber);
-
-            //((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
-
             FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, APartnerKey, false);
-
-            txtDetailCostCentreCode.Text = FPreviouslySelectedDetailRow.CostCentreCode;
-        }
-
-        private bool UpdateCostCentreCodeForRecipients(out string AFailedUpdates,
-            Int32 AGiftTransactionNumber = 0,
-            Int32 AGiftDetailNumber = 0)
-        {
-            AFailedUpdates = string.Empty;
-
-            if ((FMainDS.ARecurringGiftBatch.Count == 0) || (FMainDS.ARecurringGift.Count == 0))
-            {
-                return true;
-            }
-
-            Int64 LedgerPartnerKey = FMainDS.ALedger[0].PartnerKey;
-
-            string CurrentCostCentreCode = string.Empty;
-            string NewCostCentreCode = string.Empty;
-
-            string MotivationGroup = string.Empty;
-            string MotivationDetail = string.Empty;
-
-            Int64 PartnerKey = 0;
-            Int64 RecipientFundNumber = 0;
-
-            bool KeyMinIsActive = false;
-            bool IsKeyMinistry = false;
-
-            string ValidLedgerNumberCostCentreCode = string.Empty;
-            //bool ValidLedgerNumberExists = false;
-
-            string ErrMsg = string.Empty;
-
-            string RowFilterForGifts = string.Empty;
-
-            if (AGiftTransactionNumber > 0)
-            {
-                RowFilterForGifts = String.Format("{0}={1} And {2}={3} And {4}={5}",
-                    ARecurringGiftDetailTable.GetBatchNumberDBName(),
-                    FBatchNumber,
-                    ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
-                    AGiftTransactionNumber,
-                    ARecurringGiftDetailTable.GetDetailNumberDBName(),
-                    AGiftDetailNumber);
-            }
-            else
-            {
-                RowFilterForGifts = String.Format("{0}={1}",
-                    ARecurringGiftDetailTable.GetBatchNumberDBName(),
-                    FBatchNumber);
-            }
-
-            DataView giftRowsView = new DataView(FMainDS.ARecurringGiftDetail);
-            giftRowsView.RowFilter = RowFilterForGifts;
-
-            foreach (DataRowView dvRows in giftRowsView)
-            {
-                GiftBatchTDSARecurringGiftDetailRow giftDetailRow = (GiftBatchTDSARecurringGiftDetailRow)dvRows.Row;
-
-                ARecurringGiftRow giftRow = GetRecurringGiftRow(giftDetailRow.GiftTransactionNumber);
-
-                CurrentCostCentreCode = giftDetailRow.CostCentreCode;
-                NewCostCentreCode = CurrentCostCentreCode;
-
-                MotivationGroup = giftDetailRow.MotivationGroupCode;
-                MotivationDetail = giftDetailRow.MotivationDetailCode;
-
-                PartnerKey = giftDetailRow.RecipientKey;
-                RecipientFundNumber = giftDetailRow.RecipientLedgerNumber;
-
-                KeyMinIsActive = false;
-                IsKeyMinistry = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(PartnerKey, out KeyMinIsActive);
-
-                //ValidLedgerNumberExists = CheckCostCentreLinkForRecipient(LedgerNumber,
-                //    PartnerKey,
-                //    out ValidLedgerNumberCostCentreCode);
-
-                Int64 RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
-
-                if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(giftRow.LedgerNumber, PartnerKey, RecipientField,
-                        out ValidLedgerNumberCostCentreCode)
-                    || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(giftRow.LedgerNumber, RecipientFundNumber,
-                        RecipientField,
-                        out ValidLedgerNumberCostCentreCode))
-                {
-                    NewCostCentreCode = ValidLedgerNumberCostCentreCode;
-                }
-                else if ((RecipientFundNumber != LedgerPartnerKey) && ((MotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT) || IsKeyMinistry))
-                {
-                    ErrMsg = String.Format(
-                        "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
-                        PartnerKey,
-                        FLedgerNumber,
-                        Environment.NewLine,
-                        RecipientFundNumber,
-                        LedgerPartnerKey);
-
-                    TLogging.Log("Cost Centre Code Error: " + ErrMsg);
-                }
-                else
-                {
-                    AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                        new object[] { FLedgerNumber, MotivationGroup, MotivationDetail });
-
-                    if (motivationDetail != null)
-                    {
-                        NewCostCentreCode = motivationDetail.CostCentreCode.ToString();
-                    }
-                    else
-                    {
-                        ErrMsg = String.Format(
-                            "Error in extracting Cost Centre Code for Motivation Group: {0} and Motivation Detail: {1} in Ledger: {2}.",
-                            MotivationGroup,
-                            MotivationDetail,
-                            FLedgerNumber);
-
-                        TLogging.Log("Cost Centre Code Error: " + ErrMsg);
-                    }
-                }
-
-                if (CurrentCostCentreCode != NewCostCentreCode)
-                {
-                    giftDetailRow.CostCentreCode = NewCostCentreCode;
-                }
-
-                if (ErrMsg.Length > 0)
-                {
-                    if (AFailedUpdates.Length > 0)
-                    {
-                        AFailedUpdates += (Environment.NewLine + Environment.NewLine);
-                    }
-
-                    AFailedUpdates += ErrMsg;
-                    ErrMsg = string.Empty;
-                }
-            }
-
-            return AFailedUpdates.Length == 0;
         }
 
         private void MotivationDetailChanged(object sender, EventArgs e)
@@ -1254,8 +1051,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     cmbKeyMinistries.Enabled = true;
                 }
             }
-
-            FCorrespondingRecipientKeyToField = APartnerKey;
         }
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
@@ -1683,6 +1478,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        private void DeleteAllGifts(System.Object sender, EventArgs e)
+        {
+        }
+
         /// <summary>
         /// Clear the gift data of the current batch without marking records for delete
         /// </summary>
@@ -1739,7 +1538,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.ARecurringGiftDetail.Merge(TempDS.ARecurringGiftDetail);
                 }
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactions(FLedgerNumber, ABatchNumber));
 
                 RetVal = true;
             }
@@ -1809,7 +1608,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailGiftAmount.NumberValueDecimal = 0;
                 txtDetailRecipientKey.Text = string.Empty;
                 txtDetailRecipientLedgerNumber.Text = string.Empty;
-                FCorrespondingRecipientKeyToField = 0;
                 txtDetailAccountCode.Clear();
                 cmbDetailReceiptLetterCode.SelectedIndex = -1;
                 cmbDetailMotivationGroupCode.SelectedIndex = -1;
@@ -2059,15 +1857,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     UpdateRecipientKeyText(ARow.RecipientKey);
                 }
 
-                if (ARow.IsRecipientFieldNull())
-                {
-                    FCorrespondingRecipientKeyToField = 0;
-                }
-                else
-                {
-                    FCorrespondingRecipientKeyToField = ARow.RecipientKey;
-                }
-
                 if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
                 {
                     RecipientPartnerClassChanged(null);
@@ -2291,7 +2080,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FMainDS.ARecurringGift.Rows.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(ledgerNumber, batchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactions(ledgerNumber, batchNumber));
 
                 ((TFrmRecurringGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
@@ -2415,11 +2204,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (txtDetailRecipientLedgerNumber.Text.Length == 0)
             {
+                ARow.SetRecipientFieldNull();
                 ARow.SetRecipientLedgerNumberNull();
             }
             else
             {
-                ARow.RecipientLedgerNumber = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
+                ARow.RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
+                ARow.RecipientLedgerNumber = ARow.RecipientField;
             }
 
             //Handle gift table fields for first detail only
@@ -2472,14 +2263,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((ARow == null) || (GetCurrentRecurringBatchRow() == null) || (GetCurrentRecurringBatchRow().BatchNumber != ARow.BatchNumber))
             {
                 return;
-            }
-
-            // this happens if validation is called after recipient key has been changed but before RecipientKeyChanged is called,
-            // meaning that the Field has not yet been updated
-            if (ARow.RecipientKey != FCorrespondingRecipientKeyToField)
-            {
-                GetRecipientData(Convert.ToInt64(txtDetailRecipientKey.Text));
-                FPreviouslySelectedDetailRow.RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
             }
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -2551,7 +2334,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Refresh the dataset for this form
         /// </summary>
-        public void RefreshAll()
+        public void RefreshData()
         {
             if ((FMainDS != null) && (FMainDS.ARecurringGiftDetail != null))
             {
@@ -2634,7 +2417,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         && (Row.DateEffective != Row.DateExpires))
                     {
                         txtDetailRecipientLedgerNumber.Text = Row.FieldKey.ToString();
-                        FCorrespondingRecipientKeyToField = Row.PartnerKey;
                     }
                 }
             }
@@ -2661,7 +2443,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (UnitHierarchyChanges[i].Item2 == Convert.ToInt64(txtDetailRecipientKey.Text))
                 {
                     GetRecipientData(Convert.ToInt64(txtDetailRecipientKey.Text));
-                    FCorrespondingRecipientKeyToField = Convert.ToInt64(txtDetailRecipientKey.Text);
                     break;
                 }
             }

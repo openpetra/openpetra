@@ -52,14 +52,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
     public class TContactsWebConnector
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="contactId"></param>
         /// <param name="APartnerKeys"></param>
         /// <param name="attributeCode"></param>
         /// <param name="attributeDetailCode"></param>
         [RequireModulePermission("PTNRUSER")]
-        public static void AddContactAttributeToContacts(int contactId, List<Int64> APartnerKeys, List<int> attributeCode, List<int> attributeDetailCode)
+        public static void AddContactAttributeToContacts(int contactId,
+            List <Int64>APartnerKeys,
+            List <int>attributeCode,
+            List <int>attributeDetailCode)
         {
             Boolean NewTransaction;
 
@@ -107,7 +110,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AModuleID"></param>
         /// <param name="AMailingCode"></param>
         [RequireModulePermission("PTNRUSER")]
-        public static void AddContact(List<Int64> APartnerKeys,
+        public static void AddContact(List <Int64>APartnerKeys,
             DateTime AContactDate,
             string AContactor,
             string AMethodOfContact,
@@ -143,12 +146,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 PPartnerContactTable partnerContacts = new PPartnerContactTable();
                 APartnerKeys.ForEach(partnerKey =>
-                {
-                    PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
-                    partnerContact.ContactLogId = contact.ContactLogId;
-                    partnerContact.PartnerKey = partnerKey;
-                    partnerContacts.Rows.Add(partnerContact);
-                });
+                    {
+                        PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
+                        partnerContact.ContactLogId = contact.ContactLogId;
+                        partnerContact.PartnerKey = partnerKey;
+                        partnerContacts.Rows.Add(partnerContact);
+                    });
 
                 PContactLogAccess.SubmitChanges(contacts, WriteTransaction);
                 PPartnerContactAccess.SubmitChanges(partnerContacts, WriteTransaction);
@@ -166,6 +169,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
+
                 throw;
             }
         }
@@ -274,7 +278,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
 
                 contacts = PContactLogAccess.LoadViaPPartnerPPartnerContact(partnerKey, WriteTransaction);
-
             }
             catch (Exception e)
             {
@@ -310,7 +313,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
 
                 partnerContacts = PPartnerContactAccess.LoadViaPPartner(partnerKey, WriteTransaction);
-
             }
             catch (Exception e)
             {
@@ -366,13 +368,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 foreach (PContactLogRow contactLogRow in AContactLogs.Rows)
                 {
-                    var contactLogs = PPartnerContactAccess.LoadViaPContactLog((long)contactLogRow[PContactLogTable.ColumnContactLogIdId], WriteTransaction);
+                    var contactLogs = PPartnerContactAccess.LoadViaPContactLog((long)contactLogRow[PContactLogTable.ColumnContactLogIdId],
+                        WriteTransaction);
+
                     foreach (PPartnerContactRow partnerContactRow in contactLogs.Rows)
                     {
                         partnerContactRow.Delete();
                     }
+
                     PPartnerContactAccess.SubmitChanges(contactLogs, WriteTransaction);
-                    contactLogRow.Delete(); 
+                    contactLogRow.Delete();
                 }
 
                 PContactLogAccess.SubmitChanges(AContactLogs, WriteTransaction);
