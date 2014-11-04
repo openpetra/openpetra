@@ -14,17 +14,12 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
-        pnlInfo: 
-            Controls: [pnlLedgerInfo]
-            Dock: Top
-        pnlLedgerInfo:
-            Controls: [txtLedgerNumber]
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+            Controls: [pnlFilterAndFind, pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Dock: Fill
-            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlFilterAndFind:
+            Dock: Left
             ExpandedWidth: 175
             ShowApplyFilterButton: FilterContext.StandardFilterOnly
             ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly

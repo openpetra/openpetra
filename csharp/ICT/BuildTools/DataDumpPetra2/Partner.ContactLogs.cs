@@ -1,4 +1,27 @@
-﻿using Ict.Common;
+﻿//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       >>>> Put your full name or just a shortname here <<<<
+//
+// Copyright 2004-2013 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
+using Ict.Common;
 using Ict.Tools.DBXML;
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -52,19 +75,19 @@ namespace Ict.Tools.DataDumpPetra2
                 TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "p_partner_contact.d.gz",
                 PartnerContact.grpTableField.Count);
 
-            
+
             TTable ContactLog = TDumpProgressToPostgresql.GetStoreNew().GetTable("p_contact_log");
             StringCollection ContactLogColumnNames = GetColumnNames(ContactLog);
+
             string[] ContactLogRow = new string[ContactLogColumnNames.Count];
             int RowCounter = 0;
-            
+
             string[] OldRow = ParserPartnerContact.ReadNextRow();
-            
+
             while (OldRow != null)
             {
-
                 string ContactLogKey = TSequenceWriter.GetNextSequenceValue("seq_contact").ToString();
-                
+
                 // p_contact_log row
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_log_id_i", ContactLogKey);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "s_contact_date_d", OldRow[2]);
@@ -77,6 +100,7 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_code_c", OldRow[4]);
                 }
+
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contactor_c", OldRow[5]);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_message_id_c", OldRow[6]);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_comment_c", OldRow[7]);
@@ -119,10 +143,12 @@ namespace Ict.Tools.DataDumpPetra2
                 AWriter.WriteLine("\\.");
                 AWriter.WriteLine("COPY p_partner_contact FROM stdin;");
                 AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+
                 if (OldRow != null)
                 {
                     AWriter.WriteLine("\\.");
                 }
+
                 RowCounter += 2; // ContactLog record and PartnerContact record
             }
 

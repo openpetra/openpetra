@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private static readonly string StrSubscriptionsTabHeader = Catalog.GetString("Subscriptions");
 
         private static readonly string StrContactsTabHeader = Catalog.GetString("Contact Logs");
-        
+
         private static readonly string StrSpecialTypesTabHeader = Catalog.GetString("Special Types");
 
         private static readonly string StrFamilyMembersTabHeader = Catalog.GetString("Family Members");
@@ -1005,7 +1005,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoContacts.PartnerEditUIConnector = FPartnerEditUIConnector;
                     FUcoContacts.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
                     FUcoContacts.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
-
                 }
 
                 FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();

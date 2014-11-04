@@ -230,7 +230,7 @@ namespace Ict.Tools.DataDumpPetra2
                     FileStream outStreamCount = File.Create(rowCountDir);
                     MyWriterCount = new StreamWriter(outStreamCount);
                 }
-                
+
                 // The p_partner_contact table needs to write p_contact_log records first, so handle the COPY manually
                 if (newTable.strName != "p_partner_contact")
                 {

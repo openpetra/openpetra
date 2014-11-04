@@ -1826,13 +1826,16 @@ namespace Ict.Petra.Shared.MPartner.Validation
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="AContext"></param>
         /// <param name="ARow"></param>
         /// <param name="VerificationResultCollection"></param>
         /// <param name="FValidationControlsDict"></param>
-        public static void ValidateContactLogManual(object AContext, PContactLogRow ARow, ref TVerificationResultCollection VerificationResultCollection, TValidationControlsDict FValidationControlsDict)
+        public static void ValidateContactLogManual(object AContext,
+            PContactLogRow ARow,
+            ref TVerificationResultCollection VerificationResultCollection,
+            TValidationControlsDict FValidationControlsDict)
         {
             DataColumn ValidationColumn;
             TVerificationResult VerificationResult = null;

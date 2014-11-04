@@ -532,80 +532,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (TransDV.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(ALedgerNumber, ABatchNumber));
             }
 
             return TransDV.Count > 0;
-        }
-
-        /// <summary>
-        /// Set up the screen to show only this batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="ABatchYear"></param>
-        /// <param name="ABatchPeriod"></param>
-        public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber, int ABatchYear, int ABatchPeriod)
-        {
-            FLedgerNumber = ALedgerNumber;
-            ucoBatches.LoadOneBatch(ALedgerNumber, ABatchNumber, ABatchYear, ABatchPeriod);
-            Show();
-        }
-
-        /// <summary>
-        /// Returns the corporate exchange rate for a given batch row
-        ///  and specifies whether or not the transaction is in International
-        ///  currency
-        /// </summary>
-        /// <param name="ABatchRow"></param>
-        /// <param name="AIsTransactionInIntlCurrency"></param>
-        /// <param name="AAlwaysReportError"></param>
-        /// <returns></returns>
-        public decimal InternationalCurrencyExchangeRate(AGiftBatchRow ABatchRow,
-            out bool AIsTransactionInIntlCurrency, bool AAlwaysReportError = false)
-        {
-            decimal IntlToBaseCurrencyExchRate = 1;
-
-            AIsTransactionInIntlCurrency = false;
-
-            string BatchCurrencyCode = ABatchRow.CurrencyCode;
-            decimal BatchExchangeRateToBase = ABatchRow.ExchangeRateToBase;
-            DateTime BatchEffectiveDate = ABatchRow.GlEffectiveDate;
-            DateTime StartOfMonth = new DateTime(BatchEffectiveDate.Year, BatchEffectiveDate.Month, 1);
-            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
-            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
-
-            if (LedgerBaseCurrency == LedgerIntlCurrency)
-            {
-                IntlToBaseCurrencyExchRate = 1;
-            }
-            else if (BatchCurrencyCode == LedgerIntlCurrency)
-            {
-                AIsTransactionInIntlCurrency = true;
-            }
-            else
-            {
-                IntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
-                    LedgerIntlCurrency,
-                    StartOfMonth,
-                    BatchEffectiveDate);
-
-                if ((IntlToBaseCurrencyExchRate == 0) && (FWarnAboutMissingIntlExchangeRate || AAlwaysReportError))
-                {
-                    FWarnAboutMissingIntlExchangeRate = false;
-
-                    string IntlRateErrorMessage =
-                        String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
-                            LedgerBaseCurrency,
-                            LedgerIntlCurrency,
-                            BatchEffectiveDate);
-
-                    MessageBox.Show(IntlRateErrorMessage, Catalog.GetString(
-                            "Lookup Corporate Exchange Rate"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
-            }
-
-            return IntlToBaseCurrencyExchRate;
         }
 
         /// <summary>
@@ -616,27 +546,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoBatches.SelectBatchNumber(gdr.BatchNumber);
             ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
             standardTabIndex = 1;     // later we switch to the detail tab
-        }
-
-        private void mniNewDonorWarning_Click(Object sender, EventArgs e)
-        {
-            // toggle menu tick
-            mniNewDonorWarning.Checked = !mniNewDonorWarning.Checked;
-
-            FNewDonorWarning = mniNewDonorWarning.Checked;
-
-            // change user default
-            TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
-        }
-
-        // open screen to print the Gift Batch Detail report
-        private void PrintGiftBatchDetail(Object sender, EventArgs e)
-        {
-            TFrmGiftBatchDetail Report = new TFrmGiftBatchDetail(this);
-
-            Report.LedgerNumber = FLedgerNumber;
-            Report.BatchNumber = ucoBatches.FSelectedBatchNumber;
-            Report.Show();
         }
 
         private int GetChangedRecordCountManual(out string AMessage)
@@ -760,6 +669,97 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             return RetVal;
+        }
+
+        /// <summary>
+        /// Set up the screen to show only this batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="ABatchYear"></param>
+        /// <param name="ABatchPeriod"></param>
+        public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber, int ABatchYear, int ABatchPeriod)
+        {
+            FLedgerNumber = ALedgerNumber;
+            ucoBatches.LoadOneBatch(ALedgerNumber, ABatchNumber, ABatchYear, ABatchPeriod);
+            Show();
+        }
+
+        /// <summary>
+        /// Returns the corporate exchange rate for a given batch row
+        ///  and specifies whether or not the transaction is in International
+        ///  currency
+        /// </summary>
+        /// <param name="ABatchRow"></param>
+        /// <param name="AIsTransactionInIntlCurrency"></param>
+        /// <param name="AAlwaysReportError"></param>
+        /// <returns></returns>
+        public decimal InternationalCurrencyExchangeRate(AGiftBatchRow ABatchRow,
+            out bool AIsTransactionInIntlCurrency, bool AAlwaysReportError = false)
+        {
+            decimal IntlToBaseCurrencyExchRate = 1;
+
+            AIsTransactionInIntlCurrency = false;
+
+            string BatchCurrencyCode = ABatchRow.CurrencyCode;
+            decimal BatchExchangeRateToBase = ABatchRow.ExchangeRateToBase;
+            DateTime BatchEffectiveDate = ABatchRow.GlEffectiveDate;
+            DateTime StartOfMonth = new DateTime(BatchEffectiveDate.Year, BatchEffectiveDate.Month, 1);
+            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+
+            if (LedgerBaseCurrency == LedgerIntlCurrency)
+            {
+                IntlToBaseCurrencyExchRate = 1;
+            }
+            else if (BatchCurrencyCode == LedgerIntlCurrency)
+            {
+                AIsTransactionInIntlCurrency = true;
+            }
+            else
+            {
+                IntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
+                    LedgerIntlCurrency,
+                    StartOfMonth,
+                    BatchEffectiveDate);
+
+                if ((IntlToBaseCurrencyExchRate == 0) && (FWarnAboutMissingIntlExchangeRate || AAlwaysReportError))
+                {
+                    FWarnAboutMissingIntlExchangeRate = false;
+
+                    string IntlRateErrorMessage =
+                        String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
+                            LedgerBaseCurrency,
+                            LedgerIntlCurrency,
+                            BatchEffectiveDate);
+
+                    MessageBox.Show(IntlRateErrorMessage, Catalog.GetString(
+                            "Lookup Corporate Exchange Rate"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+
+            return IntlToBaseCurrencyExchRate;
+        }
+
+        private void mniNewDonorWarning_Click(Object sender, EventArgs e)
+        {
+            // toggle menu tick
+            mniNewDonorWarning.Checked = !mniNewDonorWarning.Checked;
+
+            FNewDonorWarning = mniNewDonorWarning.Checked;
+
+            // change user default
+            TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
+        }
+
+        // open screen to print the Gift Batch Detail report
+        private void PrintGiftBatchDetail(Object sender, EventArgs e)
+        {
+            TFrmGiftBatchDetail Report = new TFrmGiftBatchDetail(this);
+
+            Report.LedgerNumber = FLedgerNumber;
+            Report.BatchNumber = ucoBatches.FSelectedBatchNumber;
+            Report.Show();
         }
 
         #region Forms Messaging Interface Implementation

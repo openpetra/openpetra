@@ -986,7 +986,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             FPartnerEditScreenDS.RemoveEmptyTables();
         }
 
-
         private void LoadData(Boolean ADelayedDataLoading)
         {
             LoadData(ADelayedDataLoading, TPartnerEditTabPageEnum.petpDefault);
@@ -1046,7 +1045,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PLocationTable SiteLocationDT;
             StringCollection SiteLocationRequiredColumns;
             DateTime CreationDate;
-            
+
             String CreationUserID;
             String GiftReceiptingDefaults;
             String ReceiptLetterFrequency;
@@ -1586,7 +1585,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             Int32 ContactsCount;
             DateTime LastContact;
-            return GetContactsInternal(out ContactsCount,out LastContact);
+
+            return GetContactsInternal(out ContactsCount, out LastContact);
         }
 
         /// <summary>
@@ -2503,9 +2503,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 if (AInspectDS.Tables.Contains(PContactLogTable.GetTableName()) && AInspectDS.Tables.Contains(PPartnerContactTable.GetTableName()))
                 {
-                    
                 }
-                
+
                 #endregion
 
                 #region Foundations
@@ -2897,6 +2896,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
             PContactLogTable ContactDT;
+
             ALastContact = DateTime.MinValue;
             ContactDT = new PContactLogTable();
             try
@@ -2909,7 +2909,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 ACount = PartnerContacts.Rows.Count;
 
                 ContactDT = PContactLogAccess.LoadViaPPartnerPPartnerContact(FPartnerKey, ReadTransaction);
-                    
+
                 foreach (PContactLogRow row in ContactDT.Rows)
                 {
                     ALastContact = row.ContactDate > ALastContact ? row.ContactDate : ALastContact;
