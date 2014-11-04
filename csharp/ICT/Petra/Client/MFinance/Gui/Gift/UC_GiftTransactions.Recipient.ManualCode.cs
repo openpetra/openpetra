@@ -314,12 +314,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!AMotivationDetailChangedFlag && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
                         APartnerKey, ref AMotivationGroup, ref AMotivationDetail))
                 {
-                    if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
+                    if (ACmbMotivationGroupCode.GetSelectedString() != AMotivationGroup)
                     {
                         // note - this will also update the Motivation Detail
                         ACmbMotivationGroupCode.SetSelectedString(AMotivationGroup);
                     }
-                    else if (AMotivationDetail != ACmbMotivationDetailCode.GetSelectedString())
+
+                    if (ACmbMotivationDetailCode.GetSelectedString() != AMotivationDetail)
                     {
                         ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
                     }
