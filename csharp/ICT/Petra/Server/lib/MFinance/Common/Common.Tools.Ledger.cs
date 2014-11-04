@@ -133,6 +133,17 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
+        /// Property to read the value of the International currency
+        /// </summary>
+        public string InternationalCurrency
+        {
+            get
+            {
+                return FLedgerRow.IntlCurrency;
+            }
+        }
+
+        /// <summary>
         /// Read or write the ProvisionalYearEndFlag
         /// </summary>
         public bool ProvisionalYearEndFlag

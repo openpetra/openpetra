@@ -402,19 +402,15 @@ namespace Ict.Petra.Client.MReporting.Gui
             printerSelectionDlg = new PrintDialog();
             printerSelectionDlg.Document = FGfxPrinter.Document;
 
-            /* TODO: allow the printing of a range of pages.
-             * need to do something in ReportGfxPrinter.Document.Print();
-             * as well
-             *
-             * printerSelectionDlg.PrinterSettings.MinimumPage := 1;
-             * printerSelectionDlg.PrinterSettings.MaximumPage := ReportGfxPrinter.NumberOfPages;
-             * printerSelectionDlg.PrinterSettings.FromPage := 1;
-             * printerSelectionDlg.PrinterSettings.ToPage := ReportGfxPrinter.NumberOfPages;
-             *
-             * printerSelectionDlg.AllowSomePages := true;
-             * printerSelectionDlg.AllowPrintToFile := true;
-             * printerSelectionDlg.AllowSelection := true;
-             */
+            printerSelectionDlg.PrinterSettings.MinimumPage = 1;
+            printerSelectionDlg.PrinterSettings.MaximumPage = FGfxPrinter.NumberOfPages;
+            printerSelectionDlg.PrinterSettings.FromPage = 1;
+            printerSelectionDlg.PrinterSettings.ToPage = FGfxPrinter.NumberOfPages;
+
+            printerSelectionDlg.AllowSomePages = true;
+            printerSelectionDlg.AllowPrintToFile = true;
+            printerSelectionDlg.AllowSelection = true;
+
             if (printerSelectionDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 try

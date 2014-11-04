@@ -2,7 +2,7 @@ DELETE FROM s_report_template WHERE s_template_id_i=1;
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
 VALUES(1,'HOSA','OpenPetra default template','System',True,False,False,False,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="10/31/2014 14:48:24" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="11/04/2014 09:52:22" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -179,7 +179,7 @@ namespace FastReport
       <TextObject Name="Text21" Left="18.9" Top="75.6" Width="75.6" Height="18.9" Text="Currency :" HorzAlign="Right"/>
       <TextObject Name="Text18" Left="94.5" Top="75.6" Width="151.2" Height="18.9" Text="[param_currency_name]"/>
       <TextObject Name="Text10" Left="94.5" Top="56.7" Width="151.2" Height="18.9" Text="[param_ledger_number_i] [param_ledger_name]"/>
-      <TextObject Name="Text1" Left="226.8" Width="264.6" Height="28.35" Text="HOSA: [a_costCentre.a_cost_centre_name_c]" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
+      <TextObject Name="Text1" Left="217.35" Width="283.5" Height="28.35" Text="HOSA: [a_costCentre.a_cost_centre_name_c]" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
       <TextObject Name="Text20" Left="18.9" Top="56.7" Width="75.6" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
       <LineObject Name="Line1" Top="132.3" Width="718.2" Border.Width="2"/>
       <TextObject Name="Text88" Left="245.7" Top="28.35" Width="226.8" Height="18.9" Text="[param_ledger_name] " HorzAlign="Center"/>
@@ -333,8 +333,7 @@ namespace FastReport
             <GeneralFormat/>
           </Formats>
           <Highlight>
-            <Condition Expression="Value &lt; 0.01" TextFill.Color="Blue"/>
-            <Condition Expression="Value &lt; 0" TextFill.Color="White"/>
+            <Condition Expression="Value &lt; 0" Border.Lines="All" TextFill.Color="White"/>
           </Highlight>
         </TextObject>
         <TextObject Name="Text2" Left="113.4" Top="9.45" Width="113.4" Height="18.9" Text="Grand Total :" HorzAlign="Right"/>

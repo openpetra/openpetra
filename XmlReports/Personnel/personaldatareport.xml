@@ -67,7 +67,7 @@
               WHERE
                   PUB_p_data_label_value_partner.p_partner_key_n = {{StaffPartnerKey}}
                 AND PUB_p_data_label_value_partner.p_data_label_key_i = PUB_p_data_label.p_key_i
-                AND PUB_p_data_label_use.p_use_c &lt;&gt; "Personnel"
+                AND PUB_p_data_label_use.p_use_c &lt;&gt; 'Personnel'
                 AND PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label.p_key_i
             </value>
           </queryDetail>
@@ -95,7 +95,7 @@
               WHERE
                   PUB_p_data_label_value_partner.p_partner_key_n = {{StaffPartnerKey}}
                 AND PUB_p_data_label_value_partner.p_data_label_key_i = PUB_p_data_label.p_key_i
-                AND PUB_p_data_label_use.p_use_c = "Personnel"
+                AND PUB_p_data_label_use.p_use_c = 'Personnel'
                 AND PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label.p_key_i
             </value>
           </queryDetail>
