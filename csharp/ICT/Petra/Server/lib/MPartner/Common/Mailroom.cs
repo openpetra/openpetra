@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, petrih
+//       christiank, petrih, andreww
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,20 +58,20 @@ namespace Ict.Petra.Server.MPartner.Common
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             DataSet LastContactDS;
-            PPartnerContactRow ContactDR;
+            PContactLogRow ContactDR;
 
             LastContactDS = new DataSet("LastContactDate");
-            LastContactDS.Tables.Add(new PPartnerContactTable());
+            LastContactDS.Tables.Add(new PContactLogTable());
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            PPartnerContactAccess.LoadViaPPartner(LastContactDS, APartnerKey,
-                StringHelper.InitStrArr(new String[] { PPartnerContactTable.GetContactDateDBName() }), ReadTransaction,
-                StringHelper.InitStrArr(new String[] { "ORDER BY " + PPartnerContactTable.GetContactDateDBName() + " DESC" }), 0, 1);
+            PContactLogAccess.LoadViaPPartnerPPartnerContact(LastContactDS, APartnerKey,
+                StringHelper.InitStrArr(new String[] { PContactLogTable.GetContactDateDBName() }), ReadTransaction,
+                StringHelper.InitStrArr(new String[] { "ORDER BY " + PContactLogTable.GetContactDateDBName() + " DESC" }), 0, 1);
 
-            if (LastContactDS.Tables[PPartnerContactTable.GetTableName()].Rows.Count > 0)
+            if (LastContactDS.Tables[PContactLogTable.GetTableName()].Rows.Count > 0)
             {
-                ContactDR = ((PPartnerContactTable)LastContactDS.Tables[PPartnerContactTable.GetTableName()])[0];
+                ContactDR = ((PContactLogTable)LastContactDS.Tables[PContactLogTable.GetTableName()])[0];
                 ALastContactDate = ContactDR.ContactDate;
             }
             else

@@ -110,7 +110,7 @@ OpenPetra:
                         PartnerContactCategoriesAndTypes: {Label=Partner Contact Categories and Types, Description=Maintain Partner Contact Categories and Types, ActionOpenScreen=TFrmContactCategoriesAndTypesSetup}   
                         InterestCategory: {Label=Interest Categories, Description=Maintain Interest Categories, ActionOpenScreen=TFrmInterestCategorySetup}   
                         Interest: {Label=Partner Interests, Description=Maintain Partner Interests, ActionOpenScreen=TFrmInterestSetup}   
-                                                
+
                     Subscription: 
                         Publications: {Label=Publications, Description=Maintain Publications, ActionOpenScreen=TFrmPublicationSetup}
                         PublicationCosts: {Label=Publication Costs, Description=Maintain Publication Costs, ActionOpenScreen=TFrmPublicationCostSetup}
@@ -142,7 +142,6 @@ OpenPetra:
                         LocalDataFieldOrderOrganisation: {Label=Field Order for Organisation, Description=Maintain Field Order for Organisation, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Organisation}
                         LocalDataFieldOrderUnit: {Label=Field Order for Unit, Description=Maintain Field Order for Unit, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Unit}
                         LocalDataFieldOrderVenue: {Label=Field Order for Venue, Description=Maintain Field Order for Venue, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Venue}
-
             #MoreFunctions:
                 #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber

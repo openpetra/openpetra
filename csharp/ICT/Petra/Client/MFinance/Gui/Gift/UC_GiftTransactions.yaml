@@ -44,9 +44,9 @@ RootNode:
         Empty0:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Gift Batch, Unbound=true}
-        txtBatchStatus: {ReadOnly=true, NoLabel=true, Unbound=true}
         txtBatchTotal: {Format=Currency, ReadOnly=true, Unbound=true}
         txtHashTotal: {Format=Currency, ReadOnly=true,  Unbound=true}
+        txtBatchStatus: {ReadOnly=true, NoLabel=true, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlDetailButtons, grdDetails]
