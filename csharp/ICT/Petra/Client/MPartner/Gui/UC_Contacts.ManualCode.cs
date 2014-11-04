@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPartnerEditUIConnector = value;
             }
         }
-        
+
         /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
@@ -166,14 +166,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ucoDetails.Contactor = UserInfo.GUserInfo.UserID;
                 ucoDetails.Focus();
-
             }
         }
 
         private void NewRowManual(ref PContactLogRow ARow)
         {
             ARow.ContactLogId = TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_contact);
-            
+
             PPartnerContactRow PartnerContact = FMainDS.PPartnerContact.NewRowTyped(true);
             PartnerContact.ContactLogId = ARow.ContactLogId;
             PartnerContact.PartnerKey = ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey;
@@ -201,19 +200,20 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void DeleteRecord(object sender, EventArgs e)
         {
             DeletePContactLog();
-
         }
 
         private bool PreDeleteManual(PContactLogRow pContactLogRow, ref string ADeletionQuestion)
         {
             ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+
             if (TRemote.MPartner.Partner.WebConnectors.IsContactLogAssociatedWithMoreThanOnePartner((long)pContactLogRow.ContactLogId))
             {
                 ADeletionQuestion = Catalog.GetString(
-                                Environment.NewLine + "Other Partners share this contact log." +
-                                Environment.NewLine + "Deleting this record will not affect other Partners" +
-                                Environment.NewLine + "To delete this contact for everyone, use \"Find and Delete Contacts\"");
+                    Environment.NewLine + "Other Partners share this contact log." +
+                    Environment.NewLine + "Deleting this record will not affect other Partners" +
+                    Environment.NewLine + "To delete this contact for everyone, use \"Find and Delete Contacts\"");
             }
+
             ADeletionQuestion += String.Format("{0}{0}({1} {2})",
                 Environment.NewLine, ucoDetails.ContactDate, ucoDetails.ContactCode);
 
@@ -222,7 +222,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private bool DeleteRowManual(PContactLogRow ARowToDelete, ref String ACompletionMessage)
         {
-            
             foreach (DataRowView ContactLogRow in grdDetails.SelectedDataRows)
             {
                 DataView PartnerContactLogs = new DataView(FMainDS.PPartnerContact);
@@ -239,17 +238,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 // Actually delete the ContactLog if it's the last
-                if (!TRemote.MPartner.Partner.WebConnectors.IsContactLogAssociatedWithMoreThanOnePartner((long)ContactLogRow.Row[PContactLogTable.ColumnContactLogIdId]))
+                if (!TRemote.MPartner.Partner.WebConnectors.IsContactLogAssociatedWithMoreThanOnePartner((long)ContactLogRow.Row[PContactLogTable.
+                                                                                                                                 ColumnContactLogIdId
+                        ]))
                 {
                     ContactLogRow.Row.Delete();
                 }
-
             }
+
             grdDetails.Refresh();
-            
+
             return true;
         }
-        
+
         private void PostDeleteManual(PContactLogRow pContactLogRow, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
         {
             if (ADeletionPerformed)
@@ -260,7 +261,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GetDetailDataFromControlsManual(PContactLogRow ARow)
         {
-            ucoDetails.GetDetails(ARow);   
+            ucoDetails.GetDetails(ARow);
         }
 
         private void ValidateDataDetailsManual(PContactLogRow ARow)
@@ -278,7 +279,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 RecalculateScreenParts(this, e);
             }
         }
-
 
         /// <summary>
         ///

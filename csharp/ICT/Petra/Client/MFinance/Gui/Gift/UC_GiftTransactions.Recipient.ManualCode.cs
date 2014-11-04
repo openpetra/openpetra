@@ -158,13 +158,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 OnRecipientPartnerClassChanged(null, ATxtDetailRecipientKey, AtxtDetailRecipientLedgerNumber, out AEnableRecipientGiftDestination);
             }
 
-			if (Convert.ToInt64(AtxtDetailRecipientLedgerNumber.Text) == 0)
-			{
-				OnRecipientPartnerClassChanged(ATxtDetailRecipientKey.CurrentPartnerClass,
-					ATxtDetailRecipientKey,
-					AtxtDetailRecipientLedgerNumber,
-					out AEnableRecipientGiftDestination);
-			}
+            if (Convert.ToInt64(AtxtDetailRecipientLedgerNumber.Text) == 0)
+            {
+                OnRecipientPartnerClassChanged(ATxtDetailRecipientKey.CurrentPartnerClass,
+                    ATxtDetailRecipientKey,
+                    AtxtDetailRecipientLedgerNumber,
+                    out AEnableRecipientGiftDestination);
+            }
         }
 
         #endregion
