@@ -211,6 +211,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         ReportsTo = ParentRow["a_cost_centre_to_report_to_c"].ToString();
                         Path = ParentRow["a_cost_centre_code_c"].ToString() + "~" + Path;
                         Level++;
+                        if (Level > 100)
+                        {           // Surely this is a fault. If I just break here, 
+                            break;  // the report will print and I should be able to see what the fault is.
+                        }
                     }
                     else
                     {
