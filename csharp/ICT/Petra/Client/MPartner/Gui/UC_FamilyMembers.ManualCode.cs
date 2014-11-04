@@ -490,7 +490,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
-                frm.SetParameters(TScreenMode.smEdit, FMainDS.PPerson[0].FamilyKey, TPartnerEditTabPageEnum.petpFamilyMembers);
+                frm.SetParameters(TScreenMode.smEdit, FMainDS.PPerson[0].FamilyKey);
                 frm.Show();
             }
             finally
@@ -628,7 +628,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
-                        frm.SetParameters(TScreenMode.smEdit, GetPartnerKeySelected(), TPartnerEditTabPageEnum.petpFamilyMembers);
+                        frm.SetParameters(TScreenMode.smEdit, GetPartnerKeySelected());
                         frm.Show();
                     }
                     finally
