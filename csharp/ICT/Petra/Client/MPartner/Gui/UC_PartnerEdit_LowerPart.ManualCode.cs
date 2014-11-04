@@ -50,6 +50,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         // private TDelegateIsNewPartner FDelegateIsNewPartner;
 
+
         #endregion
 
         #region Events
@@ -227,7 +228,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                         else
                         {
-                            ucoPartnerTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpDetails;
+                            ucoPartnerTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
                         }
 
                         ucoPartnerTabSet.MainDS = FMainDS;
@@ -299,6 +300,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     break;
             }
+
         }
 
         /// <summary>
