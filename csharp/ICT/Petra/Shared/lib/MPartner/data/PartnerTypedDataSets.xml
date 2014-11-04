@@ -71,7 +71,9 @@
       <CustomField name="DisplayRelationDescription" type="String"/>
     </Table>
     <!-- <Table sqltable="p_relation"/> -->
+    <Table sqltable="p_contact_log"/>
     <Table sqltable="p_partner_contact"/>
+    
     <!-- not in use yet! -->
     <Table sqltable="p_data_label_value_application"/>
     <Table sqltable="p_data_label_value_partner"/>
@@ -259,7 +261,7 @@
       <!-- used for displaying 'Speaks (Language)' -->
       <CustomField name="AdditionalLanguages" type="string"/>
       <!-- used for displaying 'Speaks (Language)' (only for a PERSON, comes from Personnel Data)-->
-      <Field name="LastContact" sqltable="p_partner_contact" sqlfield="s_contact_date_d"/>
+      <Field name="LastContact" sqltable="p_contact_log" sqlfield="s_contact_date_d"/>
       <!-- used for displaying Last Contact -->
       <Field sqltable="p_partner" sqlfield="s_date_created_d"/>
       <!-- used for displaying 'Partner Updated' field -->
@@ -452,10 +454,11 @@
     <Table sqltable="p_method_of_contact"/>
     <Table sqltable="p_contact_attribute"/>
     <Table sqltable="p_contact_attribute_detail"/>
-    <Table sqltable="p_partner_contact">
+    <Table sqltable="p_contact_log">
       <CustomField name="ContactAttr" type="string"/>
       <CustomField name="ContactDetail" type="string"/>
-	</Table>
+	  </Table>
+    <Table sqltable="p_partner_contact"/>
     <Table sqltable="p_partner_contact_attribute"/>
 
     <Table sqltable="p_publication"/>
@@ -529,11 +532,12 @@
   </DataSet>   
 
   <DataSet name="ContactTDS">
+    <Table sqltable="p_contact_log"/>
     <Table sqltable="p_method_of_contact"/>
-    <Table sqltable="p_partner_contact"/>
     <Table sqltable="p_partner_contact_attribute"/>
     <Table sqltable="p_contact_attribute"/>
     <Table sqltable="p_contact_attribute_detail"/>
+    <Table sqltable="p_partner_contact"/>
   </DataSet>   
 
   <DataSet name="PostcodeRegionsTDS">

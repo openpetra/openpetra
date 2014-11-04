@@ -21,7 +21,7 @@ RootNode:
                 Row0: [pnlPartnerInfo, pnlWorkerField]
                 Row1: [pnlClassSpecificName, cmbPartnerStatus]
                 Row2: [pnlClassSpecificDetails, dtpStatusUpdated]
-                Row3: [pnlAdditionalInfo, txtLastContact]
+                Row3: [pnlAdditionalInfo, dtpLastContact]
             ColWidths: [0=Fixed:550, 1=Fixed:200]
             Label: Key Partner Data
             Dock: Fill
@@ -66,7 +66,7 @@ RootNode:
             Width: 100
             Tooltip: Date of the last change of the Partner Status
             BorderStyle: None
-        txtLastContact:
+        dtpLastContact:
             DataField: MiscellaneousData.LastContactDate
             ReadOnly: true
             Tooltip: Date when the last contact was made with this Partner

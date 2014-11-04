@@ -583,9 +583,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 " This number is used to identify the family members within a Family. " +
                 "\r\n" + " * Family ID's 0 and 1 are used for parents; " + "\r\n" +
                 "    FamilyID's 2, 3, 4 ... 9 are used for children. " + "\r\n" +
-                " * All gifts to this Family will be assigned to the Field in the Commitment" +
+                " * All gifts to this Family will be assigned to the Field in the Gift" +
                 "\r\n" +
-                "    Record of the family member with the the lowest Family ID" +
+                "    Destination of the family member with the the lowest Family ID" +
                 "\r\n" +
                 "    of those who have a current Gift Destination." +
                 "\r\n" +

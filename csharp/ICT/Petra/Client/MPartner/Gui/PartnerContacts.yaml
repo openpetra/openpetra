@@ -6,7 +6,7 @@ RootNode:
     FormType: browse
     Template: windowFind
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
-    MasterTable: PPartnerContact
+    MasterTable: PContactLog
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.Interfaces.MPartner,Ict.Petra.Shared.MPartner.Mailroom.Validation]
     Actions:
         actSearch: {ActionClick=Search}
@@ -34,8 +34,8 @@ RootNode:
         txtMailingCode:
         grdDetails:
             Dock: Fill
-            TableName: PPartnerContact
-            Columns: [PartnerKey, ContactDate, ContactCode, Contactor, ContactComment, ModuleId, MailingCode]
+            TableName: PContactLog
+            Columns: [ContactDate, ContactCode, Contactor, ContactComment, ModuleId, MailingCode]
     Toolbar:
         tbbSearch:
         tbbDeleteContacts:
