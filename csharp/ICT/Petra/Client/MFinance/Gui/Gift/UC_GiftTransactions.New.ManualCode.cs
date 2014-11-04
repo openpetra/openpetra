@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
 
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -93,6 +94,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (!ACompletelyNewGift && (FPreviouslySelectedDetailRow != null))
                     {
                         newRow.DonorName = FPreviouslySelectedDetailRow.DonorName;
+                        newRow.ConfidentialGiftFlag = FPreviouslySelectedDetailRow.ConfidentialGiftFlag;
+                        newRow.ChargeFlag = FPreviouslySelectedDetailRow.ChargeFlag;
+                        newRow.TaxDeductible = FPreviouslySelectedDetailRow.TaxDeductible;
+                        newRow.MotivationGroupCode = FPreviouslySelectedDetailRow.MotivationGroupCode;
+                        newRow.MotivationDetailCode = FPreviouslySelectedDetailRow.MotivationDetailCode;
+                    }
+                    else
+                    {
+                        newRow.MotivationGroupCode = MFinanceConstants.MOTIVATION_GROUP_GIFT;
+                        newRow.MotivationDetailCode = MFinanceConstants.GROUP_DETAIL_SUPPORT;
                     }
 
                     newRow.DateEntered = CurrentGiftRow.DateEntered;
@@ -127,6 +138,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
                     UpdateRecordNumberDisplay();
+                    FLastDonor = -1;
 
                     //Focus accordingly
                     if (ACompletelyNewGift)
@@ -138,11 +150,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         txtDetailRecipientKey.Focus();
                     }
 
-                    //Set the default motivation Group. This needs to happen after focus has returned
-                    //  to the pnlDetails to ensure FInEditMode is correct.
-                    cmbDetailMotivationGroupCode.SelectedIndex = 0;
-
-                    TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0, FPreviouslySelectedDetailRow, cmbDetailMotivationDetailCode);
+                    TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0,
+                        FPreviouslySelectedDetailRow,
+                        cmbDetailMotivationGroupCode.GetSelectedString(),
+                        cmbDetailMotivationDetailCode.GetSelectedString());
                     cmbKeyMinistries.Clear();
                     mniRecipientHistory.Enabled = false;
                 }

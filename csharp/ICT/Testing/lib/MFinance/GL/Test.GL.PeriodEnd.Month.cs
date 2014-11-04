@@ -203,8 +203,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             parameters.Add("NewLine", Environment.NewLine);
 
             TVerificationResultCollection VerificationResult;
+            GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
 
-            importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
+            importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult);
             Assert.True(TVerificationHelper.IsNullOrOnlyNonCritical(VerificationResult),
                 "Failed to import the test gift batch.  The file contains critical error(s).");
         }

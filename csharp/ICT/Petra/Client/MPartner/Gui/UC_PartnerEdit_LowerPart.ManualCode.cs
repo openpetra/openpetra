@@ -298,7 +298,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     break;
             }
-
         }
 
         /// <summary>

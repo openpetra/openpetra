@@ -31,13 +31,14 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MFinance.Logic
 {
     /// <summary>
-    /// Common logic for Ex-Worker check in Gift Batch and Recurring Gift Batch
+    /// Common logic for extra checks to be carried out during saving/posting/submitting in Gift Batch and Recurring Gift Batch
     /// </summary>
-    public static class TExWorkerAlert
+    public static class TExtraGiftBatchChecks
     {
         /// <summary>
         ///
@@ -197,17 +198,21 @@ namespace Ict.Petra.Client.MFinance.Logic
                 return ReturnValue;
             }
 
+            DataView dv = AExWorkers.DefaultView;
+            dv.Sort = GiftBatchTDSAGiftDetailTable.GetGiftTransactionNumberDBName() + " ASC";
+            DataTable sortedDT = dv.ToTable();
+
             if ((AAction == GiftBatchAction.POSTING) || (AAction == GiftBatchAction.SUBMITTING))
             {
                 if (AExWorkers.Rows.Count == 1)
                 {
                     ReturnValue = string.Format(Catalog.GetString(
-                            "The gift listed below in this batch is for a recipient who has Special Type beginning with {0}:"), AExWorkerSpecialType);
+                            "The gift listed below has a recipient who has a Special Type beginning with {0}:"), AExWorkerSpecialType);
                 }
                 else
                 {
                     ReturnValue = string.Format(Catalog.GetString(
-                            "The gifts listed below in this batch are for recipients who have Special Type beginning with {0}:"),
+                            "The gifts listed below have recipients who have a Special Type beginning with {0}:"),
                         AExWorkerSpecialType);
                 }
             }
@@ -227,7 +232,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             ReturnValue += "\n\n";
 
-            foreach (DataRow Row in AExWorkers.Rows)
+            foreach (DataRow Row in sortedDT.Rows)
             {
                 ReturnValue += Catalog.GetString("Batch: ") + Row[GiftBatchTDSAGiftDetailTable.GetBatchNumberDBName()] + "; " +
                                Catalog.GetString("Gift: ") + Row[GiftBatchTDSAGiftDetailTable.GetGiftTransactionNumberDBName()] + "; " +
@@ -236,6 +241,71 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
 
             return ReturnValue += "\n";
+        }
+
+        /// <summary>
+        /// Looks for gifts where the donor is anoymous but the gift is not marked as confidential and asks the user if they want to continue.
+        /// (Make sure GetDataFromControls is called before this method so that AMainDS is up-to-date.)
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        public static bool CanContinueWithAnyAnonymousDonors(GiftBatchTDS AMainDS)
+        {
+            GiftBatchTDSAGiftDetailTable UnConfidentialGiftsWithAnonymousDonors = new GiftBatchTDSAGiftDetailTable();
+
+            foreach (GiftBatchTDSAGiftDetailRow Row in AMainDS.AGiftDetail.Rows)
+            {
+                if (!Row.ConfidentialGiftFlag)
+                {
+                    PPartnerRow PartnerRow = (PPartnerRow)AMainDS.DonorPartners.Rows.Find(Row.DonorKey);
+
+                    if (PartnerRow.AnonymousDonor)
+                    {
+                        UnConfidentialGiftsWithAnonymousDonors.Rows.Add((object[])Row.ItemArray.Clone());
+                    }
+                }
+            }
+
+            if (UnConfidentialGiftsWithAnonymousDonors.Rows.Count > 0)
+            {
+                string Message = string.Empty;
+
+                DataView dv = UnConfidentialGiftsWithAnonymousDonors.DefaultView;
+                dv.Sort = GiftBatchTDSAGiftDetailTable.GetGiftTransactionNumberDBName() + " ASC";
+                DataTable sortedDT = dv.ToTable();
+
+                if (UnConfidentialGiftsWithAnonymousDonors.Rows.Count == 1)
+                {
+                    Message = Catalog.GetString(
+                        "The gift listed below in this batch is not marked as confidential but the donor has asked to remain anonymous.");
+                }
+                else
+                {
+                    Message = Catalog.GetString(
+                        "The gifts listed below in this batch are not marked as confidential but the donors have asked to remain anonymous.");
+                }
+
+                Message += "\n\n";
+
+                foreach (DataRow UnConfidentialGifts in sortedDT.Rows)
+                {
+                    Message += Catalog.GetString("Batch: ") + UnConfidentialGifts[GiftBatchTDSAGiftDetailTable.GetBatchNumberDBName()] + "; " +
+                               Catalog.GetString("Gift: ") + UnConfidentialGifts[GiftBatchTDSAGiftDetailTable.GetGiftTransactionNumberDBName()] +
+                               "; " +
+                               Catalog.GetString("Donor: ") + UnConfidentialGifts[GiftBatchTDSAGiftDetailTable.GetDonorNameDBName()] + " (" +
+                               UnConfidentialGifts[GiftBatchTDSAGiftDetailTable.GetDonorKeyDBName()] + ")\n";
+                }
+
+                Message += "\n" + Catalog.GetString("Do you want to continue with posting anyway?");
+
+                if (MessageBox.Show(
+                        Message, Catalog.GetString("Anonymous Donor Warning"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                    == DialogResult.No)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

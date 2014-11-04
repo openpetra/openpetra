@@ -105,8 +105,9 @@ namespace Tests.MFinance.Server.ICH
             parameters.Add("NewLine", Environment.NewLine);
 
             TVerificationResultCollection VerificationResult;
+            GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
 
-            importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
+            importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult);
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "error when importing gift batch:");
