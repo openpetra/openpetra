@@ -2380,7 +2380,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerKey"></param>
-        /// <param name="ARecipientField"></param>
         /// <param name="ACostCentreCode"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
