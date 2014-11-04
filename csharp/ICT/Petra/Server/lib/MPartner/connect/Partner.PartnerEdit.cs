@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -500,6 +500,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountPartnerInterests = 0;
             Int32 ItemsCountInterests = 0;
             Int32 ItemsCountPartnerBankingDetails = 0;
+            Int32 ItemsCountContacts = 0;
             Int64 FoundationOwner1Key = 0;
             Int64 FoundationOwner2Key = 0;
             bool HasEXWORKERPartnerType = false;
@@ -885,6 +886,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     // Determination of Last Contact Date
                     TMailroom.GetLastContactDate(FPartnerKey, out LastContactDate);
+                    GetContactsInternal(out ItemsCountContacts, out LastContactDate);
 
                     // Create 'miscellaneous' DataRow
                     MiscellaneousDataDT = FPartnerEditScreenDS.MiscellaneousData;
@@ -930,6 +932,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     MiscellaneousDataDR.ItemsCountContactDetailsActive = ItemsCountContactDetailsActive;
                     MiscellaneousDataDR.ItemsCountSubscriptions = ItemsCountSubscriptions;
                     MiscellaneousDataDR.ItemsCountSubscriptionsActive = ItemsCountSubscriptionsActive;
+                    MiscellaneousDataDR.ItemsCountContacts = ItemsCountContacts;
                     MiscellaneousDataDR.ItemsCountPartnerTypes = ItemsCountPartnerTypes;
                     MiscellaneousDataDR.ItemsCountPartnerRelationships = ItemsCountPartnerRelationships;
                     MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
@@ -982,6 +985,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // are not needed at the Client side.
             FPartnerEditScreenDS.RemoveEmptyTables();
         }
+
 
         private void LoadData(Boolean ADelayedDataLoading)
         {
@@ -1042,6 +1046,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PLocationTable SiteLocationDT;
             StringCollection SiteLocationRequiredColumns;
             DateTime CreationDate;
+            
             String CreationUserID;
             String GiftReceiptingDefaults;
             String ReceiptLetterFrequency;
@@ -1060,6 +1065,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountPartnerRelationships = 0;
             Int32 ItemsCountFamilyMembers = 0;
             Int32 ItemsCountInterests = 0;
+            Int32 ItemsCountContacts = 0;
+            DateTime LastContactDate = DateTime.Now;
             Int64 FoundationOwner1Key = 0;
             Int64 FoundationOwner2Key = 0;
             bool HasEXWORKERPartnerType = false;
@@ -1446,6 +1453,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 MiscellaneousDataDR.FoundationOwner1Key = FoundationOwner1Key;
                 MiscellaneousDataDR.FoundationOwner2Key = FoundationOwner2Key;
                 MiscellaneousDataDR.HasEXWORKERPartnerType = HasEXWORKERPartnerType;
+                MiscellaneousDataDR.ItemsCountContacts = ItemsCountContacts;
+                MiscellaneousDataDR.LastContactDate = LastContactDate;
                 MiscellaneousDataDT.Rows.Add(MiscellaneousDataDR);
                 MiscellaneousDataDT.AcceptChanges();
             }
@@ -1567,6 +1576,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 SubscriptionsCount;
 
             return GetSubscriptionsInternal(out SubscriptionsCount, false);
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <returns></returns>
+        public PContactLogTable GetDataContacts()
+        {
+            Int32 ContactsCount;
+            DateTime LastContact;
+            return GetContactsInternal(out ContactsCount,out LastContact);
         }
 
         /// <summary>
@@ -2479,6 +2499,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 #endregion
 
+                #region Contact Logs
+
+                if (AInspectDS.Tables.Contains(PContactLogTable.GetTableName()) && AInspectDS.Tables.Contains(PPartnerContactTable.GetTableName()))
+                {
+                    
+                }
+                
+                #endregion
+
                 #region Foundations
 
                 if (AInspectDS.Tables.Contains(PFoundationTable.GetTableName()))
@@ -2861,6 +2890,41 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
             }
             return SubscriptionDT;
+        }
+
+        private PContactLogTable GetContactsInternal(out int ACount, out DateTime ALastContact)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            PContactLogTable ContactDT;
+            ALastContact = DateTime.MinValue;
+            ContactDT = new PContactLogTable();
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                var PartnerContacts = PPartnerContactAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
+                ACount = PartnerContacts.Rows.Count;
+
+                ContactDT = PContactLogAccess.LoadViaPPartnerPPartnerContact(FPartnerKey, ReadTransaction);
+                    
+                foreach (PContactLogRow row in ContactDT.Rows)
+                {
+                    ALastContact = row.ContactDate > ALastContact ? row.ContactDate : ALastContact;
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetSubscriptionsInternal: committed own transaction.");
+                }
+            }
+
+            return ContactDT;
         }
 
         private PSubscriptionTable GetSubscriptionsInternal(out Int32 ACount)

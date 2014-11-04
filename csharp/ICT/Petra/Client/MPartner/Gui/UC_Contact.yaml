@@ -1,0 +1,47 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: PContactLog
+    MultipleMasterRows: true   # generates a call to the Method 'GetSelectedMasterRow' as there can be more than one master row so need to determine the current one in manual code file
+    Actions:
+        actEditIssues: {Label=Edit Issues, ActionClick=EditIssues}
+        actSelectAttributes: {Label=Select Attributes, ActionClick=SelectAttributes}
+    Controls:
+        pnlDetails:
+            Controls: 
+                Row0: [grpContact]
+                Row1: [grpAttributes]
+            Dock: Fill
+        grpContact: {Label=Contact, Stretch=horizontally}
+            Controls: [txtContactor, cmbContactCode, cmbMailingCode, dtpContactDate, txtContactComment]
+        grpAttributes: {Label=Contact Attributes, ControlsOrientation = horizontal} 
+            Controls:
+                Row0:[btnSelectAttributes, txtSelectedAttributes]
+        txtContactor:
+            Label: Contactor
+            Type: Contactor
+        cmbContactCode:{Label=Contact Code,List=ContactCode}
+        cmbMailingCode:{Label=Mailing List, List=MailingList}
+        dtpContactDate:
+            Label: Contact Date
+            Type: ContactDate
+        txtContactComment:
+            Label: Notes
+            Type: ContactComment
+            Multiline: true
+            Width: 400
+            Height: 50
+        btnSelectAttributes:
+            Label: Select Attributes
+            Action: actSelectAttributes
+        txtSelectedAttributes:
+            Label:Selected Attributes
+            Multiline: true
+            Width: 275
+            Height: 50
+            ScrollBars: Vertical

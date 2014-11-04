@@ -813,7 +813,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 writer.Template.SetCodelet("CUSTOMDISPOSING",
-                    "if (FFilterAndFindObject.FilterFindPanel != null)" + Environment.NewLine +
+                    "if (FFilterAndFindObject != null && FFilterAndFindObject.FilterFindPanel != null)" + Environment.NewLine +
                     "{" + Environment.NewLine +
                     "    FFilterAndFindObject.FilterFindPanel.Dispose();" + Environment.NewLine +
                     "}");
