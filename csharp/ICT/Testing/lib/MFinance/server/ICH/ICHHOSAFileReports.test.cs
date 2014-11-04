@@ -123,7 +123,7 @@ namespace Tests.MFinance.Server.ICH
             int PeriodNumber = 4;
             int IchNumber = 1;
             string CostCentre = "73";
-            int Currency = 0;  //0 = base 1 = intl
+            String CurrencySelect = MFinanceConstants.CURRENCY_BASE;
             string FileName = TAppSettingsManager.GetValue("Server.PathTemp") + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
             TVerificationResultCollection VerificationResults;
 
@@ -131,7 +131,7 @@ namespace Tests.MFinance.Server.ICH
                 PeriodNumber,
                 IchNumber,
                 CostCentre,
-                Currency,
+                CurrencySelect,
                 FileName,
                 out VerificationResults);
 

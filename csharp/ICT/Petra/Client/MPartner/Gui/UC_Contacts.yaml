@@ -1,0 +1,49 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Partner.Validation,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    DetailTable: PContactLog
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
+    Controls:
+        pnlContent:
+            Controls: [sptContacts]
+            Dock: Fill
+        sptContacts:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 240
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlGrid
+            Panel2: pnlDetails
+        pnlGrid:
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
+            Controls: [pnlButtons, grdDetails]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew,btnDelete]
+            ControlsOrientation: horizontal
+        btnNew: {Width=80}
+            Action: actNew
+        btnDelete: {Width=80}
+            Action: actDelete
+        grdDetails:
+            Dock: Fill
+            TableName: PContactLog
+            Columns: [ContactDate, ContactCode, Contactor, MailingCode, ContactComment]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
+            Controls:
+                Row0: [ucoDetails]
+        ucoDetails:
+            Dock: Fill
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_Contact

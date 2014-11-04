@@ -475,18 +475,23 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (ContactCode.Length > 0)
             {
-                PartnerImportExportTDSPPartnerContactRow Row = AMainDS.PPartnerContact.NewRowTyped();
-                Row.PartnerKey = APartnerKey;
-                Row.ContactCode = ContactCode;
-                Row.ContactDate = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDATE + Suffix));
+                PartnerImportExportTDSPContactLogRow ContactLogRow = AMainDS.PContactLog.NewRowTyped();
+                ContactLogRow.ContactCode = ContactCode;
+                ContactLogRow.ContactDate = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDATE + Suffix));
                 DateTime ContactTime = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTTIME + Suffix));
-                Row.ContactTime = ((ContactTime.Hour * 60) + ContactTime.Minute * 60) + ContactTime.Second;
-                Row.Contactor = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTOR + Suffix);
-                Row.ContactComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTNOTES + Suffix);
-                Row.ContactAttr = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTATTR + Suffix);
-                Row.ContactDetail = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL + Suffix);
-                AMainDS.PPartnerContact.Rows.Add(Row);
-                AddVerificationResult("Contact Record Created.", TResultSeverity.Resv_Status);
+                //ContactLogRow.ContactTime = ((ContactTime.Hour * 60) + ContactTime.Minute * 60) + ContactTime.Second;
+                ContactLogRow.Contactor = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTOR + Suffix);
+                ContactLogRow.ContactComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTNOTES + Suffix);
+                ContactLogRow.ContactAttr = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTATTR + Suffix);
+                ContactLogRow.ContactDetail = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL + Suffix);
+                AMainDS.PContactLog.Rows.Add(ContactLogRow);
+                AddVerificationResult("Contact Log Record Created.", TResultSeverity.Resv_Status);
+                
+                var PartnerContactRow = AMainDS.PPartnerContact.NewRowTyped();
+                PartnerContactRow.PartnerKey = APartnerKey;
+                PartnerContactRow.ContactLogId = ContactLogRow.ContactLogId;
+                AMainDS.PPartnerContact.Rows.Add(PartnerContactRow);
+                AddVerificationResult("Contact Associated with Partner", TResultSeverity.Resv_Status);
             }
         }
 

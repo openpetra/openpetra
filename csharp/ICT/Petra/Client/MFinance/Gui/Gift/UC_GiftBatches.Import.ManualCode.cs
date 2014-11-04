@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 
@@ -35,6 +36,9 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -123,21 +127,68 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
                     requestParams.Add("NewLine", Environment.NewLine);
 
-                    String importString = File.ReadAllText(dialog.FileName);
-                    TVerificationResultCollection AMessages = new TVerificationResultCollection();
+                    bool Repeat = true;
 
-                    Thread ImportThread = new Thread(() => ImportGiftBatches(
-                            requestParams,
-                            importString,
-                            out AMessages,
-                            out ok));
-
-                    using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
+                    while (Repeat)
                     {
-                        ImportDialog.ShowDialog();
-                    }
+                        Repeat = false;
 
-                    ShowMessages(AMessages);
+                        String importString = File.ReadAllText(dialog.FileName);
+                        TVerificationResultCollection AMessages = new TVerificationResultCollection();
+                        GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
+
+                        Thread ImportThread = new Thread(() => ImportGiftBatches(
+                                requestParams,
+                                importString,
+                                out AMessages,
+                                out ok,
+                                out NeedRecipientLedgerNumber));
+
+                        using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
+                        {
+                            ImportDialog.ShowDialog();
+                        }
+
+                        ShowMessages(AMessages);
+
+                        // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination
+                        // then the import will have failed and we need to alert the user
+                        if (NeedRecipientLedgerNumber.Rows.Count > 0)
+                        {
+                            bool OfferToRunImportAgain = true;
+
+                            // for each gift in which the recipient needs a Git Destination
+                            foreach (GiftBatchTDSAGiftDetailRow Row in NeedRecipientLedgerNumber.Rows)
+                            {
+                                if (MessageBox.Show(string.Format(
+                                            Catalog.GetString(
+                                                "Gift Import has been cancelled as the recipient '{0}' ({1}) has no Gift Destination assigned."),
+                                            Row.RecipientDescription, Row.RecipientKey) +
+                                        "\n\n" +
+                                        Catalog.GetString("Do you want to assign a Gift Destination to this partner now?"),
+                                        Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                                    == DialogResult.Yes)
+                                {
+                                    // allow the user to assign a Gift Destingation
+                                    TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), Row.RecipientKey);
+                                    GiftDestinationForm.ShowDialog();
+                                }
+                                else
+                                {
+                                    OfferToRunImportAgain = false;
+                                }
+                            }
+
+                            // if the user has clicked yes to assigning Gift Destinations then offer to restart the import
+                            if (OfferToRunImportAgain
+                                && (MessageBox.Show(Catalog.GetString("Would you like to import this Gift Batch again?"),
+                                        Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                                    == DialogResult.Yes))
+                            {
+                                Repeat = true;
+                            }
+                        }
+                    }
                 }
 
                 if (ok)
@@ -165,15 +216,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AImportString"></param>
         /// <param name="AMessages"></param>
         /// <param name="ok"></param>
+        /// <param name="ANeedRecipientLedgerNumber"></param>
         private void ImportGiftBatches(Hashtable ARequestParams, string AImportString,
-            out TVerificationResultCollection AMessages, out bool ok)
+            out TVerificationResultCollection AMessages, out bool ok, out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber)
         {
             TVerificationResultCollection AResultMessages;
             bool ImportIsSuccessful;
 
+
             ImportIsSuccessful = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatches(
                 ARequestParams,
                 AImportString,
+                out ANeedRecipientLedgerNumber,
                 out AResultMessages);
 
             ok = ImportIsSuccessful;
@@ -192,19 +246,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowMessages(TVerificationResultCollection AMessages)
         {
-            string ErrorMessages = String.Empty;
+            StringBuilder ErrorMessages = new StringBuilder();
 
             if (AMessages.Count > 0)
             {
                 foreach (TVerificationResult message in AMessages)
                 {
-                    ErrorMessages += "[" + message.ResultContext + "] " + message.ResultTextCaption + ": " + message.ResultText + Environment.NewLine;
+                    ErrorMessages.AppendFormat("[{0}] {1}: {2}{3}", message.ResultContext, message.ResultTextCaption,
+                        message.ResultText.Replace(Environment.NewLine, " "), Environment.NewLine);
                 }
             }
 
             if (ErrorMessages.Length > 0)
             {
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
+                extendedMessageBox.ShowDialog(ErrorMessages.ToString(), Catalog.GetString("Import Errors"), String.Empty,
+                    TFrmExtendedMessageBox.TButtons.embbOK, TFrmExtendedMessageBox.TIcon.embiError);
             }
         }
 

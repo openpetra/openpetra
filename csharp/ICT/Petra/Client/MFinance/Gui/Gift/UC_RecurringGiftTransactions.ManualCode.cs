@@ -420,7 +420,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (row.RecipientKey == 0)
                 {
-                    row.RecipientDescription = row.MotivationDetailCode;
+                    if (row.MotivationGroupCode != MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                    {
+                        row.RecipientDescription = row.MotivationDetailCode;
+                    }
+                    else
+                    {
+                        row.RecipientDescription = string.Empty;
+                    }
                 }
             }
         }
@@ -542,6 +549,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((APartnerKey == 0) && (FPreviouslySelectedDetailRow != null))
             {
                 FPreviouslySelectedDetailRow.RecipientDescription = cmbDetailMotivationDetailCode.GetSelectedString();
+
+                if (FMotivationGroup != MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                {
+                    FPreviouslySelectedDetailRow.RecipientDescription = FMotivationDetail;
+                }
+                else
+                {
+                    FPreviouslySelectedDetailRow.RecipientDescription = string.Empty;
+                }
             }
         }
 
@@ -553,6 +569,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // We want to deal only on manual entered changes, i.e. not on selections changes, and on non-zero keys
             if (FPetraUtilsObject.SuppressChangeDetection || (APartnerKey == 0))
             {
+                // FLastDonor should be the last donor key that has been entered for a gift (not 0)
                 if (APartnerKey != 0)
                 {
                     FLastDonor = APartnerKey;
@@ -562,6 +579,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     mniDonorHistory.Enabled = false;
                     txtDonorInfo.Text = "";
+
+                    if (FCreatingNewGiftFlag)
+                    {
+                        FLastDonor = 0;
+                    }
                 }
             }
             else
@@ -907,6 +929,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     MotivationRecipientKey = motivationDetail.RecipientKey;
 
+                    // if motivation detail has AutoPopDesc set to true and has not already been autopoulated for this detail
+                    if (motivationDetail.Autopopdesc && (txtDetailGiftCommentOne.Text != motivationDetail.MotivationDetailDesc))
+                    {
+                        // autopopulate comment one with the motivation detail description
+                        AutoPopulateCommentOne(motivationDetail.MotivationDetailDesc);
+                    }
+
                     // set tax deductible checkbox if motivation detail has been changed by the user (i.e. not a row change)
                     if (!FPetraUtilsObject.SuppressChangeDetection || FInRecipientKeyChanging)
                     {
@@ -931,6 +960,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             RetrieveMotivationDetailCostCentreCode();
+        }
+
+        private void AutoPopulateCommentOne(string AAutoPopComment)
+        {
+            if (string.IsNullOrEmpty(txtDetailGiftCommentOne.Text))
+            {
+                txtDetailGiftCommentOne.Text = AAutoPopComment;
+                cmbDetailCommentOneType.SetSelectedString("Both", -1);
+            }
+            else if (string.IsNullOrEmpty(txtDetailGiftCommentTwo.Text))
+            {
+                txtDetailGiftCommentTwo.Text = txtDetailGiftCommentOne.Text;
+                cmbDetailCommentTwoType.SetSelectedString(cmbDetailCommentOneType.GetSelectedString(), -1);
+                txtDetailGiftCommentOne.Text = AAutoPopComment;
+                cmbDetailCommentOneType.SetSelectedString("Both", -1);
+            }
+            else if (string.IsNullOrEmpty(txtDetailGiftCommentThree.Text))
+            {
+                txtDetailGiftCommentThree.Text = txtDetailGiftCommentOne.Text;
+                cmbDetailCommentThreeType.SetSelectedString(cmbDetailCommentOneType.GetSelectedString(), -1);
+                txtDetailGiftCommentOne.Text = AAutoPopComment;
+                cmbDetailCommentOneType.SetSelectedString("Both", -1);
+            }
+            else
+            {
+                if (MessageBox.Show(string.Format(Catalog.GetString(
+                                "This Motivation Detail is set to auto populate a gift comment field, but all the comment fields are currently full."
+                                +
+                                " Do you want to overwrite Comment 1?{0}{0}" +
+                                "'No' will keep the current comment,{0}" +
+                                "'Yes' will copy Comment 1 to the clipboard and replace it with the automated comment '{1}'"),
+                            "\n", AAutoPopComment),
+                        Catalog.GetString("Auto Populate Gift Comment"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                    == DialogResult.Yes)
+                {
+                    Clipboard.SetText(txtDetailGiftCommentOne.Text);
+                    txtDetailGiftCommentOne.Text = AAutoPopComment;
+                    cmbDetailCommentOneType.SetSelectedString("Both", -1);
+                }
+            }
         }
 
         private void PopulateKeyMinistry(long APartnerKey = 0)
@@ -959,24 +1028,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // If this method has been called as a result of a change in motivation detail then txtDetailRecipientKey has not yet been set...
             // but we do know that the recipient must be a Unit.
+
+            // if Family Recipient
             if (!FMotivationDetailChangedFlag && (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY))
             {
                 txtDetailRecipientLedgerNumber.Text = FPreviouslySelectedDetailRow.RecipientLedgerNumber.ToString();
                 cmbKeyMinistries.Clear();
+                cmbKeyMinistries.Enabled = false;
             }
+            // if Unit Recipient
             else
             {
                 TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtDetailRecipientLedgerNumber, APartnerKey, true);
-            }
 
-            // enable / disable combo box depending on whether it contains any key ministries
-            if ((cmbKeyMinistries.Table == null) || (cmbKeyMinistries.Table.Rows.Count == 0))
-            {
-                cmbKeyMinistries.Enabled = false;
-            }
-            else
-            {
-                cmbKeyMinistries.Enabled = true;
+                // enable / disable combo box depending on whether it contains any key ministries
+                if ((cmbKeyMinistries.Table == null) || (cmbKeyMinistries.Table.Rows.Count == 0))
+                {
+                    cmbKeyMinistries.Enabled = false;
+                }
+                else
+                {
+                    cmbKeyMinistries.Enabled = true;
+                }
             }
         }
 
@@ -1567,6 +1640,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ACompletelyNewGift"></param>
         private void CreateANewGift(bool ACompletelyNewGift)
         {
+            FCreatingNewGiftFlag = true;
+
             ARecurringGiftRow CurrentGiftRow = null;
             bool IsEmptyGrid = (grdDetails.Rows.Count == 1);
 
@@ -1616,6 +1691,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!ACompletelyNewGift && (FPreviouslySelectedDetailRow != null))
                 {
                     newRow.DonorName = FPreviouslySelectedDetailRow.DonorName;
+                    newRow.ConfidentialGiftFlag = FPreviouslySelectedDetailRow.ConfidentialGiftFlag;
+                    newRow.ChargeFlag = FPreviouslySelectedDetailRow.ChargeFlag;
+                    newRow.TaxDeductible = FPreviouslySelectedDetailRow.TaxDeductible;
+                    newRow.MotivationGroupCode = FPreviouslySelectedDetailRow.MotivationGroupCode;
+                    newRow.MotivationDetailCode = FPreviouslySelectedDetailRow.MotivationDetailCode;
+                }
+                else
+                {
+                    newRow.MotivationGroupCode = MFinanceConstants.MOTIVATION_GROUP_GIFT;
+                    newRow.MotivationDetailCode = MFinanceConstants.GROUP_DETAIL_SUPPORT;
                 }
 
                 newRow.DateEntered = DateTime.Now;
@@ -1655,16 +1740,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     txtDetailRecipientKey.Focus();
                 }
 
-                //Set the default motivation Group. This needs to happen after focus has returned
-                //  to the pnlDetails to ensure FInEditMode is correct.
-                FCreatingNewGiftFlag = true;
-                cmbDetailMotivationGroupCode.SelectedIndex = 0;
-                FCreatingNewGiftFlag = false;
-
                 UpdateRecipientKeyText(0);
                 cmbKeyMinistries.Clear();
                 mniRecipientHistory.Enabled = false;
             }
+
+            FCreatingNewGiftFlag = false;
         }
 
         /// <summary>

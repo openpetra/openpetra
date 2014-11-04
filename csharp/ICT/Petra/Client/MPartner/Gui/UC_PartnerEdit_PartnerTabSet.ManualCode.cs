@@ -65,10 +65,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private static readonly string StrAddressesTabHeader = Catalog.GetString("Addresses");
 
-//        private static readonly string StrContactDetailsTabHeader = Catalog.GetString("Contact Details");
+        private static readonly string StrContactDetailsTabHeader = Catalog.GetString("Contact Details");
 
         private static readonly string StrSubscriptionsTabHeader = Catalog.GetString("Subscriptions");
 
+        private static readonly string StrContactsTabHeader = Catalog.GetString("Contact Logs");
+        
         private static readonly string StrSpecialTypesTabHeader = Catalog.GetString("Special Types");
 
         private static readonly string StrFamilyMembersTabHeader = Catalog.GetString("Family Members");
@@ -85,7 +87,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private static readonly string StrAddressesSingular = Catalog.GetString("Address");
 
+        private static readonly string StrContactDetailsSingular = Catalog.GetString("Contact Detail");
+
         private static readonly string StrSubscriptionsSingular = Catalog.GetString("Subscription");
+
+        private static readonly string StrContactsSingular = Catalog.GetString("Contact");
 
         private static readonly string StrTabHeaderCounterTipSingular = Catalog.GetString("{0} {2}, of which {1} is ");
 
@@ -301,11 +307,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TabsToHide.Add("tpgOfficeSpecific");
             }
 
-            // for the time beeing, we always hide these Tabs that don't do anything yet...
+            // for the time being, we always hide these Tabs that don't do anything yet...
 #if  SHOWUNFINISHEDTABS
 #else
-            TabsToHide.Add("tpgContactDetails");
-            TabsToHide.Add("tbpContacts");
             TabsToHide.Add("tbpReminders");
             TabsToHide.Add("tbpInterests");
 #endif
@@ -470,12 +474,27 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucContacts))
+            {
+                TUC_Contacts UCContactLogs = (TUC_Contacts)FTabSetup[TDynamicLoadableUserControls.dlucContacts];
+
+                if (!UCContactLogs.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucContactDetails))
             {
                 TUC_ContactDetails UCContactDetails =
                     (TUC_ContactDetails)FTabSetup[TDynamicLoadableUserControls.dlucContactDetails];
 
                 if (!UCContactDetails.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+
+                if (!UCContactDetails.GetOverallContactSettingsDataFromControls())
                 {
                     ReturnValue = false;
                 }
@@ -728,6 +747,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FUcoAddresses.RefreshRecordsAfterMerge();
 
+            FUcoContactDetails.RefreshRecordsAfterMerge();
+
             if (FUcoFinanceDetails != null)
             {
                 FUcoFinanceDetails.RefreshRecordsAfterMerge();
@@ -863,6 +884,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
+                else if (ATabPageEventArgs.Tab == tpgContactDetails)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContactDetails;
+
+                    FUcoContactDetails.SpecialInitUserControl();
+                }
                 else if (ATabPageEventArgs.Tab == tpgPartnerDetails)
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpDetails;
@@ -971,6 +998,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
+                else if (ATabPageEventArgs.Tab == tpgContacts)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContacts;
+
+                    FUcoContacts.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoContacts.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+                    FUcoContacts.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                }
 
                 FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
             }
@@ -996,19 +1032,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContactDetails;
 
-                FUcoContactDetails.PartnerEditUIConnector = FPartnerEditUIConnector;
+                // Hook up RecalculateScreenParts Event
+                FUcoContactDetails.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
                 CorrectDataGridWidthsAfterDataChange();
             }
         }
 
         /// <summary>
-        /// This Method *CAN* be implemented in ManualCode to perform special initialisations *before*
+        /// This Method *CAN* be implemented in ManualCode to perform special initialisations *after*
         /// InitUserControl() gets called.
         /// </summary>
         partial void PostInitUserControl(UserControl AUserControl)
         {
-            if (AUserControl is TUC_ContactDetails)
+            if (AUserControl is TUC_PartnerAddresses)
+            {
+                FUcoAddresses.PostInitUserControl(FMainDS);
+
+                CorrectDataGridWidthsAfterDataChange();
+            }
+            else if (AUserControl is TUC_ContactDetails)
             {
                 FUcoContactDetails.PostInitUserControl(FMainDS);
 
@@ -1077,6 +1120,46 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_ContactDetails))
+            {
+                if (FMainDS.Tables.Contains(PPartnerAttributeTable.GetTableName()))
+                {
+                    Calculations.CalculateTabCountsPartnerContactDetails(FMainDS.PPartnerAttribute, out CountAll, out CountActive);
+                    tpgContactDetails.Text = String.Format(StrContactDetailsTabHeader + " ({0})", CountActive);
+                }
+                else
+                {
+                    CountAll = 0;
+                    CountActive = 0;
+                }
+
+                if ((CountAll == 0) || (CountAll > 1))
+                {
+                    DynamicToolTipPart1 = StrContactDetailsTabHeader;
+                }
+                else
+                {
+                    DynamicToolTipPart1 = StrContactDetailsSingular;
+                }
+
+                tpgContactDetails.Text = String.Format(StrContactDetailsTabHeader + " ({0})", CountActive);
+
+                if ((CountActive == 0) || (CountActive > 1))
+                {
+                    tpgContactDetails.ToolTipText = String.Format(StrTabHeaderCounterTipPlural + "current",
+                        CountAll,
+                        CountActive,
+                        DynamicToolTipPart1);
+                }
+                else
+                {
+                    tpgContactDetails.ToolTipText = String.Format(StrTabHeaderCounterTipSingular + "current",
+                        CountAll,
+                        CountActive,
+                        DynamicToolTipPart1);
+                }
+            }
+
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_Subscriptions))
             {
                 if (FMainDS.Tables.Contains(PSubscriptionTable.GetTableName()))
@@ -1112,6 +1195,30 @@ namespace Ict.Petra.Client.MPartner.Gui
                         CountActive,
                         DynamicToolTipPart1);
                 }
+            }
+
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_Contacts))
+            {
+                if (FMainDS.Tables.Contains(PContactLogTable.GetTableName()))
+                {
+                    Calculations.CalculateTabCountsContacts(FMainDS.PContactLog, out CountAll);
+                    tpgContacts.Text = String.Format(StrContactsTabHeader + " ({0})", CountAll);
+                }
+                else
+                {
+                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountContacts;
+                }
+
+                if ((CountAll == 0) || (CountAll > 1))
+                {
+                    DynamicToolTipPart1 = StrContactsTabHeader;
+                }
+                else
+                {
+                    DynamicToolTipPart1 = StrContactsSingular;
+                }
+
+                tpgContacts.Text = String.Format(StrContactsTabHeader + " ({0})", CountAll);
             }
 
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerTypes))
@@ -1396,11 +1503,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     case TPartnerEditTabPageEnum.petpReminders:
                         tabPartners.SelectedTab = tpgReminders;
                         break;
-
+#endif
                     case TPartnerEditTabPageEnum.petpContacts:
                         tabPartners.SelectedTab = tpgContacts;
                         break;
-#endif
+
                     case TPartnerEditTabPageEnum.petpNotes:
 
                         if (tpgNotes.Enabled)
@@ -1514,6 +1621,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         break;
                 }
+            }
+            else if ((this.tabPartners.SelectedTab == tpgContactDetails) && (this.FUcoContactDetails.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
             }
             else if ((this.tabPartners.SelectedTab == tpgPartnerRelationships) && (this.FUcoPartnerRelationships.ProcessParentCmdKey(ref msg, keyData)))
             {

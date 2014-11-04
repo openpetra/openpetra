@@ -59,7 +59,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (TVerificationHelper.IsNullOrOnlyNonCritical(FverificationResult))
                 {
-                    msg += Catalog.GetString("Press the button below to close the current period.");
+                    msg += (blnIsInMonthMode) ?
+                           Catalog.GetString("Press the button below to close the current period.")
+                           : Catalog.GetString("Press the button below to close the current year.");
                 }
 
                 tbxMessage.Text = msg;

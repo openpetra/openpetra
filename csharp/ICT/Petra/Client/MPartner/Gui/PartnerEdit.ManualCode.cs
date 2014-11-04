@@ -2030,6 +2030,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpAddresses);
         }
 
+        private void MaintainContactDetails(System.Object sender, System.EventArgs e)
+        {
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpContactDetails);
+        }
+
         private void MaintainPartnerDetails(System.Object sender, System.EventArgs e)
         {
             ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpDetails);
@@ -2052,7 +2057,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainContacts(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpContacts);
         }
 
         private void MaintainFamilyMembers(System.Object sender, System.EventArgs e)
@@ -2752,7 +2757,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 
 #if  SHOWUNFINISHEDTABS
-                case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
                     FInitiallySelectedTabPage = FShowTabPage;
 
@@ -2837,8 +2841,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     mniMaintainFamilyMembers.Enabled = IsEnabled;
                     mniMaintainGiftDestination.Enabled = IsEnabled;
-                    mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMenuItemText;
-
+                    mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMenuItemText.Substring(0,
+                        MPartnerResourcestrings.StrFamilyMenuItemText.Length - 3);   // remove trailing "..."
                     // TODO
 //                    // Exchange the 'Family Members' icon with the 'Family' icon!
 //                    this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
@@ -2850,7 +2854,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     mniMaintainFamilyMembers.Enabled = IsEnabled;
                     mniMaintainGiftDestination.Enabled = IsEnabled;
-                    mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText;
+                    mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText.Substring(0,
+                        MPartnerResourcestrings.StrFamilyMembersMenuItemText.Length - 3);   // remove trailing "...";
                 }
                 else
                 {

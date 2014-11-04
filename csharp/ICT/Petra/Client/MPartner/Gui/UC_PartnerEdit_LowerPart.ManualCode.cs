@@ -50,6 +50,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         // private TDelegateIsNewPartner FDelegateIsNewPartner;
 
+
         #endregion
 
         #region Events
@@ -227,7 +228,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                         else
                         {
-                            ucoPartnerTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpDetails;
+                            ucoPartnerTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
                         }
 
                         ucoPartnerTabSet.MainDS = FMainDS;
@@ -269,8 +270,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     break;
             }
-
-            // TODO Other TabSets (Finance Data)
 
             FCurrentModuleTabGroup = AModuleTabGroup;
         }
@@ -322,8 +321,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
                     ucoPersonnelTabSet.SelectTabPage(ATabPage);
                     break;
-
-                    // TODO Other TabSets (Finance Data)
             }
         }
 
@@ -414,8 +411,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ucoPartnerTabSet.GetDataFromControls();
             ucoPersonnelTabSet.GetDataFromControls();
-
-            // TODO Other TabSets (Finance Data)
         }
 
         /// <summary>

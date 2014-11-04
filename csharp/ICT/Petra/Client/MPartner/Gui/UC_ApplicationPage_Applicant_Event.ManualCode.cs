@@ -44,15 +44,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         #region Public Methods
 
         /// <summary>todoComment</summary>
-        public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
-
-        /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
-
-        private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
-        {
-            OnRecalculateScreenParts(e);
-        }
 
         /// <summary>
         /// Display data in control based on data from ARow
@@ -82,14 +74,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (HookupDataChange != null)
             {
                 HookupDataChange(this, e);
-            }
-        }
-
-        private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
-        {
-            if (RecalculateScreenParts != null)
-            {
-                RecalculateScreenParts(this, e);
             }
         }
 

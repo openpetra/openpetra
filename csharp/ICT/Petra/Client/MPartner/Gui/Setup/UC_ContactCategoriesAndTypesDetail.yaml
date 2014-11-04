@@ -56,9 +56,9 @@ RootNode:
             Dock: Fill
             Tooltip: Use the mouse or navigation keys to select a Partner Contact Type to view or edit.
             TableName: PPartnerAttributeType
-            Columns: [Code, Description, Unassignable, UnassignableDate, Deletable, Index]
+            Columns: [AttributeType, Description, Unassignable, UnassignableDate, Deletable, Index]
             CustomColumns:
-                Code: {Label=Contact Type}
+                AttributeType: {Label=Contact Type}
                 Description: {Label=Description}
                 Unassignable: {Label=Unassignable, Type=Boolean}
                 UnassignableDate: {Label=Unassignable Date, Type=DateTime}
@@ -93,6 +93,7 @@ RootNode:
             Height: 109
         txtDetailCode:
             Label: C&ontact Type
+            DataField: PPartnerAttributeType.AttributeType
             Tooltip: This can be anything really: Phone Number, Mobile Phone Number, Email Address, etc. Use singular words/phrases (e.g. 'Mobile Phone').
             Width: 255
         txtDetailSpecialLabel:

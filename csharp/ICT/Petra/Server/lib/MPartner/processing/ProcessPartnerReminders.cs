@@ -468,22 +468,21 @@ namespace Ict.Petra.Server.MPartner.Processing
         /// <param name="AContactID">The Contact ID to find.</param>
         /// <param name="AReadTransaction">Already instantiated DB Transaction.</param>
         /// <returns>Specified contact details.</returns>
-        private static string GetContactDetails(int AContactID, TDBTransaction AReadTransaction)
+        private static string GetContactDetails(long AContactID, TDBTransaction AReadTransaction)
         {
-            PPartnerContactTable PartnerContactDT;
-            PPartnerContactRow PartnerContactDR;
-            DateTime ContactTime;
+            PContactLogTable PartnerContactDT;
+            PContactLogRow PartnerContactDR;
             char LF = Convert.ToChar(10);
             string ReturnValue = "";
 
             try
             {
-                if (!PPartnerContactAccess.Exists(AContactID, AReadTransaction))
+                if (!PContactLogAccess.Exists(AContactID, AReadTransaction))
                 {
                     return String.Format("Contact ID {0} not found{1}", AContactID, LF);
                 }
 
-                PartnerContactDT = PPartnerContactAccess.LoadByPrimaryKey(AContactID, AReadTransaction);
+                PartnerContactDT = PContactLogAccess.LoadByPrimaryKey(AContactID, AReadTransaction);
             }
             catch (Exception Exp)
             {
@@ -494,12 +493,9 @@ namespace Ict.Petra.Server.MPartner.Processing
 
             PartnerContactDR = PartnerContactDT[0];
 
-            ContactTime = DateTime.Now.AddSeconds(PartnerContactDR.ContactTime);
-
-            ReturnValue = String.Format("Contact: {0} {1} {2:HH}:{2:mm} {3} {4}",
+            ReturnValue = String.Format("Contact: {0} {1} {2} {3}",
                 PartnerContactDR.Contactor,
                 PartnerContactDR.ContactDate.Date,
-                ContactTime,
                 PartnerContactDR.ContactCode,
                 Environment.NewLine);
 

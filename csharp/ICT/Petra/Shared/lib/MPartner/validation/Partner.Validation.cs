@@ -30,6 +30,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
@@ -1610,7 +1611,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
         }
 
         /// <summary>
-        /// Validates the Partner Address screen data.
+        /// Validates the Partner Edit screens' Address Tab data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
@@ -1638,6 +1639,65 @@ namespace Ict.Petra.Shared.MPartner.Validation
             {
                 VerificationResult = TStringChecks.ValidateEmail(ARow.EmailAddress, true,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the Partner Edit screens' Contact Details Tab data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <param name="AValueKind">The PPartnerAttributeType.AttributeValueKind of the DataRow passed in in <paramref name="ARow"/>.</param>
+        public static void ValidateContactDetailsManual(object AContext, PPartnerAttributeRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            TPartnerAttributeTypeValueKind AValueKind)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // If this record is about an E-Mail Contact Detail...
+            if (AValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS)
+            {
+                // ...then the E-mail Address must be in a correct format
+                ValidationColumn = ARow.Table.Columns[PPartnerAttributeTable.ColumnValueId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    VerificationResult = TStringChecks.ValidateEmail(ARow.Value, true,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+            }
+
+            // 'No Longer Current From Date' must not be a future date if the 'Current' Flag is set to false
+            ValidationColumn = ARow.Table.Columns[PPartnerAttributeTable.ColumnNoLongerCurrentFromId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = null;
+
+                if (!ARow.Current)
+                {
+                    VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.NoLongerCurrentFrom,
+                        ValidationControlsData.ValidationControlLabel, AContext, ValidationColumn,
+                        ValidationControlsData.ValidationControl);
+                }
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -1763,6 +1823,32 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="AContext"></param>
+        /// <param name="ARow"></param>
+        /// <param name="VerificationResultCollection"></param>
+        /// <param name="FValidationControlsDict"></param>
+        public static void ValidateContactLogManual(object AContext, PContactLogRow ARow, ref TVerificationResultCollection VerificationResultCollection, TValidationControlsDict FValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            ValidationColumn = ARow.Table.Columns[PContactLogTable.ColumnContactCodeId];
+            VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.ContactCode, Catalog.GetString("Contact Code"),
+                AContext, ValidationColumn);
+
+            // Handle addition to/removal from TVerificationResultCollection
+            VerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
         }
     }
 }

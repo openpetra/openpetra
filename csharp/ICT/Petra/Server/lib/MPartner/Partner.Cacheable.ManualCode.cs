@@ -25,32 +25,17 @@
 using System;
 using System.Collections.Specialized;
 using System.Data;
-using System.Data.Odbc;
-using Ict.Common.Data;
+
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Common.Verification;
-using Ict.Common.Remoting.Shared;
-using Ict.Common.Remoting.Server;
+using Ict.Petra.Server.MCommon.UIConnectors;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared;
-
+using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Server.MCommon.Data.Access;
-using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MCommon;
-using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Server.MCommon;
-using Ict.Petra.Server.MCommon.UIConnectors;
-using Ict.Petra.Shared.MPartner.Partner.Validation;
-using Ict.Petra.Shared.MPartner.Mailroom.Validation;
-using Ict.Petra.Shared.MCommon.Validation;
-using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MPartner.Partner.Cacheable
 {
@@ -264,6 +249,26 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
             return PPartnerAttributeTypeAccess.LoadViaPPartnerAttributeCategoryTemplate(template, null, null, AReadTransaction,
                 StringHelper.InitStrArr(new String[] { "ORDER BY", PPartnerAttributeTypeTable.GetTableDBName() + "." +
                                                        PPartnerAttributeTypeTable.GetIndexDBName() + " ASC" }), 0, 0);
+        }
+
+        private DataTable GetPartnerAttributeSystemCategoryTypeListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+            PPartnerAttributeCategoryRow template = new PPartnerAttributeCategoryTable().NewRowTyped(false);
+
+            template.SystemCategory = true;
+
+            return PPartnerAttributeTypeAccess.LoadViaPPartnerAttributeCategoryTemplate(template, null, null, AReadTransaction,
+                StringHelper.InitStrArr(new String[] { "ORDER BY", PPartnerAttributeTypeTable.GetTableDBName() + "." +
+                                                       PPartnerAttributeTypeTable.GetIndexDBName() + " ASC" }), 0, 0);
+        }
+
+        private DataTable GetPartnerAttributeSystemCategoryListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+            PPartnerAttributeCategoryRow template = new PPartnerAttributeCategoryTable().NewRowTyped(false);
+
+            template.SystemCategory = true;
+
+            return PPartnerAttributeCategoryAccess.LoadUsingTemplate(template, null, null, AReadTransaction);
         }
     }
 }

@@ -289,7 +289,15 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out DateTime AStartDatePeriod,
             out DateTime AEndDatePeriod)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            if ((AYearNumber < 0) || (APeriodNumber < 0))
+            {
+                AStartDatePeriod = DateTime.MinValue;
+                AEndDatePeriod = DateTime.MinValue;
+                return false;
+            }
+
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, Transaction);
 
@@ -302,7 +310,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             AStartDatePeriod = AStartDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
             AEndDatePeriod = AEndDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             return true;
         }
@@ -549,6 +560,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 DataRow resultRow = datTable.NewRow();
                 resultRow[0] = LedgerTable[0].CurrentFinancialYear;
                 resultRow[1] = currentYearEnd.ToString("yyyy");
+                resultRow[2] = currentYearEnd.ToString("dd-MMM-yyyy");
                 datTable.Rows.InsertAt(resultRow, 0);
             }
 
@@ -557,7 +569,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 DataRow resultRow = datTable.NewRow();
                 resultRow[0] = LedgerTable[0].CurrentFinancialYear + 1;
                 resultRow[1] = currentYearEnd.AddYears(1).ToString("yyyy");
-                datTable.Rows.Add(resultRow);
+                resultRow[2] = currentYearEnd.ToString("dd-MMM-yyyy");
+                datTable.Rows.InsertAt(resultRow, 0);
             }
 
             return datTable;

@@ -108,6 +108,8 @@ namespace Ict.Tools.DataDumpPetra2
 
         private void LoadTable(TTable newTable)
         {
+            bool IgnoreFile = false;
+
             TLogging.Log(newTable.strName);
 
             string oldTableName = DataDefinitionDiff.GetOldTableName(newTable.strName);
@@ -115,7 +117,8 @@ namespace Ict.Tools.DataDumpPetra2
             TTable oldTable = storeOld.GetTable(oldTableName);
 
             // if this is a new table in OpenPetra, do not dump anything. the table will be empty in OpenPetra
-            if (oldTable == null)
+            // (except p_partner_attribute_category and p_partner_attribute_type which are populated here)
+            if ((oldTable == null) && (newTable.strName != "p_partner_attribute_category") && (newTable.strName != "p_partner_attribute_type"))
             {
                 return;
             }
@@ -132,7 +135,14 @@ namespace Ict.Tools.DataDumpPetra2
             FileInfo info = new FileInfo(dumpFile + ".d.gz");
 
             // ignore empty files (with one exception)
-            if ((info.Length == 0) && (oldTableName != "p_partner_gift_destination"))
+            if ((oldTableName == "p_partner_gift_destination")
+                || (oldTableName == "p_partner_attribute_category")
+                || (oldTableName == "p_partner_attribute_type"))
+            {
+                IgnoreFile = true;
+            }
+
+            if (IgnoreFile || (info.Length == 0))
             {
                 TLogging.Log("ignoring " + dumpFile + ".d.gz");
                 return;
@@ -166,7 +176,8 @@ namespace Ict.Tools.DataDumpPetra2
             // if this is a new table in OpenPetra, do not dump anything. the table will be empty in OpenPetra
             // (except p_postcode_region_range, a_budget_revision and p_partner_gift_destination which are populated here)
             if ((oldTable == null) && (newTable.strName != "p_postcode_region_range") && (newTable.strName != "a_budget_revision")
-                && (newTable.strName != "p_partner_gift_destination"))
+                && (newTable.strName != "p_partner_gift_destination") && (newTable.strName != "p_partner_attribute_category")
+                && (newTable.strName != "p_partner_attribute_type"))
             {
                 return;
             }
@@ -174,22 +185,25 @@ namespace Ict.Tools.DataDumpPetra2
             string NewFileName = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
                                  newTable.strName + ".sql.gz";
 
-            if (File.Exists(NewFileName))
-            {
-                // for debugging: ignore files that have been written already
-                return;
-            }
+//            if (File.Exists(NewFileName))
+//            {
+//                // for debugging: ignore files that have been written already
+//                return;
+//            }
 
             StreamWriter MyWriterCount = null;
             StreamWriter MyWriterTest = null;
             FileStream outStreamTest;
             Stream gzoStreamTest;
-
+            TParseProgressCSV Parser = null;
             try
             {
-                TParseProgressCSV Parser = new TParseProgressCSV(
-                    dumpFile + ".d.gz",
-                    oldTable.grpTableField.Count);
+                if (oldTable != null)
+                {
+                    Parser = new TParseProgressCSV(
+                        dumpFile + ".d.gz",
+                        oldTable.grpTableField.Count);
+                }
 
                 FileStream outStream = File.Create(NewFileName);
                 Stream gzoStream = new GZipOutputStream(outStream);
@@ -216,8 +230,12 @@ namespace Ict.Tools.DataDumpPetra2
                     FileStream outStreamCount = File.Create(rowCountDir);
                     MyWriterCount = new StreamWriter(outStreamCount);
                 }
-
-                MyWriter.WriteLine("COPY " + newTable.strName + " FROM stdin;");
+                
+                // The p_partner_contact table needs to write p_contact_log records first, so handle the COPY manually
+                if (newTable.strName != "p_partner_contact")
+                {
+                    MyWriter.WriteLine("COPY " + newTable.strName + " FROM stdin;");
+                }
 
                 int ProcessedRows = TFixData.MigrateData(Parser, MyWriter, MyWriterTest, oldTable, newTable);
 

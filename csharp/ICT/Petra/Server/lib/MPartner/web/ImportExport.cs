@@ -729,72 +729,72 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             ref TVerificationResultCollection ReferenceResults,
             TDBTransaction ATransaction)
         {
-            int ContactId = 0;
+            //int ContactId = 0;
 
-            foreach (PartnerImportExportTDSPPartnerContactRow Row in MainDS.PPartnerContact.Rows)
-            {
-                PPartnerContactTable Tbl = PPartnerContactAccess.LoadByUniqueKey(Row.PartnerKey, Row.ContactDate, Row.ContactTime, ATransaction);
-                bool HereAlready = false;
+            //foreach (PartnerImportExportTDSPPartnerContactRow Row in MainDS.PPartnerContact.Rows)
+            //{
+            //    PPartnerContactTable Tbl = PPartnerContactAccess.LoadByUniqueKey(Row.PartnerKey, Row.ContactDate, Row.ContactTime, ATransaction);
+            //    bool HereAlready = false;
 
-                if (Tbl.Rows.Count > 0)         // I've already imported this..
-                {
-                    Row.AcceptChanges();             // This should make the DB update instead of Add
-                    Row.ContactId = Tbl[0].ContactId;
-                    Row.ModificationId = Tbl[0].ModificationId;
-                    HereAlready = true;
-                }
+            //    if (Tbl.Rows.Count > 0)         // I've already imported this..
+            //    {
+            //        Row.AcceptChanges();             // This should make the DB update instead of Add
+            //        Row.ContactId = Tbl[0].ContactId;
+            //        Row.ModificationId = Tbl[0].ModificationId;
+            //        HereAlready = true;
+            //    }
 
-                if (Row.ContactId == 0)
-                {
-                    Row.ContactId = --ContactId;
-                }
+            //    if (Row.ContactId == 0)
+            //    {
+            //        Row.ContactId = --ContactId;
+            //    }
 
-                // The row has custom Attr and Detail fields, which I need to put into the right tables..
-                if (!HereAlready && (Row.ContactAttr != ""))
-                {
-                    AddVerificationResult(ref ReferenceResults, "Adding new contact attribute: " + Row.ContactAttr, TResultSeverity.Resv_Status);
-                    PContactAttributeDetailRow PcadRow = MainDS.PContactAttributeDetail.NewRowTyped();
-                    PcadRow.ContactAttributeCode = Row.ContactAttr;
-                    PcadRow.ContactAttrDetailCode = Row.ContactDetail;
-                    PcadRow.ContactAttrDetailDescr = FNewRowDescription;
-                    PContactAttributeDetailAccess.AddOrModifyRecord(
-                        PcadRow.ContactAttributeCode,
-                        PcadRow.ContactAttrDetailCode,
-                        MainDS.PContactAttributeDetail,
-                        PcadRow, false, ATransaction);
+            //    // The row has custom Attr and Detail fields, which I need to put into the right tables..
+            //    if (!HereAlready && (Row.ContactAttr != ""))
+            //    {
+            //        AddVerificationResult(ref ReferenceResults, "Adding new contact attribute: " + Row.ContactAttr, TResultSeverity.Resv_Status);
+            //        PContactAttributeDetailRow PcadRow = MainDS.PContactAttributeDetail.NewRowTyped();
+            //        PcadRow.ContactAttributeCode = Row.ContactAttr;
+            //        PcadRow.ContactAttrDetailCode = Row.ContactDetail;
+            //        PcadRow.ContactAttrDetailDescr = FNewRowDescription;
+            //        PContactAttributeDetailAccess.AddOrModifyRecord(
+            //            PcadRow.ContactAttributeCode,
+            //            PcadRow.ContactAttrDetailCode,
+            //            MainDS.PContactAttributeDetail,
+            //            PcadRow, false, ATransaction);
 
-                    PPartnerContactAttributeRow PcaRow = MainDS.PPartnerContactAttribute.NewRowTyped();
-                    PcaRow.ContactId = Row.ContactId;
-                    PcaRow.ContactAttributeCode = Row.ContactAttr;
-                    PcaRow.ContactAttrDetailCode = Row.ContactDetail;
-                    PPartnerContactAttributeAccess.AddOrModifyRecord(
-                        PcaRow.ContactId,
-                        PcaRow.ContactAttributeCode,
-                        PcaRow.ContactAttrDetailCode,
-                        MainDS.PPartnerContactAttribute,
-                        PcaRow, false, ATransaction);
+            //        PPartnerContactAttributeRow PcaRow = MainDS.PPartnerContactAttribute.NewRowTyped();
+            //        PcaRow.ContactId = Row.ContactId;
+            //        PcaRow.ContactAttributeCode = Row.ContactAttr;
+            //        PcaRow.ContactAttrDetailCode = Row.ContactDetail;
+            //        PPartnerContactAttributeAccess.AddOrModifyRecord(
+            //            PcaRow.ContactId,
+            //            PcaRow.ContactAttributeCode,
+            //            PcaRow.ContactAttrDetailCode,
+            //            MainDS.PPartnerContactAttribute,
+            //            PcaRow, false, ATransaction);
 
-                    PContactAttributeRow CaRow = MainDS.PContactAttribute.NewRowTyped();
-                    CaRow.ContactAttributeDescr = FNewRowDescription;
-                    CaRow.ContactAttributeCode = Row.ContactAttr;
-                    PContactAttributeAccess.AddOrModifyRecord(
-                        CaRow.ContactAttributeCode,
-                        MainDS.PContactAttribute,
-                        CaRow,
-                        false,
-                        ATransaction);
-                }
+            //        PContactAttributeRow CaRow = MainDS.PContactAttribute.NewRowTyped();
+            //        CaRow.ContactAttributeDescr = FNewRowDescription;
+            //        CaRow.ContactAttributeCode = Row.ContactAttr;
+            //        PContactAttributeAccess.AddOrModifyRecord(
+            //            CaRow.ContactAttributeCode,
+            //            MainDS.PContactAttribute,
+            //            CaRow,
+            //            false,
+            //            ATransaction);
+            //    }
 
-                if (!PMethodOfContactAccess.Exists(Row.ContactCode, ATransaction))
-                {
-                    AddVerificationResult(ref ReferenceResults, "Adding new method of contact: " + Row.ContactCode, TResultSeverity.Resv_Status);
-                    PMethodOfContactRow MocRow = MainDS.PMethodOfContact.NewRowTyped();
-                    MocRow.MethodOfContactCode = Row.ContactCode;
-                    MocRow.Description = FNewRowDescription;
-                    MocRow.ValidMethod = true;
-                    MainDS.PMethodOfContact.Rows.Add(MocRow);
-                }
-            }
+            //    if (!PMethodOfContactAccess.Exists(Row.ContactCode, ATransaction))
+            //    {
+            //        AddVerificationResult(ref ReferenceResults, "Adding new method of contact: " + Row.ContactCode, TResultSeverity.Resv_Status);
+            //        PMethodOfContactRow MocRow = MainDS.PMethodOfContact.NewRowTyped();
+            //        MocRow.MethodOfContactCode = Row.ContactCode;
+            //        MocRow.Description = FNewRowDescription;
+            //        MocRow.ValidMethod = true;
+            //        MainDS.PMethodOfContact.Rows.Add(MocRow);
+            //    }
+            //}
         }
 
         private static void CheckApplication(PartnerImportExportTDS MainDS,

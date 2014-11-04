@@ -357,8 +357,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 }
 
                 TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-                String Query = "SELECT * FROM a_ledger WHERE " + ALedgerFilter;
-                DataTable LedgerTable = DBAccess.GDBAccessObj.SelectDT(Query, "Ledger", ReadTrans);
 
                 String BalanceField = (AInternational) ? "glmp.a_actual_intl_n" : "glmp.a_actual_base_n";
                 String StartBalanceField = (AInternational) ? "glm.a_start_balance_intl_n" : "glm.a_start_balance_base_n";
@@ -374,24 +372,24 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     GroupField = " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c";
                 }
 
-                Query = "SELECT glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i, " +
-                        "a_account.a_debit_credit_indicator_l AS Debit, " +
-                        StartBalanceField + " AS start_balance, " +
-                        BalanceField + " AS balance " +
-                        " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
-                        " WHERE glm." + ALedgerFilter +
-                        " AND a_account." + ALedgerFilter +
-                        " AND a_cost_centre." + ALedgerFilter +
-                        " AND a_account.a_posting_status_l = TRUE" +
-                        " AND a_cost_centre.a_posting_cost_centre_flag_l = TRUE" +
-                        " AND glm.a_year_i = " + AFinancialYear +
-                        " AND glm.a_account_code_c = a_account.a_account_code_c " +
-                        " AND glm.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c " +
-                        AAccountCodeFilter +
-                        ACostCentreFilter +
-                        " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
-                        " AND glmp.a_period_number_i BETWEEN " + AStartPeriod + " AND " + AEndPeriod +
-                        GroupField;
+                String Query = "SELECT glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i, " +
+                               "a_account.a_debit_credit_indicator_l AS Debit, " +
+                               StartBalanceField + " AS start_balance, " +
+                               BalanceField + " AS balance " +
+                               " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
+                               " WHERE glm." + ALedgerFilter +
+                               " AND a_account." + ALedgerFilter +
+                               " AND a_cost_centre." + ALedgerFilter +
+                               " AND a_account.a_posting_status_l = TRUE" +
+                               " AND a_cost_centre.a_posting_cost_centre_flag_l = TRUE" +
+                               " AND glm.a_year_i = " + AFinancialYear +
+                               " AND glm.a_account_code_c = a_account.a_account_code_c " +
+                               " AND glm.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c " +
+                               AAccountCodeFilter +
+                               ACostCentreFilter +
+                               " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
+                               " AND glmp.a_period_number_i BETWEEN " + AStartPeriod + " AND " + AEndPeriod +
+                               GroupField;
 
 
                 DataTable GlmTbl = DbAdapter.RunQuery(Query, "balances", ReadTrans);
@@ -2464,7 +2462,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String CostCentreFilter = "";
             String CostCentreOptions = AParameters["param_rgrCostCentres"].ToString();
 
-            if (CostCentreOptions == "SelectedCostCentres")
+            if (CostCentreOptions == "CostCentreList")
             {
                 String CostCentreList = AParameters["param_cost_centre_codes"].ToString();
                 CostCentreList = CostCentreList.Replace(",", "','");                             // SQL IN List items in single quotes
@@ -2474,7 +2472,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             if (CostCentreOptions == "CostCentreRange")
             {
                 CostCentreFilter = " AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_start"].ToString() +
-                                   "' AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
+                                   "' AND glm.a_cost_centre_code_c <='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
             }
 
             if (CostCentreOptions == "AllActiveCostCentres") // THIS IS NOT SET AT ALL!
@@ -2494,8 +2492,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             if (AccountCodeOptions == "AccountRange")
             {
-                CostCentreFilter = " AND glm.a_account_code_c >='" + AParameters["param_account_code_start"].ToString() +
-                                   "' AND glm.a_account_code_c >='" + AParameters["param_account_code_end"].ToString() + "'";
+                AccountCodeFilter = " AND glm.a_account_code_c >='" + AParameters["param_account_code_start"].ToString() +
+                                    "' AND glm.a_account_code_c <='" + AParameters["param_account_code_end"].ToString() + "'";
             }
 
             if (AccountCodeOptions == "AllActiveAccounts") // THIS IS NOT SET AT ALL

@@ -440,7 +440,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ADonorKey"></param>
         /// <param name="ADonorClass"></param>
         /// <param name="AGiftCurrency"></param>
-        /// <param name="ADateEntered"></param>
         /// <param name="ALocalCountryCode">If the addressee's country is the same as this, it won't be printed on the address label.</param>
         /// <param name="AGiftsThisDonor"></param>
         /// <param name="ATransaction">This can be read-only - nothing is written to the DB.</param>
@@ -451,7 +450,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int64 ADonorKey,
             TPartnerClass ADonorClass,
             String AGiftCurrency,
-            DateTime ADateEntered,
             string ALocalCountryCode,
             AGiftTable AGiftsThisDonor,
             TDBTransaction ATransaction)
@@ -553,7 +551,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // Details per gift:
             foreach (AGiftRow GiftRow in AGiftsThisDonor.Rows)
             {
-                String DateEntered = ADateEntered.ToString("dd MMM yyyy");
+                String DateEntered = GiftRow.DateEntered.ToString("dd MMM yyyy");
                 String GiftReference = GiftRow.Reference;
                 AGiftDetailTable DetailTbl = AGiftDetailAccess.LoadViaAGift(
                     GiftRow.LedgerNumber, GiftRow.BatchNumber, GiftRow.GiftTransactionNumber, ATransaction);
@@ -637,7 +635,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <param name="AGiftCurrency"></param>
-        /// <param name="ADateEntered"></param>
         /// <param name="ADonorShortName"></param>
         /// <param name="ADonorKey"></param>
         /// <param name="ADonorClass"></param>
@@ -647,7 +644,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static string PrintGiftReceipt(
             String AGiftCurrency,
-            DateTime ADateEntered,
             String ADonorShortName,
             Int64 ADonorKey,
             TPartnerClass ADonorClass,
@@ -665,7 +661,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ADonorKey,
                     ADonorClass,
                     AGiftCurrency,
-                    ADateEntered,
                     LocalCountryCode,
                     GiftsThisDonor,
                     Transaction);
@@ -728,6 +723,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         GiftRow.BatchNumber = Convert.ToInt32(Row["BatchNumber"]);
                         GiftRow.GiftTransactionNumber = Convert.ToInt32(Row["TransactionNumber"]);
                         GiftRow.Reference = Row["Reference"].ToString();
+                        GiftRow.DateEntered = Convert.ToDateTime(Row["DateEntered"]);
                         GiftsPerDonor[DonorKey].Rows.Add(GiftRow);
                     } // if Selected
 
@@ -741,7 +737,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         DonorKey,
                         DonorRow.DonorClass,
                         DonorRow.GiftCurrency,
-                        DonorRow.DateEntered,
                         LocalCountryCode,
                         GiftsPerDonor[DonorKey],
                         Transaction);

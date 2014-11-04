@@ -11,6 +11,7 @@ RootNode:
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
         READCONTROLSLOCALVARS: BLANK 
+        READCONTROLS: ACalc.AddParameter("param_today", DateTime.Today);
         SETCONTROLSLOCALVARS: BLANK
     Security:
         ModulePermissionRequired: [PTNRUSER]

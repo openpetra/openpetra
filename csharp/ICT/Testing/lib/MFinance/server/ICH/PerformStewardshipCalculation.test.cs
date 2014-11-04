@@ -95,7 +95,7 @@ namespace Tests.MFinance.Server.ICH
             sr.Close();
 
             FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
-            FileContent = FileContent.Replace("2010-09-30", AGiftDateEffective.ToString("yyyy-MM-dd"));
+            FileContent = FileContent.Replace("{thisyear}-01-01", AGiftDateEffective.ToString("yyyy-MM-dd"));
 
             Hashtable parameters = new Hashtable();
             parameters.Add("Delimiter", ",");
@@ -105,8 +105,9 @@ namespace Tests.MFinance.Server.ICH
             parameters.Add("NewLine", Environment.NewLine);
 
             TVerificationResultCollection VerificationResult;
+            GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
 
-            importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
+            importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult);
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "error when importing gift batch:");
@@ -279,8 +280,9 @@ namespace Tests.MFinance.Server.ICH
             decimal GIFAfter = new TGet_GLM_Info(FLedgerNumber,
                 MFinanceConstants.ICH_ACCT_SETTLEMENT,
                 CostCentreGIF).YtdActual;
-            Assert.AreEqual(20.0m * 1.0m / 100.0m, GIFAfter - GIFBefore,
-                "GIF should get 1% of 20 Euro gift");
+
+            Assert.AreEqual(20.0m / 100.0m, GIFAfter - GIFBefore,
+                "GIF should get 1% of 20 Euro gift. Before: " + GIFBefore + ", After: " + GIFAfter);
 
             // Receiving field should get 20-1.60 = 18.40 => 7300/5601
             decimal RecipientAfter = new TGet_GLM_Info(FLedgerNumber,

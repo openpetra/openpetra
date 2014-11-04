@@ -167,16 +167,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         ///
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
-        {
-            OnRecalculateScreenParts(e);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
         /// <param name="e"></param>
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {
@@ -500,7 +490,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
-                frm.SetParameters(TScreenMode.smEdit, FMainDS.PPerson[0].FamilyKey, TPartnerEditTabPageEnum.petpFamilyMembers);
+                frm.SetParameters(TScreenMode.smEdit, FMainDS.PPerson[0].FamilyKey);
                 frm.Show();
             }
             finally
@@ -593,9 +583,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 " This number is used to identify the family members within a Family. " +
                 "\r\n" + " * Family ID's 0 and 1 are used for parents; " + "\r\n" +
                 "    FamilyID's 2, 3, 4 ... 9 are used for children. " + "\r\n" +
-                " * All gifts to this Family will be assigned to the Field in the Commitment" +
+                " * All gifts to this Family will be assigned to the Field in the Gift" +
                 "\r\n" +
-                "    Record of the family member with the the lowest Family ID" +
+                "    Destination of the family member with the the lowest Family ID" +
                 "\r\n" +
                 "    of those who have a current Gift Destination." +
                 "\r\n" +
@@ -638,7 +628,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
-                        frm.SetParameters(TScreenMode.smEdit, GetPartnerKeySelected(), TPartnerEditTabPageEnum.petpFamilyMembers);
+                        frm.SetParameters(TScreenMode.smEdit, GetPartnerKeySelected());
                         frm.Show();
                     }
                     finally

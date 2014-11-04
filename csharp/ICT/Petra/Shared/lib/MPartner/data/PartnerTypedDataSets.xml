@@ -15,6 +15,7 @@
     <Table sqltable="p_partner_location">
       <CustomField name="BestAddress" type="bool"/>
       <CustomField name="Icon" type="Int32"/>
+      <CustomField name="IconForSort" type="Int32"/>
       <Field name="LocationLocality" sqltable="p_location" sqlfield="p_locality_c"/>
       <Field name="LocationStreetName" sqltable="p_location" sqlfield="p_street_name_c"/>
       <Field name="LocationAddress3" sqltable="p_location" sqlfield="p_address_3_c"/>
@@ -29,7 +30,9 @@
     </Table>
     <Table sqltable="p_partner_attribute_category"/>
     <Table sqltable="p_partner_attribute_type"/>
-    <Table sqltable="p_partner_attribute"/>
+    <Table sqltable="p_partner_attribute">
+        <CustomField name="PartnerContactDetail" type="Boolean"/>
+    </Table>    
     <Table sqltable="p_family">
       <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
     </Table>
@@ -68,7 +71,9 @@
       <CustomField name="DisplayRelationDescription" type="String"/>
     </Table>
     <!-- <Table sqltable="p_relation"/> -->
+    <Table sqltable="p_contact_log"/>
     <Table sqltable="p_partner_contact"/>
+    
     <!-- not in use yet! -->
     <Table sqltable="p_data_label_value_application"/>
     <Table sqltable="p_data_label_value_partner"/>
@@ -81,6 +86,8 @@
       <CustomField name="LastContactDate" type="DateTime"/>
       <CustomField name="ItemsCountAddresses" type="Int32"/>
       <CustomField name="ItemsCountAddressesActive" type="Int32"/>
+      <CustomField name="ItemsCountContactDetails" type="Int32"/>
+      <CustomField name="ItemsCountContactDetailsActive" type="Int32"/>
       <CustomField name="ItemsCountSubscriptions" type="Int32"/>
       <CustomField name="ItemsCountSubscriptionsActive" type="Int32"/>
       <CustomField name="ItemsCountPartnerTypes" type="Int32"/>
@@ -126,10 +133,10 @@
         createConstraints="false"/>
     <CustomRelation name="ContactDetails1"
         parentTable="PPartnerAttributeCategory" parentFields="CategoryCode"
-        childTable="PPartnerAttributeType" childFields="AttributeCategory"
+        childTable="PPartnerAttributeType" childFields="CategoryCode"
         createConstraints="false"/>        
     <CustomRelation name="ContactDetails2"
-        parentTable="PPartnerAttributeType" parentFields="Code"
+        parentTable="PPartnerAttributeType" parentFields="AttributeType"
         childTable="PPartnerAttribute" childFields="AttributeType"
         createConstraints="false"/>                
     <CustomRelation name="PartnerInterestCategory"
@@ -254,7 +261,7 @@
       <!-- used for displaying 'Speaks (Language)' -->
       <CustomField name="AdditionalLanguages" type="string"/>
       <!-- used for displaying 'Speaks (Language)' (only for a PERSON, comes from Personnel Data)-->
-      <Field name="LastContact" sqltable="p_partner_contact" sqlfield="s_contact_date_d"/>
+      <Field name="LastContact" sqltable="p_contact_log" sqlfield="s_contact_date_d"/>
       <!-- used for displaying Last Contact -->
       <Field sqltable="p_partner" sqlfield="s_date_created_d"/>
       <!-- used for displaying 'Partner Updated' field -->
@@ -447,10 +454,11 @@
     <Table sqltable="p_method_of_contact"/>
     <Table sqltable="p_contact_attribute"/>
     <Table sqltable="p_contact_attribute_detail"/>
-    <Table sqltable="p_partner_contact">
+    <Table sqltable="p_contact_log">
       <CustomField name="ContactAttr" type="string"/>
       <CustomField name="ContactDetail" type="string"/>
-	</Table>
+	  </Table>
+    <Table sqltable="p_partner_contact"/>
     <Table sqltable="p_partner_contact_attribute"/>
 
     <Table sqltable="p_publication"/>
@@ -524,11 +532,12 @@
   </DataSet>   
 
   <DataSet name="ContactTDS">
+    <Table sqltable="p_contact_log"/>
     <Table sqltable="p_method_of_contact"/>
-    <Table sqltable="p_partner_contact"/>
     <Table sqltable="p_partner_contact_attribute"/>
     <Table sqltable="p_contact_attribute"/>
     <Table sqltable="p_contact_attribute_detail"/>
+    <Table sqltable="p_partner_contact"/>
   </DataSet>   
 
   <DataSet name="PostcodeRegionsTDS">

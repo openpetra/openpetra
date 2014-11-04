@@ -41,23 +41,23 @@ RootNode:
         actEditCopyEmailAddress: {ActionClick=MniEdit_Click, Image=CopyToClipboard_EmailAddress.ico}
         
         actMaintainAddresses: {Label=&Addresses..., ActionClick=MniMaintain_Click, Image, Image: Address.ico}
+        actMaintainContactDetails: {Label=C&ontact Details, ActionClick=MniMaintain_Click, Image: ContactDetails.ico}
         actMaintainPartnerDetails: {Label=&Partner Details..., ActionClick=MniMaintain_Click, Image: Details.ico}
         actMaintainFoundationDetails: {Label=Foundation Details..., ActionClick=MniMaintain_Click, Image: Foundations.ico}
         actMaintainSubscriptions: {Label=&Subscriptions..., ActionClick=MniMaintain_Click, Image: Subscriptions.ico}
+        actMaintainContacts: {Label=&Contact Logs, ActionClick=MniMaintain_Click, Image: RecordedContacts.ico}
         actMaintainSpecialTypes: {Label=Special &Types..., ActionClick=MniMaintain_Click, Image: Types.ico}
-        actMaintainContacts: {Label=&Contacts..., ActionClick=MniMaintain_Click, Image: RecordedContacts.ico}
         actMaintainFamilyMembers: {Label=Fa&mily Members..., ActionClick=MniMaintain_Click, Image: FamilyMembers.ico}
         actMaintainRelationships: {Label=&Relationships..., ActionClick=MniMaintain_Click, Image: Relationships.ico}
         actMaintainInterests: {Label=&Interests..., ActionClick=MniMaintain_Click, Image: PartnerInterest.ico}
         actMaintainReminders: {Label=&Reminders..., ActionClick=MniMaintain_Click, Image: Reminders.ico}
         actMaintainNotes: {Label=&Notes..., ActionClick=MniMaintain_Click, Image: Notes.ico}
         actMaintainLocalPartnerData: {Label=&Local Partner Data..., ActionClick=MniMaintain_Click, Image: OfficeSpecific.ico}
-        actMaintainWorkerField: {Label=Gift &Destination..., ActionClick=MniMaintain_Click, Image: OMField.ico}
+        actMaintainGiftDestination: {Label=Gift &Destination..., ActionClick=MniMaintain_Click, Image: OMField.ico}
         actMaintainPersonnelData: {Label=P&ersonnel/Individual Data..., ActionClick=MniMaintain_Click, Image: personel_small.ico}
         actMaintainDonorHistory: {Label=Donor &History..., ActionClick=MniMaintain_Click}
         actMaintainRecipientHistory: {Label=Recipient Histor&y..., ActionClick=MniMaintain_Click}
         actMaintainFinanceReports: {Label=Finance Report&s..., ActionClick=MniMaintain_Click}
-        actMaintainBankAccounts: {Label=Ban&k Accounts..., ActionClick=MniMaintain_Click}
         actMaintainGiftReceipting: {Label=&Gift Processing..., ActionClick=MniMaintain_Click}
         actMaintainFinanceDetails: {Label=&Finance Details..., ActionClick=MniMaintain_Click, Image: FinanceDetails.ico}        
         
@@ -153,6 +153,7 @@ RootNode:
         mniMaintain: 
             Label: Ma&intain
             mniMaintainAddresses:
+            mniMaintainContactDetails:
             mniMaintainPartnerDetails:
             mniMaintainFoundationDetails:
             mniMaintainSubscriptions:
@@ -160,20 +161,20 @@ RootNode:
             mniMaintainContacts:
             mniMaintainFamilyMembers:
             mniMaintainRelationships:
-            mniMaintainInterests:
             mniMaintainReminders:
+            mniMaintainFinanceDetails:
+            mniMaintainLocalPartnerData:            
+            mniMaintainInterests:            
             mniMaintainNotes:
-            mniMaintainLocalPartnerData:
-            mniMaintainWorkerField:
+            mniMaintainGiftDestination:
             mniSeparator:
             mniMaintainPersonnelData: {Label=&Personnel/Individual Data...}
             mniSeparator:
             mniMaintainDonorHistory:
             mniMaintainRecipientHistory:
             mniMaintainFinanceReports:
-            mniMaintainBankAccounts:
             mniMaintainGiftReceipting:
-            mniMaintainFinanceDetails:
+            
         mniMailing: 
             Label: &Mailing
             mniMailingGenerateExtract:
