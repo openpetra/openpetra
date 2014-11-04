@@ -546,7 +546,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // For Gift Batch we will
             //  either get a change to N Batches
             //  or get changes to M transactions in N Batches
-            List<Tuple<string, int>> TableAndCountList = new List<Tuple<string, int>>();
+            List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
             int allChangesCount = 0;
 
             foreach (DataTable dt in FMainDS.Tables)
@@ -566,7 +566,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (tableChangesCount > 0)
                     {
-                        TableAndCountList.Add(new Tuple<string, int>(dt.TableName, tableChangesCount));
+                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
                     }
                 }
             }
@@ -579,7 +579,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (TableAndCountList.Count == 1)
                 {
                     // Only saving changes to batches
-                    Tuple<string, int> TableAndCount = TableAndCountList[0];
+                    Tuple <string, int>TableAndCount = TableAndCountList[0];
 
                     AMessage = String.Format(Catalog.GetString("    You have made changes to the details of {0} {1}.{2}"),
                         TableAndCount.Item2,
@@ -592,7 +592,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     int nBatches = 0;
                     int nTransactions = 0;
 
-                    foreach (Tuple<string, int> TableAndCount in TableAndCountList)
+                    foreach (Tuple <string, int>TableAndCount in TableAndCountList)
                     {
                         if (TableAndCount.Item1.Equals(AGiftBatchTable.GetTableName()))
                         {
@@ -754,7 +754,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Report.BatchNumber = ucoBatches.FSelectedBatchNumber;
             Report.Show();
         }
-
 
         #region Forms Messaging Interface Implementation
 
