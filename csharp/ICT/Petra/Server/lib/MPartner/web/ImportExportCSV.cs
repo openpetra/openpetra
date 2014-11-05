@@ -486,7 +486,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ContactLogRow.ContactDetail = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL + Suffix);
                 AMainDS.PContactLog.Rows.Add(ContactLogRow);
                 AddVerificationResult("Contact Log Record Created.", TResultSeverity.Resv_Status);
-                
+
                 var PartnerContactRow = AMainDS.PPartnerContact.NewRowTyped();
                 PartnerContactRow.PartnerKey = APartnerKey;
                 PartnerContactRow.ContactLogId = ContactLogRow.ContactLogId;

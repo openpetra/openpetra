@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
                 TRemote.MPartner.Partner.WebConnectors.DeleteContacts(FMainDS.PContactLog);
-                
+
                 // refresh the grid
                 Search(Sender, e);
             }

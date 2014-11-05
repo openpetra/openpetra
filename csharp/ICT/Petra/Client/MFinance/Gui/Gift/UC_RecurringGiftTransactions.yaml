@@ -14,6 +14,7 @@ RootNode:
         actNewGift: {Label=&New Gift, ActionClick=NewGift}
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail}
         actDelete: {Label=&Delete Detail, SkipReferenceCheck=true, ActionClick=DeleteRecord}
+        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllGifts}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlFilterAndFind, sptTransactions]
@@ -57,11 +58,12 @@ RootNode:
                 txtRecipientDescription: {Label=Recipient}
         pnlDetailButtons:
             Dock: Bottom
-            Controls: [btnNewGift, btnNewDetail, btnDelete]
+            Controls: [btnNewGift, btnNewDetail, btnDelete, btnDeleteAll]
             ControlsOrientation: horizontal
         btnNewGift: {Action=actNewGift, Width=120, Tooltip=Click to add a new gift}
         btnNewDetail: {Action=actNewDetail, Width=120, StartNewButtonGroup=true, Tooltip=Click to add a new gift detail}
         btnDelete: {Action=actDelete, Width=120}
+        btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true, Tooltip=Click to delete all gifts from the current batch}
         grdDetails:
             TableName: ARecurringGiftDetail
             Dock: Fill
@@ -110,9 +112,9 @@ RootNode:
         dtpStartDonations: {Label=Don. Period From}
         dtpEndDonations: {Label=To}
         chkDetailActive: {Label=Active Gift}
-        txtDonorInfo: {NoLabel=true, ReadOnly=true, Width=450}
         txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
+        txtDonorInfo: {NoLabel=true, ReadOnly=true, Width=450}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:
             Label: Letter Code
@@ -123,7 +125,7 @@ RootNode:
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
-        txtDetailRecipientLedgerNumber: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true}
+        txtDetailRecipientLedgerNumber: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true, OnChange=RecipientLedgerNumberChanged}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
         cmbKeyMinistries: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}

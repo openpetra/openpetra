@@ -1187,9 +1187,9 @@ namespace Ict.Tools.DevelopersAssistant
                 if (String.Compare(dbName, "nantTest", true) != 0)
                 {
                     // We don't mind nantTest, but any other database name (including demo) gives rise to a warning
-                    string msg = String.Format("Warning!  Your current database is '{0}'.  "
-                                                +"If you proceed you will lose all the information in this database."
-                                                + "\r\nAre you sure that you want to continue?", dbName);
+                    string msg = String.Format("Warning!  Your current database is '{0}'.  " +
+                        "If you proceed you will lose all the information in this database." +
+                        "\r\nAre you sure that you want to continue?", dbName);
 
                     if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.YesNo,
                             MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
