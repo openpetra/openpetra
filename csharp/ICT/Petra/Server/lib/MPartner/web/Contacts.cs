@@ -100,6 +100,47 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="ContactLogTable"></param>
+        /// <param name="ContactLogsAdded"></param>
+        [RequireModulePermission("PTNRUSER")]
+        public static void AddContactLog(int ExtractId, ref PContactLogTable ContactLogTable)
+        {
+            Boolean NewTransaction;
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            var extractTable = MExtractAccess.LoadViaMExtractMaster(ExtractId, WriteTransaction).AsEnumerable();
+            var partnerKeys = extractTable.Select(e => e.ItemArray[MExtractTable.ColumnPartnerKeyId]);
+
+            long ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", WriteTransaction);
+
+            ContactLogTable.Rows[0][PContactLogTable.ColumnContactCodeId] = ContactLogId;
+
+
+            PPartnerContactTable partnerContacts = new PPartnerContactTable();
+            partnerKeys.ToList().ForEach(partnerKey =>
+            {
+                PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
+                partnerContact.ContactLogId = ContactLogId;
+                partnerContact.PartnerKey = (long)partnerKey;
+                partnerContacts.Rows.Add(partnerContact);
+            });
+
+            PContactLogAccess.SubmitChanges(ContactLogTable, WriteTransaction);
+            PPartnerContactAccess.SubmitChanges(partnerContacts, WriteTransaction);
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+
+        }
+
+        /// <summary>
         /// this is useful when applying contact details to a group of people at the same time
         /// </summary>
         /// <param name="APartnerKeys"></param>
@@ -110,7 +151,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AModuleID"></param>
         /// <param name="AMailingCode"></param>
         [RequireModulePermission("PTNRUSER")]
-        public static void AddContact(List <Int64>APartnerKeys,
+        public static void AddContactLog(List <Int64>APartnerKeys,
             DateTime AContactDate,
             string AContactor,
             string AMethodOfContact,

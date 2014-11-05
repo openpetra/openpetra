@@ -854,6 +854,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Add Contact Log record for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddContactLog(object sender, EventArgs e)
+        {
+            ucoExtractMasterList.AddContactLog(sender, e);
+        }
+
+        /// <summary>
         /// Add Partner Type for Partners in selected extract
         /// </summary>
         /// <param name="sender"></param>
