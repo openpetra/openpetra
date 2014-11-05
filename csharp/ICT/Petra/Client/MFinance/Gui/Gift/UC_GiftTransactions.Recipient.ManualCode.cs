@@ -145,24 +145,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (ACurrentDetailRow.IsRecipientKeyNull())
             {
                 ATxtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
-                UpdateRecipientKeyText(0, ACurrentDetailRow, ACmbMotivationDetailCode);
+                UpdateRecipientKeyText(0, ACurrentDetailRow, AMotivationGroup, AMotivationDetail);
             }
             else
             {
                 ATxtDetailRecipientKey.Text = String.Format("{0:0000000000}", ACurrentDetailRow.RecipientKey);
-                UpdateRecipientKeyText(ACurrentDetailRow.RecipientKey, ACurrentDetailRow, ACmbMotivationDetailCode);
+                UpdateRecipientKeyText(ACurrentDetailRow.RecipientKey, ACurrentDetailRow, AMotivationGroup, AMotivationDetail);
             }
 
             if (Convert.ToInt64(ATxtDetailRecipientKey.Text) == 0)
             {
                 OnRecipientPartnerClassChanged(null, ATxtDetailRecipientKey, AtxtDetailRecipientLedgerNumber, out AEnableRecipientGiftDestination);
             }
-            else
+
+            if (Convert.ToInt64(AtxtDetailRecipientLedgerNumber.Text) == 0)
             {
-                if (Convert.ToInt64(AtxtDetailRecipientLedgerNumber.Text) == 0)
-                {
-                    OnRecipientPartnerClassChanged(null, ATxtDetailRecipientKey, AtxtDetailRecipientLedgerNumber, out AEnableRecipientGiftDestination);
-                }
+                OnRecipientPartnerClassChanged(ATxtDetailRecipientKey.CurrentPartnerClass,
+                    ATxtDetailRecipientKey,
+                    AtxtDetailRecipientLedgerNumber,
+                    out AEnableRecipientGiftDestination);
             }
         }
 
@@ -195,9 +196,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AInEditModeFlag,
             bool ABatchUnpostedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
-            out bool ADoTaxUpdate)
+            out bool ADoTaxUpdate,
+            out string AAutoPopComment)
         {
             ADoTaxUpdate = false;
+            AAutoPopComment = null;
 
             if (!ABatchUnpostedFlag || !AInEditModeFlag || ATxtDetailRecipientKeyMinistry.Visible)
             {
@@ -220,6 +223,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         AMotivationGroup, AMotivationDetail, ATaxDeductiblePercentageEnabledFlag);
 
                     MotivationRecipientKey = motivationDetail.RecipientKey;
+
+                    // if motivation detail autopopulation is set to true
+                    if (motivationDetail.Autopopdesc)
+                    {
+                        AAutoPopComment = motivationDetail.MotivationDetailDesc;
+                    }
 
                     // set tax deductible checkbox if motivation detail has been changed by the user (i.e. not a row change)
                     if (!APetraUtilsObject.SuppressChangeDetection || ARecipientKeyChangingFlag)
@@ -259,7 +268,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (ARecipientKey == 0)
             {
-                UpdateRecipientKeyText(0, ACurrentDetailRow, ACmbMotivationDetailCode);
+                UpdateRecipientKeyText(0, ACurrentDetailRow, AMotivationGroup, AMotivationDetail);
             }
 
             RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
@@ -294,6 +303,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool ABatchUnpostedFlag,
             bool AMotivationDetailChangedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
+            bool ACreatingNewGiftFlag,
             bool AActiveOnly,
             out bool ADoValidateGiftDestination,
             out bool ADoTaxUpdate)
@@ -314,15 +324,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ACurrentDetailRow.RecipientKey = APartnerKey;
                 ACurrentDetailRow.RecipientDescription = APartnerShortName;
 
-                if (!AMotivationDetailChangedFlag && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
-                        APartnerKey, ref AMotivationGroup, ref AMotivationDetail))
+                // do not want to update motivation comboboxes if recipient key is being changed due to a new gift or the motivation detail being changed
+                if (!AMotivationDetailChangedFlag && !ACreatingNewGiftFlag
+                    && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(APartnerKey, ref AMotivationGroup, ref AMotivationDetail))
                 {
-                    if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
+                    if (ACmbMotivationGroupCode.GetSelectedString() != AMotivationGroup)
                     {
                         // note - this will also update the Motivation Detail
                         ACmbMotivationGroupCode.SetSelectedString(AMotivationGroup);
                     }
-                    else if (AMotivationDetail != ACmbMotivationDetailCode.GetSelectedString())
+
+                    if (ACmbMotivationDetailCode.GetSelectedString() != AMotivationDetail)
                     {
                         ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
                     }
@@ -367,7 +379,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    UpdateRecipientKeyText(APartnerKey, ACurrentDetailRow, ACmbMotivationDetailCode);
+                    UpdateRecipientKeyText(APartnerKey, ACurrentDetailRow, AMotivationGroup, AMotivationDetail);
                     RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
                 }
 
@@ -541,11 +553,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public static void UpdateRecipientKeyText(Int64 APartnerKey,
             GiftBatchTDSAGiftDetailRow ACurrentDetailRow,
-            TCmbAutoPopulated ACmbMotivationDetailCode)
+            string AMotivationGroupCode,
+            string AMotivationDetailCode)
         {
             if ((APartnerKey == 0) && (ACurrentDetailRow != null))
             {
-                ACurrentDetailRow.RecipientDescription = ACmbMotivationDetailCode.GetSelectedString();
+                if (AMotivationGroupCode != MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                {
+                    ACurrentDetailRow.RecipientDescription = AMotivationDetailCode;
+                }
+                else
+                {
+                    ACurrentDetailRow.RecipientDescription = string.Empty;
+                }
             }
         }
 
@@ -658,24 +678,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // If this method has been called as a result of a change in motivation detail then txtDetailRecipientKey has not yet been set...
             // but we do know that the recipient must be a Unit.
+
+            // if Family Recipient
             if (!AMotivationDetailChangedFlag && (ATxtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY))
             {
                 AtxtDetailRecipientLedgerNumber.Text = ACurrentDetailRow.RecipientLedgerNumber.ToString();
                 ACmbKeyMinistries.Clear();
+                ACmbKeyMinistries.Enabled = false;
             }
+            // if Unit Recipient
             else
             {
                 TFinanceControls.GetRecipientData(ref ACmbKeyMinistries, ref AtxtDetailRecipientLedgerNumber, APartnerKey, true);
-            }
 
-            // enable / disable combo box depending on whether it contains any key ministries
-            if ((ACmbKeyMinistries.Table == null) || (ACmbKeyMinistries.Table.Rows.Count == 0))
-            {
-                ACmbKeyMinistries.Enabled = false;
-            }
-            else
-            {
-                ACmbKeyMinistries.Enabled = true;
+                // enable / disable combo box depending on whether it contains any key ministries
+                if ((ACmbKeyMinistries.Table == null) || (ACmbKeyMinistries.Table.Rows.Count == 0))
+                {
+                    ACmbKeyMinistries.Enabled = false;
+                }
+                else
+                {
+                    ACmbKeyMinistries.Enabled = true;
+                }
             }
         }
 
@@ -738,7 +762,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if ((row.RecipientKey == 0) && (row.RecipientDescription != row.MotivationDetailCode))
                 {
-                    row.RecipientDescription = row.MotivationDetailCode;
+                    if (row.MotivationGroupCode != MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                    {
+                        row.RecipientDescription = row.MotivationDetailCode;
+                    }
+                    else
+                    {
+                        row.RecipientDescription = string.Empty;
+                    }
                 }
             }
         }
@@ -810,102 +841,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            string CurrentCostCentreCode = ARow.CostCentreCode;
-            string NewCostCentreCode = string.Empty;
+            string FailedUpdates = string.Empty;
 
-            Int64 RecipientField = Convert.ToInt64(AtxtDetailRecipientLedgerNumber.Text);
+            GiftBatchTDSAGiftDetailTable TableAGiftDetail = new GiftBatchTDSAGiftDetailTable();
 
-            string MotivationGroup = ARow.MotivationGroupCode;
-            string MotivationDetail = ARow.MotivationDetailCode;
+            TableAGiftDetail.ImportRow(ARow);
+            TableAGiftDetail.AcceptChanges();
 
-            Int64 RecipientLedgerNumber = ARow.RecipientLedgerNumber;
-            Int64 GiftDestinationForRecipient = TRemote.MFinance.Gift.WebConnectors.GetGiftDestinationForRecipient(APartnerKey, ARow.DateEntered);
+            string NewCostCentreCode = TRemote.MFinance.Gift.WebConnectors.UpdateCostCentreCodeForOneRecipient(AMainDS,
+                TableAGiftDetail,
+                out FailedUpdates);
 
-            Int64 LedgerPartnerKey = AMainDS.ALedger[0].PartnerKey;
-
-            bool KeyMinIsActive = false;
-            bool KeyMinExists = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(APartnerKey, out KeyMinIsActive);
-
-            string ValidLedgerNumberCostCentreCode;
-
-            string errMsg = string.Empty;
-
-            DataTable PartnerCostCentreTbl = TRemote.MFinance.Setup.WebConnectors.LoadCostCentrePartnerLinks(ALedgerNumber, APartnerKey);
-
-            if ((PartnerCostCentreTbl != null) && (PartnerCostCentreTbl.Rows.Count > 0))
-            {
-                NewCostCentreCode = (string)PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"];
-            }
-            else if (GiftDestinationForRecipient > 0)
-            {
-                NewCostCentreCode = GiftDestinationForRecipient.ToString();
-            }
-            else if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, APartnerKey, RecipientField,
-                         out ValidLedgerNumberCostCentreCode)
-                     || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, RecipientLedgerNumber,
-                         RecipientField,
-                         out ValidLedgerNumberCostCentreCode))
-            {
-                NewCostCentreCode = ValidLedgerNumberCostCentreCode;
-            }
-            else if ((RecipientLedgerNumber != LedgerPartnerKey) && ((MotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT) || KeyMinExists))
-            {
-                errMsg = String.Format(
-                    "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
-                    APartnerKey,
-                    ALedgerNumber,
-                    Environment.NewLine,
-                    RecipientLedgerNumber,
-                    LedgerPartnerKey);
-
-                if (AShowError)
-                {
-                    MessageBox.Show(errMsg,
-                        "Cost Centre Code Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-                }
-                else
-                {
-                    TLogging.Log("Cost Centre Code Error: " + errMsg);
-                }
-            }
-
-            if (NewCostCentreCode.Length == 0)
-            {
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
-                    new object[] { ALedgerNumber, MotivationGroup, MotivationDetail });
-
-                if (motivationDetail != null)
-                {
-                    NewCostCentreCode = motivationDetail.CostCentreCode;
-                }
-                else
-                {
-                    errMsg = String.Format(
-                        "Error in extracting Cost Centre Code for Motivation Group: {0} and Motivation Detail: {1} in Ledger: {2}.",
-                        MotivationGroup,
-                        MotivationDetail,
-                        ALedgerNumber);
-
-                    if (AShowError)
-                    {
-                        MessageBox.Show(errMsg,
-                            "Cost Centre Code Error",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Exclamation);
-                    }
-                    else
-                    {
-                        TLogging.Log("Cost Centre Code Error: " + errMsg);
-                    }
-                }
-            }
-
-            if (CurrentCostCentreCode != NewCostCentreCode)
+            if (ARow.CostCentreCode != NewCostCentreCode)
             {
                 ARow.CostCentreCode = NewCostCentreCode;
-                ATxtCostCentreCode.Text = NewCostCentreCode;
+            }
+
+            if (ATxtCostCentreCode.Text != ARow.CostCentreCode)
+            {
+                ATxtCostCentreCode.Text = ARow.CostCentreCode;
             }
         }
 
@@ -1013,6 +967,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //FMotivationbDetail will change by next process
             string motivationDetail = AMotivationDetail;
 
+            string AutoPopComment;
+
             ResetMotivationDetailCodeFilter(ACmbMotivationDetailCode, ref AMotivationDetail, AActiveOnly);
             TFinanceControls.ChangeFilterMotivationDetailList(ref ACmbMotivationDetailCode, AMotivationGroup);
             AMotivationDetail = motivationDetail;
@@ -1050,7 +1006,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AInEditModeFlag,
                     ABatchUnpostedFlag,
                     ATaxDeductiblePercentageEnabledFlag,
-                    out ADoTaxUpdate);
+                    out ADoTaxUpdate,
+                    out AutoPopComment);
             }
             else
             {
@@ -1078,7 +1035,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AInEditModeFlag,
                     ABatchUnpostedFlag,
                     ATaxDeductiblePercentageEnabledFlag,
-                    out ADoTaxUpdate);
+                    out ADoTaxUpdate,
+                    out AutoPopComment);
             }
 
             RetrieveMotivationDetailAccountCode(AMainDS, ALedgerNumber, ATxtDetailAccountCode, ATxtDeductibleAccount,

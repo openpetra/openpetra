@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void Search(object sender, EventArgs e)
         {
-            FMainDS.PPartnerContact.Clear();
+            FMainDS.PContactLog.Clear();
 
             FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContacts(
                     txtContactor.Text,
@@ -58,23 +58,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtModule.Text,
                     txtMailingCode.Text));
 
-            FMainDS.PPartnerContact.DefaultView.AllowNew = false;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PPartnerContact.DefaultView);
+            FMainDS.PContactLog.DefaultView.AllowNew = false;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PContactLog.DefaultView);
         }
 
         private void DeleteContacts(object Sender, EventArgs e)
         {
             if (MessageBox.Show(
-                    String.Format(Catalog.GetString("Do you really want to delete all {0} contacts?"), FMainDS.PPartnerContact.Count),
+                    String.Format(Catalog.GetString("Do you really want to delete all {0} contacts?"), FMainDS.PContactLog.Count),
                     Catalog.GetString("Confirm deletion"),
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
-                foreach (PPartnerContactRow row in FMainDS.PPartnerContact.Rows)
-                {
-                    row.Delete();
-                }
-
-                TRemote.MPartner.Partner.WebConnectors.DeleteContacts(FMainDS.PPartnerContact);
+                TRemote.MPartner.Partner.WebConnectors.DeleteContacts(FMainDS.PContactLog);
 
                 // refresh the grid
                 Search(Sender, e);

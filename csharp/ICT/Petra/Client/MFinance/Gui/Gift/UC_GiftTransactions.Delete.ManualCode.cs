@@ -288,7 +288,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return deletionSuccessful;
         }
 
-        private void PostDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete,
+        private void OnPostDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete,
             bool AAllowDeletion,
             bool ADeletionPerformed,
             string ACompletionMessage)

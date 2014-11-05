@@ -102,8 +102,9 @@ namespace Tests.MFinance.Server.Gift
             parameters.Add("NewLine", Environment.NewLine);
 
             TVerificationResultCollection VerificationResult = null;
+            GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
 
-            if (!importer.ImportGiftBatches(parameters, FileContent, out VerificationResult))
+            if (!importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult))
             {
                 Assert.Fail("Gift Batch was not imported: " + VerificationResult.BuildVerificationResultString());
             }
@@ -362,7 +363,7 @@ namespace Tests.MFinance.Server.Gift
             //
             // Act: Load the batch
             //
-            GiftBatchTDS GiftBatchDS = TGiftTransactionWebConnector.LoadTransactions(FLedgerNumber, GiftBatchNumber);
+            GiftBatchTDS GiftBatchDS = TGiftTransactionWebConnector.LoadGiftTransactions(FLedgerNumber, GiftBatchNumber);
 
             //
             // Assert
@@ -648,7 +649,7 @@ namespace Tests.MFinance.Server.Gift
             //
             // Act: Load the batch
             //
-            GiftBatchTDS GiftBatchDS = TGiftTransactionWebConnector.LoadRecurringTransactions(FLedgerNumber, RecurringGiftBatchNumber);
+            GiftBatchTDS GiftBatchDS = TGiftTransactionWebConnector.LoadRecurringGiftTransactions(FLedgerNumber, RecurringGiftBatchNumber);
 
             //
             // Assert

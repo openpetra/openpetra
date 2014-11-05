@@ -25,6 +25,8 @@ using System;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
+using System.Linq;
+// generateNamespaceMap-Link-Extra-DLL System.Data.DataSetExtensions;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Verification.Exceptions;
@@ -611,29 +613,42 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         APartnerKey, Transaction);
                 }
 
+                var partnerContacts = MPartner.Partner.WebConnectors.TContactsWebConnector.GetPartnerContacts(APartnerKey)
+                                      .AsEnumerable().Select(r => {
+                        var id = r.ItemArray[PPartnerContactTable.ColumnContactLogIdId];
+                        return new { ContactLogId = id, deleteThis = !TContactsWebConnector.IsContactLogAssociatedWithMoreThanOnePartner((long)id) };
+                    });;
+
                 // Delete contact attributes before deleting contacts
                 if (ResultValue)
                 {
                     String SqlStmt;
 
-                    try
+                    foreach (var row in partnerContacts)
                     {
-                        // build sql statement for deletion
-                        SqlStmt = "DELETE FROM " + PPartnerContactAttributeTable.GetTableDBName() +
-                                  " WHERE " + PPartnerContactAttributeTable.GetContactIdDBName() +
-                                  " IN (SELECT " + PPartnerContactTable.GetContactIdDBName() +
-                                  " FROM " + PPartnerContactTable.GetTableDBName() +
-                                  " WHERE " + PPartnerContactTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() + ")";
+                        if (row.deleteThis)
+                        {
+                            try
+                            {
+                                // build sql statement for deletion
+                                SqlStmt = "DELETE FROM " + PPartnerContactAttributeTable.GetTableDBName() +
+                                          " WHERE " + PPartnerContactAttributeTable.GetContactIdDBName() +
+                                          " IN (SELECT " + PPartnerContactTable.GetContactLogIdDBName() +
+                                          " FROM " + PPartnerContactTable.GetTableDBName() +
+                                          " WHERE " + PPartnerContactTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
+                                          " AND " + PPartnerContactTable.GetContactLogIdDBName() + " = " + row.ContactLogId + ")";
 
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
-                    }
-                    catch (Exception Exc)
-                    {
-                        TLogging.Log(
-                            "An Exception occured during the deletion of " + PPartnerContactAttributeTable.GetTableDBName() +
-                            " while deleting a partner: " + Environment.NewLine + Exc.ToString());
+                                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                            }
+                            catch (Exception Exc)
+                            {
+                                TLogging.Log(
+                                    "An Exception occured during the deletion of " + PPartnerContactAttributeTable.GetTableDBName() +
+                                    " while deleting a partner: " + Environment.NewLine + Exc.ToString());
 
-                        throw;
+                                throw;
+                            }
+                        }
                     }
                 }
 
@@ -642,6 +657,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ResultValue = DeleteEntries(PPartnerContactTable.GetTableDBName(),
                         PPartnerContactTable.GetPartnerKeyDBName(),
                         APartnerKey, Transaction);
+                }
+
+                // Delete any would-be orphaned ContactLog records
+                if (ResultValue)
+                {
+                    foreach (var r in partnerContacts.Where(p => p.deleteThis))
+                    {
+                        PContactLogAccess.DeleteByPrimaryKey((long)r.ContactLogId, Transaction);
+                    }
                 }
 
                 if (ResultValue)

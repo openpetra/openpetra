@@ -400,6 +400,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FActiveOnly != AActiveOnly)
             {
                 FActiveOnly = AActiveOnly;
+
                 FAccountAndCostCentreLogicObject.RefreshBankAccountAndCostCentreFilters(AActiveOnly, ARow);
             }
         }
@@ -542,7 +543,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             GetDataFromControls();
 
-            if (!TExWorkerAlert.CanContinueWithAnyExWorkers(TExWorkerAlert.GiftBatchAction.NEWBATCH, FMainDS, FPetraUtilsObject))
+            if (!TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(TExtraGiftBatchChecks.GiftBatchAction.NEWBATCH, FMainDS, FPetraUtilsObject))
             {
                 return;
             }
@@ -591,16 +592,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow);
 
             SelectRowInGrid(CurrentlySelectedRow);
-
-            //if (grdDetails.Rows.Count > 1)
-            //{
-            //    ((TFrmGiftBatch)ParentForm).EnableTransactions();
-            //}
-            //else
-            //{
-            //    ((TFrmGiftBatch)ParentForm).DisableTransactions();
-            //    ShowDetails(null);
-            //}
 
             UpdateRecordNumberDisplay();
         }
@@ -944,7 +935,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             txtDetailHashTotal.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(FPreviouslySelectedDetailRow.CurrencyCode);
 
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.Enabled =

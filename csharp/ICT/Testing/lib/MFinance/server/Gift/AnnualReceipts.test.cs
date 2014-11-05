@@ -22,26 +22,20 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
-using System.Text;
-using System.Configuration;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
-using System.IO;
 using System.Collections;
-using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using NUnit.Framework;
+
 using Ict.Testing.NUnitPetraServer;
 using Ict.Testing.NUnitTools;
 using Ict.Common;
-using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Verification;
-using Ict.Petra.Server.MFinance.Gift.WebConnectors;
-using Ict.Petra.Server.MCommon.DataReader.WebConnectors;
-using Ict.Petra.Server.MFinance.Gift;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Common.Data;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MFinance.Gift;
+using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Tests.MFinance.Server.Gift
 {
@@ -95,7 +89,9 @@ namespace Tests.MFinance.Server.Gift
             parameters.Add("NumberFormat", "American");
             parameters.Add("NewLine", Environment.NewLine);
 
-            if (!importer.ImportGiftBatches(parameters, FileContent, out VerificationResult))
+            GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
+
+            if (!importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult))
             {
                 return false;
             }

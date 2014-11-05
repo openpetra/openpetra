@@ -93,7 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             // first save any changes
-            if (!FMyForm.SaveChangesManual(TExWorkerAlert.GiftBatchAction.CANCELLING))
+            if (!FMyForm.SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction.CANCELLING))
             {
                 return false;
             }
@@ -116,7 +116,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.AGift.Clear();
 
                 //Load tables afresh
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, ACurrentBatchRow.BatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(FLedgerNumber, ACurrentBatchRow.BatchNumber));
 
                 FMyForm.ProcessRecipientCostCentreCodeUpdateErrors(false);
 

@@ -2057,7 +2057,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainContacts(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpContacts);
         }
 
         private void MaintainFamilyMembers(System.Object sender, System.EventArgs e)
@@ -2757,7 +2757,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 
 #if  SHOWUNFINISHEDTABS
-                case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
                     FInitiallySelectedTabPage = FShowTabPage;
 

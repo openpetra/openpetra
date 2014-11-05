@@ -1078,6 +1078,17 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
+        /// Count the subscriptions
+        /// </summary>
+        /// <param name="ATable">table with contacts</param>
+        /// <param name="ATotalContacts">returns the total number of contacts</param>
+        public static void CalculateTabCountsContacts(PContactLogTable ATable, out Int32 ATotalContacts)
+        {
+            // Inspect only CurrentRows (this excludes Deleted DataRows)
+            ATotalContacts = new DataView(ATable, "", "", DataViewRowState.CurrentRows).Count;
+        }
+
+        /// <summary>
         /// Count the relationships
         /// </summary>
         /// <param name="ATable">table with subscriptions</param>

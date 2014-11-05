@@ -43,6 +43,8 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 
 
@@ -152,11 +154,14 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// </summary>
         /// <param name="ARequestParams">Hashtable containing the given params </param>
         /// <param name="AImportString">Big parts of the export file as a simple String</param>
+        /// <param name="ANeedRecipientLedgerNumber">Gifts in this table are responsible for failing the
+        /// import becuase their Family recipients do not have an active Gift Destination</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         public bool ImportGiftBatches(
             Hashtable ARequestParams,
             String AImportString,
+            out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
             out TVerificationResultCollection AMessages
             )
         {
@@ -171,6 +176,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             AMessages = new TVerificationResultCollection();
             FMainDS = new GiftBatchTDS();
             StringReader sr = new StringReader(AImportString);
+            ANeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
 
             // Parse the supplied parameters
             FDelimiter = (String)ARequestParams["Delimiter"];
@@ -389,7 +395,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                             AGiftRow gift = FMainDS.AGift.NewRowTyped(true);
                             AGiftDetailRow giftDetails;
                             ParseTransactionLine(gift, giftBatch, ref previousGift, numberOfElements, ref totalBatchAmount, ref ImportMessage,
-                                RowNumber, AMessages, ValidationControlsDictGift, ValidationControlsDictGiftDetail, CostCentreTable, out giftDetails);
+                                RowNumber, AMessages, ValidationControlsDictGift, ValidationControlsDictGiftDetail, CostCentreTable,
+                                ref ANeedRecipientLedgerNumber, out giftDetails);
 
                             if (TaxDeductiblePercentageEnabled)
                             {
@@ -492,7 +499,16 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                     TLogging.Log("Return from here!");
 
+                    // we do not want to think about Gift Destination problems if the import has failed for another reason
+                    ANeedRecipientLedgerNumber.Clear();
+
                     // Do the 'finally' actions and return false
+                    return false;
+                }
+
+                // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination then the import will fail
+                if (ANeedRecipientLedgerNumber.Rows.Count > 0)
+                {
                     return false;
                 }
 
@@ -701,7 +717,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         private void ParseTransactionLine(AGiftRow AGift, AGiftBatchRow AGiftBatch, ref AGiftRow APreviousGift, int ANumberOfColumns,
             ref decimal ATotalBatchAmount, ref string AImportMessage, int ARowNumber, TVerificationResultCollection AMessages,
             TValidationControlsDict AValidationControlsDictGift, TValidationControlsDict AValidationControlsDictGiftDetail,
-            ACostCentreTable AValidationCostCentreTable, out AGiftDetailRow AGiftDetails)
+            ACostCentreTable AValidationCostCentreTable, ref GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber, out AGiftDetailRow AGiftDetails)
         {
             //this is the format with extra columns
             bool HasExtraColumns = (ANumberOfColumns >= 27);
@@ -777,6 +793,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                 AGiftDetails.RecipientLedgerNumber = ImportInt32(Catalog.GetString("Recipient ledger number"),
                     FMainDS.AGiftDetail.ColumnRecipientLedgerNumber, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
             }
+            else
+            {
+                // calculate RecipientLedgerNumber
+                AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
+                    AGiftDetails.RecipientKey, AGiftBatch.GlEffectiveDate);
+            }
 
             decimal currentGiftAmount = ImportDecimal(Catalog.GetString("Gift amount"),
                 FMainDS.AGiftDetail.ColumnGiftTransactionAmount, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
@@ -830,6 +852,20 @@ namespace Ict.Petra.Server.MFinance.Gift
                 FMainDS.AGiftDetail.ColumnTaxDeductible, AValidationControlsDictGiftDetail);
 
             AGift.DateEntered = AGiftBatch.GlEffectiveDate;
+
+            // If the gift has a Family recipient with no Gift Destination then the import will fail. Gift is added to a table and returned to client.
+            if ((AGiftDetails.RecipientLedgerNumber == 0) && (AGiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT))
+            {
+                TPartnerClass RecipientClass;
+                string RecipientDescription;
+                TPartnerServerLookups.GetPartnerShortName(AGiftDetails.RecipientKey, out RecipientDescription, out RecipientClass);
+
+                if (RecipientClass == TPartnerClass.FAMILY)
+                {
+                    ((GiftBatchTDSAGiftDetailRow)AGiftDetails).RecipientDescription = RecipientDescription;
+                    ANeedRecipientLedgerNumber.Rows.Add((object[])AGiftDetails.ItemArray.Clone());
+                }
+            }
 
             AImportMessage = Catalog.GetString("Validating the gift data");
 

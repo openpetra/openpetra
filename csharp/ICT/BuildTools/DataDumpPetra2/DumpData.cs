@@ -231,7 +231,11 @@ namespace Ict.Tools.DataDumpPetra2
                     MyWriterCount = new StreamWriter(outStreamCount);
                 }
 
-                MyWriter.WriteLine("COPY " + newTable.strName + " FROM stdin;");
+                // The p_partner_contact table needs to write p_contact_log records first, so handle the COPY manually
+                if (newTable.strName != "p_partner_contact")
+                {
+                    MyWriter.WriteLine("COPY " + newTable.strName + " FROM stdin;");
+                }
 
                 int ProcessedRows = TFixData.MigrateData(Parser, MyWriter, MyWriterTest, oldTable, newTable);
 

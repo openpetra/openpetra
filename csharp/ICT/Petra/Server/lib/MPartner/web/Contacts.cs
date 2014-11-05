@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, andreww
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,7 +25,9 @@ using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Data;
+// generateNamespaceMap-Link-Extra-DLL System.Data.DataSetExtensions;
 using System.Data.Odbc;
+using System.Linq;
 using System.Xml;
 using System.IO;
 using GNU.Gettext;
@@ -50,17 +52,67 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
     public class TContactsWebConnector
     {
         /// <summary>
+        ///
+        /// </summary>
+        /// <param name="contactId"></param>
+        /// <param name="APartnerKeys"></param>
+        /// <param name="attributeCode"></param>
+        /// <param name="attributeDetailCode"></param>
+        [RequireModulePermission("PTNRUSER")]
+        public static void AddContactAttributeToContacts(int contactId,
+            List <Int64>APartnerKeys,
+            List <int>attributeCode,
+            List <int>attributeDetailCode)
+        {
+            Boolean NewTransaction;
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            try
+            {
+                PPartnerContactAttributeTable attributes = new PPartnerContactAttributeTable();
+
+                for (int i = 0; i < APartnerKeys.Count; i++)
+                {
+                    PPartnerContactAttributeRow row = attributes.NewRowTyped();
+                    row.ContactId = contactId;
+                }
+
+                PPartnerContactAttributeAccess.SubmitChanges(attributes, WriteTransaction);
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured while associating a Contact with a ContactAttribute:" + Environment.NewLine + Exc.ToString());
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// this is useful when applying contact details to a group of people at the same time
         /// </summary>
         /// <param name="APartnerKeys"></param>
         /// <param name="AContactDate"></param>
+        /// <param name="AContactor"></param>
         /// <param name="AMethodOfContact"></param>
         /// <param name="AComment"></param>
         /// <param name="AModuleID"></param>
-        /// <param name="AMailingCode">can be empty string</param>
+        /// <param name="AMailingCode"></param>
         [RequireModulePermission("PTNRUSER")]
         public static void AddContact(List <Int64>APartnerKeys,
             DateTime AContactDate,
+            string AContactor,
             string AMethodOfContact,
             string AComment,
             string AModuleID,
@@ -73,31 +125,36 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             try
             {
-                PPartnerContactTable contacts = new PPartnerContactTable();
+                PContactLogTable contacts = new PContactLogTable();
+                PContactLogRow contact = contacts.NewRowTyped();
+                contact.ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", WriteTransaction);
+                contact.ContactDate = new DateTime(AContactDate.Year, AContactDate.Month, AContactDate.Day);
+                //contact.ContactTime = AContactDate.Hour * 60 + AContactDate.Minute;
+                contact.ContactCode = AMethodOfContact;
+                contact.ContactComment = AComment;
+                contact.ModuleId = AModuleID;
+                contact.Contactor = AContactor;
+                contact.UserId = UserInfo.GUserInfo.UserID;
+                contacts.Rows.Add(contact);
 
-                foreach (Int64 partnerKey in APartnerKeys)
+                if (AMailingCode.Length > 0)
                 {
-                    PPartnerContactRow contact = contacts.NewRowTyped();
-                    contact.ContactId = (contacts.Count + 1) * -1;
-                    contact.PartnerKey = partnerKey;
-                    contact.ContactDate = new DateTime(AContactDate.Year, AContactDate.Month, AContactDate.Day);
-                    contact.ContactTime = AContactDate.Hour * 60 + AContactDate.Minute;
-                    contact.ContactCode = AMethodOfContact;
-                    contact.ContactComment = AComment;
-                    contact.ModuleId = AModuleID;
-                    contact.Contactor = UserInfo.GUserInfo.UserID;
-
-                    if (AMailingCode.Length > 0)
-                    {
-                        contact.MailingCode = AMailingCode;
-                    }
-
-                    // TODO: restrictions implemented via p_restricted_l or s_user_id_c
-
-                    contacts.Rows.Add(contact);
+                    contact.MailingCode = AMailingCode;
                 }
 
-                PPartnerContactAccess.SubmitChanges(contacts, WriteTransaction);
+                // TODO: restrictions implemented via p_restricted_l or s_user_id_c
+
+                PPartnerContactTable partnerContacts = new PPartnerContactTable();
+                APartnerKeys.ForEach(partnerKey =>
+                    {
+                        PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
+                        partnerContact.ContactLogId = contact.ContactLogId;
+                        partnerContact.PartnerKey = partnerKey;
+                        partnerContacts.Rows.Add(partnerContact);
+                    });
+
+                PContactLogAccess.SubmitChanges(contacts, WriteTransaction);
+                PPartnerContactAccess.SubmitChanges(partnerContacts, WriteTransaction);
 
                 if (NewTransaction)
                 {
@@ -128,7 +185,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AMailingCode">can be an empty string</param>
         /// <returns>the contacts table with all contacts that match</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static PPartnerContactTable FindContacts(string AContactor,
+        public static PContactLogTable FindContacts(string AContactor,
             DateTime? AContactDate,
             string ACommentContains,
             string AMethodOfContact,
@@ -136,15 +193,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string AMailingCode)
         {
             Boolean NewTransaction;
-            PPartnerContactTable contacts = new PPartnerContactTable();
+            PContactLogTable contacts = new PContactLogTable();
 
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
             {
-                PPartnerContactTable TempTable = new PPartnerContactTable();
-                PPartnerContactRow TemplateRow = TempTable.NewRowTyped(false);
+                PContactLogTable TempTable = new PContactLogTable();
+                PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
 
                 if (AContactor.Length > 0)
                 {
@@ -171,7 +228,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     TemplateRow.MailingCode = AMailingCode;
                 }
 
-                contacts = PPartnerContactAccess.LoadUsingTemplate(TemplateRow, WriteTransaction);
+                contacts = PContactLogAccess.LoadUsingTemplate(TemplateRow, WriteTransaction);
 
                 Int32 Counter = 0;
 
@@ -202,13 +259,105 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// This returns all Contact Logs associated with a particular partner.
+        /// </summary>
+        /// <param name="partnerKey"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PContactLogTable FindContactLogsForPartner(long partnerKey)
+        {
+            Boolean NewTransaction;
+            PContactLogTable contacts = new PContactLogTable();
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            try
+            {
+                PContactLogTable TempTable = new PContactLogTable();
+                PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
+
+                contacts = PContactLogAccess.LoadViaPPartnerPPartnerContact(partnerKey, WriteTransaction);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return contacts;
+        }
+
+        /// <summary>
+        /// This returns the PartnerContact records
+        /// </summary>
+        /// <param name="partnerKey"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PPartnerContactTable GetPartnerContacts(long partnerKey)
+        {
+            Boolean NewTransaction;
+            PPartnerContactTable partnerContacts = new PPartnerContactTable();
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            try
+            {
+                PContactLogTable TempTable = new PContactLogTable();
+                PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
+
+                partnerContacts = PPartnerContactAccess.LoadViaPPartner(partnerKey, WriteTransaction);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return partnerContacts;
+        }
+
+        /// <summary>
+        /// Determines whether this ContactLog is associated with more than one Partner
+        /// </summary>
+        /// <param name="contactLogId"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool IsContactLogAssociatedWithMoreThanOnePartner(long contactLogId)
+        {
+            Boolean NewTransaction;
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            bool returnValue = PPartnerContactAccess.CountViaPContactLog(contactLogId, WriteTransaction) > 1;
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+
+            return returnValue;
+        }
+
+        /// <summary>
         /// delete all contacts that have been marked for deletion.
         /// this should help when something went wrong and needs to be corrected
         /// </summary>
-        /// <param name="APartnerContacts">table with deleted rows. edited or untouched rows will not be deleted.</param>
+        /// <param name="AContactLogs">table with deleted rows. edited or untouched rows will not be deleted.</param>
         [RequireModulePermission("PTNRUSER")]
         public static void DeleteContacts(
-            PPartnerContactTable APartnerContacts)
+            PContactLogTable AContactLogs)
         {
             Boolean NewTransaction;
 
@@ -217,22 +366,21 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             try
             {
-                Int32 Counter = 0;
-
-                while (Counter < APartnerContacts.Rows.Count)
+                foreach (PContactLogRow contactLogRow in AContactLogs.Rows)
                 {
-                    // remove all rows from the table that are not deleted
-                    if (APartnerContacts.Rows[Counter].RowState != DataRowState.Deleted)
+                    var contactLogs = PPartnerContactAccess.LoadViaPContactLog((long)contactLogRow[PContactLogTable.ColumnContactLogIdId],
+                        WriteTransaction);
+
+                    foreach (PPartnerContactRow partnerContactRow in contactLogs.Rows)
                     {
-                        APartnerContacts.Rows.RemoveAt(Counter);
+                        partnerContactRow.Delete();
                     }
-                    else
-                    {
-                        Counter++;
-                    }
+
+                    PPartnerContactAccess.SubmitChanges(contactLogs, WriteTransaction);
+                    contactLogRow.Delete();
                 }
 
-                PPartnerContactAccess.SubmitChanges(APartnerContacts, WriteTransaction);
+                PContactLogAccess.SubmitChanges(AContactLogs, WriteTransaction);
 
                 if (NewTransaction)
                 {
@@ -241,7 +389,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
             catch (Exception Exc)
             {
-                TLogging.Log("An Exception occured during the deletion of Contacts:" + Environment.NewLine + Exc.ToString());
+                TLogging.Log("An Exception occured during the deletion of Contact Logs:" + Environment.NewLine + Exc.ToString());
 
                 if (NewTransaction)
                 {

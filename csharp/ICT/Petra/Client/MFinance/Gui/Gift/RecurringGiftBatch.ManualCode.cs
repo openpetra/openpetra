@@ -48,7 +48,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FLedgerNumber = value;
-                ucoRecurringBatches.LoadRecurringBatches(FLedgerNumber);
+
+                // setting the ledger number on the batch screen will automatically trigger loading the batches for the current year
+                ucoRecurringBatches.LedgerNumber = value;
 
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
@@ -62,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAll()
         {
-            ucoRecurringBatches.RefreshAll();
+            ucoRecurringBatches.RefreshAllData();
         }
 
         private void FileSaveManual(object sender, EventArgs e)
@@ -76,19 +78,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if Save is successful</returns>
         public bool SaveChangesManual()
         {
-            return SaveChangesManual(TExWorkerAlert.GiftBatchAction.SAVING);
+            return SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction.SAVING);
         }
 
         /// <summary>
         /// Check for ExWorkers before saving or cancelling
         /// </summary>
         /// <returns>True if Save is successful</returns>
-        public bool SaveChangesManual(TExWorkerAlert.GiftBatchAction AAction)
+        public bool SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction AAction)
         {
             GetDataFromControls();
 
             // first alert the user to any recipients who are Ex-Workers
-            if (TExWorkerAlert.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
+            if (TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
             {
                 return SaveChanges();
             }
@@ -107,8 +109,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             GetDataFromControls();
 
             // first alert the user to any recipients who are Ex-Workers
-            ACancelledDueToExWorker = !TExWorkerAlert.CanContinueWithAnyExWorkers(
-                TExWorkerAlert.GiftBatchAction.SUBMITTING, FMainDS, FPetraUtilsObject, ASubmittingGiftDetails);
+            ACancelledDueToExWorker = !TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(
+                TExtraGiftBatchChecks.GiftBatchAction.SUBMITTING, FMainDS, FPetraUtilsObject, ASubmittingGiftDetails);
 
             if (!ACancelledDueToExWorker)
             {
@@ -212,10 +214,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tpgRecurringTransactions.Enabled = AEnable;
         }
 
+        /// <summary>
         /// enable the transaction tab page
+        /// </summary>
         public void DisableTransactions()
         {
             this.tpgRecurringTransactions.Enabled = false;
+        }
+
+        /// <summary>
+        /// disable the batches tab
+        /// </summary>
+        public void DisableBatches()
+        {
+            this.tpgRecurringBatches.Enabled = false;
         }
 
         /// <summary>
@@ -369,6 +381,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// Ensure the data is loaded for the specified batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns>If transactions exist</returns>
+        public Boolean EnsureGiftDataPresent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            DataView TransDV = new DataView(FMainDS.ARecurringGiftDetail);
+
+            TransDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                ARecurringGiftDetailTable.GetLedgerNumberDBName(),
+                ALedgerNumber,
+                ARecurringGiftDetailTable.GetBatchNumberDBName(),
+                ABatchNumber);
+
+            if (TransDV.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactions(ALedgerNumber, ABatchNumber));
+            }
+
+            return TransDV.Count > 0;
+        }
+
+        /// <summary>
+        /// find a special gift detail
+        /// </summary>
+        public void FindGiftDetail(ARecurringGiftDetailRow gdr)
+        {
+            //TODO add to other forms
+            //ucoRecurringBatches.SelectBatchNumber(gdr.BatchNumber);
+            //ucoRecurringTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
+            //standardTabIndex = 1;     // later we switch to the detail tab
+        }
+
         private int GetChangedRecordCountManual(out string AMessage)
         {
             // For Gift Batch we will
@@ -454,6 +501,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             return allChangesCount;
+        }
+
+        /// <summary>
+        /// Check if batch columns have actually changed
+        /// </summary>
+        /// <param name="ARecurringBatchRow"></param>
+        /// <returns></returns>
+        public bool BatchColumnsHaveChanged(ARecurringGiftBatchRow ARecurringBatchRow)
+        {
+            bool RetVal = false;
+
+            if (ARecurringBatchRow.RowState != DataRowState.Unchanged)
+            {
+                bool columnValueChanged = false;
+
+                for (int i = 0; i < FMainDS.ARecurringGiftBatch.Columns.Count; i++)
+                {
+                    string originalValue = ARecurringBatchRow[i, DataRowVersion.Original].ToString();
+                    string currentValue = ARecurringBatchRow[i, DataRowVersion.Current].ToString();
+
+                    if (originalValue != currentValue)
+                    {
+                        columnValueChanged = true;
+                        break;
+                    }
+                }
+
+                if (!columnValueChanged)
+                {
+                    ARecurringBatchRow.RejectChanges();
+                }
+
+                RetVal = columnValueChanged;
+            }
+
+            return RetVal;
         }
 
         #region Forms Messaging Interface Implementation
