@@ -620,8 +620,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             try
             {
                 ACostCentreNode.CostCentreRow.CostCentreCode = NewValue;
-                ACostCentreNode.CostCentreRow.CostCentreToReportTo = NewValue;
-
                 return true;
             }
             catch (System.Data.ConstraintException)
