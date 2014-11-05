@@ -118,7 +118,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             long ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", WriteTransaction);
 
-            ContactLogTable.Rows[0][PContactLogTable.ColumnContactCodeId] = ContactLogId;
+            ContactLogTable.Rows[0][PContactLogTable.ColumnContactLogIdId] = ContactLogId;
 
 
             PPartnerContactTable partnerContacts = new PPartnerContactTable();

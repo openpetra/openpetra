@@ -627,7 +627,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     MessageText =
                         string.Format(Catalog.GetString(
                                 "Contact Log {0} - {1} successfully added for {2} Partner(s) in Extract {3}."),
-                            ContactLogRow.ContactCode, ContactLogRow.ContactDate, GetSelectedDetailRow().ExtractName);
+                            ContactLogRow.ContactCode, ContactLogRow.ContactDate, GetSelectedDetailRow().KeyCount, GetSelectedDetailRow().ExtractName);
 
                     MessageBox.Show(MessageText,
                         Catalog.GetString("Add Contact Log"),
