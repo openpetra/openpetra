@@ -65,7 +65,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                 // NOT NULL checks
                 if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsNotNullChecks,
-                        out ReasonForAutomValidation))
+                        currentTable.grpConstraint, out ReasonForAutomValidation))
                 {
                     if (col.GetDotNetType().Contains("DateTime"))
                     {
@@ -98,7 +98,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                         snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
                     }
 
-                    // Additionally we do not allow empty string in primary keys
+                    // Additionally we do not allow empty string in primary keys or columns that are foreign keys
                     if (col.GetDotNetType().Contains("String") && ReasonForAutomValidation.Contains(" and "))
                     {
                         validateColumnTemplate = Template.GetSnippet("CHECKEMPTYSTRING");
@@ -119,7 +119,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     // Date checks
                     // If a NULL date is not allowed we will have already tested for that above
                     if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsDateChecks,
-                            out ReasonForAutomValidation))
+                            null, out ReasonForAutomValidation))
                     {
                         columnTemplate = Template.GetSnippet("VALIDATECOLUMN2");
                         columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
@@ -138,7 +138,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                 // String Length checks
                 if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsStringLengthChecks,
-                        out ReasonForAutomValidation))
+                        null, out ReasonForAutomValidation))
                 {
                     columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
                     columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
@@ -155,7 +155,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                 // Number Range checks
                 if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsNumberRangeChecks,
-                        out ReasonForAutomValidation))
+                        null, out ReasonForAutomValidation))
                 {
                     columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
                     columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
