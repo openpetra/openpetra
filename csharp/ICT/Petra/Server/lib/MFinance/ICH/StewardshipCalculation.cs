@@ -213,9 +213,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                    " AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " <= " + strPeriodEndDate +
                                    " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName();
 
-                DataTable GiftBatchTbl = DBAccess.GDBAccessObj.SelectDT(GiftQuery, "AGiftBatch", DBTransaction);
-
-                GiftBatchTable.Merge(GiftBatchTbl);
+                DBAccess.GDBAccessObj.SelectDT(GiftBatchTable, GiftQuery, DBTransaction);
 
                 //Create a new batch. If it turns out I don't need one, I can delete it later.
                 GLBatchTDS MainDS = TGLPosting.CreateABatch(ALedgerNumber, Catalog.GetString("ICH Stewardship"), 0, PeriodEndDate);
