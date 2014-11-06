@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             FMainDS.PContactLog.Rows.Add(ContactLogRow);
 
             ucoContactLog.MainDS = FMainDS;
-            //ucoContactLog.SpecialInitUserControl();
+            ucoContactLog.SpecialInitUserControl();
             FPetraUtilsObject.HasChanges = false;
         }
 

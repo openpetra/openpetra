@@ -48,6 +48,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             get; set;
         }
 
+        /// <summary>todoComment</summary>
+        public void SpecialInitUserControl()
+        {
+            if (FValidationControlsDict.Count == 0)
+            {
+                BuildValidationControlsDict();
+            }
+        }
+
         private PContactLogRow GetSelectedMasterRow()
         {
             return FContactDR;
@@ -61,18 +70,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FInitializationRunning = true;
 
-            // set member
             FContactDR = ARow;
-
+            
             ShowData(ARow);
-
-            if (FValidationControlsDict.Count == 0)
-            {
-                BuildValidationControlsDict();
-            }
-
-            //txtPublicationCost.ReadOnly = true;
-
             FInitializationRunning = false;
         }
 

@@ -113,29 +113,43 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-            var extractTable = MExtractAccess.LoadViaMExtractMaster(ExtractId, WriteTransaction).AsEnumerable();
-            var partnerKeys = extractTable.Select(e => e.ItemArray[MExtractTable.ColumnPartnerKeyId]);
-
-            long ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", WriteTransaction);
-
-            ContactLogTable.Rows[0][PContactLogTable.ColumnContactLogIdId] = ContactLogId;
-
-
-            PPartnerContactTable partnerContacts = new PPartnerContactTable();
-            partnerKeys.ToList().ForEach(partnerKey =>
+            try
             {
-                PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
-                partnerContact.ContactLogId = ContactLogId;
-                partnerContact.PartnerKey = (long)partnerKey;
-                partnerContacts.Rows.Add(partnerContact);
-            });
+                var extractTable = MExtractAccess.LoadViaMExtractMaster(ExtractId, WriteTransaction).AsEnumerable();
+                var partnerKeys = extractTable.Select(e => e.ItemArray[MExtractTable.ColumnPartnerKeyId]);
 
-            PContactLogAccess.SubmitChanges(ContactLogTable, WriteTransaction);
-            PPartnerContactAccess.SubmitChanges(partnerContacts, WriteTransaction);
+                long ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", WriteTransaction);
 
-            if (NewTransaction)
+                ContactLogTable.Rows[0][PContactLogTable.ColumnContactLogIdId] = ContactLogId;
+
+                PPartnerContactTable partnerContacts = new PPartnerContactTable();
+                partnerKeys.ToList().ForEach(partnerKey =>
+                {
+                    PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
+                    partnerContact.ContactLogId = ContactLogId;
+                    partnerContact.PartnerKey = (long)partnerKey;
+                    partnerContacts.Rows.Add(partnerContact);
+                });
+
+                PContactLogAccess.SubmitChanges(ContactLogTable, WriteTransaction);
+                PPartnerContactAccess.SubmitChanges(partnerContacts, WriteTransaction);
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception e)
             {
-                DBAccess.GDBAccessObj.CommitTransaction();
+                TLogging.Log(
+                    "An Exception occured during the adding of a Contact to Partners in an Extract:" + 
+                    Environment.NewLine + e.ToString());
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+                throw;
             }
 
         }

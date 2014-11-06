@@ -104,6 +104,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpContacts));
             //Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
+            ucoDetails.SpecialInitUserControl();
         }
 
         private Boolean LoadDataOnDemand()
