@@ -213,9 +213,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             /*if (ReturnValue != null)
-            {
-                TPPartnerAddressAggregate.ApplySecurity(ref ReturnValue);
-            }*/
+             * {
+             *  TPPartnerAddressAggregate.ApplySecurity(ref ReturnValue);
+             * }*/
 
             return ReturnValue;
         }

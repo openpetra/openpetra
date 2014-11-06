@@ -57,20 +57,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void PopulateGrid(bool AFirstTime)
         {
             BoundDataView GiftsView = new BoundDataView(FGiftTbl.DefaultView);
+
             GiftsView.AllowNew = false;
             grdDetails.DataSource = GiftsView;
-            
+
             if (AFirstTime)
             {
-	            grdDetails.Columns.Clear();
-	            grdDetails.AddCheckBoxColumn("Sel", FGiftTbl.Columns["Selected"], 30, false);
-	            grdDetails.AddTextColumn("Recpt#", FGiftTbl.Columns["ReceiptNumber"]);
-	            grdDetails.AddDateColumn("Date", FGiftTbl.Columns["DateEntered"]);
-	            grdDetails.AddTextColumn("Donor", FGiftTbl.Columns["Donor"]);
-	            grdDetails.AddTextColumn("Batch#", FGiftTbl.Columns["BatchNumber"]);
-	            grdDetails.AddTextColumn("Ref", FGiftTbl.Columns["Reference"]);
+                grdDetails.Columns.Clear();
+                grdDetails.AddCheckBoxColumn("Sel", FGiftTbl.Columns["Selected"], 30, false);
+                grdDetails.AddTextColumn("Recpt#", FGiftTbl.Columns["ReceiptNumber"]);
+                grdDetails.AddDateColumn("Date", FGiftTbl.Columns["DateEntered"]);
+                grdDetails.AddTextColumn("Donor", FGiftTbl.Columns["Donor"]);
+                grdDetails.AddTextColumn("Batch#", FGiftTbl.Columns["BatchNumber"]);
+                grdDetails.AddTextColumn("Ref", FGiftTbl.Columns["Reference"]);
             }
-            
+
             UpdateRecordNumberDisplay();
         }
 
@@ -343,18 +344,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return ReturnTable;
         }
 
-	    ///<summary>
-	    /// Update the text in the button panel indicating details of the record count
-	    /// </summary>
-	    private void UpdateRecordNumberDisplay()
-	    {
-	        if (grdDetails.DataSource != null)
-	        {
-	            int RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-	            lblRecordCounter.Text = String.Format(
-	                Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount, true),
-	                RecordCount);
-	        }
-	    }
+        ///<summary>
+        /// Update the text in the button panel indicating details of the record count
+        /// </summary>
+        private void UpdateRecordNumberDisplay()
+        {
+            if (grdDetails.DataSource != null)
+            {
+                int RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+                lblRecordCounter.Text = String.Format(
+                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
+                        true),
+                    RecordCount);
+            }
+        }
     }
 }

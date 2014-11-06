@@ -695,18 +695,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 foreach (DataRow Row in AGiftTbl.Rows)
                 {
                     String SqlQuery = "SELECT DISTINCT " +
-	                      "a_date_entered_d AS DateEntered," +
-	                      "p_partner_short_name_c AS Donor," +
-	                      "p_donor_key_n AS DonorKey," +
-	                      "p_partner_class_c AS DonorClass," +
-	                      "a_reference_c AS Reference, " +
-	                      "a_currency_code_c AS GiftCurrency " +
-	                      "FROM PUB_a_gift LEFT JOIN PUB_p_partner on PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n " +
-	                      "LEFT JOIN PUB_a_gift_batch ON PUB_a_gift.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i AND PUB_a_gift.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i "
-	                      +
-	                      "WHERE PUB_a_gift.a_ledger_number_i=" + ALedgerNumber +
-                    	  " AND PUB_a_gift.a_batch_number_i=" + Row["BatchNumber"] +
-                    	  " AND PUB_a_gift.a_gift_transaction_number_i=" + Row["TransactionNumber"];
+                                      "a_date_entered_d AS DateEntered," +
+                                      "p_partner_short_name_c AS Donor," +
+                                      "p_donor_key_n AS DonorKey," +
+                                      "p_partner_class_c AS DonorClass," +
+                                      "a_reference_c AS Reference, " +
+                                      "a_currency_code_c AS GiftCurrency " +
+                                      "FROM PUB_a_gift LEFT JOIN PUB_p_partner on PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n " +
+                                      "LEFT JOIN PUB_a_gift_batch ON PUB_a_gift.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i AND PUB_a_gift.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i "
+                                      +
+                                      "WHERE PUB_a_gift.a_ledger_number_i=" + ALedgerNumber +
+                                      " AND PUB_a_gift.a_batch_number_i=" + Row["BatchNumber"] +
+                                      " AND PUB_a_gift.a_gift_transaction_number_i=" + Row["TransactionNumber"];
 
                     DataRow TempRow = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction).Rows[0];
 
@@ -720,7 +720,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         GiftsPerDonor.Add(DonorKey, new AGiftTable());
                         DonorInfo.Add(DonorKey, new TempDonorInfo());
                     }
-                    
+
                     TempDonorInfo DonorRow = DonorInfo[DonorKey];
                     DonorRow.DonorShortName = TempRow["Donor"].ToString();
                     DonorRow.DonorClass = SharedTypes.PartnerClassStringToEnum(TempRow["DonorClass"].ToString());
@@ -734,7 +734,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     GiftRow.Reference = TempRow["Reference"].ToString();
                     GiftRow.DateEntered = Convert.ToDateTime(TempRow["DateEntered"]);
                     GiftsPerDonor[DonorKey].Rows.Add(GiftRow);
-
                 } // foreach Row
 
                 foreach (Int64 DonorKey in GiftsPerDonor.Keys)
@@ -808,10 +807,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             foreach (DataRow Row in AGiftTbl.Rows)
             {
                 Tbl.Merge(AGiftAccess.LoadByPrimaryKey(
-                            ALedgerNumber,
-                            Convert.ToInt32(Row["BatchNumber"]),
-                            Convert.ToInt32(Row["TransactionNumber"]),
-                            Transaction));
+                        ALedgerNumber,
+                        Convert.ToInt32(Row["BatchNumber"]),
+                        Convert.ToInt32(Row["TransactionNumber"]),
+                        Transaction));
             }
 
             foreach (AGiftRow Row in Tbl.Rows)

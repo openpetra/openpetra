@@ -267,7 +267,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                 foreach (ARecurringGiftDetailRow recGiftDetail in RMainDS.ARecurringGiftDetail.Rows)
                                 {
-                                	//decimal amtIntl = 0M;
+                                    //decimal amtIntl = 0M;
                                     decimal amtBase = 0M;
                                     decimal amtTrans = 0M;
 
