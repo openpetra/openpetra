@@ -159,6 +159,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdAccounts.Columns.Clear();
             grdAccounts.AddTextColumn("Code", MainDS.AAccount.ColumnAccountCode);
             grdAccounts.AddTextColumn("Descr", MainDS.AAccount.ColumnAccountCodeShortDesc);
+            grdAccounts.AutoResizeGrid();
         }
 
         /// <summary>

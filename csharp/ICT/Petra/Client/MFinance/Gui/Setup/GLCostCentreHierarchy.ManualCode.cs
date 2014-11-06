@@ -176,6 +176,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e"></param>
         private void FilePrint(object sender, EventArgs e)
         {
+            TLogging.Log("CostCentreHierarchy.File Print..");
             FastReportsWrapper ReportingEngine = new FastReportsWrapper("Cost Centre Hierarchy");
 
             if (!ReportingEngine.LoadedOK)
@@ -192,6 +193,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             DataView PathView = new DataView(FMainDS.ACostCentre);
             PathView.Sort = "a_cost_centre_code_c";
+            TLogging.Log("CostCentreHierarchy.File Print calculating paths..");
 
             // I need to make the "CostCentrePath" field that will be used to sort the table for printout:
             foreach (DataRowView rv in PathView)
@@ -229,12 +231,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             PathView.Sort = "CostCentrePath";
             DataTable SortedByPath = PathView.ToTable();
 
+            TLogging.Log("CostCentreHierarchy.File Print paths all done.");
+
             ReportingEngine.RegisterData(SortedByPath, "CostCentreHierarchy");
             TRptCalculator Calc = new TRptCalculator();
             ALedgerRow LedgerRow = FMainDS.ALedger[0];
             Calc.AddParameter("param_ledger_nunmber", LedgerRow.LedgerNumber);
             Calc.AddStringParameter("param_ledger_name", LedgerRow.LedgerName);
 
+            TLogging.Log("CostCentreHierarchy.File Print calling FastReport...");
             if (ModifierKeys.HasFlag(Keys.Control))
             {
                 ReportingEngine.DesignReport(Calc);
