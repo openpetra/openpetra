@@ -361,6 +361,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return false;
             }
 
+            //New set of transactions to be loaded
+            FTransactionsLoaded = false;
+
             grdDetails.SuspendLayout();
             FSuppressListChanged = true;
 

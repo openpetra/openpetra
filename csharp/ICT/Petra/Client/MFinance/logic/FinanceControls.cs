@@ -822,6 +822,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         {
             string DisplayMember;
             string ValueMember;
+
             DataTable Table = TRemote.MFinance.Gift.WebConnectors.GetAvailableGiftYears(ALedgerNr, out DisplayMember, out ValueMember);
 
             Table.DefaultView.Sort = ValueMember + " DESC";

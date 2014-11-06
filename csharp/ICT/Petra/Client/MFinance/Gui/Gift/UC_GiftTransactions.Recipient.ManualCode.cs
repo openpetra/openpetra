@@ -329,13 +329,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!AMotivationDetailChangedFlag && !ACreatingNewGiftFlag
                     && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(APartnerKey, ref AMotivationGroup, ref AMotivationDetail))
                 {
-                    if (ACmbMotivationGroupCode.GetSelectedString() != AMotivationGroup)
+                    if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
                     {
                         // note - this will also update the Motivation Detail
                         ACmbMotivationGroupCode.SetSelectedString(AMotivationGroup);
                     }
 
-                    if (ACmbMotivationDetailCode.GetSelectedString() != AMotivationDetail)
+                    if (AMotivationDetail != ACmbMotivationDetailCode.GetSelectedString())
                     {
                         ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
                     }
@@ -712,8 +712,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (ABatchUnpostedFlag && AInEditModeFlag)
             {
-                bool isEmptyDetailRow = (ACurrentDetailRow == null);
                 string keyMinistry = string.Empty;
+                bool isEmptyDetailRow = (ACurrentDetailRow == null);
 
                 if (!isEmptyDetailRow && (ACmbKeyMinistries.SelectedIndex > -1))
                 {
