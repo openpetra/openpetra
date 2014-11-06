@@ -557,8 +557,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
         {
             bool MessageProcessed = false;
-
-            // update gift destination
+            
+        	// update gift destination
             if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcGiftDestinationChanged)
             {
                 ucoRecurringTransactions.ProcessGiftDetainationBroadcastMessage(AFormsMessage);

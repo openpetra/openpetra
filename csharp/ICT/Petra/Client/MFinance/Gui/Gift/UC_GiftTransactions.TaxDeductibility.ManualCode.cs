@@ -107,7 +107,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtTaxDeductAmount.Visible = true;
             txtTaxDeductAmount.CurrencyCode = FBatchRow.CurrencyCode;
             lblTaxDeductAmount.Text = Catalog.GetString("Tax Deductible Amt:");
-            lblNonDeductAmount.Location = new System.Drawing.Point(lblNonDeductAmount.Location.X - 5, lblNonDeductAmount.Location.Y - (YSPACE * 3));
+            lblNonDeductAmount.Location = new System.Drawing.Point(lblNonDeductAmount.Location.X - 6, lblNonDeductAmount.Location.Y - (YSPACE * 3));
             lblNonDeductAmount.Width = lblNonDeductAmount.Width + 11;
             txtNonDeductAmount.Location = new System.Drawing.Point(txtNonDeductAmount.Location.X, txtNonDeductAmount.Location.Y - (YSPACE * 3));
             lblNonDeductAmount.Visible = true;
@@ -157,7 +157,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // update tax deductibility amounts when the gift amount or the tax deductible percentage has changed
         private void UpdateTaxDeductibilityAmounts(object sender, EventArgs e)
         {
-            if (FCreatingNewGift)
+            if (FCreatingNewGift || txtDeductiblePercentage.NumberValueDecimal == null)
             {
                 return;
             }
@@ -227,12 +227,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (AEnabled && !string.IsNullOrEmpty(txtDeductibleAccount.Text))
             {
                 txtDeductiblePercentage.Enabled = true;
-                txtTaxDeductAmount.Enabled = true;
             }
             else
             {
                 txtDeductiblePercentage.Enabled = false;
-                txtTaxDeductAmount.Enabled = false;
             }
         }
 

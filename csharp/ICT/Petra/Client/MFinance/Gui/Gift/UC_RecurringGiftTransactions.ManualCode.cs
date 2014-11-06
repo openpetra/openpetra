@@ -111,6 +111,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             //Fix to length of field
             txtDetailReference.MaxLength = 20;
+  
+            cmbDetailMotivationDetailCode.Width += 20;
 
             //Fix a layering issue
             txtDetailRecipientLedgerNumber.SendToBack();
@@ -2406,20 +2408,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFormsMessage"></param>
         public void ProcessGiftDetainationBroadcastMessage(TFormsMessage AFormsMessage)
         {
-            if (Convert.ToInt64(txtDetailRecipientKey.Text) == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
-            {
-                foreach (PPartnerGiftDestinationRow Row in ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).
-                         GiftDestinationTable.Rows)
-                {
-                    // check if record is active for today
-                    if ((Row.DateEffective <= DateTime.Today)
-                        && ((Row.DateExpires >= DateTime.Today) || Row.IsDateExpiresNull())
-                        && (Row.DateEffective != Row.DateExpires))
-                    {
-                        txtDetailRecipientLedgerNumber.Text = Row.FieldKey.ToString();
-                    }
-                }
-            }
+        	// for some reason it is possible that this method can be called even if the parent form has been closed
+        	if (((TFrmRecurringGiftBatch)ParentForm) == null)
+        	{
+        		return;
+        	}
+
+            // update dataset from controls
+        	GetDataFromControls();
+        	
+        	// loop through every gift detail currently in the dataset
+        	foreach (ARecurringGiftDetailRow DetailRow in FMainDS.ARecurringGiftDetail.Rows)
+        	{
+	            if (DetailRow.RecipientKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
+	            {
+	                DetailRow.RecipientLedgerNumber = 0;
+	
+	                foreach (PPartnerGiftDestinationRow Row in ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).
+	                         GiftDestinationTable.Rows)
+	                {
+	                    // check if record is active for the Gift Date
+	                    if ((Row.DateEffective <= DateTime.Today)
+	                        && ((Row.DateExpires >= DateTime.Today) || Row.IsDateExpiresNull())
+	                        && (Row.DateEffective != Row.DateExpires))
+	                    {
+	                        DetailRow.RecipientLedgerNumber = Row.FieldKey;
+	                    }
+	                }
+	                
+	                // update control if updated gift is currently being displayed
+	                if (!string.IsNullOrEmpty(txtDetailRecipientKey.Text) && Convert.ToInt64(txtDetailRecipientKey.Text) == DetailRow.RecipientKey)
+	                {
+	                	txtDetailRecipientLedgerNumber.Text = DetailRow.RecipientLedgerNumber.ToString();
+	                }
+	            }
+        	}
         }
 
         /// <summary>
@@ -2428,6 +2451,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFormsMessage"></param>
         public void ProcessUnitHierarchyBroadcastMessage(TFormsMessage AFormsMessage)
         {
+        	// for some reason it is possible that this method can be called even if the parent form has been closed
+        	if (((TFrmRecurringGiftBatch)ParentForm) == null)
+        	{
+        		return;
+        	}
+
             if (txtDetailRecipientKey.CurrentPartnerClass != TPartnerClass.UNIT)
             {
                 return;
