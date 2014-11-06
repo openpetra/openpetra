@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1205,8 +1205,8 @@ namespace Ict.Common.DB
         /// <returns></returns>
         public DataTable SelectDT(DataTable ATypedDataTable, String ASqlStatement,
             TDBTransaction AReadTransaction,
-            DbParameter[] AParametersArray,
-            int AStartRecord, int AMaxRecords)
+            DbParameter[] AParametersArray = null,
+            int AStartRecord = 0, int AMaxRecords = 0)
         {
             if (ATypedDataTable == null)
             {

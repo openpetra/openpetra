@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -686,18 +686,21 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private DataTable LoadTable(int ALedgerNumber, int AYear, TDBTransaction ATransaction)
         {
+            AGeneralLedgerMasterTable typedTable = new AGeneralLedgerMasterTable();
             string strSQL = "SELECT * FROM PUB_a_general_ledger_master" +
                             " WHERE a_ledger_number_i = " + ALedgerNumber +
                             " AND a_year_i = " + AYear +
                             " ORDER BY a_account_code_c,a_cost_centre_code_c";
 
 
-            return DBAccess.GDBAccessObj.SelectDT(
-                strSQL, AGeneralLedgerMasterTable.GetTableName(), ATransaction);
+            DBAccess.GDBAccessObj.SelectDT(typedTable, strSQL, ATransaction);
+
+            return typedTable;
         }
 
         private DataTable GetGlmpRows(Int32 AYear, TDBTransaction ATransaction, Int32 APeriodGreaterThan)
         {
+            AGeneralLedgerMasterPeriodTable typedTable = new AGeneralLedgerMasterPeriodTable();
             string strSQL = "SELECT PUB_a_general_ledger_master_period.* " +
                             " FROM PUB_a_general_ledger_master, PUB_a_general_ledger_master_period" +
                             " WHERE PUB_a_general_ledger_master.a_year_i = " + AYear +
@@ -705,8 +708,9 @@ namespace Ict.Petra.Server.MFinance.GL
                             " AND PUB_a_general_ledger_master_period.a_period_number_i > " + APeriodGreaterThan +
                             " ORDER BY PUB_a_general_ledger_master_period.a_period_number_i;";
 
-            return DBAccess.GDBAccessObj.SelectDT(
-                strSQL, AGeneralLedgerMasterTable.GetTableName(), ATransaction);
+            DBAccess.GDBAccessObj.SelectDT(typedTable, strSQL, ATransaction);
+
+            return typedTable;
         }
 
         /// <summary>
@@ -953,13 +957,11 @@ namespace Ict.Petra.Server.MFinance.GL
                     "a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
                     " AND a_batch_year_i=" + FOldYearNum +
                     " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
-                DataTable Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "ABatch", Transaction);
+                ABatchTable BatchTbl = new ABatchTable();
+                DBAccess.GDBAccessObj.SelectDT(BatchTbl, Query, Transaction);
 
-                if (Tbl.Rows.Count > 0)
+                if (BatchTbl.Rows.Count > 0)
                 {
-                    ABatchTable BatchTbl = new ABatchTable();
-                    BatchTbl.Merge(Tbl);
-
                     JobSize = BatchTbl.Rows.Count;
 
                     if (!FInfoMode)
@@ -981,13 +983,11 @@ namespace Ict.Petra.Server.MFinance.GL
                     " AND PUB_a_batch.a_batch_number_i= PUB_a_journal.a_batch_number_i" +
                     " AND PUB_a_batch.a_batch_year_i=" + FOldYearNum +
                     " AND a_journal_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
-                Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "AJournal", Transaction);
+                AJournalTable JournalTbl = new AJournalTable();
+                DBAccess.GDBAccessObj.SelectDT(JournalTbl, Query, Transaction);
 
-                if (Tbl.Rows.Count > 0)
+                if (JournalTbl.Rows.Count > 0)
                 {
-                    AJournalTable JournalTbl = new AJournalTable();
-                    JournalTbl.Merge(Tbl);
-
                     if (!FInfoMode)
                     {
                         foreach (AJournalRow JournalRow in JournalTbl.Rows)
@@ -1005,13 +1005,11 @@ namespace Ict.Petra.Server.MFinance.GL
                     " a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
                     " AND a_batch_year_i=" + FOldYearNum +
                     " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
-                Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "AGiftBatch", Transaction);
+                AGiftBatchTable GiftBatchTbl = new AGiftBatchTable();
+                DBAccess.GDBAccessObj.SelectDT(GiftBatchTbl, Query, Transaction);
 
-                if (Tbl.Rows.Count > 0)
+                if (GiftBatchTbl.Rows.Count > 0)
                 {
-                    AGiftBatchTable GiftBatchTbl = new AGiftBatchTable();
-                    GiftBatchTbl.Merge(Tbl);
-
                     JobSize += GiftBatchTbl.Rows.Count;
 
                     if (!FInfoMode)

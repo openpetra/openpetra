@@ -196,6 +196,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AInEditModeFlag,
             bool ABatchUnpostedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
+            bool AAutoPopulatingGift,
             out bool ADoTaxUpdate,
             out string AAutoPopComment)
         {
@@ -255,7 +256,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            if (!ACreatingNewGiftFlag && (MotivationRecipientKey > 0))
+            if (!ACreatingNewGiftFlag && !AAutoPopulatingGift && (MotivationRecipientKey > 0))
             {
                 AMotivationDetailChangedFlag = true;
                 PopulateKeyMinistry(ACurrentDetailRow,
@@ -1006,6 +1007,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AInEditModeFlag,
                     ABatchUnpostedFlag,
                     ATaxDeductiblePercentageEnabledFlag,
+                    false,
                     out ADoTaxUpdate,
                     out AutoPopComment);
             }
@@ -1035,6 +1037,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AInEditModeFlag,
                     ABatchUnpostedFlag,
                     ATaxDeductiblePercentageEnabledFlag,
+                    false,
                     out ADoTaxUpdate,
                     out AutoPopComment);
             }
