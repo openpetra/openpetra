@@ -112,6 +112,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Fix to length of field
             txtDetailReference.MaxLength = 20;
 
+            cmbDetailMotivationDetailCode.Width += 20;
+
             //Fix a layering issue
             txtDetailRecipientLedgerNumber.SendToBack();
 
@@ -320,10 +322,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 UpdateControlsProtection();
 
                 //TODO check if next line is needed.
-                SetTextBoxOverlayOnKeyMinistryCombo();
+                //SetTextBoxOverlayOnKeyMinistryCombo();
 
                 return false;
             }
+
+            //New set of transactions to be loaded
+            FTransactionsLoaded = false;
 
             grdDetails.SuspendLayout();
             FSuppressListChanged = true;
@@ -488,7 +493,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         // note - this will also update the Motivation Detail
                         cmbDetailMotivationGroupCode.SetSelectedString(FMotivationGroup);
                     }
-                    else if (FMotivationDetail != cmbDetailMotivationDetailCode.GetSelectedString())
+
+                    if (FMotivationDetail != cmbDetailMotivationDetailCode.GetSelectedString())
                     {
                         cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
                     }
@@ -1861,7 +1867,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     RecipientPartnerClassChanged(null);
                 }
-                else if (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
+
+                if (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
                 {
                     RecipientPartnerClassChanged(null);
                 }
@@ -1912,6 +1919,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // get donor's banking details
                 ARecurringGiftRow GiftRow = (ARecurringGiftRow)FMainDS.ARecurringGift.Rows.Find(
                     new object[] { FLedgerNumber, FBatchNumber, FPreviouslySelectedDetailRow.GiftTransactionNumber });
+
                 PBankingDetailsTable BankingDetailsTable = TRemote.MFinance.Gift.WebConnectors.GetDonorBankingDetails(APartnerKey,
                     GiftRow.BankingDetailsKey);
                 PBankingDetailsRow BankingDetailsRow = null;
@@ -2406,17 +2414,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFormsMessage"></param>
         public void ProcessGiftDetainationBroadcastMessage(TFormsMessage AFormsMessage)
         {
-            if (Convert.ToInt64(txtDetailRecipientKey.Text) == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
+            // for some reason it is possible that this method can be called even if the parent form has been closed
+            if (((TFrmRecurringGiftBatch)ParentForm) == null)
             {
-                foreach (PPartnerGiftDestinationRow Row in ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).
-                         GiftDestinationTable.Rows)
+                return;
+            }
+
+            // update dataset from controls
+            GetDataFromControls();
+
+            // loop through every gift detail currently in the dataset
+            foreach (ARecurringGiftDetailRow DetailRow in FMainDS.ARecurringGiftDetail.Rows)
+            {
+                if (DetailRow.RecipientKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
                 {
-                    // check if record is active for today
-                    if ((Row.DateEffective <= DateTime.Today)
-                        && ((Row.DateExpires >= DateTime.Today) || Row.IsDateExpiresNull())
-                        && (Row.DateEffective != Row.DateExpires))
+                    DetailRow.RecipientLedgerNumber = 0;
+
+                    foreach (PPartnerGiftDestinationRow Row in ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).
+                             GiftDestinationTable.Rows)
                     {
-                        txtDetailRecipientLedgerNumber.Text = Row.FieldKey.ToString();
+                        // check if record is active for the Gift Date
+                        if ((Row.DateEffective <= DateTime.Today)
+                            && ((Row.DateExpires >= DateTime.Today) || Row.IsDateExpiresNull())
+                            && (Row.DateEffective != Row.DateExpires))
+                        {
+                            DetailRow.RecipientLedgerNumber = Row.FieldKey;
+                        }
+                    }
+
+                    // update control if updated gift is currently being displayed
+                    if (!string.IsNullOrEmpty(txtDetailRecipientKey.Text) && (Convert.ToInt64(txtDetailRecipientKey.Text) == DetailRow.RecipientKey))
+                    {
+                        txtDetailRecipientLedgerNumber.Text = DetailRow.RecipientLedgerNumber.ToString();
                     }
                 }
             }
@@ -2428,6 +2457,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFormsMessage"></param>
         public void ProcessUnitHierarchyBroadcastMessage(TFormsMessage AFormsMessage)
         {
+            // for some reason it is possible that this method can be called even if the parent form has been closed
+            if (((TFrmRecurringGiftBatch)ParentForm) == null)
+            {
+                return;
+            }
+
             if (txtDetailRecipientKey.CurrentPartnerClass != TPartnerClass.UNIT)
             {
                 return;

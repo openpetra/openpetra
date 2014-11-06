@@ -100,7 +100,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
-        /// 
+        /// Adds a Contact Log record to each Partner in the given Extract
         /// </summary>
         /// <param name="p"></param>
         /// <param name="ContactLogTable"></param>
