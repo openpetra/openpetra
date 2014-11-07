@@ -322,10 +322,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 UpdateControlsProtection();
 
                 //TODO check if next line is needed.
-                SetTextBoxOverlayOnKeyMinistryCombo();
+                //SetTextBoxOverlayOnKeyMinistryCombo();
 
                 return false;
             }
+
+            //New set of transactions to be loaded
+            FTransactionsLoaded = false;
 
             grdDetails.SuspendLayout();
             FSuppressListChanged = true;
@@ -490,7 +493,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         // note - this will also update the Motivation Detail
                         cmbDetailMotivationGroupCode.SetSelectedString(FMotivationGroup);
                     }
-                    else if (FMotivationDetail != cmbDetailMotivationDetailCode.GetSelectedString())
+
+                    if (FMotivationDetail != cmbDetailMotivationDetailCode.GetSelectedString())
                     {
                         cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
                     }
@@ -1863,7 +1867,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     RecipientPartnerClassChanged(null);
                 }
-                else if (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
+
+                if (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
                 {
                     RecipientPartnerClassChanged(null);
                 }
@@ -1914,6 +1919,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // get donor's banking details
                 ARecurringGiftRow GiftRow = (ARecurringGiftRow)FMainDS.ARecurringGift.Rows.Find(
                     new object[] { FLedgerNumber, FBatchNumber, FPreviouslySelectedDetailRow.GiftTransactionNumber });
+
                 PBankingDetailsTable BankingDetailsTable = TRemote.MFinance.Gift.WebConnectors.GetDonorBankingDetails(APartnerKey,
                     GiftRow.BankingDetailsKey);
                 PBankingDetailsRow BankingDetailsRow = null;
