@@ -107,56 +107,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoDetails.SpecialInitUserControl();
         }
 
-        private Boolean LoadDataOnDemand()
-        {
-            Boolean ReturnValue = false;
-
-            // Load Partner Types, if not already loaded
-            try
-            {
-                // Make sure that Typed DataTables are already there at Client side
-                if (FMainDS.PPartnerContact == null)
-                {
-                    FMainDS.Tables.Add(new PPartnerContactTable());
-                }
-
-                if (FMainDS.PContactLog == null)
-                {
-                    FMainDS.Tables.Add(new PContactLogTable());
-                    FMainDS.InitVars();
-                }
-
-                if (TClientSettings.DelayedDataLoading)
-                {
-                    FMainDS.Merge(FPartnerEditUIConnector.GetDataContacts());
-
-                    // Make DataRows unchanged
-                    if (FMainDS.PContactLog.Rows.Count > 0)
-                    {
-                        FMainDS.PContactLog.AcceptChanges();
-                    }
-                }
-
-                if (FMainDS.PContactLog.Rows.Count != 0)
-                {
-                    ReturnValue = true;
-                }
-                else
-                {
-                    ReturnValue = false;
-                }
-            }
-            catch (System.NullReferenceException)
-            {
-                return false;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            return ReturnValue;
-        }
-
         private void ShowDataManual()
         {
         }
@@ -195,6 +145,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ARow != null)
             {
                 ucoDetails.ShowDetails(ARow);
+                if (TRemote.MPartner.Partner.WebConnectors.IsContactLogAssociatedWithMoreThanOnePartner((long)ARow.ContactLogId))
+                {
+                    lblRelatedLogs.Text = "Note that this Contact Log associated with more than one Partner.  Changes here will affect all Partners using this Contact Log.";
+                }
+                else
+                {
+                    lblRelatedLogs.Text = "Note that this Contact Log is only associated with this Partner.";
+                }
             }
         }
 

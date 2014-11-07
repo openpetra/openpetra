@@ -43,7 +43,9 @@ RootNode:
             Dock: Fill
             BackColor: System.Drawing.SystemColors.Control
             Controls:
-                Row0: [ucoDetails]
+                Row0: [lblRelatedLogs]
+                Row1: [ucoDetails]
+        lblRelatedLogs:
+            Height: 20
         ucoDetails:
-            Dock: Fill
             Type: Ict.Petra.Client.MPartner.Gui.TUC_Contact
