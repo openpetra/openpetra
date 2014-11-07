@@ -4,7 +4,7 @@
 // @Authors:
 //       christophert, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -679,8 +679,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                       " AND PUB_a_batch.a_ledger_number_i = PUB_a_journal.a_ledger_number_i" +
                                       " AND PUB_a_batch.a_batch_number_i = PUB_a_journal.a_batch_number_i";
 
-                DataTable JournalTbl = DBAccess.GDBAccessObj.SelectDT(JournalQuery, "a_journal", DBTransaction);
-                AJournal.Merge(JournalTbl);
+                DBAccess.GDBAccessObj.SelectDT(AJournal, JournalQuery, DBTransaction);
 
                 String TransactionQuery = "SELECT PUB_a_transaction.* FROM PUB_a_batch, PUB_a_transaction WHERE " +
                                           "PUB_a_batch.a_ledger_number_i = " + ALedgerNumber +
@@ -690,9 +689,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                           " AND PUB_a_batch.a_ledger_number_i = PUB_a_transaction.a_ledger_number_i" +
                                           " AND PUB_a_batch.a_batch_number_i = PUB_a_transaction.a_batch_number_i";
 
-                DataTable TransactionTbl = DBAccess.GDBAccessObj.SelectDT(TransactionQuery, "a_transaction", DBTransaction);
-                ATransaction.Merge(TransactionTbl);
-
+                DBAccess.GDBAccessObj.SelectDT(ATransaction, TransactionQuery, DBTransaction);
 
                 String CostCentreQuery = "SELECT * FROM a_cost_centre WHERE " +
                                          ACostCentreTable.GetLedgerNumberDBName() + " = " + ALedgerNumber +
@@ -700,8 +697,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                          " AND " + ACostCentreTable.GetCostCentreTypeDBName() + " LIKE '" + MFinanceConstants.FOREIGN_CC_TYPE + "'" +
                                          " ORDER BY " + ACostCentreTable.GetCostCentreCodeDBName();
 
-                DataTable CCTbl = DBAccess.GDBAccessObj.SelectDT(CostCentreQuery, "a_cost_centre", DBTransaction);
-                ACostCentre.Merge(CCTbl);
+                DBAccess.GDBAccessObj.SelectDT(ACostCentre, CostCentreQuery, DBTransaction);
 
                 //Iterate through the cost centres
                 foreach (ACostCentreRow CostCentreRow in ACostCentre.Rows)
