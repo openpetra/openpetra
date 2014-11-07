@@ -196,6 +196,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AInEditModeFlag,
             bool ABatchUnpostedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
+            bool AAutoPopulatingGift,
             out bool ADoTaxUpdate,
             out string AAutoPopComment)
         {
@@ -255,7 +256,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            if (!ACreatingNewGiftFlag && (MotivationRecipientKey > 0))
+            if (!ACreatingNewGiftFlag && !AAutoPopulatingGift && (MotivationRecipientKey > 0))
             {
                 AMotivationDetailChangedFlag = true;
                 PopulateKeyMinistry(ACurrentDetailRow,
@@ -328,13 +329,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!AMotivationDetailChangedFlag && !ACreatingNewGiftFlag
                     && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(APartnerKey, ref AMotivationGroup, ref AMotivationDetail))
                 {
-                    if (ACmbMotivationGroupCode.GetSelectedString() != AMotivationGroup)
+                    if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
                     {
                         // note - this will also update the Motivation Detail
                         ACmbMotivationGroupCode.SetSelectedString(AMotivationGroup);
                     }
 
-                    if (ACmbMotivationDetailCode.GetSelectedString() != AMotivationDetail)
+                    if (AMotivationDetail != ACmbMotivationDetailCode.GetSelectedString())
                     {
                         ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
                     }
@@ -711,8 +712,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (ABatchUnpostedFlag && AInEditModeFlag)
             {
-                bool isEmptyDetailRow = (ACurrentDetailRow == null);
                 string keyMinistry = string.Empty;
+                bool isEmptyDetailRow = (ACurrentDetailRow == null);
 
                 if (!isEmptyDetailRow && (ACmbKeyMinistries.SelectedIndex > -1))
                 {
@@ -1006,6 +1007,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AInEditModeFlag,
                     ABatchUnpostedFlag,
                     ATaxDeductiblePercentageEnabledFlag,
+                    false,
                     out ADoTaxUpdate,
                     out AutoPopComment);
             }
@@ -1035,6 +1037,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AInEditModeFlag,
                     ABatchUnpostedFlag,
                     ATaxDeductiblePercentageEnabledFlag,
+                    false,
                     out ADoTaxUpdate,
                     out AutoPopComment);
             }

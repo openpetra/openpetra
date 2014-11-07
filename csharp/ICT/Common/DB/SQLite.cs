@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -184,6 +184,10 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("=TRUE", "=1");
             ReturnValue = ReturnValue.Replace("= FALSE", "= 0");
             ReturnValue = ReturnValue.Replace("= TRUE", "= 1");
+            ReturnValue = ReturnValue.Replace("= False", "= 0");
+            ReturnValue = ReturnValue.Replace("= True", "= 1");
+            ReturnValue = ReturnValue.Replace("=False", "= 0");
+            ReturnValue = ReturnValue.Replace("=True", "= 1");
             ReturnValue = ReturnValue.Replace(" as ", " AS ");
             ReturnValue = ReturnValue.Replace("true AS ", "1 AS ");
             ReturnValue = ReturnValue.Replace("false AS ", "0 AS ");

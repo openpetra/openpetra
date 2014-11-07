@@ -83,9 +83,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DateTime AStartDateCurrentPeriod,
             DateTime AEndDateLastForwardingPeriod)
         {
+            bool RetVal = false;
+
             if (!SaveBatchForPosting())
             {
-                return false;
+                return RetVal;
             }
 
             // TODO: display progress of posting
@@ -100,7 +102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         AStartDateCurrentPeriod,
                         AEndDateLastForwardingPeriod));
 
-                return false;
+                return RetVal;
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post batch {0}?"),
@@ -108,47 +110,56 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     Catalog.GetString("Question"),
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
             {
-                if (!TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, CurrentBatchNumber, out Verifications))
+                try
                 {
-                    string ErrorMessages = String.Empty;
+                    Cursor.Current = Cursors.WaitCursor;
 
-                    foreach (TVerificationResult verif in Verifications)
+                    if (!TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, CurrentBatchNumber, out Verifications))
                     {
-                        ErrorMessages += "[" + verif.ResultContext + "] " +
-                                         verif.ResultTextCaption + ": " +
-                                         verif.ResultText + Environment.NewLine;
+                        string ErrorMessages = String.Empty;
+
+                        foreach (TVerificationResult verif in Verifications)
+                        {
+                            ErrorMessages += "[" + verif.ResultContext + "] " +
+                                             verif.ResultTextCaption + ": " +
+                                             verif.ResultText + Environment.NewLine;
+                        }
+
+                        System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                     }
+                    else
+                    {
+                        // TODO: print reports on successfully posted batch
+                        MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"),
+                            Catalog.GetString("Success"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
 
-                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
+                        // refresh the grid, to reflect that the batch has been posted
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, CurrentBatchNumber));
+
+                        // make sure that the current dataset is clean,
+                        // otherwise the next save would try to modify the posted batch, even though no values have been changed
+                        FMainDS.AcceptChanges();
+
+                        // Ensure these tabs will ask the server for updates
+                        FMyForm.GetJournalsControl().ClearCurrentSelection();
+                        FMyForm.GetTransactionsControl().ClearCurrentSelection();
+
+                        FMyUserControl.UpdateDisplay();
+
+                        RetVal = true;
+                    }
                 }
-                else
+                finally
                 {
-                    // TODO: print reports on successfully posted batch
-                    MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"),
-                        Catalog.GetString("Success"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-
-                    // refresh the grid, to reflect that the batch has been posted
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, CurrentBatchNumber));
-
-                    // make sure that the current dataset is clean,
-                    // otherwise the next save would try to modify the posted batch, even though no values have been changed
-                    FMainDS.AcceptChanges();
-
-                    // Ensure these tabs will ask the server for updates
-                    FMyForm.GetJournalsControl().ClearCurrentSelection();
-                    FMyForm.GetTransactionsControl().ClearCurrentSelection();
-
-                    FMyUserControl.UpdateDisplay();
-
-                    return true;
+                    Cursor.Current = Cursors.Default;
                 }
             }
 
-            return false;
+            return RetVal;
         }
 
         /// <summary>
