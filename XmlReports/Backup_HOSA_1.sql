@@ -2,7 +2,7 @@ DELETE FROM s_report_template WHERE s_template_id_i=1;
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
 VALUES(1,'HOSA','OpenPetra default template','System',True,False,False,False,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="11/07/2014 12:25:47" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="11/07/2014 12:53:13" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -145,7 +145,7 @@ namespace FastReport
     <Parameter Name="param_rgrAccounts" DataType="System.String"/>
     <Parameter Name="param_rgrCostCentres" DataType="System.String"/>
     <Parameter Name="param_ich_number" DataType="System.Int32"/>
-    <Parameter Name="param_quarter" DataType="System.Boolean"/>
+    <Parameter Name="param_quarter" DataType="System.Int32"/>
     <Parameter Name="param_ledger_name" DataType="System.String"/>
     <Parameter Name="param_currency_formatter" DataType="System.String"/>
     <Parameter Name="param_date_title" DataType="System.String"/>
@@ -207,7 +207,7 @@ namespace FastReport
           <TextObject Name="Text64" Width="75.6" Height="18.9" Text="[Gifts.costcentre]-[Gifts.accountcode]" AutoShrink="FontSize" AutoShrinkMinSize="7" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
           <TextObject Name="Text65" Left="75.6" Width="642.6" Height="18.9" Text="[Gifts.a_account.a_account_code_long_desc_c], [a_costCentre.a_cost_centre_name_c]" WordWrap="false" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
           <DataBand Name="Data1" Top="199" Width="718.2" Height="18.9" CanGrow="true" DataSource="Gifts" Filter="[Gifts.costcentre]==[a_costCentre.a_cost_centre_code_c]">
-            <TextObject Name="Text66" Left="113.4" Width="113.4" Height="18.9" CanGrow="true" Text="[Gifts.Reference]"/>
+            <TextObject Name="Text66" Left="113.4" Width="113.4" Height="18.9" CanGrow="true" GrowToBottom="true" Text="[Gifts.Reference]"/>
             <TextObject Name="GiftCredits" Left="321.3" Width="94.5" Height="18.9" Text="[IIf([param_currency]==&quot;Base&quot;,IIf([Gifts.GiftBaseAmount] &gt; 0,[Gifts.GiftBaseAmount], 0),IIf([Gifts.GiftIntlAmount] &gt; 0,[Gifts.GiftIntlAmount], 0))]" HorzAlign="Right" WordWrap="false" Font="Arial, 10pt, style=Bold" Trimming="EllipsisCharacter">
               <Formats>
                 <NumberFormat UseLocale="false" NegativePattern="1"/>
@@ -259,7 +259,7 @@ namespace FastReport
           <DataBand Name="Data3" Top="275.15" Width="718.2" Height="18.9" CanGrow="true" DataSource="a_transaction" Filter="[a_costCentre.a_cost_centre_code_c]==[a_transaction.a_cost_centre_code_c]">
             <TextObject Name="TransDate" Width="113.4" Height="18.9" Text="[OmDate([a_transaction.a_transaction_date_d])]"/>
             <TextObject Name="Text75" Left="425.25" Width="292.95" Height="18.9" CanGrow="true" GrowToBottom="true" Text="[a_transaction.a_narrative_c]"/>
-            <TextObject Name="Text76" Left="113.4" Width="113.4" Height="18.9" CanGrow="true" Text="[a_transaction.a_reference_c]"/>
+            <TextObject Name="Text76" Left="113.4" Width="113.4" Height="18.9" CanGrow="true" GrowToBottom="true" Text="[a_transaction.a_reference_c]"/>
             <TextObject Name="TransDebits" Left="226.8" Width="94.5" Height="18.9" Text="[IIf([a_transaction.a_debit_credit_indicator_l]==true,IIf([param_currency]==&quot;Base&quot;,[a_transaction.a_amount_in_base_currency_n],[a_transaction.a_amount_in_intl_currency_n]),0)]" HorzAlign="Right" Font="Arial, 10pt, style=Bold" Trimming="EllipsisCharacter">
               <Formats>
                 <NumberFormat UseLocale="false" NegativePattern="1"/>
