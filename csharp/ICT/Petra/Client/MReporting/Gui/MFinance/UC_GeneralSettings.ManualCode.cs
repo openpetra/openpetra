@@ -137,23 +137,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String CurrencyName = "";
 
-            if (cmbCurrency.Visible)
-            {
-                String CurrencySelection = this.cmbCurrency.GetSelectedString();
-                ACalculator.AddParameter("param_currency", CurrencySelection);
+            String CurrencySelection = this.cmbCurrency.GetSelectedString();
+            ACalculator.AddParameter("param_currency", CurrencySelection);
 
-                if (CurrencySelection == Catalog.GetString("Base"))
-                {
-                    CurrencyName = FLedgerRow.BaseCurrency;
-                }
-                else if (CurrencySelection == Catalog.GetString("International"))
-                {
-                    CurrencyName = FLedgerRow.IntlCurrency;
-                }
-            }
-            else
+            if (CurrencySelection == Catalog.GetString("Base"))
             {
                 CurrencyName = FLedgerRow.BaseCurrency;
+            }
+            else if (CurrencySelection == Catalog.GetString("International"))
+            {
+                CurrencyName = FLedgerRow.IntlCurrency;
             }
 
             ACalculator.AddParameter("param_currency_name", CurrencyName);
