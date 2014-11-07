@@ -386,12 +386,14 @@
         <query>
             <queryDetail><value>
                 SELECT
-                    PUB_p_partner_contact.p_contactor_c   AS Contactor,
-                    PUB_p_partner_contact.p_contact_code_c  AS ContactCode,
-                    PUB_p_partner_contact.s_contact_date_d  AS ContactDate,
-                    PUB_p_partner_contact.s_contact_time_i  AS ContactTimeHours
+                    PUB_p_contact_log.p_contactor_c       AS Contactor,
+                    PUB_p_contact_log.p_contact_code_c    AS ContactCode,
+                    PUB_p_contact_log.s_contact_date_d    AS ContactDate,
+                    PUB_p_contact_log.p_contact_comment_c AS ContactComment
                 FROM
                     PUB_p_partner_contact
+                    JOIN PUB_p_contact_log
+                        ON PUB_p_partner_contact.p_contact_log_id_i = PUB_p_contact_log.p_contact_log_id_i
                 WHERE
                     PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
             </value></queryDetail>
@@ -1419,7 +1421,7 @@
                 <value text="-Contact Date-"/>
             </field>
             <field whichfield="column 3" pos="7.75cm">
-                <value text="-Contact Time-"/>
+                <value text="-Contact Comment-"/>
             </field>
             <field whichfield="column 4">
                 <value text=""/>
@@ -1462,7 +1464,7 @@
                 <value variable="ContactDate"/>
             </field>
             <field whichfield="column 3">
-                <value variable="ContactTimeHours"/>
+                <value variable="ContactComment"/>
             </field>
         </detail>
     </level>
