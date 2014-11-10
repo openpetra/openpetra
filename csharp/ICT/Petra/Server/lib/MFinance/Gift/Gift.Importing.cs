@@ -34,6 +34,7 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MCommon;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MFinance.Gift.Validation;
@@ -227,6 +228,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction);
                 AAccountTable AccountTable = AAccountAccess.LoadViaALedger(FLedgerNumber, Transaction);
                 ACostCentreTable CostCentreTable = ACostCentreAccess.LoadViaALedger(FLedgerNumber, Transaction);
+                AMotivationDetailTable MotivationDetailTable = AMotivationDetailAccess.LoadViaALedger(FLedgerNumber, Transaction);
 
                 if (LedgerTable.Rows.Count == 0)
                 {
@@ -296,7 +298,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             // Parse the complete line and validate it
                             ParseBatchLine(ref giftBatch, ref Transaction, ref LedgerTable, ref ImportMessage, RowNumber,
-                                AMessages, ValidationControlsDictBatch, AccountTable, CostCentreTable, CorporateExchangeToLedgerTable);
+                                AMessages, ValidationControlsDictBatch, AccountTable, CostCentreTable, CorporateExchangeToLedgerTable, null);
 
                             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                             {
@@ -395,7 +397,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             AGiftRow gift = FMainDS.AGift.NewRowTyped(true);
                             AGiftDetailRow giftDetails;
                             ParseTransactionLine(gift, giftBatch, ref previousGift, numberOfElements, ref totalBatchAmount, ref ImportMessage,
-                                RowNumber, AMessages, ValidationControlsDictGift, ValidationControlsDictGiftDetail, CostCentreTable,
+                                RowNumber, AMessages, ValidationControlsDictGift, ValidationControlsDictGiftDetail, CostCentreTable, MotivationDetailTable,
                                 ref ANeedRecipientLedgerNumber, out giftDetails);
 
                             if (TaxDeductiblePercentageEnabled)
@@ -636,7 +638,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             TValidationControlsDict AValidationControlsDictBatch,
             AAccountTable AValidationAccountTable,
             ACostCentreTable AValidationCostCentreTable,
-            ACorporateExchangeRateTable AValidationCorporateExchTable)
+            ACorporateExchangeRateTable AValidationCorporateExchTable,
+            ACurrencyTable AValidationCurrencyTable)
         {
             // There are 8 elements to import
             string BatchDescription = ImportString(Catalog.GetString("Batch description"),
@@ -672,7 +675,20 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftBatch.BankCostCentre = ImportString(Catalog.GetString("Bank cost centre"),
                 FMainDS.AGiftBatch.ColumnBankCostCentre, AValidationControlsDictBatch);
             AGiftBatch.GiftType = ImportString(Catalog.GetString("Gift type"),
-                FMainDS.AGiftBatch.ColumnGiftType, AValidationControlsDictBatch, false);     // can be empty, will default to GIFT
+                FMainDS.AGiftBatch.ColumnGiftType, AValidationControlsDictBatch);     // can be empty, will default to GIFT
+
+            if ((AGiftBatch.GiftType == String.Empty) || (String.Compare(AGiftBatch.GiftType, MFinanceConstants.GIFT_TYPE_GIFT, true) == 0))
+            {
+                AGiftBatch.GiftType = MFinanceConstants.GIFT_TYPE_GIFT;
+            }
+            else if (String.Compare(AGiftBatch.GiftType, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND, true) == 0)
+            {
+                AGiftBatch.GiftType = MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND;
+            }
+            else if (String.Compare(AGiftBatch.GiftType, MFinanceConstants.GIFT_TYPE_OTHER, true) == 0)
+            {
+                AGiftBatch.GiftType = MFinanceConstants.GIFT_TYPE_OTHER;
+            }
 
             int messageCountBeforeValidate = AMessages.Count;
 
@@ -683,7 +699,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             // And do the additional manual ones
             AImportMessage = Catalog.GetString("Additional validation of the gift batch data");
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, AGiftBatch, ref AMessages,
-                AValidationControlsDictBatch, AValidationAccountTable, AValidationCostCentreTable, AValidationCorporateExchTable, FLedgerBaseCurrency);
+                AValidationControlsDictBatch, AValidationAccountTable, AValidationCostCentreTable, AValidationCorporateExchTable, 
+                AValidationCurrencyTable, FLedgerBaseCurrency);
 
             for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
             {
@@ -717,10 +734,15 @@ namespace Ict.Petra.Server.MFinance.Gift
         private void ParseTransactionLine(AGiftRow AGift, AGiftBatchRow AGiftBatch, ref AGiftRow APreviousGift, int ANumberOfColumns,
             ref decimal ATotalBatchAmount, ref string AImportMessage, int ARowNumber, TVerificationResultCollection AMessages,
             TValidationControlsDict AValidationControlsDictGift, TValidationControlsDict AValidationControlsDictGiftDetail,
-            ACostCentreTable AValidationCostCentreTable, ref GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber, out AGiftDetailRow AGiftDetails)
+            ACostCentreTable AValidationCostCentreTable, AMotivationDetailTable AValidationMotivationDetailTable,
+            ref GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber, out AGiftDetailRow AGiftDetails)
         {
             //this is the format with extra columns
             bool HasExtraColumns = (ANumberOfColumns >= 27);
+            Boolean dummyBool;
+            Int32 dummyInt32;
+            String dummyString;
+            decimal dummyDecimal;
 
             AImportMessage = Catalog.GetString("Importing the gift data");
 
@@ -729,6 +751,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             ImportString(Catalog.GetString("short name of donor (unused)"), null, null); // unused
 
+            // This group is optional and database NULL's are allowed
             AGift.MethodOfGivingCode = ImportString(Catalog.GetString("Method of giving Code"),
                 FMainDS.AGift.ColumnMethodOfGivingCode, AValidationControlsDictGift, false);
             AGift.MethodOfPaymentCode = ImportString(Catalog.GetString("Method Of Payment Code"),
@@ -740,11 +763,11 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (HasExtraColumns)
             {
-                AGift.ReceiptNumber = ImportInt32(Catalog.GetString("Receipt number"),
+                dummyInt32 = ImportInt32(Catalog.GetString("Receipt number"),
                     FMainDS.AGift.ColumnReceiptNumber, ARowNumber, AMessages, AValidationControlsDictGift);
-                AGift.FirstTimeGift = ImportBoolean(Catalog.GetString("First time gift"),
+                dummyBool = ImportBoolean(Catalog.GetString("First time gift"),
                     FMainDS.AGift.ColumnFirstTimeGift, AValidationControlsDictGift);
-                AGift.ReceiptPrinted = ImportBoolean(Catalog.GetString("Receipt printed"),
+                dummyBool = ImportBoolean(Catalog.GetString("Receipt printed"),
                     FMainDS.AGift.ColumnReceiptPrinted, AValidationControlsDictGift);
             }
 
@@ -790,15 +813,13 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (HasExtraColumns)
             {
-                AGiftDetails.RecipientLedgerNumber = ImportInt32(Catalog.GetString("Recipient ledger number"),
+                dummyInt32 = ImportInt32(Catalog.GetString("Recipient ledger number"),
                     FMainDS.AGiftDetail.ColumnRecipientLedgerNumber, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
             }
-            else
-            {
-                // calculate RecipientLedgerNumber
-                AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
-                    AGiftDetails.RecipientKey, AGiftBatch.GlEffectiveDate);
-            }
+
+            // we always calculate RecipientLedgerNumber
+            AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
+                AGiftDetails.RecipientKey, AGiftBatch.GlEffectiveDate);
 
             decimal currentGiftAmount = ImportDecimal(Catalog.GetString("Gift amount"),
                 FMainDS.AGiftDetail.ColumnGiftTransactionAmount, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
@@ -810,7 +831,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             if (HasExtraColumns)
             {
                 // amount in international currency
-                AGiftDetails.GiftAmountIntl = ImportDecimal(Catalog.GetString("Gift amount intl"),
+                dummyDecimal = ImportDecimal(Catalog.GetString("Gift amount intl"),
                     FMainDS.AGiftDetail.ColumnGiftAmountIntl, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
             }
 
@@ -823,22 +844,21 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (HasExtraColumns)
             {
-                AGiftDetails.CostCentreCode = ImportString(Catalog.GetString("Cost centre code"),
+                dummyString = ImportString(Catalog.GetString("Cost centre code"),
                     FMainDS.AGiftDetail.ColumnCostCentreCode, AValidationControlsDictGiftDetail);
             }
-            else
-            {
-                // "In Petra Cost Centre is always inferred from recipient field and motivation detail so is not needed in the import."
-                AGiftDetails.CostCentreCode = InferCostCentre(AGiftDetails);
-            }
 
+            // "In Petra Cost Centre is always inferred from recipient field and motivation detail so is not needed in the import."
+            AGiftDetails.CostCentreCode = InferCostCentre(AGiftDetails);
+
+            // All the remaining columns are optional and can contain database NULL
             AGiftDetails.GiftCommentOne = ImportString(Catalog.GetString("Gift comment one"),
                 FMainDS.AGiftDetail.ColumnGiftCommentOne, AValidationControlsDictGiftDetail, false);
             AGiftDetails.CommentOneType = ImportString(Catalog.GetString("Comment one type"),
                 FMainDS.AGiftDetail.ColumnCommentOneType, AValidationControlsDictGiftDetail, false);
 
             AGiftDetails.MailingCode = ImportString(Catalog.GetString("Mailing code"),
-                FMainDS.AGiftDetail.ColumnMailingCode, AValidationControlsDictGiftDetail);
+                FMainDS.AGiftDetail.ColumnMailingCode, AValidationControlsDictGiftDetail, false);
 
             AGiftDetails.GiftCommentTwo = ImportString(Catalog.GetString("Gift comment two"),
                 FMainDS.AGiftDetail.ColumnGiftCommentTwo, AValidationControlsDictGiftDetail, false);
@@ -848,8 +868,14 @@ namespace Ict.Petra.Server.MFinance.Gift
                 FMainDS.AGiftDetail.ColumnGiftCommentThree, AValidationControlsDictGiftDetail, false);
             AGiftDetails.CommentThreeType = ImportString(Catalog.GetString("Comment three type"),
                 FMainDS.AGiftDetail.ColumnCommentThreeType, AValidationControlsDictGiftDetail, false);
+
+            // Find the default Tax deductabilty from the motivation detail. This ensures that the column can be missing.
+            AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)AValidationMotivationDetailTable.Rows.Find(
+                new object[] { FLedgerNumber, AGiftDetails.MotivationGroupCode, AGiftDetails.MotivationDetailCode });
+            string defaultTaxDeductible = ((motivationDetailRow != null) && motivationDetailRow.TaxDeductible) ? "yes" : "no";
+
             AGiftDetails.TaxDeductible = ImportBoolean(Catalog.GetString("Tax deductible"),
-                FMainDS.AGiftDetail.ColumnTaxDeductible, AValidationControlsDictGiftDetail);
+                FMainDS.AGiftDetail.ColumnTaxDeductible, AValidationControlsDictGiftDetail, defaultTaxDeductible);
 
             AGift.DateEntered = AGiftBatch.GlEffectiveDate;
 
@@ -996,7 +1022,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             return sReturn;
         }
 
-        private Boolean ImportBoolean(String AColumnTitle, DataColumn ADataColumn, TValidationControlsDict AValidationColumnsDict)
+        private Boolean ImportBoolean(String AColumnTitle, DataColumn ADataColumn, TValidationControlsDict AValidationColumnsDict, String ADefaultString = "")
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1004,6 +1030,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
+
+            if (sReturn == String.Empty)
+            {
+                sReturn = ADefaultString;
+            }
+
             return sReturn.ToLower().Equals("yes");
         }
 
@@ -1011,7 +1043,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict)
+            TValidationControlsDict AValidationColumnsDict,
+            String ADefaultString = "")
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1019,6 +1052,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
+
+            if (sReturn == String.Empty)
+            {
+                sReturn = ADefaultString;
+            }
+
             Int64 retVal;
 
             if (Int64.TryParse(sReturn, out retVal))
@@ -1036,7 +1075,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict)
+            TValidationControlsDict AValidationColumnsDict,
+            String ADefaultString = "")
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1044,6 +1084,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
+
+            if (sReturn == String.Empty)
+            {
+                sReturn = ADefaultString;
+            }
+
             Int32 retVal;
 
             if (Int32.TryParse(sReturn, out retVal))
@@ -1061,7 +1107,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict)
+            TValidationControlsDict AValidationColumnsDict,
+            String ADefaultString = "")
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1069,6 +1116,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
+
+            if (sReturn == String.Empty)
+            {
+                sReturn = ADefaultString;
+            }
+
             try
             {
                 decimal dec = Convert.ToDecimal(sReturn, FCultureInfoNumberFormat);
@@ -1087,7 +1140,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict)
+            TValidationControlsDict AValidationColumnsDict,
+            String ADefaultString = "")
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1095,6 +1149,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             String sDate = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
+
+            if (sDate == String.Empty)
+            {
+                sDate = ADefaultString;
+            }
+
             DateTime dtReturn;
 
             try
