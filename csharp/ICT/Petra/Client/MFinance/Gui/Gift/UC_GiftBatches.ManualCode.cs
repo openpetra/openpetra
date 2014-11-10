@@ -115,10 +115,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FLedgerNumber = value;
 
+                ParentForm.Cursor = Cursors.WaitCursor;
                 InitialiseLogicObjects();
                 InitialiseLedgerControls();
-
-                LoadBatchesForCurrentYear();
             }
         }
 
@@ -195,14 +194,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 out FDefaultDate);
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
+
+            FLoadAndFilterLogicObject.InitialiseDataSources(cmbDetailBankCostCentre, cmbDetailBankAccountCode);
         }
 
         private void RunOnceOnParentActivationManual()
         {
-            FLoadAndFilterLogicObject.OnMainScreenActivation(cmbDetailBankCostCentre, cmbDetailBankAccountCode);
-
+            ParentForm.Cursor = Cursors.WaitCursor;
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+
+            FLoadAndFilterLogicObject.ActivateFilter();
+            LoadBatchesForCurrentYear();
+            ParentForm.Cursor = Cursors.Default;
 
             SetInitialFocus();
         }
