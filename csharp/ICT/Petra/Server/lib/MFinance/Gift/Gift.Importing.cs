@@ -750,10 +750,6 @@ namespace Ict.Petra.Server.MFinance.Gift
         {
             //this is the format with extra columns
             bool HasExtraColumns = (ANumberOfColumns >= 27);
-            Boolean dummyBool;
-            Int32 dummyInt32;
-            String dummyString;
-            decimal dummyDecimal;
 
             AImportMessage = Catalog.GetString("Importing the gift data");
 
@@ -774,11 +770,11 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (HasExtraColumns)
             {
-                dummyInt32 = ImportInt32(Catalog.GetString("Receipt number"),
+                ImportInt32(Catalog.GetString("Receipt number"),
                     FMainDS.AGift.ColumnReceiptNumber, ARowNumber, AMessages, AValidationControlsDictGift);
-                dummyBool = ImportBoolean(Catalog.GetString("First time gift"),
+                ImportBoolean(Catalog.GetString("First time gift"),
                     FMainDS.AGift.ColumnFirstTimeGift, AValidationControlsDictGift);
-                dummyBool = ImportBoolean(Catalog.GetString("Receipt printed"),
+                ImportBoolean(Catalog.GetString("Receipt printed"),
                     FMainDS.AGift.ColumnReceiptPrinted, AValidationControlsDictGift);
             }
 
@@ -824,7 +820,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (HasExtraColumns)
             {
-                dummyInt32 = ImportInt32(Catalog.GetString("Recipient ledger number"),
+                ImportInt32(Catalog.GetString("Recipient ledger number"),
                     FMainDS.AGiftDetail.ColumnRecipientLedgerNumber, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
             }
 
@@ -842,7 +838,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             if (HasExtraColumns)
             {
                 // amount in international currency
-                dummyDecimal = ImportDecimal(Catalog.GetString("Gift amount intl"),
+                ImportDecimal(Catalog.GetString("Gift amount intl"),
                     FMainDS.AGiftDetail.ColumnGiftAmountIntl, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
             }
 
@@ -855,7 +851,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (HasExtraColumns)
             {
-                dummyString = ImportString(Catalog.GetString("Cost centre code"),
+                ImportString(Catalog.GetString("Cost centre code"),
                     FMainDS.AGiftDetail.ColumnCostCentreCode, AValidationControlsDictGiftDetail);
             }
 
