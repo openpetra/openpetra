@@ -6444,6 +6444,11 @@
                     label="Contact Date"
                     help="Enter the date the contact was made"
                     notnull="yes"/>
+        <tablefield name="s_contact_time_i"
+                    type="integer"
+                    descr="Time of contact"
+                    format="99999"
+                    initial="0"/>
         <tablefield name="p_contact_code_c"
                     type="varchar"
                     descr="Contact code"

@@ -90,13 +90,13 @@
 			
 			<queryDetail condition="eq({param_selection},one partner)">
 				<value>
-					   PUB_p_partner, PUB_p_partner_contact, PUB_p_location
+					   PUB_p_partner, PUB_p_partner_contact, PUB_p_contact_log, PUB_p_location
 					WHERE  PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
 				</value>
 			</queryDetail>
 			<queryDetail condition="eq({param_selection},an extract)">
 				<value>
-					 PUB_p_partner, PUB_m_extract, PUB_m_extract_master, PUB_p_partner_contact, PUB_p_location
+					 PUB_p_partner, PUB_m_extract, PUB_m_extract_master, PUB_p_partner_contact, PUB_p_contact_log, PUB_p_location
 					WHERE PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
 					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
 					AND PUB_m_extract_master.m_extract_name_c = {param_extract}
@@ -104,7 +104,7 @@
 			</queryDetail>
 			<queryDetail condition="eq({param_selection},all current staff)">
 				<value>
-					 PUB_p_partner, PUB_pm_staff_data, PUB_p_partner_contact, PUB_p_location
+					 PUB_p_partner, PUB_pm_staff_data, PUB_p_partner_contact, PUB_p_contact_log, PUB_p_location
 					WHERE PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
 					AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
 					AND (PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
@@ -114,32 +114,33 @@
 			<queryDetail>
 				<value>
 					AND PUB_p_partner.p_partner_key_n = PUB_p_partner_contact.p_partner_key_n
+                    AND PUB_p_contact_log.p_contact_log_id_i = PUB_p_partner_contact.p_contact_log_id_i
 				</value>
 			</queryDetail>
 			<queryDetail condition="not (eq({param_cmbContact}, *))">
 				<value>
-					AND PUB_p_partner_contact.p_contact_code_c = {param_cmbContact}
+					AND PUB_p_contact_log.p_contact_code_c = {param_cmbContact}
 				</value>
 			</queryDetail>
 			<queryDetail condition="not (eq(length({param_dtpDateTo}), 1))">
 				<value>
-					AND PUB_p_partner_contact.s_contact_date_d &lt;= {#param_dtpDateTo#}
+					AND PUB_p_contact_log.s_contact_date_d &lt;= {#param_dtpDateTo#}
 				</value>
 			</queryDetail>
 			<queryDetail condition="not(eq(length({param_dtpDateFrom}), 1))">
 				<value>
-					AND PUB_p_partner_contact.s_contact_date_d &gt;= {#param_dtpDateFrom#}
+					AND PUB_p_contact_log.s_contact_date_d &gt;= {#param_dtpDateFrom#}
 				</value>
 			</queryDetail>
 			<queryDetail condition="not (eq({param_cmbContactor},*))">
 				<value>
-					AND PUB_p_partner_contact.p_contactor_c = {param_cmbContactor}
+					AND PUB_p_contact_log.p_contactor_c = {param_cmbContactor}
 				</value>
 			</queryDetail>
 			
 			<queryDetail condition="not (eq(length({param_contact_attributes}), 1))">
 				<value>
-					AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i
+					AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_contact_log.p_contact_log_id_i
 					{{param_contact_attributes}}
 					
 				</value>
@@ -159,24 +160,23 @@
 		</query>
 	</calculation><!-- Select Partners -->
 	  
-	<calculation  id="Get All Contacts of partner" returns="Contactor, Method, ContactId, ContactDate, s_contact_time_i,
+	<calculation  id="Get All Contacts of partner" returns="Contactor, Method, ContactId, ContactDate,
 					Mailing, Notes, ContactAttribute, ContactDetail, ContactDetailDescription"	returnsFormat="row">
 		<query>
 			<queryDetail>
 				<value>
 					SELECT DISTINCT
-						PUB_p_partner_contact.p_contactor_c AS Contactor,
-						PUB_p_partner_contact.p_contact_code_c AS Method,
-						PUB_p_partner_contact.s_contact_date_d AS ContactDate,
-						PUB_p_partner_contact.s_contact_time_i AS s_contact_time_i,
-						PUB_p_partner_contact.p_mailing_code_c AS Mailing,
-						PUB_p_partner_contact.p_contact_comment_c AS Notes,
+						PUB_p_contact_log.p_contactor_c AS Contactor,
+						PUB_p_contact_log.p_contact_code_c AS Method,
+						PUB_p_contact_log.s_contact_date_d AS ContactDate,
+						PUB_p_contact_log.p_mailing_code_c AS Mailing,
+						PUB_p_contact_log.p_contact_comment_c AS Notes,
 						PUB_p_partner_contact_attribute.p_contact_id_i AS ContactId,
 						PUB_p_partner_contact_attribute.p_contact_attribute_code_c AS ContactAttribute,
 						PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c AS ContactDetail,
 						PUB_p_contact_attribute_detail.p_contact_attr_detail_descr_c AS ContactDetailDescription
 					FROM
-						PUB_p_partner_contact, PUB_p_partner_contact_attribute
+						PUB_p_partner_contact, PUB_p_contact_log, PUB_p_partner_contact_attribute
 					LEFT JOIN
 						PUB_p_contact_attribute_detail
 					ON
@@ -185,102 +185,102 @@
 						PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c
 					WHERE
 						PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
+						AND PUB_p_contact_log.p_contact_log_id_i = PUB_p_partner_contact.p_contact_log_id_i
 				</value>
 			</queryDetail>
 			<queryDetail condition="not (eq({param_cmbContact}, *))">
 				<value>
-					AND PUB_p_partner_contact.p_contact_code_c = {param_cmbContact}
+					AND PUB_p_contact_log.p_contact_code_c = {param_cmbContact}
 				</value>
 			</queryDetail>
 			<queryDetail condition="not (eq(length({param_dtpDateTo}), 1))">
 				<value>
-					AND PUB_p_partner_contact.s_contact_date_d &lt;= {#param_dtpDateTo#}
+					AND PUB_p_contact_log.s_contact_date_d &lt;= {#param_dtpDateTo#}
 				</value>
 			</queryDetail>
 			<queryDetail condition="not (eq(length({param_dtpDateFrom}), 1))">
 				<value>
-					AND PUB_p_partner_contact.s_contact_date_d &gt;= {#param_dtpDateFrom#}
+					AND PUB_p_contact_log.s_contact_date_d &gt;= {#param_dtpDateFrom#}
 				</value>
 			</queryDetail>
 			<queryDetail condition="not (eq({param_cmbContactor},*))">
 				<value>
-					AND PUB_p_partner_contact.p_contactor_c = {param_cmbContactor}
+					AND PUB_p_contact_log.p_contactor_c = {param_cmbContactor}
 				</value>
 			</queryDetail>
 			<queryDetail>
 				<value>
-					AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_id_i
+					AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_log_id_i
 					{{param_contact_attributes}}
 				</value>
 			</queryDetail>
 		</query>
 	</calculation>
 	
-	<calculation  id="Get All Contacts of partner NO ATTRIBUTE" returns="Contactor, Method, ContactId, ContactDate, s_contact_time_i,
+	<calculation  id="Get All Contacts of partner NO ATTRIBUTE" returns="Contactor, Method, ContactId, ContactDate,
 					Mailing, Notes, ContactAttribute, ContactDetail"	returnsFormat="row">
 		<query>
 			<queryDetail>
 				<value>
 					SELECT DISTINCT
-						PUB_p_partner_contact.p_contactor_c AS Contactor,
-						PUB_p_partner_contact.p_contact_code_c AS Method,
-						PUB_p_partner_contact.s_contact_date_d AS ContactDate,
-						PUB_p_partner_contact.s_contact_time_i AS s_contact_time_i,
-						PUB_p_partner_contact.p_mailing_code_c AS Mailing,
-						PUB_p_partner_contact.p_contact_comment_c AS Notes,
-						PUB_p_partner_contact.p_contact_id_i AS ContactId,
+						PUB_p_contact_log.p_contactor_c AS Contactor,
+						PUB_p_contact_log.p_contact_code_c AS Method,
+						PUB_p_contact_log.s_contact_date_d AS ContactDate,
+						PUB_p_contact_log.p_mailing_code_c AS Mailing,
+						PUB_p_contact_log.p_contact_comment_c AS Notes,
+						PUB_p_contact_log.p_contact_log_id_i AS ContactId,
 						PUB_p_partner_contact_attribute.p_contact_attribute_code_c AS ContactAttribute,
 						PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c AS ContactDetail
 					FROM
-						PUB_p_partner_contact
+						PUB_p_contact_log, PUB_p_partner_contact
 					LEFT JOIN
 						PUB_p_partner_contact_attribute
 					ON 	
-						PUB_p_partner_contact.p_contact_id_i = PUB_p_partner_contact_attribute.p_contact_id_i
+						PUB_p_partner_contact.p_contact_log_id_i = PUB_p_partner_contact_attribute.p_contact_id_i
 					WHERE
 						PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
+                        AND PUB_p_contact_log.p_contact_log_id_i = PUB_p_partner_contact.p_contact_log_id_i                        
 				</value>
 			</queryDetail>
 			<queryDetail condition="not (eq({param_cmbContact}, *))">
 				<value>
-					AND PUB_p_partner_contact.p_contact_code_c = {param_cmbContact}
+					AND PUB_p_contact_log.p_contact_code_c = {param_cmbContact}
 				</value>
 			</queryDetail>
 			<queryDetail condition="not (eq(length({param_dtpDateTo}), 1))">
 				<value>
-					AND PUB_p_partner_contact.s_contact_date_d &lt;= {#param_dtpDateTo#}
+					AND PUB_p_contact_log.s_contact_date_d &lt;= {#param_dtpDateTo#}
 				</value>
 			</queryDetail>
 			<queryDetail condition="not (eq(length({param_dtpDateFrom}), 1))">
 				<value>
-					AND PUB_p_partner_contact.s_contact_date_d &gt;= {#param_dtpDateFrom#}
+					AND PUB_p_contact_log.s_contact_date_d &gt;= {#param_dtpDateFrom#}
 				</value>
 			</queryDetail>
 			<queryDetail condition="not (eq({param_cmbContactor},*))">
 				<value>
-					AND PUB_p_partner_contact.p_contactor_c = {param_cmbContactor}
+					AND PUB_p_contact_log.p_contactor_c = {param_cmbContactor}
 				</value>
 			</queryDetail>
 		</query>
 	</calculation>
 	
-	<calculation  id="Get All Details of Contact Attribute" returns="ContactAttribute, ContactDetail, ContactDetailDescription, s_contact_time_i"	returnsFormat="row">
+	<calculation  id="Get All Details of Contact Attribute" returns="ContactAttribute, ContactDetail, ContactDetailDescription"	returnsFormat="row">
 		<query>
 			<queryDetail>
 				<value>
 					SELECT DISTINCT
-						PUB_p_partner_contact.p_contactor_c AS Contactor,
-						PUB_p_partner_contact.p_contact_code_c AS Method,
-						PUB_p_partner_contact.s_contact_date_d AS ContactDate,
-						PUB_p_partner_contact.s_contact_time_i AS s_contact_time_i,
-						PUB_p_partner_contact.p_mailing_code_c AS Mailing,
-						PUB_p_partner_contact.p_contact_comment_c AS Notes,
-						PUB_p_partner_contact.p_contact_id_i AS ContactId,
+						PUB_p_contact_log.p_contactor_c AS Contactor,
+						PUB_p_contact_log.p_contact_code_c AS Method,
+						PUB_p_contact_log.s_contact_date_d AS ContactDate,
+						PUB_p_contact_log.p_mailing_code_c AS Mailing,
+						PUB_p_contact_log.p_contact_comment_c AS Notes,
+						PUB_p_contact_log.p_contact_log_id_i AS ContactId,
 						PUB_p_partner_contact_attribute.p_contact_attribute_code_c AS ContactAttribute,
 						PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c AS ContactDetail,
 						PUB_p_contact_attribute_detail.p_contact_attr_detail_descr_c AS ContactDetailDescription
 					FROM
-						PUB_p_partner_contact, PUB_p_partner_contact_attribute
+						PUB_p_partner_contact, PUB_p_contact_log, PUB_p_partner_contact_attribute
 					LEFT JOIN
 						PUB_p_contact_attribute_detail
 					ON
@@ -289,7 +289,8 @@
 						PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c
 					WHERE
 							 PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
-						AND PUB_p_partner_contact.p_contact_id_i = {{ContactId}}
+						AND PUB_p_partner_contact.p_contact_log_id_i = {{ContactId}}
+                        AND PUB_p_contact_log.p_contact_log_id_i = PUB_p_partner_contact.p_contact_log_id_i                        
 						AND PUB_p_partner_contact_attribute.p_contact_id_i = {{ContactId}}
 						AND PUB_p_partner_contact_attribute.p_contact_attribute_code_c = {ContactAttribute}
 						AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = {ContactDetail}
