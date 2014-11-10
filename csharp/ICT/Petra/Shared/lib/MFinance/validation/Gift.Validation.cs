@@ -303,8 +303,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
-            // Motivation Group type Gift must have non-zero Recipient field
-            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMotivationGroupCodeId];
+            // If recipient is non-zero, field must also be non-zero
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnRecipientLedgerNumberId];
             ValidationContext = String.Format("batch:{0} transaction:{1} detail:{2}",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
@@ -312,16 +312,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if ((ARow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT) && (ARecipientField == 0))
+                if ((ARow.RecipientKey > 0) && (ARow.RecipientLedgerNumber == 0))
                 {
-                    VerificationResult = TSharedPartnerValidation_Partner.IsValidRecipientFieldForMotivationGroup(ARow.RecipientKey,
-                        ARecipientField,
-                        MFinanceConstants.MOTIVATION_GROUP_GIFT,
-                        isImporting ? ValidationControlsData.ValidationControlLabel : "Recipient of " +
-                        THelper.NiceValueDescription(ValidationContext.ToString()) + Environment.NewLine,
-                        AContext,
-                        ValidationColumn,
-                        null);
+                    VerificationResult = TNumericalChecks.IsGreaterThanZero(ARow.RecipientLedgerNumber,
+                    "Recipient field of " + ValidationContext + " is 0",
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition/removal to/from TVerificationResultCollection
                     if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
@@ -808,8 +803,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
-            // Motivation Group type Gift must have non-zero Recipient field
-            ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnMotivationGroupCodeId];
+            // If recipient is non-zero, field must also be non-zero
+            ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnRecipientLedgerNumberId];
             ValidationContext = String.Format("batch:{0} transaction:{1} detail:{2}",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
@@ -817,15 +812,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if ((ARow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT) && (ARecipientField == 0))
+                if ((ARow.RecipientKey > 0) && (ARow.RecipientLedgerNumber == 0))
                 {
-                    VerificationResult = TSharedPartnerValidation_Partner.IsValidRecipientFieldForMotivationGroup(ARow.RecipientKey,
-                        ARecipientField,
-                        MFinanceConstants.MOTIVATION_GROUP_GIFT,
-                        "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()) + Environment.NewLine,
-                        AContext,
-                        ValidationColumn,
-                        null);
+                    VerificationResult = TNumericalChecks.IsGreaterThanZero(ARow.RecipientLedgerNumber,
+                    "Recipient field of " + ValidationContext + " is 0",
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition/removal to/from TVerificationResultCollection
                     if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
