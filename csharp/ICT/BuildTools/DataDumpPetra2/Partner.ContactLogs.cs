@@ -91,6 +91,7 @@ namespace Ict.Tools.DataDumpPetra2
                 // p_contact_log row
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_log_id_i", ContactLogKey);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "s_contact_date_d", OldRow[2]);
+                SetValue(ContactLogColumnNames, ref ContactLogRow, "s_contact_time_i", OldRow[3]);
 
                 if ((OldRow[4].Length == 0) || (OldRow[4] == "\\N"))
                 {
