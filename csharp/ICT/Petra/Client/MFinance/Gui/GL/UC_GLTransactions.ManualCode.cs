@@ -801,7 +801,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         }
                         else
                         {
-                            AmtInIntlCurrency = (IntlRateToBaseCurrency == 0) ? 0 : GLRoutines.Divide(tr.AmountInBaseCurrency, IntlRateToBaseCurrency);
+                            // TODO: Instead of hard coding the number of decimals to 2 (for US cent) it should come from the database.
+                            AmtInIntlCurrency = (IntlRateToBaseCurrency == 0) ? 0 : GLRoutines.Divide(tr.AmountInBaseCurrency, IntlRateToBaseCurrency, 2);
 
                             if (tr.AmountInIntlCurrency != AmtInIntlCurrency)
                             {
