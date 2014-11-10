@@ -2,7 +2,7 @@ DELETE FROM s_report_template WHERE s_template_id_i=3;
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
 VALUES(3,'Trial Balance','OpenPetra default template','System',True,False,False,False,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="10/21/2014 16:10:47" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="11/10/2014 11:03:22" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -63,7 +63,7 @@ namespace FastReport
     <Parameter Name="param_account_list_title" DataType="System.String"/>
     <Parameter Name="param_account_codes" DataType="System.String"/>
     <Parameter Name="param_account_code_start" DataType="System.String"/>
-    <Parameter Name="param_account_code_end" DataType="System.String"/>
+    <Parameter Name="param_account_code_end" DataType="System.Int32"/>
     <Parameter Name="param_rgrAccounts" DataType="System.String"/>
     <Parameter Name="param_cost_centre_list_title" DataType="System.String"/>
     <Parameter Name="param_cost_centre_codes" DataType="System.String"/>
@@ -91,10 +91,10 @@ namespace FastReport
     <Parameter Name="param_requested_by" DataType="System.String"/>
     <Parameter Name="param_version" DataType="System.String"/>
     <Parameter Name="param_period_closed" DataType="System.Boolean"/>
-    <Total Name="GroupDebit" Expression="Debits.Value" Evaluator="list" PrintOn="GroupFooter1"/>
-    <Total Name="GroupCredit" Expression="Credits.Value" Evaluator="list" PrintOn="GroupFooter1"/>
-    <Total Name="OuterGroupDebit" Expression="Debits.Value" Evaluator="list" PrintOn="ReportSummary1"/>
-    <Total Name="OuterGroupCredit" Expression="Credits.Value" Evaluator="list" PrintOn="ReportSummary1"/>
+    <Total Name="GroupDebit" Expression="[TrialBalance.debit]" Evaluator="list" PrintOn="GroupFooter1"/>
+    <Total Name="GroupCredit" Expression="[TrialBalance.credit]" Evaluator="list" PrintOn="GroupFooter1"/>
+    <Total Name="OuterGroupDebit" Expression="[TrialBalance.debit]" Evaluator="list" PrintOn="ReportSummary1"/>
+    <Total Name="OuterGroupCredit" Expression="[TrialBalance.credit]" Evaluator="list" PrintOn="ReportSummary1"/>
   </Dictionary>
   <ReportPage Name="Page1">
     <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="75.6">
@@ -167,7 +167,7 @@ namespace FastReport
         <LineObject Name="Line3" Left="642.6" Top="36.8" Width="-245.7" Border.Color="Blue" Border.Width="1.5"/>
         <TextObject Name="f38" Top="18.9" Width="9.45" Height="18.9"/>
         <TextObject Name="f39" Left="9.45" Top="18.9" Width="9.45" Height="18.9"/>
-        <TextObject Name="f29" Left="18.9" Top="18.9" Width="85.05" Height="18.9"/>
+        <TextObject Name="f29" Left="18.9" Top="18.9" Width="94.5" Height="18.9"/>
       </GroupFooterBand>
     </GroupHeaderBand>
     <ReportSummaryBand Name="ReportSummary1" Top="196.22" Width="718.2" Height="37.8">
