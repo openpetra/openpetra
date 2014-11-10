@@ -444,7 +444,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 throw new Exception("Unexpected ComboBox name");
             }
 
-
             AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
             AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);
         }

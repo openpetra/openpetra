@@ -396,9 +396,20 @@ namespace Ict.Petra.Server.MFinance.Gift
                             // Parse the line into a new row
                             AGiftRow gift = FMainDS.AGift.NewRowTyped(true);
                             AGiftDetailRow giftDetails;
-                            ParseTransactionLine(gift, giftBatch, ref previousGift, numberOfElements, ref totalBatchAmount, ref ImportMessage,
-                                RowNumber, AMessages, ValidationControlsDictGift, ValidationControlsDictGiftDetail, CostCentreTable, MotivationDetailTable,
-                                ref ANeedRecipientLedgerNumber, out giftDetails);
+                            ParseTransactionLine(gift,
+                                giftBatch,
+                                ref previousGift,
+                                numberOfElements,
+                                ref totalBatchAmount,
+                                ref ImportMessage,
+                                RowNumber,
+                                AMessages,
+                                ValidationControlsDictGift,
+                                ValidationControlsDictGiftDetail,
+                                CostCentreTable,
+                                MotivationDetailTable,
+                                ref ANeedRecipientLedgerNumber,
+                                out giftDetails);
 
                             if (TaxDeductiblePercentageEnabled)
                             {
@@ -699,7 +710,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             // And do the additional manual ones
             AImportMessage = Catalog.GetString("Additional validation of the gift batch data");
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, AGiftBatch, ref AMessages,
-                AValidationControlsDictBatch, AValidationAccountTable, AValidationCostCentreTable, AValidationCorporateExchTable, 
+                AValidationControlsDictBatch, AValidationAccountTable, AValidationCostCentreTable, AValidationCorporateExchTable,
                 AValidationCurrencyTable, FLedgerBaseCurrency);
 
             for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
@@ -1022,7 +1033,10 @@ namespace Ict.Petra.Server.MFinance.Gift
             return sReturn;
         }
 
-        private Boolean ImportBoolean(String AColumnTitle, DataColumn ADataColumn, TValidationControlsDict AValidationColumnsDict, String ADefaultString = "")
+        private Boolean ImportBoolean(String AColumnTitle,
+            DataColumn ADataColumn,
+            TValidationControlsDict AValidationColumnsDict,
+            String ADefaultString = "")
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {

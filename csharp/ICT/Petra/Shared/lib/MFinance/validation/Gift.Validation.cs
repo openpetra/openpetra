@@ -107,13 +107,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     if ((foundRow != null) && foundRow.ForeignCurrencyFlag)
                     {
                         if ((foundRow.ForeignCurrencyCode != ARow.CurrencyCode) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
-                            AContext,
-                            new TVerificationResult(ValidationContext,
-                                String.Format(Catalog.GetString(
-                                    "The bank account code '{0}' is a foreign currency account so the currency code for the batch must be '{1}'."), 
-                                    ARow.BankAccountCode, foundRow.ForeignCurrencyCode),
-                                TResultSeverity.Resv_Critical),
-                            ValidationColumn))
+                                AContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString(
+                                            "The bank account code '{0}' is a foreign currency account so the currency code for the batch must be '{1}'."),
+                                        ARow.BankAccountCode, foundRow.ForeignCurrencyCode),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
                         {
                             VerifResultCollAddedCount++;
                         }
@@ -162,11 +162,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     if (foundRow != null)
                     {
                         if (!foundRow.PostingCostCentreFlag && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
-                            AContext,
-                            new TVerificationResult(ValidationContext,
-                                String.Format(Catalog.GetString("The cost centre '{0}' is not a Posting Cost Centre."), ARow.BankCostCentre),
-                                TResultSeverity.Resv_Critical),
-                            ValidationColumn))
+                                AContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString("The cost centre '{0}' is not a Posting Cost Centre."), ARow.BankCostCentre),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
                         {
                             VerifResultCollAddedCount++;
                         }
@@ -200,6 +200,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 {
                     // Currency code must exist in the currency table
                     ACurrencyRow foundRow = (ACurrencyRow)ACurrencyTableRef.Rows.Find(ARow.CurrencyCode);
+
                     if ((foundRow == null)
                         && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                             AContext,
@@ -266,17 +267,17 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 // Ensure the gift type is correct and that it matches one of the allowable options (applies when importing)
-                if ((ARow.GiftType != MFinanceConstants.GIFT_TYPE_GIFT) &&
-                    (ARow.GiftType != MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND) &&
-                    (ARow.GiftType != MFinanceConstants.GIFT_TYPE_OTHER))
+                if ((ARow.GiftType != MFinanceConstants.GIFT_TYPE_GIFT)
+                    && (ARow.GiftType != MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND)
+                    && (ARow.GiftType != MFinanceConstants.GIFT_TYPE_OTHER))
                 {
                     if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
-                        AContext,
-                        new TVerificationResult(ValidationContext,
-                            String.Format(Catalog.GetString("Unknown gift type. Expected one of '{0}', '{1}' or '{2}'"),
-                                MFinanceConstants.GIFT_TYPE_GIFT, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND, MFinanceConstants.GIFT_TYPE_OTHER),
-                            TResultSeverity.Resv_Critical),
-                        ValidationColumn))
+                            AContext,
+                            new TVerificationResult(ValidationContext,
+                                String.Format(Catalog.GetString("Unknown gift type. Expected one of '{0}', '{1}' or '{2}'"),
+                                    MFinanceConstants.GIFT_TYPE_GIFT, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND, MFinanceConstants.GIFT_TYPE_OTHER),
+                                TResultSeverity.Resv_Critical),
+                            ValidationColumn))
                     {
                         VerifResultCollAddedCount++;
                     }

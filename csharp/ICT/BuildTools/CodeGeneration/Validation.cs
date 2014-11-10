@@ -100,14 +100,14 @@ namespace Ict.Tools.CodeGeneration
         /// <param name="ADBField">DB Field.</param>
         /// <param name="AScope">Scope of the Data Validation that should be checked for. Specify <see cref="TAutomDataValidationScope.advsAll"/>
         /// to find out if any of the scopes should be checked against, or use any other value of that enum to specifiy a specific scope.</param>
-        /// <param name="AConstraintsGroup">The constraints for the table associated with this column. Can be null unless this is doing table 
+        /// <param name="AConstraintsGroup">The constraints for the table associated with this column. Can be null unless this is doing table
         /// validation rather than control validation</param>
         /// <param name="AReasonForAutomValidation">Contains the reason why automatic data validation code needs to be generated.</param>
         /// <returns>True if automatic Data Validation code should be created for the DB Table Field passed in in <paramref name="ADBField" /> for
         /// the scope that was specified with <paramref name="AScope" />, otherwise false.</returns>
         public static bool GenerateAutoValidationCodeForDBTableField(TTableField ADBField,
             TAutomDataValidationScope AScope,
-            List<TConstraint> AConstraintsGroup,
+            List <TConstraint>AConstraintsGroup,
             out string AReasonForAutomValidation)
         {
             AReasonForAutomValidation = String.Empty;
