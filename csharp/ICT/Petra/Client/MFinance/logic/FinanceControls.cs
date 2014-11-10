@@ -526,7 +526,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AMotivationGroupTable.GetMotivationGroupDescriptionDBName(),
                 null);
 
-            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+            AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
         }
 
         /// <summary>
@@ -545,7 +545,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AMotivationDetailTable.GetMotivationDetailCodeDBName(),
                 AMotivationDetailTable.GetMotivationDetailDescDBName(),
                 null);
-            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+            AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
 
             if (AActiveOnly)
             {
@@ -847,6 +847,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         {
             string DisplayMember;
             string ValueMember;
+
             DataTable Table = TRemote.MFinance.Gift.WebConnectors.GetAvailableGiftYears(ALedgerNr, out DisplayMember, out ValueMember);
 
             Table.DefaultView.Sort = ValueMember + " DESC";

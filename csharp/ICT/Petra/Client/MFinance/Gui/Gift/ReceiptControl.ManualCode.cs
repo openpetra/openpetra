@@ -22,27 +22,15 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.IO;
 using System.Data;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Drawing.Printing;
-using GNU.Gettext;
-using Ict.Common;
-using Ict.Common.Controls;
-using Ict.Common.Printing;
-using Ict.Common.Verification;
-using Ict.Petra.Client.CommonDialogs;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.CommonControls;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MFinance;
 using DevAge.ComponentModel;
-using Ict.Petra.Shared.MFinance.Account.Data;
+
+using Ict.Common;
+using Ict.Common.Printing;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonDialogs;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -66,28 +54,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
         }
 
-        private void PopulateGrid()
+        private void PopulateGrid(bool AFirstTime)
         {
             BoundDataView GiftsView = new BoundDataView(FGiftTbl.DefaultView);
 
             GiftsView.AllowNew = false;
-
             grdDetails.DataSource = GiftsView;
-            grdDetails.Columns.Clear();
-            grdDetails.AddCheckBoxColumn("Sel", FGiftTbl.Columns["Selected"], 30, false);
-            grdDetails.AddTextColumn("Recpt#", FGiftTbl.Columns["ReceiptNumber"], 60);
-            grdDetails.AddDateColumn("Date", FGiftTbl.Columns["DateEntered"]);
-            grdDetails.AddTextColumn("Donor", FGiftTbl.Columns["Donor"], 190);
-            grdDetails.AddTextColumn("Batch#", FGiftTbl.Columns["BatchNumber"], 60);
-            grdDetails.AddTextColumn("Ref", FGiftTbl.Columns["Reference"], 170);
 
-            // Only the text columns can have their widths set while
-            // they're being added.
-            // For the currency and date columns,
-            // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
+            if (AFirstTime)
+            {
+                grdDetails.Columns.Clear();
+                grdDetails.AddCheckBoxColumn("Sel", FGiftTbl.Columns["Selected"], 30, false);
+                grdDetails.AddTextColumn("Recpt#", FGiftTbl.Columns["ReceiptNumber"]);
+                grdDetails.AddDateColumn("Date", FGiftTbl.Columns["DateEntered"]);
+                grdDetails.AddTextColumn("Donor", FGiftTbl.Columns["Donor"]);
+                grdDetails.AddTextColumn("Batch#", FGiftTbl.Columns["BatchNumber"]);
+                grdDetails.AddTextColumn("Ref", FGiftTbl.Columns["Reference"]);
+            }
 
-            grdDetails.Columns[2].Width = 100;
-            grdDetails.AutoStretchColumnsToFitWidth = false;
+            UpdateRecordNumberDisplay();
         }
 
         private void RunOnceOnActivationManual()
@@ -104,7 +89,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 Row["Selected"] = false;
             }
 
-            PopulateGrid();
+            PopulateGrid(true);
         }
 
         /// <summary>
@@ -169,7 +154,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //
             // The HTML string returned here may be several complete HTML documents, with <body>...</body> for each page.
-            string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintReceipts(SelectedRecords);
+            string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintReceipts(FLedgerNumber, SelectedRecords);
 
             if (HtmlDoc == "")
             {
@@ -240,7 +225,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(SelectedRecords);
+                TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(FLedgerNumber, SelectedRecords);
 
                 // remove removed records from datatable
                 DataTable TempTable = FGiftTbl.Copy();
@@ -270,7 +255,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.SelectRowInGrid(0);
 
                 // reload the grid
-                PopulateGrid();
+                PopulateGrid(false);
 
                 grdDetails.SelectRowInGrid(SelectedIndex);
             }
@@ -350,12 +335,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (Row["Selected"].Equals(true))
                 {
                     DataRow TempRow = ReturnTable.NewRow();
-                    TempRow.ItemArray = (object[])Row.ItemArray.Clone();
+                    TempRow["BatchNumber"] = Row["BatchNumber"];
+                    TempRow["TransactionNumber"] = Row["TransactionNumber"];
                     ReturnTable.Rows.Add(TempRow);
                 }
             }
 
             return ReturnTable;
+        }
+
+        ///<summary>
+        /// Update the text in the button panel indicating details of the record count
+        /// </summary>
+        private void UpdateRecordNumberDisplay()
+        {
+            if (grdDetails.DataSource != null)
+            {
+                int RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+                lblRecordCounter.Text = String.Format(
+                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
+                        true),
+                    RecordCount);
+            }
         }
     }
 }

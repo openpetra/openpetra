@@ -212,10 +212,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                 }
             }
 
-            if (ReturnValue != null)
-            {
-                TPPartnerAddressAggregate.ApplySecurity(ref ReturnValue);
-            }
+            /*if (ReturnValue != null)
+             * {
+             *  TPPartnerAddressAggregate.ApplySecurity(ref ReturnValue);
+             * }*/
 
             return ReturnValue;
         }
