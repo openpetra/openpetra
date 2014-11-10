@@ -432,7 +432,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     {
                         TGlmpInfo glmpInfo = new TGlmpInfo(-1, -1, FglmInfo.GlmSequence, FledgerInfo.NumberOfAccountingPeriods);
 
-                        if (glmpInfo.ActualBase != 0)
+                        if (glmpInfo.ActualBase + FglmInfo.ClosingPeriodActualBase != 0)
                         {
                             if (DoExecuteableCode)
                             {
