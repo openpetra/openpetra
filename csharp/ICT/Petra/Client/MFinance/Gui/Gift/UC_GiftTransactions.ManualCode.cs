@@ -1808,7 +1808,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //revertForm.GiftBatchRow = giftBatch;   // TODO Decide whether to remove altogether
 
                 revertForm.GiftDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
-                    new object[] {workingLedgerNumber, workingBatchNumber, workingTransactionNumber, workingDetailNumber});
+                    new object[] { workingLedgerNumber, workingBatchNumber, workingTransactionNumber, workingDetailNumber });
 
                 if (revertForm.ShowDialog() == DialogResult.OK)
                 {

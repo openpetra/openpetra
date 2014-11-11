@@ -279,8 +279,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                             if (numberOfElements < 8)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                    Catalog.GetString("Wrong number of batch columns.  The correct number is either 8 columns (in which case the gift type is assumed to be 'Gift') or 9 columns, which allows for alternative gift types."),
-                                    TResultSeverity.Resv_Critical));
+                                        Catalog.GetString(
+                                            "Wrong number of batch columns.  The correct number is either 8 columns (in which case the gift type is assumed to be 'Gift') or 9 columns, which allows for alternative gift types."),
+                                        TResultSeverity.Resv_Critical));
 
                                 FImportLine = sr.ReadLine();
                                 continue;
@@ -307,7 +308,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             // Parse the complete line and validate it
                             ParseBatchLine(ref giftBatch, ref Transaction, ref LedgerTable, ref ImportMessage, RowNumber, AMessages,
-                                ValidationControlsDictBatch, AccountTable, AccountPropertyTable, AccountingPeriodTable, CostCentreTable, 
+                                ValidationControlsDictBatch, AccountTable, AccountPropertyTable, AccountingPeriodTable, CostCentreTable,
                                 CorporateExchangeToLedgerTable, CurrencyTable);
 
                             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
@@ -376,7 +377,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                             if (numberOfElements < 13) // Perhaps this CSV file is a summary, and can't be imported?
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                        Catalog.GetString("Wrong number of gift columns. Expected at least 13 columns. (This may be a summary?)"), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of gift columns. Expected at least 13 columns. (This may be a summary?)"),
+                                        TResultSeverity.Resv_Critical));
                                 FImportLine = sr.ReadLine();
                                 continue;
                             }
@@ -757,7 +759,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             // Actually if it has the extra columns but does not have the optional final 8 columns we cannot distiguish using this test...
             //   A file without extra columns will have between 13 and 21 columns - depending on whether some of the optional ones at the end are included.
             //   A file with extra columns will be between 19 and 27.
-            //  So any count between 19 and 21 is ambiguous.  We will assume that if the file has extra columns it also has 
+            //  So any count between 19 and 21 is ambiguous.  We will assume that if the file has extra columns it also has
             //   at least enough of the optional ones to exceed 21.
             bool HasExtraColumns = (ANumberOfColumns > 21);
 
@@ -966,6 +968,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         {
             //note that this is only done for "user errors" not for program errors!
             String innerMessage;
+
             if (ex.InnerException == null)
             {
                 innerMessage = ex.Message;

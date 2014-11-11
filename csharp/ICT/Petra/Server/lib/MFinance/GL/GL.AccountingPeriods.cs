@@ -843,7 +843,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-        /// Gets the first day of the accounting period for the ledger and date specified.  Depending on the settings in the 
+        /// Gets the first day of the accounting period for the ledger and date specified.  Depending on the settings in the
         /// accounting period table this may or may not be the first day of the month of the date specified.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -877,7 +877,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 });
 
             AFirstDayOfPeriod = Result;
-            return (Result != DateTime.MinValue);
+            return Result != DateTime.MinValue;
         }
     }
 }

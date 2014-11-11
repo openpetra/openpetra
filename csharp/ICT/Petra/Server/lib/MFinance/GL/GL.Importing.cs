@@ -1183,6 +1183,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             //note that this is only done for "user errors" not for program errors!
             String innerMessage;
+
             if (ex.InnerException == null)
             {
                 innerMessage = ex.Message;
