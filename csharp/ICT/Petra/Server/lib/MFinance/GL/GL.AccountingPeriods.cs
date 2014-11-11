@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -661,7 +661,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     DataRow currentBatchYearRow = row.Row;
 
-                    Int32 currentBatchYear = (Int32)currentBatchYearRow[0];
+                    Int32 currentBatchYear = Convert.ToInt32(currentBatchYearRow[0]);
 
                     if (YearNumber != currentBatchYear)
                     {
@@ -685,7 +685,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(ex.Message);
+                TLogging.Log(ex.ToString());
                 //Do nothing
             }
 
