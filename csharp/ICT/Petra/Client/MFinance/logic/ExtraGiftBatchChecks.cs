@@ -258,7 +258,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     PPartnerRow PartnerRow = (PPartnerRow)AMainDS.DonorPartners.Rows.Find(Row.DonorKey);
 
-                    if (PartnerRow.AnonymousDonor)
+                    if ((PartnerRow != null) && PartnerRow.AnonymousDonor)
                     {
                         UnConfidentialGiftsWithAnonymousDonors.Rows.Add((object[])Row.ItemArray.Clone());
                     }
