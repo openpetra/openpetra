@@ -1182,7 +1182,15 @@ namespace Ict.Petra.Server.MFinance.GL
         private String MakeFriendlyFKExceptions(Exception ex, string AType = "B")
         {
             //note that this is only done for "user errors" not for program errors!
-            String innerMessage = ex.InnerException.ToString();
+            String innerMessage;
+            if (ex.InnerException == null)
+            {
+                innerMessage = ex.Message;
+            }
+            else
+            {
+                innerMessage = ex.InnerException.ToString();
+            }
 
             string formatStr = Catalog.GetString("  Do you need to add this code to the '{0}' main setup screen?");
 
