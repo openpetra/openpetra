@@ -35,6 +35,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MFinance.Gift.Validation;
@@ -70,6 +71,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         private String FImportLine;
         private String FNewLine;
         private string FLedgerBaseCurrency = String.Empty;
+        private string FLedgerIntlCurrency = String.Empty;
 
         private String InferCostCentre(AGiftDetailRow AgiftDetails)
         {
@@ -213,6 +215,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 // This needs to be initialised because we will be calling the method
                 TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
+                TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
 
                 // Get a new transaction
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -228,7 +231,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction);
                 AAccountTable AccountTable = AAccountAccess.LoadViaALedger(FLedgerNumber, Transaction);
                 ACostCentreTable CostCentreTable = ACostCentreAccess.LoadViaALedger(FLedgerNumber, Transaction);
+                AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadViaALedger(FLedgerNumber, Transaction);
                 AMotivationDetailTable MotivationDetailTable = AMotivationDetailAccess.LoadViaALedger(FLedgerNumber, Transaction);
+                AAccountPropertyTable AccountPropertyTable = AAccountPropertyAccess.LoadViaALedger(FLedgerNumber, Transaction);
+                AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadViaALedger(FLedgerNumber, Transaction);
+                AMethodOfGivingTable MethodOfGivingTable = AMethodOfGivingAccess.LoadAll(Transaction);
+                AMethodOfPaymentTable MethodOfPaymentTable = AMethodOfPaymentAccess.LoadAll(Transaction);
+                ACurrencyTable CurrencyTable = ACurrencyAccess.LoadAll(Transaction);
 
                 if (LedgerTable.Rows.Count == 0)
                 {
@@ -236,14 +245,14 @@ namespace Ict.Petra.Server.MFinance.Gift
                 }
 
                 FLedgerBaseCurrency = ((ALedgerRow)LedgerTable.Rows[0]).BaseCurrency;
-                string LedgerIntlCurrency = ((ALedgerRow)LedgerTable.Rows[0]).IntlCurrency;
+                FLedgerIntlCurrency = ((ALedgerRow)LedgerTable.Rows[0]).IntlCurrency;
 
-                ACorporateExchangeRateTable CorporateExchangeToLedgerTable = ACorporateExchangeRateAccess.LoadViaACurrencyToCurrencyCode(
+                ACorporateExchangeRateTable CorporateExchangeToLedgerTable = ACorporateExchangeRateAccess.LoadViaACurrencyFromCurrencyCode(
                     FLedgerBaseCurrency,
                     Transaction);
                 ADailyExchangeRateTable DailyExchangeToLedgerTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(FLedgerBaseCurrency,
                     Transaction);
-                ADailyExchangeRateTable DailyExchangeToIntlTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(LedgerIntlCurrency,
+                ADailyExchangeRateTable DailyExchangeToIntlTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(FLedgerIntlCurrency,
                     Transaction);
 
                 ImportMessage = Catalog.GetString("Parsing first line");
@@ -267,11 +276,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                         if (RowType == "B")
                         {
                             // It is a Batch row
-                            if (numberOfElements != 9)
+                            if (numberOfElements < 8)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                        Catalog.GetString("Wrong number of batch columns.  The correct number is 9 columns."),
-                                        TResultSeverity.Resv_Critical));
+                                    Catalog.GetString("Wrong number of batch columns.  The correct number is either 8 columns (in which case the gift type is assumed to be 'Gift') or 9 columns, which allows for alternative gift types."),
+                                    TResultSeverity.Resv_Critical));
 
                                 FImportLine = sr.ReadLine();
                                 continue;
@@ -297,8 +306,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                             totalBatchAmount = 0;
 
                             // Parse the complete line and validate it
-                            ParseBatchLine(ref giftBatch, ref Transaction, ref LedgerTable, ref ImportMessage, RowNumber,
-                                AMessages, ValidationControlsDictBatch, AccountTable, CostCentreTable, CorporateExchangeToLedgerTable, null);
+                            ParseBatchLine(ref giftBatch, ref Transaction, ref LedgerTable, ref ImportMessage, RowNumber, AMessages,
+                                ValidationControlsDictBatch, AccountTable, AccountPropertyTable, AccountingPeriodTable, CostCentreTable, 
+                                CorporateExchangeToLedgerTable, CurrencyTable);
 
                             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                             {
@@ -363,17 +373,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                         else if (RowType == "T")
                         {
                             // It is a Transaction row
-                            if (numberOfElements < 12) // Perhaps this CSV file is a summary, and can't be imported?
+                            if (numberOfElements < 13) // Perhaps this CSV file is a summary, and can't be imported?
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                        Catalog.GetString("Wrong number of gift columns. (This may be a summary?)"), TResultSeverity.Resv_Critical));
-                                FImportLine = sr.ReadLine();
-                                continue;
-                            }
-                            else if ((numberOfElements != 21) && (numberOfElements != 27))
-                            {
-                                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                        Catalog.GetString("Wrong number of gift columns. Expected either 21 or 27."), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of gift columns. Expected at least 13 columns. (This may be a summary?)"), TResultSeverity.Resv_Critical));
                                 FImportLine = sr.ReadLine();
                                 continue;
                             }
@@ -382,7 +385,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
                                         Catalog.GetString(
-                                            "Expected a GiftBatch line, but found a Gift. Will create a dummy working batch for the current period."),
+                                            "Expected a GiftBatch line, but found a Gift Transaction. Will create a dummy working batch for the current period."),
                                         TResultSeverity.Resv_Critical));
 
                                 // in order to carry on we will make a dummy batch and force the date to fit
@@ -407,7 +410,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 ValidationControlsDictGift,
                                 ValidationControlsDictGiftDetail,
                                 CostCentreTable,
+                                MotivationGroupTable,
                                 MotivationDetailTable,
+                                MethodOfGivingTable,
+                                MethodOfPaymentTable,
                                 ref ANeedRecipientLedgerNumber,
                                 out giftDetails);
 
@@ -419,13 +425,13 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                             {
-                                if ((FLedgerBaseCurrency != LedgerIntlCurrency) && (giftDetails.GiftAmountIntl != 0))
+                                if ((FLedgerBaseCurrency != FLedgerIntlCurrency) && (giftDetails.GiftAmountIntl != 0))
                                 {
                                     // We should add a Daily Exchange Rate row pair
                                     // start with To Ledger currency
                                     decimal fromIntlToBase = GLRoutines.Divide(giftDetails.GiftAmount, giftDetails.GiftAmountIntl);
 
-                                    if (UpdateDailyExchangeRateTable(DailyExchangeToLedgerTable, LedgerIntlCurrency, FLedgerBaseCurrency,
+                                    if (UpdateDailyExchangeRateTable(DailyExchangeToLedgerTable, FLedgerIntlCurrency, FLedgerBaseCurrency,
                                             fromIntlToBase, giftBatch.GlEffectiveDate))
                                     {
                                         ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToLedgerTable, Transaction);
@@ -441,7 +447,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     // Now the inverse for From Ledger currency
                                     decimal inverseRate = GLRoutines.Divide(giftDetails.GiftAmountIntl, giftDetails.GiftAmount);
 
-                                    if (UpdateDailyExchangeRateTable(DailyExchangeToIntlTable, FLedgerBaseCurrency, LedgerIntlCurrency,
+                                    if (UpdateDailyExchangeRateTable(DailyExchangeToIntlTable, FLedgerBaseCurrency, FLedgerIntlCurrency,
                                             inverseRate, giftBatch.GlEffectiveDate))
                                     {
                                         ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToIntlTable, Transaction);
@@ -648,11 +654,13 @@ namespace Ict.Petra.Server.MFinance.Gift
             TVerificationResultCollection AMessages,
             TValidationControlsDict AValidationControlsDictBatch,
             AAccountTable AValidationAccountTable,
+            AAccountPropertyTable AValidationAccountPropertyTable,
+            AAccountingPeriodTable AValidationAccountingPeriodTable,
             ACostCentreTable AValidationCostCentreTable,
             ACorporateExchangeRateTable AValidationCorporateExchTable,
             ACurrencyTable AValidationCurrencyTable)
         {
-            // There are 8 elements to import
+            // There are 8 elements to import (the last of which can be blank)
             string BatchDescription = ImportString(Catalog.GetString("Batch description"),
                 FMainDS.AGiftBatch.ColumnBatchDescription, AValidationControlsDictBatch);
             string BankAccountCode = ImportString(Catalog.GetString("Bank account code"),
@@ -686,8 +694,10 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftBatch.BankCostCentre = ImportString(Catalog.GetString("Bank cost centre"),
                 FMainDS.AGiftBatch.ColumnBankCostCentre, AValidationControlsDictBatch);
             AGiftBatch.GiftType = ImportString(Catalog.GetString("Gift type"),
-                FMainDS.AGiftBatch.ColumnGiftType, AValidationControlsDictBatch);     // can be empty, will default to GIFT
+                FMainDS.AGiftBatch.ColumnGiftType, AValidationControlsDictBatch);
 
+            // If GiftType was empty, will default to GIFT
+            // In all cases we ensure that the case entered by the user is converted to the case of our constants
             if ((AGiftBatch.GiftType == String.Empty) || (String.Compare(AGiftBatch.GiftType, MFinanceConstants.GIFT_TYPE_GIFT, true) == 0))
             {
                 AGiftBatch.GiftType = MFinanceConstants.GIFT_TYPE_GIFT;
@@ -709,9 +719,10 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             // And do the additional manual ones
             AImportMessage = Catalog.GetString("Additional validation of the gift batch data");
-            TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, AGiftBatch, ref AMessages,
-                AValidationControlsDictBatch, AValidationAccountTable, AValidationCostCentreTable, AValidationCorporateExchTable,
-                AValidationCurrencyTable, FLedgerBaseCurrency);
+            TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, AGiftBatch, ref AMessages, AValidationControlsDictBatch,
+                AValidationAccountTable, AValidationCostCentreTable, AValidationAccountPropertyTable, AValidationAccountingPeriodTable,
+                AValidationCorporateExchTable, AValidationCurrencyTable,
+                FLedgerBaseCurrency, FLedgerIntlCurrency);
 
             for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
             {
@@ -732,24 +743,23 @@ namespace Ict.Petra.Server.MFinance.Gift
                             AGiftBatch.ExchangeRateToBase),
                         TResultSeverity.Resv_Noncritical));
             }
-
-            // If this batch is in my base currency, the ExchangeRateToBase must be 1:
-            if ((AGiftBatch.CurrencyCode == FLedgerBaseCurrency)
-                && (AGiftBatch.ExchangeRateToBase != 1.0m))
-            {
-                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                        Catalog.GetString("A batch in the ledger base currency must have exchange rate of 1.00."), TResultSeverity.Resv_Critical));
-            }
         }
 
         private void ParseTransactionLine(AGiftRow AGift, AGiftBatchRow AGiftBatch, ref AGiftRow APreviousGift, int ANumberOfColumns,
             ref decimal ATotalBatchAmount, ref string AImportMessage, int ARowNumber, TVerificationResultCollection AMessages,
             TValidationControlsDict AValidationControlsDictGift, TValidationControlsDict AValidationControlsDictGiftDetail,
-            ACostCentreTable AValidationCostCentreTable, AMotivationDetailTable AValidationMotivationDetailTable,
+            ACostCentreTable AValidationCostCentreTable, AMotivationGroupTable AValidationMotivationGroupTable,
+            AMotivationDetailTable AValidationMotivationDetailTable, AMethodOfGivingTable AValidationMethodOfGivingTable,
+            AMethodOfPaymentTable AValidationMethodOfPaymentTable,
             ref GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber, out AGiftDetailRow AGiftDetails)
         {
-            //this is the format with extra columns
-            bool HasExtraColumns = (ANumberOfColumns >= 27);
+            // Is this the format with extra columns?
+            // Actually if it has the extra columns but does not have the optional final 8 columns we cannot distiguish using this test...
+            //   A file without extra columns will have between 13 and 21 columns - depending on whether some of the optional ones at the end are included.
+            //   A file with extra columns will be between 19 and 27.
+            //  So any count between 19 and 21 is ambiguous.  We will assume that if the file has extra columns it also has 
+            //   at least enough of the optional ones to exceed 21.
+            bool HasExtraColumns = (ANumberOfColumns > 21);
 
             AImportMessage = Catalog.GetString("Importing the gift data");
 
@@ -843,7 +853,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             AGiftDetails.ConfidentialGiftFlag = ImportBoolean(Catalog.GetString("Confidential gift"),
-                FMainDS.AGiftDetail.ColumnConfidentialGiftFlag, AValidationControlsDictGiftDetail);
+                FMainDS.AGiftDetail.ColumnConfidentialGiftFlag, AValidationControlsDictGiftDetail, "no");
             AGiftDetails.MotivationGroupCode = ImportString(Catalog.GetString("Motivation group code"),
                 FMainDS.AGiftDetail.ColumnMotivationGroupCode, AValidationControlsDictGiftDetail);
             AGiftDetails.MotivationDetailCode = ImportString(Catalog.GetString("Motivation detail"),
@@ -884,7 +894,17 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftDetails.TaxDeductible = ImportBoolean(Catalog.GetString("Tax deductible"),
                 FMainDS.AGiftDetail.ColumnTaxDeductible, AValidationControlsDictGiftDetail, defaultTaxDeductible);
 
+            // Date entered cannot be imported although it can be modified in the GUI.
+            // This is because it would have to be the last column in the import for compatibility
+            // but it belongs with the gift and not the detail so it would need to go in an earlier column.
+            // For now the import date entered is the effective date.
             AGift.DateEntered = AGiftBatch.GlEffectiveDate;
+
+            // Enforce the correct case for our GIFT constant
+            if (String.Compare(AGiftDetails.MotivationGroupCode, MFinanceConstants.MOTIVATION_GROUP_GIFT, true) == 0)
+            {
+                AGiftDetails.MotivationGroupCode = MFinanceConstants.MOTIVATION_GROUP_GIFT;
+            }
 
             // If the gift has a Family recipient with no Gift Destination then the import will fail. Gift is added to a table and returned to client.
             if ((AGiftDetails.RecipientLedgerNumber == 0) && (AGiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT))
@@ -907,13 +927,14 @@ namespace Ict.Petra.Server.MFinance.Gift
             // Do our standard validation on this gift
             AGiftValidation.Validate(this, AGift, ref AMessages, AValidationControlsDictGift);
             TSharedFinanceValidation_Gift.ValidateGiftManual(this, AGift, AGiftBatch.BatchYear, AGiftBatch.BatchPeriod,
-                null, ref AMessages, AValidationControlsDictGift);
+                null, ref AMessages, AValidationControlsDictGift, AValidationMethodOfGivingTable, AValidationMethodOfPaymentTable);
 
             AImportMessage = Catalog.GetString("Validating the gift details data");
 
             AGiftDetailValidation.Validate(this, AGiftDetails, ref AMessages, AValidationControlsDictGiftDetail);
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, (GiftBatchTDSAGiftDetailRow)AGiftDetails,
-                ref AMessages, AValidationControlsDictGiftDetail, AValidationCostCentreTable, AGiftDetails.RecipientKey);
+                ref AMessages, AValidationControlsDictGiftDetail, AValidationCostCentreTable, AValidationMotivationGroupTable,
+                AValidationMotivationDetailTable, AGiftDetails.RecipientKey);
 
             for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
             {
@@ -944,7 +965,15 @@ namespace Ict.Petra.Server.MFinance.Gift
         private String MakeFriendlyFKExceptions(Exception ex)
         {
             //note that this is only done for "user errors" not for program errors!
-            String innerMessage = ex.InnerException.ToString();
+            String innerMessage;
+            if (ex.InnerException == null)
+            {
+                innerMessage = ex.Message;
+            }
+            else
+            {
+                innerMessage = ex.InnerException.ToString();
+            }
 
             string formatStr = Catalog.GetString("  Do you need to add this code to the '{0}' main setup screen?");
             string createNewPartner = Catalog.GetString("  Do you need to add this partner using the 'Create Partner' main setup screen?");

@@ -53,9 +53,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// display data that is about to be validated.</param>
         /// <param name="AAccountTableRef">Account Table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
         /// <param name="ACostCentreTableRef">Cost centre table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
+        /// <param name="AAccountPropertyTableRef">Account Property Table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
+        /// <param name="AAccountingPeriodTableRef">Accounting Period Table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
         /// <param name="ACorporateExchangeTableRef">Corporate exchange rate table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
         /// <param name="ACurrencyTableRef">Currency table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
         /// <param name="ABaseCurrency">Ledger base currency.  Required when importing</param>
+        /// <param name="AInternationalCurrency">Ledger international currency.  Required when importing</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateGiftBatchManual(object AContext,
             AGiftBatchRow ARow,
@@ -63,9 +66,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
             TValidationControlsDict AValidationControlsDict,
             AAccountTable AAccountTableRef = null,
             ACostCentreTable ACostCentreTableRef = null,
+            AAccountPropertyTable AAccountPropertyTableRef = null,
+            AAccountingPeriodTable AAccountingPeriodTableRef = null,
             ACorporateExchangeRateTable ACorporateExchangeTableRef = null,
             ACurrencyTable ACurrencyTableRef = null,
-            string ABaseCurrency = null)
+            string ABaseCurrency = null,
+            string AInternationalCurrency = null)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -87,7 +93,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if (AAccountTableRef != null)
+                if (!ARow.IsBankAccountCodeNull() && (AAccountTableRef != null))
                 {
                     // We even need to check that the code exists!
                     AAccountRow foundRow = (AAccountRow)AAccountTableRef.Rows.Find(new object[] { ARow.LedgerNumber, ARow.BankAccountCode });
@@ -118,6 +124,43 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             VerifResultCollAddedCount++;
                         }
                     }
+
+                    // If it does exist it must be a posting account
+                    if (foundRow != null)
+                    {
+                        if (!foundRow.PostingStatus && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                                AContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString(
+                                            "The bank account code '{0}' is not a posting account."),
+                                        ARow.BankAccountCode),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
+                    }
+
+                    if ((foundRow != null) && (ARow.GiftType == MFinanceConstants.GIFT_TYPE_GIFT))
+                    {
+                        // The account must be a bank account as defined in the AccountProperty table
+                        if (AAccountPropertyTableRef != null)
+                        {
+                            AAccountPropertyRow foundRow2 = (AAccountPropertyRow)AAccountPropertyTableRef.Rows.Find(
+                                new object[] { ARow.LedgerNumber, ARow.BankAccountCode, "BANK ACCOUNT", "true" });
+                            if ((foundRow2==null) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                                AContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString(
+                                            "The bank account code '{0}' must be associated with a real 'Bank Account' when the gift type is a 'Gift'."),
+                                        ARow.BankAccountCode),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                            {
+                                VerifResultCollAddedCount++;
+                            }
+                        }
+                    }
                 }
 
                 VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
@@ -142,7 +185,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if (ACostCentreTableRef != null)
+                if (!ARow.IsBankCostCentreNull() && ACostCentreTableRef != null)
                 {
                     // We even need to check that the code exists!
                     ACostCentreRow foundRow = (ACostCentreRow)ACostCentreTableRef.Rows.Find(new object[] { ARow.LedgerNumber, ARow.BankCostCentre });
@@ -196,7 +239,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if (ACurrencyTableRef != null)
+                if (!ARow.IsCurrencyCodeNull() && (ACurrencyTableRef != null))
                 {
                     // Currency code must exist in the currency table
                     ACurrencyRow foundRow = (ACurrencyRow)ACurrencyTableRef.Rows.Find(ARow.CurrencyCode);
@@ -220,14 +263,29 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
-                    ValidationControlsData.ValidationControlLabel + (isImporting ? String.Empty : " of Batch Number " + ValidationContext.ToString()),
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition/removal to/from TVerificationResultCollection
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                if (!ARow.IsExchangeRateToBaseNull())
                 {
-                    VerifResultCollAddedCount++;
+                    VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
+                        ValidationControlsData.ValidationControlLabel + (isImporting ? String.Empty : " of Batch Number " + ValidationContext.ToString()),
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+
+                    // Exchange rate must be 1.00 if the currency is the the base ledger currency
+                    if ((ABaseCurrency != null) && !ARow.IsCurrencyCodeNull() && (ARow.CurrencyCode == ABaseCurrency) && (ARow.ExchangeRateToBase != 1.00m) &&
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                            AContext,
+                            new TVerificationResult(ValidationContext,
+                                Catalog.GetString("A batch in the ledger base currency must have exchange rate of 1.00."),
+                                TResultSeverity.Resv_Critical),
+                            ValidationColumn))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
                 }
             }
 
@@ -258,6 +316,30 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 {
                     VerifResultCollAddedCount++;
                 }
+
+                // If the GL date was good we need to have a corporate exchange rate for base currency to Intl for the first day of the period
+                if ((VerificationResult == null) && (ACorporateExchangeTableRef != null) && !ARow.IsGlEffectiveDateNull())
+                {
+                    DateTime firstOfMonth;
+                    if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ARow.LedgerNumber, ARow.GlEffectiveDate, out firstOfMonth))
+                    {
+                        ACorporateExchangeRateRow foundRow = (ACorporateExchangeRateRow)ACorporateExchangeTableRef.Rows.Find(
+                            new object[] { ABaseCurrency, AInternationalCurrency, firstOfMonth });
+
+                        if ((foundRow == null)
+                            && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                                AContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString("International currency: there is no Corporate Exchange Rate defined for '{0}' to '{1}' for the month starting on '{2}'."),
+                                        ABaseCurrency, AInternationalCurrency,
+                                        StringHelper.DateToLocalizedString(firstOfMonth)),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
+                    }
+                }
             }
 
             // Gift Type must be one of our predefined constants
@@ -266,46 +348,24 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                // Ensure the gift type is correct and that it matches one of the allowable options (applies when importing)
-                if ((ARow.GiftType != MFinanceConstants.GIFT_TYPE_GIFT)
-                    && (ARow.GiftType != MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND)
-                    && (ARow.GiftType != MFinanceConstants.GIFT_TYPE_OTHER))
+                if (!ARow.IsGiftTypeNull())
                 {
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
-                            AContext,
-                            new TVerificationResult(ValidationContext,
-                                String.Format(Catalog.GetString("Unknown gift type. Expected one of '{0}', '{1}' or '{2}'"),
-                                    MFinanceConstants.GIFT_TYPE_GIFT, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND, MFinanceConstants.GIFT_TYPE_OTHER),
-                                TResultSeverity.Resv_Critical),
-                            ValidationColumn))
+                    // Ensure the gift type is correct and that it matches one of the allowable options (applies when importing)
+                    if ((ARow.GiftType != MFinanceConstants.GIFT_TYPE_GIFT)
+                        && (ARow.GiftType != MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND)
+                        && (ARow.GiftType != MFinanceConstants.GIFT_TYPE_OTHER))
                     {
-                        VerifResultCollAddedCount++;
-                    }
-                }
-            }
-
-            if ((ACorporateExchangeTableRef != null) && (ABaseCurrency != null) && (ARow.CurrencyCode != ABaseCurrency))
-            {
-                // For gifts in non-base currency there must be a corporate exchange rate
-                ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnCurrencyCodeId];
-                ValidationContext = ARow.BatchNumber;
-
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-                {
-                    DateTime firstOfMonth = new DateTime(ARow.GlEffectiveDate.Year, ARow.GlEffectiveDate.Month, 1);
-                    ACorporateExchangeRateRow foundRow = (ACorporateExchangeRateRow)ACorporateExchangeTableRef.Rows.Find(
-                        new object[] { ARow.CurrencyCode, ABaseCurrency, firstOfMonth });
-
-                    if ((foundRow == null)
-                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
-                            AContext,
-                            new TVerificationResult(ValidationContext,
-                                String.Format(Catalog.GetString("There is no Corporate Exchange Rate defined for the month starting on '{0}'."),
-                                    StringHelper.DateToLocalizedString(firstOfMonth)),
-                                TResultSeverity.Resv_Critical),
-                            ValidationColumn))
-                    {
-                        VerifResultCollAddedCount++;
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                                AContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString("Unknown gift type '{0}'. Expected one of '{1}', '{2}' or '{3}'"),
+                                        ARow.GiftType,
+                                        MFinanceConstants.GIFT_TYPE_GIFT, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND, MFinanceConstants.GIFT_TYPE_OTHER),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
                     }
                 }
             }
@@ -323,6 +383,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <param name="ACostCentres">Optional - a CostCentres table.  Is required for import validation. </param>
+        /// <param name="AMotivationGroups">Optional - a MotivationGroups table.  Is required for import validation. </param>
+        /// <param name="AMotivationDetails">Optional - a MotivationDetails table.  Is required for import validation. </param>
         /// <param name="ARecipientField">Optional The recipient field for the gift.  Is required for import validation. </param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateGiftDetailManual(object AContext,
@@ -330,6 +392,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
             ref TVerificationResultCollection AVerificationResultCollection,
             TValidationControlsDict AValidationControlsDict,
             ACostCentreTable ACostCentres = null,
+            AMotivationGroupTable AMotivationGroups = null,
+            AMotivationDetailTable AMotivationDetails = null,
             Int64 ARecipientField = -1)
         {
             DataColumn ValidationColumn;
@@ -385,7 +449,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
-            // Motivation Group type Gift must have non-zero Recipient field
+            // Motivation Group validation
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMotivationGroupCodeId];
             ValidationContext = String.Format("batch:{0} transaction:{1} detail:{2}",
                 ARow.BatchNumber,
@@ -394,7 +458,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if ((ARow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT) && (ARecipientField == 0))
+                // Motivation Group type Gift must have non-zero Recipient field
+                if (!ARow.IsMotivationGroupCodeNull() && (ARow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT) && (ARecipientField == 0))
                 {
                     VerificationResult = TSharedPartnerValidation_Partner.IsValidRecipientFieldForMotivationGroup(ARow.RecipientKey,
                         ARecipientField,
@@ -410,6 +475,23 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     {
                         VerifResultCollAddedCount++;
                     }
+                }
+
+                // Motivation Group code must exist
+                if (!ARow.IsMotivationGroupCodeNull() && (AMotivationGroups != null))
+                {
+                    AMotivationGroupRow foundRow = (AMotivationGroupRow)AMotivationGroups.Rows.Find(
+                        new object[] { ARow.LedgerNumber, ARow.MotivationGroupCode });
+                    if ((foundRow==null) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                        AContext,
+                        new TVerificationResult(ValidationContext,
+                            String.Format(Catalog.GetString("Unknown motivation group code '{0}'."),
+                                ARow.MotivationGroupCode),
+                            TResultSeverity.Resv_Critical),
+                        ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
                 }
             }
 
@@ -444,8 +526,54 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
+            // Motivation Detail must be valid
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMotivationDetailCodeId];
+            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (!ARow.IsMotivationDetailCodeNull() && (AMotivationDetails != null))
+            {
+                AMotivationDetailRow foundRow = (AMotivationDetailRow)AMotivationDetails.Rows.Find(
+                    new object[] { ARow.LedgerNumber, ARow.MotivationGroupCode, ARow.MotivationDetailCode });
+                if ((foundRow == null) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                    AContext,
+                    new TVerificationResult(ValidationContext,
+                        String.Format(Catalog.GetString("Unknown motivation detail code '{0}' for group '{1}'."),
+                            ARow.MotivationDetailCode, ARow.MotivationGroupCode),
+                        TResultSeverity.Resv_Critical),
+                    ValidationColumn))
+                {
+                    VerifResultCollAddedCount++;
+                }
+
+                if ((foundRow != null) && (foundRow.MotivationStatus == false) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                    AContext,
+                    new TVerificationResult(ValidationContext,
+                        String.Format(Catalog.GetString("Motivation detail code '{0}' is no longer in use."),
+                            ARow.MotivationDetailCode),
+                        TResultSeverity.Resv_Critical),
+                    ValidationColumn))
+                {
+                    VerifResultCollAddedCount++;
+                }
+
+                if ((foundRow != null) && (foundRow.RecipientKey != 0) && (ARow.RecipientKey != 0) && (foundRow.RecipientKey != ARow.RecipientKey)
+                    && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                        AContext,
+                        new TVerificationResult(ValidationContext,
+                            String.Format(Catalog.GetString("The recipient partner key for motivation detail code '{0}' does not match the recipient partner key in the import line."),
+                                ARow.MotivationDetailCode),
+                            TResultSeverity.Resv_Critical),
+                        ValidationColumn))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
             // Cost Centre Code must exist and be active.  Only required for importing because the GUI does this for us otherwise.
-            if (isImporting && (ACostCentres != null))
+            if (isImporting && (ACostCentres != null) && !ARow.IsCostCentreCodeNull())
             {
                 ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnCostCentreCodeId];
                 ValidationContext = ARow.CostCentreCode;
@@ -503,6 +631,28 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     {
                         VerifResultCollAddedCount++;
                     }
+
+                    if (VerificationResult == null)
+                    {
+                        // There is a comment type for the comment - but it needs to be one of the valid types
+                        if ((ARow.CommentOneType != MFinanceConstants.GIFT_COMMENT_TYPE_DONOR) &&
+                            (ARow.CommentOneType != MFinanceConstants.GIFT_COMMENT_TYPE_RECIPIENT) &&
+                            (ARow.CommentOneType != MFinanceConstants.GIFT_COMMENT_TYPE_BOTH) &&
+                            (ARow.CommentOneType != MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE) &&
+                            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                                AContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString("Comment type must be one of '{0}', '{1}', '{2}' or '{3}'."),
+                                        MFinanceConstants.GIFT_COMMENT_TYPE_DONOR,
+                                        MFinanceConstants.GIFT_COMMENT_TYPE_RECIPIENT,
+                                        MFinanceConstants.GIFT_COMMENT_TYPE_BOTH,
+                                        MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
+                    }
                 }
             }
 
@@ -526,6 +676,28 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     {
                         VerifResultCollAddedCount++;
                     }
+
+                    if (VerificationResult == null)
+                    {
+                        // There is a comment type for the comment - but it needs to be one of the valid types
+                        if ((ARow.CommentTwoType != MFinanceConstants.GIFT_COMMENT_TYPE_DONOR) &&
+                            (ARow.CommentTwoType != MFinanceConstants.GIFT_COMMENT_TYPE_RECIPIENT) &&
+                            (ARow.CommentTwoType != MFinanceConstants.GIFT_COMMENT_TYPE_BOTH) &&
+                            (ARow.CommentTwoType != MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE) &&
+                            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                                AContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString("Comment type must be one of '{0}', '{1}', '{2}' or '{3}'."),
+                                        MFinanceConstants.GIFT_COMMENT_TYPE_DONOR,
+                                        MFinanceConstants.GIFT_COMMENT_TYPE_RECIPIENT,
+                                        MFinanceConstants.GIFT_COMMENT_TYPE_BOTH,
+                                        MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
+                    }
                 }
             }
 
@@ -548,6 +720,28 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                     {
                         VerifResultCollAddedCount++;
+                    }
+
+                    if (VerificationResult == null)
+                    {
+                        // There is a comment type for the comment - but it needs to be one of the valid types
+                        if ((ARow.CommentThreeType != MFinanceConstants.GIFT_COMMENT_TYPE_DONOR) &&
+                            (ARow.CommentThreeType != MFinanceConstants.GIFT_COMMENT_TYPE_RECIPIENT) &&
+                            (ARow.CommentThreeType != MFinanceConstants.GIFT_COMMENT_TYPE_BOTH) &&
+                            (ARow.CommentThreeType != MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE) &&
+                            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                                AContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString("Comment type must be one of '{0}', '{1}', '{2}' or '{3}'."),
+                                        MFinanceConstants.GIFT_COMMENT_TYPE_DONOR,
+                                        MFinanceConstants.GIFT_COMMENT_TYPE_RECIPIENT,
+                                        MFinanceConstants.GIFT_COMMENT_TYPE_BOTH,
+                                        MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
                     }
                 }
             }
@@ -582,7 +776,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
-            // Detail comments type 2 must not be null if associated comment is not null
+            // Tax deductible account code must not be null or empty string if there is a percent specified
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnTaxDeductiblePctId];
             ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
                 ARow.BatchNumber,
@@ -619,9 +813,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AControl">Need to pass the validation control because it is not a bound control</param>
         /// <param name="AVerificationResultCollection"></param>
         /// <param name="AValidationControlsDict"></param>
+        /// <param name="AMethodOfGivingRef">Required for import validation</param>
+        /// <param name="AMethodOfPaymentRef">Required for import validation</param>
         /// <returns></returns>
         public static bool ValidateGiftManual(object AContext, AGiftRow ARow, Int32 AYear, Int32 APeriod, Control AControl,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            AMethodOfGivingTable AMethodOfGivingRef = null,
+            AMethodOfPaymentTable AMethodOfPaymentRef = null)
         {
             DataColumn ValidationColumn;
             //TValidationControlsData ValidationControlsData;
@@ -680,6 +878,48 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            // A method of giving must be valid
+            ValidationColumn = ARow.Table.Columns[AGiftTable.ColumnMethodOfGivingCodeId];
+            ValidationContext = String.Format("Batch no. {0}, gift no. {1}",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber);
+
+            if (!ARow.IsMethodOfGivingCodeNull() && (AMethodOfGivingRef != null))
+            {
+                AMethodOfGivingRow foundRow = (AMethodOfGivingRow)AMethodOfGivingRef.Rows.Find(ARow.MethodOfGivingCode);
+                if ((foundRow == null) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                    AContext,
+                    new TVerificationResult(ValidationContext,
+                        String.Format(Catalog.GetString("Unknown method of giving code '{0}'."),
+                            ARow.MethodOfGivingCode),
+                        TResultSeverity.Resv_Critical),
+                    ValidationColumn))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            // A method of payment must be valid
+            ValidationColumn = ARow.Table.Columns[AGiftTable.ColumnMethodOfPaymentCodeId];
+            ValidationContext = String.Format("Batch no. {0}, gift no. {1}",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber);
+
+            if (!ARow.IsMethodOfPaymentCodeNull() && (AMethodOfPaymentRef != null))
+            {
+                AMethodOfGivingRow foundRow = (AMethodOfGivingRow)AMethodOfPaymentRef.Rows.Find(ARow.MethodOfPaymentCode);
+                if ((foundRow == null) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                    AContext,
+                    new TVerificationResult(ValidationContext,
+                        String.Format(Catalog.GetString("Unknown method of payment code '{0}'."),
+                            ARow.MethodOfPaymentCode),
+                        TResultSeverity.Resv_Critical),
+                    ValidationColumn))
                 {
                     VerifResultCollAddedCount++;
                 }
