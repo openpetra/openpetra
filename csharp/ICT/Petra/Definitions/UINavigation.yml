@@ -64,6 +64,7 @@ OpenPetra:
                         PartnerByRelationship: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner By Relationship, ActionClick=TPartnerExtractsMain.PartnerByRelationshipExtract}
                         FamilyMembersExtract: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Family Members Extract, ActionClick=TPartnerExtractsMain.FamilyMembersExtract}
                         FamilyExtractForPersons: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Family Extract for Persons, ActionClick=TPartnerExtractsMain.FamilyExtractForPersons}
+                        PartnerByContactLog: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Contact Log, ActionClick=TPartnerExtractsMain.PartnerByContactLogExtract}
                     GeneratePersonnelExtracts: {Label=Generate Personnel Extract}
                         PartnerByEvent: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Event, ActionClick=TPersonnelMain.PartnerByEventExtract}
                         PartnerByEventRole: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Event Role, ActionClick=TPersonnelMain.PartnerByEventRoleExtract}

@@ -670,6 +670,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             TPartnerExtractsMain.FamilyExtractForPersons(FindForm());
         }
 
+        private void CreateContactLogExtract(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.PartnerByContactLogExtract(FindForm());
+        }
+
         /// <summary>
         /// Create Partner By Conference Extract
         /// </summary>
