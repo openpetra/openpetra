@@ -27,6 +27,9 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon;
+using Ict.Petra.Shared.Interfaces.MCommon;
 
 namespace Ict.Petra.Client.CommonDialogs
 {
