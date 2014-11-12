@@ -49,6 +49,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Validation;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 

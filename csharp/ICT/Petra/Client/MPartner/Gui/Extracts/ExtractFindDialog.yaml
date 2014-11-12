@@ -38,10 +38,10 @@ RootNode:
             Controls: [clbDetails]
         txtExtractName: {Label=Extract Name, ColSpan=2, Width=200}
         txtExtractDesc: {Label=Description, ColSpan=2, Width=350}
-        cmbUserCreated: {Label=Created by, List=UserList, ColSpan=2}
+        cmbUserCreated: {Label=Created by, List=UserList, AllowDbNull=true, ColSpan=2}
         dtpCreatedFrom: {Label=Created between}
         dtpCreatedTo: {Label=and}
-        cmbUserModified: {Label=Modified/Verified by, List=UserList, ColSpan=2}
+        cmbUserModified: {Label=Modified/Verified by, List=UserList, AllowDbNull=true, ColSpan=2}
         dtpModifiedFrom: {Label=Modified between}
         dtpModifiedTo: {Label=and}
 
