@@ -308,7 +308,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 {
                     ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
-                        String.Format(Catalog.GetString("Income Account header: '{1}' does not appear in the accounts table for Ledger: {0}."),
+                        String.Format(Catalog.GetString("Income Account header: '{1}' not found in the accounts table for Ledger: {0}."),
                             ALedgerNumber,
                             MFinanceConstants.INCOME_HEADING);
                     ErrorType = TResultSeverity.Resv_Noncritical;
@@ -333,7 +333,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 {
                     ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
-                        String.Format(Catalog.GetString("Expense Account header: '{1}' does not appear in the accounts table for Ledger: {0}."),
+                        String.Format(Catalog.GetString("Expense Account header: '{1}' not found in the accounts table for Ledger: {0}."),
                             ALedgerNumber,
                             MFinanceConstants.EXPENSE_HEADING);
                     ErrorType = TResultSeverity.Resv_Noncritical;
@@ -358,7 +358,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 {
                     ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
-                        String.Format(Catalog.GetString("Profit & Loss Account header: '{1}' does not appear in the accounts table for Ledger: {0}."),
+                        String.Format(Catalog.GetString("Profit & Loss Account header: '{1}' not found in the accounts table for Ledger: {0}."),
                             ALedgerNumber,
                             MFinanceConstants.PROFIT_AND_LOSS_HEADING);
                     ErrorType = TResultSeverity.Resv_Noncritical;
@@ -385,6 +385,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 AIchStewardshipTable ICHStewardshipTable = new AIchStewardshipTable();
                 Boolean NonIchTransactionsIncluded = false;
 
+                String JournalRowOrder = "a_journal_number_i";
+                String TransRowOrder = "a_batch_number_i,a_journal_number_i,a_transaction_number_i";
                 foreach (ACostCentreRow CostCentreRow in PostingDS.ACostCentre.Rows)
                 {
                     string CostCentre = CostCentreRow.CostCentreCode;
@@ -401,90 +403,78 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     Boolean TransferFound = false;
 
                     /* 0008 Go through all of the transactions. Ln:301 */
-                    String WhereClause = ATransactionTable.GetCostCentreCodeDBName() + " = '" + CostCentreRow.CostCentreCode + "'" +
-                                         " AND " + ATransactionTable.GetTransactionStatusDBName() + " = " + MFinanceConstants.POSTED +
-                                         " AND " + ATransactionTable.GetIchNumberDBName() + " = 0";
+                    String WhereClause = "a_cost_centre_code_c = '" + CostCentreRow.CostCentreCode +
+                                         "' AND a_transaction_status_l=true AND a_ich_number_i = 0";
 
-                    String OrderBy = ATransactionTable.GetBatchNumberDBName() + ", " +
-                                     ATransactionTable.GetJournalNumberDBName() + ", " +
-                                     ATransactionTable.GetTransactionNumberDBName();
-
-                    DataRow[] FoundTransRows = MainDS.ATransaction.Select(WhereClause, OrderBy);
+                    DataRow[] FoundTransRows = MainDS.ATransaction.Select(WhereClause, TransRowOrder);
 
                     foreach (DataRow UntypedTransRow in FoundTransRows)
                     {
-                        ATransactionRow TransactionRow = (ATransactionRow)UntypedTransRow;
-                        string CurrentAccountCode = TransactionRow.AccountCode;
-                        decimal AmountInBaseCurrency = TransactionRow.AmountInBaseCurrency;
-                        decimal AmountInIntlCurrency = TransactionRow.AmountInIntlCurrency;
+                        ATransactionRow TransRow = (ATransactionRow)UntypedTransRow;
 
-                        WhereClause = AJournalTable.GetLedgerNumberDBName() + " = " + TransactionRow.LedgerNumber.ToString() +
-                                      " AND " + AJournalTable.GetBatchNumberDBName() + " = " + TransactionRow.BatchNumber.ToString() +
-                                      " AND " + AJournalTable.GetJournalNumberDBName() + " = " + TransactionRow.JournalNumber.ToString();
-
-                        OrderBy = AJournalTable.GetBatchNumberDBName() + ", " + AJournalTable.GetJournalNumberDBName();
-
-                        DataRow[] FoundJournalRows = MainDS.AJournal.Select(WhereClause, OrderBy);
+                        DataRow[] FoundJournalRows = MainDS.AJournal.Select(
+                            "a_batch_number_i = " + TransRow.BatchNumber + " AND a_journal_number_i = " + TransRow.JournalNumber,
+                            JournalRowOrder);
 
                         if (FoundJournalRows != null)
                         {
                             TransferFound = true;
                             PostICHBatch = true;
-                            TransactionRow.IchNumber = ICHProcessing;
+                            TransRow.IchNumber = ICHProcessing;
 
-                            if (TransactionRow.DebitCreditIndicator == AccountDrCrIndicator)
+                            if (TransRow.DebitCreditIndicator == AccountDrCrIndicator)
                             {
-                                SettlementAmount -= AmountInBaseCurrency;
+                                SettlementAmount -= TransRow.AmountInBaseCurrency;
                             }
                             else
                             {
-                                SettlementAmount += AmountInBaseCurrency;
+                                SettlementAmount += TransRow.AmountInBaseCurrency;
                             }
 
                             //Process Income (ln:333)
-                            if (IncomeAccounts.Contains(CurrentAccountCode))
+                            if (IncomeAccounts.Contains(TransRow.AccountCode))
                             {
-                                if (TransactionRow.DebitCreditIndicator == IncomeDrCrIndicator)
+                                if (TransRow.DebitCreditIndicator == IncomeDrCrIndicator)
                                 {
-                                    IncomeAmount += AmountInBaseCurrency;
-                                    IncomeAmountIntl += AmountInIntlCurrency;
+                                    IncomeAmount += TransRow.AmountInBaseCurrency;
+                                    IncomeAmountIntl += TransRow.AmountInIntlCurrency;
                                 }
                                 else
                                 {
-                                    IncomeAmount -= AmountInBaseCurrency;
-                                    IncomeAmountIntl -= AmountInIntlCurrency;
+                                    IncomeAmount -= TransRow.AmountInBaseCurrency;
+                                    IncomeAmountIntl -= TransRow.AmountInIntlCurrency;
                                 }
                             }
 
                             //process expenses
-                            if (ExpenseAccounts.Contains(CurrentAccountCode)
-                                && (CurrentAccountCode != MFinanceConstants.DIRECT_XFER_ACCT)
-                                && (CurrentAccountCode != MFinanceConstants.ICH_ACCT_SETTLEMENT))
+                            if (ExpenseAccounts.Contains(TransRow.AccountCode)
+                                && (TransRow.AccountCode != MFinanceConstants.DIRECT_XFER_ACCT)
+                                && (TransRow.AccountCode != MFinanceConstants.ICH_ACCT_SETTLEMENT))
                             {
-                                if (TransactionRow.DebitCreditIndicator = ExpenseDrCrIndicator)
+                                if (TransRow.DebitCreditIndicator = ExpenseDrCrIndicator)
                                 {
-                                    ExpenseAmount += AmountInBaseCurrency;
-                                    ExpenseAmountIntl += AmountInIntlCurrency;
+                                    ExpenseAmount += TransRow.AmountInBaseCurrency;
+                                    ExpenseAmountIntl += TransRow.AmountInIntlCurrency;
                                 }
                                 else
                                 {
-                                    ExpenseAmount -= AmountInBaseCurrency;
-                                    ExpenseAmountIntl -= AmountInIntlCurrency;
+                                    ExpenseAmount -= TransRow.AmountInBaseCurrency;
+                                    ExpenseAmountIntl -= TransRow.AmountInIntlCurrency;
                                 }
                             }
 
                             //Process Direct Transfers
-                            if (CurrentAccountCode == MFinanceConstants.DIRECT_XFER_ACCT)
+                            if (TransRow.AccountCode == MFinanceConstants.DIRECT_XFER_ACCT)
                             {
-                                if (TransactionRow.DebitCreditIndicator == ExpenseDrCrIndicator)
+                                if (TransRow.DebitCreditIndicator == ExpenseDrCrIndicator)
                                 {
-                                    XferAmount += AmountInBaseCurrency;
-                                    XferAmountIntl += AmountInIntlCurrency;
+                                    XferAmount += TransRow.AmountInBaseCurrency;
+                                    XferAmountIntl += TransRow.AmountInIntlCurrency;
                                 }
                                 else
                                 {
-                                    XferAmount -= AmountInBaseCurrency;
-                                    XferAmountIntl -= AmountInIntlCurrency;
+                                    XferAmount -= TransRow.AmountInBaseCurrency;
+                                    XferAmountIntl -= TransRow.AmountInIntlCurrency;
                                 }
                             }
                         }
@@ -541,17 +531,14 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         }
                     }
 
+                    DrCrIndicator = AccountDrCrIndicator;
                     if (SettlementAmount < 0)
                     {
                         DrCrIndicator = !AccountDrCrIndicator;
                         SettlementAmount = 0 - SettlementAmount;
                     }
-                    else if (SettlementAmount > 0)
-                    {
-                        DrCrIndicator = AccountDrCrIndicator;
-                    }
 
-                    if (DestinationAccount[CostCentreRow.CostCentreCode] != MFinanceConstants.ICH_ACCT_ICH)
+                    if ((DestinationAccount[CostCentreRow.CostCentreCode] != MFinanceConstants.ICH_ACCT_ICH) && (SettlementAmount != 0))
                     {
                         // I'm creating a transaction right here for this "non-ICH" CostCentre.
                         // This potentially means that there will be multiple transactions to the "non-ICH" account,
@@ -702,6 +689,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         MainDS.ThrowAwayAfterSubmitChanges = true; // SubmitChanges will not return to me any changes made in MainDS.
                         GLBatchTDSAccess.SubmitChanges(MainDS);
+                        ALedgerAccess.SubmitChanges(PostingDS.ALedger, DBTransaction); // LastIchNumber has changed.
 
                         IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
                     }
@@ -757,7 +745,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 TLogging.Log("An Exception occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
 
                 ErrorContext = Catalog.GetString("Calculate Admin Fee");
-                ErrorMessage = String.Format(Catalog.GetString("Unknown error while Generating the ICH batch for Ledger: {0} and Period: {1}" +
+                ErrorMessage = String.Format(Catalog.GetString("Unknown error while generating the ICH batch for Ledger: {0} and Period: {1}" +
                         Environment.NewLine + Environment.NewLine + Exc.ToString()),
                     ALedgerNumber,
                     APeriodNumber);
@@ -976,7 +964,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         TLogging.Log("No fees to charge were found");
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Admin Fee Batch"),
-                                String.Format(Catalog.GetString("No admin fees charged in period ({0})."), APeriodNumber),
+                                String.Format(Catalog.GetString("No admin fees charged in period {0}."), APeriodNumber),
                                 TResultSeverity.Resv_Status));
                     }
 
