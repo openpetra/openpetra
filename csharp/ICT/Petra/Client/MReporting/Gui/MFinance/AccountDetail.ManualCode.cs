@@ -236,14 +236,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     "a_transaction.a_cost_centre_code_c AS CostCentreCode," +
                     "a_transaction.a_transaction_date_d AS TransactionDate," +
                     "a_transaction." + AmountField + " AS Amount," +
+                    "a_journal.a_transaction_currency_c AS Currency," +
                     "a_transaction.a_debit_credit_indicator_l AS Debit," +
                     "a_transaction.a_narrative_c AS Narrative," +
                     "a_transaction.a_reference_c AS Reference," +
                     "'' AS AnalysisTypeCode," +
                     "'' AS AnalysisTypeDescr," +
                     "'' AS AnalysisValue" +
-                    " FROM a_transaction WHERE " +
-                    LedgerFilter + AccountCodeFilter +
+                    " FROM a_transaction, a_journal WHERE " +
+                    " a_transaction."+LedgerFilter + 
+                    " AND a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i " +
+                    " AND a_transaction.a_batch_number_i = a_journal.a_batch_number_i " +
+                    " AND a_transaction.a_journal_number_i = a_journal.a_journal_number_i " +
+                    AccountCodeFilter +
                     CostCentreFilter + " AND " +
                     TranctDateFilter + ReferenceFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
