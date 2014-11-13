@@ -726,11 +726,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 FYearEndOperator.SetNextPeriod();
             }
 
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
             try
             {
                 foreach (AGeneralLedgerMasterRow GlmRowFrom in FGlmPostingFrom.Rows)
@@ -838,10 +833,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             finally
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                // Nothing special to do
             }
 
             if (DoExecuteableCode)

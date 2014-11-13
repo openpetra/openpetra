@@ -54,6 +54,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
             out DateTime AEndDatePeriod);
 
         /// <summary>
+        /// Delegate for invoking the process of finding the first day in the accounting period for the specified Ledger and date.
+        /// </summary>
+        public delegate bool TGetFirstDayOfAccountingPeriod(Int32 ALedgerNumber,
+            DateTime ADateInAPeriod,
+            out DateTime AFirstDayOfPeriod);
+
+        /// <summary>
         /// Reference to the Delegate for invoking the verification of the existence of a Finance.
         /// </summary>
         private static TGetValidPostingDateRange FDelegateGetValidPostingDateRange;
@@ -62,6 +69,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// Reference to the Delegate for invoking the verification of the existence of a Finance.
         /// </summary>
         private static TGetValidPeriodDates FDelegateGetValidPeriodDates;
+
+        /// <summary>
+        /// Reference to the Delegate for discovering the first day of the accounting period for a date.
+        /// </summary>
+        private static TGetFirstDayOfAccountingPeriod FDelegateGetFirstDayOfAccountingPeriod;
 
         /// <summary>
         /// This property is used to provide a function which invokes the verification of the existence of a Finance.
@@ -94,6 +106,23 @@ namespace Ict.Petra.Shared.MFinance.Validation
             set
             {
                 FDelegateGetValidPeriodDates = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is used to provide a function which determines the first day of the accounting period for the ledger and date specified.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TGetFirstDayOfAccountingPeriod GetFirstDayOfAccountingPeriodDelegate
+        {
+            get
+            {
+                return FDelegateGetFirstDayOfAccountingPeriod;
+            }
+
+            set
+            {
+                FDelegateGetFirstDayOfAccountingPeriod = value;
             }
         }
 
@@ -142,6 +171,25 @@ namespace Ict.Petra.Shared.MFinance.Validation
             else
             {
                 throw new InvalidOperationException("Delegate 'TGetValidPostingDateRange' must be initialised before calling this Method");
+            }
+        }
+
+        /// <summary>
+        /// Get the first day in the accounting period for any specified date/ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADateInAPeriod"></param>
+        /// <param name="AFirstDayOfPeriod"></param>
+        /// <returns>The first day in the accounting period for the date specified.</returns>
+        public static bool GetFirstDayOfAccountingPeriod(Int32 ALedgerNumber, DateTime ADateInAPeriod, out DateTime AFirstDayOfPeriod)
+        {
+            if (FDelegateGetFirstDayOfAccountingPeriod != null)
+            {
+                return FDelegateGetFirstDayOfAccountingPeriod(ALedgerNumber, ADateInAPeriod, out AFirstDayOfPeriod);
+            }
+            else
+            {
+                throw new InvalidOperationException("Delegate 'TGetFirstDayOfAccountingPeriod' must be initialised before calling this Method");
             }
         }
     }

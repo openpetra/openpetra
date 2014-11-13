@@ -191,8 +191,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void BeginEditMode(object sender, EventArgs e)
         {
-            bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
-
             FInEditMode = true;
             SetKeyMinistryTextBoxInvisible();
         }

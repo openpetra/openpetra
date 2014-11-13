@@ -1635,7 +1635,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict, null, FPreviouslySelectedDetailRow.RecipientField);
+                FValidationControlsDict, null, null, null, FPreviouslySelectedDetailRow.RecipientField);
 
             //It is necessary to validate the unbound control for date entered. This requires us to pass the control.
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
@@ -1711,6 +1711,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAllData()
         {
+            Cursor prevCursor = ParentForm.Cursor;
+
+            ParentForm.Cursor = Cursors.WaitCursor;
+
             if ((FMainDS != null) && (FMainDS.AGiftDetail != null))
             {
                 FMainDS.AGiftDetail.Rows.Clear();
@@ -1724,6 +1728,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // Be sure to pass the true parameter because we definitely need to update FMainDS.AGiftDetail as it is now empty!
                 LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus, true);
             }
+
+            ParentForm.Cursor = prevCursor;
         }
 
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
@@ -1780,6 +1786,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            int workingLedgerNumber = FPreviouslySelectedDetailRow.LedgerNumber;
+            int workingBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+            int workingTransactionNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
+            int workingDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
+
             if (reverseWholeBatch && (FBatchNumber != giftBatch.BatchNumber))
             {
                 LoadGifts(giftBatch.LedgerNumber, giftBatch.BatchNumber, MFinanceConstants.BATCH_POSTED);
@@ -1802,7 +1813,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //revertForm.GiftBatchRow = giftBatch;   // TODO Decide whether to remove altogether
 
-                revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
+                revertForm.GiftDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
+                    new object[] { workingLedgerNumber, workingBatchNumber, workingTransactionNumber, workingDetailNumber });
 
                 if (revertForm.ShowDialog() == DialogResult.OK)
                 {
@@ -2399,6 +2411,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         false);
 
                     break;
+                }
+            }
+        }
+
+        private void ImportTransactions(object sender, EventArgs e)
+        {
+            if (ValidateAllData(true, true))
+            {
+                if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions())
+                {
+                    RefreshAllData();
                 }
             }
         }

@@ -68,6 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FPrevYearEnding = -1;
         private string FPrevBaseFilter = String.Empty;
         private string FPrevFilter = String.Empty;
+        private bool FFilterIsActivated = false;
 
         #region Public Properties
 
@@ -253,25 +254,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         #region Public class methods
 
         /// <summary>
+        /// Call this method to activate the filter. Do this when the screen has fully loaded and before applying the filter
+        /// and laoding the initial data.
+        /// </summary>
+        public void ActivateFilter()
+        {
+            FFilterIsActivated = true;
+        }
+
+        /// <summary>
         /// This method must be called in order to correctly populate the ComboBoxes on the filter panel (by cloning from the main details panel)
         /// </summary>
         /// <param name="ACmbCostCentre"></param>
         /// <param name="ACmbAccountCode"></param>
-        public void OnMainScreenActivation(TCmbAutoPopulated ACmbCostCentre, TCmbAutoPopulated ACmbAccountCode)
+        public void InitialiseDataSources(TCmbAutoPopulated ACmbCostCentre, TCmbAutoPopulated ACmbAccountCode)
         {
             // We have to do these because the filter/find panel is displayed when the screen is loaded, so they do not get populated
             InitFilterFindComboBox(ACmbCostCentre,
-                (TCmbAutoComplete)FFilterFindPanelObject.FilterPanelControls.FindControlByName(ACmbCostCentre.Name),
-                TCacheableFinanceTablesEnum.CostCentreList);
+                (TCmbAutoComplete)FFilterFindPanelObject.FilterPanelControls.FindControlByName(ACmbCostCentre.Name));
             InitFilterFindComboBox(ACmbAccountCode,
-                (TCmbAutoComplete)FFilterFindPanelObject.FilterPanelControls.FindControlByName(ACmbAccountCode.Name),
-                TCacheableFinanceTablesEnum.AccountList);
+                (TCmbAutoComplete)FFilterFindPanelObject.FilterPanelControls.FindControlByName(ACmbAccountCode.Name));
             InitFilterFindComboBox(ACmbCostCentre,
-                (TCmbAutoComplete)FFilterFindPanelObject.FindPanelControls.FindControlByName(ACmbCostCentre.Name),
-                TCacheableFinanceTablesEnum.CostCentreList);
+                (TCmbAutoComplete)FFilterFindPanelObject.FindPanelControls.FindControlByName(ACmbCostCentre.Name));
             InitFilterFindComboBox(ACmbAccountCode,
-                (TCmbAutoComplete)FFilterFindPanelObject.FindPanelControls.FindControlByName(ACmbAccountCode.Name),
-                TCacheableFinanceTablesEnum.AccountList);
+                (TCmbAutoComplete)FFilterFindPanelObject.FindPanelControls.FindControlByName(ACmbAccountCode.Name));
         }
 
         /// <summary>
@@ -302,7 +308,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// The code can modify this string in the light of current control values.</param>
         public void ApplyFilterManual(ref string AFilterString)
         {
-            //int BatchNumber = 0;
+            if (!FFilterIsActivated)
+            {
+                // use anything until we have been activated.
+                return;
+            }
+
             string workingFilter = String.Empty;
             string additionalFilter = String.Empty;
             bool showingAllPeriods = false;
@@ -411,13 +422,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Helper method that we can call to initialise each of the filter/find comboBoxes
         /// </summary>
         private void InitFilterFindComboBox(TCmbAutoPopulated AClonedFromComboBox,
-            TCmbAutoComplete AFFInstance,
-            TCacheableFinanceTablesEnum AListTableEnum)
+            TCmbAutoComplete AFFInstance)
         {
             AFFInstance.DisplayMember = AClonedFromComboBox.DisplayMember;
             AFFInstance.ValueMember = AClonedFromComboBox.ValueMember;
 
-            AFFInstance.DataSource = TDataCache.TMFinance.GetCacheableFinanceTable(AListTableEnum, FLedgerNumber).DefaultView;
+            if (AClonedFromComboBox.Name.Contains("Account"))
+            {
+                // This is quicker than getting the cached table again
+                AFFInstance.DataSource = FAccountTable.Copy().DefaultView;
+                //AFFInstance.DataSource = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber).DefaultView;
+            }
+            else if (AClonedFromComboBox.Name.Contains("CostCentre"))
+            {
+                // This is quicker than getting the cached table again
+                AFFInstance.DataSource = FCostCentreTable.Copy().DefaultView;
+                //AFFInstance.DataSource = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber).DefaultView;
+            }
+            else
+            {
+                throw new Exception("Unexpected ComboBox name");
+            }
+
             AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
             AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);
         }
