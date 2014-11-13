@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       berndr
+//       Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -54,6 +55,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             // otherwise rbtSelectedCostCentres slightly obscures clbCostCentres
             rbtSelectedCostCentres.SendToBack();
+            clbCostCentres.MouseDown += clbCostCentres_MouseDown;
+        }
+
+        void clbCostCentres_MouseDown(object sender, MouseEventArgs e)
+        {
+            rbtSelectedCostCentres.Checked = true;
         }
 
         #region Parameter/Settings Handling

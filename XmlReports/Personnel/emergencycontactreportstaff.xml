@@ -52,7 +52,7 @@
                     PUB_p_partner.p_language_code_c AS FirstLanguage,
                     PUB_p_person.p_gender_c AS Gender,
                     PUB_p_person.p_marital_status_c AS MaritalStatus,
-                    PUB_p_person.p_date_of_birth_d AS DateOfBirth,
+                    PUB_p_person.p_date_of_birth_d AS DateOfBirth
                 FROM
                     PUB_p_person, PUB_p_partner
             </value></queryDetail>

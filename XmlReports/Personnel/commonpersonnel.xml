@@ -148,21 +148,6 @@
         </query>
       </calculation>
 
-      <calculation id="GetDrivingLicense" returns="Automatic" returnsFormat="row">
-        <query>
-          <queryDetail>
-            <value>
-              SELECT
-                PUB_pm_personal_data.pm_driving_license_number_c
-              FROM
-                PUB_pm_personal_data
-              WHERE
-                PUB_pm_personal_data.p_partner_key_n = {{StaffPartnerKey}}
-            </value>
-          </queryDetail>
-        </query>
-      </calculation>
-
       <calculation id="SelectSpecialNeeds" returns="Automatic" returnsFormat="row">
         <query>
           <queryDetail>

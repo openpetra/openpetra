@@ -137,23 +137,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String CurrencyName = "";
 
-            if (cmbCurrency.Visible)
-            {
-                String CurrencySelection = this.cmbCurrency.GetSelectedString();
-                ACalculator.AddParameter("param_currency", CurrencySelection);
+            String CurrencySelection = this.cmbCurrency.GetSelectedString();
+            ACalculator.AddParameter("param_currency", CurrencySelection);
 
-                if (CurrencySelection == Catalog.GetString("Base"))
-                {
-                    CurrencyName = FLedgerRow.BaseCurrency;
-                }
-                else if (CurrencySelection == Catalog.GetString("International"))
-                {
-                    CurrencyName = FLedgerRow.IntlCurrency;
-                }
-            }
-            else
+            if (CurrencySelection == Catalog.GetString("Base"))
             {
                 CurrencyName = FLedgerRow.BaseCurrency;
+            }
+            else if (CurrencySelection == Catalog.GetString("International"))
+            {
+                CurrencyName = FLedgerRow.IntlCurrency;
             }
 
             ACalculator.AddParameter("param_currency_name", CurrencyName);
@@ -296,6 +289,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// <returns>void</returns>
         public void SetControls(TParameterList AParameters)
         {
+            Int32 StoredVal = 0;
+
             if (FLedgerNumber == -1)
             {
                 // we will wait until the ledger number has been set
@@ -323,18 +318,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 rbtPeriod.Checked = true;
             }
 
-            txtQuarter.Text = (AParameters.Get("param_end_period_i").ToInt() / 3).ToString();
-            txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
-            txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
+            StoredVal = Math.Max((AParameters.Get("param_end_period_i").ToInt() / 3), 1);
+            txtQuarter.Text = StoredVal.ToString();
 
-            if (txtStartPeriod.Text.Length == 0)
+            if (AParameters.Get("param_start_period_i").ToString().Length == 0)
             {
                 txtStartPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
             }
+            else
+            {
+                StoredVal = Math.Max(AParameters.Get("param_start_period_i").ToInt(), 1);
+                txtStartPeriod.Text = StoredVal.ToString();
+            }
 
-            if (txtEndPeriod.Text.Length == 0)
+            if (AParameters.Get("param_end_period_i").ToString().Length == 0)
             {
                 txtEndPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
+            }
+            else
+            {
+                StoredVal = Math.Max(AParameters.Get("param_end_period_i").ToInt(), 1);
+                txtEndPeriod.Text = StoredVal.ToString();
             }
 
             if (cmbPeriodYear.SelectedIndex == -1)
@@ -506,6 +510,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public void HidePeriodRange(bool AHide = true)
         {
             grpPeriodRange.Visible = !AHide;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AHide"></param>
+        public void HideDateRange(bool AHide = true)
+        {
+            rbtDate.Visible = !AHide;
         }
 
         private void UnselectAll(System.Object sender, System.EventArgs e)

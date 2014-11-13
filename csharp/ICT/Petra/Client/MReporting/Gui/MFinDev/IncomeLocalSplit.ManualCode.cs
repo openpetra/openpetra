@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 uco_Selection.InitialiseLedger(FLedgerNumber);
                 uco_Selection.ShowAccountHierarchy(false);
                 uco_Selection.ShowCurrencySelection(false);
-                uco_Selection.EnableDateSelection(true);
+                uco_Selection.HideDateRange();
 
                 FPetraUtilsObject.LoadDefaultSettings();
             }
