@@ -363,7 +363,7 @@ namespace Tests.MFinance.Server.Gift
             //
             // Act: Load the batch
             //
-            GiftBatchTDS GiftBatchDS = TGiftTransactionWebConnector.LoadGiftTransactions(FLedgerNumber, GiftBatchNumber);
+            GiftBatchTDS GiftBatchDS = TGiftTransactionWebConnector.LoadGiftAndTaxDeductDataForBatch(FLedgerNumber, GiftBatchNumber);
 
             //
             // Assert

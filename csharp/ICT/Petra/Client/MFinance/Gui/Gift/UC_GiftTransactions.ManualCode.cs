@@ -1043,7 +1043,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.AGiftDetail.Merge(TempDS.AGiftDetail);
                 }
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(FLedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(FLedgerNumber, ABatchNumber));
 
                 RetVal = true;
             }
@@ -1433,7 +1433,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FMainDS.AGift.Rows.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(ledgerNumber, batchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ledgerNumber, batchNumber));
 
                 ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
@@ -1534,43 +1534,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GetDetailDataFromControlsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            if (txtDetailCostCentreCode.Text.Length == 0)
+            if (ARow == null)
             {
-                ARow.SetCostCentreCodeNull();
-            }
-            else
-            {
-                ARow.CostCentreCode = txtDetailCostCentreCode.Text;
-            }
-
-            if (txtDetailAccountCode.Text.Length == 0)
-            {
-                ARow.SetAccountCodeNull();
-            }
-            else
-            {
-                ARow.AccountCode = txtDetailAccountCode.Text;
-            }
-
-            if (ARow.IsRecipientKeyNull())
-            {
-                ARow.SetRecipientDescriptionNull();
-            }
-            else
-            {
-                TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(ARow.RecipientKey, ARow,
-                    cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString());
-            }
-
-            if (txtDetailRecipientLedgerNumber.Text.Length == 0)
-            {
-                ARow.SetRecipientFieldNull();
-                ARow.SetRecipientLedgerNumberNull();
-            }
-            else
-            {
-                ARow.RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
-                ARow.RecipientLedgerNumber = ARow.RecipientField;
+                return;
             }
 
             //Handle gift table fields for first detail only
@@ -1616,6 +1582,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
                 }
+            }
+
+            if (txtDetailCostCentreCode.Text.Length == 0)
+            {
+                ARow.SetCostCentreCodeNull();
+            }
+            else
+            {
+                ARow.CostCentreCode = txtDetailCostCentreCode.Text;
+            }
+
+            if (txtDetailAccountCode.Text.Length == 0)
+            {
+                ARow.SetAccountCodeNull();
+            }
+            else
+            {
+                ARow.AccountCode = txtDetailAccountCode.Text;
+            }
+
+            if (ARow.IsRecipientKeyNull())
+            {
+                ARow.SetRecipientDescriptionNull();
+            }
+            else
+            {
+                TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(ARow.RecipientKey, ARow,
+                    cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString());
+            }
+
+            if (txtDetailRecipientLedgerNumber.Text.Length == 0)
+            {
+                ARow.SetRecipientFieldNull();
+                ARow.SetRecipientLedgerNumberNull();
+            }
+            else
+            {
+                ARow.RecipientLedgerNumber = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
+                ARow.RecipientField = ARow.RecipientLedgerNumber;
             }
 
             if (FTaxDeductiblePercentageEnabled)
@@ -1865,7 +1870,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (giftDataView.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(ledgerNumber, batchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ledgerNumber, batchNumber));
 
                 ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
@@ -2325,7 +2330,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ProcessGiftDetainationBroadcastMessage(TFormsMessage AFormsMessage)
         {
             // for some reason it is possible that this method can be called even if the parent form has been closed
-            if (((TFrmRecurringGiftBatch)ParentForm) == null)
+            if (((TFrmGiftBatch)ParentForm) == null)
             {
                 return;
             }
@@ -2372,7 +2377,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ProcessUnitHierarchyBroadcastMessage(TFormsMessage AFormsMessage)
         {
             // for some reason it is possible that this method can be called even if the parent form has been closed
-            if (((TFrmRecurringGiftBatch)ParentForm) == null)
+            if (((TFrmGiftBatch)ParentForm) == null)
             {
                 return;
             }

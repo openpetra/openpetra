@@ -437,35 +437,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void FindCostCentreCodeForRecipient(GiftBatchTDSARecurringGiftDetailRow ARow, Int64 APartnerKey, bool AShowError = false)
-        {
-            if (ARow == null)
-            {
-                return;
-            }
-
-            string FailedUpdates = string.Empty;
-
-            GiftBatchTDSARecurringGiftDetailTable TableARecurringGiftDetail = new GiftBatchTDSARecurringGiftDetailTable();
-
-            TableARecurringGiftDetail.ImportRow(ARow);
-            TableARecurringGiftDetail.AcceptChanges();
-
-            string NewCostCentreCode = TRemote.MFinance.Gift.WebConnectors.UpdateRecurringCostCentreCodeForOneRecipient(FMainDS,
-                TableARecurringGiftDetail,
-                out FailedUpdates);
-
-            if (ARow.CostCentreCode != NewCostCentreCode)
-            {
-                ARow.CostCentreCode = NewCostCentreCode;
-            }
-
-            if (txtDetailCostCentreCode.Text != NewCostCentreCode)
-            {
-                txtDetailCostCentreCode.Text = NewCostCentreCode;
-            }
-        }
-
         private void RecipientKeyChanged(Int64 APartnerKey,
             String APartnerShortName,
             bool AValidSelection)
@@ -909,7 +880,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, APartnerKey, false);
+            string NewCostCentreCode = string.Empty;
+
+            try
+            {
+                NewCostCentreCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FPreviouslySelectedDetailRow.LedgerNumber,
+                    FPreviouslySelectedDetailRow.RecipientKey,
+                    FPreviouslySelectedDetailRow.RecipientLedgerNumber,
+                    FPreviouslySelectedDetailRow.DateEntered,
+                    FPreviouslySelectedDetailRow.MotivationGroupCode,
+                    FPreviouslySelectedDetailRow.MotivationDetailCode);
+
+                if (FPreviouslySelectedDetailRow.CostCentreCode != NewCostCentreCode)
+                {
+                    FPreviouslySelectedDetailRow.CostCentreCode = NewCostCentreCode;
+                }
+            }
+            catch (Exception ex)
+            {
+                string errMsg = Catalog.GetString("Error accessing Cost Centre Code:" + Environment.NewLine + ex.Message);
+
+                MessageBox.Show(errMsg, "Cost Centre Code", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+
+            if (txtDetailCostCentreCode.Text != NewCostCentreCode)
+            {
+                txtDetailCostCentreCode.Text = NewCostCentreCode;
+            }
         }
 
         private void MotivationDetailChanged(object sender, EventArgs e)

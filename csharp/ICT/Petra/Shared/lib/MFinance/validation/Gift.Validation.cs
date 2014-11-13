@@ -315,8 +315,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 if ((ARow.RecipientKey > 0) && (ARow.RecipientLedgerNumber == 0))
                 {
                     VerificationResult = TNumericalChecks.IsGreaterThanZero(ARow.RecipientLedgerNumber,
-                    "Recipient field of " + ValidationContext + " is 0",
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        "Recipient field of " + ValidationContext + " is 0",
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition/removal to/from TVerificationResultCollection
                     if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
@@ -815,8 +815,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 if ((ARow.RecipientKey > 0) && (ARow.RecipientLedgerNumber == 0))
                 {
                     VerificationResult = TNumericalChecks.IsGreaterThanZero(ARow.RecipientLedgerNumber,
-                    "Recipient field of " + ValidationContext + " is 0",
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        "Recipient field of " + ValidationContext + " is 0",
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition/removal to/from TVerificationResultCollection
                     if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))

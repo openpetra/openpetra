@@ -220,7 +220,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     // check changed data is either added or modified and that it is by a new donor
                     if (((Row.RowState == DataRowState.Added) || (Row.RowState == DataRowState.Modified))
-                        && NewDonorsList.Contains(Row.DonorKey))
+                        && (!Row.IsDonorKeyNull() && NewDonorsList.Contains(Row.DonorKey)))
                     {
                         if (MessageBox.Show(string.Format(Catalog.GetString(
                                         "{0} ({1}) is a new Donor.{2}Do you want to add subscriptions for them?{2}" +
@@ -532,7 +532,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (TransDV.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(ALedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ALedgerNumber, ABatchNumber));
             }
 
             return TransDV.Count > 0;
