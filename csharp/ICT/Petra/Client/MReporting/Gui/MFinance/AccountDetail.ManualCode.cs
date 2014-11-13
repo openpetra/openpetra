@@ -244,7 +244,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     "'' AS AnalysisTypeDescr," +
                     "'' AS AnalysisValue" +
                     " FROM a_transaction, a_journal WHERE " +
-                    " a_transaction."+LedgerFilter + 
+                    " a_transaction." + LedgerFilter +
                     " AND a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i " +
                     " AND a_transaction.a_batch_number_i = a_journal.a_batch_number_i " +
                     " AND a_transaction.a_journal_number_i = a_journal.a_journal_number_i " +

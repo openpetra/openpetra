@@ -387,6 +387,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 String JournalRowOrder = "a_journal_number_i";
                 String TransRowOrder = "a_batch_number_i,a_journal_number_i,a_transaction_number_i";
+
                 foreach (ACostCentreRow CostCentreRow in PostingDS.ACostCentre.Rows)
                 {
                     string CostCentre = CostCentreRow.CostCentreCode;
@@ -532,6 +533,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     }
 
                     DrCrIndicator = AccountDrCrIndicator;
+
                     if (SettlementAmount < 0)
                     {
                         DrCrIndicator = !AccountDrCrIndicator;

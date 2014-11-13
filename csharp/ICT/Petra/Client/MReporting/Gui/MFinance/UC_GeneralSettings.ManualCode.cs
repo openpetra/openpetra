@@ -290,6 +290,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public void SetControls(TParameterList AParameters)
         {
             Int32 StoredVal = 0;
+
             if (FLedgerNumber == -1)
             {
                 // we will wait until the ledger number has been set
@@ -512,7 +513,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="AHide"></param>
         public void HideDateRange(bool AHide = true)

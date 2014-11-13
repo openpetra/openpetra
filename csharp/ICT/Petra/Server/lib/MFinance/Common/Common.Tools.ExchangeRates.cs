@@ -353,6 +353,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 currentFinancialYear = ledgerTable[0].CurrentFinancialYear;
             }
+
             DateTime startOfPeriod = AccountingPeriodTable[0].PeriodStartDate;
             DateTime endOfPeriod = AccountingPeriodTable[0].PeriodEndDate;
 

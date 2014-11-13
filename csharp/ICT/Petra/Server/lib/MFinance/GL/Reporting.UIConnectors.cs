@@ -742,18 +742,19 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
 
                 EffectiveExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
-                LedgerNumber,
-                AccountingYear,
-                ReportPeriodEnd,
-                -1);
+                    LedgerNumber,
+                    AccountingYear,
+                    ReportPeriodEnd,
+                    -1);
             }
+
 /*
  * I'm not doing this anymore - I'm taking the Base values and using the applicable exchange rate for the period.
-            //
-            // Read different DB fields according to currency setting
-            ActualFieldName = International ? "a_actual_intl_n" : "a_actual_base_n";
-            StartBalanceFieldName = International ? "a_start_balance_intl_n" : "a_start_balance_base_n";
-*/
+ *          //
+ *          // Read different DB fields according to currency setting
+ *          ActualFieldName = International ? "a_actual_intl_n" : "a_actual_base_n";
+ *          StartBalanceFieldName = International ? "a_start_balance_intl_n" : "a_start_balance_base_n";
+ */
 
             String PlAccountCode = "PL"; // I could get this from the Ledger record, but in fact it's never set there!
 
