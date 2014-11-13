@@ -193,11 +193,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (ACurrentJournalRow.LastTransactionNumber > 0)
             {
                 if (MessageBox.Show(Catalog.GetString(
-                    "The current journal already contains some transactions.  Do you really want to add more transactions to this journal?"),
-                    Catalog.GetString("Import GL Transactions"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button2) == DialogResult.No)
+                            "The current journal already contains some transactions.  Do you really want to add more transactions to this journal?"),
+                        Catalog.GetString("Import GL Transactions"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     return;
                 }

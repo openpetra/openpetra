@@ -1712,6 +1712,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void RefreshAllData()
         {
             Cursor prevCursor = ParentForm.Cursor;
+
             ParentForm.Cursor = Cursors.WaitCursor;
 
             if ((FMainDS != null) && (FMainDS.AGiftDetail != null))

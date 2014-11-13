@@ -724,7 +724,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     throw new Exception(Catalog.GetString(
                             "Could not create a new import transaction because an existing transaction has not completed."));
                 }
-            
+
                 // Construct our DataSet - we use all the journals for the batch so we can update the batch totals.
                 GLBatchTDS MainDS = new GLBatchTDS();
                 ABatchTable BatchTable = ABatchAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, Transaction);
@@ -733,7 +733,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 MainDS.AJournal.Merge(JournalTable);
                 ATransactionTable TransactionTable = ATransactionAccess.LoadViaABatch(ALedgerNumber, ABatchNumber, Transaction);
                 MainDS.ATransaction.Merge(TransactionTable);
-                ATransAnalAttribTable TransAnalAttributeTable = ATransAnalAttribAccess.LoadViaAJournal(ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                ATransAnalAttribTable TransAnalAttributeTable = ATransAnalAttribAccess.LoadViaAJournal(ALedgerNumber,
+                    ABatchNumber,
+                    AJournalNumber,
+                    Transaction);
                 MainDS.ATransAnalAttrib.Merge(TransAnalAttributeTable);
                 MainDS.AcceptChanges();
 

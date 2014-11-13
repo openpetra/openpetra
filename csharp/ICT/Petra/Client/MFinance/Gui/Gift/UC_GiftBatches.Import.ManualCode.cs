@@ -236,11 +236,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (ACurrentBatchRow.LastGiftNumber > 0)
             {
                 if (MessageBox.Show(Catalog.GetString(
-                    "The current batch already contains some gift transactions.  Do you really want to add more transactions to this batch?"),
-                    Catalog.GetString("Gift Transaction Import"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button2) == DialogResult.No)
+                            "The current batch already contains some gift transactions.  Do you really want to add more transactions to this batch?"),
+                        Catalog.GetString("Gift Transaction Import"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     return false;
                 }

@@ -156,14 +156,17 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 ACommentType = MFinanceConstants.GIFT_COMMENT_TYPE_DONOR;
             }
+
             if (String.Compare(ACommentType, MFinanceConstants.GIFT_COMMENT_TYPE_RECIPIENT, false) == 0)
             {
                 ACommentType = MFinanceConstants.GIFT_COMMENT_TYPE_RECIPIENT;
             }
+
             if (String.Compare(ACommentType, MFinanceConstants.GIFT_COMMENT_TYPE_BOTH, false) == 0)
             {
                 ACommentType = MFinanceConstants.GIFT_COMMENT_TYPE_BOTH;
             }
+
             if (String.Compare(ACommentType, MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE, false) == 0)
             {
                 ACommentType = MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE;
@@ -752,7 +755,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                 AMethodOfPaymentTable MethodOfPaymentTable = AMethodOfPaymentAccess.LoadAll(Transaction);
 
                 AGiftBatchTable giftBatchTable = AGiftBatchAccess.LoadViaALedger(FLedgerNumber, Transaction);
-                DataView giftBatchDV = new DataView(giftBatchTable, String.Format("{0}={1}", AGiftBatchTable.GetBatchNumberDBName(), AGiftBatchNumber), "", DataViewRowState.CurrentRows);
+                DataView giftBatchDV = new DataView(giftBatchTable, String.Format("{0}={1}",
+                        AGiftBatchTable.GetBatchNumberDBName(), AGiftBatchNumber), "", DataViewRowState.CurrentRows);
                 FMainDS.AGiftBatch.ImportRow(giftBatchDV[0].Row);
                 FMainDS.AcceptChanges();
                 AGiftBatchRow giftBatch = (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, AGiftBatchNumber });
@@ -776,6 +780,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                     if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#"))
                     {
                         int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count + 1;
+
                         // It is a Transaction row
                         if (numberOfElements < 13) // Perhaps this CSV file is a summary, and can't be imported?
                         {
@@ -806,7 +811,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                             MethodOfPaymentTable,
                             ref ANeedRecipientLedgerNumber,
                             out giftDetails);
-            
 
                         if (TaxDeductiblePercentageEnabled)
                         {
@@ -833,6 +837,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 (BatchDetailCounter / 50 + 2) * 10 > 90 ? 90 : (BatchDetailCounter / 50 + 2) * 10);
                         }
                     }
+
                     if (AMessages.Count > 100)
                     {
                         // This probably means that it is a big file and the user has made the same mistake many times over
@@ -842,7 +847,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                     // Read the next line
                     FImportLine = sr.ReadLine();
                 }  // while CSV lines
-
 
                 // Finished reading the file - did we have critical errors?
                 if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
