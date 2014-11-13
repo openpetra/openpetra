@@ -6507,27 +6507,27 @@
         <primarykey name="p_contact_log_pk"
                     descr=""
                     thisFields="p_contact_log_id_i"/>
-        <foreignkey name="p_partner_contact_fk1"
+        <foreignkey name="p_contact_log_fk1"
                     descr=""
                     thisFields="p_mailing_code_c"
                     otherTable="p_mailing"
                     otherFields="p_mailing_code_c"/>
-        <foreignkey name="p_partner_contact_fk2"
+        <foreignkey name="p_contact_log_fk2"
                     descr=""
                     thisFields="p_contact_code_c"
                     otherTable="p_method_of_contact"
                     otherFields="p_method_of_contact_code_c"/>
-        <foreignkey name="p_partner_contact_fk3"
+        <foreignkey name="p_contact_log_fk3"
                     descr=""
                     thisFields="s_module_id_c"
                     otherTable="s_module"
                     otherFields="s_module_id_c"/>
-        <foreignkey name="p_partner_contact_fk4"
+        <foreignkey name="p_contact_log_fk4"
                     descr=""
                     thisFields="s_user_id_c"
                     otherTable="s_user"
                     otherFields="s_user_id_c"/>
-        <!-- Explicit Indexes on table p_partner_contact  -->
+        <!-- Explicit Indexes on table p_contact_log  -->
         <!--<index name="inx_p_partner_contact_uk"
              descr=""
              area=""
