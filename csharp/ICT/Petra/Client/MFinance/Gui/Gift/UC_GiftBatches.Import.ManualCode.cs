@@ -53,18 +53,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private TFrmPetraEditUtils FPetraUtilsObject = null;
         private Int32 FLedgerNumber = 0;
-        private GiftBatchTDS FMainDS = null;
         private IUC_GiftBatches FMyUserControl = null;
 
         #region Constructor
         /// <summary>
         /// Constructor
         /// </summary>
-        public TUC_GiftBatches_Import(TFrmPetraEditUtils APetraUtilsObject, Int32 ALedgerNumber, GiftBatchTDS AMainDS, IUC_GiftBatches AUserControl)
+        public TUC_GiftBatches_Import(TFrmPetraEditUtils APetraUtilsObject, Int32 ALedgerNumber, IUC_GiftBatches AUserControl)
         {
             FPetraUtilsObject = APetraUtilsObject;
             FLedgerNumber = ALedgerNumber;
-            FMainDS = AMainDS;
             FMyUserControl = AUserControl;
         }
 
