@@ -1837,7 +1837,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ImportTransactions(object sender, EventArgs e)
         {
-            ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions();
+            if (ValidateAllData(true, true))
+            {
+                ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions();
+                // The import method refreshes the screen if the import is succeswsful
+            }
         }
 
         /// <summary>
@@ -1848,6 +1852,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void SelectRow(int ARowNumber)
         {
             SelectRowInGrid(ARowNumber);
+            UpdateRecordNumberDisplay();
         }
 
         private void FilterToggledManual(bool AFilterIsOff)
