@@ -150,6 +150,26 @@ namespace Ict.Petra.Server.MFinance.Gift
             return false;
         }
 
+        private void SetCommentTypeCase(ref string ACommentType)
+        {
+            if (String.Compare(ACommentType, MFinanceConstants.GIFT_COMMENT_TYPE_DONOR, false) == 0)
+            {
+                ACommentType = MFinanceConstants.GIFT_COMMENT_TYPE_DONOR;
+            }
+            if (String.Compare(ACommentType, MFinanceConstants.GIFT_COMMENT_TYPE_RECIPIENT, false) == 0)
+            {
+                ACommentType = MFinanceConstants.GIFT_COMMENT_TYPE_RECIPIENT;
+            }
+            if (String.Compare(ACommentType, MFinanceConstants.GIFT_COMMENT_TYPE_BOTH, false) == 0)
+            {
+                ACommentType = MFinanceConstants.GIFT_COMMENT_TYPE_BOTH;
+            }
+            if (String.Compare(ACommentType, MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE, false) == 0)
+            {
+                ACommentType = MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE;
+            }
+        }
+
         /// <summary>
         /// Import Gift batch data
         /// The data file contents from the client is sent as a string, imported in the database
@@ -648,6 +668,340 @@ namespace Ict.Petra.Server.MFinance.Gift
             return ok;
         }
 
+        /// <summary>
+        /// Import Gift Transactions from a file
+        /// </summary>
+        /// <param name="ARequestParams"></param>
+        /// <param name="AImportString"></param>
+        /// <param name="AGiftBatchNumber"></param>
+        /// <param name="ANeedRecipientLedgerNumber"></param>
+        /// <param name="AMessages"></param>
+        /// <returns></returns>
+        public bool ImportGiftTransactions(
+            Hashtable ARequestParams,
+            String AImportString,
+            Int32 AGiftBatchNumber,
+            out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
+            out TVerificationResultCollection AMessages
+            )
+        {
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Importing Gift Batches"),
+                100);
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Initialising"),
+                0);
+
+            AMessages = new TVerificationResultCollection();
+            FMainDS = new GiftBatchTDS();
+            StringReader sr = new StringReader(AImportString);
+            ANeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
+
+
+            // Parse the supplied parameters
+            FDelimiter = (String)ARequestParams["Delimiter"];
+            FLedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
+            FDateFormatString = (String)ARequestParams["DateFormatString"];
+            String NumberFormat = (String)ARequestParams["NumberFormat"];
+            FNewLine = (String)ARequestParams["NewLine"];
+
+            // Set culture from parameters
+            FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
+            FCultureInfoDate = new CultureInfo("en-GB");
+            FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
+
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
+            // Initialise our working variables
+            TDBTransaction Transaction = null;
+            decimal totalBatchAmount = 0;
+            Int32 RowNumber = 0;
+            Int32 BatchDetailCounter = 0;
+            bool ok = false;
+
+            string ImportMessage = Catalog.GetString("Initialising");
+
+            // Create some validation dictionaries
+            TValidationControlsDict ValidationControlsDictGift = new TValidationControlsDict();
+            TValidationControlsDict ValidationControlsDictGiftDetail = new TValidationControlsDict();
+
+            try
+            {
+                // This needs to be initialised because we will be calling the method
+                TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
+                TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
+
+                // Get a new transaction
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                // If we did not succeed there is something wrong (a transaction is already dangling somewhere?)
+                if (Transaction == null)
+                {
+                    throw new Exception(Catalog.GetString(
+                            "Could not create a new import transaction because an existing transaction has not completed."));
+                }
+
+                // Load supplementary tables that we are going to need for validation
+                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction);
+                ACostCentreTable CostCentreTable = ACostCentreAccess.LoadViaALedger(FLedgerNumber, Transaction);
+                AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadViaALedger(FLedgerNumber, Transaction);
+                AMotivationDetailTable MotivationDetailTable = AMotivationDetailAccess.LoadViaALedger(FLedgerNumber, Transaction);
+                AMethodOfGivingTable MethodOfGivingTable = AMethodOfGivingAccess.LoadAll(Transaction);
+                AMethodOfPaymentTable MethodOfPaymentTable = AMethodOfPaymentAccess.LoadAll(Transaction);
+
+                AGiftBatchTable giftBatchTable = AGiftBatchAccess.LoadViaALedger(FLedgerNumber, Transaction);
+                DataView giftBatchDV = new DataView(giftBatchTable, String.Format("{0}={1}", AGiftBatchTable.GetBatchNumberDBName(), AGiftBatchNumber), "", DataViewRowState.CurrentRows);
+                FMainDS.AGiftBatch.ImportRow(giftBatchDV[0].Row);
+                FMainDS.AcceptChanges();
+                AGiftBatchRow giftBatch = (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, AGiftBatchNumber });
+
+                if (LedgerTable.Rows.Count == 0)
+                {
+                    throw new Exception(String.Format(Catalog.GetString("Ledger {0} doesn't exist."), FLedgerNumber));
+                }
+
+                ImportMessage = Catalog.GetString("Parsing first line");
+                AGiftRow previousGift = null;
+
+                // Go round a loop reading the file line by line
+                FImportLine = sr.ReadLine();
+
+                while (FImportLine != null)
+                {
+                    RowNumber++;
+
+                    // skip empty lines and commented lines
+                    if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#"))
+                    {
+                        int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count + 1;
+                        // It is a Transaction row
+                        if (numberOfElements < 13) // Perhaps this CSV file is a summary, and can't be imported?
+                        {
+                            AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
+                                    Catalog.GetString("Wrong number of gift columns. Expected at least 13 columns. (This may be a summary?)"),
+                                    TResultSeverity.Resv_Critical));
+                            FImportLine = sr.ReadLine();
+                            continue;
+                        }
+
+                        // Parse the line into a new row
+                        AGiftRow gift = FMainDS.AGift.NewRowTyped(true);
+                        AGiftDetailRow giftDetails;
+                        ParseTransactionLine(gift,
+                            giftBatch,
+                            ref previousGift,
+                            numberOfElements,
+                            ref totalBatchAmount,
+                            ref ImportMessage,
+                            RowNumber,
+                            AMessages,
+                            ValidationControlsDictGift,
+                            ValidationControlsDictGiftDetail,
+                            CostCentreTable,
+                            MotivationGroupTable,
+                            MotivationDetailTable,
+                            MethodOfGivingTable,
+                            MethodOfPaymentTable,
+                            ref ANeedRecipientLedgerNumber,
+                            out giftDetails);
+            
+
+                        if (TaxDeductiblePercentageEnabled)
+                        {
+                            // Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
+                            TGift.SetDefaultTaxDeductibilityData(ref giftDetails, gift.DateEntered, Transaction);
+                        }
+
+                        if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
+                        {
+                            ImportMessage = Catalog.GetString("Saving gift");
+                            AGiftAccess.SubmitChanges(FMainDS.AGift, Transaction);
+                            FMainDS.AGift.AcceptChanges();
+
+                            ImportMessage = Catalog.GetString("Saving giftdetails");
+                            AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, Transaction);
+                            FMainDS.AGiftDetail.AcceptChanges();
+                        }
+
+                        // Update progress tracker every 50 records
+                        if (++BatchDetailCounter % 50 == 0)
+                        {
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                string.Format(Catalog.GetString("Batch {0} - Importing gift detail"), giftBatch.BatchNumber),
+                                (BatchDetailCounter / 50 + 2) * 10 > 90 ? 90 : (BatchDetailCounter / 50 + 2) * 10);
+                        }
+                    }
+                    if (AMessages.Count > 100)
+                    {
+                        // This probably means that it is a big file and the user has made the same mistake many times over
+                        break;
+                    }
+
+                    // Read the next line
+                    FImportLine = sr.ReadLine();
+                }  // while CSV lines
+
+
+                // Finished reading the file - did we have critical errors?
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
+                {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Batch has critical errors"),
+                        0);
+
+                    // Record error count
+                    AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
+                            String.Format(Catalog.GetString("{0} messages reported."), AMessages.Count), TResultSeverity.Resv_Info));
+
+                    if (FImportLine == null)
+                    {
+                        // We did reach the end of the file
+                        AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
+                                Catalog.GetString(
+                                    "Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."),
+                                TResultSeverity.Resv_Info));
+                    }
+                    else
+                    {
+                        // We gave up before the end
+                        AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
+                                Catalog.GetString(
+                                    "Stopped reading the file after generating more than 100 messages.  The file may contian more errors beyond the ones listed here."),
+                                TResultSeverity.Resv_Info));
+                    }
+
+                    TLogging.Log("Return from here!");
+
+                    // we do not want to think about Gift Destination problems if the import has failed for another reason
+                    ANeedRecipientLedgerNumber.Clear();
+
+                    // Do the 'finally' actions and return false
+                    return false;
+                }
+
+                // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination then the import will fail
+                if (ANeedRecipientLedgerNumber.Rows.Count > 0)
+                {
+                    return false;
+                }
+
+                // Everything is ok, so we can do our finish actions
+
+                //Update batch total for the last batch entered.
+                if (giftBatch != null)
+                {
+                    giftBatch.BatchTotal = totalBatchAmount;
+                }
+
+                ImportMessage = Catalog.GetString("Saving all data into the database");
+
+                //Finally save pending changes (the last number is updated !)
+                AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, Transaction);
+                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+                FMainDS.AGiftBatch.AcceptChanges();
+                FMainDS.ALedger.AcceptChanges();
+
+                // Commit the transaction (we know that we got a new one and can control it)
+                DBAccess.GDBAccessObj.CommitTransaction();
+                ok = true;
+            }
+            catch (Exception ex)
+            {
+                // Parse the exception text for possible references to database foreign keys
+                // Make the message more friendly in that case
+                string friendlyExceptionText = MakeFriendlyFKExceptions(ex);
+
+                if (AMessages == null)
+                {
+                    AMessages = new TVerificationResultCollection();
+                }
+
+                if (RowNumber > 0)
+                {
+                    // At least we made a start
+                    string msg = ImportMessage;
+
+                    if (friendlyExceptionText.Length > 0)
+                    {
+                        msg += FNewLine + friendlyExceptionText;
+                    }
+
+                    AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                            msg, TResultSeverity.Resv_Critical));
+                }
+                else
+                {
+                    // We got an exception before we even started parsing the rows (getting a transaction?)
+                    AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                            friendlyExceptionText, TResultSeverity.Resv_Critical));
+                }
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Exception Occurred"),
+                    0);
+
+                ok = false;
+            }
+            finally
+            {
+                try
+                {
+                    sr.Close();
+                }
+                catch (Exception Exc)
+                {
+                    TLogging.Log("An Exception occured while closing the Import File:" + Environment.NewLine + Exc.ToString());
+
+                    if (AMessages == null)
+                    {
+                        AMessages = new TVerificationResultCollection();
+                    }
+
+                    AMessages.Add(new TVerificationResult(Catalog.GetString("Import exception"),
+                            Catalog.GetString("A problem was encountered while closing the Import File:"),
+                            TResultSeverity.Resv_Critical));
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Exception Occurred"),
+                        0);
+
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
+                    throw;
+                }
+
+                if (ok)
+                {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Gift batch import successful"),
+                        100);
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    if (AMessages == null)
+                    {
+                        AMessages = new TVerificationResultCollection();
+                    }
+
+                    AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
+                            Catalog.GetString("None of the data from the import was saved."),
+                            TResultSeverity.Resv_Critical));
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Data could not be saved."),
+                        0);
+                }
+
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            } // end of 'finally'
+
+            return ok;
+        }
+
         private void ParseBatchLine(ref AGiftBatchRow AGiftBatch,
             ref TDBTransaction ATransaction,
             ref ALedgerTable ALedgerTable,
@@ -873,7 +1227,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             // All the remaining columns are optional and can contain database NULL
             AGiftDetails.GiftCommentOne = ImportString(Catalog.GetString("Gift comment one"),
                 FMainDS.AGiftDetail.ColumnGiftCommentOne, AValidationControlsDictGiftDetail, false);
-            AGiftDetails.CommentOneType = ImportString(Catalog.GetString("Comment one type"),
+            string commentOneType = ImportString(Catalog.GetString("Comment one type"),
                 FMainDS.AGiftDetail.ColumnCommentOneType, AValidationControlsDictGiftDetail, false);
 
             AGiftDetails.MailingCode = ImportString(Catalog.GetString("Mailing code"),
@@ -881,12 +1235,21 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             AGiftDetails.GiftCommentTwo = ImportString(Catalog.GetString("Gift comment two"),
                 FMainDS.AGiftDetail.ColumnGiftCommentTwo, AValidationControlsDictGiftDetail, false);
-            AGiftDetails.CommentTwoType = ImportString(Catalog.GetString("Comment two type"),
+            string commentTwoType = ImportString(Catalog.GetString("Comment two type"),
                 FMainDS.AGiftDetail.ColumnCommentTwoType, AValidationControlsDictGiftDetail, false);
             AGiftDetails.GiftCommentThree = ImportString(Catalog.GetString("Gift comment three"),
                 FMainDS.AGiftDetail.ColumnGiftCommentThree, AValidationControlsDictGiftDetail, false);
-            AGiftDetails.CommentThreeType = ImportString(Catalog.GetString("Comment three type"),
+            string commentThreeType = ImportString(Catalog.GetString("Comment three type"),
                 FMainDS.AGiftDetail.ColumnCommentThreeType, AValidationControlsDictGiftDetail, false);
+
+            SetCommentTypeCase(ref commentOneType);
+            AGiftDetails.CommentOneType = commentOneType;
+
+            SetCommentTypeCase(ref commentTwoType);
+            AGiftDetails.CommentOneType = commentTwoType;
+
+            SetCommentTypeCase(ref commentThreeType);
+            AGiftDetails.CommentOneType = commentThreeType;
 
             // Find the default Tax deductabilty from the motivation detail. This ensures that the column can be missing.
             AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)AValidationMotivationDetailTable.Rows.Find(

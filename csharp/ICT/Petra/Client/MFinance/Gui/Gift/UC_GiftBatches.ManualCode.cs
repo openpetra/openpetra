@@ -151,7 +151,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void InitialiseLogicObjects()
         {
             FLoadAndFilterLogicObject = new TUC_GiftBatches_LoadAndFilter(FLedgerNumber, FMainDS, FFilterAndFindObject);
-            FImportLogicObject = new TUC_GiftBatches_Import(FPetraUtilsObject, FLedgerNumber, this);
+            FImportLogicObject = new TUC_GiftBatches_Import(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
             FPostingLogicObject = new TUC_GiftBatches_Post(FPetraUtilsObject, FLedgerNumber, FMainDS);
             FReceiptingLogicObject = new TUC_GiftBatches_Receipt();
             FCancelLogicObject = new TUC_GiftBatches_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS);
@@ -859,6 +859,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FImportLogicObject.ImportBatches();
+        }
+
+        /// <summary>
+        /// Imports a transactions file
+        /// </summary>
+        public bool ImportTransactions()
+        {
+            if (!FLoadAndFilterLogicObject.StatusEditing)
+            {
+                FLoadAndFilterLogicObject.StatusEditing = true;
+            }
+
+            return FImportLogicObject.ImportTransactions(FPreviouslySelectedDetailRow);
         }
 
         private void PostBatch(System.Object sender, EventArgs e)

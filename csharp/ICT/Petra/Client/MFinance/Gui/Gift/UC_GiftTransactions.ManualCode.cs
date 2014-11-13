@@ -1711,6 +1711,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAllData()
         {
+            Cursor prevCursor = ParentForm.Cursor;
+            ParentForm.Cursor = Cursors.WaitCursor;
+
             if ((FMainDS != null) && (FMainDS.AGiftDetail != null))
             {
                 FMainDS.AGiftDetail.Rows.Clear();
@@ -1724,6 +1727,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // Be sure to pass the true parameter because we definitely need to update FMainDS.AGiftDetail as it is now empty!
                 LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus, true);
             }
+
+            ParentForm.Cursor = prevCursor;
         }
 
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
@@ -2405,6 +2410,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         false);
 
                     break;
+                }
+            }
+        }
+
+        private void ImportTransactions(object sender, EventArgs e)
+        {
+            if (ValidateAllData(true, true))
+            {
+                if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions())
+                {
+                    RefreshAllData();
                 }
             }
         }

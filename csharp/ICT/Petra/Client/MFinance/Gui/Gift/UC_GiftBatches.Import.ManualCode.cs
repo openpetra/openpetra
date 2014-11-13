@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
@@ -38,6 +39,7 @@ using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -51,16 +53,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private TFrmPetraEditUtils FPetraUtilsObject = null;
         private Int32 FLedgerNumber = 0;
+        private GiftBatchTDS FMainDS = null;
         private IUC_GiftBatches FMyUserControl = null;
 
         #region Constructor
         /// <summary>
         /// Constructor
         /// </summary>
-        public TUC_GiftBatches_Import(TFrmPetraEditUtils APetraUtilsObject, Int32 ALedgerNumber, IUC_GiftBatches AUserControl)
+        public TUC_GiftBatches_Import(TFrmPetraEditUtils APetraUtilsObject, Int32 ALedgerNumber, GiftBatchTDS AMainDS, IUC_GiftBatches AUserControl)
         {
             FPetraUtilsObject = APetraUtilsObject;
             FLedgerNumber = ALedgerNumber;
+            FMainDS = AMainDS;
             FMyUserControl = AUserControl;
         }
 
@@ -205,6 +209,167 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// Import a transactions file
+        /// </summary>
+        /// <param name="ACurrentBatchRow">The batch to import to</param>
+        /// <returns>True if the import was successful</returns>
+        public bool ImportTransactions(AGiftBatchRow ACurrentBatchRow)
+        {
+            bool ok = false;
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                // saving failed, therefore do not try to import
+                MessageBox.Show(Catalog.GetString("Please save before calling this function!"), Catalog.GetString(
+                        "Gift Import"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            if ((ACurrentBatchRow == null) || (ACurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                MessageBox.Show(Catalog.GetString("Please select an unposted batch to import transactions."), Catalog.GetString(
+                        "Gift Import"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            if (ACurrentBatchRow.LastGiftNumber > 0)
+            {
+                if (MessageBox.Show(Catalog.GetString(
+                    "The current batch already contains some gift transactions.  Do you really want to add more transactions to this batch?"),
+                    Catalog.GetString("Gift Transaction Import"),
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button2) == DialogResult.No)
+                {
+                    return false;
+                }
+            }
+
+            String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
+                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
+
+            dialog.Title = Catalog.GetString("Import transactions from spreadsheet file");
+            dialog.Filter = Catalog.GetString("Gift Transactions files (*.csv)|*.csv");
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(dialog.FileName);
+
+                if (!fileCanOpen)
+                {
+                    MessageBox.Show(Catalog.GetString("Unable to open file."),
+                        Catalog.GetString("Gift Import"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop);
+                    return false;
+                }
+
+                FdlgSeparator.DateFormat = dateFormatString;
+
+                if (impOptions.Length > 1)
+                {
+                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
+                }
+
+                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+
+                if (FdlgSeparator.ShowDialog() == DialogResult.OK)
+                {
+                    Hashtable requestParams = new Hashtable();
+
+                    requestParams.Add("ALedgerNumber", FLedgerNumber);
+                    requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
+                    requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
+                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
+                    requestParams.Add("NewLine", Environment.NewLine);
+
+                    bool Repeat = true;
+
+                    while (Repeat)
+                    {
+                        Repeat = false;
+
+                        String importString = File.ReadAllText(dialog.FileName);
+                        TVerificationResultCollection AMessages = new TVerificationResultCollection();
+                        GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
+
+                        Thread ImportThread = new Thread(() => ImportGiftTransactions(
+                                requestParams,
+                                importString,
+                                ACurrentBatchRow.BatchNumber,
+                                out AMessages,
+                                out ok,
+                                out NeedRecipientLedgerNumber));
+
+                        using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
+                        {
+                            ImportDialog.ShowDialog();
+                        }
+
+                        ShowMessages(AMessages);
+
+                        // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination
+                        // then the import will have failed and we need to alert the user
+                        if (NeedRecipientLedgerNumber.Rows.Count > 0)
+                        {
+                            bool OfferToRunImportAgain = true;
+
+                            // for each gift in which the recipient needs a Git Destination
+                            foreach (GiftBatchTDSAGiftDetailRow Row in NeedRecipientLedgerNumber.Rows)
+                            {
+                                if (MessageBox.Show(string.Format(
+                                            Catalog.GetString(
+                                                "Gift Import has been cancelled as the recipient '{0}' ({1}) has no Gift Destination assigned."),
+                                            Row.RecipientDescription, Row.RecipientKey) +
+                                        "\n\n" +
+                                        Catalog.GetString("Do you want to assign a Gift Destination to this partner now?"),
+                                        Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                                    == DialogResult.Yes)
+                                {
+                                    // allow the user to assign a Gift Destingation
+                                    TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), Row.RecipientKey);
+                                    GiftDestinationForm.ShowDialog();
+                                }
+                                else
+                                {
+                                    OfferToRunImportAgain = false;
+                                }
+                            }
+
+                            // if the user has clicked yes to assigning Gift Destinations then offer to restart the import
+                            if (OfferToRunImportAgain
+                                && (MessageBox.Show(Catalog.GetString("Would you like to import these Gift Transactions again?"),
+                                        Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                                    == DialogResult.Yes))
+                            {
+                                Repeat = true;
+                            }
+                        }
+                    }
+                }
+
+                if (ok)
+                {
+                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+                        Catalog.GetString("Gift Import"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    SaveUserDefaults(dialog, impOptions);
+                    //FMyUserControl.LoadBatchesForCurrentYear();
+                    FPetraUtilsObject.DisableSaveButton();
+                }
+            }
+
+            return ok;
+        }
+
         #endregion
 
         #region Helper methods
@@ -227,6 +392,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ImportIsSuccessful = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatches(
                 ARequestParams,
                 AImportString,
+                out ANeedRecipientLedgerNumber,
+                out AResultMessages);
+
+            ok = ImportIsSuccessful;
+            AMessages = AResultMessages;
+        }
+
+        /// <summary>
+        /// Wrapper method to handle returned bool value from remoting call to ImportGiftTransactions
+        /// </summary>
+        /// <param name="ARequestParams"></param>
+        /// <param name="AImportString"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AMessages"></param>
+        /// <param name="ok"></param>
+        /// <param name="ANeedRecipientLedgerNumber"></param>
+        private void ImportGiftTransactions(Hashtable ARequestParams, string AImportString, Int32 ABatchNumber,
+            out TVerificationResultCollection AMessages, out bool ok, out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber)
+        {
+            TVerificationResultCollection AResultMessages;
+            bool ImportIsSuccessful;
+
+            ImportIsSuccessful = TRemote.MFinance.Gift.WebConnectors.ImportGiftTransactions(
+                ARequestParams,
+                AImportString,
+                ABatchNumber,
                 out ANeedRecipientLedgerNumber,
                 out AResultMessages);
 
