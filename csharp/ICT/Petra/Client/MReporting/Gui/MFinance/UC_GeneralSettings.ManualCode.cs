@@ -511,6 +511,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             grpPeriodRange.Visible = !AHide;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="AHide"></param>
+        public void HideDateRange(bool AHide = true)
+        {
+            rbtDate.Visible = !AHide;
+        }
+
         private void UnselectAll(System.Object sender, System.EventArgs e)
         {
         }
