@@ -2442,11 +2442,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-
             ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-
             ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-
             ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 
             LoadGiftDonorRelatedData(MainDS, true, ALedgerNumber, ABatchNumber, ref Transaction);
