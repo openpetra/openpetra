@@ -179,7 +179,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             bool TransactionInIntlCurrency = false;
 
-            GiftBatchTDS RMainDS = LoadRecurringGiftTransactions(ALedgerNumber, ABatchNumber);
+            GiftBatchTDS RMainDS = LoadARecurringGiftTransactions(ALedgerNumber, ABatchNumber);
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
@@ -715,6 +715,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// TODO: limit to period, limit to batch status, etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadAGiftBatchSingle(Int32 ALedgerNumber, Int32 ABatchNumber)
@@ -1296,11 +1297,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadRecurringGiftTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadARecurringGiftTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             string FailedUpdates = string.Empty;
 
-            GiftBatchTDS MainDS = LoadRecurringGiftBatchData(ALedgerNumber, ABatchNumber);
+            GiftBatchTDS MainDS = LoadARecurringGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
 
             if (!UpdateCostCentreCodeForRecipientsRecurring(MainDS, out FailedUpdates, ABatchNumber))
             {
@@ -2427,9 +2428,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return MainDS;
         }
 
+        /// <summary>
         /// create GiftBatchTDS with the recurring gift batch, and all gift transactions and details, and motivation details
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadRecurringGiftBatchData(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadARecurringGiftBatchAndRelatedData(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             bool NewTransaction = false;
             bool SaveChanges = false;
@@ -2445,6 +2451,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
             ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
             ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
             LoadGiftDonorRelatedData(MainDS, true, ALedgerNumber, ABatchNumber, ref Transaction);
 
@@ -2464,8 +2471,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 giftDetail.DonorClass = DonorRow.PartnerClass;
                 giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
                 giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
-                //giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
-                //giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
 
                 //do the same for the Recipient
                 if (giftDetail.RecipientKey > 0)
@@ -2522,8 +2527,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.SetAccountCodeNull();
                 }
             }
-
-            AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
             if (NewTransaction)
             {
@@ -2921,48 +2924,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 TResultSeverity.Resv_Critical));
                         return null;
                     }
-
-                    //PPartnerRow recipientPartnerRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
-
-                    //giftDetail.RecipientLedgerNumber = 0;
-
-                    //// make sure the correct costcentres and accounts are used
-                    //if (recipientPartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
-                    //{
-                    //    // get the field that the key ministry belongs to. or it might be a field itself
-                    //    giftDetail.RecipientLedgerNumber = GetRecipientFundNumberInner(MainDS, giftDetail.RecipientKey);
-                    //}
-                    //else if (recipientPartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
-                    //{
-                    //    // TODO make sure the correct costcentres and accounts are used, recipient ledger number
-                    //    giftDetail.RecipientLedgerNumber = GetRecipientFundNumberInner(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered);
-                    //}
-
-                    //if (giftDetail.RecipientLedgerNumber != 0)
-                    //{
-                    //    giftDetail.CostCentreCode = IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
-                    //}
-                    //else
-                    //{
-                    //    giftDetail.CostCentreCode = motivationRow.CostCentreCode;
-
-                    //    // The recipient ledger number must not be 0 if the motivation group is 'GIFT'
-                    //    if (giftDetail.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
-                    //    {
-                    //        AVerifications.Add(
-                    //            new TVerificationResult(
-                    //                "Posting Gift Batch",
-                    //                String.Format(Catalog.GetString("No valid Gift Destination exists for the recipient {0} ({1}) of gift {2}."),
-                    //                    giftDetail.RecipientDescription,
-                    //                    giftDetail.RecipientKey,
-                    //                    giftDetail.GiftTransactionNumber) +
-                    //                "\n\n" +
-                    //                Catalog.GetString(
-                    //                    "A Gift Destination will need to be assigned to this Partner before this gift can be posted with the Motivation Group 'GIFT'."),
-                    //                TResultSeverity.Resv_Critical));
-                    //        return null;
-                    //    }
-                    //}
                 }
                 else
                 {
@@ -3427,8 +3388,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 return 0;
             }
 
-            // TODO check pm_staff_data for commitments
-
             //Look in RecipientFamily table
             PFamilyRow familyRow = (PFamilyRow)AMainDS.RecipientFamily.Rows.Find(APartnerKey);
 
@@ -3464,11 +3423,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (AMainDS.LedgerPartnerTypes.Rows.Find(new object[] { APartnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) != null)
             {
-                //TODO Warning on inactive Fund
+                //TODO Warning on inactive Fund from p_partner table
                 return APartnerKey;
             }
 
-            //This was taken from old Petra - perhaps we should better search for unit type = F in PUnit
+            //This was taken from old Petra - perhaps we should better search for unit type = D, A or F in PUnit
             DataRowView[] rows = AMainDS.UmUnitStructure.DefaultView.FindRows(APartnerKey);
 
             if (rows.Length > 0)

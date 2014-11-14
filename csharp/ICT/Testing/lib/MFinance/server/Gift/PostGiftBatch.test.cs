@@ -649,7 +649,7 @@ namespace Tests.MFinance.Server.Gift
             //
             // Act: Load the batch
             //
-            GiftBatchTDS GiftBatchDS = TGiftTransactionWebConnector.LoadRecurringGiftTransactions(FLedgerNumber, RecurringGiftBatchNumber);
+            GiftBatchTDS GiftBatchDS = TGiftTransactionWebConnector.LoadARecurringGiftTransactions(FLedgerNumber, RecurringGiftBatchNumber);
 
             //
             // Assert

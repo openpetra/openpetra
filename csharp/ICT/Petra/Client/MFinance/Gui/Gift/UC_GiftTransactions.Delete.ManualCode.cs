@@ -252,10 +252,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (((TFrmGiftBatch) this.ParentForm).SaveChangesManual())
                 {
                     //Clear current batch's gift data and reload from server
-                    if (RefreshCurrentBatchGiftData(FBatchNumber))
-                    {
-                        ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-                    }
+                    RefreshCurrentBatchGiftData(FBatchNumber);
                 }
                 else
                 {
@@ -366,10 +363,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     //Clear out the gift data for the current batch without marking the records for deletion
                     //  and then reload from server
-                    if (RefreshCurrentBatchGiftData(FBatchNumber))
-                    {
-                        ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-                    }
+                    RefreshCurrentBatchGiftData(FBatchNumber);
 
                     //Now delete all gift data for current batch
                     DeleteCurrentBatchGiftData(FBatchNumber);

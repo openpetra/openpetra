@@ -404,8 +404,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateAllRecipientDescriptions(ABatchNumber);
 
-            ((TFrmRecurringGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-
             return RetVal;
         }
 
@@ -1394,10 +1392,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual())
                 {
                     //Clear current batch's gift data and reload from server
-                    if (RefreshCurrentRecurringBatchGiftData(FBatchNumber))
-                    {
-                        ((TFrmRecurringGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-                    }
+                    RefreshCurrentRecurringBatchGiftData(FBatchNumber);
                 }
                 else
                 {
@@ -1539,7 +1534,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.ARecurringGiftDetail.Merge(TempDS.ARecurringGiftDetail);
                 }
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactions(FLedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadARecurringGiftTransactions(FLedgerNumber, ABatchNumber));
 
                 RetVal = true;
             }
@@ -2083,9 +2078,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FMainDS.ARecurringGift.Rows.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactions(ledgerNumber, batchNumber));
-
-                ((TFrmRecurringGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadARecurringGiftTransactions(ledgerNumber, batchNumber));
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {

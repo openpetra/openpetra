@@ -449,8 +449,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TUC_GiftTransactions_Recipient.UpdateAllRecipientDescriptions(ABatchNumber, FMainDS);
 
-            ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-
             return RetVal;
         }
 
@@ -1434,8 +1432,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FMainDS.AGift.Rows.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ledgerNumber, batchNumber));
-
-                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
@@ -1883,8 +1879,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (giftDataView.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ledgerNumber, batchNumber));
-
-                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
             else if ((FPreviouslySelectedDetailRow != null) && (FBatchNumber == batchNumber))
             {
