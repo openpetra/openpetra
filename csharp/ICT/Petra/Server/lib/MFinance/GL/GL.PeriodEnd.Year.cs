@@ -432,11 +432,11 @@ namespace Ict.Petra.Server.MFinance.GL
                     {
                         TGlmpInfo glmpInfo = new TGlmpInfo(-1, -1, FglmInfo.GlmSequence, FledgerInfo.NumberOfAccountingPeriods);
 
-                        if ((glmpInfo.ActualBase != 0) && (FglmInfo.YtdActualBase != 0))
+                        if (glmpInfo.ActualBase + FglmInfo.ClosingPeriodActualBase != 0)
                         {
                             if (DoExecuteableCode)
                             {
-                                ReallocationLoop(YearEndBatch, strAccountCode, FglmInfo.CostCentreCode);
+                                ReallocationLoop(glmpInfo, YearEndBatch, strAccountCode, FglmInfo.CostCentreCode);
                             }
 
                             CountJobs++;
@@ -453,7 +453,7 @@ namespace Ict.Petra.Server.MFinance.GL
             return CountJobs;
         }
 
-        private void ReallocationLoop(TCommonAccountingTool YearEndBatch, String AAccountFrom, String ACostCentreFrom)
+        private void ReallocationLoop(TGlmpInfo AGlmpInfo, TCommonAccountingTool YearEndBatch, String AAccountFrom, String ACostCentreFrom)
         {
             string strCostCentreTo = TLedgerInfo.GetStandardCostCentre(FledgerInfo.LedgerNumber);
             string strAccountTo;
@@ -497,7 +497,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 blnDebitCredit = !blnDebitCredit;
             }
 
-            Decimal TransactionAmount = Math.Abs(FglmInfo.YtdActualBase);
+            Decimal TransactionAmount = Math.Abs(AGlmpInfo.ActualBase);
 
             YearEndBatch.AddBaseCurrencyTransaction(
                 AAccountFrom, ACostCentreFrom,
@@ -726,11 +726,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 FYearEndOperator.SetNextPeriod();
             }
 
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
             try
             {
                 foreach (AGeneralLedgerMasterRow GlmRowFrom in FGlmPostingFrom.Rows)
@@ -838,10 +833,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             finally
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                // Nothing special to do
             }
 
             if (DoExecuteableCode)

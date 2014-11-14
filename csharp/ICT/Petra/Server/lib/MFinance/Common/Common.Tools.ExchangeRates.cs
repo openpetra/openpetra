@@ -349,6 +349,11 @@ namespace Ict.Petra.Server.MFinance.Common
                            // I wonder whether an exception would be better. (Tim Ingham, Oct 2013)
             }
 
+            if (currentFinancialYear < 0)
+            {
+                currentFinancialYear = ledgerTable[0].CurrentFinancialYear;
+            }
+
             DateTime startOfPeriod = AccountingPeriodTable[0].PeriodStartDate;
             DateTime endOfPeriod = AccountingPeriodTable[0].PeriodEndDate;
 

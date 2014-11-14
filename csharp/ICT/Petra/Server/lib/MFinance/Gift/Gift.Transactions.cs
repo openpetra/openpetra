@@ -3206,7 +3206,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// Import Gift batch data
         /// The data file contents from the client is sent as a string, imported in the database
-        /// and committed immediatelya
+        /// and committed immediately
         /// </summary>
         /// <param name="requestParams">Hashtable containing the given params </param>
         /// <param name="importString">The import file as a simple String</param>
@@ -3225,6 +3225,32 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TGiftImporting importing = new TGiftImporting();
 
             return importing.ImportGiftBatches(requestParams, importString, out ANeedRecipientLedgerNumber, out AMessages);
+        }
+
+        /// <summary>
+        /// Import Gift batch transactions only into an existing batch
+        /// The data file contents from the client is sent as a string, imported in the database
+        /// and committed immediately
+        /// </summary>
+        /// <param name="requestParams">Hashtable containing the given params </param>
+        /// <param name="importString">The import file as a simple String</param>
+        /// <param name="AGiftBatchNumber">The gift batch number into which the transactions will be imported</param>
+        /// <param name="ANeedRecipientLedgerNumber">Gifts in this table are responsible for failing the
+        /// import becuase their Family recipients do not have an active Gift Destination</param>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <returns>false if error</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ImportGiftTransactions(
+            Hashtable requestParams,
+            String importString,
+            Int32 AGiftBatchNumber,
+            out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
+            out TVerificationResultCollection AMessages
+            )
+        {
+            TGiftImporting importing = new TGiftImporting();
+
+            return importing.ImportGiftTransactions(requestParams, importString, AGiftBatchNumber, out ANeedRecipientLedgerNumber, out AMessages);
         }
 
         /// <summary>

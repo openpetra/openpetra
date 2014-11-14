@@ -86,10 +86,15 @@ namespace Ict.Tools.DataDumpPetra2
 
             while (OldRow != null)
             {
-                string ContactLogKey = TSequenceWriter.GetNextSequenceValue("seq_contact").ToString();
+                //string ContactLogKey = TSequenceWriter.GetNextSequenceValue("seq_contact").ToString();
+
+                for (int i = 0; i < OldRow.Length; i++)
+                {
+                    OldRow[i] = string.IsNullOrWhiteSpace(OldRow[i]) ? "\\N" : OldRow[i];
+                }
 
                 // p_contact_log row
-                SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_log_id_i", ContactLogKey);
+                SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_log_id_i", OldRow[0]); //ContactLogKey);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "s_contact_date_d", OldRow[2]);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "s_contact_time_i", OldRow[3]);
 
@@ -99,26 +104,26 @@ namespace Ict.Tools.DataDumpPetra2
                 }
                 else
                 {
-                    SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_code_c", OldRow[4]);
+                    SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_code_c", OldRow[4].ToUpper());
                 }
 
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contactor_c", OldRow[5]);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_message_id_c", OldRow[6]);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_comment_c", OldRow[7]);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "s_module_id_c", OldRow[8]);
-                SetValue(ContactLogColumnNames, ref ContactLogRow, "s_user_id_c", OldRow[9]);
-                SetValue(ContactLogColumnNames, ref ContactLogRow, "p_mailing_code_c", OldRow[10]);
+                SetValue(ContactLogColumnNames, ref ContactLogRow, "s_user_id_c", OldRow[9].ToUpper());
+                SetValue(ContactLogColumnNames, ref ContactLogRow, "p_mailing_code_c", OldRow[10].ToUpper());
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "p_restricted_l", OldRow[11]);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_location_c", OldRow[12]);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "s_date_created_d", OldRow[13]);
-                SetValue(ContactLogColumnNames, ref ContactLogRow, "s_created_by_c", OldRow[14]);
+                SetValue(ContactLogColumnNames, ref ContactLogRow, "s_created_by_c", OldRow[14].ToUpper());
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "s_date_modified_d", OldRow[15]);
-                SetValue(ContactLogColumnNames, ref ContactLogRow, "s_modified_by_c", OldRow[16]);
+                SetValue(ContactLogColumnNames, ref ContactLogRow, "s_modified_by_c", OldRow[16].ToUpper());
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "s_modification_id_t", OldRow[17]);
 
                 // p_partner_contact row
                 SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", OldRow[1]);
-                SetValue(AColumnNames, ref ANewRow, "p_contact_log_id_i", ContactLogKey);
+                SetValue(AColumnNames, ref ANewRow, "p_contact_log_id_i", OldRow[0]); //ContactLogKey);
 
                 // write test records
                 if (AWriterTest != null)

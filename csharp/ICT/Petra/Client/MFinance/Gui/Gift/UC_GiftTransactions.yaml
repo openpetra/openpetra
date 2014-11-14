@@ -19,6 +19,7 @@ RootNode:
         actReverseGift: {Label=Reverse &Gift, ActionClick=ReverseGift}
         actReverseGiftDetail: {Label=&Reverse Gift Detail, ActionClick=ReverseGiftDetail}
         actReverseGiftBatch: {Label=Reverse Gift &Batch, ActionClick=ReverseGiftBatch}
+        actImportTransactions: {Label=Import Transactions, ActionClick=ImportTransactions}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlFilterAndFind, sptTransactions]
@@ -179,3 +180,6 @@ RootNode:
             mniDonorHistory: {Action: actDonorHistory, Enabled=false}
             mniRecipientHistory: {Action: actRecipientHistory, Enabled=false}
             mniRecipientGiftDestination: {Action: actRecipientGiftDestination, Enabled=false}
+
+    Toolbar:
+        tbbImportTransactions: {Action=actImportTransactions}

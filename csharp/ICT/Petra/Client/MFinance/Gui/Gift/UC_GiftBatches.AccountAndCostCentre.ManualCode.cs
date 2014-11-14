@@ -204,8 +204,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FCmbCostCentreCode.Clear();
             FCmbBankAccountCode.Clear();
-            TFinanceControls.InitialiseAccountList(ref FCmbBankAccountCode, FLedgerNumber, true, false, AActiveOnly, true, true);
-            TFinanceControls.InitialiseCostCentreList(ref FCmbCostCentreCode, FLedgerNumber, true, false, AActiveOnly, true, true);
+            TFinanceControls.InitialiseAccountList(ref FCmbBankAccountCode, FLedgerNumber, true, false, AActiveOnly, true, true, FAccountTable);
+            TFinanceControls.InitialiseCostCentreList(ref FCmbCostCentreCode, FLedgerNumber, true, false, AActiveOnly, true, true, FCostCentreTable);
 
             if (ARow != null)
             {

@@ -132,9 +132,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAllData()
         {
-            // Remember our current row position
-            int nCurrentRowIndex = GetSelectedRowIndex();
-
             if ((FMainDS != null) && (FMainDS.ARecurringGiftBatch != null))
             {
                 // Remove all data from our DataSet object - the grid will go empty!

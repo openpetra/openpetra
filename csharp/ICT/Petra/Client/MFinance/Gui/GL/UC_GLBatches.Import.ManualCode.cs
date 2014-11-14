@@ -175,16 +175,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPetraUtilsObject.HasChanges && !FMyForm.SaveChanges())
             {
+                // saving failed, therefore do not try to import
+                MessageBox.Show(Catalog.GetString("Please save your changes before Importing new transactions"), Catalog.GetString(
+                        "Import GL Transactions"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             if ((ACurrentBatchRow == null)
                 || (ACurrentJournalRow == null)
-                || (ACurrentJournalRow.JournalStatus != MFinanceConstants.BATCH_UNPOSTED)
-                || (ACurrentJournalRow.LastTransactionNumber > 0))
+                || (ACurrentJournalRow.JournalStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
-                MessageBox.Show(Catalog.GetString("Please select an empty unposted journal to import transactions"), "Import GL Transactions");
+                MessageBox.Show(Catalog.GetString("Please select an empty unposted journal to import transactions."),
+                    Catalog.GetString("Import GL Transactions"));
                 return;
+            }
+
+            if (ACurrentJournalRow.LastTransactionNumber > 0)
+            {
+                if (MessageBox.Show(Catalog.GetString(
+                            "The current journal already contains some transactions.  Do you really want to add more transactions to this journal?"),
+                        Catalog.GetString("Import GL Transactions"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2) == DialogResult.No)
+                {
+                    return;
+                }
             }
 
             String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
@@ -256,13 +272,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBoxIcon.Information);
 
                     SaveUserDefaults(dialog, impOptions);
+
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAJournal(FLedgerNumber, ACurrentBatchRow.BatchNumber));
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber,
                             ACurrentBatchRow.BatchNumber, ACurrentJournalRow.JournalNumber));
+                    FMainDS.AcceptChanges();
 
-                    //Update totals and set Journal last transaction number
-                    GLRoutines.UpdateTotalsOfBatch(ref FMainDS, ACurrentBatchRow);
                     FMyForm.GetTransactionsControl().SelectRow(1);
-                    FMyForm.SaveChanges();
                 }
             }
         }
@@ -663,61 +679,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TVerificationResultCollection AResultMessages;
             bool ImportIsSuccessful;
 
-            GLBatchTDS MainDS = StripMainDataSetForTransImport(ABatchNumber, AJournalNumber);
-
             ImportIsSuccessful = TRemote.MFinance.GL.WebConnectors.ImportGLTransactions(
                 ARequestParams,
                 AImportString,
-                ref MainDS,
+                FLedgerNumber,
+                ABatchNumber,
+                AJournalNumber,
                 out AResultMessages);
 
             ok = ImportIsSuccessful;
             AMessages = AResultMessages;
-        }
-
-        private GLBatchTDS StripMainDataSetForTransImport(int ABatchNumber, int AJournalNumber)
-        {
-            GLBatchTDS MainDS = new GLBatchTDS();
-
-            MainDS.Merge(FMainDS.ABatch);
-            MainDS.Merge(FMainDS.AJournal);
-
-            DataView JournalDV = new DataView(MainDS.AJournal);
-
-            JournalDV.RowFilter = String.Format("({0}={1} And {2}<>{3}) Or ({0}<>{1})",
-                AJournalTable.GetBatchNumberDBName(),
-                ABatchNumber,
-                AJournalTable.GetJournalNumberDBName(),
-                AJournalNumber);
-
-            JournalDV.Sort = String.Format("{0} DESC, {1} DESC",
-                AJournalTable.GetBatchNumberDBName(),
-                AJournalTable.GetJournalNumberDBName());
-
-            foreach (DataRowView drv in JournalDV)
-            {
-                AJournalRow jr = (AJournalRow)drv.Row;
-                jr.Delete();
-            }
-
-            DataView BatchDV = new DataView(MainDS.ABatch);
-
-            BatchDV.RowFilter = String.Format("{0}<>{1}",
-                ABatchTable.GetBatchNumberDBName(),
-                ABatchNumber);
-
-            BatchDV.Sort = String.Format("{0} DESC",
-                ABatchTable.GetBatchNumberDBName());
-
-            foreach (DataRowView drv in BatchDV)
-            {
-                ABatchRow br = (ABatchRow)drv.Row;
-                br.Delete();
-            }
-
-            MainDS.AcceptChanges();
-
-            return MainDS;
         }
 
         private void ShowMessages(TVerificationResultCollection AMessages)

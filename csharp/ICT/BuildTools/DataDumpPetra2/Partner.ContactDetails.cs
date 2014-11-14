@@ -338,7 +338,7 @@ namespace Ict.Tools.DataDumpPetra2
             SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
             SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
-            TLogging.Log(String.Format("PPartnerLocationRecords holds entries for {0} Partners.", FPartnerLocationRecords.Count));
+//            TLogging.Log(String.Format("PPartnerLocationRecords holds entries for {0} Partners.", FPartnerLocationRecords.Count));
 
             // FPartnerLocationRecords got created when the p_partner_location table got processed; it holds selected Columns of all
             // p_partner_location records of each Partner that gets loaded.
@@ -376,10 +376,10 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     if (PPartnersLocationsDT.Rows.Count > 1)
                     {
-                        TLogging.Log(
-                            String.Format(
-                                "'Best Address' for the p_parter_location records of Partner with PartnerKey {0} which has {1} p_partner_locations:   p_parter_location SiteKey: {2}; p_parter_location LocationKey: {3}",
-                                PartnerKey, PPartnersLocationsDT.Rows.Count, BestPartnerLocSiteKey, BestPartnerLocLocationKey));
+//                        TLogging.Log(
+//                            String.Format(
+//                                "'Best Address' for the p_parter_location records of Partner with PartnerKey {0} which has {1} p_partner_locations:   p_parter_location SiteKey: {2}; p_parter_location LocationKey: {3}",
+//                                PartnerKey, PPartnersLocationsDT.Rows.Count, BestPartnerLocSiteKey, BestPartnerLocLocationKey));
                     }
 
                     //
@@ -532,9 +532,9 @@ namespace Ict.Tools.DataDumpPetra2
 
                         AnyTelephoneNumberSetAsPrimary = true;
 
-                        TLogging.Log(String.Format(
-                                "Made Telephone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
-                                TelephoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+//                        TLogging.Log(String.Format(
+//                                "Made Telephone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
+//                                TelephoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
                     }
 
                     PPARecordList.Add(PPARecord);
@@ -563,9 +563,9 @@ namespace Ict.Tools.DataDumpPetra2
                                 {
                                     PPARecord.WithinOrgansiation = true;
 
-                                    TLogging.Log(String.Format(
-                                            "Made email address '{0}' a 'WithinOrganisation' e-mail address (PartnerKey: {1}, LocationKey: {2})",
-                                            EmailAddress, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+//                                    TLogging.Log(String.Format(
+//                                            "Made email address '{0}' a 'WithinOrganisation' e-mail address (PartnerKey: {1}, LocationKey: {2})",
+//                                            EmailAddress, APartnerKey, APartnerLocationDR["p_location_key_i"]));
                                 }
                             }
                         }
@@ -602,9 +602,9 @@ namespace Ict.Tools.DataDumpPetra2
 
                     AnyTelephoneNumberSetAsPrimary = true;
 
-                    TLogging.Log(String.Format(
-                            "Made MOBILE Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
-                            MobileNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+//                    TLogging.Log(String.Format(
+//                            "Made MOBILE Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
+//                            MobileNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
                 }
 
                 PPARecordList.Add(PPARecord);
@@ -627,9 +627,9 @@ namespace Ict.Tools.DataDumpPetra2
 
                     AnyTelephoneNumberSetAsPrimary = true;
 
-                    TLogging.Log(String.Format(
-                            "Made ALTERNATE Phone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
-                            AlternatePhoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+//                    TLogging.Log(String.Format(
+//                            "Made ALTERNATE Phone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
+//                            AlternatePhoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
                 }
 
                 PPARecordList.Add(PPARecord);

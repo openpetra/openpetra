@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -661,7 +661,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     DataRow currentBatchYearRow = row.Row;
 
-                    Int32 currentBatchYear = (Int32)currentBatchYearRow[0];
+                    Int32 currentBatchYear = Convert.ToInt32(currentBatchYearRow[0]);
 
                     if (YearNumber != currentBatchYear)
                     {
@@ -685,7 +685,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(ex.Message);
+                TLogging.Log(ex.ToString());
                 //Do nothing
             }
 
@@ -840,6 +840,44 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             return RetVal;
+        }
+
+        /// <summary>
+        /// Gets the first day of the accounting period for the ledger and date specified.  Depending on the settings in the
+        /// accounting period table this may or may not be the first day of the month of the date specified.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADateInAPeriod"></param>
+        /// <param name="AFirstDayOfPeriod">The first day in the period of the specified date.</param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool GetFirstDayOfAccountingPeriod(Int32 ALedgerNumber, DateTime ADateInAPeriod, out DateTime AFirstDayOfPeriod)
+        {
+            TDBTransaction Transaction = null;
+            DateTime Result = DateTime.MinValue;
+
+            // Used by importing so the isolation level is serializable
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+                delegate
+                {
+                    // Get the accounting periods for this ledger.  The table will contain more than 12 rows.
+                    // The start dates will be the correct day and month but may have been inserted for an arbitrary year when the table was first created.
+                    // We are really only interested in the Day anyway
+                    AAccountingPeriodTable periods = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                    DataView periodsView = new DataView(periods, "",
+                        String.Format("{0} ASC", AAccountingPeriodTable.GetPeriodStartDateDBName()), DataViewRowState.CurrentRows);
+
+                    AAccountingPeriodRow row = (AAccountingPeriodRow)periodsView[0].Row;
+                    Result = new DateTime(ADateInAPeriod.Year, ADateInAPeriod.Month, row.PeriodStartDate.Day);
+
+                    if (ADateInAPeriod.Day < row.PeriodStartDate.Day)
+                    {
+                        Result = Result.AddMonths(-1);
+                    }
+                });
+
+            AFirstDayOfPeriod = Result;
+            return Result != DateTime.MinValue;
         }
     }
 }

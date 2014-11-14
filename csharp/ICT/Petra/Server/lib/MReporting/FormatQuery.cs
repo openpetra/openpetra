@@ -210,7 +210,7 @@ namespace Ict.Petra.Server.MReporting
                         {
                             // this can be alright, for empty values; for example method of giving can be empty; for report GiftTransactions
                             TLogging.Log(
-                                "Variable " + parameter + " could not be found (column: " + column.ToString() +
+                                "Variable " + parameter + " empty or not found (column: " + column.ToString() +
                                 "; level: " + depth.ToString() + "). " + resultString);
                         }
                         else if (CountWarning % 20 == 0)

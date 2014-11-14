@@ -732,11 +732,29 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String HierarchyName = AParameters["param_account_hierarchy_c"].ToString();
             String RootCostCentre = AParameters["param_cost_centre_code"].ToString();
 
-            //
-            // Read different DB fields according to currency setting
             Boolean International = AParameters["param_currency"].ToString().StartsWith("Int");
-            String ActualFieldName = International ? "a_actual_intl_n" : "a_actual_base_n";
-            String StartBalanceFieldName = International ? "a_start_balance_intl_n" : "a_start_balance_base_n";
+            Decimal EffectiveExchangeRate = 1;
+            String ActualFieldName = "a_actual_base_n";
+            String StartBalanceFieldName = "a_start_balance_base_n";
+
+            if (International)
+            {
+                TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
+
+                EffectiveExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
+                    LedgerNumber,
+                    AccountingYear,
+                    ReportPeriodEnd,
+                    -1);
+            }
+
+/*
+ * I'm not doing this anymore - I'm taking the Base values and using the applicable exchange rate for the period.
+ *          //
+ *          // Read different DB fields according to currency setting
+ *          ActualFieldName = International ? "a_actual_intl_n" : "a_actual_base_n";
+ *          StartBalanceFieldName = International ? "a_start_balance_intl_n" : "a_start_balance_base_n";
+ */
 
             String PlAccountCode = "PL"; // I could get this from the Ledger record, but in fact it's never set there!
 
@@ -810,7 +828,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     if (RowIdx >= 0)
                     {
                         DataRow LastYearRow = OldPeriod[RowIdx].Row;
-                        Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
+                        Row["ActualLastYear"] = EffectiveExchangeRate * Convert.ToDecimal(LastYearRow["Actual"]);
                     }
 
                     if (Row["AccountCode"].ToString() == PlAccountCode)     // Tweak the PL account and pretend it's an Equity.
@@ -818,6 +836,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Row["AccountType"] = "Equity";
                         Row["AccountTypeOrder"] = 3;
                     }
+
+                    Row["YearStart"] = EffectiveExchangeRate * Convert.ToDecimal(Row["YearStart"]);
+                    Row["Actual"] = EffectiveExchangeRate * Convert.ToDecimal(Row["Actual"]);
                 }
 
                 //

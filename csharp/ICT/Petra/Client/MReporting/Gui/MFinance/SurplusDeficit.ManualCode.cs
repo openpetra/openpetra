@@ -39,7 +39,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             set
             {
-                uco_GeneralSettings.EnableDateSelection(false);
+                uco_GeneralSettings.HideDateRange();
                 uco_GeneralSettings.CurrencyOptions(new object[] { "Base", "International" });
 
                 FLedgerNumber = value;

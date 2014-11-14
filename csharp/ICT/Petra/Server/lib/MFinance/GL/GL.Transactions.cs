@@ -2206,20 +2206,24 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <param name="ARequestParams"></param>
         /// <param name="AImportString"></param>
-        /// <param name="AMainDS"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
         /// <param name="AMessages"></param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool ImportGLTransactions(
             Hashtable ARequestParams,
             String AImportString,
-            ref GLBatchTDS AMainDS,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
             out TVerificationResultCollection AMessages
             )
         {
             TGLImporting importing = new TGLImporting();
 
-            return importing.ImportGLTransactions(ARequestParams, AImportString, ref AMainDS, out AMessages);
+            return importing.ImportGLTransactions(ARequestParams, AImportString, ALedgerNumber, ABatchNumber, AJournalNumber, out AMessages);
         }
 
         /// <summary>

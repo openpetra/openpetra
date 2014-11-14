@@ -45,7 +45,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             set
             {
-                uco_GeneralSettings.EnableDateSelection(false);
+                uco_GeneralSettings.HideDateRange();
 
                 FLedgerNumber = value;
 
