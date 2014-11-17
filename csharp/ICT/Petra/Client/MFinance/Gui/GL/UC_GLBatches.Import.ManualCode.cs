@@ -50,6 +50,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public class TUC_GLBatches_Import
     {
+        /// <summary>
+        /// An enumeration of possible data sources for importing batches or transactions
+        /// </summary>
+        public enum TImportDataSourceEnum
+        {
+            /// <summary>
+            /// Import from a CSV file
+            /// </summary>
+            FromFile,
+
+            /// <summary>
+            /// Import from the clipboard in csv format
+            /// </summary>
+            FromClipboard
+        };
+
         private TDlgSelectCSVSeparator FdlgSeparator;
 
         private TFrmPetraEditUtils FPetraUtilsObject = null;
@@ -77,10 +93,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
+        /// The code handles importing from file or clipboard
         /// </summary>
-        public void ImportBatches()
+        public void ImportBatches(TImportDataSourceEnum AImportDataSource)
         {
             bool ok = false;
+            String importString;
+            String impOptions;
+            OpenFileDialog dialog = null;
 
             if (FPetraUtilsObject.HasChanges)
             {
@@ -90,88 +110,129 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-            OpenFileDialog dialog = new OpenFileDialog();
+            FdlgSeparator = new TDlgSelectCSVSeparator(false);
 
-            dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
-                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
-
-            dialog.Title = Catalog.GetString("Import batches from csv file");
-            dialog.Filter = Catalog.GetString("GL Batches files (*.csv)|*.csv");
-            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
-
-            if (dialog.ShowDialog() == DialogResult.OK)
+            if (AImportDataSource == TImportDataSourceEnum.FromClipboard)
             {
-                FdlgSeparator = new TDlgSelectCSVSeparator(false);
-                Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(dialog.FileName);
+                importString = Clipboard.GetText(TextDataFormat.UnicodeText);
 
-                if (!fileCanOpen)
+                if ((importString == null) || (importString.Length == 0))
                 {
-                    MessageBox.Show(Catalog.GetString("Unable to open file."),
-                        Catalog.GetString("Batch Import"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Stop);
+                    MessageBox.Show(Catalog.GetString("Please first copy data from your spreadsheet application!"),
+                        Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
+                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+                String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+                FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                FdlgSeparator.SelectedSeparator = "\t";
+                FdlgSeparator.CSVData = importString;
                 FdlgSeparator.DateFormat = dateFormatString;
 
                 if (impOptions.Length > 1)
                 {
                     FdlgSeparator.NumberFormat = impOptions.Substring(1);
                 }
+            }
+            else if (AImportDataSource == TImportDataSourceEnum.FromFile)
+            {
+                dialog = new OpenFileDialog();
 
-                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+                dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
+                    TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
 
-                if (FdlgSeparator.ShowDialog() == DialogResult.OK)
+                dialog.Title = Catalog.GetString("Import Batches from CSV File");
+                dialog.Filter = Catalog.GetString("GL Batches files (*.csv)|*.csv");
+                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+
+                if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    Hashtable requestParams = new Hashtable();
+                    Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(dialog.FileName);
 
-                    requestParams.Add("ALedgerNumber", FLedgerNumber);
-                    requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
-                    requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
-                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
-                    requestParams.Add("NewLine", Environment.NewLine);
-
-
-                    TVerificationResultCollection AMessages = new TVerificationResultCollection();
-                    string importString = File.ReadAllText(dialog.FileName);
-
-                    Thread ImportThread = new Thread(() => ImportGLBatches(
-                            requestParams,
-                            importString,
-                            out AMessages,
-                            out ok));
-
-                    using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
+                    if (!fileCanOpen)
                     {
-                        ImportDialog.ShowDialog();
+                        MessageBox.Show(Catalog.GetString("Unable to open file."),
+                            Catalog.GetString("Batch Import"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                        return;
                     }
 
-                    ShowMessages(AMessages);
-                }
+                    importString = File.ReadAllText(dialog.FileName);
 
-                if (ok)
+                    String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+                    FdlgSeparator.DateFormat = dateFormatString;
+
+                    if (impOptions.Length > 1)
+                    {
+                        FdlgSeparator.NumberFormat = impOptions.Substring(1);
+                    }
+
+                    FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+                }
+                else
                 {
-                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
-                        Catalog.GetString("Batch Import"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-
-                    SaveUserDefaults(dialog, impOptions);
-                    FMyUserControl.ReloadBatches();
-                    FPetraUtilsObject.DisableSaveButton();
+                    return;
                 }
+            }
+            else
+            {
+                // unknown source!!  The following need a value...
+                impOptions = String.Empty;
+                importString = String.Empty;
+            }
+
+            if (FdlgSeparator.ShowDialog() == DialogResult.OK)
+            {
+                Hashtable requestParams = new Hashtable();
+
+                requestParams.Add("ALedgerNumber", FLedgerNumber);
+                requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
+                requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
+                requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
+                requestParams.Add("NewLine", Environment.NewLine);
+
+
+                TVerificationResultCollection AMessages = new TVerificationResultCollection();
+
+                Thread ImportThread = new Thread(() => ImportGLBatches(
+                        requestParams,
+                        importString,
+                        out AMessages,
+                        out ok));
+
+                using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
+                {
+                    ImportDialog.ShowDialog();
+                }
+
+                ShowMessages(AMessages);
+            }
+
+            if (ok)
+            {
+                MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+                    Catalog.GetString("Batch Import"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                SaveUserDefaults(dialog, impOptions);
+                FMyUserControl.ReloadBatches();
+                FPetraUtilsObject.DisableSaveButton();
             }
         }
 
         /// <summary>
-        /// this supports the batch export files from Petra 2.x.
-        /// Each line starts with a type specifier, T for transaction
+        /// this supports the transaction export files from Petra 2.x.
+        /// Lines do NOT start with T for transaction
         /// </summary>
-        public void ImportTransactions(ABatchRow ACurrentBatchRow, AJournalRow ACurrentJournalRow)
+        public void ImportTransactions(ABatchRow ACurrentBatchRow, AJournalRow ACurrentJournalRow, TImportDataSourceEnum AImportDataSource)
         {
             bool ok = false;
+            String importString;
+            String impOptions;
+            OpenFileDialog dialog = null;
 
             if (FPetraUtilsObject.HasChanges && !FMyForm.SaveChanges())
             {
@@ -185,7 +246,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 || (ACurrentJournalRow == null)
                 || (ACurrentJournalRow.JournalStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
-                MessageBox.Show(Catalog.GetString("Please select an empty unposted journal to import transactions."),
+                MessageBox.Show(Catalog.GetString("Please select an unposted journal to import transactions."),
                     Catalog.GetString("Import GL Transactions"));
                 return;
             }
@@ -203,122 +264,77 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-            OpenFileDialog dialog = new OpenFileDialog();
+            FdlgSeparator = new TDlgSelectCSVSeparator(false);
 
-            dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
-                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
-
-            dialog.Title = Catalog.GetString("Import batches from csv file");
-            dialog.Filter = Catalog.GetString("GL Transactions files (*.csv)|*.csv");
-            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
-
-            if (dialog.ShowDialog() == DialogResult.OK)
+            if (AImportDataSource == TImportDataSourceEnum.FromClipboard)
             {
-                FdlgSeparator = new TDlgSelectCSVSeparator(false);
-                Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(dialog.FileName);
+                importString = Clipboard.GetText(TextDataFormat.UnicodeText);
 
-                if (!fileCanOpen)
+                if ((importString == null) || (importString.Length == 0))
                 {
-                    MessageBox.Show(Catalog.GetString("Unable to open file."),
-                        Catalog.GetString("Transaction Import"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Stop);
+                    MessageBox.Show(Catalog.GetString("Please first copy data from your spreadsheet application!"),
+                        Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
+                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+                String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+                FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                FdlgSeparator.SelectedSeparator = "\t";
+                FdlgSeparator.CSVData = importString;
                 FdlgSeparator.DateFormat = dateFormatString;
 
                 if (impOptions.Length > 1)
                 {
                     FdlgSeparator.NumberFormat = impOptions.Substring(1);
                 }
+            }
+            else if (AImportDataSource == TImportDataSourceEnum.FromFile)
+            {
+                dialog = new OpenFileDialog();
 
-                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+                dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
+                    TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
 
-                if (FdlgSeparator.ShowDialog() == DialogResult.OK)
+                dialog.Title = Catalog.GetString("Import Transactions from CSV File");
+                dialog.Filter = Catalog.GetString("GL Transactions files (*.csv)|*.csv");
+                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+
+                if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    Hashtable requestParams = new Hashtable();
+                    Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(dialog.FileName);
 
-                    requestParams.Add("ALedgerNumber", FLedgerNumber);
-                    requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
-                    requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
-                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
-                    requestParams.Add("NewLine", Environment.NewLine);
-
-                    TVerificationResultCollection AMessages = new TVerificationResultCollection();
-                    string importString = File.ReadAllText(dialog.FileName);
-
-                    Thread ImportThread = new Thread(() => ImportGLTransactions(requestParams,
-                            importString,
-                            ACurrentBatchRow.BatchNumber,
-                            ACurrentJournalRow.JournalNumber,
-                            out AMessages,
-                            out ok));
-
-                    using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
+                    if (!fileCanOpen)
                     {
-                        ImportDialog.ShowDialog();
+                        MessageBox.Show(Catalog.GetString("Unable to open file."),
+                            Catalog.GetString("Transaction Import"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                        return;
                     }
 
-                    ShowMessages(AMessages);
-                }
+                    importString = File.ReadAllText(dialog.FileName);
 
-                if (ok)
+                    String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+                    FdlgSeparator.DateFormat = dateFormatString;
+
+                    if (impOptions.Length > 1)
+                    {
+                        FdlgSeparator.NumberFormat = impOptions.Substring(1);
+                    }
+
+                    FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+                }
+                else
                 {
-                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
-                        Catalog.GetString("Transactions Import"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-
-                    SaveUserDefaults(dialog, impOptions);
-
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAJournal(FLedgerNumber, ACurrentBatchRow.BatchNumber));
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber,
-                            ACurrentBatchRow.BatchNumber, ACurrentJournalRow.JournalNumber));
-                    FMainDS.AcceptChanges();
-
-                    FMyForm.GetTransactionsControl().SelectRow(1);
+                    return;
                 }
             }
-        }
-
-        /// <summary>
-        /// this supports the batch export files from Petra 2.x.
-        /// Each line starts with a type specifier, B for batch, J for journal, T for transaction.
-        /// This particular functions allows to paste batches from Excel/LibreOfficeCalc via clipboard
-        /// </summary>
-        public void ImportFromClipboard()
-        {
-            bool ok = false;
-
-            if (FPetraUtilsObject.HasChanges)
+            else
             {
-                // saving failed, therefore do not try to post
-                MessageBox.Show(Catalog.GetString("Please save before calling this function!"), Catalog.GetString(
-                        "Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            string clipboardData = Clipboard.GetText(TextDataFormat.Text);
-
-            if ((clipboardData == null) || (clipboardData.Length == 0))
-            {
-                MessageBox.Show(Catalog.GetString("Please first copy data from your spreadsheet application!"),
-                    Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
-            String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-            FdlgSeparator = new TDlgSelectCSVSeparator(false);
-            FdlgSeparator.SelectedSeparator = "\t";
-            FdlgSeparator.CSVData = clipboardData;
-            FdlgSeparator.DateFormat = dateFormatString;
-
-            if (impOptions.Length > 1)
-            {
-                FdlgSeparator.NumberFormat = impOptions.Substring(1);
+                // unknown source!!  The following need a value...
+                impOptions = String.Empty;
+                importString = String.Empty;
             }
 
             if (FdlgSeparator.ShowDialog() == DialogResult.OK)
@@ -333,9 +349,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 TVerificationResultCollection AMessages = new TVerificationResultCollection();
 
-                Thread ImportThread = new Thread(() => ImportGLBatches(
-                        requestParams,
-                        clipboardData,
+                Thread ImportThread = new Thread(() => ImportGLTransactions(requestParams,
+                        importString,
+                        ACurrentBatchRow.BatchNumber,
+                        ACurrentJournalRow.JournalNumber,
                         out AMessages,
                         out ok));
 
@@ -350,13 +367,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (ok)
             {
                 MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
-                    Catalog.GetString("Success"),
+                    Catalog.GetString("Transactions Import"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
-                SaveUserDefaults(null, impOptions);
-                FMyUserControl.ReloadBatches();
-                FPetraUtilsObject.DisableSaveButton();
+                SaveUserDefaults(dialog, impOptions);
+
+                // Update the client side with new information from the server
+                FMyForm.Cursor = Cursors.WaitCursor;
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAJournal(FLedgerNumber, ACurrentBatchRow.BatchNumber));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber,
+                        ACurrentBatchRow.BatchNumber, ACurrentJournalRow.JournalNumber));
+                FMainDS.AcceptChanges();
+                FMyForm.Cursor = Cursors.Default;
+
+                FMyForm.GetTransactionsControl().SelectRow(1);
             }
         }
 

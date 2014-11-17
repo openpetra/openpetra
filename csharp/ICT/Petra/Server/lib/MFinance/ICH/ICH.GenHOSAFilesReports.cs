@@ -710,6 +710,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         int BatchNumber = JournalRow.BatchNumber;
                         int JournalNumber = JournalRow.JournalNumber;
 
+#if TODO
                         String TransFilter =
                             ATransactionTable.GetBatchNumberDBName() + " = " + BatchNumber.ToString() +
                             " AND " + ATransactionTable.GetJournalNumberDBName() + " = " + JournalNumber.ToString() +
@@ -718,7 +719,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             "      OR " + ATransactionTable.GetIchNumberDBName() + " = " + AIchNumber.ToString() +
                             ")";
 
-#if TODO
                         DataRow[] FoundTransRows = BatchDS.ATransaction.Select(TransFilter);
 
                         foreach (DataRow untypedTransRow in FoundTransRows)

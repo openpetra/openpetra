@@ -299,9 +299,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
+        /// <param name="AValidationCostCentreTable">REQUIRED for importing.  A reference to a cost centre table so that inputs can be validated.</param>
+        /// <param name="AvalidationAccountTable">REQUIRED for importing.  A reference to an account table so that inputs can be validated.</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateGLDetailManual(object AContext, ABatchRow ABatchRow, ATransactionRow ARow, Control AControl,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            ACostCentreTable AValidationCostCentreTable = null, AAccountTable AvalidationAccountTable = null)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -438,6 +441,112 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                     {
                         VerifResultCollAddedCount++;
+                    }
+                }
+            }
+
+            // 'CostCentre' must be valid
+            ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnCostCentreCodeId];
+            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                ARow.TransactionNumber,
+                ARow.BatchNumber,
+                ARow.JournalNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if ((AValidationCostCentreTable != null) && !ARow.IsCostCentreCodeNull())
+                {
+                    // Code must exist in the cost centre table
+                    ACostCentreRow foundRow = (ACostCentreRow)AValidationCostCentreTable.Rows.Find(
+                        new object[] { ARow.LedgerNumber, ARow.CostCentreCode });
+
+                    if ((foundRow == null) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                            ValidationContext,
+                            new TVerificationResult(ValidationContext,
+                                String.Format(Catalog.GetString("Cost centre code '{0}' does not exist."), ARow.CostCentreCode),
+                                TResultSeverity.Resv_Critical),
+                            ValidationColumn))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+
+                    // cost centre must be a posting cost centre
+                    if ((foundRow != null) && !foundRow.PostingCostCentreFlag)
+                    {
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(ValidationContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString("Cost centre code '{0}' is not a posting cost centre."), ARow.CostCentreCode),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
+                    }
+
+                    // cost centre must not be inactive
+                    if ((foundRow != null) && !foundRow.CostCentreActiveFlag)
+                    {
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(ValidationContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString("Cost centre code '{0}' is an inactive cost centre."), ARow.CostCentreCode),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
+                    }
+                }
+            }
+
+            // 'Account code' must be valid
+            ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnAccountCodeId];
+            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                ARow.TransactionNumber,
+                ARow.BatchNumber,
+                ARow.JournalNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if ((AvalidationAccountTable != null) && !ARow.IsAccountCodeNull())
+                {
+                    // Code must exist in the account table
+                    AAccountRow foundRow = (AAccountRow)AvalidationAccountTable.Rows.Find(
+                        new object[] { ARow.LedgerNumber, ARow.AccountCode });
+
+                    if ((foundRow == null) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                            ValidationContext,
+                            new TVerificationResult(ValidationContext,
+                                String.Format(Catalog.GetString("Account code '{0}' does not exist."), ARow.AccountCode),
+                                TResultSeverity.Resv_Critical),
+                            ValidationColumn))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+
+                    // Account code must be a posting Account code
+                    if ((foundRow != null) && !foundRow.PostingStatus)
+                    {
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(ValidationContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString("Account code '{0}' is not a posting account."), ARow.AccountCode),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
+                    }
+
+                    // Account code must not be inactive
+                    if ((foundRow != null) && !foundRow.AccountActiveFlag)
+                    {
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(ValidationContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString("Account code '{0}' is an inactive account."), ARow.AccountCode),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
                     }
                 }
             }
