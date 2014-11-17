@@ -734,6 +734,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             Boolean International = AParameters["param_currency"].ToString().StartsWith("Int");
             Decimal EffectiveExchangeRate = 1;
+            Decimal LastYearExchangeRate = 1;
             String ActualFieldName = "a_actual_base_n";
             String StartBalanceFieldName = "a_start_balance_base_n";
 
@@ -746,15 +747,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     AccountingYear,
                     ReportPeriodEnd,
                     -1);
-            }
 
-/*
- * I'm not doing this anymore - I'm taking the Base values and using the applicable exchange rate for the period.
- *          //
- *          // Read different DB fields according to currency setting
- *          ActualFieldName = International ? "a_actual_intl_n" : "a_actual_base_n";
- *          StartBalanceFieldName = International ? "a_start_balance_intl_n" : "a_start_balance_base_n";
- */
+                LastYearExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
+                    LedgerNumber,
+                    AccountingYear - 1,
+                    ReportPeriodEnd,
+                    -1);
+            }
 
             String PlAccountCode = "PL"; // I could get this from the Ledger record, but in fact it's never set there!
 
@@ -828,7 +827,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     if (RowIdx >= 0)
                     {
                         DataRow LastYearRow = OldPeriod[RowIdx].Row;
-                        Row["ActualLastYear"] = EffectiveExchangeRate * Convert.ToDecimal(LastYearRow["Actual"]);
+                        Row["ActualLastYear"] = LastYearExchangeRate * Convert.ToDecimal(LastYearRow["Actual"]);
                     }
 
                     if (Row["AccountCode"].ToString() == PlAccountCode)     // Tweak the PL account and pretend it's an Equity.
