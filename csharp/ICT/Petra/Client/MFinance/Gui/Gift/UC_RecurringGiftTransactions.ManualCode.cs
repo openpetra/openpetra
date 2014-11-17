@@ -1534,7 +1534,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.ARecurringGiftDetail.Merge(TempDS.ARecurringGiftDetail);
                 }
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadARecurringGiftTransactions(FLedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactions(FLedgerNumber, ABatchNumber));
 
                 RetVal = true;
             }
@@ -2078,7 +2078,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FMainDS.ARecurringGift.Rows.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadARecurringGiftTransactions(ledgerNumber, batchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactions(ledgerNumber, batchNumber));
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
