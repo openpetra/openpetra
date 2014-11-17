@@ -12,7 +12,8 @@ RootNode:
         actCancel: {Label=&Cancel Batch, ActionClick=CancelRecord, Image=Delete_Record.ico}
         actPostBatch: {Label=P&ost Batch, ActionClick=PostBatch}
         actExportBatches: {Label=E&xport Batches, ActionClick=ExportBatches}
-        actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
+        actImportBatches: {Label=&Import From File, ActionClick=ImportBatches}
+        actImportFromClipboard: {Label=I&mport From Clipboard, ActionClick=ImportFromClipboard}
         actReverseGiftBatch: {Label=Re&verse Gift Batch, ActionClick=ReverseGiftBatch}
         actSetExchangeRate:{Label=Get/Set Exchange Rate, ActionClick=SetExchangeRateValue}
     Controls:
@@ -101,7 +102,11 @@ RootNode:
             Label: &Batch
             mniPost: {Action=actPostBatch}
             mniReverseGiftBatch: {Action=actReverseGiftBatch}
+            mniSeparator: {Label=-}
+            mniImportTransactions: {Label=&Import From File, Action: actImportBatches}
+            mniImportFromClipboard: {Label=I&mport From Clipboard, Action: actImportFromClipboard}
     Toolbar:
         tbbPostBatch: {Action=actPostBatch}
         tbbExportBatches: {Action=actExportBatches}
         tbbImportBatches: {Action=actImportBatches}
+        tbbImportFromClipboard: {Action=actImportFromClipboard}

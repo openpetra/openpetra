@@ -1835,12 +1835,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return RetVal;
         }
 
-        private void ImportTransactions(object sender, EventArgs e)
+        private void ImportTransactionsFromFile(object sender, EventArgs e)
         {
             if (ValidateAllData(true, true))
             {
-                ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions();
-                // The import method refreshes the screen if the import is succeswsful
+                ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GLBatches_Import.TImportDataSourceEnum.FromFile);
+                // The import method refreshes the screen if the import is successful
+            }
+        }
+
+        private void ImportTransactionsFromClipboard(object sender, EventArgs e)
+        {
+            if (ValidateAllData(true, true))
+            {
+                ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GLBatches_Import.TImportDataSourceEnum.FromClipboard);
+                // The import method refreshes the screen if the import is successful
             }
         }
 
