@@ -364,7 +364,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //New set of transactions to be loaded
             FTransactionsLoaded = false;
 
-            grdDetails.SuspendLayout();
             FSuppressListChanged = true;
 
             //Read key fields
@@ -419,7 +418,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateControlsProtection();
 
             FSuppressListChanged = false;
-            grdDetails.ResumeLayout();
 
             UpdateTotals();
 
@@ -2414,11 +2412,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void ImportTransactions(object sender, EventArgs e)
+        private void ImportTransactionsFromFile(object sender, EventArgs e)
         {
             if (ValidateAllData(true, true))
             {
-                if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions())
+                if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromFile))
+                {
+                    RefreshAllData();
+                }
+            }
+        }
+
+        private void ImportTransactionsFromClipboard(object sender, EventArgs e)
+        {
+            if (ValidateAllData(true, true))
+            {
+                if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromClipboard))
                 {
                     RefreshAllData();
                 }

@@ -147,7 +147,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // We have been launched from the Import Batches main menu screen as opposed to the regular GL Batches menu
                 // Call the logic object to import:  this will request a CSV file and merge the batches on the server.
                 // Finally it will call back to ReloadBatches() in this class, which merges the server data into FMainDS and selects the first row
-                FImportLogicObject.ImportBatches();
+                FImportLogicObject.ImportBatches(TUC_GLBatches_Import.TImportDataSourceEnum.FromFile);
 
                 // Reset the flag
                 ((TFrmGLBatch) this.ParentForm).LoadForImport = false;
@@ -723,32 +723,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void ImportBatches(object sender, EventArgs e)
+        public void ImportBatchesFromFile(object sender, EventArgs e)
         {
             if (!SaveChangesAndResetFilter())
             {
                 return;
             }
 
-            FImportLogicObject.ImportBatches();
+            FImportLogicObject.ImportBatches(TUC_GLBatches_Import.TImportDataSourceEnum.FromFile);
         }
 
-        private void ImportFromClipboard(object sender, EventArgs e)
+        private void ImportBatchesFromClipboard(object sender, EventArgs e)
         {
             if (!SaveChangesAndResetFilter())
             {
                 return;
             }
 
-            FImportLogicObject.ImportFromClipboard();
+            FImportLogicObject.ImportBatches(TUC_GLBatches_Import.TImportDataSourceEnum.FromClipboard);
         }
 
         /// <summary>
         /// Public method called from the transactions tab
         /// </summary>
-        public void ImportTransactions()
+        public void ImportTransactions(TUC_GLBatches_Import.TImportDataSourceEnum AImportDataSource)
         {
-            FImportLogicObject.ImportTransactions(FPreviouslySelectedDetailRow, GetCurrentJournal());
+            FImportLogicObject.ImportTransactions(FPreviouslySelectedDetailRow, GetCurrentJournal(), AImportDataSource);
         }
 
         private void ExportBatches(object sender, EventArgs e)
