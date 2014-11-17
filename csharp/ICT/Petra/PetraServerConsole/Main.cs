@@ -91,6 +91,7 @@ public class TServer
 
             Console.WriteLine();
             TLogging.Log(TheServerManager.ServerInfoVersion);
+            TLogging.Log(Catalog.GetString("Configuration file: " + TheServerManager.ConfigurationFileName));
 
             //
             // Connect to main Database
@@ -685,6 +686,7 @@ ReadClientTaskPriority:
     void DisplayPetraServerInformation(IServerAdminInterface AServerManager)
     {
         Console.WriteLine(AServerManager.ServerInfoVersion);
+        Console.WriteLine(Catalog.GetString("Configuration file: " + AServerManager.ConfigurationFileName));
         Console.WriteLine("  " +
             String.Format(Catalog.GetString("Client connections since Server start: {0}"), AServerManager.ClientsConnectedTotal));
         Console.WriteLine("  " + String.Format(Catalog.GetString("Clients currently connected: "), AServerManager.ClientsConnected));

@@ -148,8 +148,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             // Determine and set the 'Index' (ARow.Index in this case) of the new Row
             FIndexedGridRowsHelper.DetermineIndexForNewRow(ARow);
-
-            cmbDetailAttributeTypeValueKind.SelectedIndex = 1;
         }
 
         private void ShowDetailsManual(PPartnerAttributeTypeRow ARow)
