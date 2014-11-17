@@ -49,6 +49,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// </summary>
     public class TUC_GiftBatches_Import
     {
+        /// <summary>
+        /// A enumeration of available import data sources
+        /// </summary>
         public enum TGiftImportDataSourceEnum
         {
             /// <summary>
@@ -265,6 +268,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Import a transactions file or a clipboard equivalent
         /// </summary>
         /// <param name="ACurrentBatchRow">The batch to import to</param>
+        /// <param name="AImportSource">The import source - eg File or Clipboard</param>
         /// <returns>True if the import was successful</returns>
         public bool ImportTransactions(AGiftBatchRow ACurrentBatchRow, TGiftImportDataSourceEnum AImportSource)
         {

@@ -299,6 +299,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
+        /// <param name="AValidationCostCentreTable">REQUIRED for importing.  A reference to a cost centre table so that inputs can be validated.</param>
+        /// <param name="AvalidationAccountTable">REQUIRED for importing.  A reference to an account table so that inputs can be validated.</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateGLDetailManual(object AContext, ABatchRow ABatchRow, ATransactionRow ARow, Control AControl,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
