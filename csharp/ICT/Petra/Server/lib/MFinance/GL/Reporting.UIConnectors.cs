@@ -1182,12 +1182,31 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Int32 PeriodMonths = 1 + (ReportPeriodEnd - ReportPeriodStart);
             String HierarchyName = AParameters["param_account_hierarchy_c"].ToString();
 
+            Boolean International = AParameters["param_currency"].ToString().StartsWith("Int");
+            Decimal EffectiveExchangeRate = 1;
+            Decimal LastYearExchangeRate = 1;
+            if (International)
+            {
+                TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
+
+                EffectiveExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
+                    LedgerNumber,
+                    AccountingYear,
+                    ReportPeriodEnd,
+                    -1);
+/*
+                LastYearExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
+                    LedgerNumber,
+                    AccountingYear - 1,
+                    ReportPeriodEnd,
+                    -1);
+ */
+            }
             //
             // Read different DB fields according to currency setting
-            String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_actual_intl_n" : "a_actual_base_n";
-            String StartBalanceFieldName =
-                AParameters["param_currency"].ToString().StartsWith("Int") ? "a_start_balance_intl_n" : "a_start_balance_base_n";
-            String BudgetFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_budget_intl_n" : "a_budget_base_n";
+            String ActualFieldName = /* International ? "a_actual_intl_n" : */ "a_actual_base_n";
+            String StartBalanceFieldName = /* International ? "a_start_balance_intl_n" : */ "a_start_balance_base_n";
+            String BudgetFieldName = /* International ? "a_budget_intl_n" : */ "a_budget_base_n";
             Boolean CostCentreBreakdown = AParameters["param_cost_centre_breakdown"].ToBool();
             Boolean WholeYearPeriodsBreakdown = AParameters["param_period_breakdown"].ToBool();
 
@@ -1346,7 +1365,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                 }
                                 );
                             DataRow PreviousPeriodRow = OldPeriod[RowIdx].Row;
-                            Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(PreviousPeriodRow["ActualYTD"]);
+                            Row["Actual"] = (Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(PreviousPeriodRow["ActualYTD"])) * EffectiveExchangeRate;
                         }
                     }
                     else
@@ -1361,7 +1380,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             }
 
                             DataRow Row = rv.Row;
-                            Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(Row["YearStart"]);
+                            Row["Actual"] = (Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(Row["YearStart"])) * EffectiveExchangeRate;
                         }
                     }
 
@@ -1391,8 +1410,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         {
                             DataRow LastYearRow = OldPeriod[RowIdx].Row;
                             Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
-                            Row["BudgetLastYear"] = Convert.ToDecimal(LastYearRow["Budget"]);
+                            Row["BudgetLastYear"] = Convert.ToDecimal(LastYearRow["Budget"]) * EffectiveExchangeRate;
                         }
+
+                        Row["Budget"] = Convert.ToDecimal(Row["Budget"]) * EffectiveExchangeRate;
                     }
 
                     //
@@ -1418,7 +1439,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                         if (YearBudgetTbl.Rows.Count > 0)
                         {
-                            Row["WholeYearBudget"] = YearBudgetTbl.Rows[0]["WholeYearBudget"];
+                            Row["WholeYearBudget"] = Convert.ToDecimal(YearBudgetTbl.Rows[0]["WholeYearBudget"]) * EffectiveExchangeRate;
                         }
                     }
                 } // If not Whole Year Periods Breakdown
