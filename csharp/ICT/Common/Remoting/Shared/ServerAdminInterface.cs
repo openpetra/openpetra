@@ -64,7 +64,7 @@ namespace Ict.Common.Remoting.Shared
         {
             get;
         }
-        
+
         /// <summary>
         /// Name of the Server configuration file
         /// </summary>
@@ -72,7 +72,7 @@ namespace Ict.Common.Remoting.Shared
         {
             get;
         }
-        
+
         /// <summary>
         /// version of the server
         /// </summary>

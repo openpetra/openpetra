@@ -11,7 +11,8 @@ RootNode:
         actNew: {Label=&Add, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
         actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllTrans}
-        actImportTransactions: {Label=&Import Transactions, ActionClick=ImportTransactions}
+        actImportTransactions: {Label=&Import Transactions, ActionClick=ImportTransactionsFromFile}
+        actImportFromClipboard: {Label=I&mport From Clipboard, ActionClick=ImportTransactionsFromClipboard}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlFilterAndFind, pnlDetailGrid, pnlDetailsSection]
@@ -122,8 +123,10 @@ RootNode:
         tbrTabPage: {NoAttribute=true}
         mnuTabPage: {NoAttribute=true}
     Menu:
-        mniJournal:
-            Label: &Import
-            mniImportTransactions:
+        mniTransaction:
+            Label: Transacti&on
+            mniImportTransactions: {Label=&Import From File}
+            mniImportFromClipboard: {Label=I&mport From Clipboard}
     Toolbar:
         tbbImportTransactions:
+        tbbImportFromClipboard:

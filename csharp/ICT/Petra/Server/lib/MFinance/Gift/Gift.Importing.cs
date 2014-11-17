@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash, timop, dougm
+//       matthiash, timop, dougm, alanP
 //
 // Copyright 2004-2012 by OM International
 //
@@ -224,7 +224,10 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftBatchRow giftBatch = null;
             decimal totalBatchAmount = 0;
             Int32 RowNumber = 0;
-            Int32 BatchDetailCounter = 0;
+            Int32 InitialTextLength = AImportString.Length;
+            Int32 TextProcessedLength = 0;
+            Int32 PercentDone = 10;
+            Int32 PreviousPercentDone = 0;
             bool ok = false;
 
             string ImportMessage = Catalog.GetString("Initialising");
@@ -288,6 +291,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                 {
                     RowNumber++;
 
+                    TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                    PercentDone = 10 + ((TextProcessedLength * 90) / InitialTextLength);
+
                     // skip empty lines and commented lines
                     if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#"))
                     {
@@ -307,6 +313,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                                         TResultSeverity.Resv_Critical));
 
                                 FImportLine = sr.ReadLine();
+
+                                if (FImportLine != null)
+                                {
+                                    TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                                }
+
                                 continue;
                             }
 
@@ -318,12 +330,19 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                                 if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                                 {
+                                    ImportMessage = Catalog.GetString("Saving batch");
                                     AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, Transaction);
-                                    // no need to AcceptChanges() because we will create a new TDS below
+                                    FMainDS.AGiftBatch.AcceptChanges();
+
+                                    ImportMessage = Catalog.GetString("Saving gift");
+                                    AGiftAccess.SubmitChanges(FMainDS.AGift, Transaction);
+                                    FMainDS.AGift.AcceptChanges();
+
+                                    ImportMessage = Catalog.GetString("Saving giftdetails");
+                                    AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, Transaction);
+                                    FMainDS.AGiftDetail.AcceptChanges();
                                 }
 
-                                // We use a new TDS for each new batch
-                                FMainDS = new GiftBatchTDS();
                                 previousGift = null;
                             }
 
@@ -381,18 +400,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                         ADailyExchangeRateAccess.SubmitChanges(DailyExchangeFromTable, Transaction);
                                     }
                                 }
-
-                                // Now we can commit the change
-                                ImportMessage = Catalog.GetString("Saving gift batch");
-
-                                AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, Transaction);
-                                FMainDS.AGiftBatch.AcceptChanges();
                             }
-
-                            BatchDetailCounter = 0;
-                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                string.Format(Catalog.GetString("Batch {0}"), giftBatch.BatchNumber),
-                                10);
                         }
                         else if (RowType == "T")
                         {
@@ -403,6 +411,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                                         Catalog.GetString("Wrong number of gift columns. Expected at least 13 columns. (This may be a summary?)"),
                                         TResultSeverity.Resv_Critical));
                                 FImportLine = sr.ReadLine();
+
+                                if (FImportLine != null)
+                                {
+                                    TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                                }
+
                                 continue;
                             }
 
@@ -476,24 +490,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                                             inverseRate, giftBatch.GlEffectiveDate))
                                     {
                                         ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToIntlTable, Transaction);
+                                        DailyExchangeToIntlTable.AcceptChanges();
                                     }
                                 }
-
-                                ImportMessage = Catalog.GetString("Saving gift");
-                                AGiftAccess.SubmitChanges(FMainDS.AGift, Transaction);
-                                FMainDS.AGift.AcceptChanges();
-
-                                ImportMessage = Catalog.GetString("Saving giftdetails");
-                                AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, Transaction);
-                                FMainDS.AGiftDetail.AcceptChanges();
-                            }
-
-                            // Update progress tracker every 50 records
-                            if (++BatchDetailCounter % 50 == 0)
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    string.Format(Catalog.GetString("Batch {0} - Importing gift detail"), giftBatch.BatchNumber),
-                                    (BatchDetailCounter / 50 + 2) * 10 > 90 ? 90 : (BatchDetailCounter / 50 + 2) * 10);
                             }
                         } // If known row analysisType
                         else
@@ -509,8 +508,22 @@ namespace Ict.Petra.Server.MFinance.Gift
                         break;
                     }
 
+                    // Update progress tracker every few percent
+                    if ((PercentDone - PreviousPercentDone) > 3)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            String.Format(Catalog.GetString("Importing row {0}"), RowNumber),
+                            (PercentDone > 98) ? 98 : PercentDone);
+                        PreviousPercentDone = PercentDone;
+                    }
+
                     // Read the next line
                     FImportLine = sr.ReadLine();
+
+                    if (FImportLine != null)
+                    {
+                        TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                    }
                 }  // while CSV lines
 
                 // Finished reading the file - did we have critical errors?
@@ -567,9 +580,20 @@ namespace Ict.Petra.Server.MFinance.Gift
                 ImportMessage = Catalog.GetString("Saving all data into the database");
 
                 //Finally save pending changes (the last number is updated !)
+                ImportMessage = Catalog.GetString("Saving final batch");
                 AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, Transaction);
-                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
                 FMainDS.AGiftBatch.AcceptChanges();
+
+                ImportMessage = Catalog.GetString("Saving final gift");
+                AGiftAccess.SubmitChanges(FMainDS.AGift, Transaction);
+                FMainDS.AGift.AcceptChanges();
+
+                ImportMessage = Catalog.GetString("Saving final giftdetails");
+                AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, Transaction);
+                FMainDS.AGiftDetail.AcceptChanges();
+
+                ImportMessage = Catalog.GetString("Saving ledger changes");
+                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
                 FMainDS.ALedger.AcceptChanges();
 
                 // Commit the transaction (we know that we got a new one and can control it)
@@ -694,7 +718,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Initialising"),
-                0);
+                5);
 
             AMessages = new TVerificationResultCollection();
             FMainDS = new GiftBatchTDS();
@@ -721,7 +745,10 @@ namespace Ict.Petra.Server.MFinance.Gift
             TDBTransaction Transaction = null;
             decimal totalBatchAmount = 0;
             Int32 RowNumber = 0;
-            Int32 BatchDetailCounter = 0;
+            Int32 InitialTextLength = AImportString.Length;
+            Int32 TextProcessedLength = 0;
+            Int32 PercentDone = 10;
+            Int32 PreviousPercentDone = 0;
             bool ok = false;
 
             string ImportMessage = Catalog.GetString("Initialising");
@@ -776,9 +803,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                 {
                     RowNumber++;
 
+                    TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                    PercentDone = 10 + ((TextProcessedLength * 90) / InitialTextLength);
+
                     // skip empty lines and commented lines
                     if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#"))
                     {
+                        // number of elements is incremented by 1 as though the line started with 'T'
                         int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count + 1;
 
                         // It is a Transaction row
@@ -788,10 +819,17 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     Catalog.GetString("Wrong number of gift columns. Expected at least 13 columns. (This may be a summary?)"),
                                     TResultSeverity.Resv_Critical));
                             FImportLine = sr.ReadLine();
+
+                            if (FImportLine != null)
+                            {
+                                TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                            }
+
                             continue;
                         }
 
                         // Parse the line into a new row
+                        ImportMessage = Catalog.GetString("Parsing transaction line");
                         AGiftRow gift = FMainDS.AGift.NewRowTyped(true);
                         AGiftDetailRow giftDetails;
                         ParseTransactionLine(gift,
@@ -817,25 +855,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                             // Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
                             TGift.SetDefaultTaxDeductibilityData(ref giftDetails, gift.DateEntered, Transaction);
                         }
-
-                        if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
-                        {
-                            ImportMessage = Catalog.GetString("Saving gift");
-                            AGiftAccess.SubmitChanges(FMainDS.AGift, Transaction);
-                            FMainDS.AGift.AcceptChanges();
-
-                            ImportMessage = Catalog.GetString("Saving giftdetails");
-                            AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, Transaction);
-                            FMainDS.AGiftDetail.AcceptChanges();
-                        }
-
-                        // Update progress tracker every 50 records
-                        if (++BatchDetailCounter % 50 == 0)
-                        {
-                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                string.Format(Catalog.GetString("Batch {0} - Importing gift detail"), giftBatch.BatchNumber),
-                                (BatchDetailCounter / 50 + 2) * 10 > 90 ? 90 : (BatchDetailCounter / 50 + 2) * 10);
-                        }
                     }
 
                     if (AMessages.Count > 100)
@@ -844,16 +863,30 @@ namespace Ict.Petra.Server.MFinance.Gift
                         break;
                     }
 
+                    // Update progress tracker every few percent
+                    if ((PercentDone - PreviousPercentDone) > 3)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            String.Format(Catalog.GetString("Importing row {0}"), RowNumber),
+                            (PercentDone > 98) ? 98 : PercentDone);
+                        PreviousPercentDone = PercentDone;
+                    }
+
                     // Read the next line
                     FImportLine = sr.ReadLine();
-                }  // while CSV lines
+
+                    if (FImportLine != null)
+                    {
+                        TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                    }
+                } // while CSV lines
 
                 // Finished reading the file - did we have critical errors?
                 if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                 {
                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                         Catalog.GetString("Batch has critical errors"),
-                        0);
+                        100);
 
                     // Record error count
                     AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
@@ -888,6 +921,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination then the import will fail
                 if (ANeedRecipientLedgerNumber.Rows.Count > 0)
                 {
+                    // Do the 'finally' actions and return false
                     return false;
                 }
 
@@ -899,13 +933,26 @@ namespace Ict.Petra.Server.MFinance.Gift
                     giftBatch.BatchTotal = totalBatchAmount;
                 }
 
-                ImportMessage = Catalog.GetString("Saving all data into the database");
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Saving all data into the database"),
+                    100);
 
                 //Finally save pending changes (the last number is updated !)
+                ImportMessage = Catalog.GetString("Saving gift batch");
                 AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, Transaction);
-                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
                 FMainDS.AGiftBatch.AcceptChanges();
-                FMainDS.ALedger.AcceptChanges();
+
+                ImportMessage = Catalog.GetString("Saving gifts");
+                AGiftAccess.SubmitChanges(FMainDS.AGift, Transaction);
+                FMainDS.AGift.AcceptChanges();
+
+                ImportMessage = Catalog.GetString("Saving giftdetails");
+                AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, Transaction);
+                FMainDS.AGiftDetail.AcceptChanges();
+
+                ImportMessage = Catalog.GetString("Saving ledger");
+                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+                LedgerTable.AcceptChanges();
 
                 // Commit the transaction (we know that we got a new one and can control it)
                 DBAccess.GDBAccessObj.CommitTransaction();
