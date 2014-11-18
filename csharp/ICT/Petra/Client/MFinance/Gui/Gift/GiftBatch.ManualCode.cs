@@ -174,7 +174,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (!ACancelledDueToExWorkerOrAnonDonor)
             {
-                ProcessRecipientCostCentreCodeUpdateErrors(false);
                 return SaveChanges();
             }
 
@@ -220,7 +219,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     // check changed data is either added or modified and that it is by a new donor
                     if (((Row.RowState == DataRowState.Added) || (Row.RowState == DataRowState.Modified))
-                        && NewDonorsList.Contains(Row.DonorKey))
+                        && (!Row.IsDonorKeyNull() && NewDonorsList.Contains(Row.DonorKey)))
                     {
                         if (MessageBox.Show(string.Format(Catalog.GetString(
                                         "{0} ({1}) is a new Donor.{2}Do you want to add subscriptions for them?{2}" +
@@ -489,32 +488,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Check for any errors
-        /// </summary>
-        /// <param name="AShowMessage"></param>
-        public void ProcessRecipientCostCentreCodeUpdateErrors(bool AShowMessage = true)
-        {
-            //Process update errors
-            if (FMainDS.Tables.Contains("AUpdateErrors"))
-            {
-                //TODO remove this code when the worker field issue is sorted out
-                AShowMessage = false;
-
-                //--------------------------------------------------------------
-                if (AShowMessage)
-                {
-                    string loadErrors = FMainDS.Tables["AUpdateErrors"].Rows[0].ItemArray[0].ToString();
-
-                    MessageBox.Show(String.Format("Errors occurred in updating gift data:{0}{0}{1}",
-                            Environment.NewLine,
-                            loadErrors), "Update Gift Details", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                FMainDS.Tables.Remove("AUpdateErrors");
-            }
-        }
-
-        /// <summary>
         /// Ensure the data is loaded for the specified batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -532,7 +505,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (TransDV.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(ALedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ALedgerNumber, ABatchNumber));
             }
 
             return TransDV.Count > 0;
