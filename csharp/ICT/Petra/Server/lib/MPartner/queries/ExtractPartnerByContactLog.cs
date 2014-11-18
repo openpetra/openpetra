@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
+using System.Linq;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
@@ -37,7 +38,7 @@ using Ict.Petra.Server.MPartner.Extracts;
 namespace Ict.Petra.Server.MPartner.queries
 {
     /// <summary>
-    /// todoComment
+    /// Backend for creating an Extract based off of Contact Logs
     /// </summary>
     public class QueryPartnerByContactLog : Ict.Petra.Server.MCommon.queries.ExtractQueryBase
     {
@@ -63,7 +64,6 @@ namespace Ict.Petra.Server.MPartner.queries
         /// <param name="ASQLParameterList"></param>S
         protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List <OdbcParameter>ASQLParameterList)
         {
-
             ASQLParameterList.Add(new OdbcParameter("param_has_contactor", OdbcType.Bit)
             {
                 Value = !string.IsNullOrWhiteSpace(AParameters.Get("param_contactor").ToString())
@@ -93,6 +93,22 @@ namespace Ict.Petra.Server.MPartner.queries
             {
                 Value = AParameters.Get("param_mailing_code").ToString()
             });
+
+            List<String> param_contact_attributes = new List<String>();
+            foreach (TVariant choice in AParameters.Get("param_contact_attributes").ToComposite())
+            {
+                if(choice.ToString().Length > 0)
+                    param_contact_attributes.Add(choice.ToString());
+            }
+
+            ASQLParameterList.Add(new OdbcParameter("param_has_contact_attributes", OdbcType.Bit)
+            {
+                Value = param_contact_attributes.Any()
+            });
+
+            ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_explicit_publication",
+                OdbcType.VarChar,
+                param_contact_attributes));
 
             ASQLParameterList.Add(new OdbcParameter("param_has_date_from", OdbcType.Bit)
             {

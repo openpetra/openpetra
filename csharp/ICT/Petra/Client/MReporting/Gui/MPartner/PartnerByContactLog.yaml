@@ -4,8 +4,8 @@ RootNode:
     FormTitle: Partner By Contact Log
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     UsingNamespaces: [Ict.Petra.Client.MReporting.Gui]
-    WindowWidth: 550
-    WindowHeight: 500
+    WindowWidth: 675
+    WindowHeight: 600
     TemplateParameters:
         CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByContactLog.CalculateExtract
         ISOLATIONLEVEL: serializable
@@ -17,7 +17,6 @@ RootNode:
         READCONTROLSVERIFICATION: BLANK
         READCONTROLSLOCALVARS: ReadControlsVerify(ACalc, AReportAction);
         SETCONTROLSLOCALVARS: BLANK
-        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:

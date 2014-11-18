@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr, andreww
+//       andreww
 //
 // Copyright 2004-2014 by OM International
 //
@@ -50,149 +50,34 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
         private void InitializeManualCode()
         {
-            //ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+            
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            // if (!FDirectRelationshipTable.Select(FDirectRelationshipTable.DefaultView.RowFilter).Any(r => (bool)r["Selection"])
-                // && !FReciprocalRelationshipTable.Select(FReciprocalRelationshipTable.DefaultView.RowFilter).Any(r => (bool)r["Selection"]))
-            // {
-                // TVerificationResult VerificationResult = new TVerificationResult(
-                    // Catalog.GetString("Select at least one Relationship Type to run the report."),
-                    // Catalog.GetString("No Relationship Type selected!"),
-                    // TResultSeverity.Resv_Critical);
-                // FPetraUtilsObject.AddVerificationResult(VerificationResult);
-            // }
+            //if (true)
+            //{
+            //    TVerificationResult VerificationResult = new TVerificationResult(
+            //        Catalog.GetString("Please enter some criteria."),
+            //        Catalog.GetString("No criteria added!"),
+            //        TResultSeverity.Resv_Critical);
+            //    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            //}
         }
 
         private void RunOnceOnActivationManual()
         {
-            // InitRelationshipList();
-            // this.cmbRelationCategory.SelectedIndexChanged += new System.EventHandler(this.CmbRelationCategorySelectedIndexChanged);
-            // grdReciprocalRelationship.Visible = false;
-            // lblSelectReciprocalRelationship.Visible = false;
+            if (CalledFromExtracts)
+            {
+                tabReportSettings.Controls.Remove(tpgColumns);
+            }
 
-            // if (CalledFromExtracts)
-            // {
-                // rbtDirectRelationship.Visible = false;
-                // rbtReciprocalRelationship.Visible = false;
-                // grdReciprocalRelationship.Visible = true;
-                // lblSelectReciprocalRelationship.Visible = true;
-
-                // tabReportSettings.Controls.Remove(tpgColumns);
-                // tabReportSettings.Controls.Remove(tpgReportSorting);
-            // }
-            // else
-            // {
-                // grdReciprocalRelationship.Visible = false;
-                // lblSelectReciprocalRelationship.Visible = false;
-            // }
-
-            // rbtDirectRelationship.Checked = true;
-            // rbtDirectRelationship.Enabled = true;
-            // chkCategoryFilter.Checked = false;
-            // cmbRelationCategory.Enabled = false;
-
-
-            // ucoChkFilter.ShowFamiliesOnly(false);
+            var addressSettings = new TParameterList();
+            addressSettings.Add("param_active", true);
+            addressSettings.Add("param_mailing_addresses_only", true);
+            addressSettings.Add("param_families_only", false);
+            addressSettings.Add("param_exclude_no_solicitations", true);
+            ucoChkFilter.SetControls(addressSettings);
         }
-
-        private void grdDirectRelationship_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
-        {
-        }
-
-        private void grdReciprocalRelationship_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
-        {
-        }
-
-        private void grdReciprocalRelationship_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
-        {
-        }
-
-        private void grdReciprocalRelationship_SetControls(TParameterList AParameters)
-        {
-        }
-
-        private void grdDirectRelationship_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
-        {
-            // if (!CalledFromExtracts)
-            // {
-                // if (rbtReciprocalRelationship.Checked)
-                // {
-                    // ACalc.AddParameter("param_use_reciprocal_relationship", "true");
-                // }
-                // else
-                // {
-                    // ACalc.AddParameter("param_use_reciprocal_relationship", "false");
-                // }
-
-                // String RelationshipTypeList = GetSelectedRelationshipsAsCsv();
-                // ACalc.AddParameter("param_relationship_types", RelationshipTypeList);
-            // }
-            // else
-            // {
-                // ACalc.AddParameter("param_explicit_relationships", GetSelectedRelationshipsAsCsv(true));
-                // ACalc.AddParameter("param_reciprocal_relationships", GetSelectedRelationshipsAsCsv(false));
-            // }
-        }
-
-        private void grdDirectRelationship_SetControls(TParameterList AParameters)
-        {
-            // if (AParameters.Get("param_use_reciprocal_relationship").ToString() == "true")
-            // {
-                // rbtReciprocalRelationship.Checked = true;
-            // }
-            // else
-            // {
-                // rbtDirectRelationship.Checked = true;
-            // }
-
-            // String SelectedRelationshipTypes = AParameters.Get("param_relationship_types").ToString();
-            // SelectRelationshipTypes(SelectedRelationshipTypes);
-        }
-
-        #region EventHandling
-        private void FilterRelationCategoryChanged(System.Object sender, EventArgs e)
-        {
-            // cmbRelationCategory.Enabled = chkCategoryFilter.Checked;
-
-            // if (!chkCategoryFilter.Checked)
-            // {
-                ////Show all relationship types
-                // UpdateRelationshipGrid("");
-            // }
-            // else
-            // {
-                // CmbRelationCategorySelectedIndexChanged(null, null);
-            // }
-        }
-
-        private void rbtRelationshipDirectionChanged(System.Object sender, EventArgs e)
-        {
-            // if (!CalledFromExtracts)
-            // {
-                // grdReciprocalRelationship.Visible = rbtReciprocalRelationship.Checked;
-                // lblSelectReciprocalRelationship.Visible = rbtReciprocalRelationship.Checked;
-                // grdDirectRelationship.Visible = rbtDirectRelationship.Checked;
-                // lblSelectDirectRelationship.Visible = rbtDirectRelationship.Checked;
-            // }
-        }
-
-        private void CmbRelationCategorySelectedIndexChanged(object sender, EventArgs e)
-        {
-            // if (cmbRelationCategory.SelectedIndex >= 0)
-            // {
-                // String SelectedType = cmbRelationCategory.Items[cmbRelationCategory.SelectedIndex].ToString();
-
-                // UpdateRelationshipGrid(SelectedType);
-            // }
-            // else
-            // {
-                // UpdateRelationshipGrid("");
-            // }
-        }
-
-        #endregion
     }
 }

@@ -86,12 +86,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             GetDataFromControls(ARow);
         }
 
-        public int ContactLogUsageCount()
-        {
-            
-            return 0;
-        }
-
         /// <summary>
         /// Code associated with ContactLog entry
         /// </summary>
