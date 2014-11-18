@@ -396,8 +396,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 pnlDetails.Enabled = true;
                 EnableButtonControl(true);
 
+                // NOTE: we need to suppress change detection here because otherwise the DateChanged event fires off
+                //   It would not normally be a problem although it can give strange effects of focussing the date box AND the description (!)
+                //   and also may sometimes give problems with running some tests.
+                //  So do not remove change detection suppression so we do not run UpdateBatchPeriod()
+                FPetraUtilsObject.SuppressChangeDetection = true;
                 FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
                 dtpDetailDateEffective.Date = FDefaultDate;
+                FPetraUtilsObject.SuppressChangeDetection = false;
 
                 Int32 yearNumber = 0;
                 Int32 periodNumber = 0;

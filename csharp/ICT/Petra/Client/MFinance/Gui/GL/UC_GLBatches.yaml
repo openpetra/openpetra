@@ -105,6 +105,6 @@ RootNode:
     Toolbar:
         tbbPostBatch:
         tbbReverseBatch:
-        tbbImportBatches:
-        tbbImportFromClipboard:
+        tbbImportBatches: {Label=&Import From File}
+        tbbImportFromClipboard: {Label=I&mport From Clipboard}
         tbbExportBatches:
