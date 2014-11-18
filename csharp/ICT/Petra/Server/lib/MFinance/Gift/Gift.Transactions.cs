@@ -2405,7 +2405,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        /// <param name="ASerializable"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadAGiftBatchAndRelatedData(Int32 ALedgerNumber, Int32 ABatchNumber)
@@ -2497,20 +2496,25 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
                             if (giftDetail.RecipientLedgerNumber != giftDetail.RecipientField)
                             {
-                                TLogging.Log("Update RecipientLedgerNumber from: " + giftDetail.RecipientLedgerNumber.ToString() + " to: " + giftDetail.RecipientField.ToString());
                                 giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
                                 AChangesToCommit = true;
                             }
 
-                            string newCostCentreCode =
-                                RetrieveCostCentreCodeForRecipient(ALedgerNumber, giftDetail.RecipientKey, giftDetail.RecipientLedgerNumber,
-                                    giftDetail.DateEntered, motivationDetailRow.MotivationGroupCode, motivationDetailRow.MotivationDetailCode, ATransaction);
-
-                            if (giftDetail.CostCentreCode != newCostCentreCode)
+                            try
                             {
-                                TLogging.Log("Update CostCentreCode from: " + giftDetail.CostCentreCode + " to: " + newCostCentreCode);
-                                giftDetail.CostCentreCode = newCostCentreCode;
-                                AChangesToCommit = true;
+                                string newCostCentreCode =
+                                    RetrieveCostCentreCodeForRecipient(ALedgerNumber, giftDetail.RecipientKey, giftDetail.RecipientLedgerNumber,
+                                        giftDetail.DateEntered, motivationDetailRow.MotivationGroupCode, motivationDetailRow.MotivationDetailCode, ATransaction);
+
+                                if (giftDetail.CostCentreCode != newCostCentreCode)
+                                {
+                                    giftDetail.CostCentreCode = newCostCentreCode;
+                                    AChangesToCommit = true;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                TLogging.Log("Error in: LoadAGiftBatchAndRelatedData - " + ex.Message);
                             }
                         }
                         else
@@ -2670,7 +2674,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         if (giftDetail.CostCentreCode != newCostCentreCode)
                         {
-                            TLogging.Log("Recurring newCostCentreCode: " + newCostCentreCode);
                             giftDetail.CostCentreCode = newCostCentreCode;
                             AChangesToCommit = true;
                         }
@@ -3211,8 +3214,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 Catalog.GetString("Posting gift batches"),
                 ABatchNumbers.Count * 3 + 1);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -3269,8 +3271,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                 MainDS.ALedger[0].LastHeaderRNumber = LastReceiptNumber;
 
-                                MainDS.ThrowAwayAfterSubmitChanges = true;
+                                //Mark gift batch as posted
+                                MainDS.AGiftBatch[0].BatchStatus = MFinanceConstants.BATCH_POSTED;
 
+                                MainDS.ThrowAwayAfterSubmitChanges = true;
                                 GiftBatchTDSAccess.SubmitChanges(MainDS);
                             }
                             else
@@ -3612,6 +3616,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (structureRow.ParentUnitKey == structureRow.ChildUnitKey)
                 {
                     // should not get here
+                    TLogging.Log("GetRecipientFundNumberInner: - should not get here");
                     return 0;
                 }
 

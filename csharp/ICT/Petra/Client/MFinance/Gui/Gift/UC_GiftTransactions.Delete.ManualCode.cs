@@ -346,12 +346,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 ||
                 (MessageBox.Show(String.Format(Catalog.GetString(
-                             "You have chosen to delete all gifts from batch ({0}).\n\nDo you really want to delete all?"),
-                         FBatchNumber),
+                             "You have chosen to delete all gifts from batch ({0}).{1}{1}Are you sure you want to delete all?"),
+                         FBatchNumber,
+                         Environment.NewLine),
                      Catalog.GetString("Confirm Delete All"),
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
             {
+                int BatchNumberToClear = FBatchNumber;
+
                 try
                 {
                     //Normally need to set the message parameters before the delete is performed if requiring any of the row values
@@ -359,14 +362,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         FPreviouslySelectedDetailRow.BatchNumber);
 
                     //clear any transactions currently being editied in the Transaction Tab
-                    ClearCurrentSelection();
+                    ClearCurrentSelection(false);
 
                     //Clear out the gift data for the current batch without marking the records for deletion
                     //  and then reload from server
-                    RefreshCurrentBatchGiftData(FBatchNumber);
+                    RefreshCurrentBatchGiftData(BatchNumberToClear);
 
                     //Now delete all gift data for current batch
-                    DeleteCurrentBatchGiftData(FBatchNumber);
+                    DeleteCurrentBatchGiftData(BatchNumberToClear);
 
                     FBatchRow.BatchTotal = 0;
 

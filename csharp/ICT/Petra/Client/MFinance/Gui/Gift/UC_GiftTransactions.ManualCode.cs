@@ -925,11 +925,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
         /// reset the control
-        public void ClearCurrentSelection()
+        /// </summary>
+        /// <param name="AResetFBatchNumber"></param>
+        public void ClearCurrentSelection(bool AResetFBatchNumber = true)
         {
             this.FPreviouslySelectedDetailRow = null;
-            FBatchNumber = -1;
+            
+            if (AResetFBatchNumber)
+            {
+                FBatchNumber = -1;
+            }
         }
 
         /// <summary>
@@ -986,7 +993,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Copy and backup the current dataset
             GiftBatchTDS TempDS = (GiftBatchTDS)FMainDS.Copy();
-
             TempDS.Merge(FMainDS);
 
             GiftBatchTDS BackupDS = (GiftBatchTDS)FMainDS.Copy();
