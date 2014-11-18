@@ -736,7 +736,7 @@ public class TAdminConsole
                     CommonTypes.ExecutingOSEnumToString(Utilities.DetermineExecutingOS()) + ')');
 
                 TLogging.Log(Catalog.GetString("Configuration file: " + TAppSettingsManager.ConfigFileName));
-                
+
                 // System.Reflection.Assembly.GetEntryAssembly.FullName does not return the file path
                 TLogging.Log("Connecting to PETRAServer...");
                 Console.WriteLine();

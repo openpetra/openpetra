@@ -858,20 +858,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FLoadAndFilterLogicObject.StatusEditing = true;
             }
 
-            FImportLogicObject.ImportBatches();
+            FImportLogicObject.ImportBatches(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromFile);
         }
 
         /// <summary>
-        /// Imports a transactions file
+        /// this supports the batch export files from Petra 2.x.
+        /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
         /// </summary>
-        public bool ImportTransactions()
+        private void ImportFromClipboard(System.Object sender, System.EventArgs e)
         {
             if (!FLoadAndFilterLogicObject.StatusEditing)
             {
                 FLoadAndFilterLogicObject.StatusEditing = true;
             }
 
-            return FImportLogicObject.ImportTransactions(FPreviouslySelectedDetailRow);
+            FImportLogicObject.ImportBatches(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromClipboard);
+        }
+
+        /// <summary>
+        /// Imports a transactions file
+        /// </summary>
+        public bool ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum AImportDataSource)
+        {
+            if (!FLoadAndFilterLogicObject.StatusEditing)
+            {
+                FLoadAndFilterLogicObject.StatusEditing = true;
+            }
+
+            bool bSuccess = FImportLogicObject.ImportTransactions(FPreviouslySelectedDetailRow, AImportDataSource);
+
+            if (bSuccess)
+            {
+                // We need to update the last transaction number for the batch
+                ParentForm.Cursor = Cursors.WaitCursor;
+
+                FMainDS.AGiftBatch.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchSingle(
+                        FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber).AGiftBatch);
+                FMainDS.AGiftBatch.AcceptChanges();
+
+                ParentForm.Cursor = Cursors.Default;
+            }
+
+            return bSuccess;
         }
 
         private void PostBatch(System.Object sender, EventArgs e)
@@ -884,7 +912,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow))
             {
                 // Posting succeeded so now deal with gift receipting ...
-                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadGiftBatchData(FLedgerNumber, FSelectedBatchNumber);
+                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber, FSelectedBatchNumber);
+
                 FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
 
                 // Now we need to get the data back from the server to pick up all the changes

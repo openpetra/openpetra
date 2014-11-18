@@ -842,20 +842,20 @@ namespace Ict.Common.Data
         /// <param name="ATableName">table to remove</param>
         public void RemoveTable(String ATableName)
         {
-            DataTable tab;
+            DataTable TableToDelete;
 
             // remove all constraints referencing the table that should be deleted
             foreach (TTypedConstraint constr in FConstraints)
             {
                 if ((constr.FTable1 == ATableName) || (constr.FTable2 == ATableName))
                 {
-                    tab = Tables[constr.FTable2];
+                    TableToDelete = Tables[constr.FTable2];
 
-                    if (tab != null)
+                    if (TableToDelete != null)
                     {
-                        if (tab.Constraints.IndexOf(constr.FName) != -1)
+                        if (TableToDelete.Constraints.IndexOf(constr.FName) != -1)
                         {
-                            tab.Constraints.Remove(constr.FName);
+                            TableToDelete.Constraints.Remove(constr.FName);
                         }
                     }
                 }
@@ -866,29 +866,29 @@ namespace Ict.Common.Data
             {
                 if ((relation.FTable1 == ATableName) || (relation.FTable2 == ATableName))
                 {
-                    tab = Tables[relation.FTable2];
+                    TableToDelete = Tables[relation.FTable2];
 
-                    if (tab != null)
+                    if (TableToDelete != null)
                     {
                         if (Relations.IndexOf(relation.FName) != -1)
                         {
                             Relations.Remove(relation.FName);
                         }
 
-                        if (tab.Constraints.IndexOf(relation.FName) != -1)
+                        if (TableToDelete.Constraints.IndexOf(relation.FName) != -1)
                         {
-                            tab.Constraints.Remove(relation.FName);
+                            TableToDelete.Constraints.Remove(relation.FName);
                         }
                     }
                 }
             }
 
-            tab = Tables[ATableName];
+            TableToDelete = Tables[ATableName];
 
-            if (tab != null)
+            if (TableToDelete != null)
             {
                 // remove the table itself
-                Tables.Remove(tab);
+                Tables.Remove(TableToDelete);
             }
         }
 
@@ -921,22 +921,21 @@ namespace Ict.Common.Data
         /// </summary>
         public void RemoveEmptyTables()
         {
-            System.Int32 countTab;
-            System.Data.DataTable tab;
-            countTab = 0;
+            System.Data.DataTable CurrentTable;
+            System.Int32 TableCount = 0;
 
-            while (countTab != Tables.Count)
+            while (TableCount != Tables.Count)
             {
-                tab = (System.Data.DataTable)(Tables[countTab]);
+                CurrentTable = (System.Data.DataTable)(Tables[TableCount]);
 
-                if (tab.Rows.Count == 0)
+                if (CurrentTable.Rows.Count == 0)
                 {
-                    RemoveTable(tab.TableName);
-                    countTab = 0;
+                    RemoveTable(CurrentTable.TableName);
+                    TableCount = 0;
                 }
                 else
                 {
-                    countTab = (countTab + 1);
+                    TableCount++;
                 }
             }
         }

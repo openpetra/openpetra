@@ -38,6 +38,7 @@ namespace Ict.Common.Verification
     {
         #region Resourcestrings
 
+        private static readonly string StrNumberMustBeGreaterThanZero = Catalog.GetString("{0} must be a number greater than 0.");
         private static readonly string StrNumberMustBeInteger = Catalog.GetString("{0} must be a number without a decimal point.");
         private static readonly string StrNumberMustBeDecimal = Catalog.GetString("{0} must be a number with a decimal point.");
         private static readonly string StrNumberMustBePositiveInteger = Catalog.GetString(
@@ -219,6 +220,45 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
                         StrNumberMustBePositiveInteger, new string[] { Description }));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks whether an integer/long is greater than zero
+        /// </summary>
+        /// <param name="AValue">Integer number.</param>
+        /// <param name="ADescription">Description what the integer number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a valid integer number or is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsGreaterThanZero(Int64? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if (AValue.Value <= 0)
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBeGreaterThanZero, new string[] { Description }));
 
                 if (AResultColumn != null)
                 {

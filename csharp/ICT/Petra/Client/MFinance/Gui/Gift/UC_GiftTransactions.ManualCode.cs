@@ -364,7 +364,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //New set of transactions to be loaded
             FTransactionsLoaded = false;
 
-            grdDetails.SuspendLayout();
             FSuppressListChanged = true;
 
             //Read key fields
@@ -419,7 +418,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateControlsProtection();
 
             FSuppressListChanged = false;
-            grdDetails.ResumeLayout();
 
             UpdateTotals();
 
@@ -448,8 +446,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool RetVal = ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(ALedgerNumber, ABatchNumber);
 
             TUC_GiftTransactions_Recipient.UpdateAllRecipientDescriptions(ABatchNumber, FMainDS);
-
-            ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
 
             return RetVal;
         }
@@ -929,11 +925,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
         /// reset the control
-        public void ClearCurrentSelection()
+        /// </summary>
+        /// <param name="AResetFBatchNumber"></param>
+        public void ClearCurrentSelection(bool AResetFBatchNumber = true)
         {
             this.FPreviouslySelectedDetailRow = null;
-            FBatchNumber = -1;
+
+            if (AResetFBatchNumber)
+            {
+                FBatchNumber = -1;
+            }
         }
 
         /// <summary>
@@ -1043,7 +1046,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.AGiftDetail.Merge(TempDS.AGiftDetail);
                 }
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(FLedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(FLedgerNumber, ABatchNumber));
 
                 RetVal = true;
             }
@@ -1433,9 +1436,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FMainDS.AGift.Rows.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(ledgerNumber, batchNumber));
-
-                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ledgerNumber, batchNumber));
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
@@ -1534,43 +1535,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GetDetailDataFromControlsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            if (txtDetailCostCentreCode.Text.Length == 0)
+            if (ARow == null)
             {
-                ARow.SetCostCentreCodeNull();
-            }
-            else
-            {
-                ARow.CostCentreCode = txtDetailCostCentreCode.Text;
-            }
-
-            if (txtDetailAccountCode.Text.Length == 0)
-            {
-                ARow.SetAccountCodeNull();
-            }
-            else
-            {
-                ARow.AccountCode = txtDetailAccountCode.Text;
-            }
-
-            if (ARow.IsRecipientKeyNull())
-            {
-                ARow.SetRecipientDescriptionNull();
-            }
-            else
-            {
-                TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(ARow.RecipientKey, ARow,
-                    cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString());
-            }
-
-            if (txtDetailRecipientLedgerNumber.Text.Length == 0)
-            {
-                ARow.SetRecipientFieldNull();
-                ARow.SetRecipientLedgerNumberNull();
-            }
-            else
-            {
-                ARow.RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
-                ARow.RecipientLedgerNumber = ARow.RecipientField;
+                return;
             }
 
             //Handle gift table fields for first detail only
@@ -1616,6 +1583,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
                 }
+            }
+
+            if (txtDetailCostCentreCode.Text.Length == 0)
+            {
+                ARow.SetCostCentreCodeNull();
+            }
+            else
+            {
+                ARow.CostCentreCode = txtDetailCostCentreCode.Text;
+            }
+
+            if (txtDetailAccountCode.Text.Length == 0)
+            {
+                ARow.SetAccountCodeNull();
+            }
+            else
+            {
+                ARow.AccountCode = txtDetailAccountCode.Text;
+            }
+
+            if (ARow.IsRecipientKeyNull())
+            {
+                ARow.SetRecipientDescriptionNull();
+            }
+            else
+            {
+                TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(ARow.RecipientKey, ARow,
+                    cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString());
+            }
+
+            if (txtDetailRecipientLedgerNumber.Text.Length == 0)
+            {
+                ARow.SetRecipientFieldNull();
+                ARow.SetRecipientLedgerNumberNull();
+            }
+            else
+            {
+                ARow.RecipientLedgerNumber = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
+                ARow.RecipientField = ARow.RecipientLedgerNumber;
             }
 
             if (FTaxDeductiblePercentageEnabled)
@@ -1877,9 +1883,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (giftDataView.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(ledgerNumber, batchNumber));
-
-                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ledgerNumber, batchNumber));
             }
             else if ((FPreviouslySelectedDetailRow != null) && (FBatchNumber == batchNumber))
             {
@@ -2337,7 +2341,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ProcessGiftDetainationBroadcastMessage(TFormsMessage AFormsMessage)
         {
             // for some reason it is possible that this method can be called even if the parent form has been closed
-            if (((TFrmRecurringGiftBatch)ParentForm) == null)
+            if (((TFrmGiftBatch)ParentForm) == null)
             {
                 return;
             }
@@ -2384,7 +2388,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ProcessUnitHierarchyBroadcastMessage(TFormsMessage AFormsMessage)
         {
             // for some reason it is possible that this method can be called even if the parent form has been closed
-            if (((TFrmRecurringGiftBatch)ParentForm) == null)
+            if (((TFrmGiftBatch)ParentForm) == null)
             {
                 return;
             }
@@ -2415,11 +2419,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void ImportTransactions(object sender, EventArgs e)
+        private void ImportTransactionsFromFile(object sender, EventArgs e)
         {
             if (ValidateAllData(true, true))
             {
-                if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions())
+                if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromFile))
+                {
+                    RefreshAllData();
+                }
+            }
+        }
+
+        private void ImportTransactionsFromClipboard(object sender, EventArgs e)
+        {
+            if (ValidateAllData(true, true))
+            {
+                if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromClipboard))
                 {
                     RefreshAllData();
                 }

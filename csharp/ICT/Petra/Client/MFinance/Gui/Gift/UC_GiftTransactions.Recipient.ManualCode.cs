@@ -370,13 +370,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (APartnerKey > 0)
                 {
-                    RetrieveRecipientCostCentreCode(APartnerKey,
-                        ACurrentDetailRow,
-                        AMainDS,
-                        AtxtDetailRecipientLedgerNumber,
-                        ALedgerNumber,
-                        ATxtDetailCostCentreCode,
-                        AInKeyMinistryChangingFlag);
+                    RetrieveRecipientCostCentreCode(ACurrentDetailRow, ATxtDetailCostCentreCode);
                 }
                 else
                 {
@@ -826,44 +820,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ATxtDetailCostCentreCode.Text = CostCentreCode;
         }
 
-        /// <summary>
-        /// FindCostCentreCodeForRecipient
-        /// </summary>
-        public static void FindCostCentreCodeForRecipient(GiftBatchTDSAGiftDetailRow ARow,
-            Int64 APartnerKey,
-            GiftBatchTDS AMainDS,
-            Int32 ALedgerNumber,
-            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
-            TextBox ATxtCostCentreCode,
-            bool AShowError = false)
-        {
-            if (ARow == null)
-            {
-                return;
-            }
-
-            string FailedUpdates = string.Empty;
-
-            GiftBatchTDSAGiftDetailTable TableAGiftDetail = new GiftBatchTDSAGiftDetailTable();
-
-            TableAGiftDetail.ImportRow(ARow);
-            TableAGiftDetail.AcceptChanges();
-
-            string NewCostCentreCode = TRemote.MFinance.Gift.WebConnectors.UpdateCostCentreCodeForOneRecipient(AMainDS,
-                TableAGiftDetail,
-                out FailedUpdates);
-
-            if (ARow.CostCentreCode != NewCostCentreCode)
-            {
-                ARow.CostCentreCode = NewCostCentreCode;
-            }
-
-            if (ATxtCostCentreCode.Text != ARow.CostCentreCode)
-            {
-                ATxtCostCentreCode.Text = ARow.CostCentreCode;
-            }
-        }
-
         #endregion
 
         #region Private methods
@@ -871,26 +827,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// RetrieveRecipientCostCentreCode
         /// </summary>
-        private static void RetrieveRecipientCostCentreCode(Int64 APartnerKey,
-            GiftBatchTDSAGiftDetailRow ACurrentDetailRow,
-            GiftBatchTDS AMainDS,
-            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
-            Int32 ALedgerNumber,
-            TextBox ATxtDetailCostCentreCode,
-            bool AInKeyMinistryChangingFlag)
+        private static void RetrieveRecipientCostCentreCode(GiftBatchTDSAGiftDetailRow ARow, TextBox ATxtDetailCostCentreCode)
         {
-            if (ACurrentDetailRow == null)
+            if (ARow == null)
             {
                 return;
             }
 
-            FindCostCentreCodeForRecipient(ACurrentDetailRow,
-                APartnerKey,
-                AMainDS,
-                ALedgerNumber,
-                AtxtDetailRecipientLedgerNumber,
-                ATxtDetailCostCentreCode,
-                false);
+            try
+            {
+                string NewCostCentreCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ARow.LedgerNumber,
+                    ARow.RecipientKey,
+                    ARow.RecipientLedgerNumber,
+                    ARow.DateEntered,
+                    ARow.MotivationGroupCode,
+                    ARow.MotivationDetailCode);
+
+                if (ARow.CostCentreCode != NewCostCentreCode)
+                {
+                    ARow.CostCentreCode = NewCostCentreCode;
+                }
+            }
+            catch (Exception ex)
+            {
+                string errMsg = Catalog.GetString("Error accessing Cost Centre Code:" + Environment.NewLine + ex.Message);
+
+                MessageBox.Show(errMsg, "Cost Centre Code", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+
+            if (ATxtDetailCostCentreCode.Text != ARow.CostCentreCode)
+            {
+                ATxtDetailCostCentreCode.Text = ARow.CostCentreCode;
+            }
         }
 
         /// <summary>
