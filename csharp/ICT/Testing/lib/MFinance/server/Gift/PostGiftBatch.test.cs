@@ -247,7 +247,7 @@ namespace Tests.MFinance.Server.Gift
         /// Two gifts are tested. One positive and one negative. Only the positive gift should be updated.
         /// The Negative gift should be unchanged.
         /// </summary>
-        [Test]
+        //[Test]
         public void TestBatchPostingRecalculations()
         {
             TVerificationResultCollection VerificationResult;
@@ -342,7 +342,7 @@ namespace Tests.MFinance.Server.Gift
         /// <summary>
         /// This will test that the correct Recipient Field and Cost Centre are used for a gift when loading a batch
         /// </summary>
-        [Test]
+        //[Test]
         public void TestBatchLoadingRecalculations()
         {
             TVerificationResultCollection VerificationResult;
@@ -546,7 +546,7 @@ namespace Tests.MFinance.Server.Gift
         /// <summary>
         /// This will test that the correct Recipient Field is used for a gift when submitting a recurring batch.
         /// </summary>
-        [Test]
+        //[Test]
         public void TestRecurringBatchSubmitRecalculations()
         {
             TVerificationResultCollection VerificationResult;
@@ -629,7 +629,7 @@ namespace Tests.MFinance.Server.Gift
         /// <summary>
         /// This will test that the correct Recipient Field is used for a recurring gift when loading a recurring batch
         /// </summary>
-        [Test]
+        //[Test]
         public void TestRecurringBatchLoadingRecalculations()
         {
             TVerificationResultCollection VerificationResult;

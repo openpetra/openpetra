@@ -2035,7 +2035,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     AddGiftDetailToGLBatch(ref GLDataset, giftdetail.CostCentreCode, giftdetail.AccountCode,
                         giftdetail.GiftTransactionAmount, giftdetail.GiftAmount, giftdetail.GiftAmountIntl, journal, giftBatch);
                 }
-                else
+                else if (!giftdetail.IsTaxDeductiblePctNull())
                 {
                     // if tax deductible pct is enabled then the gift detail needs split in two: tax-deductible and non-deductible
                     if (giftdetail.TaxDeductiblePct > 0)
