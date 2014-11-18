@@ -294,18 +294,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
-            FPetraUtilsObject.VerificationResultCollection.Clear();
+            if (CreateNewATransaction())
+            {
+                pnlTransAnalysisAttributes.Enabled = true;
+                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
 
-            this.CreateNewATransaction();
-
-//          ClearControls(); // Don't clear controls! I've just worked hard to set some default values in them!
-            ValidateAllData(true, false);
-
-            pnlTransAnalysisAttributes.Enabled = true;
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
-
-            //Needs to be called at end of addition process to process Analysis Attributes
-            AccountCodeDetailChanged(null, null);
+                //Needs to be called at end of addition process to process Analysis Attributes
+                AccountCodeDetailChanged(null, null);
+            }
         }
 
         /// <summary>
