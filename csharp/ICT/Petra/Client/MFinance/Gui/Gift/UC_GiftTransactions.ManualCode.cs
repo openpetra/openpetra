@@ -2335,7 +2335,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ProcessGiftDetainationBroadcastMessage(TFormsMessage AFormsMessage)
         {
             // for some reason it is possible that this method can be called even if the parent form has been closed
-            if (((TFrmRecurringGiftBatch)ParentForm) == null)
+            if (((TFrmGiftBatch)ParentForm) == null)
             {
                 return;
             }

@@ -340,6 +340,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void DeleteAllGifts(System.Object sender, EventArgs e)
         {
             string completionMessage = string.Empty;
+            int BatchNumber = FBatchNumber;
 
             if ((FPreviouslySelectedDetailRow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
@@ -350,7 +351,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ||
                 (MessageBox.Show(String.Format(Catalog.GetString(
                              "You have chosen to delete all gifts from batch ({0}).\n\nDo you really want to delete all?"),
-                         FBatchNumber),
+                         BatchNumber),
                      Catalog.GetString("Confirm Delete All"),
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
@@ -366,13 +367,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     //Clear out the gift data for the current batch without marking the records for deletion
                     //  and then reload from server
-                    if (RefreshCurrentBatchGiftData(FBatchNumber))
+                    if (RefreshCurrentBatchGiftData(BatchNumber))
                     {
                         ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
                     }
 
                     //Now delete all gift data for current batch
-                    DeleteCurrentBatchGiftData(FBatchNumber);
+                    DeleteCurrentBatchGiftData(BatchNumber);
 
                     FBatchRow.BatchTotal = 0;
 

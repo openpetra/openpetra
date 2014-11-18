@@ -73,9 +73,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
             // SModuleTable is loaded with the users, therefore we can only now fill the checked list box.
             // TODO: should use cached table instead?
             LoadAvailableModulesIntoCheckedListBox();
-
-            // Event to reload the grid after every save.
-            FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnDataSaved);
         }
 
         private void LoadAvailableModulesIntoCheckedListBox()
@@ -117,6 +114,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 MessageBox.Show(Catalog.GetString("Changes to users will take effect at next login."),
                     Catalog.GetString("Maintain Users"));
+            	
+            	// Reload the grid after every successful save. (This will add new password's hash and salt to the table.)
+            	LoadUsers();
+
+            	btnChangePassword.Enabled = true;
+                txtDetailPasswordHash.Enabled = false;
             }
 
             return Result;
@@ -224,17 +227,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
 
             ARow.UserId = newName;
-        }
-
-        /// <summary>
-        /// Reload the grid after every save. (This will add new password's hash and salt to the table.)
-        /// </summary>
-        /// <param name="Sender"></param>
-        /// <param name="e"></param>
-        private void OnDataSaved(object Sender, TDataSavedEventArgs e)
-        {
-            LoadUsers();
-            SelectRowInGrid(FPrevRowChangedRow);
         }
 
         private void RetireUser(Object Sender, EventArgs e)
