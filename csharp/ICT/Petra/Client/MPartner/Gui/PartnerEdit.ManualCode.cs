@@ -1669,6 +1669,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Only switch to Personnel Tab Group if Partner is of Partner Class PERSON
                     if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                     {
+                        // TODO: this call to ViewPartnerData should not really be needed here but
+                        // if it is not done then currently the Save button gets enabled when the user wants
+                        // to access the Partner Data section (there is probably some initialisation happening
+                        // in there that is necessary for the whole screen)
+                        ViewPartnerData(null, null);
+
                         ViewPersonnelData(null, null);
                     }
                     else
@@ -1732,7 +1738,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             // we remove some TabPages, therefore the Controls on it, but the Events hooked
             // up to them would still be around and prevent a GC of the Form!
             FPetraUtilsObject.HookupAllControls();
-
 
             ucoUpperPart.Focus();
             this.Cursor = Cursors.Default;

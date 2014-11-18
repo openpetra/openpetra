@@ -98,6 +98,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
 
             ucoChkFilter.ShowFamiliesOnly(false);
+
+            //TODO: Unfortunately can't allow sorting at the moment as the xml report is a multi level report and 
+            //      they don't allow sorting but raise an exception --> hide sorting tab for now
+            tpgReportSorting.Hide();
         }
 
         private void grdDirectRelationship_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)

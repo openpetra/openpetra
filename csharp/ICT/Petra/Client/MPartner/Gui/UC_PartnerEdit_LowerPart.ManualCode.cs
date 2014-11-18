@@ -288,6 +288,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ucoPartnerTabSet.Visible = true;
                     ucoPersonnelTabSet.Visible = false;
+                    ucoPartnerTabSet.SelectTabPage(ucoPartnerTabSet.CurrentlySelectedTabPage); // make refresh happen
 
                     break;
 
@@ -295,6 +296,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ucoPersonnelTabSet.Visible = true;
                     ucoPartnerTabSet.Visible = false;
+                    ucoPersonnelTabSet.SelectTabPage(ucoPersonnelTabSet.CurrentlySelectedTabPage); // make refresh happen
 
                     break;
             }
