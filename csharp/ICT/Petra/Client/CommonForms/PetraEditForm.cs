@@ -88,6 +88,9 @@ namespace Ict.Petra.Client.CommonForms
         /// Tells whether the Screen has changes that are not yet saved
         protected Boolean FHasChanges;
 
+        /// Set if the user answers 'no' to the 'save changes?' question.
+        protected Boolean FChangesWereAbandonded;
+
         /// Tells whether the Screen is working with new data (is not editing existing data)
         protected Boolean FHasNewData;
 
@@ -179,6 +182,18 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        public Boolean ChangesWereAbandonded
+        {
+            get
+            {
+                return FChangesWereAbandonded;
+            }
+            set
+            {
+                FChangesWereAbandonded = value;
+            }
+        }
+
         /// <summary>
         /// Tells whether the check if the Form can be closed has already been run
         /// </summary>
@@ -222,6 +237,7 @@ namespace Ict.Petra.Client.CommonForms
 
             // default behavior is false, DONT supress detecting the change events
             FSuppressChangeDetection = false;
+            ChangesWereAbandonded = false;
         }
 
         /** Adds event handlers for the appropiate onChange event to call a central procedure
@@ -1048,6 +1064,10 @@ namespace Ict.Petra.Client.CommonForms
                 }
                 else if (SaveQuestionAnswer == System.Windows.Forms.DialogResult.No)
                 {
+                    //
+                    // The user has elected not to save the changes that have been made.
+                    // Here I set a flag (visible to manual code) to make this explicit
+                    ChangesWereAbandonded = true;
                     HasChanges = false;
                     ReturnValue = true;
                 }
