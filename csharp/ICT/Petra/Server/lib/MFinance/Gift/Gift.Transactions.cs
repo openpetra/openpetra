@@ -203,7 +203,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             AEffectiveDate);
 
                         NewGiftBatchNumber = batch.BatchNumber;
-                       
+
                         batch.BatchDescription = recBatch.BatchDescription;
                         batch.BankCostCentre = recBatch.BankCostCentre;
                         batch.BankAccountCode = recBatch.BankAccountCode;
@@ -727,6 +727,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 delegate
@@ -768,6 +769,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 delegate
@@ -777,7 +779,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
                     AGiftDetailAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
                 });
-            
+
             return MainDS;
         }
 
@@ -794,6 +796,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 delegate
@@ -819,6 +822,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 delegate
@@ -842,6 +846,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 delegate
@@ -913,17 +918,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string CostCentreCode = string.Empty;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 delegate
                 {
                     CostCentreCode = RetrieveCostCentreCodeForRecipient(ALedgerNumber,
-                                                                        ARecipientPartnerKey,
-                                                                        ARecipientLedgerNumber,
-                                                                        ADateGiftEntered,
-                                                                        AMotivationGroupCode,
-                                                                        AMotivationDetailCode,
-                                                                        Transaction);
+                        ARecipientPartnerKey,
+                        ARecipientLedgerNumber,
+                        ADateGiftEntered,
+                        AMotivationGroupCode,
+                        AMotivationDetailCode,
+                        Transaction);
                 });
 
             return CostCentreCode;
@@ -2414,6 +2420,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool ChangesToCommit = false;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -2434,7 +2441,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// Create GiftBatchTDS with the gift batch to post, and all gift transactions and details, and motivation details
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        private static GiftBatchTDS LoadAGiftBatchAndRelatedData(Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction, out bool AChangesToCommit)
+        private static GiftBatchTDS LoadAGiftBatchAndRelatedData(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            TDBTransaction ATransaction,
+            out bool AChangesToCommit)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -2503,8 +2513,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             try
                             {
                                 string newCostCentreCode =
-                                    RetrieveCostCentreCodeForRecipient(ALedgerNumber, giftDetail.RecipientKey, giftDetail.RecipientLedgerNumber,
-                                        giftDetail.DateEntered, motivationDetailRow.MotivationGroupCode, motivationDetailRow.MotivationDetailCode, ATransaction);
+                                    RetrieveCostCentreCodeForRecipient(ALedgerNumber,
+                                        giftDetail.RecipientKey,
+                                        giftDetail.RecipientLedgerNumber,
+                                        giftDetail.DateEntered,
+                                        motivationDetailRow.MotivationGroupCode,
+                                        motivationDetailRow.MotivationDetailCode,
+                                        ATransaction);
 
                                 if (giftDetail.CostCentreCode != newCostCentreCode)
                                 {
@@ -2593,6 +2608,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool ChangesToCommit = false;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -2614,7 +2630,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// create GiftBatchTDS with the recurring gift batch, and all gift transactions and details, and motivation details
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        private static GiftBatchTDS LoadARecurringGiftBatchAndRelatedData(Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction, out bool AChangesToCommit)
+        private static GiftBatchTDS LoadARecurringGiftBatchAndRelatedData(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            TDBTransaction ATransaction,
+            out bool AChangesToCommit)
         {
             AChangesToCommit = false;
 

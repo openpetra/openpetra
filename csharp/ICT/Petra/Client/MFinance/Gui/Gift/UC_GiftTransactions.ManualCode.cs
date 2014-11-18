@@ -932,7 +932,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ClearCurrentSelection(bool AResetFBatchNumber = true)
         {
             this.FPreviouslySelectedDetailRow = null;
-            
+
             if (AResetFBatchNumber)
             {
                 FBatchNumber = -1;
@@ -993,6 +993,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Copy and backup the current dataset
             GiftBatchTDS TempDS = (GiftBatchTDS)FMainDS.Copy();
+
             TempDS.Merge(FMainDS);
 
             GiftBatchTDS BackupDS = (GiftBatchTDS)FMainDS.Copy();
