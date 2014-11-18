@@ -115,10 +115,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FLedgerNumber = value;
 
+                ParentForm.Cursor = Cursors.WaitCursor;
                 InitialiseLogicObjects();
                 InitialiseLedgerControls();
-
-                LoadBatchesForCurrentYear();
             }
         }
 
@@ -195,14 +194,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 out FDefaultDate);
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
+
+            FLoadAndFilterLogicObject.InitialiseDataSources(cmbDetailBankCostCentre, cmbDetailBankAccountCode);
         }
 
         private void RunOnceOnParentActivationManual()
         {
-            FLoadAndFilterLogicObject.OnMainScreenActivation(cmbDetailBankCostCentre, cmbDetailBankAccountCode);
-
+            ParentForm.Cursor = Cursors.WaitCursor;
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+
+            FLoadAndFilterLogicObject.ActivateFilter();
+            LoadBatchesForCurrentYear();
+            ParentForm.Cursor = Cursors.Default;
 
             SetInitialFocus();
         }
@@ -854,7 +858,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FLoadAndFilterLogicObject.StatusEditing = true;
             }
 
-            FImportLogicObject.ImportBatches();
+            FImportLogicObject.ImportBatches(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromFile);
+        }
+
+        /// <summary>
+        /// this supports the batch export files from Petra 2.x.
+        /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
+        /// </summary>
+        private void ImportFromClipboard(System.Object sender, System.EventArgs e)
+        {
+            if (!FLoadAndFilterLogicObject.StatusEditing)
+            {
+                FLoadAndFilterLogicObject.StatusEditing = true;
+            }
+
+            FImportLogicObject.ImportBatches(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromClipboard);
+        }
+
+        /// <summary>
+        /// Imports a transactions file
+        /// </summary>
+        public bool ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum AImportDataSource)
+        {
+            if (!FLoadAndFilterLogicObject.StatusEditing)
+            {
+                FLoadAndFilterLogicObject.StatusEditing = true;
+            }
+
+            bool bSuccess = FImportLogicObject.ImportTransactions(FPreviouslySelectedDetailRow, AImportDataSource);
+
+            if (bSuccess)
+            {
+                // We need to update the last transaction number for the batch
+                ParentForm.Cursor = Cursors.WaitCursor;
+
+                FMainDS.AGiftBatch.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftBatchData(
+                        FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber).AGiftBatch);
+                FMainDS.AGiftBatch.AcceptChanges();
+
+                ParentForm.Cursor = Cursors.Default;
+            }
+
+            return bSuccess;
         }
 
         private void PostBatch(System.Object sender, EventArgs e)

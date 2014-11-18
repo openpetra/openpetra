@@ -64,14 +64,11 @@ namespace Ict.Tools.DataDumpPetra2
             while (OldRow != null)
             {
                 //string ContactLogKey = TSequenceWriter.GetNextSequenceValue("seq_contact").ToString();
-                
-                for( int i = 0; i < OldRow.Length; i++)
-                {
-                    OldRow[i] = string.IsNullOrWhiteSpace(OldRow[i]) ? "\\N" : OldRow[i];
-                }
+
+                for (int i = 0; i < OldRow.Length; i++)
 
                 // p_contact_log row
-                SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_log_id_i", OldRow[0]);//ContactLogKey);
+                SetValue(ContactLogColumnNames, ref ContactLogRow, "p_contact_log_id_i", OldRow[0]); //ContactLogKey);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "s_contact_date_d", OldRow[2]);
                 SetValue(ContactLogColumnNames, ref ContactLogRow, "s_contact_time_i", OldRow[3]);
 
@@ -100,7 +97,7 @@ namespace Ict.Tools.DataDumpPetra2
 
                 // p_partner_contact row
                 SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", OldRow[1]);
-                SetValue(AColumnNames, ref ANewRow, "p_contact_log_id_i", OldRow[0]);//ContactLogKey);
+                SetValue(AColumnNames, ref ANewRow, "p_contact_log_id_i", OldRow[0]); //ContactLogKey);
 
                 // write test records
                 if (AWriterTest != null)

@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash, timop
+//       matthiash, timop, alanP
 //
 // Copyright 2004-2014 by OM International
 //
@@ -125,8 +125,6 @@ namespace Ict.Petra.Server.MFinance.GL
             out TVerificationResultCollection AMessages
             )
         {
-            Int32 ProgressTrackerCounter = 0;       // Counts transactions per journal
-
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Importing GL Batches"),
                 100);
@@ -156,6 +154,10 @@ namespace Ict.Petra.Server.MFinance.GL
             // Initialise our working variables
             TDBTransaction Transaction = null;
             Int32 RowNumber = 0;
+            Int32 InitialTextLength = AImportString.Length;
+            Int32 TextProcessedLength = 0;
+            Int32 PercentDone = 10;
+            Int32 PreviousPercentDone = 0;
             ABatchRow NewBatch = null;
             AJournalRow NewJournal = null;
             int BatchPeriodNumber = -1;
@@ -211,6 +213,9 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     RowNumber++;
 
+                    TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                    PercentDone = 10 + ((TextProcessedLength * 90) / InitialTextLength);
+
                     // skip empty lines and commented lines
                     if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#"))
                     {
@@ -223,18 +228,40 @@ namespace Ict.Petra.Server.MFinance.GL
                         {
                             ImportMessage = Catalog.GetString("Parsing a batch row");
 
-                            if (numberOfElements != 4)
+                            if (numberOfElements < 4)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
                                         Catalog.GetString("Wrong number of batch columns.  Expected 4 columns."), TResultSeverity.Resv_Critical));
 
                                 FImportLine = sr.ReadLine();
+
+                                if (FImportLine != null)
+                                {
+                                    TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                                }
+
                                 continue;
                             }
 
                             if (NewBatch != null)   // update the totals of the batch that has just been imported
                             {
                                 GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
+
+                                if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
+                                {
+                                    // Save the current batch and its components
+                                    ImportMessage = Catalog.GetString("Saving batch");
+                                    ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
+                                    MainDS.ABatch.AcceptChanges();
+
+                                    ImportMessage = Catalog.GetString("Saving gift");
+                                    AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
+                                    MainDS.AJournal.AcceptChanges();
+
+                                    ImportMessage = Catalog.GetString("Saving giftdetails");
+                                    ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction);
+                                    MainDS.ATransaction.AcceptChanges();
+                                }
                             }
 
                             NewBatch = MainDS.ABatch.NewRowTyped(true);
@@ -252,10 +279,6 @@ namespace Ict.Petra.Server.MFinance.GL
                                 MainDS.ABatch.ColumnBatchControlTotal, RowNumber, AMessages, ValidationControlsDictBatch);
                             NewBatch.DateEffective = ImportDate(Catalog.GetString("Batch effective date"),
                                 MainDS.ABatch.ColumnDateEffective, RowNumber, AMessages, ValidationControlsDictBatch);
-
-                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                string.Format(Catalog.GetString("Batch {0}"), NewBatch.BatchNumber),
-                                10);
 
                             if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
                                     NewBatch.DateEffective,
@@ -303,25 +326,23 @@ namespace Ict.Petra.Server.MFinance.GL
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, RowNumber),
                                         Catalog.GetString("The batch description must not be empty."), TResultSeverity.Resv_Critical));
                             }
-
-                            if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
-                            {
-                                ImportMessage = Catalog.GetString("Saving GL batch:");
-
-                                ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
-                                MainDS.ABatch.AcceptChanges();
-                            }
                         }
                         else if (RowType == "J")
                         {
                             ImportMessage = Catalog.GetString("Parsing a journal row");
 
-                            if (numberOfElements != 7)
+                            if (numberOfElements < 7)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
                                         Catalog.GetString("Wrong number of journal columns.  Expected 7 columns."), TResultSeverity.Resv_Critical));
 
                                 FImportLine = sr.ReadLine();
+
+                                if (FImportLine != null)
+                                {
+                                    TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                                }
+
                                 continue;
                             }
 
@@ -352,13 +373,6 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewJournal.DateEffective = NewBatch.DateEffective;
                             NewJournal.JournalPeriod = NewBatch.BatchPeriod;
                             NewBatch.LastJournal++;
-
-                            ProgressTrackerCounter = 0;   // counts transactions per journal
-                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                string.Format(Catalog.GetString("Batch {0}, Journal {1}"),
-                                    NewBatch.BatchNumber,
-                                    NewJournal.JournalNumber),
-                                15);
 
                             MainDS.AJournal.Rows.Add(NewJournal);
 
@@ -455,9 +469,6 @@ namespace Ict.Petra.Server.MFinance.GL
                                     if (UpdateDailyExchangeRateTable(DailyExchangeToTable, NewJournal.TransactionCurrency, LedgerBaseCurrency,
                                             NewJournal.ExchangeRateToBase, NewJournal.DateEffective))
                                     {
-                                        ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToTable, Transaction);
-                                        DailyExchangeToTable.AcceptChanges();
-
                                         AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportInformationForLine, RowNumber),
                                                 String.Format(Catalog.GetString("Added exchange rate of {0} to Daily Exchange Rate table for {1}"),
                                                     NewJournal.ExchangeRateToBase, StringHelper.DateToLocalizedString(NewJournal.DateEffective)),
@@ -475,10 +486,6 @@ namespace Ict.Petra.Server.MFinance.GL
                                         ADailyExchangeRateAccess.SubmitChanges(DailyExchangeFromTable, Transaction);
                                     }
                                 }
-
-                                ImportMessage = Catalog.GetString("Saving the journal:");
-                                AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
-                                MainDS.AJournal.AcceptChanges();
                             }
                         }
                         else if (RowType == "T")
@@ -492,12 +499,17 @@ namespace Ict.Petra.Server.MFinance.GL
                                         TResultSeverity.Resv_Critical));
 
                                 FImportLine = sr.ReadLine();
+
+                                if (FImportLine != null)
+                                {
+                                    TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                                }
+
                                 continue;
                             }
 
                             ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatch, ref NewJournal,
-                                ref ProgressTrackerCounter, ref Transaction, ref ImportMessage,
-                                ref AMessages, ref ValidationControlsDictTransaction);
+                                ref Transaction, ref ImportMessage, ref AMessages, ref ValidationControlsDictTransaction);
                         }
                         else
                         {
@@ -512,8 +524,22 @@ namespace Ict.Petra.Server.MFinance.GL
                         break;
                     }
 
+                    // Update progress tracker every few percent
+                    if ((PercentDone - PreviousPercentDone) > 3)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            String.Format(Catalog.GetString("Importing row {0}"), RowNumber),
+                            (PercentDone > 98) ? 98 : PercentDone);
+                        PreviousPercentDone = PercentDone;
+                    }
+
                     // Read the next line
                     FImportLine = sr.ReadLine();
+
+                    if (FImportLine != null)
+                    {
+                        TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                    }
                 }  // while CSV lines
 
                 // Finished reading the file - did we have critical errors?
@@ -555,11 +581,24 @@ namespace Ict.Petra.Server.MFinance.GL
                 ImportMessage = Catalog.GetString("Saving counter fields:");
 
                 //Finally save all pending changes (last xxx number is updated)
-                ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
-                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
-                AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
+                ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToTable, Transaction);
+                DailyExchangeToTable.AcceptChanges();
 
-                MainDS.AcceptChanges();
+                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+                LedgerTable.AcceptChanges();
+
+                // Update totals of final batch
+                if (NewBatch != null)
+                {
+                    GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
+                }
+
+                ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
+                MainDS.ABatch.AcceptChanges();
+                AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
+                MainDS.AJournal.AcceptChanges();
+                ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction);
+                MainDS.ATransaction.AcceptChanges();
 
                 // Now we are done!!!
                 DBAccess.GDBAccessObj.CommitTransaction();
@@ -665,16 +704,19 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ARequestParams"></param>
         /// <param name="AImportString"></param>
-        /// <param name="AMainDS"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
         /// <param name="AMessages"></param>
         /// <returns></returns>
         public bool ImportGLTransactions(
             Hashtable ARequestParams,
             String AImportString,
-            ref GLBatchTDS AMainDS,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
             out TVerificationResultCollection AMessages)
         {
-            Int32 ProgressTrackerCounter = 0;
             string ImportMessage = Catalog.GetString("Initialising");
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
@@ -686,14 +728,8 @@ namespace Ict.Petra.Server.MFinance.GL
                 5);
 
             AMessages = new TVerificationResultCollection();
-            GLBatchTDS MainDS = (GLBatchTDS)AMainDS.Copy();
-            MainDS.Merge(AMainDS.ABatch);
-            MainDS.Merge(AMainDS.AJournal);
             GLSetupTDS SetupDS = new GLSetupTDS();
             StringReader sr = new StringReader(AImportString);
-
-            ABatchRow NewBatchRow = (ABatchRow)MainDS.ABatch[0];
-            AJournalRow NewJournalRow = (AJournalRow)MainDS.AJournal[0];
 
             FDelimiter = (String)ARequestParams["Delimiter"];
             Int32 LedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
@@ -707,6 +743,10 @@ namespace Ict.Petra.Server.MFinance.GL
 
             TDBTransaction Transaction = null;
             Int32 RowNumber = 0;
+            Int32 InitialTextLength = AImportString.Length;
+            Int32 TextProcessedLength = 0;
+            Int32 PercentDone = 10;
+            Int32 PreviousPercentDone = 0;
             bool ok = false;
 
             // Create some validation dictionaries
@@ -714,6 +754,10 @@ namespace Ict.Petra.Server.MFinance.GL
 
             try
             {
+                // This needs to be initialised because we will be calling the method
+                TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookups.GetCurrentPostingRangeDates;
+                TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
+
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
                 // If we did not succeed there is something wrong (a transaction is already dangling somewhere?)
@@ -722,6 +766,24 @@ namespace Ict.Petra.Server.MFinance.GL
                     throw new Exception(Catalog.GetString(
                             "Could not create a new import transaction because an existing transaction has not completed."));
                 }
+
+                // Construct our DataSet - we use all the journals for the batch so we can update the batch totals.
+                GLBatchTDS MainDS = new GLBatchTDS();
+                ABatchTable BatchTable = ABatchAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, Transaction);
+                MainDS.ABatch.Merge(BatchTable);
+                AJournalTable JournalTable = AJournalAccess.LoadViaABatch(ALedgerNumber, ABatchNumber, Transaction);
+                MainDS.AJournal.Merge(JournalTable);
+                ATransactionTable TransactionTable = ATransactionAccess.LoadViaABatch(ALedgerNumber, ABatchNumber, Transaction);
+                MainDS.ATransaction.Merge(TransactionTable);
+                ATransAnalAttribTable TransAnalAttributeTable = ATransAnalAttribAccess.LoadViaAJournal(ALedgerNumber,
+                    ABatchNumber,
+                    AJournalNumber,
+                    Transaction);
+                MainDS.ATransAnalAttrib.Merge(TransAnalAttributeTable);
+                MainDS.AcceptChanges();
+
+                ABatchRow NewBatchRow = (ABatchRow)MainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber });
+                AJournalRow NewJournalRow = (AJournalRow)MainDS.AJournal.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber });
 
                 // Load supplementary tables that we are going to need for validation
                 AAnalysisTypeAccess.LoadAll(SetupDS, Transaction);
@@ -739,34 +801,32 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     RowNumber++;
 
+                    TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                    PercentDone = 10 + ((TextProcessedLength * 90) / InitialTextLength);
+
                     // skip empty lines and commented lines
                     if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#"))
                     {
-                        int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count;
+                        int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count + 1;
 
-                        // Read the row analysisType - there is no 'validation' on this so we can make the call with null parameters
-                        string RowType = ImportString(Catalog.GetString("row type"), null, null);
-
-                        if (RowType == "T")
-                        {
-                            if (numberOfElements < 8)
-                            {
-                                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                        Catalog.GetString("Wrong number of transaction columns.  Expected at least 8 columns."),
-                                        TResultSeverity.Resv_Critical));
-
-                                FImportLine = sr.ReadLine();
-                                continue;
-                            }
-
-                            ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatchRow, ref NewJournalRow,
-                                ref ProgressTrackerCounter, ref Transaction, ref ImportMessage, ref AMessages, ref ValidationControlsDictTransaction);
-                        }
-                        else
+                        if (numberOfElements < 8)
                         {
                             AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                    Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
+                                    Catalog.GetString("Wrong number of transaction columns.  Expected at least 8 columns."),
+                                    TResultSeverity.Resv_Critical));
+
+                            FImportLine = sr.ReadLine();
+
+                            if (FImportLine != null)
+                            {
+                                TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                            }
+
+                            continue;
                         }
+
+                        ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatchRow, ref NewJournalRow,
+                            ref Transaction, ref ImportMessage, ref AMessages, ref ValidationControlsDictTransaction);
                     }  // if the CSV line qualifies
 
                     if (AMessages.Count > 100)
@@ -775,8 +835,22 @@ namespace Ict.Petra.Server.MFinance.GL
                         break;
                     }
 
+                    // Update progress tracker every few percent
+                    if ((PercentDone - PreviousPercentDone) > 3)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            String.Format(Catalog.GetString("Importing row {0}"), RowNumber),
+                            (PercentDone > 98) ? 98 : PercentDone);
+                        PreviousPercentDone = PercentDone;
+                    }
+
                     // Read the next line
                     FImportLine = sr.ReadLine();
+
+                    if (FImportLine != null)
+                    {
+                        TextProcessedLength += (FImportLine.Length + FNewLine.Length);
+                    }
                 }  // while CSV lines
 
                 // Finished reading the file - did we have critical errors?
@@ -809,20 +883,27 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 // Everything is ok, so we can do our finish actions
 
-                ImportMessage = Catalog.GetString("Saving counter fields:");
 
-                if (NewBatchRow != null)   // update the totals of the batch that has just been imported
-                {
-                    //GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatchRow);
-                }
-
-                //Finally reject and save accordingly
-                MainDS.ABatch.RejectChanges();
-                MainDS.AJournal.RejectChanges();
+                //Finally submit all our changes
+                ImportMessage = Catalog.GetString("Saving transactions");
                 ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction);
-                ATransAnalAttribAccess.SubmitChanges(MainDS.ATransAnalAttrib, Transaction);
+                MainDS.ATransaction.AcceptChanges();
 
-                MainDS.AcceptChanges();
+                ImportMessage = Catalog.GetString("Saving analysis attributes");
+                ATransAnalAttribAccess.SubmitChanges(MainDS.ATransAnalAttrib, Transaction);
+                MainDS.ATransAnalAttrib.AcceptChanges();
+
+                // update the totals of the batch that has just been imported
+                ImportMessage = Catalog.GetString("Updating batch totals");
+                GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatchRow);
+
+                ImportMessage = Catalog.GetString("Saving journal totals");
+                AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
+                MainDS.AJournal.AcceptChanges();
+
+                ImportMessage = Catalog.GetString("Saving batch totals");
+                ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
+                MainDS.ABatch.AcceptChanges();
 
                 // Now we are done!!!
                 DBAccess.GDBAccessObj.CommitTransaction();
@@ -924,8 +1005,7 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         private void ImportGLTransactionsInner(Int32 ALedgerNumber, Int32 ARowNumber, ref GLBatchTDS AMainDS, ref GLSetupTDS ASetupDS,
-            ref ABatchRow ANewBatchRow, ref AJournalRow ANewJournalRow,
-            ref Int32 AProgressTrackerCounter, ref TDBTransaction ATransaction, ref string AImportMessage,
+            ref ABatchRow ANewBatchRow, ref AJournalRow ANewJournalRow, ref TDBTransaction ATransaction, ref string AImportMessage,
             ref TVerificationResultCollection AMessages, ref TValidationControlsDict AValidationControlsDictTransaction)
         {
             AImportMessage = Catalog.GetString("Parsing a transaction line.");
@@ -956,9 +1036,9 @@ namespace Ict.Petra.Server.MFinance.GL
                 AMainDS.ATransaction.ColumnTransactionDate, ARowNumber, AMessages, AValidationControlsDictTransaction);
 
             decimal DebitAmount = ImportDecimal(Catalog.GetString("Debit amount"),
-                AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, AValidationControlsDictTransaction);
+                AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, AValidationControlsDictTransaction, "0");
             decimal CreditAmount = ImportDecimal(Catalog.GetString("Credit amount"),
-                AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, AValidationControlsDictTransaction);
+                AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, AValidationControlsDictTransaction, "0");
 
             for (int i = 0; i < 10; i++)
             {
@@ -1087,7 +1167,9 @@ namespace Ict.Petra.Server.MFinance.GL
                 NewTransaction,
                 null,
                 ref AMessages,
-                AValidationControlsDictTransaction);
+                AValidationControlsDictTransaction,
+                ASetupDS.ACostCentre,
+                ASetupDS.AAccount);
 
             for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
             {
@@ -1116,73 +1198,21 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
                 }
             }
-
-            AImportMessage = Catalog.GetString("Additional import validation of the transaction data.");
-            ACostCentreRow costcentre = (ACostCentreRow)ASetupDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, NewTransaction.CostCentreCode });
-
-            // check if cost centre exists, and is a posting costcentre.
-            // check if cost centre is active.
-            if ((costcentre == null) || !costcentre.PostingCostCentreFlag)
-            {
-                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                        String.Format(Catalog.GetString("Invalid cost centre '{0}'."), NewTransaction.CostCentreCode), TResultSeverity.Resv_Critical));
-            }
-            else if (!costcentre.CostCentreActiveFlag)
-            {
-                // TODO: ask user if he wants to use an inactive cost centre???
-                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                        String.Format(Catalog.GetString("Inactive cost centre '{0}'."), NewTransaction.CostCentreCode), TResultSeverity.Resv_Critical));
-            }
-
-            AAccountRow account = (AAccountRow)ASetupDS.AAccount.Rows.Find(new object[] { ALedgerNumber, NewTransaction.AccountCode });
-
-            // check if account exists, and is a posting account.
-            // check if account is active
-            if ((account == null) || !account.PostingStatus)
-            {
-                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                        String.Format(Catalog.GetString("Invalid account code '{0}'."), NewTransaction.AccountCode), TResultSeverity.Resv_Critical));
-            }
-            else if (!account.AccountActiveFlag)
-            {
-                // TODO: ask user if he wants to use an inactive account???
-                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                        String.Format(Catalog.GetString("Inactive account code '{0}'."), NewTransaction.AccountCode), TResultSeverity.Resv_Critical));
-            }
-
-            // update the totals of the batch
-            GLRoutines.UpdateTotalsOfBatch(ref AMainDS, ANewBatchRow);
-
-            if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
-            {
-                AImportMessage = Catalog.GetString("Saving the transaction:");
-
-                // TODO If this is a fund transfer to a foreign cost centre, check whether there are Key Ministries available for it.
-                ATransactionAccess.SubmitChanges(AMainDS.ATransaction, ATransaction);
-                AMainDS.ATransaction.AcceptChanges();
-
-                AImportMessage = Catalog.GetString("Saving the attributes:");
-
-                ATransAnalAttribAccess.SubmitChanges(AMainDS.ATransAnalAttrib, ATransaction);
-                AMainDS.ATransAnalAttrib.AcceptChanges();
-            }
-
-            // Update progress tracker every 40 records
-            if (++AProgressTrackerCounter % 40 == 0)
-            {
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    string.Format(Catalog.GetString("Batch {0}, Journal {1}: {2}"),
-                        ANewBatchRow.BatchNumber,
-                        ANewJournalRow.JournalNumber,
-                        AProgressTrackerCounter),
-                    ((AProgressTrackerCounter / 40) + 2) * 10 > 90 ? 90 : ((AProgressTrackerCounter / 40) + 2) * 10);
-            }
         }
 
         private String MakeFriendlyFKExceptions(Exception ex, string AType = "B")
         {
             //note that this is only done for "user errors" not for program errors!
-            String innerMessage = ex.InnerException.ToString();
+            String innerMessage;
+
+            if (ex.InnerException == null)
+            {
+                innerMessage = ex.Message;
+            }
+            else
+            {
+                innerMessage = ex.InnerException.ToString();
+            }
 
             string formatStr = Catalog.GetString("  Do you need to add this code to the '{0}' main setup screen?");
 
@@ -1248,7 +1278,10 @@ namespace Ict.Petra.Server.MFinance.GL
             return sReturn;
         }
 
-        private Boolean ImportBoolean(String AColumnTitle, DataColumn ADataColumn, TValidationControlsDict AValidationColumnsDict)
+        private Boolean ImportBoolean(String AColumnTitle,
+            DataColumn ADataColumn,
+            TValidationControlsDict AValidationColumnsDict,
+            String ADefaultString = "")
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1256,6 +1289,12 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
+
+            if (sReturn == String.Empty)
+            {
+                sReturn = ADefaultString;
+            }
+
             return sReturn.ToLower().Equals("yes");
         }
 
@@ -1263,7 +1302,8 @@ namespace Ict.Petra.Server.MFinance.GL
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict)
+            TValidationControlsDict AValidationColumnsDict,
+            String ADefaultString = "")
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1271,6 +1311,12 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
+
+            if (sReturn == String.Empty)
+            {
+                sReturn = ADefaultString;
+            }
+
             Int64 retVal;
 
             if (Int64.TryParse(sReturn, out retVal))
@@ -1288,7 +1334,8 @@ namespace Ict.Petra.Server.MFinance.GL
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict)
+            TValidationControlsDict AValidationColumnsDict,
+            String ADefaultString = "")
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1296,6 +1343,12 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
+
+            if (sReturn == String.Empty)
+            {
+                sReturn = ADefaultString;
+            }
+
             Int32 retVal;
 
             if (Int32.TryParse(sReturn, out retVal))
@@ -1313,7 +1366,8 @@ namespace Ict.Petra.Server.MFinance.GL
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict)
+            TValidationControlsDict AValidationColumnsDict,
+            String ADefaultString = "")
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1321,6 +1375,12 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
+
+            if (sReturn == String.Empty)
+            {
+                sReturn = ADefaultString;
+            }
+
             try
             {
                 decimal dec = Convert.ToDecimal(sReturn, FCultureInfoNumberFormat);
@@ -1339,7 +1399,8 @@ namespace Ict.Petra.Server.MFinance.GL
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict)
+            TValidationControlsDict AValidationColumnsDict,
+            String ADefaultString = "")
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1347,6 +1408,12 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             String sDate = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
+
+            if (sDate == String.Empty)
+            {
+                sDate = ADefaultString;
+            }
+
             DateTime dtReturn;
 
             try

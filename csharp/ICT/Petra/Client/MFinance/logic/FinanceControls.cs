@@ -344,15 +344,27 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AActiveOnly"></param>
         /// <param name="ALocalOnly">Local Costcentres only; otherwise foreign costcentres (ie from other legal entities) are included)</param>
         /// <param name="AIndicateInactive">Determines wether or not to indicate a cost centre as inactive</param>
+        /// <param name="AACostCentreListDataSource">If a reference to the ACostCentreList is available, pass it here.  Otherwise the method
+        /// will get it from the data cache.</param>
         public static void InitialiseCostCentreList(ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
             bool AExcludePosting,
             bool AActiveOnly,
             bool ALocalOnly,
-            bool AIndicateInactive = false)
+            bool AIndicateInactive = false,
+            DataTable AACostCentreListDataSource = null)
         {
-            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
+            DataTable Table;
+
+            if (AACostCentreListDataSource == null)
+            {
+                Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
+            }
+            else
+            {
+                Table = AACostCentreListDataSource.Copy();
+            }
 
             // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
             DataRow emptyRow = Table.NewRow();
@@ -394,11 +406,12 @@ namespace Ict.Petra.Client.MFinance.Logic
             bool AExcludePosting,
             bool AActiveOnly,
             bool ABankAccountOnly,
-            bool AIndicateInactive = false)
+            bool AIndicateInactive = false,
+            DataTable AAAccountListDataSource = null)
         {
             InitialiseAccountList(
                 ref AControl, ALedgerNumber, APostingOnly,
-                AExcludePosting, AActiveOnly, ABankAccountOnly, "", AIndicateInactive);
+                AExcludePosting, AActiveOnly, ABankAccountOnly, "", AIndicateInactive, AAAccountListDataSource);
         }
 
         /// <summary>
@@ -412,6 +425,8 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ABankAccountOnly"></param>
         /// <param name="AForeignCurrencyName">If a value is defined, only base curreny or the defined currency are filtered</param>
         /// <param name="AIndicateInactive">Determines wether or not to indicate an account code as inactive</param>
+        /// <param name="AAAccountListDataSource">If a reference to the AAccountList is available, pass it here.  Otherwise the method
+        /// will get it from the data cache.</param>
         public static void InitialiseAccountList(ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
@@ -419,9 +434,19 @@ namespace Ict.Petra.Client.MFinance.Logic
             bool AActiveOnly,
             bool ABankAccountOnly,
             string AForeignCurrencyName,
-            bool AIndicateInactive = false)
+            bool AIndicateInactive = false,
+            DataTable AAAccountListDataSource = null)
         {
-            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
+            DataTable Table;
+
+            if (AAAccountListDataSource == null)
+            {
+                Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
+            }
+            else
+            {
+                Table = AAAccountListDataSource.Copy();
+            }
 
             // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first account etc)
             DataRow emptyRow = Table.NewRow();

@@ -46,7 +46,16 @@ namespace Ict.Petra.Shared.MFinance
         public const int CURRENCY_INTERNATIONAL_NUM = 2;
 
         /// <summary>gift comment type</summary>
+        public const string GIFT_COMMENT_TYPE_DONOR = "Donor";
+
+        /// <summary>gift comment type</summary>
+        public const string GIFT_COMMENT_TYPE_RECIPIENT = "Recipient";
+
+        /// <summary>gift comment type</summary>
         public const string GIFT_COMMENT_TYPE_BOTH = "Both";
+
+        /// <summary>gift comment type</summary>
+        public const string GIFT_COMMENT_TYPE_OFFICE = "Office";
 
         /// <summary>gift type</summary>
         public const string GIFT_TYPE_GIFT = "Gift";

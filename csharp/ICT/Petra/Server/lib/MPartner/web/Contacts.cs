@@ -328,9 +328,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             try
             {
-                PContactLogTable TempTable = new PContactLogTable();
-                PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
-
                 contacts = PContactLogAccess.LoadViaPPartnerPPartnerContact(partnerKey, WriteTransaction);
             }
             catch (Exception e)
@@ -363,9 +360,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             try
             {
-                PContactLogTable TempTable = new PContactLogTable();
-                PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
-
                 partnerContacts = PPartnerContactAccess.LoadViaPPartner(partnerKey, WriteTransaction);
             }
             catch (Exception e)

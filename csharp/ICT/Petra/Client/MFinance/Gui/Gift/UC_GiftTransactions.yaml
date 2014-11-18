@@ -19,6 +19,8 @@ RootNode:
         actReverseGift: {Label=Reverse &Gift, ActionClick=ReverseGift}
         actReverseGiftDetail: {Label=&Reverse Gift Detail, ActionClick=ReverseGiftDetail}
         actReverseGiftBatch: {Label=Reverse Gift &Batch, ActionClick=ReverseGiftBatch}
+        actImportTransactions: {Label=&Import From File, ActionClick=ImportTransactionsFromFile}
+        actImportFromClipboard: {Label=I&mport From Clipboard, ActionClick=ImportTransactionsFromClipboard}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlFilterAndFind, sptTransactions]
@@ -170,12 +172,19 @@ RootNode:
 
     Menu:
         mniTransactions:
-            Label: &Gift Transaction
-            mniAdjustGift: {Action=actAdjustGift}
-            mniReverseGiftBatch: {Action=actReverseGiftBatch}
-            mniReverseGift: {Action=actReverseGift}
-            mniReverseGiftDetail: {Action=actReverseGiftDetail}
+            Label: Gift Transacti&on
+            mniAdjustGift: {Label=&Adjust Gift, Action=actAdjustGift}
+            mniReverseGiftBatch: {Label=Reverse Gift &Batch, Action=actReverseGiftBatch}
+            mniReverseGift: {Label=Reverse &Gift, Action=actReverseGift}
+            mniReverseGiftDetail: {Label=Re&verse Gift Detail, Action=actReverseGiftDetail}
             mniSeparator: {Label=-}
-            mniDonorHistory: {Action: actDonorHistory, Enabled=false}
-            mniRecipientHistory: {Action: actRecipientHistory, Enabled=false}
-            mniRecipientGiftDestination: {Action: actRecipientGiftDestination, Enabled=false}
+            mniDonorHistory: {Label=&Donor History, Action: actDonorHistory, Enabled=false}
+            mniRecipientHistory: {Label=Recipient &History, Action: actRecipientHistory, Enabled=false}
+            mniRecipientGiftDestination: {Label=Recipient Gift D&estination, Action: actRecipientGiftDestination, Enabled=false}
+            mniSeparator: {Label=-}
+            mniImportTransactions: {Label=&Import From File, Action: actImportTransactions}
+            mniImportFromClipboard: {Label=I&mport From Clipboard, Action: actImportFromClipboard}
+
+    Toolbar:
+        tbbImportTransactions: {Action=actImportTransactions}
+        tbbImportFromClipboard: {Action=actImportFromClipboard}

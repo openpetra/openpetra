@@ -154,6 +154,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdCostCentres.Columns.Clear();
             grdCostCentres.AddTextColumn("Code", MainDS.ACostCentre.ColumnCostCentreCode);
             grdCostCentres.AddTextColumn("Name", MainDS.ACostCentre.ColumnCostCentreName);
+            grdCostCentres.AutoResizeGrid();
         }
 
         /// <summary>

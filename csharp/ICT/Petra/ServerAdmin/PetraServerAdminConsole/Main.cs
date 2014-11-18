@@ -685,6 +685,7 @@ public class TAdminConsole
         RetrieveConnectedClients(AServerManager, out TotalConnectedClients, out CurrentlyConnectedClients);
 
         TLogging.Log(AServerManager.ServerInfoVersion);
+        TLogging.Log(Catalog.GetString("Configuration file: " + AServerManager.ConfigurationFileName));
         TLogging.Log("  Clients connections since Server start: " + TotalConnectedClients.ToString());
         TLogging.Log("  Clients currently connected: " + CurrentlyConnectedClients.ToString());
 
@@ -733,6 +734,8 @@ public class TAdminConsole
                     System.IO.File.GetLastWriteTime(
                         Process.GetCurrentProcess().MainModule.FileName).ToString() + " (OS: " +
                     CommonTypes.ExecutingOSEnumToString(Utilities.DetermineExecutingOS()) + ')');
+
+                TLogging.Log(Catalog.GetString("Configuration file: " + TAppSettingsManager.ConfigFileName));
 
                 // System.Reflection.Assembly.GetEntryAssembly.FullName does not return the file path
                 TLogging.Log("Connecting to PETRAServer...");

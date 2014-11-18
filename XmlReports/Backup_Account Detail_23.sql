@@ -2,7 +2,7 @@ DELETE FROM s_report_template WHERE s_template_id_i=23;
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
 VALUES(23,'Account Detail','OpenPetra default template','System',True,False,False,False,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="10/28/2014 10:29:00" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="11/12/2014 16:24:30" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -231,6 +231,7 @@ namespace FastReport
       <Column Name="analysistypecode" DataType="System.String"/>
       <Column Name="analysistypedescr" DataType="System.String"/>
       <Column Name="analysisvalue" DataType="System.String"/>
+      <Column Name="currency" DataType="System.String"/>
     </TableDataSource>
     <Relation Name="a_account_Transactions" ParentDataSource="a_account" ChildDataSource="Transactions" ParentColumns="a_account_code_c" ChildColumns="accountcode" Enabled="true"/>
     <Relation Name="a_costCentre_Transactions" ParentDataSource="a_costCentre" ChildDataSource="Transactions" ParentColumns="a_cost_centre_code_c" ChildColumns="costcentrecode" Enabled="true"/>
@@ -251,12 +252,12 @@ namespace FastReport
     <Parameter Name="param_account_list_title" DataType="System.String"/>
     <Parameter Name="param_account_codes" DataType="System.String"/>
     <Parameter Name="param_account_code_start" DataType="System.String"/>
-    <Parameter Name="param_account_code_end" DataType="System.String"/>
+    <Parameter Name="param_account_code_end" DataType="System.Int32"/>
     <Parameter Name="param_rgrAccounts" DataType="System.String"/>
-    <Parameter Name="param_cost_centre_list_title" DataType="System.Int32"/>
+    <Parameter Name="param_cost_centre_list_title" DataType="System.String"/>
     <Parameter Name="param_cost_centre_codes" DataType="System.String"/>
     <Parameter Name="param_cost_centre_code_start" DataType="System.String"/>
-    <Parameter Name="param_cost_centre_code_end" DataType="System.String"/>
+    <Parameter Name="param_cost_centre_code_end" DataType="System.Int32"/>
     <Parameter Name="param_rgrCostCentres" DataType="System.String"/>
     <Parameter Name="param_depth" DataType="System.String"/>
     <Parameter Name="param_ledger_number_i" DataType="System.Int32"/>
@@ -298,7 +299,7 @@ namespace FastReport
       <TextObject Name="Text14" Left="453.6" Top="37.8" Width="103.95" Height="18.9" Text="Accounts :" HorzAlign="Right"/>
       <TextObject Name="HeaderAccountsList" Left="557.55" Top="37.8" Width="160.65" Height="18.9" Text="[param_account_list_title]" AutoShrink="FontSize" AutoShrinkMinSize="6"/>
       <TextObject Name="Text21" Top="18.9" Width="75.6" Height="18.9" Text="Currency :" HorzAlign="Right"/>
-      <TextObject Name="Text18" Left="75.6" Top="18.9" Width="170.1" Height="18.9" Text="[param_currency_name]"/>
+      <TextObject Name="Text18" Left="75.6" Top="18.9" Width="170.1" Height="18.9" Text="[IIf([param_currency]==&quot;Transaction&quot;,&quot;Mixed&quot;,[param_currency_name])]"/>
       <TextObject Name="Text22" Top="37.8" Width="75.6" Height="18.9" Text="[IIf([param_period],&quot;Period :&quot;,&quot;Date :&quot;)]" HorzAlign="Right"/>
       <TextObject Name="Text19" Left="75.6" Top="37.8" Width="198.45" Height="18.9" Text="[IIf([param_period],ToString([param_start_period_i])+&quot; - &quot;+ToString([param_end_period_i]), OmDate([param_start_date]) + &quot; - &quot; + OmDate([param_end_date]))]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
       <TextObject Name="Text42" Left="245.7" Top="18.9" Width="207.9" Height="18.9" Text="[param_ledger_name]" HorzAlign="Center"/>
@@ -312,7 +313,7 @@ namespace FastReport
       <DataBand Name="Account_CostCentre" Top="101.17" Width="718.2" Height="47.25" CanGrow="true" BeforePrintEvent="Transaction_BeforePrint" DataSource="balances" PrintIfDetailEmpty="true">
         <TextObject Name="Text3" Left="113.4" Top="28.35" Width="85.05" Height="18.9" Text="Date" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="Gray"/>
         <TextObject Name="Text5" Left="198.45" Top="28.35" Width="85.05" Height="18.9" Text="Debits" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="Gray"/>
-        <TextObject Name="Text7" Left="387.45" Top="28.35" Width="103.95" Height="18.9" Text="Narrative" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="Gray"/>
+        <TextObject Name="Text7" Left="406.35" Top="28.35" Width="103.95" Height="18.9" Text="Narrative" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="Gray"/>
         <TextObject Name="Text23" Left="283.5" Top="28.35" Width="85.05" Height="18.9" Text="Credits" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="Gray"/>
         <TextObject Name="Text41" Left="9.45" Top="28.35" Width="103.95" Height="18.9" Text="Ref" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="Gray"/>
         <TextObject Name="Text40" Top="28.35" Width="9.45" Height="18.9"/>
@@ -339,22 +340,38 @@ namespace FastReport
               <Condition Expression="Value == 0" TextFill.Color="White"/>
             </Highlight>
           </TextObject>
-          <TextObject Name="Narrative" Left="387.45" Width="330.75" Height="18.9" CanGrow="true" GrowToBottom="true" Text="[Transactions.narrative]" Font="Arial, 9pt" Clip="false"/>
+          <TextObject Name="Narrative" Left="406.35" Width="330.75" Height="18.9" CanGrow="true" GrowToBottom="true" Text="[Transactions.narrative]" Font="Arial, 9pt" Clip="false"/>
+          <TextObject Name="Text2" Left="368.55" Width="28.35" Height="18.9" Text="[Transactions.currency]" Font="Arial, 7pt">
+            <Highlight>
+              <Condition Expression="[param_currency]!=&quot;Transaction&quot;" Visible="false"/>
+            </Highlight>
+          </TextObject>
           <DataBand Name="Attributes" Top="173.98" Width="718.2" Height="9.45" CanShrink="true" RowCount="0">
-            <TextObject Name="AttrDescr" Left="387.45" Width="330.75" Height="9.45" CanGrow="true" CanShrink="true" CanBreak="false" Text="[Transactions.AnalysisTypeDescr] [Transactions.AnalysisValue]" HideValue=" " Font="Arial, 9pt" TextFill.Color="Green"/>
+            <TextObject Name="AttrDescr" Left="406.35" Width="330.75" Height="9.45" CanGrow="true" CanShrink="true" CanBreak="false" Text="[Transactions.AnalysisTypeDescr] [Transactions.AnalysisValue]" HideValue=" " Font="Arial, 9pt" TextFill.Color="Green"/>
           </DataBand>
           <DataFooterBand Name="DataFooter2" Top="186.77" Width="718.2" Height="37.8">
-            <TextObject Name="GroupDebitTotal" Left="198.45" Width="85.05" Height="18.9" Text="[GroupDebit]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" AutoShrink="FontSize" AutoShrinkMinSize="7" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Clip="false"/>
+            <TextObject Name="GroupDebitTotal" Left="198.45" Width="85.05" Height="18.9" Text="[GroupDebit]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" AutoShrink="FontSize" AutoShrinkMinSize="7" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Clip="false">
+              <Highlight>
+                <Condition Expression="Value &lt; 0" TextFill.Color="White"/>
+                <Condition Expression="[param_currency]==&quot;Transaction&quot;" Visible="false"/>
+              </Highlight>
+            </TextObject>
             <TextObject Name="Text24" Left="103.95" Width="94.5" Height="18.9" Text="Sub-Total :" HorzAlign="Right" Font="Arial, 9pt, style=Italic"/>
-            <TextObject Name="GroupCreditTotal" Left="283.5" Width="85.05" Height="18.9" CanBreak="false" Text="[GroupCredit]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" AutoShrink="FontSize" AutoShrinkMinSize="7" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Clip="false"/>
+            <TextObject Name="GroupCreditTotal" Left="283.5" Width="85.05" Height="18.9" CanBreak="false" Text="[GroupCredit]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" AutoShrink="FontSize" AutoShrinkMinSize="7" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Clip="false">
+              <Highlight>
+                <Condition Expression="[param_currency]==&quot;Transaction&quot;" Visible="false"/>
+              </Highlight>
+            </TextObject>
             <TextObject Name="Text4" Left="198.45" Top="18.9" Width="85.05" Height="18.9" Text="[ToDecimal([GroupDebit]-[GroupCredit])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Arial, 9pt, style=Bold">
               <Highlight>
-                <Condition Expression="Value &lt;= 0" TextFill.Color="White"/>
+                <Condition Expression="Value &lt; 0" TextFill.Color="White"/>
+                <Condition Expression="[param_currency]==&quot;Transaction&quot;" Visible="false"/>
               </Highlight>
             </TextObject>
             <TextObject Name="Text25" Left="283.5" Top="18.9" Width="85.05" Height="18.9" Text="[ToDecimal([GroupCredit]-[GroupDebit])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Arial, 9pt, style=Bold">
               <Highlight>
                 <Condition Expression="Value &lt; 0" TextFill.Color="White"/>
+                <Condition Expression="[param_currency]==&quot;Transaction&quot;" Visible="false"/>
               </Highlight>
             </TextObject>
             <TextObject Name="Text26" Left="103.95" Top="18.9" Width="94.5" Height="18.9" Text="Balance :" HorzAlign="Right" Font="Arial, 9pt, style=Italic"/>
@@ -369,18 +386,30 @@ namespace FastReport
       <GroupFooterBand Name="GroupFooter1" Top="227.9" Width="718.2" Height="56.7">
         <TextObject Name="Text60" Left="198.45" Top="28.35" Width="85.05" Height="18.9" Text="[ToDecimal([OuterGroupDebit]-[OuterGroupCredit])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkBlue">
           <Highlight>
-            <Condition Expression="Value &lt;= 0" TextFill.Color="White"/>
+            <Condition Expression="Value &lt; 0" TextFill.Color="White"/>
+            <Condition Expression="[param_currency]==&quot;Transaction&quot;" Visible="false"/>
           </Highlight>
         </TextObject>
         <TextObject Name="Text61" Left="283.5" Top="28.35" Width="85.05" Height="18.9" Text="[ToDecimal([OuterGroupCredit]-[OuterGroupDebit])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkBlue">
           <Highlight>
             <Condition Expression="Value &lt; 0" TextFill.Color="White"/>
+            <Condition Expression="[param_currency]==&quot;Transaction&quot;" Visible="false"/>
           </Highlight>
         </TextObject>
         <TextObject Name="Text62" Left="103.95" Top="28.35" Width="94.5" Height="18.9" Text="Balance :" HorzAlign="Right" Font="Arial, 9pt, style=Italic" TextFill.Color="DarkBlue"/>
-        <TextObject Name="OuterDebitTotal" Left="198.45" Top="9.45" Width="85.05" Height="18.9" Text="[OuterGroupDebit]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkBlue"/>
+        <TextObject Name="OuterDebitTotal" Left="198.45" Top="9.45" Width="85.05" Height="18.9" Text="[OuterGroupDebit]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkBlue">
+          <Highlight>
+            <Condition Expression="Value &lt; 0" TextFill.Color="White"/>
+            <Condition Expression="[param_currency]==&quot;Transaction&quot;" Visible="false"/>
+          </Highlight>
+        </TextObject>
         <TextObject Name="Text58" Left="103.95" Top="9.45" Width="94.5" Height="18.9" Text="[IIf(&quot;Cost Centre&quot;==[param_sortby],[balances.a_cost_centre_code_c],[balances.a_account_code_c])] Total :" HorzAlign="Right" Font="Arial, 9pt, style=Italic" TextFill.Color="DarkBlue"/>
-        <TextObject Name="OuterCreditTotal" Left="283.5" Top="9.45" Width="85.05" Height="18.9" Text="[OuterGroupCredit]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkBlue"/>
+        <TextObject Name="OuterCreditTotal" Left="283.5" Top="9.45" Width="85.05" Height="18.9" Text="[OuterGroupCredit]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkBlue">
+          <Highlight>
+            <Condition Expression="Value &lt; 0" TextFill.Color="White"/>
+            <Condition Expression="[param_currency]==&quot;Transaction&quot;" Visible="false"/>
+          </Highlight>
+        </TextObject>
         <LineObject Name="Line3" Left="103.95" Top="9.45" Width="264.6" Border.Color="Blue" Border.Width="2"/>
       </GroupFooterBand>
     </GroupHeaderBand>
