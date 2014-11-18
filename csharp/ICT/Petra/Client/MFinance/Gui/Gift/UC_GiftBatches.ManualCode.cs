@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
 
@@ -34,6 +35,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Client.MCommon;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -552,41 +554,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            //If viewing posted batches only, show list of editing batches
-            //  instead before adding a new batch
-            if (!FLoadAndFilterLogicObject.StatusEditing)
+            if (CreateNewAGiftBatch())
             {
-                FLoadAndFilterLogicObject.StatusEditing = true;
+                if (!EnsureNewBatchIsVisible())
+                {
+                    return;
+                }
+
+                pnlDetails.Enabled = true;
+
+                FPreviouslySelectedDetailRow.GlEffectiveDate = FDefaultDate;
+                dtpDetailGlEffectiveDate.Date = FDefaultDate;
+
+                Int32 yearNumber = 0;
+                Int32 periodNumber = 0;
+
+                if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
+                {
+                    FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+                }
+
+                UpdateRecordNumberDisplay();
+
+                ((TFrmGiftBatch)ParentForm).SaveChanges();
             }
-            else if (FPetraUtilsObject.HasChanges && !ValidateAllData(false, true))
-            {
-                return;
-            }
-
-            //Set year and period to correct value
-            FLoadAndFilterLogicObject.YearIndex = 0;            // Latest year
-            FLoadAndFilterLogicObject.PeriodIndex = 1;          // Current and forwarding
-
-            pnlDetails.Enabled = true;
-
-            this.CreateNewAGiftBatch();
-
-            txtDetailBatchDescription.Focus();
-
-            FPreviouslySelectedDetailRow.GlEffectiveDate = FDefaultDate;
-            dtpDetailGlEffectiveDate.Date = FDefaultDate;
-
-            Int32 yearNumber = 0;
-            Int32 periodNumber = 0;
-
-            if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
-            {
-                FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
-            }
-
-            UpdateRecordNumberDisplay();
-
-            ((TFrmGiftBatch)ParentForm).SaveChanges();
         }
 
         private void CancelRecord(System.Object sender, EventArgs e)
@@ -1029,6 +1020,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             RefreshCurrencyAndExchangeRateControls();
+        }
+
+        private bool EnsureNewBatchIsVisible()
+        {
+            // Can we see the new row, bearing in mind we have filtering that the standard filter code does not know about?
+            DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+            Int32 RowNumberGrid = DataUtilities.GetDataViewIndexByDataTableIndex(dv, FMainDS.AGiftBatch, FMainDS.AGiftBatch.Rows.Count - 1) + 1;
+            if (RowNumberGrid < 1)
+            {
+                MessageBox.Show(
+                    Catalog.GetString("The new row has been added but the filter may be preventing it from being displayed. The filter will be reset."),
+                    Catalog.GetString("New Batch"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                if (!FLoadAndFilterLogicObject.StatusEditing)
+                {
+                    FLoadAndFilterLogicObject.StatusEditing = true;
+                }
+
+                //Set year and period to correct value
+                FLoadAndFilterLogicObject.YearIndex = 0;
+                FLoadAndFilterLogicObject.PeriodIndex = 0;
+
+                FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
+
+                if (SelectDetailRowByDataTableIndex(FMainDS.AGiftBatch.Rows.Count - 1))
+                {
+                    // Good - we found the row so now we need to do the other stuff to the new record
+                    txtDetailBatchDescription.Text = MCommonResourcestrings.StrPleaseEnterDescription;
+                    txtDetailBatchDescription.Focus();
+                }
+                else
+                {
+                    // This is not supposed to happen!!
+                    MessageBox.Show(
+                        Catalog.GetString("The filter was reset but unexpectedly the new batch is not in the list. Please close the screen and do not save changes."),
+                        Catalog.GetString("New Batch"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return false;
+                }
+            }
+            return true;
         }
 
         private void ApplyFilterManual(ref string AFilterString)
