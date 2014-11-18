@@ -3430,8 +3430,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 // check if partner keys are equal or that, if the partner is a Person, that they belong to a family with the same partner key
                 if ((FPartnerKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
-            	    || (FPartnerClass == TPartnerClass.PERSON.ToString()
-            	        && FMainDS.PPerson[0].FamilyKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey))
+                    || ((FPartnerClass == TPartnerClass.PERSON.ToString())
+                        && (FMainDS.PPerson[0].FamilyKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)))
                 {
                     if (FMainDS.PPartnerGiftDestination == null)
                     {

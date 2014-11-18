@@ -1027,10 +1027,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // Can we see the new row, bearing in mind we have filtering that the standard filter code does not know about?
             DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
             Int32 RowNumberGrid = DataUtilities.GetDataViewIndexByDataTableIndex(dv, FMainDS.AGiftBatch, FMainDS.AGiftBatch.Rows.Count - 1) + 1;
+
             if (RowNumberGrid < 1)
             {
                 MessageBox.Show(
-                    Catalog.GetString("The new row has been added but the filter may be preventing it from being displayed. The filter will be reset."),
+                    Catalog.GetString(
+                        "The new row has been added but the filter may be preventing it from being displayed. The filter will be reset."),
                     Catalog.GetString("New Batch"),
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -1055,12 +1057,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     // This is not supposed to happen!!
                     MessageBox.Show(
-                        Catalog.GetString("The filter was reset but unexpectedly the new batch is not in the list. Please close the screen and do not save changes."),
+                        Catalog.GetString(
+                            "The filter was reset but unexpectedly the new batch is not in the list. Please close the screen and do not save changes."),
                         Catalog.GetString("New Batch"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return false;
                 }
             }
+
             return true;
         }
 
