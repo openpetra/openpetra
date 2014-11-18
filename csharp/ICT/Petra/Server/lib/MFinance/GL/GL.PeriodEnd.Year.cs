@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Ict.Petra.Server.App.Core.Security;
 
-
+using Ict.Petra.Shared;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
@@ -153,6 +153,10 @@ namespace Ict.Petra.Server.MFinance.GL
             FledgerInfo.ProvisionalYearEndFlag = false;
             FledgerInfo.CurrentPeriod = 1;
             FledgerInfo.CurrentFinancialYear = FledgerInfo.CurrentFinancialYear + 1;
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                TCacheableFinanceTablesEnum.LedgerDetails.ToString());
 
             TAccountPeriodToNewYear accountPeriodOperator = new TAccountPeriodToNewYear(FledgerInfo.LedgerNumber);
             accountPeriodOperator.IsInInfoMode = false;
