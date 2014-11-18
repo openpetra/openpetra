@@ -892,7 +892,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // We need to update the last transaction number for the batch
                 ParentForm.Cursor = Cursors.WaitCursor;
 
-                FMainDS.AGiftBatch.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftBatchData(
+                FMainDS.AGiftBatch.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchSingle(
                         FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber).AGiftBatch);
                 FMainDS.AGiftBatch.AcceptChanges();
 
@@ -912,7 +912,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow))
             {
                 // Posting succeeded so now deal with gift receipting ...
-                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadGiftBatchData(FLedgerNumber, FSelectedBatchNumber);
+                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber, FSelectedBatchNumber);
+
                 FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
 
                 // Now we need to get the data back from the server to pick up all the changes

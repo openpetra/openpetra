@@ -116,9 +116,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.AGift.Clear();
 
                 //Load tables afresh
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(FLedgerNumber, ACurrentBatchRow.BatchNumber));
-
-                FMyForm.ProcessRecipientCostCentreCodeUpdateErrors(false);
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(FLedgerNumber, ACurrentBatchRow.BatchNumber));
 
                 //Delete gift details
                 for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
