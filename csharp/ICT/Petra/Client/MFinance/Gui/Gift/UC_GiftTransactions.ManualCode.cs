@@ -2230,7 +2230,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         chkDetailTaxDeductible.Checked = Row.TaxDeductible;
                         ToggleTaxDeductible(this, null);
                         cmbDetailMailingCode.SetSelectedString(Row.MailingCode, -1);
-                        KeyMinistryChanged(this, null);
 
                         if (SplitGift)
                         {
