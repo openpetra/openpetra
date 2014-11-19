@@ -22,16 +22,13 @@ RootNode:
                 Row1: [txtContactor]
                 Row2: [txtCommentContains]
                 Row3: [txtModule]
-                Row4: [txtMethodOfContact, txtMailingCode]
+                Row4: [cmbContactCode, cmbMailingCode]
         dtpContactDate:
         txtContactor:
         txtCommentContains:
-        # TODO: use a combobox with modules
         txtModule:
-        # TODO: cmbbox from table p_method_of_contact
-        txtMethodOfContact:
-        # TODO: use a combobox with mailing codes
-        txtMailingCode:
+        cmbContactCode:{Label=Contact Code,List=ContactCode}
+        cmbMailingCode:{Label=Mailing List, List=MailingList}
         grdDetails:
             Dock: Fill
             TableName: PContactLog
