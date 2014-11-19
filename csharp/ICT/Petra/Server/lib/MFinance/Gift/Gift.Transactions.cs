@@ -869,8 +869,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadGiftAndTaxDeductDataForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            string FailedUpdates = string.Empty;
-
             GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
 
             TDBTransaction Transaction = null;
@@ -965,8 +963,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             bool KeyMinIsActive = false;
             bool KeyMinExists = KeyMinistryExists(ARecipientPartnerKey, out KeyMinIsActive);
-
-            string ValidLedgerNumberCostCentreCode = string.Empty;
 
             DataTable PartnerCostCentreTbl = Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.LoadCostCentrePartnerLinks(
                 ALedgerNumber,
@@ -1430,8 +1426,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadGiftTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            string FailedUpdates = string.Empty;
-
             GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
 
             // drop all tables apart from ARecurringGift and ARecurringGiftDetail
@@ -1455,8 +1449,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadRecurringGiftTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            string FailedUpdates = string.Empty;
-
             GiftBatchTDS MainDS = LoadARecurringGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
 
             // drop all tables apart from ARecurringGift and ARecurringGiftDetail

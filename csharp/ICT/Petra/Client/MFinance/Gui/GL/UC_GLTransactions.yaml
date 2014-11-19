@@ -33,7 +33,7 @@ RootNode:
         pnlFilterAndFind:
             Dock: Left
             ExpandedWidth: 170
-            ShowApplyFilterButton: FilterContext.StandardFilterOnly
+            #ShowApplyFilterButton: FilterContext.StandardFilterOnly
             ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
             FilterControls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate-1, dtpDetailTransactionDate-2, Column:TransactionAmount-1, Column:TransactionAmount-2]
             FindControls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate-1, dtpDetailTransactionDate-2, Column:TransactionAmount-1, Column:TransactionAmount-2]
@@ -128,5 +128,5 @@ RootNode:
             mniImportTransactions: {Label=&Import From File}
             mniImportFromClipboard: {Label=I&mport From Clipboard}
     Toolbar:
-        tbbImportTransactions:
-        tbbImportFromClipboard:
+        tbbImportTransactions: {Label=&Import From File}
+        tbbImportFromClipboard: {Label=I&mport From Clipboard}
