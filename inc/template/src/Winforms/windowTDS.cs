@@ -508,7 +508,7 @@ namespace {#NAMESPACE}
     /// auto generated
     public bool CanClose()
     {
-        return FPetraUtilsObject.CanClose();
+        return FPetraUtilsObject.CanClose(){#CANCLOSEMANUAL};
     }
 
     /// auto generated

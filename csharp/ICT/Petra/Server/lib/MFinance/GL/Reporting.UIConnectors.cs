@@ -734,6 +734,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             Boolean International = AParameters["param_currency"].ToString().StartsWith("Int");
             Decimal EffectiveExchangeRate = 1;
+            Decimal LastYearExchangeRate = 1;
             String ActualFieldName = "a_actual_base_n";
             String StartBalanceFieldName = "a_start_balance_base_n";
 
@@ -746,15 +747,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     AccountingYear,
                     ReportPeriodEnd,
                     -1);
-            }
 
-/*
- * I'm not doing this anymore - I'm taking the Base values and using the applicable exchange rate for the period.
- *          //
- *          // Read different DB fields according to currency setting
- *          ActualFieldName = International ? "a_actual_intl_n" : "a_actual_base_n";
- *          StartBalanceFieldName = International ? "a_start_balance_intl_n" : "a_start_balance_base_n";
- */
+                LastYearExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
+                    LedgerNumber,
+                    AccountingYear - 1,
+                    ReportPeriodEnd,
+                    -1);
+            }
 
             String PlAccountCode = "PL"; // I could get this from the Ledger record, but in fact it's never set there!
 
@@ -828,7 +827,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     if (RowIdx >= 0)
                     {
                         DataRow LastYearRow = OldPeriod[RowIdx].Row;
-                        Row["ActualLastYear"] = EffectiveExchangeRate * Convert.ToDecimal(LastYearRow["Actual"]);
+                        Row["ActualLastYear"] = LastYearExchangeRate * Convert.ToDecimal(LastYearRow["Actual"]);
                     }
 
                     if (Row["AccountCode"].ToString() == PlAccountCode)     // Tweak the PL account and pretend it's an Equity.
@@ -1183,12 +1182,34 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Int32 PeriodMonths = 1 + (ReportPeriodEnd - ReportPeriodStart);
             String HierarchyName = AParameters["param_account_hierarchy_c"].ToString();
 
+            Boolean International = AParameters["param_currency"].ToString().StartsWith("Int");
+            Decimal EffectiveExchangeRate = 1;
+
+//          Decimal LastYearExchangeRate = 1;
+            if (International)
+            {
+                TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
+
+                EffectiveExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
+                    LedgerNumber,
+                    AccountingYear,
+                    ReportPeriodEnd,
+                    -1);
+
+/*
+ *              LastYearExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
+ *                  LedgerNumber,
+ *                  AccountingYear - 1,
+ *                  ReportPeriodEnd,
+ *                  -1);
+ */
+            }
+
             //
             // Read different DB fields according to currency setting
-            String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_actual_intl_n" : "a_actual_base_n";
-            String StartBalanceFieldName =
-                AParameters["param_currency"].ToString().StartsWith("Int") ? "a_start_balance_intl_n" : "a_start_balance_base_n";
-            String BudgetFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_budget_intl_n" : "a_budget_base_n";
+            String ActualFieldName = /* International ? "a_actual_intl_n" : */ "a_actual_base_n";
+            String StartBalanceFieldName = /* International ? "a_start_balance_intl_n" : */ "a_start_balance_base_n";
+            String BudgetFieldName = /* International ? "a_budget_intl_n" : */ "a_budget_base_n";
             Boolean CostCentreBreakdown = AParameters["param_cost_centre_breakdown"].ToBool();
             Boolean WholeYearPeriodsBreakdown = AParameters["param_period_breakdown"].ToBool();
 
@@ -1347,7 +1368,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                 }
                                 );
                             DataRow PreviousPeriodRow = OldPeriod[RowIdx].Row;
-                            Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(PreviousPeriodRow["ActualYTD"]);
+                            Row["Actual"] =
+                                (Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(PreviousPeriodRow["ActualYTD"])) * EffectiveExchangeRate;
                         }
                     }
                     else
@@ -1362,7 +1384,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             }
 
                             DataRow Row = rv.Row;
-                            Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(Row["YearStart"]);
+                            Row["Actual"] = (Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(Row["YearStart"])) * EffectiveExchangeRate;
                         }
                     }
 
@@ -1392,8 +1414,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         {
                             DataRow LastYearRow = OldPeriod[RowIdx].Row;
                             Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
-                            Row["BudgetLastYear"] = Convert.ToDecimal(LastYearRow["Budget"]);
+                            Row["BudgetLastYear"] = Convert.ToDecimal(LastYearRow["Budget"]) * EffectiveExchangeRate;
                         }
+
+                        Row["Budget"] = Convert.ToDecimal(Row["Budget"]) * EffectiveExchangeRate;
                     }
 
                     //
@@ -1419,7 +1443,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                         if (YearBudgetTbl.Rows.Count > 0)
                         {
-                            Row["WholeYearBudget"] = YearBudgetTbl.Rows[0]["WholeYearBudget"];
+                            Row["WholeYearBudget"] = Convert.ToDecimal(YearBudgetTbl.Rows[0]["WholeYearBudget"]) * EffectiveExchangeRate;
                         }
                     }
                 } // If not Whole Year Periods Breakdown
@@ -1781,6 +1805,45 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
         } // HosaGiftsTable
+
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable StewardshipTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            try
+            {
+                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+                Int32 IchNumber = AParameters["param_cmbICHNumber"].ToInt32();
+                Int32 period = AParameters["param_cmbReportPeriod"].ToInt32();
+
+                String StewardshipFilter = "PUB_a_ich_stewardship.a_ledger_number_i = " + LedgerNumber;
+
+                if (IchNumber == 0)
+                {
+                    StewardshipFilter += " AND PUB_a_ich_stewardship.a_period_number_i = " + period;
+                }
+                else
+                {
+                    StewardshipFilter += " AND PUB_a_ich_stewardship.a_ich_number_i = " + IchNumber;
+                }
+
+                String Query = "SELECT PUB_a_ich_stewardship.*, PUB_a_cost_centre.a_cost_centre_name_c" +
+                               " FROM PUB_a_ich_stewardship, PUB_a_cost_centre WHERE " +
+                               StewardshipFilter +
+                               " AND PUB_a_cost_centre.a_ledger_number_i = PUB_a_ich_stewardship.a_ledger_number_i" +
+                               " AND PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_ich_stewardship.a_cost_centre_code_c ";
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                TLogging.Log(Catalog.GetString(""), TLoggingType.ToStatusBar);
+                return DbAdapter.RunQuery(Query, "Stewardship", Transaction);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+        } // StewardshipTable
 
         /// <summary>
         /// Returns a DataTable to the client for use in client-side reporting
