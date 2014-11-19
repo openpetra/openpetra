@@ -1838,7 +1838,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-
         } // StewardshipTable
 
         /// <summary>
