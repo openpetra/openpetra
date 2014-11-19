@@ -156,7 +156,10 @@ namespace Ict.Petra.Client.MReporting.Logic
                     SortByColumnNumber = SortByColumnNumber + ColumnPos.ToString();
                 }
 
-                Parameters.Add("param_sortby_columns", SortByColumnNumber);
+                if (SortByColumnNumber.Length != 0)
+                {
+                    Parameters.Add("param_sortby_columns", SortByColumnNumber);
+                }
             }
         }
 

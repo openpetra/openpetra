@@ -117,7 +117,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber)
         {
-            return CreateAGiftBatch(ALedgerNumber, DateTime.Today, Catalog.GetString("Please enter batch description"));
+            return CreateAGiftBatch(ALedgerNumber, DateTime.Today, Catalog.GetString("PLEASE ENTER DESCRIPTION"));
         }
 
         /// <summary>
@@ -179,9 +179,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             bool TransactionInIntlCurrency = false;
 
+            int NewGiftBatchNumber = -1;
+
             GiftBatchTDS RMainDS = LoadRecurringGiftTransactions(ALedgerNumber, ABatchNumber);
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             try
             {
@@ -199,6 +201,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             ref LedgerTable,
                             ALedgerNumber,
                             AEffectiveDate);
+
+                        NewGiftBatchNumber = batch.BatchNumber;
 
                         batch.BatchDescription = recBatch.BatchDescription;
                         batch.BankCostCentre = recBatch.BankCostCentre;
@@ -447,17 +451,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-
-            // Accept row changes here so that the Client gets 'unmodified' rows
-            MainDS.AcceptChanges();
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                });
 
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            // Accept row changes here so that the Client gets 'unmodified' rows
+            MainDS.AcceptChanges();
 
             return MainDS;
         }
@@ -473,7 +480,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// Period = -2 means all periods in current year</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber, Int32 AYear, Int32 APeriod)
+        public static GiftBatchTDS LoadAGiftBatchForYearPeriod(Int32 ALedgerNumber, Int32 AYear, Int32 APeriod)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
             string FilterByPeriod = string.Empty;
@@ -484,6 +491,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref Transaction,
                 delegate
                 {
+                    //Load Ledger table
                     ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
                     if (AYear > -1)
@@ -605,17 +613,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ADetailNumber"></param>
         /// <returns>DataSet containing the transation's data</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadSingleGiftDetail(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber)
+        public static GiftBatchTDS LoadAGiftDetailSingle(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-            AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, Transaction);
-            AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
-            AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, Transaction);
+                    AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
+                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
+
             return MainDS;
         }
 
@@ -627,17 +640,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AGiftTransactionNumber"></param>
         /// <returns>DataSet containing the transation's data</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadSingleGift(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber)
+        public static GiftBatchTDS LoadAGiftSingle(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-            AGiftDetailAccess.LoadViaAGift(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
-            AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
-            AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    AGiftDetailAccess.LoadViaAGift(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
+                    AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
+                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
+
             return MainDS;
         }
 
@@ -701,16 +719,144 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// TODO: limit to period, limit to batch status, etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadAGiftBatchSingle(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber, ref Transaction);
+                });
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of recurring batches for the given ledger
+        /// also get the ledger for the base currency etc
+        /// TODO: limit to period, limit to batch status, etc
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="ATransaction"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        private static GiftBatchTDS LoadAGiftBatchSingle(Int32 ALedgerNumber, Int32 ABatchNumber, ref TDBTransaction ATransaction)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ATransaction);
+            AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, ATransaction);
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of batches for the given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadAGiftDetailForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    AGiftDetailAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of recurring batches for the given ledger
+        /// also get the ledger for the base currency etc
+        /// TODO: limit to period, limit to batch status, etc
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadARecurringGiftBatch(Int32 ALedgerNumber)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-            ARecurringGiftBatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    ARecurringGiftBatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of recurring batches for the given ledger
+        /// also get the ledger for the base currency etc
+        /// TODO: limit to period, limit to batch status, etc
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadARecurringGiftBatchSingle(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of batches for the given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadARecurringGiftDetailForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
+
             return MainDS;
         }
 
@@ -721,67 +867,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadGiftTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadGiftAndTaxDeductDataForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            bool BatchStatusUnposted;
-            string FailedUpdates = string.Empty;
-
-            GiftBatchTDS MainDS = new GiftBatchTDS();
-
-            MainDS.Merge(LoadGiftBatchData(ALedgerNumber, ABatchNumber));
+            GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
                     try
                     {
-                        //Load Ledger & Motivation Data to allow updating of CostCentreCode
-                        AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-
-                        //Find the batch status
-                        BatchStatusUnposted = (MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
-
-                        if (BatchStatusUnposted)
-                        {
-                            if (!UpdateCostCentreCodeForRecipients(MainDS, out FailedUpdates, ABatchNumber))
-                            {
-                                TLogging.Log(String.Format("Updating Cost Centre Codes For Recipients in Ledger {0} and Batch {1} failed:{2}  {3}",
-                                        ALedgerNumber,
-                                        ABatchNumber,
-                                        Environment.NewLine,
-                                        FailedUpdates));
-                            }
-                        }
-
-                        // drop all tables apart from AGift and AGiftDetail and PPartnerTaxDeductiblePct
-                        foreach (DataTable table in MainDS.Tables)
-                        {
-                            if ((table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName)
-                                && (table.TableName != MainDS.PPartnerTaxDeductiblePct.TableName))
-                            {
-                                table.Clear();
-                            }
-                        }
-
                         // find PPartnerRows for all donors (needed for receipt frequency info)
                         foreach (AGiftRow Row in MainDS.AGift.Rows)
                         {
                             MainDS.DonorPartners.Merge(PPartnerAccess.LoadByPrimaryKey(Row.DonorKey, Transaction));
-                        }
-
-                        //Add a temp table
-                        if (FailedUpdates.Length > 0)
-                        {
-                            DataTable table = new DataTable();
-                            table.TableName = "AUpdateErrors";
-                            table.Columns.Add("UpdateError", typeof(string));
-                            table.Rows.Add(FailedUpdates);
-
-                            MainDS.Tables.Add(table);
                         }
                     }
                     catch (Exception e)
@@ -790,282 +892,256 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 });
 
-            MainDS.AcceptChanges();
-
             return MainDS;
         }
 
         /// <summary>
-        /// Update cost centre code for single recipient
+        /// Retrieve the cost centre code for the recipient
         /// </summary>
-        /// <param name="AMainDS"></param>
-        /// <param name="ATableAGiftDetail"></param>
-        /// <param name="AFailedUpdates"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ARecipientPartnerKey"></param>
+        /// <param name="ARecipientLedgerNumber"></param>
+        /// <param name="ADateGiftEntered"></param>
+        /// <param name="AMotivationGroupCode"></param>
+        /// <param name="AMotivationDetailCode"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static String UpdateCostCentreCodeForOneRecipient(GiftBatchTDS AMainDS,
-            GiftBatchTDSAGiftDetailTable ATableAGiftDetail,
-            out string AFailedUpdates)
+        public static string RetrieveCostCentreCodeForRecipient(Int32 ALedgerNumber,
+            Int64 ARecipientPartnerKey,
+            Int64 ARecipientLedgerNumber,
+            DateTime ADateGiftEntered,
+            String AMotivationGroupCode,
+            String AMotivationDetailCode)
         {
-            AFailedUpdates = string.Empty;
+            string CostCentreCode = string.Empty;
 
-            if ((AMainDS.AGiftBatch == null)
-                || (AMainDS.AGift == null)
-                || (AMainDS.AGiftDetail == null)
-                || (ATableAGiftDetail == null)
-                || (AMainDS.AGiftBatch.Count == 0)
-                || (AMainDS.AGift.Count == 0)
-                || (AMainDS.AGiftDetail.Count == 0)
-                || (ATableAGiftDetail.Count == 0))
-            {
-                return string.Empty;
-            }
+            TDBTransaction Transaction = null;
 
-            GiftBatchTDSAGiftDetailRow GiftDetailRow = (GiftBatchTDSAGiftDetailRow)ATableAGiftDetail.Rows[0];
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    CostCentreCode = RetrieveCostCentreCodeForRecipient(ALedgerNumber,
+                        ARecipientPartnerKey,
+                        ARecipientLedgerNumber,
+                        ADateGiftEntered,
+                        AMotivationGroupCode,
+                        AMotivationDetailCode,
+                        Transaction);
+                });
 
-            int LedgerNumber = AMainDS.ALedger[0].LedgerNumber;
-            Int64 PartnerKey = 0;
-            Int64 LedgerPartnerKey = AMainDS.ALedger[0].PartnerKey;
+            return CostCentreCode;
+        }
 
-            string CurrentCostCentreCode = GiftDetailRow.CostCentreCode;
-            string NewCostCentreCode = string.Empty;
+        /// <summary>
+        /// Retrieve the cost centre code for the recipient
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ARecipientPartnerKey"></param>
+        /// <param name="ARecipientLedgerNumber"></param>
+        /// <param name="ADateGiftEntered"></param>
+        /// <param name="AMotivationGroupCode"></param>
+        /// <param name="AMotivationDetailCode"></param>
+        /// <param name="ATransaction"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        private static string RetrieveCostCentreCodeForRecipient(Int32 ALedgerNumber,
+            Int64 ARecipientPartnerKey,
+            Int64 ARecipientLedgerNumber,
+            DateTime ADateGiftEntered,
+            String AMotivationGroupCode,
+            String AMotivationDetailCode,
+            TDBTransaction ATransaction)
+        {
+            string CostCentreCode = string.Empty;
 
-            string MotivationGroup = string.Empty;
-            string MotivationDetail = string.Empty;
+            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ATransaction);
+            AMotivationDetailTable MotivationDetailTable =
+                AMotivationDetailAccess.LoadByPrimaryKey(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, ATransaction);
 
-            Int64 RecipientLedgerNumber = 0;
-            Int64 GiftDestinationForRecipient = 0;
+            Int64 LedgerPartnerKey = LedgerTable[0].PartnerKey;
 
             bool KeyMinIsActive = false;
-            bool KeyMinExists = false;
-
-            string ValidLedgerNumberCostCentreCode = string.Empty;
-
-            string ErrMsg = string.Empty;
-
-            PartnerKey = GiftDetailRow.RecipientKey;
-
-            MotivationGroup = GiftDetailRow.MotivationGroupCode;
-            MotivationDetail = GiftDetailRow.MotivationDetailCode;
-
-            RecipientLedgerNumber = GiftDetailRow.RecipientLedgerNumber;
-            GiftDestinationForRecipient = GetGiftDestinationForRecipient(PartnerKey, GiftDetailRow.DateEntered);
-
-            KeyMinIsActive = false;
-            KeyMinExists = KeyMinistryExists(PartnerKey, out KeyMinIsActive);
+            bool KeyMinExists = KeyMinistryExists(ARecipientPartnerKey, out KeyMinIsActive);
 
             DataTable PartnerCostCentreTbl = Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.LoadCostCentrePartnerLinks(
-                LedgerNumber,
-                PartnerKey);
+                ALedgerNumber,
+                ARecipientPartnerKey);
 
             if ((PartnerCostCentreTbl != null) && (PartnerCostCentreTbl.Rows.Count > 0))
             {
-                NewCostCentreCode = (string)PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"];
+                CostCentreCode = (string)PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"];
             }
-            else if (GiftDestinationForRecipient > 0)
+            else if (ARecipientLedgerNumber > 0)
             {
-                NewCostCentreCode = GiftDestinationForRecipient.ToString();
-            }
-            else if (CheckCostCentreDestinationForRecipient(GiftDetailRow.LedgerNumber, PartnerKey,
-                         out ValidLedgerNumberCostCentreCode)
-                     || CheckCostCentreDestinationForRecipient(GiftDetailRow.LedgerNumber, RecipientLedgerNumber,
-                         out ValidLedgerNumberCostCentreCode))
-            {
-                NewCostCentreCode = ValidLedgerNumberCostCentreCode;
-            }
-            else if ((RecipientLedgerNumber != LedgerPartnerKey) && ((MotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT) || KeyMinExists))
-            {
-                ErrMsg = String.Format(
-                    "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
-                    PartnerKey,
-                    LedgerNumber,
-                    Environment.NewLine,
-                    RecipientLedgerNumber,
-                    LedgerPartnerKey);
+                //Valid ledger number table
+                CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientLedgerNumber,
+                    out CostCentreCode);
             }
 
-            if (NewCostCentreCode.Length == 0)
+            if (CostCentreCode.Length == 0)
             {
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
-                    new object[] { LedgerNumber, MotivationGroup, MotivationDetail });
-
-                if (motivationDetail != null)
+                //Error condition which should never happen
+                if ((ARecipientLedgerNumber != LedgerPartnerKey)
+                    && ((AMotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                        || KeyMinExists))
                 {
-                    NewCostCentreCode = motivationDetail.CostCentreCode.ToString();
+                    throw new Exception(String.Format(Catalog.GetString("DATA QUALITY ERROR! Missing Cost Centre Code for Partner {0} in Ledger {1}!"),
+                            ARecipientPartnerKey,
+                            ALedgerNumber));
+                }
+                else if (MotivationDetailTable.Rows.Count > 0)
+                {
+                    CostCentreCode = MotivationDetailTable[0].CostCentreCode;
                 }
                 else
                 {
-                    ErrMsg = String.Format(
-                        "Error in extracting Cost Centre Code for Motivation Group: {0} and Motivation Detail: {1} in Ledger: {2}.",
-                        MotivationGroup,
-                        MotivationDetail,
-                        LedgerNumber);
+                    //Error condition which should never happen
+                    throw new Exception(String.Format(Catalog.GetString(
+                                "DATA QUALITY ERROR! Missing Cost Centre Code in Motivation Detail table for Partner {0} in Ledger {1}, Motivation Group {2} and motivation Detail Code {3}!"),
+                            ARecipientPartnerKey,
+                            ALedgerNumber,
+                            AMotivationGroupCode,
+                            AMotivationDetailCode));
                 }
             }
 
-            if (CurrentCostCentreCode != NewCostCentreCode)
-            {
-                GiftDetailRow.CostCentreCode = NewCostCentreCode;
-            }
-
-            if (ErrMsg.Length > 0)
-            {
-                if (AFailedUpdates.Length > 0)
-                {
-                    AFailedUpdates += (Environment.NewLine + Environment.NewLine);
-                }
-
-                AFailedUpdates += ErrMsg;
-                ErrMsg = string.Empty;
-            }
-
-            return NewCostCentreCode;
+            return CostCentreCode;
         }
 
         /// <summary>
         /// Update cost centre code for single recipient
         /// </summary>
-        /// <param name="AMainDS"></param>
-        /// <param name="ATableARecurringGiftDetail"></param>
-        /// <param name="AFailedUpdates"></param>
+        /// <param name="ATableAGiftDetail"></param>
+        /// <param name="ASaveChanges"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static String UpdateRecurringCostCentreCodeForOneRecipient(GiftBatchTDS AMainDS,
-            GiftBatchTDSARecurringGiftDetailTable ATableARecurringGiftDetail,
-            out string AFailedUpdates)
+        public static bool UpdateCostCentreCodeForOneRecipient(GiftBatchTDSAGiftDetailTable ATableAGiftDetail, out bool ASaveChanges)
         {
-            AFailedUpdates = string.Empty;
+            bool Success = false;
 
-            if ((AMainDS.ARecurringGiftBatch == null)
-                || (AMainDS.ARecurringGift == null)
-                || (AMainDS.ARecurringGiftDetail == null)
-                || (ATableARecurringGiftDetail == null)
-                || (AMainDS.ARecurringGiftBatch.Count == 0)
-                || (AMainDS.ARecurringGift.Count == 0)
-                || (AMainDS.ARecurringGiftDetail.Count == 0)
-                || (ATableARecurringGiftDetail.Count == 0))
+            ASaveChanges = false;
+
+            if ((ATableAGiftDetail == null) || (ATableAGiftDetail.Count == 0))
             {
-                return string.Empty;
+                return Success;
             }
 
-            GiftBatchTDSARecurringGiftDetailRow GiftDetailRow = (GiftBatchTDSARecurringGiftDetailRow)ATableARecurringGiftDetail.Rows[0];
-
-            int LedgerNumber = AMainDS.ALedger[0].LedgerNumber;
-            Int64 PartnerKey = 0;
-            Int64 LedgerPartnerKey = AMainDS.ALedger[0].PartnerKey;
+            GiftBatchTDSAGiftDetailRow GiftDetailRow = (GiftBatchTDSAGiftDetailRow)ATableAGiftDetail.Rows[0];
 
             string CurrentCostCentreCode = GiftDetailRow.CostCentreCode;
             string NewCostCentreCode = string.Empty;
 
-            string MotivationGroup = string.Empty;
-            string MotivationDetail = string.Empty;
-
-            Int64 RecipientLedgerNumber = 0;
-            Int64 GiftDestinationForRecipient = 0;
-
-            bool KeyMinIsActive = false;
-            bool KeyMinExists = false;
-
-            string ValidLedgerNumberCostCentreCode = string.Empty;
-
-            string ErrMsg = string.Empty;
-
-            PartnerKey = GiftDetailRow.RecipientKey;
-
-            MotivationGroup = GiftDetailRow.MotivationGroupCode;
-            MotivationDetail = GiftDetailRow.MotivationDetailCode;
-
-            RecipientLedgerNumber = GiftDetailRow.RecipientLedgerNumber;
-            GiftDestinationForRecipient = GetGiftDestinationForRecipient(PartnerKey, DateTime.Now);
-
-            KeyMinIsActive = false;
-            KeyMinExists = KeyMinistryExists(PartnerKey, out KeyMinIsActive);
-
-            DataTable PartnerCostCentreTbl = Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.LoadCostCentrePartnerLinks(
-                LedgerNumber,
-                PartnerKey);
-
-            if ((PartnerCostCentreTbl != null) && (PartnerCostCentreTbl.Rows.Count > 0))
+            try
             {
-                NewCostCentreCode = (string)PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"];
-            }
-            else if (GiftDestinationForRecipient > 0)
-            {
-                NewCostCentreCode = GiftDestinationForRecipient.ToString();
-            }
-            else if (CheckCostCentreDestinationForRecipient(GiftDetailRow.LedgerNumber, PartnerKey,
-                         out ValidLedgerNumberCostCentreCode)
-                     || CheckCostCentreDestinationForRecipient(GiftDetailRow.LedgerNumber, RecipientLedgerNumber,
-                         out ValidLedgerNumberCostCentreCode))
-            {
-                NewCostCentreCode = ValidLedgerNumberCostCentreCode;
-            }
-            else if ((RecipientLedgerNumber != LedgerPartnerKey) && ((MotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT) || KeyMinExists))
-            {
-                ErrMsg = String.Format(
-                    "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
-                    PartnerKey,
-                    LedgerNumber,
-                    Environment.NewLine,
-                    RecipientLedgerNumber,
-                    LedgerPartnerKey);
-            }
+                NewCostCentreCode = RetrieveCostCentreCodeForRecipient(GiftDetailRow.LedgerNumber,
+                    GiftDetailRow.RecipientKey,
+                    GiftDetailRow.RecipientLedgerNumber,
+                    GiftDetailRow.DateEntered,
+                    GiftDetailRow.MotivationGroupCode,
+                    GiftDetailRow.MotivationDetailCode);
 
-            if (NewCostCentreCode.Length == 0)
-            {
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
-                    new object[] { LedgerNumber, MotivationGroup, MotivationDetail });
-
-                if (motivationDetail != null)
+                if (GiftDetailRow.CostCentreCode != NewCostCentreCode)
                 {
-                    NewCostCentreCode = motivationDetail.CostCentreCode.ToString();
-                }
-                else
-                {
-                    ErrMsg = String.Format(
-                        "Error in extracting Cost Centre Code for Motivation Group: {0} and Motivation Detail: {1} in Ledger: {2}.",
-                        MotivationGroup,
-                        MotivationDetail,
-                        LedgerNumber);
-                }
-            }
-
-            if (CurrentCostCentreCode != NewCostCentreCode)
-            {
-                GiftDetailRow.CostCentreCode = NewCostCentreCode;
-            }
-
-            if (ErrMsg.Length > 0)
-            {
-                if (AFailedUpdates.Length > 0)
-                {
-                    AFailedUpdates += (Environment.NewLine + Environment.NewLine);
+                    GiftDetailRow.CostCentreCode = NewCostCentreCode;
+                    ASaveChanges = true;
                 }
 
-                AFailedUpdates += ErrMsg;
-                ErrMsg = string.Empty;
+                Success = true;
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format(Catalog.GetString(
+                            "UpdateCostCentreCodeForOneRecipient: Unable to retrieve Cost Centre Code for Recipient {0} in Ledger {1}, Gift Detail {2}-{3}-{4}!{5}{5}{6}"),
+                        GiftDetailRow.RecipientKey,
+                        GiftDetailRow.LedgerNumber,
+                        GiftDetailRow.BatchNumber,
+                        GiftDetailRow.GiftTransactionNumber,
+                        GiftDetailRow.DetailNumber,
+                        Environment.NewLine,
+                        ex.Message));
             }
 
-            return NewCostCentreCode;
+            return Success;
+        }
+
+        /// <summary>
+        /// Update cost centre code for single recipient in recurring gift
+        /// </summary>
+        /// <param name="ATableARecurringGiftDetail"></param>
+        /// <param name="ASaveChanges"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool UpdateCostCentreCodeForOneRecipientRecurring(GiftBatchTDSARecurringGiftDetailTable ATableARecurringGiftDetail,
+            out bool ASaveChanges)
+        {
+            bool Success = false;
+
+            ASaveChanges = false;
+
+            if ((ATableARecurringGiftDetail == null) || (ATableARecurringGiftDetail.Count == 0))
+            {
+                return Success;
+            }
+
+            GiftBatchTDSARecurringGiftDetailRow RecurringGiftDetailRow = (GiftBatchTDSARecurringGiftDetailRow)ATableARecurringGiftDetail.Rows[0];
+
+            string CurrentCostCentreCode = RecurringGiftDetailRow.CostCentreCode;
+            string NewCostCentreCode = string.Empty;
+
+            try
+            {
+                NewCostCentreCode = RetrieveCostCentreCodeForRecipient(RecurringGiftDetailRow.LedgerNumber,
+                    RecurringGiftDetailRow.RecipientKey,
+                    RecurringGiftDetailRow.RecipientLedgerNumber,
+                    RecurringGiftDetailRow.DateEntered,
+                    RecurringGiftDetailRow.MotivationGroupCode,
+                    RecurringGiftDetailRow.MotivationDetailCode);
+
+                if (RecurringGiftDetailRow.CostCentreCode != NewCostCentreCode)
+                {
+                    RecurringGiftDetailRow.CostCentreCode = NewCostCentreCode;
+                    ASaveChanges = true;
+                }
+
+                Success = true;
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format(Catalog.GetString(
+                            "UpdateCostCentreCodeForOneRecipientRecurring: Unable to retrieve Cost Centre Code for Recipient {0} in Ledger {1}, Recurring Gift Detail {2}-{3}-{4}!{5}{5}{6}"),
+                        RecurringGiftDetailRow.RecipientKey,
+                        RecurringGiftDetailRow.LedgerNumber,
+                        RecurringGiftDetailRow.BatchNumber,
+                        RecurringGiftDetailRow.GiftTransactionNumber,
+                        RecurringGiftDetailRow.DetailNumber,
+                        Environment.NewLine,
+                        ex.Message));
+            }
+
+            return Success;
         }
 
         /// <summary>
         /// Update the cost centres for the recipients
         /// </summary>
         /// <param name="AMainDS"></param>
-        /// <param name="AFailedUpdates"></param>
         /// <param name="ABatchNumber"></param>
+        /// <param name="AFailedUpdates"></param>
+        /// <param name="ASaveChanges"></param>
         /// <param name="AGiftNumber"></param>
         /// <param name="AGiftDetailNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool UpdateCostCentreCodeForRecipients(GiftBatchTDS AMainDS,
-            out string AFailedUpdates,
             Int32 ABatchNumber,
+            out string AFailedUpdates,
+            out bool ASaveChanges,
             Int32 AGiftNumber = 0,
             Int32 AGiftDetailNumber = 0)
         {
             AFailedUpdates = string.Empty;
+            ASaveChanges = false;
 
             if ((AMainDS.AGiftBatch == null)
                 || (AMainDS.AGift == null)
@@ -1080,23 +1156,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool ForSingleGift = (AGiftNumber > 0);
             bool ForSingleGiftDetail = (AGiftDetailNumber > 0);
 
-            int LedgerNumber = AMainDS.ALedger[0].LedgerNumber;
-            Int64 PartnerKey = 0;
-            Int64 LedgerPartnerKey = AMainDS.ALedger[0].PartnerKey;
-
             string CurrentCostCentreCode = string.Empty;
             string NewCostCentreCode = string.Empty;
-
-            string MotivationGroup = string.Empty;
-            string MotivationDetail = string.Empty;
-
-            Int64 RecipientLedgerNumber = 0;
-            Int64 GiftDestinationForRecipient = 0;
-
-            bool KeyMinIsActive = false;
-            bool KeyMinExists = false;
-
-            string ValidLedgerNumberCostCentreCode = string.Empty;
 
             string ErrMsg = string.Empty;
 
@@ -1167,65 +1228,33 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     GiftRowDateEntered = (DateTime)GiftView[0][AGiftTable.GetDateEnteredDBName()];
                 }
 
-                PartnerKey = giftDetailRow.RecipientKey;
-
                 CurrentCostCentreCode = giftDetailRow.CostCentreCode;
-                NewCostCentreCode = string.Empty;
 
-                MotivationGroup = giftDetailRow.MotivationGroupCode;
-                MotivationDetail = giftDetailRow.MotivationDetailCode;
-
-                RecipientLedgerNumber = giftDetailRow.RecipientLedgerNumber;
-                GiftDestinationForRecipient = GetGiftDestinationForRecipient(PartnerKey, GiftRowDateEntered);
-
-                KeyMinIsActive = false;
-                KeyMinExists = KeyMinistryExists(PartnerKey, out KeyMinIsActive);
-
-                DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(LedgerNumber, PartnerKey);
-
-                if ((PartnerCostCentreTbl != null) && (PartnerCostCentreTbl.Rows.Count > 0))
+                try
                 {
-                    NewCostCentreCode = (string)PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"];
-                }
-                else if (GiftDestinationForRecipient > 0)
-                {
-                    NewCostCentreCode = GiftDestinationForRecipient.ToString();
-                }
-                else if (CheckCostCentreDestinationForRecipient(giftDetailRow.LedgerNumber, PartnerKey,
-                             out ValidLedgerNumberCostCentreCode)
-                         || CheckCostCentreDestinationForRecipient(giftDetailRow.LedgerNumber, RecipientLedgerNumber,
-                             out ValidLedgerNumberCostCentreCode))
-                {
-                    NewCostCentreCode = ValidLedgerNumberCostCentreCode;
-                }
-                else if ((RecipientLedgerNumber != LedgerPartnerKey) && ((MotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT) || KeyMinExists))
-                {
-                    ErrMsg = String.Format(
-                        "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
-                        PartnerKey,
-                        LedgerNumber,
-                        Environment.NewLine,
-                        RecipientLedgerNumber,
-                        LedgerPartnerKey);
-                }
+                    NewCostCentreCode = RetrieveCostCentreCodeForRecipient(giftDetailRow.LedgerNumber,
+                        giftDetailRow.RecipientKey,
+                        giftDetailRow.RecipientLedgerNumber,
+                        GiftRowDateEntered,
+                        giftDetailRow.MotivationGroupCode,
+                        giftDetailRow.MotivationDetailCode);
 
-                if (NewCostCentreCode.Length == 0)
-                {
-                    AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
-                        new object[] { LedgerNumber, MotivationGroup, MotivationDetail });
-
-                    if (motivationDetail != null)
+                    if (giftDetailRow.CostCentreCode != NewCostCentreCode)
                     {
-                        NewCostCentreCode = motivationDetail.CostCentreCode.ToString();
+                        giftDetailRow.CostCentreCode = NewCostCentreCode;
+                        ASaveChanges = true;
                     }
-                    else
-                    {
-                        ErrMsg = String.Format(
-                            "Error in extracting Cost Centre Code for Motivation Group: {0} and Motivation Detail: {1} in Ledger: {2}.",
-                            MotivationGroup,
-                            MotivationDetail,
-                            LedgerNumber);
-                    }
+                }
+                catch
+                {
+                    ErrMsg =
+                        String.Format(Catalog.GetString(
+                                "Unable to retrieve Cost Centre Code for Recipient {0} in Ledger {1}, Gift Detail {2}-{3}-{4}"),
+                            giftDetailRow.RecipientKey,
+                            giftDetailRow.LedgerNumber,
+                            giftDetailRow.BatchNumber,
+                            giftDetailRow.GiftTransactionNumber,
+                            giftDetailRow.DetailNumber);
                 }
 
                 if (CurrentCostCentreCode != NewCostCentreCode)
@@ -1245,6 +1274,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
+            if (ASaveChanges)
+            {
+                ASaveChanges = (AFailedUpdates.Length == 0);
+            }
+
             return AFailedUpdates.Length == 0;
         }
 
@@ -1258,7 +1292,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ARecurringGiftDetailNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool UpdateRecurringCostCentreCodeForRecipients(GiftBatchTDS AMainDS,
+        public static bool UpdateCostCentreCodeForRecipientsRecurring(GiftBatchTDS AMainDS,
             out string AFailedUpdates,
             Int32 ARecurringBatchNumber,
             Int32 ARecurringGiftNumber = 0,
@@ -1278,23 +1312,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             bool ForSingleGift = (ARecurringGiftNumber > 0);
             bool ForSingleGiftDetail = (ARecurringGiftDetailNumber > 0);
-
-            int LedgerNumber = AMainDS.ALedger[0].LedgerNumber;
-            Int64 PartnerKey = 0;
-            Int64 LedgerPartnerKey = AMainDS.ALedger[0].PartnerKey;
-
-            string NewCostCentreCode = string.Empty;
-
-            string MotivationGroup = string.Empty;
-            string MotivationDetail = string.Empty;
-
-            Int64 RecipientLedgerNumber = 0;
-            Int64 GiftDestinationForRecipient = 0;
-
-            bool KeyMinIsActive = false;
-            bool KeyMinExists = false;
-
-            string ValidLedgerNumberCostCentreCode = string.Empty;
 
             string ErrMsg = string.Empty;
 
@@ -1345,7 +1362,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             foreach (DataRowView dvRows in GiftDetailView)
             {
-                GiftBatchTDSARecurringGiftDetailRow giftDetailRow = (GiftBatchTDSARecurringGiftDetailRow)dvRows.Row;
+                GiftBatchTDSARecurringGiftDetailRow recurringGiftDetailRow = (GiftBatchTDSARecurringGiftDetailRow)dvRows.Row;
 
                 //Get date entered from gift table
                 // Executes once per gift number change
@@ -1353,9 +1370,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     GiftView.RowFilter = RowFilterForGifts;
                 }
-                else if (CurrentGiftNo != giftDetailRow.GiftTransactionNumber)
+                else if (CurrentGiftNo != recurringGiftDetailRow.GiftTransactionNumber)
                 {
-                    CurrentGiftNo = giftDetailRow.GiftTransactionNumber;
+                    CurrentGiftNo = recurringGiftDetailRow.GiftTransactionNumber;
 
                     GiftView.RowFilter = RowFilterForGifts + String.Format(" And {0}={1}",
                         ARecurringGiftTable.GetGiftTransactionNumberDBName(),
@@ -1364,68 +1381,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 DateForGiftRow = DateTime.Now;
 
-                PartnerKey = giftDetailRow.RecipientKey;
-
-                NewCostCentreCode = string.Empty;
-
-                MotivationGroup = giftDetailRow.MotivationGroupCode;
-                MotivationDetail = giftDetailRow.MotivationDetailCode;
-
-                RecipientLedgerNumber = giftDetailRow.RecipientLedgerNumber;
-                GiftDestinationForRecipient = GetGiftDestinationForRecipient(PartnerKey, DateForGiftRow);
-
-                KeyMinIsActive = false;
-                KeyMinExists = KeyMinistryExists(PartnerKey, out KeyMinIsActive);
-
-                DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(LedgerNumber, PartnerKey);
-
-                if ((PartnerCostCentreTbl != null) && (PartnerCostCentreTbl.Rows.Count > 0))
+                try
                 {
-                    NewCostCentreCode = (string)PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"];
+                    recurringGiftDetailRow.CostCentreCode = RetrieveCostCentreCodeForRecipient(recurringGiftDetailRow.LedgerNumber,
+                        recurringGiftDetailRow.RecipientKey,
+                        recurringGiftDetailRow.RecipientLedgerNumber,
+                        DateForGiftRow,
+                        recurringGiftDetailRow.MotivationGroupCode,
+                        recurringGiftDetailRow.MotivationDetailCode);
                 }
-                else if (GiftDestinationForRecipient > 0)
+                catch
                 {
-                    NewCostCentreCode = GiftDestinationForRecipient.ToString();
+                    ErrMsg =
+                        String.Format(Catalog.GetString(
+                                "Unable to retrieve Cost Centre Code for Recipient {0} in Ledger {1}, Recurring Gift Detail {2}-{3}-{4}"),
+                            recurringGiftDetailRow.RecipientKey,
+                            recurringGiftDetailRow.LedgerNumber,
+                            recurringGiftDetailRow.BatchNumber,
+                            recurringGiftDetailRow.GiftTransactionNumber,
+                            recurringGiftDetailRow.DetailNumber);
                 }
-                else if (CheckCostCentreDestinationForRecipient(giftDetailRow.LedgerNumber, PartnerKey,
-                             out ValidLedgerNumberCostCentreCode)
-                         || CheckCostCentreDestinationForRecipient(giftDetailRow.LedgerNumber, RecipientLedgerNumber,
-                             out ValidLedgerNumberCostCentreCode))
-                {
-                    NewCostCentreCode = ValidLedgerNumberCostCentreCode;
-                }
-                else if ((RecipientLedgerNumber != LedgerPartnerKey) && ((MotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT) || KeyMinExists))
-                {
-                    ErrMsg = String.Format(
-                        "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
-                        PartnerKey,
-                        LedgerNumber,
-                        Environment.NewLine,
-                        RecipientLedgerNumber,
-                        LedgerPartnerKey);
-                }
-
-                if (NewCostCentreCode.Length == 0)
-                {
-                    AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
-                        new object[] { LedgerNumber, MotivationGroup, MotivationDetail });
-
-                    if (motivationDetail != null)
-                    {
-                        NewCostCentreCode = motivationDetail.CostCentreCode.ToString();
-                    }
-                    else
-                    {
-                        ErrMsg = String.Format(
-                            "Error in extracting Cost Centre Code for Motivation Group: {0} and Motivation Detail: {1} in Ledger: {2}.",
-                            MotivationGroup,
-                            MotivationDetail,
-                            LedgerNumber);
-                    }
-                }
-
-                //Write out the new Cost centre code value
-                giftDetailRow.CostCentreCode = NewCostCentreCode;
 
                 if (ErrMsg.Length > 0)
                 {
@@ -1449,20 +1424,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadRecurringGiftTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadGiftTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            string FailedUpdates = string.Empty;
-
-            GiftBatchTDS MainDS = LoadRecurringGiftBatchData(ALedgerNumber, ABatchNumber);
-
-            if (!UpdateRecurringCostCentreCodeForRecipients(MainDS, out FailedUpdates, ABatchNumber))
-            {
-                TLogging.Log(String.Format("Updating Cost Centre Codes For Recipients in Ledger {0} and Recurring Batch {1} failed:{2}  {3}",
-                        ALedgerNumber,
-                        ABatchNumber,
-                        Environment.NewLine,
-                        FailedUpdates));
-            }
+            GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
 
             // drop all tables apart from ARecurringGift and ARecurringGiftDetail
             foreach (DataTable table in MainDS.Tables)
@@ -1473,15 +1437,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            //Add a temp table
-            if (FailedUpdates.Length > 0)
-            {
-                DataTable table = new DataTable();
-                table.TableName = "AUpdateErrors";
-                table.Columns.Add("UpdateError", typeof(string));
-                table.Rows.Add(FailedUpdates);
+            return MainDS;
+        }
 
-                MainDS.Tables.Add(table);
+        /// <summary>
+        /// loads a list of recurring gift transactions and details for the given ledger and recurring batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadRecurringGiftTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GiftBatchTDS MainDS = LoadARecurringGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
+
+            // drop all tables apart from ARecurringGift and ARecurringGiftDetail
+            foreach (DataTable table in MainDS.Tables)
+            {
+                if ((table.TableName != MainDS.ARecurringGift.TableName) && (table.TableName != MainDS.ARecurringGiftDetail.TableName))
+                {
+                    table.Clear();
+                }
             }
 
             return MainDS;
@@ -2051,7 +2027,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     AddGiftDetailToGLBatch(ref GLDataset, giftdetail.CostCentreCode, giftdetail.AccountCode,
                         giftdetail.GiftTransactionAmount, giftdetail.GiftAmount, giftdetail.GiftAmountIntl, journal, giftBatch);
                 }
-                else
+                else if (!giftdetail.IsTaxDeductiblePctNull())
                 {
                     // if tax deductible pct is enabled then the gift detail needs split in two: tax-deductible and non-deductible
                     if (giftdetail.TaxDeductiblePct > 0)
@@ -2181,7 +2157,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             transaction.AmountInIntlCurrency += AAmountInIntlCurrency;
         }
 
-        private static void LoadGiftRelatedData(GiftBatchTDS AGiftDS,
+        private static void LoadGiftDonorRelatedData(GiftBatchTDS AGiftDS,
             bool ARecurring,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
@@ -2423,150 +2399,217 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// create GiftBatchTDS with the gift batch to post, and all gift transactions and details, and motivation details
+        /// Create GiftBatchTDS with the gift batch to post, and all gift transactions and details, and motivation details
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadGiftBatchData(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadAGiftBatchAndRelatedData(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            bool SaveChanges = false;
+
+            bool ChangesToCommit = false;
 
             TDBTransaction Transaction = null;
-
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
-                    try
-                    {
-                        AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-
-                        AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-
-                        AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-
-                        AGiftDetailAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-
-                        LoadGiftRelatedData(MainDS, false, ALedgerNumber, ABatchNumber, ref Transaction);
-
-                        DataView giftView = new DataView(MainDS.AGift);
-                        giftView.Sort = AGiftTable.GetGiftTransactionNumberDBName();
-
-                        bool UnpostedBatch = ((AGiftBatchRow)MainDS.AGiftBatch.Rows.Find(
-                                                  new object[] { ALedgerNumber, ABatchNumber })).BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
-
-                        // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
-                        foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
-                        {
-                            // get the gift
-                            AGiftRow giftRow = (AGiftRow)giftView.FindRows(giftDetail.GiftTransactionNumber)[0].Row;
-
-                            PPartnerRow DonorRow = (PPartnerRow)MainDS.DonorPartners.Rows.Find(giftRow.DonorKey);
-
-                            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
-                                new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
-
-                            giftDetail.DonorKey = giftRow.DonorKey;
-                            giftDetail.DonorName = DonorRow.PartnerShortName;
-                            giftDetail.DonorClass = DonorRow.PartnerClass;
-                            giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
-                            giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
-                            giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
-                            giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
-
-                            //do the same for the Recipient
-                            if (giftDetail.RecipientKey > 0)
-                            {
-                                // if true then this gift is protected and data cannot be changed
-                                // (note: here this includes all negative gifts and not just reversals)
-                                if (!UnpostedBatch || (giftDetail.GiftTransactionAmount < 0))
-                                {
-                                    giftDetail.RecipientField = giftDetail.RecipientLedgerNumber;
-                                }
-                                else
-                                {
-                                    // get the current Recipient Fund Number
-                                    giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftRow.DateEntered);
-
-                                    // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
-                                    if (giftDetail.RecipientField != giftDetail.RecipientLedgerNumber)
-                                    {
-                                        giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
-                                        SaveChanges = true;
-                                    }
-
-                                    // get the current CostCentreCode
-                                    if (giftDetail.RecipientLedgerNumber != 0)
-                                    {
-                                        giftDetail.CostCentreCode =
-                                            IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
-                                    }
-                                    else
-                                    {
-                                        giftDetail.CostCentreCode = motivationDetail.CostCentreCode;
-                                    }
-                                }
-
-                                PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
-                                giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
-
-                                PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
-
-                                if ((RecipientUnitRow != null) && (RecipientUnitRow.UnitTypeCode == MPartnerConstants.UNIT_TYPE_KEYMIN))
-                                {
-                                    giftDetail.RecipientKeyMinistry = RecipientUnitRow.UnitName;
-                                }
-                                else
-                                {
-                                    giftDetail.SetRecipientKeyMinistryNull();
-                                }
-
-                                if (TaxDeductiblePercentageEnabled)
-                                {
-                                    MainDS.PPartnerTaxDeductiblePct.Merge(
-                                        PPartnerTaxDeductiblePctAccess.LoadViaPPartner(giftDetail.RecipientKey, Transaction));
-                                }
-                            }
-                            else
-                            {
-                                giftDetail.SetRecipientFieldNull();
-                                giftDetail.RecipientDescription = "INVALID";
-                                giftDetail.SetRecipientKeyMinistryNull();
-                            }
-
-                            //And account code
-                            if (motivationDetail != null)
-                            {
-                                giftDetail.AccountCode = motivationDetail.AccountCode;
-                                giftDetail.TaxDeductibleAccountCode = motivationDetail.TaxDeductibleAccount;
-                            }
-                            else
-                            {
-                                giftDetail.SetAccountCodeNull();
-                                giftDetail.SetTaxDeductibleAccountCodeNull();
-                            }
-
-                            giftDetail.DateEntered = giftRow.DateEntered;
-                            giftDetail.Reference = giftRow.Reference;
-                        }
-
-                        AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                        MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, Transaction));
-                    }
-                    catch (Exception e)
-                    {
-                        TLogging.Log("Error in LoadGiftBatchData: " + e.Message);
-                    }
+                    MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, Transaction, out ChangesToCommit);
                 });
 
-            if (SaveChanges)
+            if (ChangesToCommit)
+            {
+                GiftBatchTDSAccess.SubmitChanges(MainDS);
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// Create GiftBatchTDS with the gift batch to post, and all gift transactions and details, and motivation details
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        private static GiftBatchTDS LoadAGiftBatchAndRelatedData(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            TDBTransaction ATransaction,
+            out bool AChangesToCommit)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            AChangesToCommit = false;
+
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
+            try
+            {
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ATransaction);
+                AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, ATransaction);
+                AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, ATransaction);
+                AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, ATransaction);
+                AGiftDetailAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, ATransaction);
+
+                //Load Ledger Partner types
+                MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, ATransaction));
+
+                //Load related donor data
+                LoadGiftDonorRelatedData(MainDS, false, ALedgerNumber, ABatchNumber, ref ATransaction);
+
+                DataView giftView = new DataView(MainDS.AGift);
+                giftView.Sort = AGiftTable.GetGiftTransactionNumberDBName();
+
+                bool allowUpdates = (MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+                // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
+                foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+                {
+                    // get the gift
+                    AGiftRow giftRow = (AGiftRow)giftView.FindRows(giftDetail.GiftTransactionNumber)[0].Row;
+
+                    PPartnerRow DonorRow = (PPartnerRow)MainDS.DonorPartners.Rows.Find(giftRow.DonorKey);
+
+                    AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
+                        new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
+
+                    giftDetail.DonorKey = giftRow.DonorKey;
+                    giftDetail.DonorName = DonorRow.PartnerShortName;
+                    giftDetail.DonorClass = DonorRow.PartnerClass;
+                    giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
+                    giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
+                    giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
+                    giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
+                    giftDetail.DateEntered = giftRow.DateEntered;
+                    giftDetail.Reference = giftRow.Reference;
+
+                    //do the same for the Recipient
+                    if (giftDetail.RecipientKey > 0)
+                    {
+                        // if true then this gift is protected and data cannot be changed
+                        // (note: here this includes all negative gifts and not just reversals)
+                        if (allowUpdates && (giftDetail.GiftTransactionAmount > 0))
+                        {
+                            // get the current Recipient Fund Number
+                            giftDetail.RecipientField = GetRecipientFundNumberInner(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered);
+
+                            // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
+                            if (giftDetail.RecipientLedgerNumber != giftDetail.RecipientField)
+                            {
+                                giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
+                                AChangesToCommit = true;
+                            }
+
+                            try
+                            {
+                                string newCostCentreCode =
+                                    RetrieveCostCentreCodeForRecipient(ALedgerNumber,
+                                        giftDetail.RecipientKey,
+                                        giftDetail.RecipientLedgerNumber,
+                                        giftDetail.DateEntered,
+                                        motivationDetailRow.MotivationGroupCode,
+                                        motivationDetailRow.MotivationDetailCode,
+                                        ATransaction);
+
+                                if (giftDetail.CostCentreCode != newCostCentreCode)
+                                {
+                                    giftDetail.CostCentreCode = newCostCentreCode;
+                                    AChangesToCommit = true;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                TLogging.Log("Error in: LoadAGiftBatchAndRelatedData - " + ex.Message);
+                            }
+                        }
+                        else
+                        {
+                            giftDetail.RecipientField = giftDetail.RecipientLedgerNumber;
+                        }
+
+                        PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
+
+                        if (RecipientRow != null)
+                        {
+                            giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
+                        }
+                        else
+                        {
+                            giftDetail.RecipientDescription = "INVALID";
+                        }
+
+                        PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
+
+                        if ((RecipientUnitRow != null) && (RecipientUnitRow.UnitTypeCode == MPartnerConstants.UNIT_TYPE_KEYMIN))
+                        {
+                            giftDetail.RecipientKeyMinistry = RecipientUnitRow.UnitName;
+                        }
+                        else
+                        {
+                            giftDetail.SetRecipientKeyMinistryNull();
+                        }
+
+                        if (TaxDeductiblePercentageEnabled)
+                        {
+                            MainDS.PPartnerTaxDeductiblePct.Merge(
+                                PPartnerTaxDeductiblePctAccess.LoadViaPPartner(giftDetail.RecipientKey, ATransaction));
+                        }
+
+                        //And account code
+                        if (motivationDetailRow != null)
+                        {
+                            giftDetail.AccountCode = motivationDetailRow.AccountCode;
+                            giftDetail.TaxDeductibleAccountCode = motivationDetailRow.TaxDeductibleAccount;
+                        }
+                        else
+                        {
+                            giftDetail.SetAccountCodeNull();
+                            giftDetail.SetTaxDeductibleAccountCodeNull();
+                        }
+                    }
+                    else
+                    {
+                        giftDetail.RecipientDescription = "INVALID";
+                        giftDetail.SetRecipientFieldNull();
+                        giftDetail.SetRecipientKeyMinistryNull();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Error in LoadAGiftBatchAndRelatedData with Trans: " + e.Message);
+                throw;
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// Create GiftBatchTDS with the gift batch to post, and all gift transactions and details, and motivation details
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadARecurringGiftBatchAndRelatedData(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            bool ChangesToCommit = false;
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    MainDS = LoadARecurringGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, Transaction, out ChangesToCommit);
+                });
+
+            if (ChangesToCommit)
             {
                 // if RecipientLedgerNumber has been updated then this should immediately be saved to the database
                 GiftBatchTDSAccess.SubmitChanges(MainDS);
@@ -2575,29 +2618,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return MainDS;
         }
 
+        /// <summary>
         /// create GiftBatchTDS with the recurring gift batch, and all gift transactions and details, and motivation details
+        /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadRecurringGiftBatchData(Int32 ALedgerNumber, Int32 ABatchNumber)
+        private static GiftBatchTDS LoadARecurringGiftBatchAndRelatedData(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            TDBTransaction ATransaction,
+            out bool AChangesToCommit)
         {
-            bool NewTransaction = false;
-            bool SaveChanges = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            AChangesToCommit = false;
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ATransaction);
+            ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, ATransaction);
+            ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, ATransaction);
+            ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, ATransaction);
+            AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, ATransaction);
 
-            ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-
-            ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-
-            ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-
-            LoadGiftRelatedData(MainDS, true, ALedgerNumber, ABatchNumber, ref Transaction);
+            LoadGiftDonorRelatedData(MainDS, true, ALedgerNumber, ABatchNumber, ref ATransaction);
 
             DataView giftView = new DataView(MainDS.ARecurringGift);
             giftView.Sort = ARecurringGiftTable.GetGiftTransactionNumberDBName();
@@ -2615,8 +2655,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 giftDetail.DonorClass = DonorRow.PartnerClass;
                 giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
                 giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
-                //giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
-                //giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
+
+                AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
+                    new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
 
                 //do the same for the Recipient
                 if (giftDetail.RecipientKey > 0)
@@ -2629,13 +2670,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     else
                     {
                         // get the current Recipient Fund Number
-                        giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, DateTime.Today);
+                        giftDetail.RecipientField = GetRecipientFundNumberInner(MainDS, giftDetail.RecipientKey, DateTime.Today);
 
                         // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
-                        if (giftDetail.RecipientField != giftDetail.RecipientLedgerNumber)
+                        if (giftDetail.RecipientLedgerNumber != giftDetail.RecipientField)
                         {
                             giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
-                            SaveChanges = true;
+                            AChangesToCommit = true;
+                        }
+
+                        string newCostCentreCode =
+                            RetrieveCostCentreCodeForRecipient(ALedgerNumber, giftDetail.RecipientKey, giftDetail.RecipientLedgerNumber,
+                                giftDetail.DateEntered, motivationDetailRow.MotivationGroupCode, motivationDetailRow.MotivationDetailCode);
+
+                        if (giftDetail.CostCentreCode != newCostCentreCode)
+                        {
+                            giftDetail.CostCentreCode = newCostCentreCode;
+                            AChangesToCommit = true;
                         }
                     }
 
@@ -2661,30 +2712,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 //And account code
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
-                    new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
-
-                if (motivationDetail != null)
+                if (motivationDetailRow != null)
                 {
-                    giftDetail.AccountCode = motivationDetail.AccountCode.ToString();
+                    giftDetail.AccountCode = motivationDetailRow.AccountCode.ToString();
                 }
                 else
                 {
                     giftDetail.SetAccountCodeNull();
                 }
-            }
-
-            AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
-            if (SaveChanges)
-            {
-                // if RecipientLedgerNumber has been updated then this should immediately be saved to the database
-                GiftBatchTDSAccess.SubmitChanges(MainDS);
             }
 
             return MainDS;
@@ -2914,16 +2949,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ref TDBTransaction ATransaction,
             out TVerificationResultCollection AVerifications)
         {
-            GiftBatchTDS MainDS = LoadGiftBatchData(ALedgerNumber, ABatchNumber);
-
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ATransaction);
+            GiftBatchTDS MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber, ref ATransaction);
 
             string LedgerBaseCurrency = MainDS.ALedger[0].BaseCurrency;
             string LedgerIntlCurrency = MainDS.ALedger[0].IntlCurrency;
 
             AVerifications = new TVerificationResultCollection();
 
-            if (MainDS.AGiftBatch.Rows.Count < 1)
+            if ((MainDS.AGiftBatch == null) || (MainDS.AGiftBatch.Rows.Count < 1))
             {
                 AVerifications.Add(
                     new TVerificationResult(
@@ -2934,16 +2967,34 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         TResultSeverity.Resv_Critical));
                 return null;
             }
+            else if (MainDS.AGiftBatch[0].BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting Gift Batch",
+                        String.Format("Cannot post batch ({0}, {1}) with status: {2}",
+                            ALedgerNumber,
+                            ABatchNumber,
+                            MainDS.AGiftBatch[0].BatchStatus),
+                        TResultSeverity.Resv_Critical));
+                return null;
+            }
+
+            //Load all other related data for the batch and commit any changes
+            bool ChangesToCommit = false;
+            MainDS.Merge(LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, ATransaction, out ChangesToCommit));
+
+            if (ChangesToCommit)
+            {
+                GiftBatchTDSAccess.SubmitChanges(MainDS);
+            }
 
             AGiftBatchRow GiftBatchRow = MainDS.AGiftBatch[0];
 
             string BatchTransactionCurrency = GiftBatchRow.CurrencyCode;
 
             // for calculation of admin fees
-            AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, ATransaction);
-            AFeesPayableAccess.LoadViaALedger(MainDS, ALedgerNumber, ATransaction);
-            AFeesReceivableAccess.LoadViaALedger(MainDS, ALedgerNumber, ATransaction);
-            AProcessedFeeAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, ATransaction);
+            LoadAdminFeeTablesForGiftBatch(MainDS, ALedgerNumber, ABatchNumber, ATransaction);
 
             // check that the Gift Batch BatchPeriod matches the date effective
             DateTime GLEffectiveDate = GiftBatchRow.GlEffectiveDate;
@@ -2994,6 +3045,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 return null;
             }
 
+            //Check validity at the gift detail level
             foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
             {
                 // do not allow posting gifts with no donor
@@ -3030,47 +3082,52 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // data is only updated if the gift amount is positive
                 if (giftDetail.GiftTransactionAmount >= 0)
                 {
-                    PPartnerRow RecipientPartner = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
-
-                    giftDetail.RecipientLedgerNumber = 0;
-
-                    // make sure the correct costcentres and accounts are used
-                    if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
+                    if (giftDetail.IsRecipientLedgerNumberNull() || (giftDetail.RecipientLedgerNumber == 0))
                     {
-                        // get the field that the key ministry belongs to. or it might be a field itself
-                        giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey);
-                    }
-                    else if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
-                    {
-                        // TODO make sure the correct costcentres and accounts are used, recipient ledger number
-                        giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered);
+                        AVerifications.Add(
+                            new TVerificationResult(
+                                "Posting Gift Batch",
+                                String.Format(Catalog.GetString("No valid Gift Destination field exists for the recipient {0} ({1}) of gift {2}."),
+                                    giftDetail.RecipientDescription,
+                                    giftDetail.RecipientKey,
+                                    giftDetail.GiftTransactionNumber) +
+                                "\n\n" +
+                                Catalog.GetString(
+                                    "A Gift Destination will need to be assigned to this Partner."),
+                                TResultSeverity.Resv_Critical));
+                        return null;
                     }
 
-                    if (giftDetail.RecipientLedgerNumber != 0)
+                    if (giftDetail.IsCostCentreCodeNull() || (giftDetail.CostCentreCode == string.Empty))
                     {
-                        giftDetail.CostCentreCode = IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
+                        AVerifications.Add(
+                            new TVerificationResult(
+                                "Posting Gift Batch",
+                                String.Format(Catalog.GetString("No valid Cost Centre Code exists for the recipient {0} ({1}) of gift {2}."),
+                                    giftDetail.RecipientDescription,
+                                    giftDetail.RecipientKey,
+                                    giftDetail.GiftTransactionNumber) +
+                                "\n\n" +
+                                Catalog.GetString(
+                                    "A Gift Destination will need to be assigned to this Partner."),
+                                TResultSeverity.Resv_Critical));
+                        return null;
                     }
-                    else
-                    {
-                        giftDetail.CostCentreCode = motivationRow.CostCentreCode;
-
-                        // The recipient ledger number must not be 0 if the motivation group is 'GIFT'
-                        if (giftDetail.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
-                        {
-                            AVerifications.Add(
-                                new TVerificationResult(
-                                    "Posting Gift Batch",
-                                    String.Format(Catalog.GetString("No valid Gift Destination exists for the recipient {0} ({1}) of gift {2}."),
-                                        giftDetail.RecipientDescription,
-                                        giftDetail.RecipientKey,
-                                        giftDetail.GiftTransactionNumber) +
-                                    "\n\n" +
-                                    Catalog.GetString(
-                                        "A Gift Destination will need to be assigned to this Partner before this gift can be posted with the Motivation Group 'GIFT'."),
-                                    TResultSeverity.Resv_Critical));
-                            return null;
-                        }
-                    }
+                }
+                else
+                {
+                    AVerifications.Add(
+                        new TVerificationResult(
+                            "Posting Gift Batch",
+                            String.Format(Catalog.GetString("No valid Gift Destination exists for the recipient {0} ({1}) of gift {2}."),
+                                giftDetail.RecipientDescription,
+                                giftDetail.RecipientKey,
+                                giftDetail.GiftTransactionNumber) +
+                            "\n\n" +
+                            Catalog.GetString(
+                                "A Gift Destination will need to be assigned to this Partner before this gift can be posted with the Motivation Group 'GIFT'."),
+                            TResultSeverity.Resv_Critical));
+                    return null;
                 }
 
                 // set column giftdetail.AccountCode motivation
@@ -3113,10 +3170,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            // TODO if already posted, fail
-            MainDS.AGiftBatch[0].BatchStatus = MFinanceConstants.BATCH_POSTED;
-
             return MainDS;
+        }
+
+        private static void LoadAdminFeeTablesForGiftBatch(GiftBatchTDS AMainDS,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            TDBTransaction ATransaction)
+        {
+            // for calculation of admin fees
+            AMotivationDetailFeeAccess.LoadViaALedger(AMainDS, ALedgerNumber, ATransaction);
+            AFeesPayableAccess.LoadViaALedger(AMainDS, ALedgerNumber, ATransaction);
+            AFeesReceivableAccess.LoadViaALedger(AMainDS, ALedgerNumber, ATransaction);
+            AProcessedFeeAccess.LoadViaAGiftBatch(AMainDS, ALedgerNumber, ABatchNumber, ATransaction);
         }
 
         /// <summary>
@@ -3159,8 +3225,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 Catalog.GetString("Posting gift batches"),
                 ABatchNumbers.Count * 3 + 1);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -3217,8 +3282,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                 MainDS.ALedger[0].LastHeaderRNumber = LastReceiptNumber;
 
-                                MainDS.ThrowAwayAfterSubmitChanges = true;
+                                //Mark gift batch as posted
+                                MainDS.AGiftBatch[0].BatchStatus = MFinanceConstants.BATCH_POSTED;
 
+                                MainDS.ThrowAwayAfterSubmitChanges = true;
                                 GiftBatchTDSAccess.SubmitChanges(MainDS);
                             }
                             else
@@ -3482,7 +3549,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         MainDS.RecipientFamily.Merge(PFamilyAccess.LoadByPrimaryKey(APartnerKey, Transaction));
                         MainDS.RecipientPerson.Merge(PPersonAccess.LoadByPrimaryKey(APartnerKey, Transaction));
                         MainDS.RecipientUnit.Merge(PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction));
-                        //MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, Transaction));
 
                         UmUnitStructureAccess.LoadAll(MainDS, Transaction);
                         MainDS.UmUnitStructure.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
@@ -3497,7 +3563,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (DataLoaded)
             {
-                return GetRecipientFundNumberSub(MainDS, APartnerKey, AGiftDate);
+                return GetRecipientFundNumberInner(MainDS, APartnerKey, AGiftDate);
             }
             else
             {
@@ -3505,20 +3571,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        private static Int64 GetRecipientFundNumberSub(GiftBatchTDS AMainDS, Int64 APartnerKey, DateTime? AGiftDate = null)
+        private static Int64 GetRecipientFundNumberInner(GiftBatchTDS AMainDS, Int64 APartnerKey, DateTime? AGiftDate = null)
         {
             if (APartnerKey == 0)
             {
                 return 0;
             }
 
-            // TODO check pm_staff_data for commitments
-
             //Look in RecipientFamily table
             PFamilyRow familyRow = (PFamilyRow)AMainDS.RecipientFamily.Rows.Find(APartnerKey);
-            PPersonRow personRow;
-
-            //p_partner
 
             if (familyRow != null)
             {
@@ -3526,7 +3587,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             //Look in RecipientPerson table
-            personRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(APartnerKey);
+            PPersonRow personRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(APartnerKey);
 
             if (personRow != null)
             {
@@ -3539,7 +3600,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 PPartnerTypeTable PPTTable = null;
 
                 TDBTransaction Transaction = null;
-
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
@@ -3553,11 +3613,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (AMainDS.LedgerPartnerTypes.Rows.Find(new object[] { APartnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) != null)
             {
-                //TODO Warning on inactive Fund
+                //TODO Warning on inactive Fund from p_partner table
                 return APartnerKey;
             }
 
-            //This was taken from old Petra - perhaps we should better search for unit type = F in PUnit
+            //This was taken from old Petra - perhaps we should better search for unit type = D, A or F in PUnit
             DataRowView[] rows = AMainDS.UmUnitStructure.DefaultView.FindRows(APartnerKey);
 
             if (rows.Length > 0)
@@ -3567,11 +3627,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (structureRow.ParentUnitKey == structureRow.ChildUnitKey)
                 {
                     // should not get here
+                    TLogging.Log("GetRecipientFundNumberInner: - should not get here");
                     return 0;
                 }
 
                 // recursive call until we find a partner that has partnertype LEDGER
-                return GetRecipientFundNumberSub(AMainDS, structureRow.ParentUnitKey);
+                return GetRecipientFundNumberInner(AMainDS, structureRow.ParentUnitKey);
             }
             else
             {

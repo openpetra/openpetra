@@ -142,7 +142,7 @@ namespace Ict.Tools.DataDumpPetra2
                 IgnoreFile = true;
             }
 
-            if (info.Length == 0 && !IgnoreFile)
+            if ((info.Length == 0) && !IgnoreFile)
             {
                 TLogging.Log("ignoring " + dumpFile + ".d.gz");
                 return;

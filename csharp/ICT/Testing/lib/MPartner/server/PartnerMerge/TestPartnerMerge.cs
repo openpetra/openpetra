@@ -4385,7 +4385,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             TestMergeGiftInfo_SecondaryAsserts(FromPartnerKey, ToPartnerKey, LedgerNumber, BatchNumber, ref UIConnector);
 
             // Cleanup: Delete test records
-            GiftBatchTDS GiftDS = TGiftTransactionWebConnector.LoadGiftBatchData(LedgerNumber, BatchNumber);
+            GiftBatchTDS GiftDS = TGiftTransactionWebConnector.LoadAGiftBatchAndRelatedData(LedgerNumber, BatchNumber);
             GiftDS.AGiftDetail.Rows[0].Delete();
             GiftDS.AGift.Rows[0].Delete();
             GiftDS.AGiftBatch.Rows[0].Delete();
@@ -4547,7 +4547,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             TestMergeRecurringGiftInfo_SecondaryAsserts(FromPartnerKey, ToPartnerKey, LedgerNumber, BatchNumber, ref UIConnector);
 
             // Cleanup: Delete test records
-            GiftBatchTDS GiftDS = TGiftTransactionWebConnector.LoadRecurringGiftBatchData(LedgerNumber, BatchNumber);
+            GiftBatchTDS GiftDS = TGiftTransactionWebConnector.LoadARecurringGiftBatchAndRelatedData(LedgerNumber, BatchNumber);
             GiftDS.ARecurringGiftDetail.Rows[0].Delete();
             GiftDS.ARecurringGift.Rows[0].Delete();
             GiftDS.ARecurringGiftBatch.Rows[0].Delete();

@@ -404,8 +404,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateAllRecipientDescriptions(ABatchNumber);
 
-            ((TFrmRecurringGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-
             return RetVal;
         }
 
@@ -432,35 +430,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         row.RecipientDescription = string.Empty;
                     }
                 }
-            }
-        }
-
-        private void FindCostCentreCodeForRecipient(GiftBatchTDSARecurringGiftDetailRow ARow, Int64 APartnerKey, bool AShowError = false)
-        {
-            if (ARow == null)
-            {
-                return;
-            }
-
-            string FailedUpdates = string.Empty;
-
-            GiftBatchTDSARecurringGiftDetailTable TableARecurringGiftDetail = new GiftBatchTDSARecurringGiftDetailTable();
-
-            TableARecurringGiftDetail.ImportRow(ARow);
-            TableARecurringGiftDetail.AcceptChanges();
-
-            string NewCostCentreCode = TRemote.MFinance.Gift.WebConnectors.UpdateRecurringCostCentreCodeForOneRecipient(FMainDS,
-                TableARecurringGiftDetail,
-                out FailedUpdates);
-
-            if (ARow.CostCentreCode != NewCostCentreCode)
-            {
-                ARow.CostCentreCode = NewCostCentreCode;
-            }
-
-            if (txtDetailCostCentreCode.Text != NewCostCentreCode)
-            {
-                txtDetailCostCentreCode.Text = NewCostCentreCode;
             }
         }
 
@@ -907,7 +876,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, APartnerKey, false);
+            string NewCostCentreCode = string.Empty;
+
+            try
+            {
+                NewCostCentreCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FPreviouslySelectedDetailRow.LedgerNumber,
+                    FPreviouslySelectedDetailRow.RecipientKey,
+                    FPreviouslySelectedDetailRow.RecipientLedgerNumber,
+                    FPreviouslySelectedDetailRow.DateEntered,
+                    FPreviouslySelectedDetailRow.MotivationGroupCode,
+                    FPreviouslySelectedDetailRow.MotivationDetailCode);
+
+                if (FPreviouslySelectedDetailRow.CostCentreCode != NewCostCentreCode)
+                {
+                    FPreviouslySelectedDetailRow.CostCentreCode = NewCostCentreCode;
+                }
+            }
+            catch (Exception ex)
+            {
+                string errMsg = Catalog.GetString("Error accessing Cost Centre Code:" + Environment.NewLine + ex.Message);
+
+                MessageBox.Show(errMsg, "Cost Centre Code", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+
+            if (txtDetailCostCentreCode.Text != NewCostCentreCode)
+            {
+                txtDetailCostCentreCode.Text = NewCostCentreCode;
+            }
         }
 
         private void MotivationDetailChanged(object sender, EventArgs e)
@@ -1397,10 +1392,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual())
                 {
                     //Clear current batch's gift data and reload from server
-                    if (RefreshCurrentRecurringBatchGiftData(FBatchNumber))
-                    {
-                        ((TFrmRecurringGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-                    }
+                    RefreshCurrentRecurringBatchGiftData(FBatchNumber);
                 }
                 else
                 {
@@ -2087,8 +2079,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FMainDS.ARecurringGift.Rows.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactions(ledgerNumber, batchNumber));
-
-                ((TFrmRecurringGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
