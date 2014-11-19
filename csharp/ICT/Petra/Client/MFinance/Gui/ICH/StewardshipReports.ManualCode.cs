@@ -45,6 +45,9 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.Interfaces.MFinance;
+using Ict.Petra.Client.MReporting.Logic;
+using System.Collections;
+using System.Collections.Generic;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.ICH
@@ -116,6 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 //Resize and move label
                 cmbYearEnding.ComboBoxWidth += 18;
                 cmbYearEnding.AttachedLabel.Left += 18;
+                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
         }
 
@@ -177,7 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
         }
 
-        private void GenerateHOSAFiles(Object Sender, EventArgs e)
+        private void GenerateReports(Object Sender, EventArgs e)
         {
             String CurrencySelect = (this.rbtBase.Checked ? MFinanceConstants.CURRENCY_BASE : MFinanceConstants.CURRENCY_INTERNATIONAL);
             bool DoGenerateHOSAReports = chkHOSAReport.Checked;
@@ -263,6 +267,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                             cmbICHNumber.GetSelectedInt32(),
                             CurrencySelect,
                             out VerificationResults);
+                        HOSASuccess = !VerificationResults.HasCriticalErrors;
                     }
                     else if (DoGenerateHOSAFiles)
                     {
@@ -317,8 +322,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 }
 
                 MessageBox.Show(msg, Catalog.GetString("Generate Reports"));
-
-                btnCancel.Text = "Close";
             }
             finally
             {
@@ -339,6 +342,57 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
 
             return false;
+        }
+
+        //
+        // New methods using the Fast-reports DLL:
+
+        private Boolean LoadReportData(TRptCalculator ACalc)
+        {
+            Shared.MReporting.TParameterList pm = ACalc.GetParameters();
+            pm.Add("param_ledger_number_i", FLedgerNumber);
+
+            ArrayList reportParam = pm.Elems;
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation"))
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+//          pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
+
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("Stewardship", paramsDictionary);
+
+            if (this.IsDisposed)
+            {
+                return false;
+            }
+
+            if (ReportTable == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "Stewardship");
+            //
+            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+
+            Boolean HasData = (ReportTable.Rows.Count > 0);
+
+            if (!HasData)
+            {
+                MessageBox.Show(Catalog.GetString("No Stewardship entries found for selected Run Number."), "Stewardship");
+            }
+
+            return HasData;
         }
     }
 }

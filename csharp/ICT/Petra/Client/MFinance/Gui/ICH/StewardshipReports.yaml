@@ -1,35 +1,39 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    BaseYaml: ../../../MReporting/Gui/MFinance/FinanceReportingForm.yaml
+    FormType: report
     FormTitle: Stewardship Reports
     Namespace: Ict.Petra.Client.MFinance.Gui.ICH
-    FormType: dialog
-    Template: window
-    WindowWidth: 570
+    WindowWidth: 540
     WindowHeight: 380
-    Events:
-        #Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}
-    Actions:
-        actGenerateHOSAFiles: {ActionClick=GenerateHOSAFiles}
-    
+
+    TemplateParameters:
+        XMLFILES: [Finance\\\\stewardship.xml]
+        REPORTNAME: Stewardship
+        CURRENTREPORT: Stewardship
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+
     Controls:
-        pnlDialogContent:
-            Controls: [pnlDialogContentTop, pnlDialogContentMiddle]
-            Dock: Fill
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [pnlContentTop, pnlContentMiddle]
                 
-        pnlDialogContentTop:
+        pnlContentTop:
             Dock: Fill
             Controls:
                 Row0: [grpSelection, rgrCurrency]
-                Row1: [Empty1]
                 
-        pnlDialogContentMiddle:
+        pnlContentMiddle:
             Dock: Bottom            
             Controls:
                 Row0: [grpHOSA, grpStewardship, grpOther]
 
         grpSelection: {Width:410, Height:120}
             Controls: 
-                Row0: [Empty2]
                 Row1: [cmbYearEnding]
                 Row2: [cmbReportPeriod]
                 Row3: [cmbICHNumber]
@@ -53,20 +57,19 @@ RootNode:
             Controls: 
                 Row0: [lblFees]
                 Row1: [chkFeesReport]
-                Row2: [Empty4]
-                Row3: [lblGift]
-                Row4: [chkRecipientStatement]
+                Row2: [lblGift]
+                Row3: [chkRecipientStatement]
 
         rgrCurrency:
-            Height: 85
-            ParameterName: param_sortby
+            Height: 120
+            ParameterName: param_currency
             Controls: [rbtBase, rbtInternational]
         rbtBase: 
             Label: Base
-            ParameterValue: 0
+            ParameterValue: Base
         rbtInternational: 
             Label: International
-            ParameterValue: 1
+            ParameterValue: International
 
         cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
         cmbYearEnding: {Label=Year End, List=UserDefinedList, OnChange=RefreshReportPeriodList}
@@ -84,10 +87,3 @@ RootNode:
         chkEmailStewardshipFileAndReport: {Label=Email File and Report, CheckBoxAttachedLabel=right, OnChange=EnableStewardshipFileOptions}
         chkStewardshipReport: {Label=Print Report, CheckBoxAttachedLabel=right}
         chkStewardshipFile: {Label=Email CSV File, CheckBoxAttachedLabel=right, OnChange=EnableStewardshipFileOptions}
-
-        Empty1: #{Label=None, Visible=false}
-        Empty2:
-        Empty4:
-        btnOK:
-            Label: &Generate Reports
-            Action: actGenerateHOSAFiles

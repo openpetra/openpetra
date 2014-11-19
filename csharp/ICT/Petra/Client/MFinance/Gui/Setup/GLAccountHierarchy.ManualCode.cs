@@ -310,7 +310,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             cmbDetailValidCcCombo.SelectedValueChanged += cmbDetailValidCcCombo_SelectedValueChanged;
 
             FPetraUtilsObject.DataSaved += OnHierarchySaved;
-            FormClosing += TFrmGLAccountHierarchy_FormClosing;
             FIAmUpdating = 0;
             FNameForNewAccounts = Catalog.GetString("NEWACCOUNT");
 
@@ -1071,9 +1070,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             return changeAccepted;
         }
 
-        private void TFrmGLAccountHierarchy_FormClosing(object sender, FormClosingEventArgs e)
+        private bool CanCloseManual()
         {
-            e.Cancel |= CheckAccountCodeValueChanged();
+            return FPetraUtilsObject.ChangesWereAbandonded || !CheckAccountCodeValueChanged();
         }
     } // TFrmGLAccountHierarchy
 }
