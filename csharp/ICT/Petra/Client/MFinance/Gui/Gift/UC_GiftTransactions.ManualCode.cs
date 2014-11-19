@@ -1757,30 +1757,44 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return;
             }
+            
+        	((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
 
             AGiftBatchRow giftBatch = ((TFrmGiftBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
+            int BatchNumber = giftBatch.BatchNumber;
 
             if (giftBatch == null)
             {
                 MessageBox.Show(Catalog.GetString("Please select a Gift Batch to Reverse."));
+        		((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
                 return;
             }
 
             if (!giftBatch.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED))
             {
                 MessageBox.Show(Catalog.GetString("This function is only possible when the selected batch is already posted."));
+        		((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
                 return;
             }
 
             if (FPetraUtilsObject.HasChanges)
             {
                 MessageBox.Show(Catalog.GetString("Please save first and than try again!"));
+        		((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
                 return;
+            }
+
+            if (reverseWholeBatch && (FBatchNumber != BatchNumber))
+            {
+                ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions);
+                ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Batches);
+        		((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
             }
 
             if (FPreviouslySelectedDetailRow == null)
             {
                 MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
+        		((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
                 return;
             }
 
@@ -1788,11 +1802,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int workingBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             int workingTransactionNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
             int workingDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
-
-            if (reverseWholeBatch && (FBatchNumber != giftBatch.BatchNumber))
-            {
-                LoadGifts(giftBatch.LedgerNumber, giftBatch.BatchNumber, MFinanceConstants.BATCH_POSTED);
-            }
 
             TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
 
@@ -1816,13 +1825,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (revertForm.ShowDialog() == DialogResult.OK)
                 {
+        			((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
                     ((TFrmGiftBatch)ParentForm).RefreshAll();
                 }
             }
             finally
             {
+        		((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
                 revertForm.Dispose();
                 ParentForm.ShowInTaskbar = true;
+        		((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
             }
         }
 

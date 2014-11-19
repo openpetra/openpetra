@@ -219,6 +219,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // Remember our current row position
             int nCurrentRowIndex = GetSelectedRowIndex();
+            int nCurrentBatchNumber = -1;
+            
+            if (FPreviouslySelectedDetailRow != null)
+            {
+            	nCurrentBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+            }
+            
             TFrmGiftBatch parentForm = (TFrmGiftBatch)ParentForm;
             Cursor prevCursor = parentForm.Cursor;
 
@@ -238,8 +245,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //  because our ApplyFilterManual() code will do that for us
                 FFilterAndFindObject.ApplyFilter();
 
-                // Now we can select the row index we had before (if it exists)
-                SelectRowInGrid(nCurrentRowIndex);
+                // Now we can select the gift batch we had before (if it still exists on the grid)
+                if (!SelectBatchNumber(nCurrentBatchNumber))
+                {
+                	// If batch is no longer in the grid then select the batch that is in the same position
+                	SelectRowInGrid(nCurrentRowIndex);
+                }
+
                 UpdateRecordNumberDisplay();
 
                 TUC_GiftTransactions TransactionForm = parentForm.GetTransactionsControl();
@@ -646,17 +658,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
         /// Select a special batch number from outside
-        public void SelectBatchNumber(Int32 ABatchNumber)
+        /// </summary>
+        /// <param name="ABatchNumber"></param>
+        /// <returns>True if the record is displayed in the grid, False otherwise</returns>
+        public bool SelectBatchNumber(Int32 ABatchNumber)
         {
             for (int i = 0; (i < FMainDS.AGiftBatch.Rows.Count); i++)
             {
                 if (FMainDS.AGiftBatch[i].BatchNumber == ABatchNumber)
                 {
-                    SelectDetailRowByDataTableIndex(i);
-                    break;
+                    return SelectDetailRowByDataTableIndex(i);
                 }
             }
+            
+            return false;
         }
 
         private void ValidateDataDetailsManual(AGiftBatchRow ARow)

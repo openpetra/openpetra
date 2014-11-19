@@ -2099,12 +2099,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {
-                transactionForTotals.TransactionAmount += giftdetail.GiftTransactionAmount;
-                transactionForTotals.AmountInBaseCurrency += giftdetail.GiftAmount;
-                transactionForTotals.AmountInIntlCurrency += giftdetail.GiftAmountIntl;
+            	transactionForTotals.TransactionAmount += giftdetail.GiftTransactionAmount;
+            	transactionForTotals.AmountInBaseCurrency += Math.Abs(giftdetail.GiftAmount);
+            	transactionForTotals.AmountInIntlCurrency += Math.Abs(giftdetail.GiftAmountIntl);
             }
 
-            transactionForTotals.DebitCreditIndicator = true;
+            // determine whether gift is debit or credit
+            transactionForTotals.DebitCreditIndicator = transactionForTotals.TransactionAmount >= 0;
+            
+            transactionForTotals.TransactionAmount = Math.Abs(transactionForTotals.TransactionAmount);
 
             // TODO: account and costcentre based on linked costcentre, current commitment, and Motivation detail
             // if motivation cost centre is a summary cost centre, make sure the transaction costcentre is reporting to that summary cost centre
@@ -2162,7 +2165,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 transaction.CostCentreCode = ACostCentre;
                 transaction.Narrative = "GB - Gift Batch " + AGiftBatch.BatchNumber.ToString();
                 transaction.Reference = "GB" + AGiftBatch.BatchNumber.ToString();
-                transaction.DebitCreditIndicator = false;
+                transaction.DebitCreditIndicator = ATransactionAmount < 0;
                 transaction.TransactionAmount = 0;
                 transaction.AmountInBaseCurrency = 0;
                 transaction.AmountInIntlCurrency = 0;
@@ -2176,9 +2179,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 transaction = (ATransactionRow)AGLDataset.ATransaction.DefaultView[0].Row;
             }
 
-            transaction.TransactionAmount += ATransactionAmount;
-            transaction.AmountInBaseCurrency += AAmountInBaseCurrency;
-            transaction.AmountInIntlCurrency += AAmountInIntlCurrency;
+            // use non-negative values as we now have a debit/credit indicator
+            transaction.TransactionAmount += Math.Abs(ATransactionAmount);
+            transaction.AmountInBaseCurrency += Math.Abs(AAmountInBaseCurrency);
+            transaction.AmountInIntlCurrency += Math.Abs(AAmountInIntlCurrency);
         }
 
         private static void LoadGiftRelatedData(GiftBatchTDS AGiftDS,
