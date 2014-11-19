@@ -34,6 +34,8 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
@@ -369,6 +371,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Boolean batchSelected = (Boolean)requestParams["NewBatchSelected"];
             Int32 ANewBatchNumber = 0;
 
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
             if (batchSelected)
             {
                 ANewBatchNumber = (Int32)requestParams["NewBatchNumber"];
@@ -530,9 +535,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                     decimal signum = (cycle == 0) ? -1 : 1;
                                     giftDetail.GiftTransactionAmount = signum * oldGiftDetail.GiftTransactionAmount;
+                                    batchGiftTotal += giftDetail.GiftTransactionAmount;
                                     giftDetail.GiftAmount = signum * oldGiftDetail.GiftAmount;
-                                    batchGiftTotal += giftDetail.GiftAmount;
                                     giftDetail.GiftAmountIntl = signum * oldGiftDetail.GiftAmountIntl;
+
+                                    if (TaxDeductiblePercentageEnabled)
+                                    {
+                                        giftDetail.TaxDeductibleAmount = signum * oldGiftDetail.TaxDeductibleAmount;
+                                        giftDetail.TaxDeductibleAmountBase = signum * oldGiftDetail.TaxDeductibleAmountBase;
+                                        giftDetail.TaxDeductibleAmountIntl = signum * oldGiftDetail.TaxDeductibleAmountIntl;
+                                        giftDetail.NonDeductibleAmount = signum * oldGiftDetail.NonDeductibleAmount;
+                                        giftDetail.NonDeductibleAmountBase = signum * oldGiftDetail.NonDeductibleAmountBase;
+                                        giftDetail.NonDeductibleAmountIntl = signum * oldGiftDetail.NonDeductibleAmountIntl;
+                                    }
 
                                     giftDetail.GiftCommentOne = (String)requestParams["ReversalCommentOne"];
                                     giftDetail.GiftCommentTwo = (String)requestParams["ReversalCommentTwo"];

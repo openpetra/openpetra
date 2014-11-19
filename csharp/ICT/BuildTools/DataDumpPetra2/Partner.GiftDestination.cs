@@ -178,46 +178,49 @@ namespace Ict.Tools.DataDumpPetra2
 
                 string familykey = GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n");
 
-                if (!FamilyKeysWithPersons.ContainsKey(familykey))
-                {
-                    continue;
-                }
-
                 // find Person partners belonging to the family
                 bool CommitmentFound = false;
                 int MinimumFamilyId = int.MaxValue;
 
-                // read through each of the Family's Persons
-                foreach (PersonKeyAndRow PersonRecord in FamilyKeysWithPersons[familykey])
+                // if family contains Persons
+                if (FamilyKeysWithPersons.ContainsKey(familykey))
                 {
-                    // find if the Person has a currently active commitment
-                    string[] Commitment = ActiveCommitments.Find(e => GetValue(StaffDataColumnNames, e, "p_partner_key_n") ==
-                        PersonRecord.PersonKey);
-
-                    // if currently active commitment exists create a new Gift Destination record
-                    if (Commitment != null)
+                    // read through each of the Family's Persons
+                    foreach (PersonKeyAndRow PersonRecord in FamilyKeysWithPersons[familykey])
                     {
-                        int CurrentFamilyId = Convert.ToInt32(GetValue(PersonColumnNames, PersonRecord.PersonRow, "p_old_omss_family_id_i"));
+                        // find if the Person has a currently active commitment
+                        string[] Commitment = ActiveCommitments.Find(e => GetValue(StaffDataColumnNames, e, "p_partner_key_n") ==
+                            PersonRecord.PersonKey);
 
-                        if (CurrentFamilyId < MinimumFamilyId)
+                        // if currently active commitment exists create a new Gift Destination record
+                        if (Commitment != null)
                         {
-                            SetValue(AColumnNames, ref ANewRow, "p_key_i", RowCounter.ToString());
-                            SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
-                            SetValue(AColumnNames, ref ANewRow, "p_field_key_n", GetValue(StaffDataColumnNames, Commitment, "pm_target_field_n"));
+                            int CurrentFamilyId = Convert.ToInt32(GetValue(PersonColumnNames, PersonRecord.PersonRow, "p_old_omss_family_id_i"));
 
-                            TTableField tf = new TTableField();
-                            tf.strName = "pm_start_of_commitment_d";
-                            tf.strType = "DATE";
+                            if (CurrentFamilyId < MinimumFamilyId)
+                            {
+                                SetValue(AColumnNames, ref ANewRow, "p_key_i", RowCounter.ToString());
+                                SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
+                                SetValue(AColumnNames, ref ANewRow, "p_field_key_n", GetValue(StaffDataColumnNames, Commitment, "pm_target_field_n"));
+                                SetValue(AColumnNames, ref ANewRow, "p_comment_c", "\\N");
 
-                            SetValue(AColumnNames, ref ANewRow, "p_date_effective_d",
-                                TFixData.FixValue(GetValue(StaffDataColumnNames, Commitment, "pm_start_of_commitment_d"), tf));
-                            tf.strName = "pm_end_of_commitment_d";
-                            SetValue(AColumnNames, ref ANewRow, "p_date_expires_d",
-                                TFixData.FixValue(GetValue(StaffDataColumnNames, Commitment, "pm_end_of_commitment_d"), tf));
+                                TTableField tf = new TTableField();
+                                tf.strName = "pm_start_of_commitment_d";
+                                tf.strType = "DATE";
 
-                            CommitmentFound = true;
+                                SetValue(AColumnNames, ref ANewRow, "p_date_effective_d",
+                                    TFixData.FixValue(GetValue(StaffDataColumnNames, Commitment, "pm_start_of_commitment_d"), tf));
+                                tf.strName = "pm_end_of_commitment_d";
+                                SetValue(AColumnNames, ref ANewRow, "p_date_expires_d",
+                                    TFixData.FixValue(GetValue(StaffDataColumnNames, Commitment, "pm_end_of_commitment_d"), tf));
 
-                            MinimumFamilyId = CurrentFamilyId;
+                                CommitmentFound = true;
+
+                                MinimumFamilyId = CurrentFamilyId;
+
+                                // there can only be one active gift destination per family
+                                break;
+                            }
                         }
                     }
                 }

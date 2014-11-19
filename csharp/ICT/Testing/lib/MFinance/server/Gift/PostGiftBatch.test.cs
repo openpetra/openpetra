@@ -35,10 +35,12 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Testing.NUnitPetraServer;
 using Ict.Testing.NUnitTools;
@@ -247,7 +249,7 @@ namespace Tests.MFinance.Server.Gift
         /// Two gifts are tested. One positive and one negative. Only the positive gift should be updated.
         /// The Negative gift should be unchanged.
         /// </summary>
-        //[Test]
+        [Test]
         public void TestBatchPostingRecalculations()
         {
             TVerificationResultCollection VerificationResult;
@@ -265,7 +267,7 @@ namespace Tests.MFinance.Server.Gift
             // Arrange: Create all data needed for this test (Gift Details have 'fake' RecipientLedgerNumber and CostCentreCode)
             //
             TestBatchPostingRecalculations_Arrange(out RecipientKey, out RealRecipientLedgerNumber,
-                out FalseRecipientLedgerNumber, FALSECOSTCENTRECODE, out GiftBatchNumber);
+                out FalseRecipientLedgerNumber, REALCOSTCENTRECODE, FALSECOSTCENTRECODE, out GiftBatchNumber);
 
             //
             // Act: Post the batch
@@ -342,7 +344,7 @@ namespace Tests.MFinance.Server.Gift
         /// <summary>
         /// This will test that the correct Recipient Field and Cost Centre are used for a gift when loading a batch
         /// </summary>
-        //[Test]
+        [Test]
         public void TestBatchLoadingRecalculations()
         {
             TVerificationResultCollection VerificationResult;
@@ -358,7 +360,7 @@ namespace Tests.MFinance.Server.Gift
             // Arrange: Create all data needed for this test (Gift Detail has a 'fake' RecipientLedgerNumber and CostCentreCode)
             //
             TestBatchPostingRecalculations_Arrange(out RecipientKey, out RealRecipientLedgerNumber,
-                out FalseRecipientLedgerNumber, FALSECOSTCENTRECODE, out GiftBatchNumber);
+                out FalseRecipientLedgerNumber, REALCOSTCENTRECODE, FALSECOSTCENTRECODE, out GiftBatchNumber);
 
             //
             // Act: Load the batch
@@ -424,11 +426,13 @@ namespace Tests.MFinance.Server.Gift
         /// <param name="ARecipientKey">Partner Key of the recipient.</param>
         /// <param name="ARealRecipientLedgerNumber">What the RecipientLedgerNumber should be.</param>
         /// <param name="AFalseRecipientLedgerNumber">What the RecipientLedgerNumber is.</param>
+        /// <param name="ARealCostCentreCode">What the CostCentreCode should be.</param>
         /// <param name="AFalseCostCentreCode">What the CostCentreCode is.</param>
         /// <param name="AGiftBatchNumber">Batch Number.</param>
         private void TestBatchPostingRecalculations_Arrange(out long ARecipientKey,
             out long ARealRecipientLedgerNumber,
             out long AFalseRecipientLedgerNumber,
+            string ARealCostCentreCode,
             string AFalseCostCentreCode,
             out Int32 AGiftBatchNumber)
         {
@@ -439,6 +443,7 @@ namespace Tests.MFinance.Server.Gift
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
             PartnerEditTDS PartnerEditDS = new PartnerEditTDS();
+            //GLSetupTDS GLSetupDS = new GLSetupTDS();
 
             // this is a family partner in the test database
             const Int64 DONORKEY = 43005001;
@@ -475,6 +480,14 @@ namespace Tests.MFinance.Server.Gift
             // Guard Assertion
             Assert.That(Result, Is.EqualTo(
                     TSubmitChangesResult.scrOK), "SubmitChanges for PartnerEditDS failed: " + VerificationResult.BuildVerificationResultString());
+
+            // link unit to Cost Centre
+            DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, 0);
+            DataRow PartnerCostCentreRow = PartnerCostCentreTbl.NewRow();
+            PartnerCostCentreRow["PartnerKey"] = ARealRecipientLedgerNumber;
+            PartnerCostCentreRow["IsLinked"] = ARealCostCentreCode;
+            PartnerCostCentreTbl.Rows.Add(PartnerCostCentreRow);
+            TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
 
             // create a new Gift Batch
             MainDS = TGiftTransactionWebConnector.CreateAGiftBatch(FLedgerNumber);
@@ -546,7 +559,7 @@ namespace Tests.MFinance.Server.Gift
         /// <summary>
         /// This will test that the correct Recipient Field is used for a gift when submitting a recurring batch.
         /// </summary>
-        //[Test]
+        [Test]
         public void TestRecurringBatchSubmitRecalculations()
         {
             TVerificationResultCollection VerificationResult;
@@ -629,7 +642,7 @@ namespace Tests.MFinance.Server.Gift
         /// <summary>
         /// This will test that the correct Recipient Field is used for a recurring gift when loading a recurring batch
         /// </summary>
-        //[Test]
+        [Test]
         public void TestRecurringBatchLoadingRecalculations()
         {
             TVerificationResultCollection VerificationResult;
@@ -751,6 +764,14 @@ namespace Tests.MFinance.Server.Gift
             // Guard Assertion
             Assert.That(Result, Is.EqualTo(
                     TSubmitChangesResult.scrOK), "SubmitChanges for PartnerEditDS failed: " + VerificationResult.BuildVerificationResultString());
+
+            // link unit to Cost Centre
+            DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, 0);
+            DataRow PartnerCostCentreRow = PartnerCostCentreTbl.NewRow();
+            PartnerCostCentreRow["PartnerKey"] = ARealRecipientLedgerNumber;
+            PartnerCostCentreRow["IsLinked"] = 4300;
+            PartnerCostCentreTbl.Rows.Add(PartnerCostCentreRow);
+            TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
 
             // create a new Recurring Gift Batch
             MainDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(FLedgerNumber);

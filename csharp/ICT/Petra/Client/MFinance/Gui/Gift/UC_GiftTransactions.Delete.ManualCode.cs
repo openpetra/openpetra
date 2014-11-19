@@ -337,6 +337,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void DeleteAllGifts(System.Object sender, EventArgs e)
         {
             string completionMessage = string.Empty;
+            int BatchNumberToClear = FBatchNumber;
 
             if ((FPreviouslySelectedDetailRow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
@@ -347,14 +348,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ||
                 (MessageBox.Show(String.Format(Catalog.GetString(
                              "You have chosen to delete all gifts from batch ({0}).{1}{1}Are you sure you want to delete all?"),
-                         FBatchNumber,
+                         BatchNumberToClear,
                          Environment.NewLine),
                      Catalog.GetString("Confirm Delete All"),
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
             {
-                int BatchNumberToClear = FBatchNumber;
-
                 try
                 {
                     //Normally need to set the message parameters before the delete is performed if requiring any of the row values
