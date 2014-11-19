@@ -1184,6 +1184,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             Boolean International = AParameters["param_currency"].ToString().StartsWith("Int");
             Decimal EffectiveExchangeRate = 1;
+
 //          Decimal LastYearExchangeRate = 1;
             if (International)
             {
@@ -1194,14 +1195,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     AccountingYear,
                     ReportPeriodEnd,
                     -1);
+
 /*
-                LastYearExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
-                    LedgerNumber,
-                    AccountingYear - 1,
-                    ReportPeriodEnd,
-                    -1);
+ *              LastYearExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
+ *                  LedgerNumber,
+ *                  AccountingYear - 1,
+ *                  ReportPeriodEnd,
+ *                  -1);
  */
             }
+
             //
             // Read different DB fields according to currency setting
             String ActualFieldName = /* International ? "a_actual_intl_n" : */ "a_actual_base_n";
@@ -1365,7 +1368,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                 }
                                 );
                             DataRow PreviousPeriodRow = OldPeriod[RowIdx].Row;
-                            Row["Actual"] = (Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(PreviousPeriodRow["ActualYTD"])) * EffectiveExchangeRate;
+                            Row["Actual"] =
+                                (Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(PreviousPeriodRow["ActualYTD"])) * EffectiveExchangeRate;
                         }
                     }
                     else
@@ -1806,7 +1810,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable StewardshipTable(Dictionary<String, TVariant> AParameters, TReportingDbAdapter DbAdapter)
+        public static DataTable StewardshipTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             try
             {
@@ -1816,6 +1820,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 Int32 period = AParameters["param_cmbReportPeriod"].ToInt32();
 
                 String StewardshipFilter = "PUB_a_ich_stewardship.a_ledger_number_i = " + LedgerNumber;
+
                 if (IchNumber == 0)
                 {
                     StewardshipFilter += " AND PUB_a_ich_stewardship.a_period_number_i = " + period;
@@ -1825,11 +1830,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     StewardshipFilter += " AND PUB_a_ich_stewardship.a_ich_number_i = " + IchNumber;
                 }
 
-                String Query = "SELECT PUB_a_ich_stewardship.*, PUB_a_cost_centre.a_cost_centre_name_c"
-                    + " FROM PUB_a_ich_stewardship, PUB_a_cost_centre WHERE "
-                    + StewardshipFilter
-                    + " AND PUB_a_cost_centre.a_ledger_number_i = PUB_a_ich_stewardship.a_ledger_number_i"
-                    + " AND PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_ich_stewardship.a_cost_centre_code_c ";
+                String Query = "SELECT PUB_a_ich_stewardship.*, PUB_a_cost_centre.a_cost_centre_name_c" +
+                               " FROM PUB_a_ich_stewardship, PUB_a_cost_centre WHERE " +
+                               StewardshipFilter +
+                               " AND PUB_a_cost_centre.a_ledger_number_i = PUB_a_ich_stewardship.a_ledger_number_i" +
+                               " AND PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_ich_stewardship.a_cost_centre_code_c ";
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
                 TLogging.Log(Catalog.GetString(""), TLoggingType.ToStatusBar);
                 return DbAdapter.RunQuery(Query, "Stewardship", Transaction);

@@ -967,8 +967,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private bool CanCloseManual()
         {
-            return (FPetraUtilsObject.ChangesWereAbandonded || !CheckCostCentreValueChanged());
+            return FPetraUtilsObject.ChangesWereAbandonded || !CheckCostCentreValueChanged();
         }
-
     } // TFrmGLCostCentreHierarchy
 } // namespace

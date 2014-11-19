@@ -353,7 +353,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             pm.Add("param_ledger_number_i", FLedgerNumber);
 
             ArrayList reportParam = pm.Elems;
-            Dictionary<String, TVariant> paramsDictionary = new Dictionary<string, TVariant>();
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
 
             foreach (Shared.MReporting.TParameter p in reportParam)
             {

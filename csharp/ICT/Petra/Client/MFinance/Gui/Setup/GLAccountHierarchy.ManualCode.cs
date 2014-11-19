@@ -1072,8 +1072,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private bool CanCloseManual()
         {
-            return (FPetraUtilsObject.ChangesWereAbandonded || !CheckAccountCodeValueChanged());
+            return FPetraUtilsObject.ChangesWereAbandonded || !CheckAccountCodeValueChanged();
         }
-
     } // TFrmGLAccountHierarchy
 }

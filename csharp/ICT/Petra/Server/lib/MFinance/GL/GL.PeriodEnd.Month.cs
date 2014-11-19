@@ -170,9 +170,9 @@ namespace Ict.Petra.Server.MFinance.GL
                 // Conventional Month->Month Switch ...
                 FledgerInfo.CurrentPeriod = FledgerInfo.CurrentPeriod + 1;
             }
+
             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.LedgerDetails.ToString());
-
         }
 
         /// <summary>
