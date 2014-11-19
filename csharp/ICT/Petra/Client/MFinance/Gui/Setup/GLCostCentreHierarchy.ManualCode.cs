@@ -315,7 +315,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtDetailCostCentreCode.TextChanged += new EventHandler(txtDetailCostCentreCode_TextChanged);
             txtDetailCostCentreCode.Leave += txtDetailCostCentreCode_Leave;
             FPetraUtilsObject.DataSaved += OnHierarchySaved;
-            FormClosing += TFrmGLCostCentreHierarchy_FormClosing;
 
             mniFilePrint.Click += FilePrint;
             mniFilePrint.Enabled = true;
@@ -966,9 +965,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
-        void TFrmGLCostCentreHierarchy_FormClosing(object sender, FormClosingEventArgs e)
+        private bool CanCloseManual()
         {
-            e.Cancel |= CheckCostCentreValueChanged();
+            return FPetraUtilsObject.ChangesWereAbandonded || !CheckCostCentreValueChanged();
         }
     } // TFrmGLCostCentreHierarchy
 } // namespace

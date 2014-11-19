@@ -220,7 +220,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (motivationDetail != null)
                 {
-                    RetrieveMotivationDetailAccountCode(motivationDetail, ATxtDetailAccountCode, ATxtDeductibleAccount, ATaxDeductiblePercentageEnabledFlag);
+                    RetrieveMotivationDetailAccountCode(motivationDetail,
+                        ATxtDetailAccountCode,
+                        ATxtDeductibleAccount,
+                        ATaxDeductiblePercentageEnabledFlag);
 
                     MotivationRecipientKey = motivationDetail.RecipientKey;
 
@@ -277,7 +280,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                string NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber, ARecipientKey, ACurrentDetailRow.RecipientLedgerNumber, ACurrentDetailRow.DateEntered, AMotivationGroup, AMotivationDetail);
+                string NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
+                    ARecipientKey,
+                    ACurrentDetailRow.RecipientLedgerNumber,
+                    ACurrentDetailRow.DateEntered,
+                    AMotivationGroup,
+                    AMotivationDetail);
 
                 if (ATxtDetailCostCentreCode.Text != NewCCCode)
                 {
@@ -812,7 +820,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ATxtDeductibleAccount.Text != TaxDeductibleAcctCode)
             {
-                ATxtDeductibleAccount.Text = TaxDeductibleAcctCode;    
+                ATxtDeductibleAccount.Text = TaxDeductibleAcctCode;
             }
         }
 
@@ -829,7 +837,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ATxtDetailAccountCode.Text = AMotivationDetail.AccountCode;
                 }
 
-                if (ATaxDeductiblePercentageEnabledFlag && ATxtDeductibleAccount.Text != AMotivationDetail.TaxDeductibleAccount)
+                if (ATaxDeductiblePercentageEnabledFlag && (ATxtDeductibleAccount.Text != AMotivationDetail.TaxDeductibleAccount))
                 {
                     ATxtDeductibleAccount.Text = AMotivationDetail.TaxDeductibleAccount;
                 }

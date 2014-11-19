@@ -2076,11 +2076,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {
                 transactionForTotals.TransactionAmount += giftdetail.GiftTransactionAmount;
-                transactionForTotals.AmountInBaseCurrency += giftdetail.GiftAmount;
-                transactionForTotals.AmountInIntlCurrency += giftdetail.GiftAmountIntl;
+                transactionForTotals.AmountInBaseCurrency += Math.Abs(giftdetail.GiftAmount);
+                transactionForTotals.AmountInIntlCurrency += Math.Abs(giftdetail.GiftAmountIntl);
             }
 
-            transactionForTotals.DebitCreditIndicator = true;
+            // determine whether gift is debit or credit
+            transactionForTotals.DebitCreditIndicator = transactionForTotals.TransactionAmount >= 0;
+
+            transactionForTotals.TransactionAmount = Math.Abs(transactionForTotals.TransactionAmount);
 
             // TODO: account and costcentre based on linked costcentre, current commitment, and Motivation detail
             // if motivation cost centre is a summary cost centre, make sure the transaction costcentre is reporting to that summary cost centre
@@ -2138,7 +2141,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 transaction.CostCentreCode = ACostCentre;
                 transaction.Narrative = "GB - Gift Batch " + AGiftBatch.BatchNumber.ToString();
                 transaction.Reference = "GB" + AGiftBatch.BatchNumber.ToString();
-                transaction.DebitCreditIndicator = false;
+                transaction.DebitCreditIndicator = ATransactionAmount < 0;
                 transaction.TransactionAmount = 0;
                 transaction.AmountInBaseCurrency = 0;
                 transaction.AmountInIntlCurrency = 0;
@@ -2152,9 +2155,30 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 transaction = (ATransactionRow)AGLDataset.ATransaction.DefaultView[0].Row;
             }
 
-            transaction.TransactionAmount += ATransactionAmount;
-            transaction.AmountInBaseCurrency += AAmountInBaseCurrency;
-            transaction.AmountInIntlCurrency += AAmountInIntlCurrency;
+            // if gift has same debit/credit indicator as transaction
+            if (transaction.DebitCreditIndicator == ATransactionAmount < 0)
+            {
+                transaction.TransactionAmount += Math.Abs(ATransactionAmount);
+                transaction.AmountInBaseCurrency += Math.Abs(AAmountInBaseCurrency);
+                transaction.AmountInIntlCurrency += Math.Abs(AAmountInIntlCurrency);
+            }
+            // if gift has a different debit/credit indicator as transaction
+            else
+            {
+                transaction.TransactionAmount -= Math.Abs(ATransactionAmount);
+                transaction.AmountInBaseCurrency -= Math.Abs(AAmountInBaseCurrency);
+                transaction.AmountInIntlCurrency -= Math.Abs(AAmountInIntlCurrency);
+
+                // if transaction amount has went negative then the debit/credit indicator must change
+                if (transaction.TransactionAmount < 0)
+                {
+                    transaction.TransactionAmount = Math.Abs(transaction.TransactionAmount);
+                    transaction.AmountInBaseCurrency = Math.Abs(transaction.AmountInBaseCurrency);
+                    transaction.AmountInIntlCurrency = Math.Abs(transaction.AmountInIntlCurrency);
+
+                    transaction.DebitCreditIndicator = !transaction.DebitCreditIndicator;
+                }
+            }
         }
 
         private static void LoadGiftDonorRelatedData(GiftBatchTDS AGiftDS,
@@ -3082,18 +3106,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // data is only updated if the gift amount is positive
                 if (giftDetail.GiftTransactionAmount >= 0)
                 {
-                    if (giftDetail.IsRecipientLedgerNumberNull() || (giftDetail.RecipientLedgerNumber == 0))
+                    // The recipient ledger number must not be 0 if the motivation group is 'GIFT'
+                    if ((giftDetail.IsRecipientLedgerNumberNull() || (giftDetail.RecipientLedgerNumber == 0))
+                        && (giftDetail.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT))
                     {
                         AVerifications.Add(
                             new TVerificationResult(
                                 "Posting Gift Batch",
-                                String.Format(Catalog.GetString("No valid Gift Destination field exists for the recipient {0} ({1}) of gift {2}."),
+                                String.Format(Catalog.GetString("No valid Gift Destination exists for the recipient {0} ({1}) of gift {2}."),
                                     giftDetail.RecipientDescription,
                                     giftDetail.RecipientKey,
                                     giftDetail.GiftTransactionNumber) +
                                 "\n\n" +
                                 Catalog.GetString(
-                                    "A Gift Destination will need to be assigned to this Partner."),
+                                    "A Gift Destination will need to be assigned to this Partner before this gift can be posted with the Motivation Group 'GIFT'."),
                                 TResultSeverity.Resv_Critical));
                         return null;
                     }
@@ -3113,21 +3139,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 TResultSeverity.Resv_Critical));
                         return null;
                     }
-                }
-                else
-                {
-                    AVerifications.Add(
-                        new TVerificationResult(
-                            "Posting Gift Batch",
-                            String.Format(Catalog.GetString("No valid Gift Destination exists for the recipient {0} ({1}) of gift {2}."),
-                                giftDetail.RecipientDescription,
-                                giftDetail.RecipientKey,
-                                giftDetail.GiftTransactionNumber) +
-                            "\n\n" +
-                            Catalog.GetString(
-                                "A Gift Destination will need to be assigned to this Partner before this gift can be posted with the Motivation Group 'GIFT'."),
-                            TResultSeverity.Resv_Critical));
-                    return null;
                 }
 
                 // set column giftdetail.AccountCode motivation
