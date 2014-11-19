@@ -538,15 +538,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     batchGiftTotal += giftDetail.GiftTransactionAmount;
                                     giftDetail.GiftAmount = signum * oldGiftDetail.GiftAmount;
                                     giftDetail.GiftAmountIntl = signum * oldGiftDetail.GiftAmountIntl;
-                                    
+
                                     if (TaxDeductiblePercentageEnabled)
                                     {
-                                    	giftDetail.TaxDeductibleAmount = signum * oldGiftDetail.TaxDeductibleAmount;
-                                    	giftDetail.TaxDeductibleAmountBase = signum * oldGiftDetail.TaxDeductibleAmountBase;
-                                    	giftDetail.TaxDeductibleAmountIntl = signum * oldGiftDetail.TaxDeductibleAmountIntl;
-                                    	giftDetail.NonDeductibleAmount = signum * oldGiftDetail.NonDeductibleAmount;
-                                    	giftDetail.NonDeductibleAmountBase = signum * oldGiftDetail.NonDeductibleAmountBase;
-                                    	giftDetail.NonDeductibleAmountIntl = signum * oldGiftDetail.NonDeductibleAmountIntl;
+                                        giftDetail.TaxDeductibleAmount = signum * oldGiftDetail.TaxDeductibleAmount;
+                                        giftDetail.TaxDeductibleAmountBase = signum * oldGiftDetail.TaxDeductibleAmountBase;
+                                        giftDetail.TaxDeductibleAmountIntl = signum * oldGiftDetail.TaxDeductibleAmountIntl;
+                                        giftDetail.NonDeductibleAmount = signum * oldGiftDetail.NonDeductibleAmount;
+                                        giftDetail.NonDeductibleAmountBase = signum * oldGiftDetail.NonDeductibleAmountBase;
+                                        giftDetail.NonDeductibleAmountIntl = signum * oldGiftDetail.NonDeductibleAmountIntl;
                                     }
 
                                     giftDetail.GiftCommentOne = (String)requestParams["ReversalCommentOne"];

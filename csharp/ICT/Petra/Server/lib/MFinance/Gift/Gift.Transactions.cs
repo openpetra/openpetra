@@ -2075,14 +2075,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {
-            	transactionForTotals.TransactionAmount += giftdetail.GiftTransactionAmount;
-            	transactionForTotals.AmountInBaseCurrency += Math.Abs(giftdetail.GiftAmount);
-            	transactionForTotals.AmountInIntlCurrency += Math.Abs(giftdetail.GiftAmountIntl);
+                transactionForTotals.TransactionAmount += giftdetail.GiftTransactionAmount;
+                transactionForTotals.AmountInBaseCurrency += Math.Abs(giftdetail.GiftAmount);
+                transactionForTotals.AmountInIntlCurrency += Math.Abs(giftdetail.GiftAmountIntl);
             }
 
             // determine whether gift is debit or credit
             transactionForTotals.DebitCreditIndicator = transactionForTotals.TransactionAmount >= 0;
-            
+
             transactionForTotals.TransactionAmount = Math.Abs(transactionForTotals.TransactionAmount);
 
             // TODO: account and costcentre based on linked costcentre, current commitment, and Motivation detail
@@ -2158,26 +2158,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // if gift has same debit/credit indicator as transaction
             if (transaction.DebitCreditIndicator == ATransactionAmount < 0)
             {
-            	transaction.TransactionAmount += Math.Abs(ATransactionAmount);
-            	transaction.AmountInBaseCurrency += Math.Abs(AAmountInBaseCurrency);
-            	transaction.AmountInIntlCurrency += Math.Abs(AAmountInIntlCurrency);
+                transaction.TransactionAmount += Math.Abs(ATransactionAmount);
+                transaction.AmountInBaseCurrency += Math.Abs(AAmountInBaseCurrency);
+                transaction.AmountInIntlCurrency += Math.Abs(AAmountInIntlCurrency);
             }
             // if gift has a different debit/credit indicator as transaction
             else
             {
-            	transaction.TransactionAmount -= Math.Abs(ATransactionAmount);
-            	transaction.AmountInBaseCurrency -= Math.Abs(AAmountInBaseCurrency);
-            	transaction.AmountInIntlCurrency -= Math.Abs(AAmountInIntlCurrency);
-            	
-            	// if transaction amount has went negative then the debit/credit indicator must change
-            	if (transaction.TransactionAmount < 0)
-            	{
-            		transaction.TransactionAmount = Math.Abs(transaction.TransactionAmount);
-            		transaction.AmountInBaseCurrency = Math.Abs(transaction.AmountInBaseCurrency);
-            		transaction.AmountInIntlCurrency = Math.Abs(transaction.AmountInIntlCurrency);
-            		
-            		transaction.DebitCreditIndicator = !transaction.DebitCreditIndicator;
-            	}
+                transaction.TransactionAmount -= Math.Abs(ATransactionAmount);
+                transaction.AmountInBaseCurrency -= Math.Abs(AAmountInBaseCurrency);
+                transaction.AmountInIntlCurrency -= Math.Abs(AAmountInIntlCurrency);
+
+                // if transaction amount has went negative then the debit/credit indicator must change
+                if (transaction.TransactionAmount < 0)
+                {
+                    transaction.TransactionAmount = Math.Abs(transaction.TransactionAmount);
+                    transaction.AmountInBaseCurrency = Math.Abs(transaction.AmountInBaseCurrency);
+                    transaction.AmountInIntlCurrency = Math.Abs(transaction.AmountInIntlCurrency);
+
+                    transaction.DebitCreditIndicator = !transaction.DebitCreditIndicator;
+                }
             }
         }
 
@@ -3106,23 +3106,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // data is only updated if the gift amount is positive
                 if (giftDetail.GiftTransactionAmount >= 0)
                 {
-                	// The recipient ledger number must not be 0 if the motivation group is 'GIFT'
+                    // The recipient ledger number must not be 0 if the motivation group is 'GIFT'
                     if ((giftDetail.IsRecipientLedgerNumberNull() || (giftDetail.RecipientLedgerNumber == 0))
-                	    && giftDetail.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                        && (giftDetail.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT))
                     {
-	                    AVerifications.Add(
-	                        new TVerificationResult(
-	                            "Posting Gift Batch",
-	                            String.Format(Catalog.GetString("No valid Gift Destination exists for the recipient {0} ({1}) of gift {2}."),
-	                                giftDetail.RecipientDescription,
-	                                giftDetail.RecipientKey,
-	                                giftDetail.GiftTransactionNumber) +
-	                            "\n\n" +
-	                            Catalog.GetString(
-	                                "A Gift Destination will need to be assigned to this Partner before this gift can be posted with the Motivation Group 'GIFT'."),
-	                            TResultSeverity.Resv_Critical));
-	                    return null;
-	                }
+                        AVerifications.Add(
+                            new TVerificationResult(
+                                "Posting Gift Batch",
+                                String.Format(Catalog.GetString("No valid Gift Destination exists for the recipient {0} ({1}) of gift {2}."),
+                                    giftDetail.RecipientDescription,
+                                    giftDetail.RecipientKey,
+                                    giftDetail.GiftTransactionNumber) +
+                                "\n\n" +
+                                Catalog.GetString(
+                                    "A Gift Destination will need to be assigned to this Partner before this gift can be posted with the Motivation Group 'GIFT'."),
+                                TResultSeverity.Resv_Critical));
+                        return null;
+                    }
 
                     if (giftDetail.IsCostCentreCodeNull() || (giftDetail.CostCentreCode == string.Empty))
                     {

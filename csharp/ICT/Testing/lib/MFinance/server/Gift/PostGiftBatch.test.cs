@@ -426,6 +426,7 @@ namespace Tests.MFinance.Server.Gift
         /// <param name="ARecipientKey">Partner Key of the recipient.</param>
         /// <param name="ARealRecipientLedgerNumber">What the RecipientLedgerNumber should be.</param>
         /// <param name="AFalseRecipientLedgerNumber">What the RecipientLedgerNumber is.</param>
+        /// <param name="ARealCostCentreCode">What the CostCentreCode should be.</param>
         /// <param name="AFalseCostCentreCode">What the CostCentreCode is.</param>
         /// <param name="AGiftBatchNumber">Batch Number.</param>
         private void TestBatchPostingRecalculations_Arrange(out long ARecipientKey,
@@ -479,7 +480,7 @@ namespace Tests.MFinance.Server.Gift
             // Guard Assertion
             Assert.That(Result, Is.EqualTo(
                     TSubmitChangesResult.scrOK), "SubmitChanges for PartnerEditDS failed: " + VerificationResult.BuildVerificationResultString());
-            
+
             // link unit to Cost Centre
             DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, 0);
             DataRow PartnerCostCentreRow = PartnerCostCentreTbl.NewRow();
@@ -487,7 +488,7 @@ namespace Tests.MFinance.Server.Gift
             PartnerCostCentreRow["IsLinked"] = ARealCostCentreCode;
             PartnerCostCentreTbl.Rows.Add(PartnerCostCentreRow);
             TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
-            
+
             // create a new Gift Batch
             MainDS = TGiftTransactionWebConnector.CreateAGiftBatch(FLedgerNumber);
             AGiftBatchNumber = MainDS.AGiftBatch[0].BatchNumber;
@@ -763,7 +764,7 @@ namespace Tests.MFinance.Server.Gift
             // Guard Assertion
             Assert.That(Result, Is.EqualTo(
                     TSubmitChangesResult.scrOK), "SubmitChanges for PartnerEditDS failed: " + VerificationResult.BuildVerificationResultString());
-            
+
             // link unit to Cost Centre
             DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, 0);
             DataRow PartnerCostCentreRow = PartnerCostCentreTbl.NewRow();

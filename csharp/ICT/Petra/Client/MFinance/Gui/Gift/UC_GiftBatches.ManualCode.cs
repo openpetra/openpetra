@@ -222,12 +222,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // Remember our current row position
             int nCurrentRowIndex = GetSelectedRowIndex();
             int nCurrentBatchNumber = -1;
-            
+
             if (FPreviouslySelectedDetailRow != null)
             {
-            	nCurrentBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+                nCurrentBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             }
-            
+
             TFrmGiftBatch parentForm = (TFrmGiftBatch)ParentForm;
             Cursor prevCursor = parentForm.Cursor;
 
@@ -250,8 +250,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // Now we can select the gift batch we had before (if it still exists on the grid)
                 if (!SelectBatchNumber(nCurrentBatchNumber))
                 {
-                	// If batch is no longer in the grid then select the batch that is in the same position
-                	SelectRowInGrid(nCurrentRowIndex);
+                    // If batch is no longer in the grid then select the batch that is in the same position
+                    SelectRowInGrid(nCurrentRowIndex);
                 }
 
                 UpdateRecordNumberDisplay();
@@ -669,7 +669,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return SelectDetailRowByDataTableIndex(i);
                 }
             }
-            
+
             return false;
         }
 

@@ -114,11 +114,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 MessageBox.Show(Catalog.GetString("Changes to users will take effect at next login."),
                     Catalog.GetString("Maintain Users"));
-            	
-            	// Reload the grid after every successful save. (This will add new password's hash and salt to the table.)
-            	LoadUsers();
 
-            	btnChangePassword.Enabled = true;
+                // Reload the grid after every successful save. (This will add new password's hash and salt to the table.)
+                LoadUsers();
+
+                btnChangePassword.Enabled = true;
                 txtDetailPasswordHash.Enabled = false;
             }
 
