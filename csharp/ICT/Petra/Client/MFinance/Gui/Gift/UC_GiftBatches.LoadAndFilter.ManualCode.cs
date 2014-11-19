@@ -380,7 +380,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (!BatchYearIsLoaded(newYear))
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, newYear, newPeriod));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchForYearPeriod(FLedgerNumber, newYear, newPeriod));
             }
 
             if (FrbtEditing.Checked)
