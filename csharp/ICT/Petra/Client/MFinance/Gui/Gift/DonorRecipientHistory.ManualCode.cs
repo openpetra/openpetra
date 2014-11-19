@@ -546,7 +546,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     TFrmGiftBatch gb = new TFrmGiftBatch(this);
 
                     // load dataset with data for whole transaction (all details)
-                    gb.ViewModeTDS = TRemote.MFinance.Gift.WebConnectors.LoadSingleGift(FLedgerNumber,
+                    gb.ViewModeTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftSingle(FLedgerNumber,
                         (int)FPreviouslySelectedDetailRow["BatchNumber"],
                         (int)FPreviouslySelectedDetailRow["GiftTransactionNumber"]);
 

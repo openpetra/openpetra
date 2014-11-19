@@ -252,10 +252,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (((TFrmGiftBatch) this.ParentForm).SaveChangesManual())
                 {
                     //Clear current batch's gift data and reload from server
-                    if (RefreshCurrentBatchGiftData(FBatchNumber))
-                    {
-                        ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-                    }
+                    RefreshCurrentBatchGiftData(FBatchNumber);
                 }
                 else
                 {
@@ -340,7 +337,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void DeleteAllGifts(System.Object sender, EventArgs e)
         {
             string completionMessage = string.Empty;
-            int BatchNumber = FBatchNumber;
+            int BatchNumberToClear = FBatchNumber;
 
             if ((FPreviouslySelectedDetailRow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
@@ -350,8 +347,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 ||
                 (MessageBox.Show(String.Format(Catalog.GetString(
-                             "You have chosen to delete all gifts from batch ({0}).\n\nDo you really want to delete all?"),
-                         BatchNumber),
+                             "You have chosen to delete all gifts from batch ({0}).{1}{1}Are you sure you want to delete all?"),
+                         BatchNumberToClear,
+                         Environment.NewLine),
                      Catalog.GetString("Confirm Delete All"),
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
@@ -363,17 +361,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         FPreviouslySelectedDetailRow.BatchNumber);
 
                     //clear any transactions currently being editied in the Transaction Tab
-                    ClearCurrentSelection();
+                    ClearCurrentSelection(false);
 
                     //Clear out the gift data for the current batch without marking the records for deletion
                     //  and then reload from server
-                    if (RefreshCurrentBatchGiftData(BatchNumber))
-                    {
-                        ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-                    }
+                    RefreshCurrentBatchGiftData(BatchNumberToClear);
 
                     //Now delete all gift data for current batch
-                    DeleteCurrentBatchGiftData(BatchNumber);
+                    DeleteCurrentBatchGiftData(BatchNumberToClear);
 
                     FBatchRow.BatchTotal = 0;
 

@@ -107,6 +107,6 @@ RootNode:
             mniImportFromClipboard: {Label=I&mport From Clipboard, Action: actImportFromClipboard}
     Toolbar:
         tbbPostBatch: {Action=actPostBatch}
-        tbbExportBatches: {Action=actExportBatches}
         tbbImportBatches: {Action=actImportBatches}
         tbbImportFromClipboard: {Action=actImportFromClipboard}
+        tbbExportBatches: {Action=actExportBatches}
