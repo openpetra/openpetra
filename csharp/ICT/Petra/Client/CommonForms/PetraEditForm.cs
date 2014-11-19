@@ -182,6 +182,7 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        /// Shows that the user answered no to the "Save changes before exit?" question.
         public Boolean ChangesWereAbandonded
         {
             get

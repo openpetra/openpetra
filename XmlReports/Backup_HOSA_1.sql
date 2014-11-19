@@ -2,7 +2,7 @@ DELETE FROM s_report_template WHERE s_template_id_i=1;
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
 VALUES(1,'HOSA','OpenPetra default template','System',True,False,False,False,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="11/07/2014 12:53:13" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="11/19/2014 09:49:58" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -145,7 +145,7 @@ namespace FastReport
     <Parameter Name="param_rgrAccounts" DataType="System.String"/>
     <Parameter Name="param_rgrCostCentres" DataType="System.String"/>
     <Parameter Name="param_ich_number" DataType="System.Int32"/>
-    <Parameter Name="param_quarter" DataType="System.Int32"/>
+    <Parameter Name="param_quarter" DataType="System.Boolean"/>
     <Parameter Name="param_ledger_name" DataType="System.String"/>
     <Parameter Name="param_currency_formatter" DataType="System.String"/>
     <Parameter Name="param_date_title" DataType="System.String"/>
@@ -171,42 +171,42 @@ namespace FastReport
     <Total Name="AllTransCredits" Expression="TransCredits.Value" Evaluator="Data3" PrintOn="PageFooter" ResetOnReprint="true"/>
   </Dictionary>
   <ReportPage Name="Page1">
-    <GroupHeaderBand Name="PageHeader" Width="718.2" Height="170.1" StartNewPage="true" Condition="[a_costCentre.a_cost_centre_code_c]" SortOrder="None">
-      <TextObject Name="Text22" Left="444.15" Top="56.7" Width="56.7" Height="18.9" Text="[IIf([param_period],&quot;Period :&quot;,&quot;Date :&quot;)]" HorzAlign="Right"/>
-      <TextObject Name="Text19" Left="500.85" Top="56.7" Width="217.35" Height="18.9" Text="[param_date_title]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
-      <TextObject Name="Text11" Left="94.5" Top="94.5" Width="66.15" Height="18.9" Text="[a_costCentre.a_cost_centre_code_c]"/>
-      <TextObject Name="Text12" Left="-9.45" Top="94.5" Width="103.95" Height="18.9" Text="Cost Centre :" HorzAlign="Right"/>
-      <TextObject Name="Text21" Left="18.9" Top="75.6" Width="75.6" Height="18.9" Text="Currency :" HorzAlign="Right"/>
-      <TextObject Name="Text18" Left="94.5" Top="75.6" Width="151.2" Height="18.9" Text="[param_currency_name]"/>
-      <TextObject Name="Text10" Left="94.5" Top="56.7" Width="151.2" Height="18.9" Text="[param_ledger_number_i] [param_ledger_name]"/>
-      <TextObject Name="Text1" Left="217.35" Width="283.5" Height="28.35" Text="HOSA: [a_costCentre.a_cost_centre_name_c]" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
-      <TextObject Name="Text20" Left="18.9" Top="56.7" Width="75.6" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
-      <LineObject Name="Line1" Top="132.3" Width="718.2" Border.Width="2"/>
-      <TextObject Name="Text88" Left="245.7" Top="28.35" Width="226.8" Height="18.9" Text="[param_ledger_name] " HorzAlign="Center"/>
-      <TextObject Name="Text89" Left="491.4" Width="122.85" Height="18.9" Text="Printed :" HorzAlign="Right"/>
-      <TextObject Name="Text90" Left="614.25" Width="141.75" Height="18.9" Text="[OmDate([Date])]"/>
-      <TextObject Name="Text91" Left="141.75" Top="18.9" Width="103.95" Height="18.9" Text="[param_requested_by]"/>
-      <TextObject Name="Text26" Left="614.25" Top="18.9" Width="94.5" Height="18.9" Text="[param_version]"/>
-      <TextObject Name="Text92" Top="18.9" Width="141.75" Height="18.9" Text="Report requested by :" HorzAlign="Right"/>
-      <TextObject Name="Text93" Left="491.4" Top="18.9" Width="122.85" Height="18.9" Text="Version :" HorzAlign="Right"/>
-      <TextObject Name="Text61" Left="387.45" Top="94.5" Width="113.4" Height="18.9" Text="[IIf([param_current_financial_year],&quot;Current Period :&quot;,&quot;&quot;)]" HorzAlign="Right"/>
-      <TextObject Name="Text94" Left="500.85" Top="94.5" Width="103.95" Height="18.9" Text="[IIf([param_current_financial_year],[param_current_period],&quot;&quot;)]"/>
-      <TextObject Name="Text4" Left="406.35" Top="113.4" Width="94.5" Height="18.9" Text="Ordered by :" HorzAlign="Right"/>
-      <TextObject Name="Text5" Left="500.85" Top="113.4" Width="103.95" Height="18.9" Text="Account"/>
-      <TextObject Name="Text95" Left="160.65" Top="94.5" Width="66.15" Height="18.9" Text="Account :" HorzAlign="Right"/>
-      <TextObject Name="Text96" Left="226.8" Top="94.5" Width="94.5" Height="18.9" Text="All Accounts"/>
-      <TextObject Name="Text6" Left="500.85" Top="75.6" Width="217.35" Height="18.9" Text="[IIf([param_start_period_i] == [param_end_period_i],IIf([param_current_financial_year],IIf([param_current_period]&gt;[param_end_period_i],&quot;(CLOSED)&quot;,IIf([param_current_period]&lt;[param_end_period_i],&quot;(FWD PERIOD)&quot;,&quot;(CURRENT)&quot;)),&quot;(CLOSED)&quot;),&quot;&quot;)]"/>
-      <TextObject Name="Text97" Top="113.4" Width="94.5" Height="18.9" Text="Run Number :" HorzAlign="Right"/>
-      <TextObject Name="Text7" Left="94.5" Top="113.4" Width="94.5" Height="18.9" Text="[param_run_number]"/>
-      <TextObject Name="Text8" Left="226.8" Top="141.75" Width="94.5" Height="18.9" Text="Debits" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
-      <TextObject Name="Text98" Left="321.3" Top="141.75" Width="94.5" Height="18.9" Text="Credits" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
-      <TextObject Name="Text99" Left="425.25" Top="141.75" Width="302.4" Height="18.9" Text="Recipient Name / Description" Font="Arial, 10pt, style=Bold, Italic"/>
-      <TextObject Name="Text100" Left="113.4" Top="141.75" Width="94.5" Height="18.9" Text="Reference" Font="Arial, 10pt, style=Bold, Italic"/>
-      <DataBand Name="GiftsReport" Top="173.43" Width="718.2" DataSource="a_costCentre">
-        <GroupHeaderBand Name="GiftsHeader" Top="176.77" Width="718.2" Height="18.9" Condition="[Gifts.accountcode]" SortOrder="None">
+    <GroupHeaderBand Name="PageHeader" Width="718.2" Height="151.2" StartNewPage="true" Condition="[a_costCentre.a_cost_centre_code_c]" SortOrder="None">
+      <TextObject Name="Text22" Left="500.85" Top="37.8" Width="113.4" Height="18.9" Text="[IIf([param_period],&quot;Period :&quot;,&quot;Date :&quot;)]" HorzAlign="Right"/>
+      <TextObject Name="Text19" Left="614.25" Top="37.8" Width="103.95" Height="18.9" Text="[param_date_title]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
+      <TextObject Name="Text11" Left="94.5" Top="56.7" Width="151.2" Height="18.9" Text="[a_costCentre.a_cost_centre_code_c]"/>
+      <TextObject Name="Text12" Left="-9.45" Top="56.7" Width="103.95" Height="18.9" Text="Cost Centre :" HorzAlign="Right"/>
+      <TextObject Name="Text21" Left="18.9" Top="37.8" Width="75.6" Height="18.9" Text="Currency :" HorzAlign="Right"/>
+      <TextObject Name="Text18" Left="94.5" Top="37.8" Width="151.2" Height="18.9" Text="[param_currency_name]"/>
+      <TextObject Name="Text10" Left="94.5" Top="18.9" Width="151.2" Height="18.9" Text="[param_ledger_number_i] [param_ledger_name]"/>
+      <TextObject Name="Text1" Left="245.7" Width="255.15" Height="28.35" Text="HOSA: [a_costCentre.a_cost_centre_name_c]" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
+      <TextObject Name="Text20" Left="18.9" Top="18.9" Width="75.6" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
+      <LineObject Name="Line1" Top="122.85" Width="718.2" Border.Width="2"/>
+      <TextObject Name="Text88" Left="245.7" Top="28.35" Width="255.15" Height="18.9" Text="[param_ledger_name] " HorzAlign="Center"/>
+      <TextObject Name="Text89" Left="500.85" Width="113.4" Height="18.9" Text="Printed :" HorzAlign="Right"/>
+      <TextObject Name="Text90" Left="614.25" Width="103.95" Height="18.9" Text="[OmDate([Date])]"/>
+      <TextObject Name="Text91" Left="141.75" Width="103.95" Height="18.9" Text="[param_requested_by]"/>
+      <TextObject Name="Text26" Left="614.25" Top="18.9" Width="103.95" Height="18.9" Text="[param_version]"/>
+      <TextObject Name="Text92" Width="141.75" Height="18.9" Text="Report requested by :" HorzAlign="Right"/>
+      <TextObject Name="Text93" Left="500.85" Top="18.9" Width="113.4" Height="18.9" Text="Version :" HorzAlign="Right"/>
+      <TextObject Name="Text61" Left="500.85" Top="75.6" Width="113.4" Height="18.9" Text="[IIf([param_current_financial_year],&quot;Current Period :&quot;,&quot;&quot;)]" HorzAlign="Right"/>
+      <TextObject Name="Text94" Left="614.25" Top="75.6" Width="103.95" Height="18.9" Text="[IIf([param_current_financial_year],[param_current_period],&quot;&quot;)]"/>
+      <TextObject Name="Text4" Left="500.85" Top="94.5" Width="113.4" Height="18.9" Text="Ordered by :" HorzAlign="Right"/>
+      <TextObject Name="Text5" Left="614.25" Top="94.5" Width="103.95" Height="18.9" Text="Account"/>
+      <TextObject Name="Text95" Left="28.35" Top="75.6" Width="66.15" Height="18.9" Text="Account :" HorzAlign="Right"/>
+      <TextObject Name="Text96" Left="94.5" Top="75.6" Width="151.2" Height="18.9" Text="All Accounts"/>
+      <TextObject Name="Text6" Left="614.25" Top="56.7" Width="103.95" Height="18.9" Text="[IIf([param_start_period_i] == [param_end_period_i],IIf([param_current_financial_year],IIf([param_current_period]&gt;[param_end_period_i],&quot;(CLOSED)&quot;,IIf([param_current_period]&lt;[param_end_period_i],&quot;(FWD PERIOD)&quot;,&quot;(CURRENT)&quot;)),&quot;(CLOSED)&quot;),&quot;&quot;)]"/>
+      <TextObject Name="Text97" Top="94.5" Width="94.5" Height="18.9" Text="Run Number :" HorzAlign="Right"/>
+      <TextObject Name="Text7" Left="94.5" Top="94.5" Width="151.2" Height="18.9" Text="[param_run_number]"/>
+      <TextObject Name="Text8" Left="226.8" Top="132.3" Width="94.5" Height="18.9" Text="Debits" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
+      <TextObject Name="Text98" Left="321.3" Top="132.3" Width="94.5" Height="18.9" Text="Credits" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
+      <TextObject Name="Text99" Left="425.25" Top="132.3" Width="302.4" Height="18.9" Text="Recipient Name / Description" Font="Arial, 10pt, style=Bold, Italic"/>
+      <TextObject Name="Text100" Left="113.4" Top="132.3" Width="113.4" Height="18.9" Text="Reference" Font="Arial, 10pt, style=Bold, Italic"/>
+      <DataBand Name="GiftsReport" Top="154.53" Width="718.2" DataSource="a_costCentre">
+        <GroupHeaderBand Name="GiftsHeader" Top="157.87" Width="718.2" Height="18.9" Condition="[Gifts.accountcode]" SortOrder="None">
           <TextObject Name="Text64" Width="75.6" Height="18.9" Text="[Gifts.costcentre]-[Gifts.accountcode]" AutoShrink="FontSize" AutoShrinkMinSize="7" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
           <TextObject Name="Text65" Left="75.6" Width="642.6" Height="18.9" Text="[Gifts.a_account.a_account_code_long_desc_c], [a_costCentre.a_cost_centre_name_c]" WordWrap="false" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
-          <DataBand Name="Data1" Top="199" Width="718.2" Height="18.9" CanGrow="true" DataSource="Gifts" Filter="[Gifts.costcentre]==[a_costCentre.a_cost_centre_code_c]">
+          <DataBand Name="Data1" Top="180.1" Width="718.2" Height="18.9" CanGrow="true" DataSource="Gifts" Filter="[Gifts.costcentre]==[a_costCentre.a_cost_centre_code_c]">
             <TextObject Name="Text66" Left="113.4" Width="113.4" Height="18.9" CanGrow="true" GrowToBottom="true" Text="[Gifts.Reference]"/>
             <TextObject Name="GiftCredits" Left="321.3" Width="94.5" Height="18.9" Text="[IIf([param_currency]==&quot;Base&quot;,IIf([Gifts.GiftBaseAmount] &gt; 0,[Gifts.GiftBaseAmount], 0),IIf([Gifts.GiftIntlAmount] &gt; 0,[Gifts.GiftIntlAmount], 0))]" HorzAlign="Right" WordWrap="false" Font="Arial, 10pt, style=Bold" Trimming="EllipsisCharacter">
               <Formats>
@@ -229,7 +229,7 @@ namespace FastReport
             </TextObject>
             <TextObject Name="Text3" Width="113.4" Height="18.9" Text=" "/>
           </DataBand>
-          <GroupFooterBand Name="GiftsFooter" Top="221.23" Width="718.2" Height="28.35">
+          <GroupFooterBand Name="GiftsFooter" Top="202.33" Width="718.2" Height="28.35">
             <TextObject Name="Text70" Left="321.3" Width="94.5" Height="18.9" Text="[GiftCreditsTotal]" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue" Trimming="EllipsisCharacter">
               <Formats>
                 <NumberFormat UseLocale="false" NegativePattern="1"/>
@@ -253,10 +253,10 @@ namespace FastReport
             <TextObject Name="Text84" Width="113.4" Height="18.9" Text=" "/>
           </GroupFooterBand>
         </GroupHeaderBand>
-        <GroupHeaderBand Name="TransHeader" Top="252.92" Width="718.2" Height="18.9" Condition="[a_transaction.a_account_code_c]">
+        <GroupHeaderBand Name="TransHeader" Top="234.02" Width="718.2" Height="18.9" Condition="[a_transaction.a_account_code_c]">
           <TextObject Name="Text72" Left="75.6" Width="633.15" Height="18.9" Text="[a_transaction.a_account.a_account_code_long_desc_c], [a_costCentre.a_cost_centre_name_c]" WordWrap="false" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
           <TextObject Name="Text73" Width="75.6" Height="18.9" Text="[a_costCentre.a_cost_centre_code_c]-[a_transaction.a_account.a_account_code_c]" AutoShrink="FontSize" AutoShrinkMinSize="7" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
-          <DataBand Name="Data3" Top="275.15" Width="718.2" Height="18.9" CanGrow="true" DataSource="a_transaction" Filter="[a_costCentre.a_cost_centre_code_c]==[a_transaction.a_cost_centre_code_c]">
+          <DataBand Name="Data3" Top="256.25" Width="718.2" Height="18.9" CanGrow="true" DataSource="a_transaction" Filter="[a_costCentre.a_cost_centre_code_c]==[a_transaction.a_cost_centre_code_c]">
             <TextObject Name="TransDate" Width="113.4" Height="18.9" Text="[OmDate([a_transaction.a_transaction_date_d])]"/>
             <TextObject Name="Text75" Left="425.25" Width="292.95" Height="18.9" CanGrow="true" GrowToBottom="true" Text="[a_transaction.a_narrative_c]"/>
             <TextObject Name="Text76" Left="113.4" Width="113.4" Height="18.9" CanGrow="true" GrowToBottom="true" Text="[a_transaction.a_reference_c]"/>
@@ -279,7 +279,7 @@ namespace FastReport
               </Highlight>
             </TextObject>
           </DataBand>
-          <GroupFooterBand Name="TransFooter" Top="297.38" Width="718.2" Height="28.35">
+          <GroupFooterBand Name="TransFooter" Top="278.48" Width="718.2" Height="28.35">
             <TextObject Name="Text79" Left="226.8" Width="94.5" Height="18.9" Text="[TransDebitsTotal]" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue" Trimming="EllipsisCharacter">
               <Formats>
                 <NumberFormat UseLocale="false" NegativePattern="1"/>
@@ -303,7 +303,7 @@ namespace FastReport
           </GroupFooterBand>
         </GroupHeaderBand>
       </DataBand>
-      <GroupFooterBand Name="PageFooter" Top="329.07" Width="718.2" Height="47.25">
+      <GroupFooterBand Name="PageFooter" Top="310.17" Width="718.2" Height="47.25">
         <TextObject Name="AllDebits" Left="226.8" Top="9.45" Width="94.5" Height="18.9" Text="[[AllGiftDebits]+[AllTransDebits]]" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue" Trimming="EllipsisCharacter">
           <Formats>
             <NumberFormat UseLocale="false" NegativePattern="1"/>

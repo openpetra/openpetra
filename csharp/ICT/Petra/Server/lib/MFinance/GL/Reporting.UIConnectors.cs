@@ -1184,7 +1184,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             Boolean International = AParameters["param_currency"].ToString().StartsWith("Int");
             Decimal EffectiveExchangeRate = 1;
-            Decimal LastYearExchangeRate = 1;
+//          Decimal LastYearExchangeRate = 1;
             if (International)
             {
                 TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
@@ -1801,6 +1801,45 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
         } // HosaGiftsTable
+
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable StewardshipTable(Dictionary<String, TVariant> AParameters, TReportingDbAdapter DbAdapter)
+        {
+            try
+            {
+                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+                Int32 IchNumber = AParameters["param_cmbICHNumber"].ToInt32();
+                Int32 period = AParameters["param_cmbReportPeriod"].ToInt32();
+
+                String StewardshipFilter = "PUB_a_ich_stewardship.a_ledger_number_i = " + LedgerNumber;
+                if (IchNumber == 0)
+                {
+                    StewardshipFilter += " AND PUB_a_ich_stewardship.a_period_number_i = " + period;
+                }
+                else
+                {
+                    StewardshipFilter += " AND PUB_a_ich_stewardship.a_ich_number_i = " + IchNumber;
+                }
+
+                String Query = "SELECT PUB_a_ich_stewardship.*, PUB_a_cost_centre.a_cost_centre_name_c"
+                    + " FROM PUB_a_ich_stewardship, PUB_a_cost_centre WHERE "
+                    + StewardshipFilter
+                    + " AND PUB_a_cost_centre.a_ledger_number_i = PUB_a_ich_stewardship.a_ledger_number_i"
+                    + " AND PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_ich_stewardship.a_cost_centre_code_c ";
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                TLogging.Log(Catalog.GetString(""), TLoggingType.ToStatusBar);
+                return DbAdapter.RunQuery(Query, "Stewardship", Transaction);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+        } // StewardshipTable
 
         /// <summary>
         /// Returns a DataTable to the client for use in client-side reporting
