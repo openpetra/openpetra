@@ -21,12 +21,12 @@ RootNode:
                 Row0: [dtpContactDate]
                 Row1: [txtContactor]
                 Row2: [txtCommentContains]
-                Row3: [txtModule]
+                Row3: [cmbModule]
                 Row4: [cmbContactCode, cmbMailingCode]
         dtpContactDate:
         txtContactor:
         txtCommentContains:
-        txtModule:
+        cmbModule:{Label=Module, List=Module}
         cmbContactCode:{Label=Contact Code,List=ContactCode}
         cmbMailingCode:{Label=Mailing List, List=MailingList}
         grdDetails:

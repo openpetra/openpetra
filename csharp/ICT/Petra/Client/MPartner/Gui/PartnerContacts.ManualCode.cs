@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     dtpContactDate.Date,
                     txtCommentContains.Text,
                     cmbContactCode.Text,
-                    txtModule.Text,
+                    cmbModule.Text,
                     cmbMailingCode.Text));
 
             FMainDS.PContactLog.DefaultView.AllowNew = false;
