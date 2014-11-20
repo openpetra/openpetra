@@ -851,6 +851,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailAccountCode.Text = AcctCode;
         }
 
+        /// <summary>
+        /// To be called on the display of a new record
+        /// </summary>
+        private void RetrieveMotivationDetailAccountCode(AMotivationDetailRow AMotivationDetail)
+        {
+            if (AMotivationDetail != null)
+            {
+                if (txtDetailAccountCode.Text != AMotivationDetail.AccountCode)
+                {
+                    txtDetailAccountCode.Text = AMotivationDetail.AccountCode;
+                }
+            }
+        }
+
         private void RetrieveMotivationDetailCostCentreCode()
         {
             string CostCentreCode = string.Empty;
@@ -924,7 +938,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (motivationDetail != null)
                 {
-                    RetrieveMotivationDetailAccountCode();
+                    RetrieveMotivationDetailAccountCode(motivationDetail);
 
                     MotivationRecipientKey = motivationDetail.RecipientKey;
 
@@ -947,18 +961,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 chkDetailTaxDeductible.Checked = false;
             }
 
+            Int64 partnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+
             if (!FCreatingNewGiftFlag && (MotivationRecipientKey > 0))
             {
                 FMotivationDetailChangedFlag = true;
                 PopulateKeyMinistry(MotivationRecipientKey);
                 FMotivationDetailChangedFlag = false;
             }
-            else if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            else if (partnerKey == 0)
             {
                 UpdateRecipientKeyText(0);
             }
 
-            RetrieveMotivationDetailCostCentreCode();
+            if (partnerKey == 0)
+            {
+                RetrieveMotivationDetailCostCentreCode();
+            }
+            else
+            {
+                string NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FLedgerNumber,
+                    partnerKey,
+                    FPreviouslySelectedDetailRow.RecipientLedgerNumber,
+                    FPreviouslySelectedDetailRow.DateEntered,
+                    FMotivationGroup,
+                    FMotivationDetail);
+
+                if (txtDetailCostCentreCode.Text != NewCCCode)
+                {
+                    txtDetailCostCentreCode.Text = NewCCCode;
+                }
+            }
         }
 
         private void AutoPopulateCommentOne(string AAutoPopComment)
