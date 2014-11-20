@@ -956,41 +956,35 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string CostCentreCode = string.Empty;
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ATransaction);
-            AMotivationDetailTable MotivationDetailTable =
-                AMotivationDetailAccess.LoadByPrimaryKey(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, ATransaction);
-
             Int64 LedgerPartnerKey = LedgerTable[0].PartnerKey;
 
             bool KeyMinIsActive = false;
             bool KeyMinExists = KeyMinistryExists(ARecipientPartnerKey, out KeyMinIsActive);
 
-            DataTable PartnerCostCentreTbl = Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.LoadCostCentrePartnerLinks(
-                ALedgerNumber,
-                ARecipientPartnerKey);
+            if (ARecipientPartnerKey > 0)
+            {
+                DataTable PartnerCostCentreTbl = Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.LoadCostCentrePartnerLinks(
+                    ALedgerNumber,
+                    ARecipientPartnerKey);
 
-            if ((PartnerCostCentreTbl != null) && (PartnerCostCentreTbl.Rows.Count > 0))
-            {
-                CostCentreCode = (string)PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"];
-            }
-            else if (ARecipientLedgerNumber > 0)
-            {
-                //Valid ledger number table
-                CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientLedgerNumber,
-                    out CostCentreCode);
+                if ((PartnerCostCentreTbl != null) && (PartnerCostCentreTbl.Rows.Count > 0))
+                {
+                    CostCentreCode = (string)PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"];
+                }
+                else if (ARecipientLedgerNumber > 0)
+                {
+                    //Valid ledger number table
+                    CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientLedgerNumber,
+                        out CostCentreCode);
+                }
             }
 
             if (CostCentreCode.Length == 0)
             {
-                //Error condition which should never happen
-                if ((ARecipientLedgerNumber != LedgerPartnerKey)
-                    && ((AMotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
-                        || KeyMinExists))
-                {
-                    throw new Exception(String.Format(Catalog.GetString("DATA QUALITY ERROR! Missing Cost Centre Code for Partner {0} in Ledger {1}!"),
-                            ARecipientPartnerKey,
-                            ALedgerNumber));
-                }
-                else if (MotivationDetailTable.Rows.Count > 0)
+                AMotivationDetailTable MotivationDetailTable =
+                    AMotivationDetailAccess.LoadByPrimaryKey(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, ATransaction);
+
+                if ((MotivationDetailTable != null) && (MotivationDetailTable.Rows.Count > 0))
                 {
                     CostCentreCode = MotivationDetailTable[0].CostCentreCode;
                 }
@@ -1004,6 +998,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             AMotivationGroupCode,
                             AMotivationDetailCode));
                 }
+
+                //if (ARecipientPartnerKey > 0
+                //    && (ARecipientLedgerNumber != LedgerPartnerKey)
+                //    && ((AMotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                //        || KeyMinExists))
+                //{
+                //    //Error condition which should never happen
+                //    throw new Exception(String.Format(Catalog.GetString("DATA QUALITY ERROR! Missing Cost Centre Code for Partner {0} in Ledger {1}!"),
+                //            ARecipientPartnerKey,
+                //            ALedgerNumber));
+                //}
             }
 
             return CostCentreCode;
