@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -74,6 +75,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string CompletionMessage = string.Empty;
             string ExistingBatchStatus = string.Empty;
             decimal ExistingBatchTotal = 0;
+            List<string> ModifiedDetailKeys = new List<string>();
 
             if ((ACurrentBatchRow == null) || (ACurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
@@ -121,6 +123,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Delete gift details
                 for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
                 {
+                    // if the gift detail being cancelled is a reversed gift
+                    if (FMainDS.AGiftDetail[i].ModifiedDetail && !string.IsNullOrEmpty(FMainDS.AGiftDetail[i].ModifiedDetailKey))
+                    {
+                        ModifiedDetailKeys.Add(FMainDS.AGiftDetail[i].ModifiedDetailKey);
+                    }
+
                     FMainDS.AGiftDetail[i].Delete();
                 }
 
@@ -152,6 +160,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
+                    TRemote.MFinance.Gift.WebConnectors.RemoveModifiedDetailOnCancel(FLedgerNumber, ModifiedDetailKeys);
+                	
                     MessageBox.Show(CompletionMessage,
                         "Batch Cancelled",
                         MessageBoxButtons.OK,

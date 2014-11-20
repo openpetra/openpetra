@@ -896,6 +896,45 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// When a reversed gift detail is cancelled this method will remove the Modified Detail flag on the original gift detail
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AModifiedDetailKeys"></param>        
+        [RequireModulePermission("FINANCE-1")]
+        public static void RemoveModifiedDetailOnCancel(Int32 ALedgerNumber, List<string> AModifiedDetailKeys)
+        {
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = true;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
+                {
+                    try
+                    {
+                        // find PPartnerRows for all donors (needed for receipt frequency info)
+                        foreach (string ModifiedDetailKey in AModifiedDetailKeys)
+                        {
+                            string[] GiftDetailFields = ModifiedDetailKey.Split('|');
+
+                            AGiftDetailTable GiftDetailTable = AGiftDetailAccess.LoadByPrimaryKey(
+                                ALedgerNumber, Convert.ToInt32(GiftDetailFields[1]),
+                                Convert.ToInt32(GiftDetailFields[2]), Convert.ToInt32(GiftDetailFields[3]), Transaction);
+
+                            GiftDetailTable[0].ModifiedDetail = false;
+
+                            AGiftDetailAccess.SubmitChanges(GiftDetailTable, Transaction);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("Error in LoadTransactions: " + e.Message);
+                    }
+                });
+        }
+
+        /// <summary>
         /// Retrieve the cost centre code for the recipient
         /// </summary>
         /// <param name="ALedgerNumber"></param>
