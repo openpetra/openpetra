@@ -1415,6 +1415,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             if (ResultValue)
             {
+                ResultValue = DeleteEntries(PmPersonSkillTable.GetTableDBName(),
+                    PmPersonSkillTable.GetPartnerKeyDBName(),
+                    APartnerKey, ATransaction);
+            }
+
+            if (ResultValue)
+            {
                 ResultValue = DeleteEntries(PmPersonQualificationTable.GetTableDBName(),
                     PmPersonQualificationTable.GetPartnerKeyDBName(),
                     APartnerKey, ATransaction);

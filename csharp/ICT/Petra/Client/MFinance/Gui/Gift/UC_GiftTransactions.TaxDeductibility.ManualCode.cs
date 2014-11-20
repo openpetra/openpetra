@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grpDetailsForEachGift.Height += YSPACE2;
 
             // If pnlDetails is not big enough then move the splitter. Only want to move the splitter once as it's new location will be remembered.
-            if (pnlDetails.VerticalScroll.Visible)
+            if (this.FindForm().Visible && pnlDetails.VerticalScroll.Visible)
             {
                 sptTransactions.SplitterDistance -= YSPACE2;
             }

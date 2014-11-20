@@ -220,8 +220,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (motivationDetail != null)
                 {
-                    RetrieveMotivationDetailAccountCode(AMainDS, ALedgerNumber, ATxtDetailAccountCode, ATxtDeductibleAccount,
-                        AMotivationGroup, AMotivationDetail, ATaxDeductiblePercentageEnabledFlag);
+                    RetrieveMotivationDetailAccountCode(motivationDetail,
+                        ATxtDetailAccountCode,
+                        ATxtDeductibleAccount,
+                        ATaxDeductiblePercentageEnabledFlag);
 
                     MotivationRecipientKey = motivationDetail.RecipientKey;
 
@@ -272,7 +274,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 UpdateRecipientKeyText(0, ACurrentDetailRow, AMotivationGroup, AMotivationDetail);
             }
 
-            RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
+            if (ARecipientKey == 0)
+            {
+                RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
+            }
+            else
+            {
+                string NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
+                    ARecipientKey,
+                    ACurrentDetailRow.RecipientLedgerNumber,
+                    ACurrentDetailRow.DateEntered,
+                    AMotivationGroup,
+                    AMotivationDetail);
+
+                if (ATxtDetailCostCentreCode.Text != NewCCCode)
+                {
+                    ATxtDetailCostCentreCode.Text = NewCCCode;
+                }
+            }
         }
 
         /// <summary>
@@ -772,7 +791,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// To be called on the display of a new record
         /// </summary>
-        public static void RetrieveMotivationDetailAccountCode(GiftBatchTDS AMainDS, Int32 ALedgerNumber, TextBox ATxtDetailAccountCode,
+        private static void RetrieveMotivationDetailAccountCode(GiftBatchTDS AMainDS, Int32 ALedgerNumber, TextBox ATxtDetailAccountCode,
             TextBox ATxtDeductibleAccount, string AMotivationGroup, string AMotivationDetail, bool ATaxDeductiblePercentageEnabledFlag)
         {
             string AcctCode = string.Empty;
@@ -794,8 +813,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            ATxtDetailAccountCode.Text = AcctCode;
-            ATxtDeductibleAccount.Text = TaxDeductibleAcctCode;
+            if (ATxtDetailAccountCode.Text != AcctCode)
+            {
+                ATxtDetailAccountCode.Text = AcctCode;
+            }
+
+            if (ATxtDeductibleAccount.Text != TaxDeductibleAcctCode)
+            {
+                ATxtDeductibleAccount.Text = TaxDeductibleAcctCode;
+            }
+        }
+
+        /// <summary>
+        /// To be called on the display of a new record
+        /// </summary>
+        private static void RetrieveMotivationDetailAccountCode(AMotivationDetailRow AMotivationDetail, TextBox ATxtDetailAccountCode,
+            TextBox ATxtDeductibleAccount, bool ATaxDeductiblePercentageEnabledFlag)
+        {
+            if (AMotivationDetail != null)
+            {
+                if (ATxtDetailAccountCode.Text != AMotivationDetail.AccountCode)
+                {
+                    ATxtDetailAccountCode.Text = AMotivationDetail.AccountCode;
+                }
+
+                if (ATaxDeductiblePercentageEnabledFlag && (ATxtDeductibleAccount.Text != AMotivationDetail.TaxDeductibleAccount))
+                {
+                    ATxtDeductibleAccount.Text = AMotivationDetail.TaxDeductibleAccount;
+                }
+            }
         }
 
         /// <summary>
@@ -817,7 +863,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            ATxtDetailCostCentreCode.Text = CostCentreCode;
+            if (ATxtDetailCostCentreCode.Text != CostCentreCode)
+            {
+                ATxtDetailCostCentreCode.Text = CostCentreCode;
+            }
         }
 
         #endregion
