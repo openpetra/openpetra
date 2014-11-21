@@ -423,7 +423,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         filter += filterJoint;
                     }
 
-                    filter += String.Format("(DateDue >= #{0}#) AND (DateDue <= #{0}#)",
+                    filter += String.Format("(DateDue >= #{0}#) AND (DateDue <= #{1}#)",
                         dtToday.ToString("d", System.Globalization.CultureInfo.InvariantCulture),
                         dtToday.AddDays(7).ToString("d", System.Globalization.CultureInfo.InvariantCulture));
                 }
@@ -437,7 +437,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         filter += filterJoint;
                     }
 
-                    filter += String.Format("(DateDue >= #{0}#) AND (DateDue <= #{0}#)",
+                    filter += String.Format("(DateDue >= #{0}#) AND (DateDue <= #{1}#)",
                         dtToday.ToString("d", System.Globalization.CultureInfo.InvariantCulture),
                         dtToday.AddDays(30).ToString("d", System.Globalization.CultureInfo.InvariantCulture));
                 }
@@ -451,7 +451,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         filter += filterJoint;
                     }
 
-                    filter += String.Format("(DateDue >= #{0}#) AND (DateDue <= #{0}#)",
+                    filter += String.Format("(DateDue >= #{0}#) AND (DateDue <= #{1}#)",
                         dtToday.ToString("d", System.Globalization.CultureInfo.InvariantCulture),
                         dtToday.AddDays(90).ToString("d", System.Globalization.CultureInfo.InvariantCulture));
                 }

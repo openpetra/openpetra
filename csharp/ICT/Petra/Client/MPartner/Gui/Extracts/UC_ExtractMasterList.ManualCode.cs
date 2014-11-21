@@ -599,6 +599,45 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Add Contact Log record for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void AddContactLog(object sender, EventArgs e)
+        {
+            PContactLogTable ContactLogTable = new PContactLogTable();
+            PContactLogRow ContactLogRow = ContactLogTable.NewRowTyped();
+
+            string MessageText;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Add Contact Log"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractAddContactLogDialog dialog = new TFrmUpdateExtractAddContactLogDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(ref ContactLogRow);
+                    ContactLogTable.Rows.Add(ContactLogRow);
+                    // perform update of extract data on server side
+                    TRemote.MPartner.Partner.WebConnectors.AddContactLog(
+                        GetSelectedDetailRow().ExtractId, ref ContactLogTable);
+
+                    MessageText =
+                        string.Format(Catalog.GetString(
+                                "Contact Log {0} - {1} successfully added for {2} Partner(s) in Extract {3}."),
+                            ContactLogRow.ContactCode, ContactLogRow.ContactDate, GetSelectedDetailRow().KeyCount, GetSelectedDetailRow().ExtractName);
+
+                    MessageBox.Show(MessageText,
+                        Catalog.GetString("Add Contact Log"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        /// <summary>
         /// Add Partner Type for Partners in selected extract
         /// </summary>
         /// <param name="sender"></param>
