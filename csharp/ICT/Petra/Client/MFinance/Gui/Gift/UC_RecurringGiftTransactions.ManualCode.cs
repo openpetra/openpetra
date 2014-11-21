@@ -511,9 +511,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String APartnerShortName,
             bool AValidSelection)
         {
-            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RecipientLedgerNumber != APartnerKey))
+            if (FInRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection || FShowingDetails)
             {
-                FPreviouslySelectedDetailRow.RecipientLedgerNumber = APartnerKey;
+                return;
+            }
+
+            string NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FLedgerNumber,
+                FPreviouslySelectedDetailRow.RecipientKey,
+                FPreviouslySelectedDetailRow.RecipientLedgerNumber,
+                FPreviouslySelectedDetailRow.DateEntered,
+                FPreviouslySelectedDetailRow.MotivationGroupCode,
+                FPreviouslySelectedDetailRow.MotivationDetailCode);
+
+            if (txtDetailCostCentreCode.Text != NewCCCode)
+            {
+                txtDetailCostCentreCode.Text = NewCCCode;
             }
         }
 

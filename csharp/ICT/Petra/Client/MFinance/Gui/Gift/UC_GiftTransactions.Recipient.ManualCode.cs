@@ -416,6 +416,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// Call when the recipient ledger number changes
+        /// </summary>
+        public static void OnRecipientLedgerNumberChanged(Int32 ALedgerNumber,
+            GiftBatchTDSAGiftDetailRow ACurrentDetailRow,
+            TFrmPetraEditUtils APetraUtilsObject,
+            TextBox ATxtDetailCostCentreCode,
+            bool ABatchUnpostedFlag,
+            bool ARecipientKeyChangingFlag,
+            bool AShowingDetailsFlag)
+        {
+            if (APetraUtilsObject.SuppressChangeDetection || AShowingDetailsFlag || ARecipientKeyChangingFlag || !ABatchUnpostedFlag)
+            {
+                return;
+            }
+
+            string NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
+                ACurrentDetailRow.RecipientKey,
+                ACurrentDetailRow.RecipientLedgerNumber,
+                ACurrentDetailRow.DateEntered,
+                ACurrentDetailRow.MotivationGroupCode,
+                ACurrentDetailRow.MotivationDetailCode);
+
+            if (ATxtDetailCostCentreCode.Text != NewCCCode)
+            {
+                ATxtDetailCostCentreCode.Text = NewCCCode;
+            }
+        }
+
+        /// <summary>
         /// Modifies menu items depending on the Recipeint's Partner class
         /// </summary>
         public static void OnRecipientPartnerClassChanged(TPartnerClass? APartnerClass, TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
