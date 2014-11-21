@@ -47,10 +47,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 {
     public partial class TFrmPartnerByContactLog
     {
-
         private void InitializeManualCode()
         {
-            
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

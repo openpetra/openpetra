@@ -131,7 +131,7 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     AWriter.WriteLine("\\.");
                 }
-                
+
                 RowCounter += 2; // ContactLog record and PartnerContact record
             }
 

@@ -123,12 +123,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 PPartnerContactTable partnerContacts = new PPartnerContactTable();
                 partnerKeys.ToList().ForEach(partnerKey =>
-                {
-                    PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
-                    partnerContact.ContactLogId = ContactLogId;
-                    partnerContact.PartnerKey = (long)partnerKey;
-                    partnerContacts.Rows.Add(partnerContact);
-                });
+                    {
+                        PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
+                        partnerContact.ContactLogId = ContactLogId;
+                        partnerContact.PartnerKey = (long)partnerKey;
+                        partnerContacts.Rows.Add(partnerContact);
+                    });
 
                 PContactLogAccess.SubmitChanges(ContactLogTable, WriteTransaction);
                 PPartnerContactAccess.SubmitChanges(partnerContacts, WriteTransaction);
@@ -141,16 +141,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             catch (Exception e)
             {
                 TLogging.Log(
-                    "An Exception occured during the adding of a Contact to Partners in an Extract:" + 
+                    "An Exception occured during the adding of a Contact to Partners in an Extract:" +
                     Environment.NewLine + e.ToString());
 
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
+
                 throw;
             }
-
         }
 
         /// <summary>

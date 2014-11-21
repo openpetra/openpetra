@@ -138,5 +138,4 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             return -1;
         }
     }
-
 }

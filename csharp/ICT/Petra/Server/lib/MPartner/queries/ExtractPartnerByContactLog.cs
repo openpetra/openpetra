@@ -52,7 +52,7 @@ namespace Ict.Petra.Server.MPartner.queries
         {
             string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerByContactLog.sql");
             QueryPartnerByContactLog ExtractQuery = new QueryPartnerByContactLog();
-            
+
             return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
         }
 
@@ -65,85 +65,87 @@ namespace Ict.Petra.Server.MPartner.queries
         protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List <OdbcParameter>ASQLParameterList)
         {
             ASQLParameterList.Add(new OdbcParameter("param_has_contactor", OdbcType.Bit)
-            {
-                Value = !string.IsNullOrWhiteSpace(AParameters.Get("param_contactor").ToString())
-            });
+                {
+                    Value = !string.IsNullOrWhiteSpace(AParameters.Get("param_contactor").ToString())
+                });
 
             ASQLParameterList.Add(new OdbcParameter("param_contactor", OdbcType.VarChar)
-            {
-                Value = AParameters.Get("param_contactor").ToString()
-            });
+                {
+                    Value = AParameters.Get("param_contactor").ToString()
+                });
 
             ASQLParameterList.Add(new OdbcParameter("param_has_contact_code", OdbcType.Bit)
-            {
-                Value = !string.IsNullOrWhiteSpace(AParameters.Get("param_contact_code").ToString())
-            });
+                {
+                    Value = !string.IsNullOrWhiteSpace(AParameters.Get("param_contact_code").ToString())
+                });
 
             ASQLParameterList.Add(new OdbcParameter("param_contact_code", OdbcType.VarChar)
-            {
-                Value = AParameters.Get("param_contact_code").ToString()
-            });
+                {
+                    Value = AParameters.Get("param_contact_code").ToString()
+                });
 
             ASQLParameterList.Add(new OdbcParameter("param_has_mailing_code", OdbcType.Bit)
-            {
-                Value = !string.IsNullOrWhiteSpace(AParameters.Get("param_mailing_code").ToString())
-            });
+                {
+                    Value = !string.IsNullOrWhiteSpace(AParameters.Get("param_mailing_code").ToString())
+                });
 
             ASQLParameterList.Add(new OdbcParameter("param_mailing_code", OdbcType.VarChar)
-            {
-                Value = AParameters.Get("param_mailing_code").ToString()
-            });
+                {
+                    Value = AParameters.Get("param_mailing_code").ToString()
+                });
 
-            List<String> param_contact_attributes = new List<String>();
+            List <String>param_contact_attributes = new List <String>();
+
             foreach (TVariant choice in AParameters.Get("param_contact_attributes").ToComposite())
             {
-                if(choice.ToString().Length > 0)
+                if (choice.ToString().Length > 0)
+                {
                     param_contact_attributes.Add(choice.ToString());
+                }
             }
 
             ASQLParameterList.Add(new OdbcParameter("param_has_contact_attributes", OdbcType.Bit)
-            {
-                Value = param_contact_attributes.Any()
-            });
+                {
+                    Value = param_contact_attributes.Any()
+                });
 
             ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_explicit_publication",
-                OdbcType.VarChar,
-                param_contact_attributes));
+                    OdbcType.VarChar,
+                    param_contact_attributes));
 
             ASQLParameterList.Add(new OdbcParameter("param_has_date_from", OdbcType.Bit)
-            {
-                Value = AParameters.Get("param_date_from") != null && AParameters.Get("param_date_from").ToDate() > DateTime.MinValue
-            });
+                {
+                    Value = AParameters.Get("param_date_from") != null && AParameters.Get("param_date_from").ToDate() > DateTime.MinValue
+                });
 
             ASQLParameterList.Add(new OdbcParameter("param_date_from", OdbcType.Date)
-            {
-                Value = AParameters.Get("param_date_from").ToDate()
-            });
+                {
+                    Value = AParameters.Get("param_date_from").ToDate()
+                });
 
             ASQLParameterList.Add(new OdbcParameter("param_has_date_to", OdbcType.Bit)
-            {
-                Value = AParameters.Get("param_date_to") != null && AParameters.Get("param_date_to").ToDate() > DateTime.MinValue
-            });
+                {
+                    Value = AParameters.Get("param_date_to") != null && AParameters.Get("param_date_to").ToDate() > DateTime.MinValue
+                });
 
             ASQLParameterList.Add(new OdbcParameter("param_date_to", OdbcType.Date)
-            {
-                Value = AParameters.Get("param_date_to").ToDate()
-            });
-
+                {
+                    Value = AParameters.Get("param_date_to").ToDate()
+                });
 
 
             ASQLParameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
-            {
-                Value = AParameters.Get("param_active").ToBool()
-            });
+                {
+                    Value = AParameters.Get("param_active").ToBool()
+                });
             ASQLParameterList.Add(new OdbcParameter("param_families_only", OdbcType.Bit)
-            {
-                Value = AParameters.Get("param_families_only").ToBool()
-            });
+                {
+                    Value = AParameters.Get("param_families_only").ToBool()
+                });
             ASQLParameterList.Add(new OdbcParameter("param_exclude_no_solicitations", OdbcType.Bit)
-            {
-                Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
-            });
+                {
+                    Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
+                });
         }
     }
 }

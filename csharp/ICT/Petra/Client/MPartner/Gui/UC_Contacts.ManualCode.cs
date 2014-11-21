@@ -145,9 +145,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ARow != null)
             {
                 ucoDetails.ShowDetails(ARow);
+
                 if (TRemote.MPartner.Partner.WebConnectors.IsContactLogAssociatedWithMoreThanOnePartner((long)ARow.ContactLogId))
                 {
-                    lblRelatedLogs.Text = Catalog.GetString("Note that this Contact Log associated with more than one Partner.  Changes here will affect all Partners using this Contact Log.");
+                    lblRelatedLogs.Text = Catalog.GetString(
+                        "Note that this Contact Log associated with more than one Partner.  Changes here will affect all Partners using this Contact Log.");
                 }
                 else
                 {

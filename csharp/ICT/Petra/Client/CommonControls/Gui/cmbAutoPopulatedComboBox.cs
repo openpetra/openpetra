@@ -810,9 +810,9 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.Module:
                     InitialiseUserControl(TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.ModuleList),
-                        SModuleTable.GetModuleIdDBName(),
-                        SModuleTable.GetModuleNameDBName(),
-                        null);
+                    SModuleTable.GetModuleIdDBName(),
+                    SModuleTable.GetModuleNameDBName(),
+                    null);
                     break;
 
                 case TListTableEnum.PartnerAttributeCategoryList:

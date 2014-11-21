@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FInitializationRunning = true;
 
             FContactDR = ARow;
-            
+
             ShowData(ARow);
             FInitializationRunning = false;
         }
