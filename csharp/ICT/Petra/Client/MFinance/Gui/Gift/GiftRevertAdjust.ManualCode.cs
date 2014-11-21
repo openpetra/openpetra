@@ -139,7 +139,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RevertAdjust(System.Object sender, System.EventArgs e)
         {
-            if (chkSelect.Checked && (FPreviouslySelectedDetailRow == null))
+            if (chkSelect.Checked && (GetSelectedDetailRow() == null))
             {
                 // nothing seleted
                 MessageBox.Show(Catalog.GetString("Please select a batch."));
@@ -166,7 +166,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (chkSelect.Checked)
             {
-                AddParam("NewBatchNumber", FPreviouslySelectedDetailRow.BatchNumber);
+                AddParam("NewBatchNumber", GetSelectedDetailRow().BatchNumber);
             }
             else
             {

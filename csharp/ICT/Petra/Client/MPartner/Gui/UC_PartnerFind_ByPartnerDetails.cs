@@ -1295,7 +1295,18 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (!ucoPartnerFindCriteria.HasSearchCriteria())
                 {
-                    MessageBox.Show(MPartnerResourcestrings.StrNoCriteriaSpecified);
+                    string TitleBar = string.Empty;
+
+                    if (FBankDetailsTab)
+                    {
+                        TitleBar = Catalog.GetString("Find by Bank Details");
+                    }
+                    else
+                    {
+                        TitleBar = Catalog.GetString("Find by Partner Details");
+                    }
+
+                    MessageBox.Show(MPartnerResourcestrings.StrNoCriteriaSpecified, TitleBar, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
