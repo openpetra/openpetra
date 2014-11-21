@@ -513,10 +513,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String APartnerShortName,
             bool AValidSelection)
         {
-            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RecipientLedgerNumber != APartnerKey))
-            {
-                FPreviouslySelectedDetailRow.RecipientLedgerNumber = APartnerKey;
-            }
+            TUC_GiftTransactions_Recipient.OnRecipientLedgerNumberChanged(FLedgerNumber,
+                FPreviouslySelectedDetailRow,
+                FPetraUtilsObject,
+                txtDetailCostCentreCode,
+                FBatchUnposted,
+                FInRecipientKeyChanging,
+                FShowingDetails);
         }
 
         // used for ValidateGiftDestinationThread
