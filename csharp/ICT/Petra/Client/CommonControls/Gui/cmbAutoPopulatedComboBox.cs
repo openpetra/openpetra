@@ -271,6 +271,7 @@ namespace Ict.Petra.Client.CommonControls
         private String FNotSetValue;
         private String FNotSetDisplay;
         private Boolean FAllowDbNull = false;
+        private string FNullValueDesciption = ApplWideResourcestrings.StrUndefined;
 
         /// <summary>
         /// Gets or sets the text associated with this Control (in this case: the text in the editable part of the ComboBox)
@@ -368,6 +369,20 @@ namespace Ict.Petra.Client.CommonControls
                 // we also set this property of the labelled combo so that even though the value member is empty text
                 //  we still see our description of 'Undefined'
                 FIncludeDescriptionForEmptyValue = FAllowDbNull;
+            }
+        }
+
+        /// <summary>
+        /// The description of the Null value row (if enabled)
+        /// </summary>
+        /// <value>
+        /// The null value desciption.
+        /// </value>
+        public string NullValueDesciption
+        {
+            set
+            {
+                FNullValueDesciption = value;
             }
         }
 
@@ -1076,7 +1091,7 @@ namespace Ict.Petra.Client.CommonControls
 
                 if (ADescDBName != null)
                 {
-                    Dr[ADescDBName] = ApplWideResourcestrings.StrUndefined;
+                    Dr[ADescDBName] = FNullValueDesciption;
                 }
 
                 FDataCache_ListTable.Rows.InsertAt(Dr, 0);

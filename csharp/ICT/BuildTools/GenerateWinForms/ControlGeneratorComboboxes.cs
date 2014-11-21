@@ -115,6 +115,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     writer.SetControlProperty(ctrl, "AllowDbNull", ctrl.GetAttribute("AllowDbNull"));
                 }
+
+                if (ctrl.HasAttribute("NullValueDesciption"))
+                {
+                    writer.SetControlProperty(ctrl, "NullValueDesciption", "\"" + ctrl.GetAttribute("NullValueDesciption") + "\"");
+                }
             }
             else
             {
