@@ -190,6 +190,9 @@ namespace Ict.Petra.Client.CommonControls
             MethodOfPaymentList,
 
             /// <summary>todoComment</summary>
+            Module,
+
+            /// <summary>todoComment</summary>
             PartnerAttributeCategoryList,
 
             /// <summary>todoComment</summary>
@@ -820,6 +823,13 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.Module:
+                    InitialiseUserControl(TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.ModuleList),
+                    SModuleTable.GetModuleIdDBName(),
+                    SModuleTable.GetModuleNameDBName(),
+                    null);
+                    break;
+
                 case TListTableEnum.PartnerAttributeCategoryList:
                     SortedCacheableDataTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactCategoryList);
 
@@ -1400,6 +1410,11 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 39;
                     this.ColumnWidthCol2 = 230;
                     cmbCombobox.MaxDropDownItems = 10;
+                    break;
+
+                case TListTableEnum.Module:
+                    this.ColumnWidthCol1 = 120;
+                    this.ColumnWidthCol2 = 230;
                     break;
 
                 case TListTableEnum.PartnerAttributeCategoryList:

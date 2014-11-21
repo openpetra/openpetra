@@ -123,9 +123,8 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             // check for zero in glmperiod budget: that row does not even exist yet, so check that it does not exist
             string sqlQueryCheckEmptyConsolidatedBudget =
                 String.Format(
-                    "SELECT COUNT(*) FROM PUB_{1}, PUB_{2} WHERE {1}.a_glm_sequence_i = {2}.a_glm_sequence_i AND a_period_number_i = 1 AND " +
-                    "a_ledger_number_i = {3} AND a_year_i = 0 AND a_account_code_c = '0300' AND a_cost_centre_code_c = '4300'",
-                    AGeneralLedgerMasterPeriodTable.GetBudgetBaseDBName(),
+                    "SELECT COUNT(*) FROM PUB_{0}, PUB_{1} WHERE {0}.a_glm_sequence_i = {1}.a_glm_sequence_i AND a_period_number_i = 1 AND " +
+                    "a_ledger_number_i = {2} AND a_year_i = 0 AND a_account_code_c = '0300' AND a_cost_centre_code_c = '4300'",
                     AGeneralLedgerMasterPeriodTable.GetTableDBName(),
                     AGeneralLedgerMasterTable.GetTableDBName(),
                     FLedgerNumber);

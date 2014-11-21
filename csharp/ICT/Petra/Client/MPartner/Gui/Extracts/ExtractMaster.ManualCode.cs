@@ -670,6 +670,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             TPartnerExtractsMain.FamilyExtractForPersons(FindForm());
         }
 
+        private void CreateContactLogExtract(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.PartnerByContactLogExtract(FindForm());
+        }
+
         /// <summary>
         /// Create Partner By Conference Extract
         /// </summary>
@@ -851,6 +856,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void ChangeSubscription(System.Object sender, EventArgs e)
         {
             ucoExtractMasterList.ChangeSubscription(sender, e);
+        }
+
+        /// <summary>
+        /// Add Contact Log record for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddContactLog(object sender, EventArgs e)
+        {
+            ucoExtractMasterList.AddContactLog(sender, e);
         }
 
         /// <summary>

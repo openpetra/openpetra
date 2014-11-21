@@ -1,0 +1,30 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    UtilObjectClass: TFrmPetraEditUtils
+    FormTitle: Add Contact Log
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data, Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    MasterTable: PContactLog
+    FormType: dialog
+    Template: window
+    WindowWidth: 794
+    WindowHeight: 400
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
+    Controls:
+        pnlDialogContent:
+            Dock: Fill
+            Controls:
+                Row0: [lblExtractName]
+                Row1: [ucoContactLog]
+                
+        lblExtractName:
+            Dock: Top
+            
+        ucoContactLog:
+            Dock: Fill
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_Contact
+            
