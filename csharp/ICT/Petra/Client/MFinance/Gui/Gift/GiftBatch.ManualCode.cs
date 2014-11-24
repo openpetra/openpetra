@@ -492,9 +492,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        /// <param name="ALoadRelatedDataTables"></param>
         /// <returns>If transactions exist</returns>
-        public Boolean EnsureGiftDataPresent(Int32 ALedgerNumber, Int32 ABatchNumber, bool ALoadRelatedDataTables = false)
+        public Boolean EnsureGiftDataPresent(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             DataView TransDV = new DataView(FMainDS.AGiftDetail);
 
@@ -506,14 +505,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (TransDV.Count == 0)
             {
-                if (ALoadRelatedDataTables)
-                {
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ALedgerNumber, ABatchNumber));
-                }
-                else
-                {
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber));
-                }
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ALedgerNumber, ABatchNumber));
             }
 
             return TransDV.Count > 0;

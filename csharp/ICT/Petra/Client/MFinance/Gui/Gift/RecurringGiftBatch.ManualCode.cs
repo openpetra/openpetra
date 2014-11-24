@@ -372,7 +372,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (TransDV.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadARecurringGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, true));
             }
 
             return TransDV.Count > 0;

@@ -926,7 +926,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow))
             {
                 // Posting succeeded so now deal with gift receipting ...
-                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber, FSelectedBatchNumber);
+                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber,
+                    FSelectedBatchNumber,
+                    false);
 
                 FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
 

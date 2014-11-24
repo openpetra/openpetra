@@ -789,7 +789,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadGiftAndTaxDeductDataForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
+            GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, true);
 
             TDBTransaction Transaction = null;
 
@@ -943,7 +943,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
+            GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, true);
 
             // drop all tables apart from ARecurringGift and ARecurringGiftDetail
             foreach (DataTable table in MainDS.Tables)
@@ -1944,9 +1944,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
+        /// <param name="AExcludeBatchRow"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftBatchAndRelatedData(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadAGiftBatchAndRelatedData(Int32 ALedgerNumber, Int32 ABatchNumber, bool AExcludeBatchRow = false)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -1959,7 +1960,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, Transaction, out ChangesToCommit);
+                    MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, Transaction, out ChangesToCommit, AExcludeBatchRow);
                 });
 
             if (ChangesToCommit)
@@ -1977,7 +1978,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         private static GiftBatchTDS LoadAGiftBatchAndRelatedData(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             TDBTransaction ATransaction,
-            out bool AChangesToCommit)
+            out bool AChangesToCommit,
+            bool AExcludeBatchRow = false)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -2124,6 +2126,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 throw;
             }
 
+            if (AExcludeBatchRow)
+            {
+                MainDS.AGiftBatch.Clear();
+            }
+
             return MainDS;
         }
 
@@ -2132,9 +2139,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
+        /// <param name="AExcludeBatchRow"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadARecurringGiftBatchAndRelatedData(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadARecurringGiftBatchAndRelatedData(Int32 ALedgerNumber, Int32 ABatchNumber, bool AExcludeBatchRow = false)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -2147,7 +2155,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    MainDS = LoadARecurringGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, Transaction, out ChangesToCommit);
+                    MainDS = LoadARecurringGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, Transaction, out ChangesToCommit, AExcludeBatchRow);
                 });
 
             if (ChangesToCommit)
@@ -2166,7 +2174,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         private static GiftBatchTDS LoadARecurringGiftBatchAndRelatedData(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             TDBTransaction ATransaction,
-            out bool AChangesToCommit)
+            out bool AChangesToCommit,
+            bool AExcludeBatchRow = false)
         {
             AChangesToCommit = false;
 
@@ -2261,6 +2270,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     giftDetail.SetAccountCodeNull();
                 }
+            }
+
+            if (AExcludeBatchRow)
+            {
+                MainDS.ARecurringGiftBatch.Clear();
             }
 
             return MainDS;
@@ -2523,7 +2537,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             //Load all other related data for the batch and commit any changes
             bool ChangesToCommit = false;
-            MainDS.Merge(LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, ATransaction, out ChangesToCommit));
+            MainDS.Merge(LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, ATransaction, out ChangesToCommit, true));
 
             if (ChangesToCommit)
             {

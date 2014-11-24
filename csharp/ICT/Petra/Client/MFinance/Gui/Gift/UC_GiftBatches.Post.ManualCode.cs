@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMyForm.Cursor = Cursors.WaitCursor;
 
-                FMyForm.EnsureGiftDataPresent(FLedgerNumber, FSelectedBatchNumber, true);
+                FMyForm.EnsureGiftDataPresent(FLedgerNumber, FSelectedBatchNumber);
 
                 GiftBatchTDSAGiftDetailTable BatchGiftDetails = new GiftBatchTDSAGiftDetailTable();
 

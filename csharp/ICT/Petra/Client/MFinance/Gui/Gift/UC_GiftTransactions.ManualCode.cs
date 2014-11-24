@@ -441,9 +441,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <returns>If transactions exist</returns>
-        private bool LoadGiftDataForBatch(Int32 ALedgerNumber, Int32 ABatchNumber, bool ARefreshBatchData = true)
+        private bool LoadGiftDataForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            bool RetVal = ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(ALedgerNumber, ABatchNumber, ARefreshBatchData);
+            bool RetVal = ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(ALedgerNumber, ABatchNumber);
 
             TUC_GiftTransactions_Recipient.UpdateAllRecipientDescriptions(ABatchNumber, FMainDS);
 
@@ -1437,7 +1437,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             LedgerNumber = FBatchRow.LedgerNumber;
             BatchNumber = FBatchRow.BatchNumber;
 
-            if (!LoadGiftDataForBatch(LedgerNumber, BatchNumber, false))
+            if (!LoadGiftDataForBatch(LedgerNumber, BatchNumber))
             {
                 //No transactions exist to process or corporate exchange rate not found
                 return;
@@ -1898,7 +1898,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftTable.GetBatchNumberDBName(),
                 batchNumber);
 
-            ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(ledgerNumber, batchNumber, true);
+            ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(ledgerNumber, batchNumber);
 
             if ((FPreviouslySelectedDetailRow != null) && (FBatchNumber == batchNumber))
             {
@@ -1973,7 +1973,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             IntlToBaseCurrencyExchRate = ((TFrmGiftBatch)ParentForm).InternationalCurrencyExchangeRate(CurrentBatchRow,
                 out IsTransactionInIntlCurrency);
 
-            if (!LoadGiftDataForBatch(LedgerNumber, CurrentBatchNumber, false))
+            if (!LoadGiftDataForBatch(LedgerNumber, CurrentBatchNumber))
             {
                 //No transactions exist to process or corporate exchange rate not found
                 return;
