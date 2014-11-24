@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       christophert
+//       Tim Ingham
 //
 // Copyright 2004-2012 by OM International
 //
@@ -48,6 +49,7 @@ using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Client.MReporting.Logic;
 using System.Collections;
 using System.Collections.Generic;
+using Ict.Petra.Client.MReporting.Gui;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.ICH
@@ -71,9 +73,11 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
     /// manual methods for the generated window
     public partial class TFrmStewardshipReports : System.Windows.Forms.Form
     {
-        ICHModeEnum FReportingPeriodSelectionMode = ICHModeEnum.StewardshipCalc;
         Int32 FLedgerNumber = 0;
         ALedgerRow FLedgerRow = null;
+        FastReportsWrapper MyFastReportsPlugin;
+/*
+        ICHModeEnum FReportingPeriodSelectionMode = ICHModeEnum.StewardshipCalc;
 
         /// <summary>
         /// Gets or sets the ICH reporting period selection mode
@@ -99,7 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 }
             }
         }
-
+*/
         /// <summary>
         /// Write-only Ledger number property
         /// </summary>
@@ -115,32 +119,24 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 TFinanceControls.InitialiseAvailableFinancialYearsListHOSA(
                     ref cmbYearEnding,
                     FLedgerNumber);
-
+                /*
                 //Resize and move label
                 cmbYearEnding.ComboBoxWidth += 18;
                 cmbYearEnding.AttachedLabel.Left += 18;
-                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                 */
+                chkHOSA.CheckedChanged += RefreshReportingOptions;
+                chkStewardship.CheckedChanged += RefreshReportingOptions;
+                chkFees.CheckedChanged += RefreshReportingOptions;
+                chkRecipient.CheckedChanged += RefreshReportingOptions;
+                RefreshReportingOptions(null, null);
+                FPetraUtilsObject.DelegateGenerateReportOverride = GenerateAllSelectedReports;
+                FPetraUtilsObject.DelegateViewReportOverride = ViewReportTemplate;
+
             }
         }
 
-        private void EnableHOSAFileOptions(object sender, EventArgs e)
-        {
-            bool IsEnabled = chkHOSAFile.Checked;
-
-            txtHOSAPrefix.Enabled = IsEnabled;
-            chkEmailHOSAFile.Enabled = IsEnabled;
-        }
-
-        private void EnableStewardshipFileOptions(object sender, EventArgs e)
-        {
-            chkStewardshipFile.Enabled = !chkEmailStewardshipFileAndReport.Checked;
-
-            if ((chkStewardshipFile.Checked && chkEmailStewardshipFileAndReport.Checked))
-            {
-                chkStewardshipFile.Checked = false;
-            }
-        }
-
+        //
+        // called on Year change.
         private void RefreshReportPeriodList(object sender, EventArgs e)
         {
             if (cmbYearEnding.SelectedIndex > -1)
@@ -154,6 +150,8 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
         }
 
+        //
+        // Called on period change.
         private void RefreshICHStewardshipNumberList(object sender, EventArgs e)
         {
             if ((cmbReportPeriod.SelectedIndex > -1) && (cmbYearEnding.SelectedIndex > -1))
@@ -176,11 +174,28 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                         null,
                         null);
                 }
-
                 cmbICHNumber.SelectedIndex = 0;
             }
         }
 
+        //
+        // Called on any report checkbox changed
+        private void RefreshReportingOptions(Object Sender, EventArgs e)
+        {
+            rbtEmailHosa.Enabled = chkHOSA.Checked;
+            rbtReprintHosa.Enabled = chkHOSA.Checked;
+
+            rbtEmailStewardship.Enabled =
+            rbtReprintStewardship.Enabled = chkStewardship.Checked;
+
+            rbtEmailFees.Enabled = chkFees.Checked;
+            rbtReprintFees.Enabled = chkFees.Checked;
+
+            rbtEmailRecipient.Enabled = chkRecipient.Checked;
+            rbtReprintRecipient.Enabled = chkRecipient.Checked;
+        }
+
+/*
         private void GenerateReports(Object Sender, EventArgs e)
         {
             String CurrencySelect = (this.rbtBase.Checked ? MFinanceConstants.CURRENCY_BASE : MFinanceConstants.CURRENCY_INTERNATIONAL);
@@ -328,7 +343,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 Cursor = Cursors.Default;
             }
         }
-
         private bool ValidReportPeriod()
         {
             if (cmbReportPeriod.SelectedIndex > -1)
@@ -343,11 +357,51 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
             return false;
         }
+*/
+        private void ViewReportTemplate(TRptCalculator ACalc)
+        {
+            String ReportName = "";
+
+            if (chkRecipient.Checked)
+            {
+                ReportName = "Recipient Gift Statement";
+            }
+            if (chkFees.Checked)
+            {
+                ReportName = "Fees";
+            }
+            if (chkStewardship.Checked)
+            {
+                ReportName = "Stewardship";
+            }
+            if (chkHOSA.Checked)
+            {
+                ReportName = "HOSA";
+            }
+
+            if (ReportName == "")
+            {
+                return;
+            }
+            MyFastReportsPlugin = new FastReportsWrapper(ReportName);
+            MyFastReportsPlugin.DesignReport(ACalc);
+        }
 
         //
         // New methods using the Fast-reports DLL:
+        // This form generates a clutch of different reports.
 
-        private Boolean LoadReportData(TRptCalculator ACalc)
+        // In this method, a new FastReportsWrapper is used for each selected report type.
+
+        private void GenerateAllSelectedReports(TRptCalculator ACalc)
+        {
+            // "Stewardship";
+            MyFastReportsPlugin = new FastReportsWrapper("Stewardship");
+            MyFastReportsPlugin.SetDataGetter(LoadStewardshipReportData);
+            MyFastReportsPlugin.GenerateReport(ACalc);
+        }
+
+        private Boolean LoadStewardshipReportData(TRptCalculator ACalc)
         {
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
             pm.Add("param_ledger_number_i", FLedgerNumber);
@@ -378,7 +432,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 return false;
             }
 
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "Stewardship");
+            MyFastReportsPlugin.RegisterData(ReportTable, "Stewardship");
             //
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
             String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);

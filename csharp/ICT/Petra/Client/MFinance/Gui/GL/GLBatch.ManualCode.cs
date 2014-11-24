@@ -170,6 +170,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Print out the Hierarchy using FastReports template.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FilePrint(object sender, EventArgs e)
+        {
+            MessageBox.Show("File Print!");
+        }
+
+        /// <summary>
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
@@ -311,6 +321,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunOnceOnActivationManual()
         {
+            mniFilePrint.Click += FilePrint;
+            mniFilePrint.Enabled = true;
+
         }
 
         /// <summary>

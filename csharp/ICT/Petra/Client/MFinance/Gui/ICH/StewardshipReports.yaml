@@ -3,8 +3,8 @@ RootNode:
     FormType: report
     FormTitle: Stewardship Reports
     Namespace: Ict.Petra.Client.MFinance.Gui.ICH
-    WindowWidth: 540
-    WindowHeight: 380
+    WindowWidth: 570
+    WindowHeight: 410
 
     TemplateParameters:
         XMLFILES: [Finance\\\\stewardship.xml]
@@ -26,64 +26,55 @@ RootNode:
             Dock: Fill
             Controls:
                 Row0: [grpSelection, rgrCurrency]
-                
-        pnlContentMiddle:
-            Dock: Bottom            
-            Controls:
-                Row0: [grpHOSA, grpStewardship, grpOther]
 
-        grpSelection: {Width:410, Height:120}
+        grpSelection: {Width:410, Height:100}
             Controls: 
                 Row1: [cmbYearEnding]
                 Row2: [cmbReportPeriod]
                 Row3: [cmbICHNumber]
-                Row4: [lblFullReport]
-                
-        grpHOSA: {Label:HOSA, Width:150, Height:160}
-            Controls: 
-                Row0: [chkEmailHOSAReport]
-                Row1: [chkHOSAReport]
-                Row2: [chkHOSAFile]
-                Row3: [txtHOSAPrefix]
-                Row4: [chkEmailHOSAFile]
-
-        grpStewardship: {Label: Stewardship, Width:210, Height:160}
-            Controls: 
-                Row0: [chkEmailStewardshipFileAndReport]
-                Row1: [chkStewardshipReport]
-                Row2: [chkStewardshipFile]
-                
-        grpOther: {NoLabel:true, Width:165, Height:160}
-            Controls: 
-                Row0: [lblFees]
-                Row1: [chkFeesReport]
-                Row2: [lblGift]
-                Row3: [chkRecipientStatement]
-
         rgrCurrency:
-            Height: 120
+            Height: 100
             ParameterName: param_currency
             Controls: [rbtBase, rbtInternational]
+
+        pnlContentMiddle:
+            Dock: Bottom
+            Controls:
+                Row0: [chkHOSA, rgrHosa]
+                Row1: [chkStewardship, rgrStewardship]
+                Row2: [chkFees, rgrFees]
+                Row3: [chkRecipient, rgrRecipient]
+
+        chkHOSA:{Label=All HOSAs, CheckBoxAttachedLabel=right}
+        chkStewardship:{Label=Stewardship Report, CheckBoxAttachedLabel=right}
+        chkFees:{Label=Admin Fees, CheckBoxAttachedLabel=right}
+        chkRecipient:{Label=All Recipient Statements, CheckBoxAttachedLabel=right}
+
+        rgrHosa: {Label=HOSA options, ControlsOrientation=horizontal, BorderVisible=false}
+            Controls:[rbtEmailHosa, rbtReprintHosa]
+        rgrStewardship: {Label=Stewardship options, ControlsOrientation=horizontal, BorderVisible=false}
+            Controls:[rbtEmailStewardship, rbtReprintStewardship]
+        rgrFees: {Label=Fees options, ControlsOrientation=horizontal, BorderVisible=false}
+            Controls:[rbtEmailFees, rbtReprintFees]
+        rgrRecipient: {Label=Recipient Statement options, ControlsOrientation=horizontal, BorderVisible=false}
+            Controls:[rbtEmailRecipient, rbtReprintRecipient]
+
+        rbtEmailHosa:{Label=Send emails, ParameterValue=Email}
+        rbtReprintHosa:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
+        rbtEmailStewardship:{Label=Email to ICT, ParameterValue=Email}
+        rbtReprintStewardship:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
+        rbtEmailFees:{Label=Email to ICT, ParameterValue=Email}
+        rbtReprintFees:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
+        rbtEmailRecipient:{Label=Send emails, ParameterValue=Email}
+        rbtReprintRecipient:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
+
+        cmbYearEnding: {Label=Year End, List=UserDefinedList, OnChange=RefreshReportPeriodList, Width=250}
+        cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList, Width=250}
+        cmbICHNumber: {Label=Run Number (0=all), List=UserDefinedList, Width=250}
+
         rbtBase: 
             Label: Base
             ParameterValue: Base
         rbtInternational: 
             Label: International
             ParameterValue: International
-
-        cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
-        cmbYearEnding: {Label=Year End, List=UserDefinedList, OnChange=RefreshReportPeriodList}
-        cmbICHNumber: {Label=Run Number, List=UserDefinedList}
-        lblFullReport: {Label=(0=Full report)}
-        lblFees: {Label=Fees}
-        chkFeesReport: {Label=Report, CheckBoxAttachedLabel=right}
-        lblGift: {Label=Gift}
-        chkRecipientStatement: {Label=Recipient Statement, CheckBoxAttachedLabel=right}
-        chkEmailHOSAReport: {Label=Email Report, CheckBoxAttachedLabel=right}
-        chkHOSAReport: {Label=Print Report, CheckBoxAttachedLabel=right}
-        chkHOSAFile: {Label=Create CSV File, CheckBoxAttachedLabel=right, OnChange=EnableHOSAFileOptions}
-        chkEmailHOSAFile: {Label=Email CSV File, CheckBoxAttachedLabel=right, Enabled=false}
-        txtHOSAPrefix: {Label=Prefix, Width=70, Enabled=false}
-        chkEmailStewardshipFileAndReport: {Label=Email File and Report, CheckBoxAttachedLabel=right, OnChange=EnableStewardshipFileOptions}
-        chkStewardshipReport: {Label=Print Report, CheckBoxAttachedLabel=right}
-        chkStewardshipFile: {Label=Email CSV File, CheckBoxAttachedLabel=right, OnChange=EnableStewardshipFileOptions}
