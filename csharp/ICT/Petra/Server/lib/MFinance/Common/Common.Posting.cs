@@ -474,7 +474,6 @@ namespace Ict.Petra.Server.MFinance.Common
                     {
                         AAnalysisAttributeRow attributeRow = (AAnalysisAttributeRow)ANView[i].Row;
 
-
                         ATransAnalAttribRow aTransAttribRow =
                             (ATransAnalAttribRow)ADataSet.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber,
                                                                                                     transRow.JournalNumber,

@@ -181,7 +181,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             int NewGiftBatchNumber = -1;
 
-            GiftBatchTDS RMainDS = LoadRecurringGiftTransactions(ALedgerNumber, ABatchNumber);
+            GiftBatchTDS RMainDS = LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -605,34 +605,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// loads a GiftBatchTDS for a single transaction
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AGiftTransactionNumber"></param>
-        /// <param name="ADetailNumber"></param>
-        /// <returns>DataSet containing the transation's data</returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftDetailSingle(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber)
-        {
-            GiftBatchTDS MainDS = new GiftBatchTDS();
-
-            TDBTransaction Transaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                ref Transaction,
-                delegate
-                {
-                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                    AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, Transaction);
-                    AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
-                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-                });
-
-            return MainDS;
-        }
-
-        /// <summary>
         /// loads a GiftBatchTDS for a whole transaction (i.e. all details in the transaction)
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -758,32 +730,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// loads a list of batches for the given ledger
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftDetailForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            GiftBatchTDS MainDS = new GiftBatchTDS();
-
-            TDBTransaction Transaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                ref Transaction,
-                delegate
-                {
-                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-                    AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-                    AGiftDetailAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-                });
-
-            return MainDS;
-        }
-
-        /// <summary>
         /// loads a list of recurring batches for the given ledger
         /// also get the ledger for the base currency etc
         /// TODO: limit to period, limit to batch status, etc
@@ -829,32 +775,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
                     ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-                });
-
-            return MainDS;
-        }
-
-        /// <summary>
-        /// loads a list of batches for the given ledger
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadARecurringGiftDetailForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            GiftBatchTDS MainDS = new GiftBatchTDS();
-
-            TDBTransaction Transaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                ref Transaction,
-                delegate
-                {
-                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                    ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-                    ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-                    ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
                 });
 
             return MainDS;
@@ -1291,19 +1211,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// Update the cost centres for the recipients
         /// </summary>
         /// <param name="AMainDS"></param>
-        /// <param name="AFailedUpdates"></param>
         /// <param name="ARecurringBatchNumber"></param>
+        /// <param name="AFailedUpdates"></param>
+        /// <param name="ASaveChanges"></param>
         /// <param name="ARecurringGiftNumber"></param>
         /// <param name="ARecurringGiftDetailNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool UpdateCostCentreCodeForRecipientsRecurring(GiftBatchTDS AMainDS,
-            out string AFailedUpdates,
             Int32 ARecurringBatchNumber,
+            out string AFailedUpdates,
+            out bool ASaveChanges,
             Int32 ARecurringGiftNumber = 0,
             Int32 ARecurringGiftDetailNumber = 0)
         {
             AFailedUpdates = string.Empty;
+            ASaveChanges = false;
 
             if ((AMainDS.ARecurringGiftBatch == null)
                 || (AMainDS.ARecurringGift == null)
@@ -1388,12 +1311,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 try
                 {
-                    recurringGiftDetailRow.CostCentreCode = RetrieveCostCentreCodeForRecipient(recurringGiftDetailRow.LedgerNumber,
+                    string newCostCentreCode = RetrieveCostCentreCodeForRecipient(recurringGiftDetailRow.LedgerNumber,
                         recurringGiftDetailRow.RecipientKey,
                         recurringGiftDetailRow.RecipientLedgerNumber,
                         DateForGiftRow,
                         recurringGiftDetailRow.MotivationGroupCode,
                         recurringGiftDetailRow.MotivationDetailCode);
+
+                    if (recurringGiftDetailRow.CostCentreCode != newCostCentreCode)
+                    {
+                        recurringGiftDetailRow.CostCentreCode = newCostCentreCode;
+                        ASaveChanges = true;
+                    }
                 }
                 catch
                 {
@@ -1429,14 +1358,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadGiftTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
 
             // drop all tables apart from ARecurringGift and ARecurringGiftDetail
             foreach (DataTable table in MainDS.Tables)
             {
-                if ((table.TableName != MainDS.ARecurringGift.TableName) && (table.TableName != MainDS.ARecurringGiftDetail.TableName))
+                if ((table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName))
                 {
                     table.Clear();
                 }
@@ -1452,7 +1381,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadRecurringGiftTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadRecurringGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GiftBatchTDS MainDS = LoadARecurringGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
 

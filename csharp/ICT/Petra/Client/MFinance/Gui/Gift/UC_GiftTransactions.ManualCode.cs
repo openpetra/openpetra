@@ -441,9 +441,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <returns>If transactions exist</returns>
-        private bool LoadGiftDataForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        private bool LoadGiftDataForBatch(Int32 ALedgerNumber, Int32 ABatchNumber, bool ARefreshBatchData = true)
         {
-            bool RetVal = ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(ALedgerNumber, ABatchNumber);
+            bool RetVal = ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(ALedgerNumber, ABatchNumber, ARefreshBatchData);
 
             TUC_GiftTransactions_Recipient.UpdateAllRecipientDescriptions(ABatchNumber, FMainDS);
 
@@ -1049,7 +1049,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.AGiftDetail.Merge(TempDS.AGiftDetail);
                 }
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(FLedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactionsForBatch(FLedgerNumber, ABatchNumber));
 
                 RetVal = true;
             }
@@ -1411,8 +1411,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateMethodOfPayment(bool ACalledLocally)
         {
-            Int32 ledgerNumber;
-            Int32 batchNumber;
+            Int32 LedgerNumber;
+            Int32 BatchNumber;
 
             if (ACalledLocally)
             {
@@ -1434,14 +1434,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FBatchMethodOfPayment = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().MethodOfPaymentCode;
 
-            ledgerNumber = FBatchRow.LedgerNumber;
-            batchNumber = FBatchRow.BatchNumber;
+            LedgerNumber = FBatchRow.LedgerNumber;
+            BatchNumber = FBatchRow.BatchNumber;
 
-            if (FMainDS.AGift.Rows.Count == 0)
+            if (!LoadGiftDataForBatch(LedgerNumber, BatchNumber, false))
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ledgerNumber, batchNumber));
+                //No transactions exist to process or corporate exchange rate not found
+                return;
             }
-            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
+
+            if ((FLedgerNumber == LedgerNumber) || (FBatchNumber == BatchNumber))
             {
                 //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
                 if (FPreviouslySelectedDetailRow != null)
@@ -1454,7 +1456,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Update all transactions
             foreach (AGiftRow giftRow in FMainDS.AGift.Rows)
             {
-                if (giftRow.BatchNumber.Equals(batchNumber) && giftRow.LedgerNumber.Equals(ledgerNumber)
+                if (giftRow.BatchNumber.Equals(BatchNumber) && giftRow.LedgerNumber.Equals(LedgerNumber)
                     && (giftRow.MethodOfPaymentCode != FBatchMethodOfPayment))
                 {
                     giftRow.MethodOfPaymentCode = FBatchMethodOfPayment;
@@ -1896,11 +1898,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftTable.GetBatchNumberDBName(),
                 batchNumber);
 
-            if (giftDataView.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ledgerNumber, batchNumber));
-            }
-            else if ((FPreviouslySelectedDetailRow != null) && (FBatchNumber == batchNumber))
+            ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(ledgerNumber, batchNumber, true);
+
+            if ((FPreviouslySelectedDetailRow != null) && (FBatchNumber == batchNumber))
             {
                 //Rows already active in transaction tab. Need to set current row as code below will not update currently selected row
                 FGLEffectivePeriodChanged = true;
@@ -1973,7 +1973,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             IntlToBaseCurrencyExchRate = ((TFrmGiftBatch)ParentForm).InternationalCurrencyExchangeRate(CurrentBatchRow,
                 out IsTransactionInIntlCurrency);
 
-            if (!LoadGiftDataForBatch(LedgerNumber, CurrentBatchNumber))
+            if (!LoadGiftDataForBatch(LedgerNumber, CurrentBatchNumber, false))
             {
                 //No transactions exist to process or corporate exchange rate not found
                 return;
@@ -2040,7 +2040,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int BatchNumber = ABatchRow.BatchNumber;
             decimal BatchExchangeRateToBase = ABatchRow.ExchangeRateToBase;
 
-            LoadGiftDataForBatch(LedgerNumber, BatchNumber);
+            if (!LoadGiftDataForBatch(LedgerNumber, BatchNumber))
+            {
+                return;
+            }
 
             DataView transDV = new DataView(FMainDS.AGiftDetail);
             transDV.RowFilter = String.Format("{0}={1}",
