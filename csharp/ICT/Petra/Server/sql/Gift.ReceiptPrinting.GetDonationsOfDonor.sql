@@ -1,6 +1,8 @@
 SELECT a_gift.a_date_entered_d AS DateEntered, 
         a_gift_detail.a_gift_transaction_amount_n AS TransactionAmount,
         a_gift_detail.a_gift_amount_n AS AmountInBaseCurrency,
+        a_gift_detail.a_tax_deductible_amount_n AS TaxDeductibleAmount,
+        a_gift_detail.a_tax_deductible_amount_base_n AS TaxDeductibleAmountBase,
         a_gift_batch.a_currency_code_c AS Currency,
         a_gift_batch.a_gift_type_c AS GiftType,
         a_gift_detail.a_gift_comment_one_c AS CommentOne,
