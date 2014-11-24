@@ -41,6 +41,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
+using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MConference.Data;
@@ -107,6 +108,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     NumberOfCategories++;
                 }
             }
+
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
 
             // calculates each step's (optional and non-optional) percentage for the progress tracker
             TrackerPercent = 100 / (NumberOfCategories + 3);
@@ -410,6 +414,21 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 if (ACategories[16] == true)
                 {
+                    if (TaxDeductiblePercentageEnabled && 
+                        ((AFromPartnerClass == TPartnerClass.FAMILY && AToPartnerClass == TPartnerClass.FAMILY) ||
+                        (AFromPartnerClass == TPartnerClass.UNIT && AToPartnerClass == TPartnerClass.UNIT)))
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Tax Deductibility Percentage"),
+                            TrackerPercent * CurrentCategory);
+
+                        MergeTaxDeductibilityPercentage(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    CurrentCategory++;
+                }
+
+                if (ACategories[17] == true)
+                {
                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Link to Cost Centre"),
                         TrackerPercent * CurrentCategory);
                     CurrentCategory++;
@@ -417,7 +436,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     MergeLinkToCostCentre(AFromPartnerKey, AToPartnerKey, Transaction);
                 }
 
-                if (ACategories[17] == true)
+                if (ACategories[18] == true)
                 {
                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Graphic"),
                         TrackerPercent * CurrentCategory);
@@ -2860,6 +2879,27 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 PBankingDetailsUsageAccess.SubmitChanges(BankingDetailsUsageTable, ATransaction);
             }
+        }
+
+        private static void MergeTaxDeductibilityPercentage(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        {
+            PPartnerTaxDeductiblePctTable FromTable = PPartnerTaxDeductiblePctAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
+            PPartnerTaxDeductiblePctTable ToTable = PPartnerTaxDeductiblePctAccess.LoadViaPPartner(AToPartnerKey, ATransaction);
+
+            // Merge tax deductibile percentage if To partner does not already have one set
+            foreach(PPartnerTaxDeductiblePctRow Row in FromTable.Rows)
+            {
+                if (ToTable == null || ToTable.Rows.Count == 0)
+                {
+                    Row.PartnerKey = AToPartnerKey;
+                }
+                else
+                {
+                    Row.Delete();
+                }
+            }
+
+            PPartnerTaxDeductiblePctAccess.SubmitChanges(FromTable, ATransaction);
         }
 
         //  1) Update recent partner settings for the current user to refer to the To partner.
