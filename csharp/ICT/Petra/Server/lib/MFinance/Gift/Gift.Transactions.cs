@@ -899,9 +899,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// When a reversed gift detail is cancelled this method will remove the Modified Detail flag on the original gift detail
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="AModifiedDetailKeys"></param>        
+        /// <param name="AModifiedDetailKeys"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static void RemoveModifiedDetailOnCancel(Int32 ALedgerNumber, List<string> AModifiedDetailKeys)
+        public static void RemoveModifiedDetailOnCancel(Int32 ALedgerNumber, List <string>AModifiedDetailKeys)
         {
             TDBTransaction Transaction = null;
             bool SubmissionOK = true;

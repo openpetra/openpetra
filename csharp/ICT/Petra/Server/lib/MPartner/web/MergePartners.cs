@@ -414,11 +414,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 if (ACategories[16] == true)
                 {
-                    if (TaxDeductiblePercentageEnabled && 
-                        ((AFromPartnerClass == TPartnerClass.FAMILY && AToPartnerClass == TPartnerClass.FAMILY) ||
-                        (AFromPartnerClass == TPartnerClass.UNIT && AToPartnerClass == TPartnerClass.UNIT)))
+                    if (TaxDeductiblePercentageEnabled
+                        && (((AFromPartnerClass == TPartnerClass.FAMILY) && (AToPartnerClass == TPartnerClass.FAMILY))
+                            || ((AFromPartnerClass == TPartnerClass.UNIT) && (AToPartnerClass == TPartnerClass.UNIT))))
                     {
-                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Tax Deductibility Percentage"),
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            Catalog.GetString("Merging: Tax Deductibility Percentage"),
                             TrackerPercent * CurrentCategory);
 
                         MergeTaxDeductibilityPercentage(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -2887,9 +2888,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PPartnerTaxDeductiblePctTable ToTable = PPartnerTaxDeductiblePctAccess.LoadViaPPartner(AToPartnerKey, ATransaction);
 
             // Merge tax deductibile percentage if To partner does not already have one set
-            foreach(PPartnerTaxDeductiblePctRow Row in FromTable.Rows)
+            foreach (PPartnerTaxDeductiblePctRow Row in FromTable.Rows)
             {
-                if (ToTable == null || ToTable.Rows.Count == 0)
+                if ((ToTable == null) || (ToTable.Rows.Count == 0))
                 {
                     Row.PartnerKey = AToPartnerKey;
                 }

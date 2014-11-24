@@ -75,7 +75,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string CompletionMessage = string.Empty;
             string ExistingBatchStatus = string.Empty;
             decimal ExistingBatchTotal = 0;
-            List<string> ModifiedDetailKeys = new List<string>();
+
+            List <string>ModifiedDetailKeys = new List <string>();
 
             if ((ACurrentBatchRow == null) || (ACurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
@@ -161,7 +162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     TRemote.MFinance.Gift.WebConnectors.RemoveModifiedDetailOnCancel(FLedgerNumber, ModifiedDetailKeys);
-                	
+
                     MessageBox.Show(CompletionMessage,
                         "Batch Cancelled",
                         MessageBoxButtons.OK,

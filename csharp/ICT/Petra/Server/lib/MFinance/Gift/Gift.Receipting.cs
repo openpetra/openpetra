@@ -433,8 +433,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             // TODO allow other currencies. use a_currency table, and base currency
             msg = msg.Replace("#TOTALAMOUNTINWORDS", NumberToWords.AmountToWords(sum, "Euro", "Cent")).
-                Replace("#TOTALAMOUNT_TAX_DEDUCT_INWORDS", NumberToWords.AmountToWords(sumTaxDeduct, "Euro", "Cent")).
-                Replace("#TOTALAMOUNT_TAX_NONDEDUCT _INWORDS", NumberToWords.AmountToWords(sumNonDeduct, "Euro", "Cent"));
+                  Replace("#TOTALAMOUNT_TAX_DEDUCT_INWORDS", NumberToWords.AmountToWords(sumTaxDeduct, "Euro", "Cent")).
+                  Replace("#TOTALAMOUNT_TAX_NONDEDUCT _INWORDS", NumberToWords.AmountToWords(sumNonDeduct, "Euro", "Cent"));
 
             return msg.Replace("#ROWTEMPLATE", rowTexts);
         }

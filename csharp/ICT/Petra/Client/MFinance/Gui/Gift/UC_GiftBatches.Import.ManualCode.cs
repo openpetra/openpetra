@@ -209,7 +209,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ImportDialog.ShowDialog();
                     }
 
-                    // If NeedRecipientLedgerNumber contains data then AMessages will only ever contain 
+                    // If NeedRecipientLedgerNumber contains data then AMessages will only ever contain
                     // one message alerting the user that no data has been imported.
                     // We do not want to show this as we will be displaying another more detailed message.
                     if (NeedRecipientLedgerNumber.Rows.Count == 0)
@@ -223,7 +223,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         bool OfferToRunImportAgain = true;
                         bool DoNotShowMessageBoxEverytime = false;
-                        TFrmExtendedMessageBox.TResult Result  = TFrmExtendedMessageBox.TResult.embrUndefined;
+                        TFrmExtendedMessageBox.TResult Result = TFrmExtendedMessageBox.TResult.embrUndefined;
                         int count = 1;
 
                         // for each gift in which the recipient needs a Git Destination
@@ -241,15 +241,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                 }
 
                                 TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
-                            
+
                                 extendedMessageBox.ShowDialog(string.Format(
-                                            Catalog.GetString(
-                                                "Gift Import has been cancelled as the recipient '{0}' ({1}) has no Gift Destination assigned."),
-                                            Row.RecipientDescription, Row.RecipientKey) +
-                                        "\n\r\n\r\n\r" +
-                                        Catalog.GetString("Do you want to assign a Gift Destination to this partner now?"),
-                                        Catalog.GetString("Import Errors"),
-                                        CheckboxText,
+                                        Catalog.GetString(
+                                            "Gift Import has been cancelled as the recipient '{0}' ({1}) has no Gift Destination assigned."),
+                                        Row.RecipientDescription, Row.RecipientKey) +
+                                    "\n\r\n\r\n\r" +
+                                    Catalog.GetString("Do you want to assign a Gift Destination to this partner now?"),
+                                    Catalog.GetString("Import Errors"),
+                                    CheckboxText,
                                     TFrmExtendedMessageBox.TButtons.embbYesNo, TFrmExtendedMessageBox.TIcon.embiWarning);
                                 Result = extendedMessageBox.GetResult(out DoNotShowMessageBoxEverytime);
                             }
