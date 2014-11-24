@@ -1666,7 +1666,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ValidateRecipientLedgerNumber()
         {
             // if no gift destination exists for Family parter then give the user the option to open Gift Destination maintenance screen
-            if ((FPreviouslySelectedDetailRow != null)
+            if (FInEditMode
+                && (FPreviouslySelectedDetailRow != null)
                 && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
                 && (FPreviouslySelectedDetailRow.RecipientKey != 0)
                 && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT))

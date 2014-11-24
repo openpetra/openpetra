@@ -2,7 +2,7 @@ DELETE FROM s_report_template WHERE s_template_id_i=9;
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
 VALUES(9,'Recipient Tax Deduct Pct','OpenPetra default template','System',True,False,False,False,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="10/03/2014 15:58:13" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="11/21/2014 10:26:55" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -67,7 +67,7 @@ namespace FastReport
       <TextObject Name="Text5" Left="103.95" Width="283.5" Height="18.9" Text="Recipient Name" Font="Arial, 10pt, style=Bold, Italic"/>
       <TextObject Name="Text63" Width="103.95" Height="18.9" Text="Recipient Key" Font="Arial, 10pt, style=Bold, Italic"/>
     </PageHeaderBand>
-    <GroupHeaderBand Name="GroupHeader2" Top="121.4" Width="718.2" Condition="[RecipientTaxDeductPct.p_percentage_tax_deductible_n]">
+    <GroupHeaderBand Name="GroupHeader2" Top="121.4" Width="718.2" Condition="[RecipientTaxDeductPct.p_partner_short_name_c]">
       <DataBand Name="Transaction" Top="125.4" Width="718.2" Height="28.35" CanGrow="true" KeepChild="true" DataSource="RecipientTaxDeductPct" KeepDetail="true">
         <TextObject Name="Text2" Width="103.95" Height="18.9" Text="[RecipientTaxDeductPct.p_partner_key_n]" Format="Custom" Format.Format="0000000000"/>
         <TextObject Name="Text3" Left="103.95" Width="283.5" Height="18.9" CanGrow="true" Text="[RecipientTaxDeductPct.p_partner_short_name_c]"/>

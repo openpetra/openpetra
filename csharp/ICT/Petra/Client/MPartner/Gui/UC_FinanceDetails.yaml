@@ -107,6 +107,7 @@ RootNode:
             List: FrequencyList
             Width: 105
             AllowDbNull: true
+            NullValueDesciption: No receipts
         chkReceiptEachGift:
             Label: Printed Receipt for Each Gift
         chkAnonymousDonor:
