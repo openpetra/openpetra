@@ -39,7 +39,6 @@ using Ict.Petra.Server.MFinance.GL.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.Common
 {
-
     /// <summary>
     /// provides methods for posting a batch
     /// </summary>
@@ -1073,7 +1072,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns>true</returns>
         private static bool SubmitChanges(GLPostingTDS AMainDS)
         {
-            TLogging.LogAtLevel(POSTING_LOGLEVEL,"Posting: SubmitChanges...");
+            TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: SubmitChanges...");
 
             GLPostingTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true));
 
@@ -1331,11 +1330,12 @@ namespace Ict.Petra.Server.MFinance.Common
             // Generate posting report (on the client!)
             foreach (Int32 BatchNumber in ABatchNumbers)
             {
-                String[] Params = {
+                String[] Params =
+                {
                     "param_ledger_number_i=" + ALedgerNumber,
                     "param_batch_number_i=" + BatchNumber,
-                    "param_ledger_name=\""+ LedgerName + "\""
-                                  };
+                    "param_ledger_name=\"" + LedgerName + "\""
+                };
                 String ParamStr = String.Join(",", Params);
                 PrintReportOnClientDelegate("Batch Posting Register", ParamStr);
             }

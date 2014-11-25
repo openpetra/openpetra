@@ -3578,6 +3578,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         private static Int64 GetRecipientFundNumberInner(GiftBatchTDS AMainDS, Int64 APartnerKey, DateTime? AGiftDate = null)
         {
             TDBTransaction Transaction = null;
+
             if (APartnerKey == 0)
             {
                 return 0;

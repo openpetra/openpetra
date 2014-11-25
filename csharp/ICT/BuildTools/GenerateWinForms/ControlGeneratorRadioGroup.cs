@@ -192,8 +192,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 if (TXMLParser.GetChild(curNode, "OptionalValues") != null)
                 {
-                    return !TYml2Xml.HasAttribute(curNode,"BorderVisible")
-                        || TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() != "false";
+                    return !TYml2Xml.HasAttribute(curNode, "BorderVisible")
+                           || TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() != "false";
                 }
             }
 
@@ -304,8 +304,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (TXMLParser.GetChild(curNode, "Controls") == null)
                 {
-                    return TYml2Xml.HasAttribute(curNode, "BorderVisible") 
-                        && TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() == "false";
+                    return TYml2Xml.HasAttribute(curNode, "BorderVisible")
+                           && TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() == "false";
                 }
             }
 

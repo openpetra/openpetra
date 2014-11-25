@@ -239,14 +239,15 @@ namespace Ict.Petra.Client.MReporting.Gui
             set
             {
                 FDelegateViewReportOverride = value;
-/*
-                ToolStripItem tbbItm = ((ToolStripItem)((ToolStrip)FWinForm.Controls["tbrMain"]).Items["tbbEditTemplate"]);
 
-                if (tbbItm != null)
-                {
-                    tbbItm.Visible = true;
-                }
-*/
+/*
+ *              ToolStripItem tbbItm = ((ToolStripItem)((ToolStrip)FWinForm.Controls["tbrMain"]).Items["tbbEditTemplate"]);
+ *
+ *              if (tbbItm != null)
+ *              {
+ *                  tbbItm.Visible = true;
+ *              }
+ */
                 ToolStripItem mniItm =
                     ((ToolStripMenuItem)((MenuStrip)FWinForm.Controls["mnuMain"]).Items["mniFile"]).DropDownItems["mniEditTemplate"];
 
@@ -631,16 +632,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             FormCursor = FWinForm.Cursor;
             TLogging.SetStatusBarProcedure(WriteToStatusBar);
 
-            if (DoEditTemplate && FDelegateViewReportOverride != null)
+            if (DoEditTemplate && (FDelegateViewReportOverride != null))
             {
                 ((IFrmReporting)FTheForm).EnableBusy(true);
                 FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);
                 FGenerateReportThread.SetApartmentState(ApartmentState.STA);
                 FGenerateReportThread.Start(FDelegateViewReportOverride);
-
             }
-            else
-            if (FDelegateGenerateReportOverride != null)
+            else if (FDelegateGenerateReportOverride != null)
             {
                 ((IFrmReporting)FTheForm).EnableBusy(true);
                 FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);

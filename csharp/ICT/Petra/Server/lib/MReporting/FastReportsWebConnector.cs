@@ -175,10 +175,10 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// <param name="ReportName"></param>
         /// <param name="Params">a CSV list of param_name=value</param>
         /// <returns></returns>
-        public static Int32 GenerateReportOnClient (String ReportName, String Params)
+        public static Int32 GenerateReportOnClient(String ReportName, String Params)
         {
             return Ict.Common.Remoting.Server.DomainManagerBase.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_REPORT, ReportName, Params,
-                null,null,null,1);
+                null, null, null, 1);
         }
     }
 }

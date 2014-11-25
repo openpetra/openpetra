@@ -118,7 +118,9 @@ namespace Ict.Petra.Server.MFinance.Common
             String ReturnValue = "";
             TDBTransaction ReadTransaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
                 delegate
                 {
                     String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
@@ -133,7 +135,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
             return ReturnValue;
         }
-
 
         /// <summary>
         /// Property to read the value of the Revaluation account

@@ -621,24 +621,26 @@ namespace Ict.Petra.Client.MReporting.Gui
         } // AutoEmailReports
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ReportName"></param>
         /// <param name="paramStr"></param>
-        public static void PrintReportNoUi (String ReportName, String paramStr)
+        public static void PrintReportNoUi(String ReportName, String paramStr)
         {
             String[] Params = paramStr.Split(',');
             Int32 LedgerNumber = -1;
             Int32 BatchNumber = -1;
+
 /*
-            String Msg = ReportName + "\n";
-            foreach (String param in Params)
-            {
-                Msg += (param + "\n");
-            }
-            MessageBox.Show(Msg, "FastReportWrapper.PrintReportNoUi");
-*/
+ *          String Msg = ReportName + "\n";
+ *          foreach (String param in Params)
+ *          {
+ *              Msg += (param + "\n");
+ *          }
+ *          MessageBox.Show(Msg, "FastReportWrapper.PrintReportNoUi");
+ */
             FastReportsWrapper ReportingEngine = new FastReportsWrapper(ReportName);
+
             if (!ReportingEngine.LoadedOK)
             {
                 ReportingEngine.ShowErrorPopup();
@@ -652,6 +654,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             foreach (String param in Params)
             {
                 String[] term = param.Split('=');
+
                 if (term.Length > 1)
                 {
                     if (term[1][0] == '"') // This is a string
@@ -661,6 +664,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     else // This is a number - Int32 assumed.
                     {
                         Int32 IntTerm;
+
                         if (Int32.TryParse(term[1], out IntTerm))
                         {
                             Calc.AddParameter(term[0], IntTerm);
@@ -669,16 +673,17 @@ namespace Ict.Petra.Client.MReporting.Gui
                             // As I'm adding these values, I'll keep a note of any that may be useful later..
                             switch (term[0])
                             {
-                                case "param_ledger_number_i" :
-                                    {
-                                        LedgerNumber = IntTerm;
-                                        break;
-                                    }
+                                case "param_ledger_number_i":
+                                {
+                                    LedgerNumber = IntTerm;
+                                    break;
+                                }
+
                                 case "param_batch_number_i":
-                                    {
-                                        BatchNumber = IntTerm;
-                                        break;
-                                    }
+                                {
+                                    BatchNumber = IntTerm;
+                                    break;
+                                }
                             }
                         }
                         else
@@ -698,21 +703,23 @@ namespace Ict.Petra.Client.MReporting.Gui
             switch (ReportName)
             {
                 case "Batch Posting Register":
+                {
+                    if ((LedgerNumber != -1) && (BatchNumber != -1))
                     {
-                        if (LedgerNumber != -1 && BatchNumber != -1)
-                        {
-                            GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(LedgerNumber, BatchNumber);
-                            ReportingEngine.RegisterData(BatchTDS.ABatch, "ABatch");
-                            ReportingEngine.RegisterData(BatchTDS.AJournal, "AJournal");
-                            ReportingEngine.RegisterData(BatchTDS.ATransaction, "ATransaction");
-                        }
-                        else
-                        {
-                            MessageBox.Show("Error: Can't get data for Batch Posting Register", "FastReportWrapper.PrintReportNoUi");
-                        }
-                        break;
+                        GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(LedgerNumber, BatchNumber);
+                        ReportingEngine.RegisterData(BatchTDS.ABatch, "ABatch");
+                        ReportingEngine.RegisterData(BatchTDS.AJournal, "AJournal");
+                        ReportingEngine.RegisterData(BatchTDS.ATransaction, "ATransaction");
                     }
+                    else
+                    {
+                        MessageBox.Show("Error: Can't get data for Batch Posting Register", "FastReportWrapper.PrintReportNoUi");
+                    }
+
+                    break;
+                }
             } // switch
+
             ReportingEngine.GenerateReport(Calc);
         } // PrintReportNoUi
     }

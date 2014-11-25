@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Print or reprint the posting report for this batch.
         /// </summary>
-        public static void PrintPostingRegister (Int32 ALedgerNumber, Int32 ABatchNumber, Boolean AEditTemplate = false)
+        public static void PrintPostingRegister(Int32 ALedgerNumber, Int32 ABatchNumber, Boolean AEditTemplate = false)
         {
             FastReportsWrapper ReportingEngine = new FastReportsWrapper("Batch Posting Register");
 
@@ -206,7 +206,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ReportingEngine.GenerateReport(Calc);
             }
-
         }
 
         /// <summary>

@@ -52,75 +52,80 @@ namespace Ict.Petra.Client.App.Core
                 {
                     // MessageBox.Show('Executing Client Task #' + FClientTaskDataRow['TaskID'].ToString + ' in Thread.');
                     case SharedConstants.CLIENTTASKGROUP_USERMESSAGE:
-                        {
-                            // MessageBox.Show(CLIENTTASKGROUP_USERMESSAGE + ' (Client Task #' + FClientTaskDataRow['TaskID'].ToString + '): ' + FClientTaskDataRow['TaskCode'].ToString, 'Client #' + UClientID.ToString + ' received a ClientTask.');
-                            MessageBox.Show(FClientTaskDataRow["TaskCode"].ToString(), "OpenPetra Message");
-                            break;
-                        }
+                    {
+                        // MessageBox.Show(CLIENTTASKGROUP_USERMESSAGE + ' (Client Task #' + FClientTaskDataRow['TaskID'].ToString + '): ' + FClientTaskDataRow['TaskCode'].ToString, 'Client #' + UClientID.ToString + ' received a ClientTask.');
+                        MessageBox.Show(FClientTaskDataRow["TaskCode"].ToString(), "OpenPetra Message");
+                        break;
+                    }
 
                     case SharedConstants.CLIENTTASKGROUP_CACHEREFRESH:
+                    {
+                        if (FClientTaskDataRow["TaskParameter1"].ToString() == "")
                         {
-                            if (FClientTaskDataRow["TaskParameter1"].ToString() == "")
-                            {
-                                TDataCache.ReloadCacheTable(FClientTaskDataRow["TaskCode"].ToString());
-                            }
-                            else
-                            {
-                                TDataCache.ReloadCacheTable(FClientTaskDataRow["TaskCode"].ToString(), FClientTaskDataRow["TaskParameter1"]);
-                            }
-                            break;
+                            TDataCache.ReloadCacheTable(FClientTaskDataRow["TaskCode"].ToString());
                         }
+                        else
+                        {
+                            TDataCache.ReloadCacheTable(FClientTaskDataRow["TaskCode"].ToString(), FClientTaskDataRow["TaskParameter1"]);
+                        }
+
+                        break;
+                    }
 
                     case SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH:
+                    {
+                        if (FClientTaskDataRow["TaskCode"].ToString() == "All")
                         {
-                            if (FClientTaskDataRow["TaskCode"].ToString() == "All")
-                            {
-                                // MessageBox.Show('FClientTaskDataRow[''TaskCode''] = All!');
-                                TUserDefaults.ReloadCachedUserDefaults();
-                                TUserDefaults.SaveChangedUserDefaults();
-                            }
-                            else
-                            {
-                                // MessageBox.Show('FClientTaskDataRow[''TaskCode''] <> All, but ''' + FClientTaskDataRow['TaskCode'].ToString + '''');
-                                // MessageBox.Show('FClientTaskDataRow[''TaskParameter1'']: ' + FClientTaskDataRow['TaskParameter1'].ToString + "\r\n" +
-                                // 'FClientTaskDataRow[''TaskParameter2'']: ' + FClientTaskDataRow['TaskParameter2'].ToString + "\r\n" +
-                                // 'FClientTaskDataRow[''TaskParameter3'']: ' + FClientTaskDataRow['TaskParameter3'].ToString);
-                                TUserDefaults.RefreshCachedUserDefault(
-                                    FClientTaskDataRow["TaskParameter1"].ToString(), FClientTaskDataRow["TaskParameter2"].ToString(),
-                                    FClientTaskDataRow["TaskParameter3"].ToString());
-                            }
-                            break;
+                            // MessageBox.Show('FClientTaskDataRow[''TaskCode''] = All!');
+                            TUserDefaults.ReloadCachedUserDefaults();
+                            TUserDefaults.SaveChangedUserDefaults();
                         }
+                        else
+                        {
+                            // MessageBox.Show('FClientTaskDataRow[''TaskCode''] <> All, but ''' + FClientTaskDataRow['TaskCode'].ToString + '''');
+                            // MessageBox.Show('FClientTaskDataRow[''TaskParameter1'']: ' + FClientTaskDataRow['TaskParameter1'].ToString + "\r\n" +
+                            // 'FClientTaskDataRow[''TaskParameter2'']: ' + FClientTaskDataRow['TaskParameter2'].ToString + "\r\n" +
+                            // 'FClientTaskDataRow[''TaskParameter3'']: ' + FClientTaskDataRow['TaskParameter3'].ToString);
+                            TUserDefaults.RefreshCachedUserDefault(
+                                FClientTaskDataRow["TaskParameter1"].ToString(), FClientTaskDataRow["TaskParameter2"].ToString(),
+                                FClientTaskDataRow["TaskParameter3"].ToString());
+                        }
+
+                        break;
+                    }
 
                     case SharedConstants.CLIENTTASKGROUP_USERINFOREFRESH:
-                        {
-                            TUserInfo.ReloadCachedUserInfo();
-                            break;
-                        }
+                    {
+                        TUserInfo.ReloadCachedUserInfo();
+                        break;
+                    }
 
                     case SharedConstants.CLIENTTASKGROUP_DISCONNECT:
+                    {
+                        if (FClientTaskDataRow["TaskCode"].ToString() == "IMMEDIATE")
                         {
-                            if (FClientTaskDataRow["TaskCode"].ToString() == "IMMEDIATE")
-                            {
-                                TLogging.Log("Client disconnected due to server disconnection request.");
+                            TLogging.Log("Client disconnected due to server disconnection request.");
 
-                                PetraClientShutdown.Shutdown.SaveUserDefaultsAndDisconnectAndStop();
-                            }
-
-                            if (FClientTaskDataRow["TaskCode"].ToString() == "IMMEDIATE-HARDEXIT")
-                            {
-                                TLogging.Log("Application stopped due to server disconnection request (without saving of User Defaults or disconnection).");
-
-                                // APPLICATION STOPS HERE !!!
-                                Environment.Exit(0);
-                            }
-                            break;
+                            PetraClientShutdown.Shutdown.SaveUserDefaultsAndDisconnectAndStop();
                         }
+
+                        if (FClientTaskDataRow["TaskCode"].ToString() == "IMMEDIATE-HARDEXIT")
+                        {
+                            TLogging.Log(
+                                "Application stopped due to server disconnection request (without saving of User Defaults or disconnection).");
+
+                            // APPLICATION STOPS HERE !!!
+                            Environment.Exit(0);
+                        }
+
+                        break;
+                    }
+
                     case SharedConstants.CLIENTTASKGROUP_REPORT:
-                        {
-                            FastReportsPrintReportNoUiDelegate(FClientTaskDataRow["TaskCode"].ToString(), FClientTaskDataRow["TaskParameter1"].ToString());
-                            break;
-                        }
+                    {
+                        FastReportsPrintReportNoUiDelegate(FClientTaskDataRow["TaskCode"].ToString(), FClientTaskDataRow["TaskParameter1"].ToString());
+                        break;
+                    }
                 }
             }
             catch (Exception Exp)
