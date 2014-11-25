@@ -915,7 +915,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (!ARow.IsMethodOfPaymentCodeNull() && (AMethodOfPaymentRef != null))
             {
-                AMethodOfGivingRow foundRow = (AMethodOfGivingRow)AMethodOfPaymentRef.Rows.Find(ARow.MethodOfPaymentCode);
+                AMethodOfPaymentRow foundRow = (AMethodOfPaymentRow)AMethodOfPaymentRef.Rows.Find(ARow.MethodOfPaymentCode);
 
                 if ((foundRow == null) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                         AContext,
