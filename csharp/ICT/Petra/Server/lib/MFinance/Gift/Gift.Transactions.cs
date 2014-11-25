@@ -706,6 +706,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber, ref Transaction);
                 });
+
             return MainDS;
         }
 
@@ -2822,8 +2823,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 Catalog.GetString("Posting gift batches"),
                                 ABatchNumbers.IndexOf(BatchNumber) * 3);
 
-                            GiftBatchTDS MainDS =
-                                PrepareGiftBatchForPosting(ALedgerNumber, BatchNumber, ref Transaction, out SingleVerificationResultCollection);
+                            GiftBatchTDS MainDS = PrepareGiftBatchForPosting(ALedgerNumber,
+                                BatchNumber,
+                                ref Transaction,
+                                out SingleVerificationResultCollection);
 
                             VerificationResult.AddCollection(SingleVerificationResultCollection);
 
@@ -2886,12 +2889,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         {
                             VerificationResult.AddCollection(SingleVerificationResultCollection);
                             // Transaction will be rolled back, no open GL batch flying around
-                            return;
+                            SubmissionOK = false;
                         }
                         else
                         {
                             VerificationResult.AddCollection(SingleVerificationResultCollection);
-
                             SubmissionOK = true;
                         }
                     }
