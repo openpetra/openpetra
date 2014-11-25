@@ -1996,6 +1996,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
                 }
+
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    UpdateTaxDeductibilityAmounts(this, null);
+                }
             }
             else
             {
@@ -2019,11 +2024,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //Update all transactions
                 RecalcTransactionsCurrencyAmounts(CurrentBatchRow, IntlToBaseCurrencyExchRate, IsTransactionInIntlCurrency);
-            }
-
-            if (FTaxDeductiblePercentageEnabled)
-            {
-                UpdateTaxDeductibilityAmounts(this, null);
             }
         }
 
@@ -2064,6 +2064,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     gdr.GiftAmountIntl = gdr.GiftTransactionAmount;
+                }
+
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref gdr);
                 }
             }
         }
