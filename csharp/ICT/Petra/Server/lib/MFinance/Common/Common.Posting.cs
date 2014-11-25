@@ -132,50 +132,71 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
         /// <returns>false if batch does not exist at all</returns>
-        public static bool LoadGLBatchData(out GLBatchTDS AGLBatchDS,
-            Int32 ALedgerNumber,
+        public static GLBatchTDS LoadGLBatchData(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
         {
-            bool RetVal = false;
+            GLBatchTDS GLBatchDS = new GLBatchTDS();
 
             AVerifications = new TVerificationResultCollection();
             TVerificationResultCollection Verifications = AVerifications;
 
-            AGLBatchDS = new GLBatchTDS();
-
             TDBTransaction Transaction = null;
-            GLBatchTDS GLBatchDS = AGLBatchDS;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
-                    if (!ABatchAccess.Exists(ALedgerNumber, ABatchNumber, Transaction))
-                    {
-                        Verifications.Add(new TVerificationResult(
-                                String.Format(Catalog.GetString("Cannot access Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                Catalog.GetString("Batch not found."),
-                                TResultSeverity.Resv_Critical));
-                    }
-                    else
-                    {
-                        ALedgerAccess.LoadByPrimaryKey(GLBatchDS, ALedgerNumber, Transaction);
-
-                        ABatchAccess.LoadByPrimaryKey(GLBatchDS, ALedgerNumber, ABatchNumber, Transaction);
-
-                        AJournalAccess.LoadViaABatch(GLBatchDS, ALedgerNumber, ABatchNumber, Transaction);
-
-                        ATransactionAccess.LoadViaABatch(GLBatchDS, ALedgerNumber, ABatchNumber, Transaction);
-
-                        ATransAnalAttribAccess.LoadViaABatch(GLBatchDS, ALedgerNumber, ABatchNumber, Transaction);
-
-                        RetVal = true;
-                    }
+                    GLBatchDS = LoadGLBatchData(ALedgerNumber, ABatchNumber, ref Transaction, ref Verifications);
                 });
 
-            return RetVal;
+            AVerifications = Verifications;
+
+            return GLBatchDS;
+        }
+
+        /// <summary>
+        /// load the batch and all associated tables into the typed dataset
+        /// </summary>
+        /// <param name="AGLBatchDS"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        private static GLBatchTDS LoadGLBatchData(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            ref TDBTransaction Transaction,
+            ref TVerificationResultCollection AVerifications)
+        {
+            GLBatchTDS GLBatchDS = new GLBatchTDS();
+
+            try
+            {
+                if (!ABatchAccess.Exists(ALedgerNumber, ABatchNumber, Transaction))
+                {
+                    AVerifications.Add(new TVerificationResult(
+                            String.Format(Catalog.GetString("Cannot access Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                            Catalog.GetString("Batch not found."),
+                            TResultSeverity.Resv_Critical));
+
+                    return null;
+                }
+                else
+                {
+                    ALedgerAccess.LoadByPrimaryKey(GLBatchDS, ALedgerNumber, Transaction);
+                    ABatchAccess.LoadByPrimaryKey(GLBatchDS, ALedgerNumber, ABatchNumber, Transaction);
+                    AJournalAccess.LoadViaABatch(GLBatchDS, ALedgerNumber, ABatchNumber, Transaction);
+                    ATransactionAccess.LoadViaABatch(GLBatchDS, ALedgerNumber, ABatchNumber, Transaction);
+                    ATransAnalAttribAccess.LoadViaABatch(GLBatchDS, ALedgerNumber, ABatchNumber, Transaction);
+                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log("Error in LoadGLBatchData: " + ex.Message);
+                return null;
+            }
+
+            return GLBatchDS;
         }
 
         /// <summary>
@@ -184,11 +205,9 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="APostingDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <returns>false if batch does not exist at all</returns>
-        private static bool LoadDataForPosting(out GLPostingTDS APostingDS,
-            Int32 ALedgerNumber)
+        private static GLPostingTDS LoadDataForPosting(Int32 ALedgerNumber)
         {
-            APostingDS = new GLPostingTDS();
-            GLPostingTDS PostingDS = APostingDS;
+            GLPostingTDS PostingDS = new GLPostingTDS();
 
             TDBTransaction Transaction = null;
 
@@ -216,7 +235,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     AAnalysisAttributeAccess.LoadViaALedger(PostingDS, ALedgerNumber, Transaction);
                 });
 
-            return true;
+            return PostingDS;
         }
 
         /// <summary>
@@ -1113,10 +1132,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
-                    MainDS = new GLBatchTDS();
+                    MainDS = LoadGLBatchData(ALedgerNumber, ABatchNumberToReverse, ref Transaction, ref Verifications);
 
                     // get the data from the database into the MainDS
-                    if (LoadGLBatchData(out MainDS, ALedgerNumber, ABatchNumberToReverse, out Verifications))
+                    if (MainDS != null)
                     {
                         ABatchRow NewBatchRow = MainDS.ABatch.NewRowTyped(true);
                         NewBatchRow.LedgerNumber = ALedgerNumber;
@@ -1227,6 +1246,10 @@ namespace Ict.Petra.Server.MFinance.Common
                             }
                         }
                     }
+                    else
+                    {
+                        //TODO Need to add code to handle case of no batch exists to reverse
+                    }
                 });
 
             AVerifications = Verifications;
@@ -1239,6 +1262,8 @@ namespace Ict.Petra.Server.MFinance.Common
         // If the Ledger's ProvisionalYearEndFlag is set, no further batches can be posted.
         private static Boolean CheckPostIsAllowed(Int32 ALedgerNumber, out TVerificationResultCollection AVerifications)
         {
+            //TODO consider removing this method as per comments below
+
             AVerifications = null;
 
             /*
@@ -1275,6 +1300,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             List <Int32>BatchNumbers = new List <int>();
             BatchNumbers.Add(ABatchNumber);
+
             return PostGLBatches(ALedgerNumber, BatchNumbers, out AVerifications);
         }
 
@@ -1284,63 +1310,132 @@ namespace Ict.Petra.Server.MFinance.Common
         public static bool PostGLBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
         {
             // TODO: get a lock on this ledger, no one else is allowed to change anything.
+            AVerifications = new TVerificationResultCollection();
+            //For use in transaction delegate
+            TVerificationResultCollection VerificationResult = AVerifications;
+            TVerificationResultCollection SingleVerificationResultCollection;
 
-            GLPostingTDS PostingDS;
+            //Error handling
+            string ErrorContext = "Posting a GL Batch";
+            string ErrorMessage = String.Empty;
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
 
-            if (!CheckPostIsAllowed(ALedgerNumber, out AVerifications))
-            {
-                return false;
-            }
+            //TODO consider removing below
+            //if (!CheckPostIsAllowed(ALedgerNumber, out AVerifications))
+            //{
+            //    return false;
+            //}
 
-            LoadDataForPosting(out PostingDS, ALedgerNumber);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
-
-            Int32 BatchPeriod = -1;
-
-            foreach (Int32 BatchNumber in ABatchNumbers)
-            {
-                if (!PostGLBatchPrepare(ALedgerNumber, BatchNumber, out AVerifications, PostingDS, PostingLevel, ref BatchPeriod))
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    return false;
-                }
-            }
+                    try
+                    {
+                        SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
 
-            SummarizeInternal(ALedgerNumber, PostingDS, PostingLevel, BatchPeriod, true);
+                        Int32 BatchPeriod = -1;
 
-            PostingDS.ThrowAwayAfterSubmitChanges = true;
+                        foreach (Int32 BatchNumber in ABatchNumbers)
+                        {
+                            GLBatchTDS MainDS = null;
+                            GLPostingTDS PostingDS = PrepareGLBatchForPosting(out MainDS,
+                                ALedgerNumber,
+                                BatchNumber,
+                                ref Transaction,
+                                out SingleVerificationResultCollection,
+                                PostingLevel,
+                                ref BatchPeriod);
 
-            bool result = SubmitChanges(PostingDS);
+                            VerificationResult.AddCollection(SingleVerificationResultCollection);
+
+                            if ((MainDS == null) || (PostingDS == null))
+                            {
+                                return;
+                            }
+
+                            GLBatchTDSAccess.SubmitChanges(MainDS);
+
+                            SummarizeInternal(ALedgerNumber, PostingDS, PostingLevel, BatchPeriod, true);
+
+                            PostingDS.ThrowAwayAfterSubmitChanges = true;
+
+                            if (!SubmitChanges(PostingDS))
+                            {
+                                VerificationResult.AddCollection(SingleVerificationResultCollection);
+                                // Transaction will be rolled back, no open GL batch flying around
+                                SubmissionOK = false;
+                                break;
+                            }
+                            else
+                            {
+                                VerificationResult.AddCollection(SingleVerificationResultCollection);
+                                SubmissionOK = true;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorMessage =
+                            String.Format(Catalog.GetString("Unknown error while posting GL batch." +
+                                    Environment.NewLine + Environment.NewLine + ex.ToString()),
+                                ALedgerNumber);
+                        ErrorType = TResultSeverity.Resv_Critical;
+
+                        VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+
+                        throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
+                    }
+                });
+
+            AVerifications = VerificationResult;
 
             // TODO: release the lock
 
-            if (AVerifications == null)
-            {
-                AVerifications = new TVerificationResultCollection();
-            }
-
-            return result;
+            return SubmissionOK;
         }
 
         /// <summary>
         /// Only used for precalculating the new balances before the user actually posts the batch
         /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="ATransaction"></param>
+        /// <param name="AVerifications"></param>
+        /// <param name="APostingDS"></param>
+        /// <param name="ABatchPeriod"></param>
+        /// <returns></returns>
         public static bool TestPostGLBatch(Int32 ALedgerNumber,
             Int32 ABatchNumber,
+            TDBTransaction ATransaction,
             out TVerificationResultCollection AVerifications,
             out GLPostingTDS APostingDS,
             ref Int32 ABatchPeriod)
         {
-            if (!CheckPostIsAllowed(ALedgerNumber, out AVerifications))
-            {
-                APostingDS = null;
-                return false;
-            }
+            //TODO consider removing below
+            //if (!CheckPostIsAllowed(ALedgerNumber, out AVerifications))
+            //{
+            //    APostingDS = null;
+            //    return false;
+            //}
+
+            GLBatchTDS MainDS = new GLBatchTDS();
 
             SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
-            LoadDataForPosting(out APostingDS, ALedgerNumber);
 
-            if (PostGLBatchPrepare(ALedgerNumber, ABatchNumber, out AVerifications, APostingDS, PostingLevel, ref ABatchPeriod))
+            APostingDS = PrepareGLBatchForPosting(out MainDS,
+                ALedgerNumber,
+                ABatchNumber,
+                ref ATransaction,
+                out AVerifications,
+                PostingLevel,
+                ref ABatchPeriod);
+
+            if ((MainDS != null) && (APostingDS != null))
             {
                 SummarizeInternal(ALedgerNumber, APostingDS, PostingLevel, ABatchPeriod, false);
                 return true;
@@ -1360,10 +1455,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="APostingLevel">collected new balances</param>
         /// <param name="ABatchPeriod">make sure that all batches that are posted together, are from the same period</param>
         /// <returns></returns>
-        private static bool PostGLBatchPrepare(Int32 ALedgerNumber,
+        private static GLPostingTDS PrepareGLBatchForPosting(out GLBatchTDS AMainDS,
+            Int32 ALedgerNumber,
             Int32 ABatchNumber,
+            ref TDBTransaction ATransaction,
             out TVerificationResultCollection AVerifications,
-            GLPostingTDS APostingDS,
             SortedList <string, TAmount>APostingLevel,
             ref Int32 ABatchPeriod)
         {
@@ -1372,18 +1468,40 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.Log("Posting: LoadData...");
             }
 
-            // get the data from the database into the MainDS
-            GLBatchTDS BatchDS;
+            AVerifications = new TVerificationResultCollection();
 
-            if (!LoadGLBatchData(out BatchDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            GLPostingTDS PostingDS = LoadDataForPosting(ALedgerNumber);
+            // get the data from the database into the MainDS
+            AMainDS = LoadGLBatchData(ALedgerNumber, ABatchNumber, ref ATransaction, ref AVerifications);
+
+            if ((AMainDS.ABatch == null) || (AMainDS.ABatch.Rows.Count < 1))
             {
-                return false;
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting GL Batch",
+                        String.Format("Unable to Load GLBatchData ({0}, {1})",
+                            ALedgerNumber,
+                            ABatchNumber),
+                        TResultSeverity.Resv_Critical));
+                return null;
+            }
+            else if (AMainDS.ABatch[0].BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting GL Batch",
+                        String.Format("Cannot post batch ({0}, {1}) with status: {2}",
+                            ALedgerNumber,
+                            ABatchNumber,
+                            AMainDS.ABatch[0].BatchStatus),
+                        TResultSeverity.Resv_Critical));
+                return null;
             }
 
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Validation...");
 
             ABatchRow BatchToPost =
-                ((ABatchRow)BatchDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber }));
+                ((ABatchRow)AMainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber }));
 
             if (ABatchPeriod == -1)
             {
@@ -1391,42 +1509,39 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             else if (ABatchPeriod != BatchToPost.BatchPeriod)
             {
-                AVerifications = new TVerificationResultCollection();
                 AVerifications.Add(new TVerificationResult(
                         Catalog.GetString("Cannot post Batches from different periods at once!"),
                         Catalog.GetString("Batches from more than one period."),
                         TResultSeverity.Resv_Critical));
-                return false;
+                return null;
             }
 
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
-            if (!ValidateBatchAndTransactions(ref BatchDS, APostingDS, ALedgerNumber, BatchToPost, out AVerifications))
+            if (!ValidateBatchAndTransactions(ref AMainDS, PostingDS, ALedgerNumber, BatchToPost, out AVerifications))
             {
-                return false;
+                return null;
             }
 
-            if (!APostingDS.ALedger[0].ProvisionalYearEndFlag) // During YearEnd Processing, I don't require all the attributes correctly fulfiled.
+            if (!PostingDS.ALedger[0].ProvisionalYearEndFlag) // During YearEnd Processing, I don't require all the attributes correctly fulfiled.
             {
-                if (!ValidateAnalysisAttributes(ref BatchDS, APostingDS, ALedgerNumber, ABatchNumber, out AVerifications))
+                if (!ValidateAnalysisAttributes(ref AMainDS, PostingDS, ALedgerNumber, ABatchNumber, out AVerifications))
                 {
-                    return false;
+                    return null;
                 }
             }
 
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Load GLM Data...");
 
             // TODO
-            LoadGLMData(ref APostingDS, ALedgerNumber, BatchToPost);
+            LoadGLMData(ref PostingDS, ALedgerNumber, BatchToPost);
 
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Mark as posted and collect data...");
 
             // post each journal, each transaction; add sums for costcentre/account combinations
-            MarkAsPostedAndCollectData(BatchDS, APostingDS, APostingLevel, BatchToPost);
-
-            GLBatchTDSAccess.SubmitChanges(BatchDS);
+            MarkAsPostedAndCollectData(AMainDS, PostingDS, APostingLevel, BatchToPost);
 
             // if posting goes wrong later, the transation will be rolled back
-            return true;
+            return PostingDS;
         }
 
         /// <summary>
@@ -1444,15 +1559,18 @@ namespace Ict.Petra.Server.MFinance.Common
             bool RetVal = false;
             string BatchStatus = string.Empty;
 
+            AVerifications = new TVerificationResultCollection();
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
+
             string ErrorMessage = string.Empty;
             string ErrorContext = "Check if a Batch can be cancelled";
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
 
-            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
+            AMainDS = LoadGLBatchData(ALedgerNumber, ABatchNumber, out VerificationResult);
 
             // get the data from the database into the MainDS
-            if (!LoadGLBatchData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (AMainDS == null)
             {
                 RetVal = false;
             }
