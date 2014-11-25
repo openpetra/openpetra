@@ -127,11 +127,10 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// load the batch and all associated tables into the typed dataset
         /// </summary>
-        /// <param name="AGLBatchDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
-        /// <returns>false if batch does not exist at all</returns>
+        /// <returns></returns>
         public static GLBatchTDS LoadGLBatchData(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
@@ -159,10 +158,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// load the batch and all associated tables into the typed dataset
         /// </summary>
-        /// <param name="AGLBatchDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
+        /// <param name="Transaction"></param>
         /// <param name="AVerifications"></param>
+        /// <returns></returns>
         private static GLBatchTDS LoadGLBatchData(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             ref TDBTransaction Transaction,
@@ -202,9 +202,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// load the tables that are needed for posting
         /// </summary>
-        /// <param name="APostingDS"></param>
         /// <param name="ALedgerNumber"></param>
-        /// <returns>false if batch does not exist at all</returns>
+        /// <returns></returns>
         private static GLPostingTDS LoadDataForPosting(Int32 ALedgerNumber)
         {
             GLPostingTDS PostingDS = new GLPostingTDS();
@@ -1448,12 +1447,13 @@ namespace Ict.Petra.Server.MFinance.Common
         /// Prepare posting a GL Batch, without saving to database yet.
         /// This is called by the actual PostGLBatch routine, and also by the routine for testing what would happen to the balances.
         /// </summary>
+        /// <param name="AMainDS"></param>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber">Batch to post</param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="ATransaction"></param>
         /// <param name="AVerifications"></param>
-        /// <param name="APostingDS">account, costcentre, hierarchy tables</param>
-        /// <param name="APostingLevel">collected new balances</param>
-        /// <param name="ABatchPeriod">make sure that all batches that are posted together, are from the same period</param>
+        /// <param name="APostingLevel"></param>
+        /// <param name="ABatchPeriod"></param>
         /// <returns></returns>
         private static GLPostingTDS PrepareGLBatchForPosting(out GLBatchTDS AMainDS,
             Int32 ALedgerNumber,
