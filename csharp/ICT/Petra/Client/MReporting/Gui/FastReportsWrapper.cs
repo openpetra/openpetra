@@ -37,6 +37,7 @@ using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
 using System.IO;
 using Ict.Common.IO;
+using Ict.Petra.Shared.MFinance.GL.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -617,6 +618,102 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             MessageBox.Show(SendReport, Catalog.GetString("Auto-email to linked partners"));
             FPetraUtilsObject.WriteToStatusBar("");
-        }
+        } // AutoEmailReports
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ReportName"></param>
+        /// <param name="paramStr"></param>
+        public static void PrintReportNoUi (String ReportName, String paramStr)
+        {
+            String[] Params = paramStr.Split(',');
+            Int32 LedgerNumber = -1;
+            Int32 BatchNumber = -1;
+/*
+            String Msg = ReportName + "\n";
+            foreach (String param in Params)
+            {
+                Msg += (param + "\n");
+            }
+            MessageBox.Show(Msg, "FastReportWrapper.PrintReportNoUi");
+*/
+            FastReportsWrapper ReportingEngine = new FastReportsWrapper(ReportName);
+            if (!ReportingEngine.LoadedOK)
+            {
+                ReportingEngine.ShowErrorPopup();
+                return;
+            }
+
+            TRptCalculator Calc = new TRptCalculator();
+
+            //
+            // Copy paramters to report:
+            foreach (String param in Params)
+            {
+                String[] term = param.Split('=');
+                if (term.Length > 1)
+                {
+                    if (term[1][0] == '"') // This is a string
+                    {
+                        Calc.AddStringParameter(term[0], term[1].Substring(1, term[1].Length - 2));
+                    }
+                    else // This is a number - Int32 assumed.
+                    {
+                        Int32 IntTerm;
+                        if (Int32.TryParse(term[1], out IntTerm))
+                        {
+                            Calc.AddParameter(term[0], IntTerm);
+
+                            //
+                            // As I'm adding these values, I'll keep a note of any that may be useful later..
+                            switch (term[0])
+                            {
+                                case "param_ledger_number_i" :
+                                    {
+                                        LedgerNumber = IntTerm;
+                                        break;
+                                    }
+                                case "param_batch_number_i":
+                                    {
+                                        BatchNumber = IntTerm;
+                                        break;
+                                    }
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Error: Parameter not recognised: " + param, "FastReportWrapper.PrintReportNoUi");
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Error: malformed Parameter: " + param, "FastReportWrapper.PrintReportNoUi");
+                }
+            } // foreach
+
+            //
+            // Get Data for report:
+            switch (ReportName)
+            {
+                case "Batch Posting Register":
+                    {
+                        if (LedgerNumber != -1 && BatchNumber != -1)
+                        {
+                            GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(LedgerNumber, BatchNumber);
+                            ReportingEngine.RegisterData(BatchTDS.ABatch, "ABatch");
+                            ReportingEngine.RegisterData(BatchTDS.AJournal, "AJournal");
+                            ReportingEngine.RegisterData(BatchTDS.ATransaction, "ATransaction");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Error: Can't get data for Batch Posting Register", "FastReportWrapper.PrintReportNoUi");
+                        }
+                        break;
+                    }
+            } // switch
+            ReportingEngine.GenerateReport(Calc);
+        } // PrintReportNoUi
     }
 }

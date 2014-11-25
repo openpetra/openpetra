@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             ReportingEngine.RegisterData(FMainDS.AMotivationDetail, "MotivationDetail");
             TRptCalculator Calc = new TRptCalculator();
             ALedgerRow LedgerRow = FMainDS.ALedger[0];
-            Calc.AddParameter("param_ledger_nunmber", LedgerRow.LedgerNumber);
+            Calc.AddParameter("param_ledger_number_i", LedgerRow.LedgerNumber);
             Calc.AddStringParameter("param_ledger_name", LedgerRow.LedgerName);
 
             if (ModifierKeys.HasFlag(Keys.Control))

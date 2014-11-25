@@ -111,6 +111,31 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
+        /// Get the name for this Ledger
+        /// </summary>
+        public static string GetLedgerName(int ledgernumber)
+        {
+            String ReturnValue = "";
+            TDBTransaction ReadTransaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
+                {
+                    String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
+                                    ledgernumber + " AND PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
+                    DataTable tab = DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
+
+                    if (tab.Rows.Count > 0)
+                    {
+                        ReturnValue = Convert.ToString(tab.Rows[0]["p_partner_short_name_c"]);
+                    }
+                });
+
+            return ReturnValue;
+        }
+
+
+        /// <summary>
         /// Property to read the value of the Revaluation account
         /// </summary>
         public string RevaluationAccount

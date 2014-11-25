@@ -2261,9 +2261,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DBAccess.GDBAccessObj.Select(AGiftDS, getRecipientUnitSQL, AGiftDS.RecipientUnit.TableName,
                 ATransaction,
                 parameters.ToArray(), 0, 0);
-
-            UmUnitStructureAccess.LoadAll(AGiftDS, ATransaction);
-            AGiftDS.UmUnitStructure.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
         }
 
         /// <summary>
@@ -3560,10 +3557,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         MainDS.RecipientFamily.Merge(PFamilyAccess.LoadByPrimaryKey(APartnerKey, Transaction));
                         MainDS.RecipientPerson.Merge(PPersonAccess.LoadByPrimaryKey(APartnerKey, Transaction));
                         MainDS.RecipientUnit.Merge(PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction));
-
-                        UmUnitStructureAccess.LoadAll(MainDS, Transaction);
-                        MainDS.UmUnitStructure.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
-
                         DataLoaded = true;
                     }
                     catch (Exception)
@@ -3584,6 +3577,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
         private static Int64 GetRecipientFundNumberInner(GiftBatchTDS AMainDS, Int64 APartnerKey, DateTime? AGiftDate = null)
         {
+            TDBTransaction Transaction = null;
             if (APartnerKey == 0)
             {
                 return 0;
@@ -3610,7 +3604,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 PPartnerTypeTable PPTTable = null;
 
-                TDBTransaction Transaction = null;
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
@@ -3628,12 +3621,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 return APartnerKey;
             }
 
-            //This was taken from old Petra - perhaps we should better search for unit type = D, A or F in PUnit
-            DataRowView[] rows = AMainDS.UmUnitStructure.DefaultView.FindRows(APartnerKey);
+            UmUnitStructureTable UnitStructTbl = null;
 
-            if (rows.Length > 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    UnitStructTbl = UmUnitStructureAccess.LoadViaPUnitChildUnitKey(APartnerKey, Transaction);
+                });
+
+            if (UnitStructTbl.Rows.Count > 0)
             {
-                UmUnitStructureRow structureRow = (UmUnitStructureRow)rows[0].Row;
+                UmUnitStructureRow structureRow = UnitStructTbl[0];
 
                 if (structureRow.ParentUnitKey == structureRow.ChildUnitKey)
                 {

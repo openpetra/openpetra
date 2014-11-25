@@ -39,11 +39,23 @@ using Ict.Petra.Server.MFinance.GL.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.Common
 {
+
     /// <summary>
     /// provides methods for posting a batch
     /// </summary>
     public class TGLPosting
     {
+        /// <summary>
+        ///
+        /// </summary>
+        [NoRemoting]
+        public delegate Int32 PrintReportOnClient(String ReportName, String ParamStr);
+
+        /// <summary>
+        /// This will be setup by CallForwarding, to allow me to call the FastReportsWrapper from here.
+        /// </summary>
+        public static PrintReportOnClient PrintReportOnClientDelegate;
+
         private const int POSTING_LOGLEVEL = 1;
 
         /// <summary>
@@ -1061,17 +1073,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns>true</returns>
         private static bool SubmitChanges(GLPostingTDS AMainDS)
         {
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: SubmitChanges...");
-            }
+            TLogging.LogAtLevel(POSTING_LOGLEVEL,"Posting: SubmitChanges...");
 
             GLPostingTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true));
 
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: Finished...");
-            }
+            TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Finished...");
 
             return true;
         }
@@ -1311,7 +1317,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             PostingDS.ThrowAwayAfterSubmitChanges = true;
 
-            bool result = SubmitChanges(PostingDS);
+            SubmitChanges(PostingDS);
 
             // TODO: release the lock
 
@@ -1320,7 +1326,21 @@ namespace Ict.Petra.Server.MFinance.Common
                 AVerifications = new TVerificationResultCollection();
             }
 
-            return result;
+            String LedgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
+
+            // Generate posting report (on the client!)
+            foreach (Int32 BatchNumber in ABatchNumbers)
+            {
+                String[] Params = {
+                    "param_ledger_number_i=" + ALedgerNumber,
+                    "param_batch_number_i=" + BatchNumber,
+                    "param_ledger_name=\""+ LedgerName + "\""
+                                  };
+                String ParamStr = String.Join(",", Params);
+                PrintReportOnClientDelegate("Batch Posting Register", ParamStr);
+            }
+
+            return true;
         }
 
         /// <summary>

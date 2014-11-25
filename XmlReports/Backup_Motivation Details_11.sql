@@ -2,7 +2,7 @@ DELETE FROM s_report_template WHERE s_template_id_i=11;
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
 VALUES(11,'Motivation Details','Motivation Details template','System',True,False,False,False,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="07/01/2014 12:07:58" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="11/24/2014 11:51:43" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -74,10 +74,14 @@ namespace FastReport
       <Column Name="s_date_modified_d" DataType="System.DateTime"/>
       <Column Name="s_modified_by_c" DataType="System.String"/>
       <Column Name="s_modification_id_t" DataType="System.DateTime"/>
+      <Column Name="a_tax_deductible_account_c" DataType="System.String"/>
     </TableDataSource>
     <Parameter Name="param_ledger_number_i" DataType="System.Int32"/>
     <Parameter Name="param_ledger_name" DataType="System.String"/>
     <Parameter Name="param_ledger_nunmber" DataType="System.Int32"/>
+    <Parameter Name="param_design_template" DataType="System.Boolean"/>
+    <Parameter Name="param_requested_by" DataType="System.String"/>
+    <Parameter Name="param_version" DataType="System.String"/>
   </Dictionary>
   <ReportPage Name="Page1">
     <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="37.8">
