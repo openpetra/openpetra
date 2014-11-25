@@ -552,7 +552,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     //Load tables afresh
                     FMainDS.ARecurringGiftDetail.Clear();
                     FMainDS.ARecurringGift.Clear();
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactions(FLedgerNumber, batchNumber));
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(FLedgerNumber, batchNumber));
                 }
 
                 //Delete transactions
@@ -889,7 +889,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (GiftDV.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactions(FLedgerNumber, FSelectedBatchNumber));
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(FLedgerNumber, FSelectedBatchNumber));
                 }
 
                 NoGiftRows = (GiftDV.Count == 0);

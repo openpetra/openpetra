@@ -1579,7 +1579,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.ARecurringGiftDetail.Merge(TempDS.ARecurringGiftDetail);
                 }
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactions(FLedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(FLedgerNumber, ABatchNumber));
 
                 RetVal = true;
             }
@@ -2095,8 +2095,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateMethodOfPayment(bool ACalledLocally)
         {
-            Int32 ledgerNumber;
-            Int32 batchNumber;
+            Int32 LedgerNumber;
+            Int32 BatchNumber;
 
             if (ACalledLocally)
             {
@@ -2118,14 +2118,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FBatchMethodOfPayment = ((TFrmRecurringGiftBatch) this.ParentForm).GetBatchControl().MethodOfPaymentCode;
 
-            ledgerNumber = FBatchRow.LedgerNumber;
-            batchNumber = FBatchRow.BatchNumber;
+            LedgerNumber = FBatchRow.LedgerNumber;
+            BatchNumber = FBatchRow.BatchNumber;
 
-            if (FMainDS.ARecurringGift.Rows.Count == 0)
+            if (!LoadGiftDataForBatch(LedgerNumber, BatchNumber))
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactions(ledgerNumber, batchNumber));
+                return;
             }
-            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
+
+            if ((FLedgerNumber == LedgerNumber) || (FBatchNumber == BatchNumber))
             {
                 //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
                 if (FPreviouslySelectedDetailRow != null)
@@ -2138,7 +2139,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Update all transactions
             foreach (ARecurringGiftRow recurringGiftRow in FMainDS.ARecurringGift.Rows)
             {
-                if (recurringGiftRow.BatchNumber.Equals(batchNumber) && recurringGiftRow.LedgerNumber.Equals(ledgerNumber)
+                if (recurringGiftRow.BatchNumber.Equals(BatchNumber) && recurringGiftRow.LedgerNumber.Equals(LedgerNumber)
                     && (recurringGiftRow.MethodOfPaymentCode != FBatchMethodOfPayment))
                 {
                     recurringGiftRow.MethodOfPaymentCode = FBatchMethodOfPayment;
