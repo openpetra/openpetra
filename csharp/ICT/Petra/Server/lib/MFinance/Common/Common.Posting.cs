@@ -1328,9 +1328,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
                             PostingDS.ThrowAwayAfterSubmitChanges = true;
                             SubmitChanges(PostingDS);
-
-
                         }  // foreach
+
                         SubmissionOK = true;
                     }
                     catch (Exception ex)
@@ -1352,15 +1351,16 @@ namespace Ict.Petra.Server.MFinance.Common
             if (SubmissionOK == true)
             {
                 String LedgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
+
                 // Generate posting reports (on the client!)
                 foreach (Int32 BatchNumber in ABatchNumbers)
                 {
                     String[] Params =
-                {
-                    "param_ledger_number_i=" + ALedgerNumber,
-                    "param_batch_number_i=" + BatchNumber,
-                    "param_ledger_name=\"" + LedgerName + "\""
-                };
+                    {
+                        "param_ledger_number_i=" + ALedgerNumber,
+                        "param_batch_number_i=" + BatchNumber,
+                        "param_ledger_name=\"" + LedgerName + "\""
+                    };
                     String ParamStr = String.Join(",", Params);
                     PrintReportOnClientDelegate("Batch Posting Register", ParamStr);
                 }
