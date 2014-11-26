@@ -535,12 +535,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             RefreshCurrencyAndExchangeRateControls();
 
-            Boolean ComboSetsOk = cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
-            ComboSetsOk &= cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+            bool BankCostCentreIsActive = cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
+            bool BankAccountIsActive = cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
 
-            if (!ComboSetsOk)
+            if (!BankCostCentreIsActive)
             {
-                MessageBox.Show("Can't set combo box with row details.");
+                MessageBox.Show(String.Format(Catalog.GetString("Can't set the Cost Centre to {0} in batch {1}. It might be set to inactive."),
+                                                ARow.BankCostCentre,
+                                                ARow.BatchNumber),
+                                   Catalog.GetString("Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            if (!BankAccountIsActive)
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("Can't set the Bank Account to {0} in batch {1}. It might be set to inactive."),
+                                                ARow.BankAccountCode,
+                                                ARow.BatchNumber),
+                                   Catalog.GetString("Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
