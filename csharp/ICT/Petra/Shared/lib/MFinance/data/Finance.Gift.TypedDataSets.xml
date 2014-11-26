@@ -44,18 +44,17 @@
 
         <Table sqltable="a_motivation_group"/>
         <Table sqltable="a_motivation_detail"/>
-		<Table sqltable="a_motivation_detail_fee"/>
-		<Table sqltable="a_fees_payable"/>
-		<Table sqltable="a_fees_receivable"/>
-		<Table sqltable="a_processed_fee"/>
+        <Table sqltable="a_motivation_detail_fee"/>
+        <Table sqltable="a_fees_payable"/>
+        <Table sqltable="a_fees_receivable"/>
+        <Table sqltable="a_processed_fee"/>
         <Table sqltable="p_partner" name="RecipientPartners"/>
         <Table sqltable="p_partner" name="DonorPartners"/>
         <Table sqltable="p_family" name="RecipientFamily"/>
         <Table sqltable="p_person" name="RecipientPerson"/>
         <Table sqltable="p_unit" name="RecipientUnit"/>
         <Table sqltable="p_partner_type" name="LedgerPartnerTypes"/>
-		<Table sqltable="p_partner_tax_deductible_pct"/>
-        <Table sqltable="um_unit_structure"/>
+        <Table sqltable="p_partner_tax_deductible_pct"/>
     </DataSet>
 
     <DataSet name="NewDonorTDS">

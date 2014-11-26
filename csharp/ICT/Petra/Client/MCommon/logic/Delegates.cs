@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,7 +27,7 @@ using Ict.Petra.Shared;
 namespace Ict.Petra.Client.MCommon
 {
     /// <summary>
-    /// todoComment
+    /// This is currently not used in any useful sense...
     /// </summary>
     public delegate Boolean TDelegateGetPartnerShortName(Int64 APartnerKey, out String APartnerShortName, out TPartnerClass APartnerClass);
 }

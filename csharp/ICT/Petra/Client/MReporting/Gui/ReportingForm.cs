@@ -239,13 +239,15 @@ namespace Ict.Petra.Client.MReporting.Gui
             set
             {
                 FDelegateViewReportOverride = value;
-                ToolStripItem tbbItm = ((ToolStripItem)((ToolStrip)FWinForm.Controls["tbrMain"]).Items["tbbEditTemplate"]);
 
-                if (tbbItm != null)
-                {
-                    tbbItm.Visible = true;
-                }
-
+/*
+ *              ToolStripItem tbbItm = ((ToolStripItem)((ToolStrip)FWinForm.Controls["tbrMain"]).Items["tbbEditTemplate"]);
+ *
+ *              if (tbbItm != null)
+ *              {
+ *                  tbbItm.Visible = true;
+ *              }
+ */
                 ToolStripItem mniItm =
                     ((ToolStripMenuItem)((MenuStrip)FWinForm.Controls["mnuMain"]).Items["mniFile"]).DropDownItems["mniEditTemplate"];
 
@@ -613,6 +615,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return;
             }
 
+            Boolean DoEditTemplate = ((Control.ModifierKeys & Keys.Control) == Keys.Control); // If the Control Key is pressed, I'll call the delegate that displays the report template.
+
             // read the settings and parameters from the controls
             if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
             {
@@ -628,7 +632,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             FormCursor = FWinForm.Cursor;
             TLogging.SetStatusBarProcedure(WriteToStatusBar);
 
-            if (FDelegateGenerateReportOverride != null)
+            if (DoEditTemplate && (FDelegateViewReportOverride != null))
+            {
+                ((IFrmReporting)FTheForm).EnableBusy(true);
+                FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);
+                FGenerateReportThread.SetApartmentState(ApartmentState.STA);
+                FGenerateReportThread.Start(FDelegateViewReportOverride);
+            }
+            else if (FDelegateGenerateReportOverride != null)
             {
                 ((IFrmReporting)FTheForm).EnableBusy(true);
                 FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);

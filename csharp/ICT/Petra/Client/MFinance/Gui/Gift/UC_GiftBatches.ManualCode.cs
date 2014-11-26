@@ -541,17 +541,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (!BankCostCentreIsActive)
             {
                 MessageBox.Show(String.Format(Catalog.GetString("Can't set the Cost Centre to {0} in batch {1}. It might be set to inactive."),
-                                                ARow.BankCostCentre,
-                                                ARow.BatchNumber),
-                                   Catalog.GetString("Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        ARow.BankCostCentre,
+                        ARow.BatchNumber),
+                    Catalog.GetString("Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
             if (!BankAccountIsActive)
             {
                 MessageBox.Show(String.Format(Catalog.GetString("Can't set the Bank Account to {0} in batch {1}. It might be set to inactive."),
-                                                ARow.BankAccountCode,
-                                                ARow.BatchNumber),
-                                   Catalog.GetString("Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        ARow.BankAccountCode,
+                        ARow.BatchNumber),
+                    Catalog.GetString("Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

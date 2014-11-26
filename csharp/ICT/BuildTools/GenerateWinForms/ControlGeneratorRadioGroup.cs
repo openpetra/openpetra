@@ -192,8 +192,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 if (TXMLParser.GetChild(curNode, "OptionalValues") != null)
                 {
-                    return !TYml2Xml.HasAttribute(curNode,
-                        "BorderVisible") || TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() != "false";
+                    return !TYml2Xml.HasAttribute(curNode, "BorderVisible")
+                           || TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() != "false";
                 }
             }
 
@@ -292,7 +292,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
-        /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
+        /// <summary>check if the generator fits the given control by checking the prefix and some of the attributes</summary>
         public override bool ControlFitsNode(XmlNode curNode)
         {
             if (SimplePrefixMatch(curNode))
@@ -304,8 +304,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (TXMLParser.GetChild(curNode, "Controls") == null)
                 {
-                    return TYml2Xml.HasAttribute(curNode,
-                        "BorderVisible") && TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() == "false";
+                    return TYml2Xml.HasAttribute(curNode, "BorderVisible")
+                           && TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() == "false";
                 }
             }
 

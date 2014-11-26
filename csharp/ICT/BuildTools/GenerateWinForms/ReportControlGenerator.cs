@@ -246,6 +246,41 @@ namespace Ict.Tools.CodeGeneration.Winforms
     }
 
     /// <summary>
+    /// Generator for a group with no border
+    /// </summary>
+    public class RadioGroupNoBorderReportGenerator : RadioGroupNoBorderGenerator
+    {
+        /// <summary>add GeneratedReadSetControls</summary>
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
+        {
+            string paramName = ReportControls.GetParameterName(control.xmlNode);
+
+            if (paramName == null)
+            {
+                return;
+            }
+
+            StringCollection optionalValues =
+                TYml2Xml.GetElements(TXMLParser.GetChild(control.xmlNode, "OptionalValues"));
+
+            foreach (string rbtValueText in optionalValues)
+            {
+                string rbtValue = StringHelper.UpperCamelCase(rbtValueText.Replace("'", "").Replace(" ", "_"), false, false);
+                string rbtName = "rbt" + rbtValue;
+                writer.Template.AddToCodelet("READCONTROLS",
+                    "if (" + rbtName + ".Checked) " + Environment.NewLine +
+                    "{" + Environment.NewLine +
+                    "  ACalc.AddParameter(\"" + paramName + "\", \"" + rbtValue + "\");" + Environment.NewLine +
+                    "}" + Environment.NewLine);
+                writer.Template.AddToCodelet("SETCONTROLS",
+                    rbtName + ".Checked = " +
+                    "AParameters.Get(\"" + paramName + "\").ToString() == \"" + rbtValue + "\";" +
+                    Environment.NewLine);
+            }
+        }
+    }
+
+    /// <summary>
     /// generator for simple radio group, values are defined as strings only
     /// </summary>
     public class RadioGroupSimpleReportGenerator : RadioGroupSimpleGenerator

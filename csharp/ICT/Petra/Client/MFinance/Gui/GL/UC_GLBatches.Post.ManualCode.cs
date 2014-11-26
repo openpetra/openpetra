@@ -131,6 +131,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
                     else
                     {
+//                                                                                          I don't need to call this directly, because the server calls it:
+//                        TFrmGLBatch.PrintPostingRegister(FLedgerNumber, CurrentBatchNumber);
+
                         // TODO: print reports on successfully posted batch
                         MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"),
                             Catalog.GetString("Success"),
