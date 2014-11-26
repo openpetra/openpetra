@@ -621,12 +621,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void CurrencyChanged(object sender, EventArgs e)
         {
-            String ACurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
+            String CurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
 
             if (!FPetraUtilsObject.SuppressChangeDetection && (FPreviouslySelectedDetailRow != null)
                 && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
-                FPreviouslySelectedDetailRow.CurrencyCode = ACurrencyCode;
+                FPreviouslySelectedDetailRow.CurrencyCode = CurrencyCode;
                 RecalculateTransactionAmounts();
                 RefreshCurrencyAndExchangeRateControls(true);
             }
@@ -926,7 +926,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow))
             {
                 // Posting succeeded so now deal with gift receipting ...
-                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber, FSelectedBatchNumber);
+                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber,
+                    FSelectedBatchNumber,
+                    false);
 
                 FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
 

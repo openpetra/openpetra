@@ -24,6 +24,7 @@
 using System;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.App.Core;
+using Ict.Common.Remoting.Client;
 
 namespace Ict.Petra.Client.MCommon.CallForwarding
 {

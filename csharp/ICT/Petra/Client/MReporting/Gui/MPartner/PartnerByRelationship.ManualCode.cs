@@ -89,6 +89,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             {
                 grdReciprocalRelationship.Visible = false;
                 lblSelectReciprocalRelationship.Visible = false;
+
+                //TODO: Unfortunately can't allow sorting at the moment as the xml report is a multi level report and
+                //      they don't allow sorting but raise an exception --> hide sorting tab for now
+                tabReportSettings.Controls.Remove(tpgReportSorting);
             }
 
             rbtDirectRelationship.Checked = true;
@@ -96,12 +100,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             chkCategoryFilter.Checked = false;
             cmbRelationCategory.Enabled = false;
 
-
             ucoChkFilter.ShowFamiliesOnly(false);
-
-            //TODO: Unfortunately can't allow sorting at the moment as the xml report is a multi level report and
-            //      they don't allow sorting but raise an exception --> hide sorting tab for now
-            tpgReportSorting.Hide();
         }
 
         private void grdDirectRelationship_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)

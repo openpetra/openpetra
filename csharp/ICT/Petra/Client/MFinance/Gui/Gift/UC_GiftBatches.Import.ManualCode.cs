@@ -209,25 +209,52 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ImportDialog.ShowDialog();
                     }
 
-                    ShowMessages(AMessages);
+                    // If NeedRecipientLedgerNumber contains data then AMessages will only ever contain
+                    // one message alerting the user that no data has been imported.
+                    // We do not want to show this as we will be displaying another more detailed message.
+                    if (NeedRecipientLedgerNumber.Rows.Count == 0)
+                    {
+                        ShowMessages(AMessages);
+                    }
 
                     // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination
                     // then the import will have failed and we need to alert the user
                     if (NeedRecipientLedgerNumber.Rows.Count > 0)
                     {
                         bool OfferToRunImportAgain = true;
+                        bool DoNotShowMessageBoxEverytime = false;
+                        TFrmExtendedMessageBox.TResult Result = TFrmExtendedMessageBox.TResult.embrUndefined;
+                        int count = 1;
 
                         // for each gift in which the recipient needs a Git Destination
                         foreach (GiftBatchTDSAGiftDetailRow Row in NeedRecipientLedgerNumber.Rows)
                         {
-                            if (MessageBox.Show(string.Format(
+                            if (!DoNotShowMessageBoxEverytime)
+                            {
+                                string CheckboxText = string.Empty;
+
+                                // only show checkbox if there is at least one more occurance of this error
+                                if (NeedRecipientLedgerNumber.Rows.Count - count > 0)
+                                {
+                                    CheckboxText = string.Format(
+                                        Catalog.GetString("Do this for all further occurances ({0})?"), NeedRecipientLedgerNumber.Rows.Count - count);
+                                }
+
+                                TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
+
+                                extendedMessageBox.ShowDialog(string.Format(
                                         Catalog.GetString(
                                             "Gift Import has been cancelled as the recipient '{0}' ({1}) has no Gift Destination assigned."),
                                         Row.RecipientDescription, Row.RecipientKey) +
-                                    "\n\n" +
+                                    "\n\r\n\r\n\r" +
                                     Catalog.GetString("Do you want to assign a Gift Destination to this partner now?"),
-                                    Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-                                == DialogResult.Yes)
+                                    Catalog.GetString("Import Errors"),
+                                    CheckboxText,
+                                    TFrmExtendedMessageBox.TButtons.embbYesNo, TFrmExtendedMessageBox.TIcon.embiWarning);
+                                Result = extendedMessageBox.GetResult(out DoNotShowMessageBoxEverytime);
+                            }
+
+                            if (Result == TFrmExtendedMessageBox.TResult.embrYes)
                             {
                                 // allow the user to assign a Gift Destingation
                                 TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), Row.RecipientKey);
@@ -236,7 +263,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             else
                             {
                                 OfferToRunImportAgain = false;
+
+                                if (DoNotShowMessageBoxEverytime)
+                                {
+                                    break;
+                                }
                             }
+
+                            count++;
                         }
 
                         // if the user has clicked yes to assigning Gift Destinations then offer to restart the import

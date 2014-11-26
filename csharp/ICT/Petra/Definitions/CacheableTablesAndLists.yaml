@@ -49,6 +49,7 @@ CachedTables:
                 PPostcodeRange:
                 PPostcodeRegion:
                 PPostcodeRegionRange:
+                SModule:
         Subscriptions:
             DatabaseTables:
                 PPublication:

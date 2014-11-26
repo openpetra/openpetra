@@ -100,6 +100,60 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// Adds a Contact Log record to each Partner in the given Extract
+        /// </summary>
+        /// <param name="ExtractId"></param>
+        /// <param name="ContactLogTable"></param>
+        [RequireModulePermission("PTNRUSER")]
+        public static void AddContactLog(int ExtractId, ref PContactLogTable ContactLogTable)
+        {
+            Boolean NewTransaction;
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            try
+            {
+                var extractTable = MExtractAccess.LoadViaMExtractMaster(ExtractId, WriteTransaction).AsEnumerable();
+                var partnerKeys = extractTable.Select(e => e.ItemArray[MExtractTable.ColumnPartnerKeyId]);
+
+                long ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", WriteTransaction);
+
+                ContactLogTable.Rows[0][PContactLogTable.ColumnContactLogIdId] = ContactLogId;
+
+                PPartnerContactTable partnerContacts = new PPartnerContactTable();
+                partnerKeys.ToList().ForEach(partnerKey =>
+                    {
+                        PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
+                        partnerContact.ContactLogId = ContactLogId;
+                        partnerContact.PartnerKey = (long)partnerKey;
+                        partnerContacts.Rows.Add(partnerContact);
+                    });
+
+                PContactLogAccess.SubmitChanges(ContactLogTable, WriteTransaction);
+                PPartnerContactAccess.SubmitChanges(partnerContacts, WriteTransaction);
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(
+                    "An Exception occured during the adding of a Contact to Partners in an Extract:" +
+                    Environment.NewLine + e.ToString());
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// this is useful when applying contact details to a group of people at the same time
         /// </summary>
         /// <param name="APartnerKeys"></param>
@@ -110,7 +164,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AModuleID"></param>
         /// <param name="AMailingCode"></param>
         [RequireModulePermission("PTNRUSER")]
-        public static void AddContact(List <Int64>APartnerKeys,
+        public static void AddContactLog(List <Int64>APartnerKeys,
             DateTime AContactDate,
             string AContactor,
             string AMethodOfContact,

@@ -48,6 +48,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
@@ -238,6 +239,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 return "";
             }
 
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
             string msg = AHTMLTemplate;
 
             if (ADonorName.Contains(","))
@@ -277,8 +281,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string OrigRowTemplate = RowTemplate;
             string rowTexts = "";
             decimal sum = 0;
+            decimal sumTaxDeduct = 0;
+            decimal sumNonDeduct = 0;
 
             decimal prevAmount = 0.0M;
+            decimal prevAmountTaxDeduct = 0.0M;
+            decimal prevAmountNonDeduct = 0.0M;
             string prevCurrency = String.Empty;
             string prevCommentOne = String.Empty;
             string prevAccountDesc = String.Empty;
@@ -290,6 +298,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 DateTime dateEntered = Convert.ToDateTime(rowGifts["DateEntered"]);
                 decimal amount = Convert.ToDecimal(rowGifts["TransactionAmount"]);
+                decimal taxDeductibleAmount = 0;
+                decimal nonDeductibleAmount = 0;
                 string currency = rowGifts["Currency"].ToString();
                 string commentOne = rowGifts["CommentOne"].ToString();
                 string accountDesc = rowGifts["AccountDesc"].ToString();
@@ -298,6 +308,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 RowTemplate = OrigRowTemplate;
 
                 sum += Convert.ToDecimal(rowGifts["AmountInBaseCurrency"]);
+
+                if (TaxDeductiblePercentageEnabled)
+                {
+                    taxDeductibleAmount = Convert.ToDecimal(rowGifts["TaxDeductibleAmount"]);
+                    nonDeductibleAmount = Convert.ToDecimal(rowGifts["NonDeductibleAmount"]);
+                    sumTaxDeduct += Convert.ToDecimal(rowGifts["TaxDeductibleAmountBase"]);
+                    sumNonDeduct += Convert.ToDecimal(rowGifts["NonDeductibleAmountBase"]);
+                }
 
                 // can we sum up donations on the same date, or do we need to print each detail with the account description?
                 if (RowTemplate.Contains("#COMMENTONE") || RowTemplate.Contains("#ACCOUNTDESC") || RowTemplate.Contains("#COSTCENTREDESC"))
@@ -313,8 +331,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     rowTexts += RowTemplate.
                                 Replace("#DONATIONDATE", dateEntered.ToString("dd.MM.yyyy")).
-                                Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(amount, currency)).
                                 Replace("#AMOUNTCURRENCY", currency).
+                                Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(amount, currency)).
+                                Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(taxDeductibleAmount, currency)).
+                                Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(nonDeductibleAmount, currency)).
                                 Replace("#COMMENTONE", commentOne).
                                 Replace("#ACCOUNTDESC", accountDesc).
                                 Replace("#COSTCENTREDESC", costcentreDesc);
@@ -334,16 +354,30 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         rowTexts += RowTemplate.
                                     Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
-                                    Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
                                     Replace("#AMOUNTCURRENCY", prevCurrency).
+                                    Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
+                                    Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountTaxDeduct, prevCurrency)).
+                                    Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency)).
                                     Replace("#COMMENTONE", prevCommentOne).
                                     Replace("#ACCOUNTDESC", prevAccountDesc).
                                     Replace("#COSTCENTREDESC", prevCostCentreDesc);
                         prevAmount = amount;
+
+                        if (TaxDeductiblePercentageEnabled)
+                        {
+                            prevAmountTaxDeduct = taxDeductibleAmount;
+                            prevAmountNonDeduct = nonDeductibleAmount;
+                        }
                     }
                     else
                     {
                         prevAmount += amount;
+
+                        if (TaxDeductiblePercentageEnabled)
+                        {
+                            prevAmountTaxDeduct += taxDeductibleAmount;
+                            prevAmountNonDeduct += nonDeductibleAmount;
+                        }
                     }
 
                     prevCurrency = currency;
@@ -370,16 +404,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 rowTexts += RowTemplate.
                             Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
-                            Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
                             Replace("#AMOUNTCURRENCY", prevCurrency).
+                            Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
+                            Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountTaxDeduct, prevCurrency)).
+                            Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency)).
                             Replace("#COMMENTONE", prevCommentOne).
                             Replace("#ACCOUNTDESC", prevAccountDesc).
                             Replace("#COSTCENTREDESC", prevCostCentreDesc);
                 prevAmount = 0.0M;
+
+                if (TaxDeductiblePercentageEnabled)
+                {
+                    prevAmountTaxDeduct = 0.0M;
+                    prevAmountNonDeduct = 0.0M;
+                }
             }
 
-            msg = msg.Replace("#OVERALLAMOUNT", StringHelper.FormatUsingCurrencyCode(sum, ABaseCurrency)).
-                  Replace("#OVERALLAMOUNTCURRENCY", ABaseCurrency);
+            msg = msg.Replace("#OVERALLAMOUNTCURRENCY", ABaseCurrency).
+                  Replace("#OVERALLAMOUNT", StringHelper.FormatUsingCurrencyCode(sum, ABaseCurrency)).
+                  Replace("#OVERALLTAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(sumTaxDeduct, ABaseCurrency)).
+                  Replace("#OVERALLTAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(sumNonDeduct, ABaseCurrency));
 
             if ((ADonations.Rows.Count == 1) && msg.Contains("#DONATIONDATE"))
             {
@@ -388,7 +432,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             // TODO allow other currencies. use a_currency table, and base currency
-            msg = msg.Replace("#TOTALAMOUNTINWORDS", NumberToWords.AmountToWords(sum, "Euro", "Cent"));
+            msg = msg.Replace("#TOTALAMOUNTINWORDS", NumberToWords.AmountToWords(sum, "Euro", "Cent")).
+                  Replace("#TOTALTAXDEDUCTAMOUNTINWORDS", NumberToWords.AmountToWords(sumTaxDeduct, "Euro", "Cent")).
+                  Replace("#TOTALTAXNONDEDUCTAMOUNTINWORDS", NumberToWords.AmountToWords(sumNonDeduct, "Euro", "Cent"));
 
             return msg.Replace("#ROWTEMPLATE", rowTexts);
         }

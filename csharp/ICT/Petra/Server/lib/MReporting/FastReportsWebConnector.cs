@@ -26,6 +26,7 @@ using System.Threading;
 using System.Data;
 using System.Collections.Generic;
 using Ict.Common;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Reporting.WebConnectors;
@@ -175,9 +176,10 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// <param name="ReportName"></param>
         /// <param name="Params">a CSV list of param_name=value</param>
         /// <returns></returns>
+        [RequireModulePermission("none")]
         public static Int32 GenerateReportOnClient(String ReportName, String Params)
         {
-            return Ict.Common.Remoting.Server.DomainManagerBase.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_REPORT, ReportName, Params,
+            return DomainManagerBase.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_REPORT, ReportName, Params,
                 null, null, null, 1);
         }
     }

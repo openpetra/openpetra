@@ -39,7 +39,6 @@ RootNode:
             TableName: AGiftBatch
             Dock: Fill
             Columns: [BatchNumber, GlEffectiveDate, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType, DateModified]
-            ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Top
             Controls:

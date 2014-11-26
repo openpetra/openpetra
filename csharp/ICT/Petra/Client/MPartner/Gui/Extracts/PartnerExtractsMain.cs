@@ -280,5 +280,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
             }
         }
+
+        /// <summary>
+        /// open screen to create "Partner by Contact Log" Extract
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        public static void PartnerByContactLogExtract(Form AParentForm)
+        {
+            TFrmPartnerByContactLog frm = new TFrmPartnerByContactLog(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
     }
 }

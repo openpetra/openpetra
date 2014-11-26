@@ -25,7 +25,8 @@ RootNode:
         actCreatePartnerByCityExtract: {ActionClick=CreatePartnerByCityExtract}     
         actCreatePartnerBySubscriptionExtract: {ActionClick=CreatePartnerBySubscriptionExtract}     
         actCreatePartnerBySpecialTypeExtract: {ActionClick=CreatePartnerBySpecialTypeExtract}     
-        actCreatePartnerByRelationshipExtract: {ActionClick=CreatePartnerByRelationshipExtract}     
+        actCreatePartnerByRelationshipExtract: {ActionClick=CreatePartnerByRelationshipExtract}  
+        actCreatePartnerByContactLogExtract: {ActionClick=CreateContactLogExtract}   
         actCreateFamilyMembersExtract: {ActionClick=CreateFamilyMembersExtract}     
         actCreateFamilyExtractForPersons: {ActionClick=CreateFamilyExtractForPersons}     
         actCreatePartnerByEventExtract: {ActionClick=CreatePartnerByEventExtract}     
@@ -41,6 +42,7 @@ RootNode:
         actAddSubscription: {ActionClick=AddSubscription}     
         actDeleteSubscription: {ActionClick=DeleteSubscription}     
         actChangeSubscription: {ActionClick=ChangeSubscription}     
+        actAddContactLog: {ActionClick=AddContactLog}
         actAddPartnerType: {ActionClick=AddPartnerType}     
         actDeletePartnerType: {ActionClick=DeletePartnerType}     
         actUpdateSolicitationFlag: {ActionClick=UpdateSolicitationFlag}     
@@ -68,6 +70,7 @@ RootNode:
             mniCreatePartnerBySubscriptionExtract: {Label=Partner by Subscription, Action=actCreatePartnerBySubscriptionExtract}
             mniCreatePartnerBySpecialTypeExtract: {Label=Partner by Special Type, Action=actCreatePartnerBySpecialTypeExtract}
             mniCreatePartnerByRelationshipExtract: {Label=Partner by Relationship, Action=actCreatePartnerByRelationshipExtract}
+            mniCreatePartnerByContactLogExtract: {Label=Partner by Contact Log, Action=actCreatePartnerByContactLogExtract}
             mniSeparator:
             mniCreateFamilyMembersExtract: {Label=Family Members Extract, Action=actCreateFamilyMembersExtract}
             mniCreateFamilyExtractForPersons: {Label=Family Extract for Persons, Action=actCreateFamilyExtractForPersons}
@@ -99,6 +102,8 @@ RootNode:
             mniAddSubscription: {Label=Add Subscription, Action=actAddSubscription}
             mniDeleteSubscription: {Label=Delete Subscription, Action=actDeleteSubscription}
             mniChangeSubscription: {Label=Change Subscription, Action=actChangeSubscription}
+            mniSeparator:
+            mniAddContactLog: {Label=Add Contact Log, Action=actAddContactLog}
             mniSeparator:
             mniAddPartnerType: {Label=Add Partner Special Type, Action=actAddPartnerType}
             mniDeletePartnerType: {Label=Delete Partner Special Type, Action=actDeletePartnerType}

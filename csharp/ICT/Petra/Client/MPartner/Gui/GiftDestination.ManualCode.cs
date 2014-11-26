@@ -85,12 +85,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.Columns.Clear();
             grdDetails.AddDateColumn("Date Effective From", FMainDS.PPartnerGiftDestination.ColumnDateEffective);
             grdDetails.AddDateColumn("Date of Expiry", FMainDS.PPartnerGiftDestination.ColumnDateExpires);
-            grdDetails.AddPartnerKeyColumn("Field Key", FMainDS.PPartnerGiftDestination.ColumnFieldKey, 90);
+            grdDetails.AddPartnerKeyColumn("Field Key", FMainDS.PPartnerGiftDestination.ColumnFieldKey);
             grdDetails.AddPartnerKeyColumn("Field Name", FieldName);
-
-            // TODO this does not work?!
-            grdDetails.Columns[0].Width = 90;
-            grdDetails.Columns[1].Width = 90;
 
             foreach (DataRow Row in FMainDS.PPartnerGiftDestination.Rows)
             {
@@ -192,14 +188,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            // dtpDetailDateEffective cannot be changed once saved
+            // dtpDetailDateEffective and txtDetailFieldKey cannot be changed once saved
             if (ARow.RowState == DataRowState.Added)
             {
                 dtpDetailDateEffective.Enabled = true;
+                txtDetailFieldKey.Enabled = true;
             }
             else
             {
                 dtpDetailDateEffective.Enabled = false;
+                txtDetailFieldKey.Enabled = false;
             }
 
             if (ARow.DateEffective == ARow.DateExpires)
@@ -210,6 +208,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 btnDeactivate.Enabled = true;
             }
+        }
+
+        private void GetDetailDataFromControlsManual(PPartnerGiftDestinationRow ARow)
+        {
+            // updates the custom field to display field name in the grid
+            ARow["FieldName"] = txtDetailFieldKey.LabelText;
         }
 
         private void DateExpiresEntered(object sender, EventArgs e)
