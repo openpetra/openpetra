@@ -535,22 +535,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             RefreshCurrencyAndExchangeRateControls();
 
-            bool BankCostCentreIsActive = cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
-            bool BankAccountIsActive = cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
-
-            if (!BankCostCentreIsActive)
+            //Check for inactive cost centre and/or account codes
+            if (!cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1))
             {
-                MessageBox.Show(String.Format(Catalog.GetString("Can't set the Cost Centre to {0} in batch {1}. It might be set to inactive."),
-                        ARow.BankCostCentre,
-                        ARow.BatchNumber),
+                MessageBox.Show(String.Format(Catalog.GetString("Batch {0} - the Cost Centre: '{1}' is no longer active and so cannot be used."),
+                        ARow.BatchNumber,
+                        ARow.BankCostCentre),
                     Catalog.GetString("Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
-            if (!BankAccountIsActive)
+            if (!cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1))
             {
-                MessageBox.Show(String.Format(Catalog.GetString("Can't set the Bank Account to {0} in batch {1}. It might be set to inactive."),
-                        ARow.BankAccountCode,
-                        ARow.BatchNumber),
+                MessageBox.Show(String.Format(Catalog.GetString("Batch {0} - the Bank Account: '{1}' is no longer active and so cannot be used."),
+                        ARow.BatchNumber,
+                        ARow.BankAccountCode),
                     Catalog.GetString("Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
