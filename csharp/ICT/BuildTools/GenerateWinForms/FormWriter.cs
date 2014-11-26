@@ -106,6 +106,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new TcmbAutoPopulatedReportGenerator());
                 AddControlGenerator(new RadioGroupComplexReportGenerator());
                 AddControlGenerator(new RadioGroupSimpleReportGenerator());
+                AddControlGenerator(new RadioGroupNoBorderReportGenerator());
                 AddControlGenerator(new RadioButtonReportGenerator());
                 AddControlGenerator(new UserControlReportGenerator());
                 AddControlGenerator(new SourceGridReportGenerator());

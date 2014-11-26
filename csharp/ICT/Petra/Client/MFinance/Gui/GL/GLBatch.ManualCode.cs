@@ -34,6 +34,8 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Client.MReporting.Logic;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -167,6 +169,61 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 this.tpgTransactions.Enabled = false;
                 this.Refresh();
             }
+        }
+
+        /// <summary>
+        /// Print or reprint the posting report for this batch.
+        /// </summary>
+        public static void PrintPostingRegister(Int32 ALedgerNumber, Int32 ABatchNumber, Boolean AEditTemplate = false)
+        {
+            FastReportsWrapper ReportingEngine = new FastReportsWrapper("Batch Posting Register");
+
+            if (!ReportingEngine.LoadedOK)
+            {
+                ReportingEngine.ShowErrorPopup();
+                return;
+            }
+
+            GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(ALedgerNumber, ABatchNumber);
+            TRptCalculator Calc = new TRptCalculator();
+            ALedgerRow LedgerRow = BatchTDS.ALedger[0];
+
+            //Call RegisterData to give the data to the template
+            ReportingEngine.RegisterData(BatchTDS.ABatch, "ABatch");
+            ReportingEngine.RegisterData(BatchTDS.AJournal, "AJournal");
+            ReportingEngine.RegisterData(BatchTDS.ATransaction, "ATransaction");
+
+            Calc.AddParameter("param_batch_number_i", ABatchNumber);
+            Calc.AddParameter("param_ledger_number_i", ALedgerNumber);
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(ALedgerNumber);
+            Calc.AddStringParameter("param_ledger_name", LedgerName);
+
+            if (AEditTemplate)
+            {
+                ReportingEngine.DesignReport(Calc);
+            }
+            else
+            {
+                ReportingEngine.GenerateReport(Calc);
+            }
+        }
+
+        /// <summary>
+        /// Print out the selected batch using FastReports template.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FilePrint(object sender, EventArgs e)
+        {
+            if (!this.tpgJournals.Enabled)
+            {
+                MessageBox.Show(Catalog.GetString("No Batch is selected"), Catalog.GetString("Batch Posting Register"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            ABatchRow BatchRow = ucoBatches.GetSelectedDetailRow();
+            PrintPostingRegister(FLedgerNumber, BatchRow.BatchNumber, ModifierKeys.HasFlag(Keys.Control));
         }
 
         /// <summary>

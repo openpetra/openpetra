@@ -199,6 +199,9 @@ namespace Ict.Petra.Shared
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_USERINFOREFRESH = "USERINFOREFRESH";
 
+        /// <summary>ClientTask TaskGroups</summary>
+        public const String CLIENTTASKGROUP_REPORT = "REPORT";
+
         /// <summary>Securityrelated</summary>
         public const String SECURITY_CAN_LOCATIONTYPE = "-CAN";
 

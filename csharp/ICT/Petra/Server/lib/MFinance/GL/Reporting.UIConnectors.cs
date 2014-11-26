@@ -294,25 +294,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Get the name for this Ledger
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static string GetLedgerName(int ledgernumber)
+        public static string GetLedgerName(int ALedgerNumber)
         {
-            String ReturnValue = "";
-            TDBTransaction ReadTransaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
-                delegate
-                {
-                    String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
-                                    StringHelper.IntToStr(ledgernumber) + " and PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
-                    DataTable tab = DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
-
-                    if (tab.Rows.Count > 0)
-                    {
-                        ReturnValue = Convert.ToString(tab.Rows[0]["p_partner_short_name_c"]);
-                    }
-                });
-
-            return ReturnValue;
+            return TLedgerInfo.GetLedgerName(ALedgerNumber);
         }
 
         /// <summary>

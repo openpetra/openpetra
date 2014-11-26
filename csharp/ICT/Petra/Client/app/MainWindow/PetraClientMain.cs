@@ -52,6 +52,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MCommon.Gui;
+using Ict.Petra.Client.MCommon.CallForwarding;
 using Ict.Petra.Client.MConference.Gui;
 using Ict.Petra.Client.MFinance.Gui.Gift;
 using Ict.Petra.Client.MPartner.Gui;
@@ -367,6 +368,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 TClientTasksQueue.ClientTasksInstanceType = typeof(TClientTaskInstance);
                 TConnectionManagementBase.ConnectorType = typeof(TConnector);
                 TConnectionManagementBase.GConnectionManagement = new TConnectionManagement();
+                new TCallForwarding();
 
 
 //            System.Windows.Forms.MessageBox.Show(ErrorCodes.GetErrorInfo("GENC.00001V").ShortDescription + Environment.NewLine + Environment.NewLine +

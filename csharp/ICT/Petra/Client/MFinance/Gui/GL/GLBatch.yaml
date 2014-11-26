@@ -37,4 +37,8 @@ RootNode:
         ucoTransactions:
             Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_GLTransactions
             Dock: Fill
-            
+
+    Menu:
+        mniFile:
+            mniFilePrint:
+                ActionClick:FilePrint

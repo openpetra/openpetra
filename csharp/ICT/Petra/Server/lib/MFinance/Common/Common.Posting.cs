@@ -44,6 +44,17 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TGLPosting
     {
+        /// <summary>
+        ///
+        /// </summary>
+        [NoRemoting]
+        public delegate Int32 PrintReportOnClient(String ReportName, String ParamStr);
+
+        /// <summary>
+        /// This will be setup by CallForwarding, to allow me to call the FastReportsWrapper from here.
+        /// </summary>
+        public static PrintReportOnClient PrintReportOnClientDelegate;
+
         private const int POSTING_LOGLEVEL = 1;
 
         /// <summary>
@@ -1072,25 +1083,15 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// write all changes to the database; on failure the whole transaction is rolled back
+        /// Write all changes to the database; on failure the whole transaction will be rolled back
         /// </summary>
         /// <param name="AMainDS"></param>
-        /// <returns>true</returns>
-        private static bool SubmitChanges(GLPostingTDS AMainDS)
+
+        private static void SubmitChanges(GLPostingTDS AMainDS)
         {
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: SubmitChanges...");
-            }
-
+            TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: SubmitChanges...");
             GLPostingTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true));
-
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: Finished...");
-            }
-
-            return true;
+            TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Finished...");
         }
 
         /// <summary>
@@ -1245,48 +1246,12 @@ namespace Ict.Petra.Server.MFinance.Common
                             }
                         }
                     }
-                    else
-                    {
-                        //TODO Need to add code to handle case of no batch exists to reverse
-                    }
                 });
 
             AVerifications = Verifications;
             AReversalBatchNumber = ReversalBatchNumber;
 
             return ReturnValue;
-        }
-
-        //
-        // If the Ledger's ProvisionalYearEndFlag is set, no further batches can be posted.
-        private static Boolean CheckPostIsAllowed(Int32 ALedgerNumber, out TVerificationResultCollection AVerifications)
-        {
-            //TODO consider removing this method as per comments below
-
-            AVerifications = null;
-
-            /*
-             * As far as I can work out, we should not be doing this here:
-             * It's supposed to be impossible to create a new Batch after the final MonthEnd, and this may be adequate.
-             *
-             * If this check is required, we need to deal with the fact that the YearEnd process calls here,
-             * and its reallocation batch should succeed!
-             */
-
-            /*
-             * TLedgerInfo LedgerInfo = new TLedgerInfo(ALedgerNumber);
-             * if (LedgerInfo.ProvisionalYearEndFlag)
-             * {
-             *  AVerifications = new TVerificationResultCollection();
-             *  AVerifications.Add(
-             *      new TVerificationResult(
-             *          Catalog.GetString("Post Batch"),
-             *          Catalog.GetString("There are no open periods in which a batch can be posted.\r\nYear End process must be run."),
-             *          TResultSeverity.Resv_Critical));
-             *  return false;
-             * }
-             */
-            return true;
         }
 
         /// <summary>
@@ -1362,20 +1327,10 @@ namespace Ict.Petra.Server.MFinance.Common
                             SummarizeInternal(ALedgerNumber, PostingDS, PostingLevel, BatchPeriod, true);
 
                             PostingDS.ThrowAwayAfterSubmitChanges = true;
+                            SubmitChanges(PostingDS);
+                        }  // foreach
 
-                            if (!SubmitChanges(PostingDS))
-                            {
-                                VerificationResult.AddCollection(SingleVerificationResultCollection);
-                                // Transaction will be rolled back, no open GL batch flying around
-                                SubmissionOK = false;
-                                break;
-                            }
-                            else
-                            {
-                                VerificationResult.AddCollection(SingleVerificationResultCollection);
-                                SubmissionOK = true;
-                            }
-                        }
+                        SubmissionOK = true;
                     }
                     catch (Exception ex)
                     {
@@ -1393,7 +1348,23 @@ namespace Ict.Petra.Server.MFinance.Common
 
             AVerifications = VerificationResult;
 
-            // TODO: release the lock
+            if (SubmissionOK == true)
+            {
+                String LedgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
+
+                // Generate posting reports (on the client!)
+                foreach (Int32 BatchNumber in ABatchNumbers)
+                {
+                    String[] Params =
+                    {
+                        "param_ledger_number_i=" + ALedgerNumber,
+                        "param_batch_number_i=" + BatchNumber,
+                        "param_ledger_name=\"" + LedgerName + "\""
+                    };
+                    String ParamStr = String.Join(",", Params);
+                    PrintReportOnClientDelegate("Batch Posting Register", ParamStr);
+                }
+            }
 
             return SubmissionOK;
         }
@@ -1415,13 +1386,6 @@ namespace Ict.Petra.Server.MFinance.Common
             out GLPostingTDS APostingDS,
             ref Int32 ABatchPeriod)
         {
-            //TODO consider removing below
-            //if (!CheckPostIsAllowed(ALedgerNumber, out AVerifications))
-            //{
-            //    APostingDS = null;
-            //    return false;
-            //}
-
             GLBatchTDS MainDS = new GLBatchTDS();
 
             SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
@@ -1559,15 +1523,12 @@ namespace Ict.Petra.Server.MFinance.Common
             bool RetVal = false;
             string BatchStatus = string.Empty;
 
-            AVerifications = new TVerificationResultCollection();
-            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
-
             string ErrorMessage = string.Empty;
             string ErrorContext = "Check if a Batch can be cancelled";
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
 
-            AMainDS = LoadGLBatchData(ALedgerNumber, ABatchNumber, out VerificationResult);
+            AMainDS = LoadGLBatchData(ALedgerNumber, ABatchNumber, out AVerifications);
 
             // get the data from the database into the MainDS
             if (AMainDS == null)
@@ -1584,7 +1545,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     if (BatchStatus == MFinanceConstants.BATCH_CANCELLED)
                     {
-                        VerificationResult.Add(new TVerificationResult(
+                        AVerifications.Add(new TVerificationResult(
                                 String.Format(Catalog.GetString("Cannot cancel Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
                                 String.Format(Catalog.GetString("It was already cancelled.")),
                                 TResultSeverity.Resv_Critical));
@@ -1592,7 +1553,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
                     else if (BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
                     {
-                        VerificationResult.Add(new TVerificationResult(
+                        AVerifications.Add(new TVerificationResult(
                                 String.Format(Catalog.GetString("Cannot cancel Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
                                 String.Format(Catalog.GetString("It has status {0}"), Batch.BatchStatus),
                                 TResultSeverity.Resv_Critical));
@@ -1610,13 +1571,8 @@ namespace Ict.Petra.Server.MFinance.Common
                             Environment.NewLine + Environment.NewLine + ex.ToString()),
                         ALedgerNumber);
                     ErrorType = TResultSeverity.Resv_Critical;
-                    VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                    AVerifications.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
                 }
-            }
-
-            if (VerificationResult.Count > 0)
-            {
-                AVerifications.AddCollection(VerificationResult);
             }
 
             return RetVal;

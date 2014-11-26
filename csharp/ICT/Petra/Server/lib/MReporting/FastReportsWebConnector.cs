@@ -26,11 +26,13 @@ using System.Threading;
 using System.Data;
 using System.Collections.Generic;
 using Ict.Common;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Reporting.WebConnectors;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Common.DB;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Server.MReporting.WebConnectors
 {
@@ -166,6 +168,19 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             }
 
             return MainDs;
+        }
+
+        /// <summary>
+        /// Uses the ClientTask mechanism to ask the client to request a report with the given params
+        /// </summary>
+        /// <param name="ReportName"></param>
+        /// <param name="Params">a CSV list of param_name=value</param>
+        /// <returns></returns>
+        [RequireModulePermission("none")]
+        public static Int32 GenerateReportOnClient(String ReportName, String Params)
+        {
+            return DomainManagerBase.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_REPORT, ReportName, Params,
+                null, null, null, 1);
         }
     }
 }
