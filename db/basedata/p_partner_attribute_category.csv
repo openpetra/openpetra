@@ -1,5 +1,5 @@
-Phone,Phone and Fax numbers,0,yes,false,false,?,?,?,?,?
-E-Mail,E-Mail addresses,2,yes,false,false,?,?,?,?,?
-Digital Media,"Social Media, Web Sites & Blogs",3,yes,false,false,?,?,?,?,?
-Instant Messaging & Chat,"Instant Messaging, Internet Voice Communication",4,yes,false,false,?,?,?,?,?
+Phone,Phone and Fax numbers,0,true,false,false,?,?,?,?,?
+E-Mail,E-Mail addresses,2,true,false,false,?,?,?,?,?
+Digital Media,"Social Media, Web Sites & Blogs",3,true,false,false,?,?,?,?,?
+Instant Messaging & Chat,"Instant Messaging, Internet Voice Communication",4,true,false,false,?,?,?,?,?
 PARTNERS_CONTACTDETAILS_SETTINGS,"A Partners' Contact Details Settings",0,false,true,false,?,?,?,?,?
