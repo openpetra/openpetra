@@ -140,6 +140,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// set the number format: American or European
+        /// </summary>
+        public string NumberFormat
+        {
+            set
+            {
+                cmbNumberFormat.SelectedIndex = (value.ToLower() == "American".ToLower() ? 0 : 1);
+
+                if ((cmbDelimiter.GetSelectedString() == ",") && (value.ToLower() == "European".ToLower()))
+                {
+                    cmbDelimiter.SetSelectedString(";");
+                }
+            }
+        }
+
         const String sSpace = "[SPACE]";
         private String ConvertDelimiter(String Delimiter, bool displayform)
         {
@@ -221,11 +237,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TUserDefaults.SaveChangedUserDefaults();
         }
 
+        private void ExportBatches(object sender, EventArgs e)
+        {
+            ExportBatches();
+        }
+
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
         /// </summary>
-        public void ExportBatches(object sender, EventArgs e)
+        public void ExportBatches(bool AWithInteractionOnSuccess = true)
         {
             if (File.Exists(txtFilename.Text))
             {
@@ -300,7 +321,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 Hashtable requestParams = new Hashtable();
                 requestParams.Add("ALedgerNumber", FLedgerNumber);
-                requestParams.Add("Delimiter", ConvertDelimiter(cmbDelimiter.GetSelectedString(), false));
+                requestParams.Add("Delimiter", delimiter);
                 requestParams.Add("DateFormatString", cmbDateFormat.GetSelectedString());
                 requestParams.Add("Summary", rbtSummary.Checked);
                 requestParams.Add("IncludeUnposted", chkIncludeUnposted.Checked);
@@ -309,7 +330,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 requestParams.Add("RecipientNumber", Convert.ToInt64(txtDetailRecipientKey.Text));
                 requestParams.Add("FieldNumber", Convert.ToInt64(txtDetailFieldKey.Text));
                 requestParams.Add("DateForSummary", dtpDateSummary.Date);
-                requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
+                requestParams.Add("NumberFormat", numberFormat);
                 requestParams.Add("ExtraColumns", chkExtraColumns.Checked);
 
                 if (rbtBatchNumberSelection.Checked)
@@ -369,10 +390,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 sw1.Close();
 
                 SaveUserDefaults();
-                MessageBox.Show(Catalog.GetString("Gift Batches Exported successfully."),
-                    Catalog.GetString("Gift Batch Export"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+
+                if (AWithInteractionOnSuccess)
+                {
+                    MessageBox.Show(Catalog.GetString("Gift Batches Exported successfully."),
+                        Catalog.GetString("Gift Batch Export"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {
