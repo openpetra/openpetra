@@ -242,6 +242,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         public void ShowErrorPopup()
         {
+            // in OpenPetra OpenSource, we do not use the FastReport DLLs
+            return;
+
             // Note from AlanP: This method will show an appropriate Fast Reports error message box depending on the InitState
             // We want to show this error if FastReports is supposed to be used but is not installed.
             // We do not want to show it if FastReports is NOT supposed to be used....
