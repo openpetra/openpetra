@@ -150,12 +150,12 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
                 SampleDataGiftBatches.CreateGiftBatches(period);
 
-                if (!SampleDataGiftBatches.PostBatches((yearCounter, period, periodOverall == FNumberOfClosedPeriods) ? 1 : 0))
+                if (!SampleDataGiftBatches.PostBatches(yearCounter, period, (periodOverall == FNumberOfClosedPeriods) ? 1 : 0))
                 {
                     throw new Exception("could not post gift batches");
                 }
 
-                if (!SampleDataAccountsPayable.PostAndPayInvoices((yearCounter, period, periodOverall == FNumberOfClosedPeriods) ? 1 : 0))
+                if (!SampleDataAccountsPayable.PostAndPayInvoices(yearCounter, period, (periodOverall == FNumberOfClosedPeriods) ? 1 : 0))
                 {
                     throw new Exception("could not post invoices");
                 }
