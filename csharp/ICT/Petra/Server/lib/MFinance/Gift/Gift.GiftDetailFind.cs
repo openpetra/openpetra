@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +29,7 @@ using System.Threading;
 
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Session;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MCommon;
@@ -45,18 +46,15 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <summary>Paged query object</summary>
         TPagedDataSet FPagedDataSetObject;
 
-        /// <summary>Asynchronous execution control object</summary>
-        TAsynchronousExecutionProgress FAsyncExecProgress;
-
         /// <summary>Thread that is used for asynchronously executing the Find query</summary>
         Thread FFindThread;
 
-        /// <summary>Returns reference to the Asynchronous execution control object to the caller</summary>
-        public TAsynchronousExecutionProgress AsyncExecProgress
+        /// <summary>Get the current state of progress</summary>
+        public TProgressState Progress
         {
             get
             {
-                return FAsyncExecProgress;
+                return FPagedDataSetObject.Progress;
             }
         }
 
@@ -81,15 +79,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             System.Text.StringBuilder sb;
             TLogging.LogAtLevel(7, "TGiftDetailFind.PerformSearch called.");
 
-            FAsyncExecProgress = new TAsynchronousExecutionProgress();
             FPagedDataSetObject = new TPagedDataSet(new GiftBatchTDSAGiftDetailTable());
-
-            /* Pass the TAsynchronousExecutionProgress object to FPagedDataSetObject so that it
-             * can update execution status */
-            FPagedDataSetObject.AsyncExecProgress = FAsyncExecProgress;
-
-            // Register Event Handler for the StopAsyncronousExecution event
-            FAsyncExecProgress.StopAsyncronousExecution += new System.EventHandler(this.StopSearch);
 
             // Build WHERE criteria string based on AFindCriteria
             CustomWhereCriteria = BuildCustomWhereCriteria(ACriteriaData, out ParametersArray);
@@ -159,12 +149,18 @@ namespace Ict.Petra.Server.MFinance.Gift
                 ColumnNameMapping,
                 ParametersArray);
 
+            string session = TSession.GetSessionID();
+
             //
             // Start the Find Thread
             //
             try
             {
-                FFindThread = new Thread(new ThreadStart(FPagedDataSetObject.ExecuteQuery));
+                ThreadStart myThreadStart = delegate {
+                                FPagedDataSetObject.ExecuteQuery(session);
+                };                
+                FFindThread = new Thread(myThreadStart);
+                FFindThread.Name = "GiftDetailFind" + Guid.NewGuid().ToString();
                 FFindThread.Start();
             }
             catch (Exception)
@@ -405,8 +401,6 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <summary>
         /// Stops the query execution.
         ///
-        /// Is intended to be called as an Event from FAsyncExecProgress.Cancel.
-        ///
         /// @comment It might take some time until the executing query is cancelled by
         /// the DB, but this procedure returns immediately. The reason for this is that
         /// we consider the query cancellation as done since the application can
@@ -415,11 +409,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// errors that state that a ADO.NET command is still executing!).
         ///
         /// </summary>
-        /// <param name="ASender">Object that requested the stopping (not evaluated)</param>
-        /// <param name="AArgs">(not evaluated)
-        /// </param>
-        /// <returns>void</returns>
-        public void StopSearch(object ASender, EventArgs AArgs)
+        public void StopSearch()
         {
             Thread StopQueryThread;
 
@@ -430,6 +420,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             ThreadStart ThreadStartDelegate = new ThreadStart(FPagedDataSetObject.StopQuery);
             StopQueryThread = new Thread(ThreadStartDelegate);
+            StopQueryThread.Name = "GiftDetailFindStopQuery" + Guid.NewGuid().ToString();
             StopQueryThread.Start();
 
             /* It might take some time until the executing query is cancelled by the DB,

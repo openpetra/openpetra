@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,7 +44,7 @@ namespace Ict.Testing.TextBoxNumberFormatting
             Application.SetCompatibleTextRenderingDefault(true);
 
 
-            new TLogging("TextBoxNumberFormatting.log");
+            new TLogging("../../log/TextBoxNumberFormatting.log");
             Application.Run(new MainForm());
         }
     }

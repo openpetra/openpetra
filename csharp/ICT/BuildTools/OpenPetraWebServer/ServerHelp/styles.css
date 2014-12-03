@@ -1,0 +1,21 @@
+﻿body
+{
+    font-family: Tahoma; 
+    font-size: 12pt;
+}
+h1
+{
+    font-family: Tahoma; 
+    font-size: 18pt;
+    color: highlight;
+}
+h4
+{
+    font-family: Tahoma; 
+    font-size: 14pt;
+    color: highlight;
+}
+.seeAlso
+{
+     font-size: 10pt;
+}

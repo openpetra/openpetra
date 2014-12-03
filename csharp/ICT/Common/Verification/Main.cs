@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,7 +33,6 @@
 //
 using System;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -171,7 +170,6 @@ namespace Ict.Common.Verification
         /// Data Validation Run ID.
         /// </summary>
         protected System.Guid FDataValidationRunID;
-
 
         /// <summary>
         /// We need this constructor so that inherited Classes can get by not having a default constructor...
@@ -457,6 +455,7 @@ namespace Ict.Common.Verification
     /// verification in a Form or UserControl on the Client side.
     /// It is made to be stored in the TVerificationResultCollection.
     /// </summary>
+    [Serializable]
     public class TScreenVerificationResult : TVerificationResult, IResultInterface
     {
         /// <summary>
@@ -467,6 +466,7 @@ namespace Ict.Common.Verification
         /// <summary>
         /// specify the control that failed the verification
         /// </summary>
+        [NonSerializedAttribute()]
         private Control FResultControl;
 
         /// <summary>
@@ -643,8 +643,18 @@ namespace Ict.Common.Verification
     /// allow named Indexed Properties!
     /// </remarks>
     [Serializable]
-    public class TVerificationResultCollection : CollectionBase
+    public class TVerificationResultCollection
     {
+        #region Resourcestrings
+
+        private static readonly string StrErrorFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1}, Code={3})");
+        private static readonly string StrErrorNoCodeFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1})");
+        private static readonly string StrStatusFooter = Catalog.GetString("{0}\r\n    Status: {2}\r\n");
+
+        #endregion
+
+        private List <IResultInterface>FList = new List <IResultInterface>();
+
         /// <summary>
         /// Control for which the first data validation error is recorded.
         /// </summary>
@@ -652,6 +662,7 @@ namespace Ict.Common.Verification
         /// <see cref="M:BuildScreenVerificationResultList(out String, out Control, out Object, bool, Type)" /> or
         /// <see cref="M:BuildScreenVerificationResultList(object, out String, out Control, bool)" /> is called,
         /// except if their Argument 'AUpdateFirstErrorControl' is set to false.</remarks>
+        [NonSerializedAttribute()]
         Control FFirstErrorControl = null;
 
         /// <summary>
@@ -663,6 +674,16 @@ namespace Ict.Common.Verification
         /// Data Validation Run ID that this instance is associated with.
         /// </summary>
         System.Guid FCurrentDataValidationRunID;
+
+        /// Deserialization constructor.
+        public TVerificationResultCollection(SerializationInfo info, StreamingContext ctxt)
+        {
+        }
+
+        /// Serialization function.
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext ctxt)
+        {
+        }
 
         /// <summary>
         /// constructor
@@ -677,6 +698,22 @@ namespace Ict.Common.Verification
         public TVerificationResultCollection(System.Guid ACurrentDataValidationRunID)
         {
             FCurrentDataValidationRunID = ACurrentDataValidationRunID;
+        }
+
+        /// <summary>
+        /// get an enumerator
+        /// </summary>
+        public IEnumerator GetEnumerator()
+        {
+            return FList.GetEnumerator();
+        }
+
+        /// <summary>
+        /// clear all items from the list
+        /// </summary>
+        public void Clear()
+        {
+            FList.Clear();
         }
 
         /// <summary>
@@ -712,7 +749,7 @@ namespace Ict.Common.Verification
         {
             get
             {
-                foreach (TVerificationResult v in List)
+                foreach (TVerificationResult v in FList)
                 {
                     if (v.ResultSeverity == TResultSeverity.Resv_Critical)
                     {
@@ -734,7 +771,7 @@ namespace Ict.Common.Verification
         {
             get
             {
-                foreach (TVerificationResult v in List)
+                foreach (TVerificationResult v in FList)
                 {
                     if ((v.ResultSeverity == TResultSeverity.Resv_Critical)
                         || (v.ResultSeverity == TResultSeverity.Resv_Noncritical))
@@ -795,13 +832,24 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
+        /// the number of verification objects
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return FList.Count;
+            }
+        }
+
+        /// <summary>
         /// Adds a new verification object.
         /// </summary>
         /// <param name="value">the verification object to be added (must not be null)</param>
-        /// <returns></returns>
         public int Add(IResultInterface value)
         {
-            return List.Add(value);
+            FList.Add(value);
+            return Count;
         }
 
         /// <summary>
@@ -812,14 +860,13 @@ namespace Ict.Common.Verification
         /// <returns></returns>
         public int AddAndIgnoreNullValue(IResultInterface value)
         {
-            int ReturnValue = -1;
-
             if (value != null)
             {
-                ReturnValue = List.Add(value);
+                FList.Add(value);
+                return Count;
             }
 
-            return ReturnValue;
+            return -1;
         }
 
         /// <summary>
@@ -832,7 +879,7 @@ namespace Ict.Common.Verification
             {
                 for (int Counter = 0; Counter <= value.Count - 1; Counter += 1)
                 {
-                    List.Add(value.GetVerificationResult(Counter));
+                    FList.Add(value.GetVerificationResult(Counter));
                 }
             }
         }
@@ -866,7 +913,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TVerificationResult)(List[Counter]);
+                si = (TVerificationResult)(FList[Counter]);
 
                 if (ARestrictToTypeWhichRaisesError != null)
                 {
@@ -902,7 +949,7 @@ namespace Ict.Common.Verification
 
                     if (si is TScreenVerificationResult)
                     {
-                        siScr = (TScreenVerificationResult)(List[Counter]);
+                        siScr = (TScreenVerificationResult)(FList[Counter]);
 
                         if (AFirstErrorControl == null)
                         {
@@ -937,7 +984,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
+                si = (TScreenVerificationResult)(FList[Counter]);
 
                 if (si.ResultContext == AResultContext)
                 {
@@ -956,10 +1003,6 @@ namespace Ict.Common.Verification
             }
         }
 
-        private static readonly string StrErrorFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1}, Code={3})");
-        private static readonly string StrErrorNoCodeFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1})");
-        private static readonly string StrStatusFooter = Catalog.GetString("{0}\r\n    Status: {2}\r\n");
-
         /// <summary>
         /// Returns a formatted String that contains information about all
         /// <see cref="TVerificationResult" />s in the <see cref="TVerificationResultCollection" />.
@@ -973,7 +1016,7 @@ namespace Ict.Common.Verification
 
             for (int i = 0; i <= Count - 1; i += 1)
             {
-                si = (TVerificationResult)(List[i]);
+                si = (TVerificationResult)(FList[i]);
                 String Status = "Info";
                 String Formatter = StrStatusFooter; // For either Resv_Status or Resv_Info, this smaller message format is used.
 
@@ -1011,7 +1054,7 @@ namespace Ict.Common.Verification
         /// <returns>true if the value is already there</returns>
         public bool Contains(IResultInterface value)
         {
-            return List.Contains(value);
+            return FList.Contains(value);
         }
 
         /// <summary>
@@ -1027,7 +1070,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TVerificationResult)(List[Counter]);
+                si = (TVerificationResult)(FList[Counter]);
 
                 if (si.ResultContext == AResultContext)
                 {
@@ -1051,7 +1094,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
+                si = (TScreenVerificationResult)(FList[Counter]);
 
                 if (si.ResultColumn == AResultColumn)
                 {
@@ -1075,7 +1118,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
+                si = (TScreenVerificationResult)(FList[Counter]);
 
                 if ((si.ResultColumn != null)
                     && (si.ResultColumn.Table == ADataTable))
@@ -1096,7 +1139,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
+                si = (TScreenVerificationResult)(FList[Counter]);
 
                 if (si.ResultCode == CommonErrorCodes.ERR_DUPLICATE_RECORD)
                 {
@@ -1112,11 +1155,11 @@ namespace Ict.Common.Verification
 
             for (int Counter = Count - 1; Counter >= 0; Counter--)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
+                si = (TScreenVerificationResult)(FList[Counter]);
 
                 if (si.ResultCode != CommonErrorCodes.ERR_DUPLICATE_RECORD)
                 {
-                    RemoveAt(Counter);
+                    FList.RemoveAt(Counter);
                 }
             }
 
@@ -1124,7 +1167,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
+                si = (TScreenVerificationResult)(FList[Counter]);
 
                 if (si.ResultColumn != null)
                 {
@@ -1140,11 +1183,11 @@ namespace Ict.Common.Verification
 
             for (int Counter = Count - 1; Counter >= 0; Counter--)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
+                si = (TScreenVerificationResult)(FList[Counter]);
 
                 if (si.ResultColumn == null)
                 {
-                    RemoveAt(Counter);
+                    FList.RemoveAt(Counter);
                 }
             }
         }
@@ -1303,7 +1346,7 @@ namespace Ict.Common.Verification
         /// <returns>the selected result</returns>
         public IResultInterface GetVerificationResult(int Index)
         {
-            return (TVerificationResult)List[Index];
+            return (TVerificationResult)FList[Index];
         }
 
         /// <summary>
@@ -1313,7 +1356,7 @@ namespace Ict.Common.Verification
         /// <param name="Value">the new value</param>
         public void SetVerificationResult(int Index, IResultInterface Value)
         {
-            List[Index] = Value;
+            FList[Index] = Value;
         }
 
         /// <summary>
@@ -1323,7 +1366,7 @@ namespace Ict.Common.Verification
         /// <returns>index of the value</returns>
         public int IndexOf(IResultInterface value)
         {
-            return List.IndexOf(value);
+            return FList.IndexOf(value);
         }
 
         /// <summary>
@@ -1333,7 +1376,15 @@ namespace Ict.Common.Verification
         /// <param name="value">value to add</param>
         public void Insert(int index, IResultInterface value)
         {
-            List.Insert(index, value);
+            FList.Insert(index, value);
+        }
+
+        /// <summary>
+        /// remove the value at the given position
+        /// </summary>
+        public void RemoveAt(int index)
+        {
+            FList.RemoveAt(index);
         }
 
         /// <summary>
@@ -1350,7 +1401,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
+                si = (TScreenVerificationResult)(FList[Counter]);
 
                 if (si.ResultColumn == AResultColumn)
                 {
@@ -1377,7 +1428,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
+                si = (TScreenVerificationResult)(FList[Counter]);
 
                 if (si.ResultColumn == AResultColumn)
                 {
@@ -1408,7 +1459,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
+                si = (TScreenVerificationResult)(FList[Counter]);
 
                 if (si.ResultColumn.Table == ADataTable)
                 {
@@ -1438,7 +1489,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (IResultInterface)(List[Counter]);
+                si = (IResultInterface)(FList[Counter]);
 
                 if (si.ResultContext == AResultContext)
                 {
@@ -1457,35 +1508,7 @@ namespace Ict.Common.Verification
         /// <returns>The <see cref="TScreenVerificationResult" /> at the index position.</returns>
         public IResultInterface FindBy(int index)
         {
-            return (IResultInterface)(List[index]);
-        }
-
-        /// <summary>
-        /// Type checking events
-        /// </summary>
-        /// <returns>void</returns>
-        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
-             Justification = "This Method only verifies that the Type is correct and makes no use of the index Argument for that",
-             MessageId = "index")]
-        private new void OnInsert(int index, object value)
-        {
-            VerifyType(value);
-        }
-
-        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
-             Justification = "This Method only verifies that the Type is correct and makes no use of the index Argument for that",
-             MessageId = "index")]
-        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
-             Justification = "This Method only verifies that the Type is correct and makes no use of the oldvalue Argument for that",
-             MessageId = "oldvalue")]
-        private new void OnSet(int index, object oldValue, object newValue)
-        {
-            VerifyType(newValue);
-        }
-
-        private new void OnValidate(object value)
-        {
-            VerifyType(value);
+            return (IResultInterface)(FList[index]);
         }
 
         /// <summary>
@@ -1494,7 +1517,7 @@ namespace Ict.Common.Verification
         /// <param name="value">value to delete</param>
         public void Remove(IResultInterface value)
         {
-            List.Remove(value);
+            FList.Remove(value);
         }
 
         /// <summary>
@@ -1507,13 +1530,13 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                if (List[Counter] is TScreenVerificationResult)
+                if (FList[Counter] is TScreenVerificationResult)
                 {
-                    si = (TScreenVerificationResult)(List[Counter]);
+                    si = (TScreenVerificationResult)(FList[Counter]);
 
                     if (si.ResultColumn == AResultColumn)
                     {
-                        List.Remove(si);
+                        FList.Remove(si);
                         break;
                     }
                 }
@@ -1532,11 +1555,11 @@ namespace Ict.Common.Verification
             {
                 for (int Counter = 0; Counter <= Count - 1; Counter += 1)
                 {
-                    si = (TScreenVerificationResult)(List[Counter]);
+                    si = (TScreenVerificationResult)(FList[Counter]);
 
                     if (si.ResultColumn.ColumnName == AResultColumnName)
                     {
-                        List.Remove(si);
+                        FList.Remove(si);
                         break;
                     }
                 }
@@ -1559,7 +1582,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
+                si = (TScreenVerificationResult)(FList[Counter]);
 
                 // MessageBox.Show(si.ResultColumn.ToString + ' is found at array count ' + Counter.ToString);
                 if (si.ResultContext == AResultContext)
@@ -1574,15 +1597,7 @@ namespace Ict.Common.Verification
             for (int Counter2 = 0; Counter2 <= siarray.Count - 1; Counter2 += 1)
             {
                 // MessageBox.Show('List.Remove of ' + siarray[Counter2].ResultColumn.ToString + ' at array count ' + Counter2.ToString);
-                List.Remove((TScreenVerificationResult)siarray[Counter2]);
-            }
-        }
-
-        private void VerifyType(object value)
-        {
-            if (!(value is IResultInterface))
-            {
-                throw new ArgumentException("Invalid Type");
+                FList.Remove((TScreenVerificationResult)siarray[Counter2]);
             }
         }
 
@@ -1608,7 +1623,7 @@ namespace Ict.Common.Verification
 
             for (int Counter2 = 0; Counter2 < NumberOfDowngradedVerificationResults; Counter2++)
             {
-                AScreenVerificationResults.RemoveAt(0);
+                AScreenVerificationResults.FList.RemoveAt(0);
             }
         }
 

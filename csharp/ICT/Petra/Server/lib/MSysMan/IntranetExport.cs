@@ -4,7 +4,7 @@
 // @Authors:
 //       Tim Ingham
 //
-// Copyright 2012 by OM International
+// Copyright 2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -483,7 +483,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
         private static Boolean ExportField()
         {
-            Int64 MySiteKey = DomainManagerBase.GSiteKey;
+            Int64 MySiteKey = DomainManager.GSiteKey;
 
             /*
              *  From 4GL:
@@ -715,7 +715,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             {
                 sw.WriteLine("key,value");
                 sw.WriteLine("version," + ExportVersion);
-                sw.WriteLine("office," + ((Int64)DomainManagerBase.GSiteKey).ToString("D10"));
+                sw.WriteLine("office," + ((Int64)DomainManager.GSiteKey).ToString("D10"));
                 sw.WriteLine("date," + DateTime.Now.ToString(ExportDateFormat));
                 sw.WriteLine("time," + DateTime.Now.ToString("HH:mm:ss"));
                 sw.WriteLine("options," + AOptionalMetadata);
@@ -821,7 +821,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             try
             {
                 FZipFileNames.Clear();
-                FExportFilePath = TAppSettingsManager.GetValue("OpenPetra.PathTemp") + @"\";
+                FExportFilePath = TAppSettingsManager.GetValue("Server.PathTemp") + @"\";
                 FExportTrace = "Exporting (Temporary path: " + FExportFilePath + ")\r\n";
                 FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 

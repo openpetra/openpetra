@@ -29,9 +29,8 @@ using System.Xml;
 
 using Ict.Common;
 using Ict.Common.IO;
-using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
-using Ict.Petra.ServerAdmin.App.Core;
+using Ict.Petra.ServerAdmin.App.Core.RemoteObjects;
 
 namespace PetraMultiStart
 {
@@ -42,8 +41,8 @@ public class main
 {
     private static TXMLParser parser;
     private static System.Random rnd;
-    private static IServerAdminInterface TRemote;
-    private static Ict.Petra.ServerAdmin.App.Core.TConnector TheConnector;
+    private static TMServerAdminNamespace.TServerAdminWebConnectorsNamespace TRemote;
+//    private static Ict.Petra.ServerAdmin.App.Core.TConnector TheConnector;
 
     /// <summary>
     /// Returns milliseconds from a XML Value.
@@ -127,7 +126,7 @@ public class main
         try
         {
             // We use the following server call ONLY for an 'side effect' - namely when it throws an Exception!
-            int Tmp = TRemote.ClientsConnected;  // Causes: CA1804:RemoveUnusedLocals (but is suppressed for that reason with the SuppressMessage Attribute!)
+            int Tmp = TRemote.GetClientsConnected();      // Causes: CA1804:RemoveUnusedLocals (but is suppressed for that reason with the SuppressMessage Attribute!)
         }
         catch (Exception exp)
         {
@@ -156,7 +155,7 @@ public class main
         testcase = TAppSettingsManager.GetValue("testcase");
         Global.StartClientID = TAppSettingsManager.GetInt16("startclientid");
 
-        rnd = new System.Random(DateTime.Now.Millisecond);     // Init
+        rnd = new System.Random(DateTime.Now.Millisecond);         // Init
 
         try
         {
@@ -173,8 +172,10 @@ public class main
 
         new TLogging(@"..\..\log\PetraMultiStart.log");
 
-        TheConnector = new Ict.Petra.ServerAdmin.App.Core.TConnector();
-        TheConnector.GetServerConnection(TAppSettingsManager.ConfigFileName, out TRemote);
+//            TheConnector = new Ict.Petra.ServerAdmin.App.Core.Connector.TConnector();
+//            TheConnector.GetServerConnection(TAppSettingsManager.ConfigFileName, out TRemote);
+
+        TRemote = new TMServerAdminNamespace().WebConnectors;
 
         CreateTestUsers();
 

@@ -97,40 +97,6 @@ public static class Shutdown
     /// </summary>
     public static void StopServers()
     {
-        System.Diagnostics.Process PetraServerProcess;
-
-        // stop the Petra server (e.g. c:\petra2\bin22\PetraServerAdminConsole.exe C:C:\petra2\ServerAdminStandalone.config Command:Stop
-        try
-        {
-            PetraServerProcess = new System.Diagnostics.Process();
-            PetraServerProcess.StartInfo.FileName = TClientSettings.Petra_Path_Bin + "/PetraServerAdminConsole.exe";
-            PetraServerProcess.StartInfo.WorkingDirectory = TClientSettings.Petra_Path_Bin;
-            PetraServerProcess.StartInfo.Arguments = "-C:\"" + TClientSettings.PetraServerAdmin_Configfile + "\" -Command:Stop";
-            PetraServerProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            PetraServerProcess.EnableRaisingEvents = false;
-
-            if (!PetraServerProcess.Start())
-            {
-#if TESTMODE
-                TLogging.Log("failed to start " + PetraServerProcess.StartInfo.FileName);
-#endif
-                return;
-            }
-        }
-        catch (Exception exp)
-        {
-#if TESTMODE
-            TLogging.Log("Exception while shutting down OpenPetra server process: " + exp.ToString());
-#endif
-#if  TESTMODE
-#else
-            MessageBox.Show("Exception while shutting down OpenPetra server process: " + exp.ToString());
-#endif
-            return;
-        }
-
-        PetraServerProcess.WaitForExit(20000);
-
         StopPostgreSqlServer();
     }
 

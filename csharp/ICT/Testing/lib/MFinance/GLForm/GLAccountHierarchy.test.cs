@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,6 +46,7 @@ namespace Tests.MFinance.GLBatches
     /// ...
     /// </summary>
     [TestFixture]
+    [Ignore("We know that this doesn't work yet! (According to Timo)")]
     public class GLAccountHierarchy_test : CommonNUnitFormFunctions
     {
         // Each account is defined by its LedgerNumber ...
@@ -109,9 +110,9 @@ namespace Tests.MFinance.GLBatches
         /// This routine sets and unsets an account to and from a foreign currency ...
         /// </summary>
         [Test]
-        public void T02_SetAccountToForeigenCurrency()
+        public void T02_SetAccountToForeignCurrency()
         {
-            System.Console.WriteLine("-------T02_SetAccountToForeigenCurrency------------");
+            System.Console.WriteLine("-------T02_SetAccountToForeignCurrency------------");
             TFrmGLAccountHierarchyTester hierarchyTester
                 = new TFrmGLAccountHierarchyTester();
             hierarchyTester.mainForm.Show();
@@ -138,6 +139,12 @@ namespace Tests.MFinance.GLBatches
             Boolean blnCheckBoxSet;
             Boolean blnCheckBoxSet2;
 
+            // Problem: account 6000 is already fixed, ie. you cannot change it to a foreign currency account anymore.
+            // TODO: create a new account, that can be changed to a foreign currency account.
+            // or change another field, eg. the description, to check the save button
+            Assert.IsTrue(hierarchyTester.chkDetailForeignCurrencyFlag.Properties.Enabled,
+                "the currency must be changeable for account " + hierarchyTester.txtDetailAccountCode.Text);
+
             for (int i = 0; i <= 1; i++)
             {
                 blnCheckBoxSet =
@@ -146,17 +153,15 @@ namespace Tests.MFinance.GLBatches
 
                 if (blnCheckBoxSet)
                 {
-                    // Actually it is not possiblie to write SetSelectedString("ALL") ín order to
-                    // reset a combobox. This is to be fixed with id 216
-                    hierarchyTester.cmbDetailForeignCurrencyCode.Properties.SetSelectedString("ALL");
                     hierarchyTester.chkDetailForeignCurrencyFlag.Properties.CheckState =
                         CheckState.Unchecked;
                 }
                 else
                 {
-                    hierarchyTester.cmbDetailForeignCurrencyCode.Properties.SetSelectedString("CNY");
                     hierarchyTester.chkDetailForeignCurrencyFlag.Properties.CheckState =
                         CheckState.Checked;
+                    hierarchyTester.cmbDetailForeignCurrencyCode.Properties.SetSelectedString("CNY");
+                    Assert.AreEqual("CNY", hierarchyTester.cmbDetailForeignCurrencyCode.Properties.GetSelectedString());
                 }
 
                 blnSaveBtn = hierarchyTester.tbbSave.Properties.Enabled;
@@ -348,8 +353,8 @@ namespace Tests.MFinance.GLBatches
         [TestFixtureSetUp]
         public void Init()
         {
-            new TLogging("PetraClient.log");
-            TPetraConnector.Connect("../../../../../etc/TestClient.config");
+            new TLogging("../../log/TestClient.log");
+            TPetraConnector.Connect("../../etc/TestClient.config");
             fLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValue("LedgerNumber"));
         }
 

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Diagnostics;
+using System.Text;
 
 using Ict.Common.Exceptions;
 
@@ -93,9 +94,17 @@ namespace Ict.Common
         /// </summary>
         public delegate void TStatusCallbackProcedure(string msg);
 
+        /// <summary>
+        /// his is used for Windows Forms logging
+        /// </summary>
+        public delegate void TLogNewMessageCallback();
+
         private static TLogWriter ULogWriter = null;
         private static String ULogFileName;
         private static String UUserNamePrefix = DEFAULTUSERNAMEPREFIX;
+        private static String ULogTextAsString = null;
+        private static Int32 ULogPageNumber = 1;
+        private static TLogNewMessageCallback UNewMessageCallback = null;
 
         /// <summary>
         /// This can provide information about the context of the program situation when a log message is displayed.
@@ -176,6 +185,15 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// Call this method on Windows Forms apps to send the 'console' output to a dynamic string
+        /// </summary>
+        public static void SendConsoleOutputToString(TLogNewMessageCallback ANewMessageCallback)
+        {
+            ULogTextAsString = "Logging started..." + Environment.NewLine;
+            UNewMessageCallback = ANewMessageCallback;
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="ALogFileMsg"></param>
@@ -214,6 +232,23 @@ namespace Ict.Common
         {
             TLogging.StatusBarProcedure = callbackfn;
             StatusBarProcedureValid = true;
+        }
+
+        /// <summary>
+        /// Gets the current console log text.  Throws an exception if the console text is being written to a console.
+        ///   You should call <see cref="SendConsoleOutputToString"/> to send output to this string
+        /// </summary>
+        /// <returns></returns>
+        public static String GetConsoleLog()
+        {
+            if (ULogTextAsString == null)
+            {
+                throw new InvalidOperationException("The console log has not been set to text output ");
+            }
+            else
+            {
+                return ULogTextAsString;
+            }
         }
 
         /// <summary>
@@ -269,10 +304,32 @@ namespace Ict.Common
         /// Note: More than one output destination can be chosen!</param>
         public static void Log(string Text, TLoggingType ALoggingType)
         {
-            if (((ALoggingType & TLoggingType.ToConsole) != 0)
-                || ((ALoggingType & TLoggingType.ToLogfile) != 0)
-                // only in Debugmode write the messages for the statusbar also on the console (e.g. reporting progress)
-                || (((ALoggingType & TLoggingType.ToStatusBar) != 0) && (TLogging.DebugLevel == TLogging.DEBUGLEVEL_TRACE)))
+            if (((ALoggingType & TLoggingType.ToConsole) != 0) && (ULogTextAsString != null) && (ULogTextAsString.Length > 0))
+            {
+                // log to static string for Windows Forms app
+                if (ULogTextAsString.Length > 16384)
+                {
+                    TruncateLogString(8192);
+                }
+
+                ULogTextAsString += (Utilities.CurrentTime() + "  " + Text + Environment.NewLine);
+
+                if ((TLogging.Context != null) && (TLogging.Context.Length != 0))
+                {
+                    ULogTextAsString += ("  Context: " + TLogging.Context + Environment.NewLine);
+                }
+
+                // Tell our caller that there is a new message
+                if (UNewMessageCallback != null)
+                {
+                    // Can this fail if the program has closed??
+                    UNewMessageCallback();
+                }
+            }
+            else if (((ALoggingType & TLoggingType.ToConsole) != 0)
+                     || ((ALoggingType & TLoggingType.ToLogfile) != 0)
+                     // only in Debugmode write the messages for the statusbar also on the console (e.g. reporting progress)
+                     || (((ALoggingType & TLoggingType.ToStatusBar) != 0) && (TLogging.DebugLevel == TLogging.DEBUGLEVEL_TRACE)))
             {
                 Console.Error.WriteLine(Utilities.CurrentTime() + "  " + Text);
 
@@ -415,6 +472,27 @@ namespace Ict.Common
             for (int Counter = 0; Counter <= (aList.Count - 1); Counter++)
             {
                 Log(aList[Counter].ToString(), Loggingtype);
+            }
+        }
+
+        private static void TruncateLogString(Int32 ANewSize)
+        {
+            int newStartPos = ULogTextAsString.Length - ANewSize;
+
+            if (newStartPos > 1024)
+            {
+                ULogPageNumber++;
+
+                string newString = ULogTextAsString.Substring(newStartPos);
+                int pos = newString.IndexOf(Environment.NewLine);
+
+                if (pos >= 0)
+                {
+                    newString = newString.Substring(pos + Environment.NewLine.Length);
+                }
+
+                ULogTextAsString = String.Format("Log was truncated.  Starting Page {0} ...{1}{2}",
+                    ULogPageNumber.ToString(), Environment.NewLine, newString);
             }
         }
     }

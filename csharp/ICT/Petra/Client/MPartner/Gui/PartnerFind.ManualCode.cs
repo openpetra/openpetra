@@ -1010,12 +1010,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FPartnerFindObject != null)
             {
-                // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
-                TEnsureKeepAlive.UnRegister(FPartnerFindObject);
+                // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
+                TUIConnectorLifetimeHandling.ReleaseUIConnector((IDisposable)FPartnerFindObject);
                 FPartnerFindObject = null;
             }
         }
-
+        
         #endregion
 
         #region Screen Parameters
@@ -1234,8 +1234,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoFindByPartnerDetails.PartnerFindObject = FPartnerFindObject;
             ucoFindByBankDetails.PartnerFindObject = FPartnerFindObject;
 
-            // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
-            TEnsureKeepAlive.Register(FPartnerFindObject);
 
             // We're done!
             FFormSetupFinished = true;

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       berndr, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -312,8 +312,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         /// <param name="AUnitKey">Partner Key of the unit from which the outreach options are retrieved</param>
         /// <param name="AConferenceTable">A table with all the units</param>
         /// <returns></returns>
-        [RequireModulePermission("CONFERENCE")]
-        public static System.Boolean GetOutreachOptions(long AUnitKey,
+        private static System.Boolean GetOutreachOptions(long AUnitKey,
             out System.Data.DataTable AConferenceTable)
         {
             AConferenceTable = new DataTable();

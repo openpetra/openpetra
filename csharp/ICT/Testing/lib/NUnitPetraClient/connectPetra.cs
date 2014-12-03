@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,10 +28,12 @@ using System.Net.Sockets;
 using System.Runtime.Remoting;
 using System.Threading;
 using System.Windows.Forms;
+using System.IO;
 using Ict.Common;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.Exceptions;
 using Ict.Common.Data;
+using Ict.Common.IO;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
@@ -53,7 +55,7 @@ namespace Ict.Testing.NUnitPetraClient
     public class TPetraConnector
     {
         /// connect to the server
-        public static void Connect(string AConfigName)
+        public static eLoginEnum Connect(string AConfigName, bool AThrowExceptionOnLoginFailure = true)
         {
             TUnhandledThreadExceptionHandler UnhandledThreadExceptionHandler;
 
@@ -70,7 +72,6 @@ namespace Ict.Testing.NUnitPetraClient
 
             Catalog.Init();
             TClientTasksQueue.ClientTasksInstanceType = typeof(TClientTaskInstance);
-            TConnectionManagementBase.ConnectorType = typeof(TConnector);
             TConnectionManagementBase.GConnectionManagement = new TConnectionManagement();
 
             new TClientSettings();
@@ -83,63 +84,70 @@ namespace Ict.Testing.NUnitPetraClient
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TServerLookup.TMFinance.GetCurrentPostingRangeDates;
             TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TServerLookup.TMFinance.GetCurrentPeriodDates;
 
-            Connect(TAppSettingsManager.GetValue("AutoLogin"), TAppSettingsManager.GetValue("AutoLoginPasswd"),
+            // Ensure we throw away the previous client session cookies!
+            THTTPUtils.ResetSession();
+            
+            eLoginEnum Result = Connect(TAppSettingsManager.GetValue("AutoLogin"), TAppSettingsManager.GetValue("AutoLoginPasswd"),
                 TAppSettingsManager.GetInt64("SiteKey"));
+
+            if ((Result != eLoginEnum.eLoginSucceeded) && AThrowExceptionOnLoginFailure)
+            {
+                throw new Exception("login failed");
+            }
+
+            return Result;
         }
 
-        private static void Connect(String AUserName, String APassword, Int64 ASiteKey)
+        /// <summary>
+        /// connect the client, but use some special parameters
+        /// </summary>
+        public static eLoginEnum Connect(string AConfigName, string AParameters)
         {
-            bool ConnectionResult;
+            string tempConfigFile = Path.GetTempFileName();
+            StreamReader sr = new StreamReader(AConfigName);
+            string config = sr.ReadToEnd();
+
+            sr.Close();
+
+            StreamWriter sw = new StreamWriter(tempConfigFile);
+            sw.Write(config.Replace("</appSettings>", AParameters + "</appSettings>"));
+            sw.Close();
+
+            eLoginEnum result = TPetraConnector.Connect(tempConfigFile);
+            File.Delete(tempConfigFile);
+
+            return result;
+        }
+
+        private static eLoginEnum Connect(String AUserName, String APassword, Int64 ASiteKey)
+        {
+            eLoginEnum ConnectionResult;
             String WelcomeMessage;
             String LoginError;
             Int32 ProcessID;
             Boolean SystemEnabled;
 
             TLogging.Log("connecting UserId: " + AUserName + " to Server...");
-            try
-            {
-                ConnectionResult = ((TConnectionManagement)TConnectionManagement.GConnectionManagement).ConnectToServer(
-                    AUserName.ToUpper(), APassword,
-                    out ProcessID,
-                    out WelcomeMessage,
-                    out SystemEnabled,
-                    out LoginError);
+            ConnectionResult = ((TConnectionManagement)TConnectionManagement.GConnectionManagement).ConnectToServer(
+                AUserName.ToUpper(), APassword,
+                out ProcessID,
+                out WelcomeMessage,
+                out SystemEnabled,
+                out LoginError);
 
-                if (!ConnectionResult)
-                {
-                    TLogging.Log("Connection to PetraServer failed! ConnectionResult: " + ConnectionResult + " Error: " + LoginError);
-                    return;
-                }
-            }
-            catch (EServerConnectionServerNotReachableException)
+            if (ConnectionResult != eLoginEnum.eLoginSucceeded)
             {
-                throw;
+                TLogging.Log("Connection to PetraServer failed! ConnectionResult: " + ConnectionResult.ToString() + " Error: " + LoginError);
+                return ConnectionResult;
             }
-            catch (ELoginFailedServerTooBusyException)
-            {
-                TLogging.Log("Login failed because server was too busy.");
-                throw;
-            }
-            catch (EDBConnectionNotEstablishedException exp)
-            {
-                if (exp.Message.IndexOf("Exceeding permissible number of connections") != -1)
-                {
-                    throw new Exception("Login failed because too many users are logged in.");
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            catch (EServerConnectionGeneralException)
-            {
-                throw;
-            }
+
             TUserDefaults.InitUserDefaults();
             new TServerInfo(Utilities.DetermineExecutingOS());
             TLogging.Log(
                 "client is connected ClientID: " + TConnectionManagement.GConnectionManagement.ClientID.ToString() + " UserId: " + AUserName +
                 " to Server...");
+
+            return eLoginEnum.eLoginSucceeded;
         }
 
         /// disconnect from the server

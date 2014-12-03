@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 
+using Ict.Common;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MCommon;
@@ -55,7 +56,7 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     /// </summary>
-    public class TGiftDetailFindUIConnector : TConfigurableMBRObject, IFinanceUIConnectorsGiftDetailFind
+    public class TGiftDetailFindUIConnector : IFinanceUIConnectorsGiftDetailFind
     {
         private TGiftDetailFind FGiftDetailFind = new TGiftDetailFind();
 
@@ -66,14 +67,12 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
         {
         }
 
-        /// <summary>Returns reference to the Asynchronous execution control object to the caller</summary>
-        public IAsynchronousExecutionProgress AsyncExecProgress
+        /// <summary>Get the current state of progress</summary>
+        public TProgressState Progress
         {
             get
             {
-                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
-                    typeof(TAsynchronousExecutionProgressRemote),
-                    FGiftDetailFind.AsyncExecProgress);
+		return FGiftDetailFind.Progress;
             }
         }
 
@@ -121,13 +120,9 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
         /// errors that state that a ADO.NET command is still executing!).
         ///
         /// </summary>
-        /// <param name="ASender">Object that requested the stopping (not evaluated)</param>
-        /// <param name="AArgs">(not evaluated)
-        /// </param>
-        /// <returns>void</returns>
-        public void StopSearch(object ASender, EventArgs AArgs)
+        public void StopSearch()
         {
-            FGiftDetailFind.StopSearch(ASender, AArgs);
+            FGiftDetailFind.StopSearch();
         }
     }
 }

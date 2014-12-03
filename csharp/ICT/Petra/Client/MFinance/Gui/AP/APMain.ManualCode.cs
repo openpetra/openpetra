@@ -307,8 +307,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if (FInvoiceFindObject == null)
                 {
                     FInvoiceFindObject = TRemote.MFinance.AP.UIConnectors.Find();
-                    // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
-                    TEnsureKeepAlive.Register(FInvoiceFindObject);
                 }
 
                 ucoOutstandingInvoices.LoadInvoices();
@@ -322,8 +320,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if (FSupplierFindObject == null)
                 {
                     FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
-                    // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
-                    TEnsureKeepAlive.Register(FSupplierFindObject);
                 }
 
                 ucoSuppliers.LoadSuppliers();
@@ -336,15 +332,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             if (FSupplierFindObject != null)
             {
-                // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
-                TEnsureKeepAlive.UnRegister(FSupplierFindObject);
+                // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
+                TUIConnectorLifetimeHandling.ReleaseUIConnector((IDisposable)FSupplierFindObject);
                 FSupplierFindObject = null;
             }
 
             if (FInvoiceFindObject != null)
             {
-                // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
-                TEnsureKeepAlive.UnRegister(FInvoiceFindObject);
+                // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
+                TUIConnectorLifetimeHandling.ReleaseUIConnector((IDisposable)FInvoiceFindObject);
                 FInvoiceFindObject = null;
             }
         }

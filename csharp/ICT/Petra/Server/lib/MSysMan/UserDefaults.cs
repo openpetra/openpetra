@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,6 +31,7 @@ using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Common.Data;
@@ -874,15 +875,18 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                 if (AUserName == UserInfo.GUserInfo.UserID)
                 {
                     // Queue a ClientTask to the current User's PetraClient
-                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH, "All", 1);
+                    DomainManager.CurrentClient.FTasksManager.ClientTaskAdd(
+                        SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH, "All",
+                        null, null, null, null, 1);
                 }
                 else
                 {
                     // Queue a ClientTask to any but the current User's PetraClient
-                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(AUserName,
+                    TClientManager.QueueClientTask(AUserName,
                         SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                         "All",
-                        1);
+                        null, null, null, null,
+                        1, DomainManager.GClientID);
                 }
             }
             else
@@ -899,25 +903,29 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                 if (AUserName == UserInfo.GUserInfo.UserID)
                 {
                     // Queue a ClientTask to the current User's PetraClient
-                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
-                        SingleOrMultipleIndicator,
-                        AChangedUserDefaultCode,
-                        AChangedUserDefaultValue,
-                        AChangedUserDefaultModId,
-                        null,
-                        1);
+                    if (DomainManager.CurrentClient != null)
+                    {
+                        DomainManager.CurrentClient.FTasksManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
+                            SingleOrMultipleIndicator,
+                            AChangedUserDefaultCode,
+                            AChangedUserDefaultValue,
+                            AChangedUserDefaultModId,
+                            null,
+                            1);
+                    }
                 }
 
                 // Send the same ClientTask to all other running PetraClient instances where
                 // the same user is logged in!
-                Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(AUserName,
+                TClientManager.QueueClientTask(AUserName,
                     SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                     SingleOrMultipleIndicator,
                     AChangedUserDefaultCode,
                     AChangedUserDefaultValue,
                     AChangedUserDefaultModId,
                     null,
-                    1);
+                    1,
+                    DomainManager.GClientID);
             }
         }
 

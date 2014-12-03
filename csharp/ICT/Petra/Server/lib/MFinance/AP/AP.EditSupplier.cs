@@ -59,7 +59,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     ///</summary>
-    public class TSupplierEditUIConnector : TConfigurableMBRObject, IAPUIConnectorsSupplierEdit
+    public class TSupplierEditUIConnector : IAPUIConnectorsSupplierEdit
     {
         /// <summary>
         /// constructor

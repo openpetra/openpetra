@@ -37,7 +37,7 @@ namespace Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors
     /// <summary>
     /// User Interface Connector for table maintenance
     /// </summary>
-    public class TSysManTableMaintenanceUIConnector : TConfigurableMBRObject, ISysManUIConnectorsTableMaintenance
+    public class TSysManTableMaintenanceUIConnector : ISysManUIConnectorsTableMaintenance
     {
         /// <summary>
         /// Constructor

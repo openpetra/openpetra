@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,13 +39,6 @@ namespace Ict.Common.Remoting.Shared
     {
     }
 
-    /// for keeping UIConnector objects alive
-    public interface IKeepAlive
-    {
-        /// keep alive
-        void KeepAlive();
-    }
-
     /// <summary>
     /// some constants that are useful for Remoting
     /// </summary>
@@ -56,6 +49,9 @@ namespace Ict.Common.Remoting.Shared
 
         /// <summary>Remoting URL Identifiers</summary>
         public const String REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS = "PollClientTasks";
+
+        /// <summary>ClientTask TaskGroups</summary>
+        public const String CLIENTTASKGROUP_DISCONNECT = "DISCONNECT";
     }
 
     /// an interface for cacheable tables manager

@@ -167,7 +167,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         /// access this partner</param>
         /// <returns>true if Partner was found in DB or Partner key = 0, otherwise false</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static Boolean VerifyPartner(Int64 APartnerKey,
+        public static Boolean VerifyPartnerAndGetDetails(Int64 APartnerKey,
             out String APartnerShortName,
             out TPartnerClass APartnerClass,
             out Boolean AIsMergedPartner,

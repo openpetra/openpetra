@@ -44,9 +44,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
     /// These Business Objects handle the retrieval, verification and saving of data.
     ///
     /// @Comment These Business Objects can be instantiated by other Server Objects
-    ///          (usually UIConnectors) and also directly from the Instantiator
-    ///          classes (only when it makes sense AND they derive from
-    ///          TConfigurableMBRObject).
+    ///          (usually UIConnectors).
     /// </summary>
     public static class TExtractsHandling
     {

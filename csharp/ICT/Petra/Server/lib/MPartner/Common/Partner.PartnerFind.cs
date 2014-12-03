@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,8 +30,10 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Session;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -50,18 +52,15 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         /// <summary>Paged query object</summary>
         TPagedDataSet FPagedDataSetObject;
 
-        /// <summary>Asynchronous execution control object</summary>
-        TAsynchronousExecutionProgress FAsyncExecProgress;
-
         /// <summary>Thread that is used for asynchronously executing the Find query</summary>
         Thread FFindThread;
 
-        /// <summary>Returns reference to the Asynchronous execution control object to the caller</summary>
-        public TAsynchronousExecutionProgress AsyncExecProgress
+        /// <summary>Returns current state of progress</summary>
+        public TProgressState Progress
         {
             get
             {
-                return FAsyncExecProgress;
+                return FPagedDataSetObject.Progress;
             }
         }
 
@@ -89,15 +88,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             DataRow CriteriaRow;
             TLogging.LogAtLevel(7, "TPartnerFind.PerformSearch called.");
 
-            FAsyncExecProgress = new TAsynchronousExecutionProgress();
             FPagedDataSetObject = new TPagedDataSet(new PartnerFindTDSSearchResultTable());
-
-            /* Pass the TAsynchronousExecutionProgress object to FPagedDataSetObject so that it
-             * can update execution status */
-            FPagedDataSetObject.AsyncExecProgress = FAsyncExecProgress;
-
-            // Register Event Handler for the StopAsyncronousExecution event
-            FAsyncExecProgress.StopAsyncronousExecution += new System.EventHandler(this.StopSearch);
 
             // Build WHERE criteria string based on AFindCriteria
             CustomWhereCriteria = BuildCustomWhereCriteria(ACriteriaData, out ParametersArray);
@@ -246,12 +237,18 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 ColumnNameMapping,
                 ParametersArray);
 
+            string session = TSession.GetSessionID();
+            
             //
             // Start the Find Thread
             //
             try
             {
-                FFindThread = new Thread(new ThreadStart(FPagedDataSetObject.ExecuteQuery));
+                ThreadStart myThreadStart = delegate {
+                                FPagedDataSetObject.ExecuteQuery(session);
+                };
+                FFindThread = new Thread(myThreadStart);
+                FFindThread.Name = "PartnerFindPerformSearch" + Guid.NewGuid().ToString();
                 FFindThread.Start();
             }
             catch (Exception)
@@ -281,15 +278,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             System.Text.StringBuilder sb;
             TLogging.LogAtLevel(7, "TPartnerFind.PerformSearchByBankDetails called.");
 
-            FAsyncExecProgress = new TAsynchronousExecutionProgress();
             FPagedDataSetObject = new TPagedDataSet(new PartnerFindTDSSearchResultTable());
-
-            /* Pass the TAsynchronousExecutionProgress object to FPagedDataSetObject so that it
-             * can update execution status */
-            FPagedDataSetObject.AsyncExecProgress = FAsyncExecProgress;
-
-            // Register Event Handler for the StopAsyncronousExecution event
-            FAsyncExecProgress.StopAsyncronousExecution += new System.EventHandler(this.StopSearch);
 
             // Build WHERE criteria string based on AFindCriteria
             CustomWhereCriteria = BuildCustomWhereCriteriaForBankDetails(ACriteriaData, out ParametersArray);
@@ -369,12 +358,17 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 ColumnNameMapping,
                 ParametersArray);
 
+            string session = TSession.GetSessionID();
+            
             //
             // Start the Find Thread
             //
             try
             {
-                FFindThread = new Thread(new ThreadStart(FPagedDataSetObject.ExecuteQuery));
+                ThreadStart myThreadStart = delegate {
+                                FPagedDataSetObject.ExecuteQuery(session);
+                };                
+                FFindThread = new Thread(myThreadStart);
                 FFindThread.Start();
             }
             catch (Exception)
@@ -1017,8 +1011,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         /// <summary>
         /// Stops the query execution.
         ///
-        /// Is intended to be called as an Event from FAsyncExecProgress.Cancel.
-        ///
         /// @comment It might take some time until the executing query is cancelled by
         /// the DB, but this procedure returns immediately. The reason for this is that
         /// we consider the query cancellation as done since the application can
@@ -1027,11 +1019,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         /// errors that state that a ADO.NET command is still executing!).
         ///
         /// </summary>
-        /// <param name="ASender">Object that requested the stopping (not evaluated)</param>
-        /// <param name="AArgs">(not evaluated)
-        /// </param>
-        /// <returns>void</returns>
-        public void StopSearch(object ASender, EventArgs AArgs)
+        public void StopSearch()
         {
             Thread StopQueryThread;
 
@@ -1042,6 +1030,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
             ThreadStart ThreadStartDelegate = new ThreadStart(FPagedDataSetObject.StopQuery);
             StopQueryThread = new Thread(ThreadStartDelegate);
+            StopQueryThread.Name = "PartnerFindStopQuery" + Guid.NewGuid().ToString();
             StopQueryThread.Start();
 
             /* It might take some time until the executing query is cancelled by the DB,

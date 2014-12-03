@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,7 +61,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>how long did it take to calculate the report</summary>
         protected TimeSpan Duration;
-        private IReportingUIConnectorsReportGenerator FReportingGenerator;
+        private TMReportingNamespace.TReportingUIConnectorsNamespace.TReportGeneratorUIConnector FReportingGenerator;
         private Boolean FKeepUpProgressCheck;
 
         /// <summary>
@@ -472,11 +472,9 @@ namespace Ict.Petra.Client.MReporting.Logic
             Thread ProgressCheckThread;
 
             ReturnValue = false;
-            FReportingGenerator = TRemote.MReporting.UIConnectors.ReportGenerator();
+            FReportingGenerator = (TMReportingNamespace.TReportingUIConnectorsNamespace.TReportGeneratorUIConnector)TRemote.MReporting.UIConnectors.ReportGenerator();
             FKeepUpProgressCheck = true;
 
-            // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
-            TEnsureKeepAlive.Register(FReportingGenerator);
             try
             {
                 this.Results = new TResultList();
@@ -488,8 +486,8 @@ namespace Ict.Petra.Client.MReporting.Logic
             {
                 TLogging.Log(e.Message);
 
-                // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
-                TEnsureKeepAlive.UnRegister(FReportingGenerator);
+                // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
+                TUIConnectorLifetimeHandling.ReleaseUIConnector(FReportingGenerator);
 
                 return false;
             }
@@ -502,8 +500,8 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             ReturnValue = FReportingGenerator.GetSuccess();
 
-            // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
-            TEnsureKeepAlive.UnRegister(FReportingGenerator);
+            // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
+            TUIConnectorLifetimeHandling.ReleaseUIConnector(FReportingGenerator);
 
             if (ReturnValue)
             {
@@ -530,9 +528,6 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         private void AsyncProgressCheckThread()
         {
-            TAsyncExecProgressState ProgressState;
-            Int16 ProgressPercentage;
-            String ProgressInformation;
             String OldLoggingText;
             DateTime startTime;
 
@@ -541,36 +536,32 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             while (FKeepUpProgressCheck)
             {
-                FReportingGenerator.AsyncExecProgress.ProgressCombinedInfo(out ProgressState, out ProgressPercentage, out ProgressInformation);
+                TProgressState state = FReportingGenerator.Progress;
 
-                switch (ProgressState)
+                if (state.JobFinished)
                 {
-                    case TAsyncExecProgressState.Aeps_Finished:
-                        this.Duration = DateTime.Now - startTime;
+                    this.Duration = DateTime.Now - startTime;
 
-                        if (FReportingGenerator.GetSuccess() == true)
-                        {
-                            this.Parameters.LoadFromDataTable(FReportingGenerator.GetParameter());
-                            this.Results.LoadFromDataTable(FReportingGenerator.GetResult());
-                            this.Results.SetMaxDisplayColumns(this.Parameters.Get("MaxDisplayColumns").ToInt());
-                        }
-                        else
-                        {
-                            TLogging.Log(FReportingGenerator.GetErrorMessage());
-                        }
+                    if (FReportingGenerator.GetSuccess() == true)
+                    {
+                        this.Parameters.LoadFromDataTable(FReportingGenerator.GetParameter());
+                        this.Results.LoadFromDataTable(FReportingGenerator.GetResult());
+                        this.Results.SetMaxDisplayColumns(this.Parameters.Get("MaxDisplayColumns").ToInt());
+                    }
+                    else
+                    {
+                        TLogging.Log(FReportingGenerator.GetErrorMessage());
+                    }
 
-                        FKeepUpProgressCheck = false;
-                        break;
-
-                    default:
-
-                        if ((ProgressInformation != null) && (!OldLoggingText.Equals(ProgressInformation)))
-                        {
-                            TLogging.Log(ProgressInformation, TLoggingType.ToStatusBar);
-                            OldLoggingText = ProgressInformation;
-                        }
-
-                        break;
+                    FKeepUpProgressCheck = false;
+                }
+                else
+                {
+                    if ((state.StatusMessage != null) && (!OldLoggingText.Equals(state.StatusMessage)))
+                    {
+                        TLogging.Log(state.StatusMessage, TLoggingType.ToStatusBar);
+                        OldLoggingText = state.StatusMessage;
+                    }
                 }
 
                 if (FKeepUpProgressCheck)

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Data;
 using System.Configuration;
 using System.IO;
 using System.Security.Principal;
+using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
@@ -34,7 +35,7 @@ using Ict.Testing.NUnitTools;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.CallForwarding;
+using Ict.Petra.Server.App.Delegates;
 
 namespace Ict.Testing.NUnitPetraServer
 {
@@ -47,8 +48,6 @@ namespace Ict.Testing.NUnitPetraServer
     /// AutoLoginPasswd
     public class TPetraServerConnector
     {
-        private static TClientDomainManager FDomain = null;
-
         /// <summary>
         /// Initialize the Petra server and connect to the database.
         /// this overload looks for the config file itself
@@ -82,7 +81,7 @@ namespace Ict.Testing.NUnitPetraServer
             CommonNUnitFunctions.InitRootPath();
 
             Catalog.Init();
-            TServerManager ServerManager = new TServerManager();
+            TServerManager.TheServerManager = new TServerManager();
 
             DBAccess.GDBAccessObj = new TDataBase();
             DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
@@ -91,34 +90,34 @@ namespace Ict.Testing.NUnitPetraServer
                 TSrvSetting.DBUsername, TSrvSetting.DBPassword, "");
 
             bool SystemEnabled;
-            int ProcessID;
-            TPetraPrincipal UserInfo = (TPetraPrincipal)TClientManager.PerformLoginChecks(TAppSettingsManager.GetValue("AutoLogin").ToUpper(),
+            string WelcomeMessage;
+            IPrincipal ThisUserInfo;
+            Int32 ClientID;
+
+            TConnectedClient CurrentClient = TClientManager.ConnectClient(
+                TAppSettingsManager.GetValue("AutoLogin").ToUpper(),
                 TAppSettingsManager.GetValue("AutoLoginPasswd"),
-                "NUNITTEST", "127.0.0.1", out ProcessID, out SystemEnabled);
-
-            if (FDomain != null)
-            {
-                FDomain.StopClientAppDomain();
-            }
-
-            TClientManager ClientManager = new TClientManager();
-            DomainManager.UClientManagerCallForwarderRef = new TClientManagerCallForwarder(ClientManager);
-
-            // do the same as in Ict.Petra.Server.App.Main.TRemoteLoader.LoadDomainManagerAssembly
-            FDomain = new TClientDomainManager("0",
+                "NUNITTEST", "127.0.0.1",
+                TFileVersionInfo.GetApplicationVersion().ToVersion(),
                 TClientServerConnectionType.csctLocal,
-                DomainManager.UClientManagerCallForwarderRef,
-                new TSystemDefaultsCache(),
-                new TCacheableTablesManager(null),
-                UserInfo);
-            FDomain.InitAppDomain(TSrvSetting.ServerSettings);
+                out ClientID,
+                out WelcomeMessage,
+                out SystemEnabled,
+                out ThisUserInfo);
 
-            new TCallForwarding();
+            // the following values are stored in the session object
+            DomainManager.GClientID = ClientID;
+            DomainManager.CurrentClient = CurrentClient;
+            UserInfo.GUserInfo = (TPetraPrincipal)ThisUserInfo;
 
-            // we don't need to establish the database connection anymore
-            // FDomain.EstablishDBConnection();
+            TSetupDelegates.Init();
+            TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
+            DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(
+                Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
 
-            return ServerManager;
+            StringHelper.CurrencyFormatTable = DBAccess.GDBAccessObj.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", null);
+
+            return (TServerManager)TServerManager.TheServerManager;
         }
 
         /// <summary>
@@ -126,9 +125,7 @@ namespace Ict.Testing.NUnitPetraServer
         /// </summary>
         public static void Disconnect()
         {
-            FDomain.CloseDBConnection();
-            FDomain.StopClientAppDomain();
-            FDomain = null;
+            DomainManager.CurrentClient.EndSession();
         }
     }
 }

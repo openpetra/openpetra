@@ -179,7 +179,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         [RequireModulePermission("none")]
         public static Int32 GenerateReportOnClient(String ReportName, String Params)
         {
-            return DomainManagerBase.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_REPORT, ReportName, Params,
+            return DomainManager.CurrentClient.FTasksManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_REPORT, ReportName, Params,
                 null, null, null, 1);
         }
     }

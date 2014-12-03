@@ -79,6 +79,7 @@ namespace Ict.Common.Remoting.Client
                 ClientTaskInstance = (TClientTaskInstanceBase)Activator.CreateInstance(ClientTasksInstanceType);
                 ClientTaskInstance.ClientTask = NewEntryRow;
                 ClientTaskThread = new Thread(new ThreadStart(ClientTaskInstance.Execute));
+                ClientTaskThread.Name = "ClientTasks" + Guid.NewGuid().ToString();
                 ClientTaskThread.Start();
             }
         }

@@ -4,7 +4,7 @@
 // @Authors:
 //       timh, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Session;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Server.MCommon.Data.Cascading;
@@ -48,20 +49,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
     /// Partner Location Search Screen UIConnector
     ///
     /// </summary>
-    public class TPartnerLocationFindUIConnector : TConfigurableMBRObject, IPartnerUIConnectorsPartnerLocationFind
+    public class TPartnerLocationFindUIConnector : IPartnerUIConnectorsPartnerLocationFind
     {
-        private TAsynchronousExecutionProgress FAsyncExecProgress;
         private Thread FFindThread;
         private TPagedDataSet FPagedDataSetObject;
 
-        /// <summary>Property accessor Returns reference to the Asynchronous execution control object to the caller</summary>
-        public IAsynchronousExecutionProgress AsyncExecProgress
+        /// <summary>Get the current state of progress</summary>
+        public TProgressState Progress
         {
             get
             {
-                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
-                    typeof(TAsynchronousExecutionProgressRemote),
-                    FAsyncExecProgress);
+                return FPagedDataSetObject.Progress;
             }
         }
 
@@ -77,9 +75,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             OdbcParameter miParam;
             DataRow CriteriaRow;
 
-            FAsyncExecProgress = new TAsynchronousExecutionProgress();
             FPagedDataSetObject = new TPagedDataSet(new PartnerFindTDSSearchResultTable());
-            FPagedDataSetObject.AsyncExecProgress = FAsyncExecProgress;
             ColumnNameMapping = null;
 
             // get the first and only row
@@ -170,16 +166,25 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // where
             // order by
             // both empty for now
+            
+            string session = TSession.GetSessionID();
+            
+            //
+            // Start the Find Thread
+            //
             try
             {
-                ThreadStart ThreadStartDelegate = new ThreadStart(FPagedDataSetObject.ExecuteQuery);
-                FFindThread = new Thread(ThreadStartDelegate);
+                ThreadStart myThreadStart = delegate {
+                                FPagedDataSetObject.ExecuteQuery(session);
+                };                
+                FFindThread = new Thread(myThreadStart);
+                FFindThread.Name = "PartnerLocationFind" + Guid.NewGuid().ToString();
                 FFindThread.Start();
             }
             catch (Exception)
             {
                 throw;
-            }
+            }            
         }
 
 /*

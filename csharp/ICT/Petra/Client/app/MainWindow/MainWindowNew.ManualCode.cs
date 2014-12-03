@@ -68,7 +68,9 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private static bool FConferenceSelected = false;
         private static Int64 FConferenceKey = 0;
+#if TODORemoting
         private PetraClient_AutomatedAppTest.TAutomatedAppTest TestRunner;
+#endif
 
         private bool FTaxDeductiblePercentageEnabled = false;
 
@@ -189,6 +191,7 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             string DisconnectTimeFromCommandLine = TAppSettingsManager.GetValue("DisconnectTime");
 
+#if TODORemoting
             if (TAppSettingsManager.GetBoolean("RunAutoTests", false) == true)
             {
                 // We need to manually 'fix up' the value of DisconnectTime that we get from .NET when we request
@@ -210,7 +213,10 @@ namespace Ict.Petra.Client.App.PetraClient
                 TestRunner.ClientID = TConnectionManagementBase.GConnectionManagement.ClientID;
                 TestRunner.Start(this);
             }
-            else if (System.Windows.Forms.Form.ModifierKeys != Keys.Control)
+            else
+#endif
+
+            if (System.Windows.Forms.Form.ModifierKeys != Keys.Control)
             {
                 string testAction = TAppSettingsManager.GetValue("TestAction");
 

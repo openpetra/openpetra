@@ -4,7 +4,7 @@
 // @Authors:
 //		 Taylor Students
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,7 +40,7 @@ namespace Ict.Testing.ControlTestBench
         [STAThread]
         private static void Main(string[] args)
         {
-            new TLogging("ControlTestBench.log");
+            new TLogging("../../log/ControlTestBench.log");
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

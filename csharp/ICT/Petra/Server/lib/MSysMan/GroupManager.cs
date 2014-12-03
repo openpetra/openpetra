@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,8 +22,11 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+using Ict.Common;
+using Ict.Common.DB;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MSysMan.Data.Access;
 
 namespace Ict.Petra.Server.MSysMan.Security
 {
@@ -31,20 +34,41 @@ namespace Ict.Petra.Server.MSysMan.Security
     /// The TGroupManager class provides functions to work with the Security Groups
     /// and Users' Security Groups of a Petra DB.
     /// </summary>
-    /// <remarks>
-    /// Calls methods that have the same name in the
-    /// Ict.Petra.Server.App.Core.Security.GroupManager Namespace to perform its
-    /// functionality!</remarks>
     public class TGroupManager
     {
         /// <summary>
-        /// call Server.App.Core.Security.TGroupManager.LoadUserGroups
+        /// load the groups of the given user
         /// </summary>
         /// <param name="AUserID"></param>
         /// <returns></returns>
         public static SUserGroupTable LoadUserGroups(String AUserID)
         {
-            return Ict.Petra.Server.App.Core.Security.TGroupManager.LoadUserGroups(AUserID);
+            SUserGroupTable ReturnValue;
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+                if (SUserGroupAccess.CountViaSUser(AUserID, ReadTransaction) > 0)
+                {
+                    ReturnValue = SUserGroupAccess.LoadViaSUser(AUserID, ReadTransaction);
+                }
+                else
+                {
+                    ReturnValue = new SUserGroupTable();
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(9, "TGroupManager.LoadUserGroups: committed own transaction.");
+                }
+            }
+            return ReturnValue;
         }
     }
 }

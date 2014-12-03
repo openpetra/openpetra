@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -99,7 +99,7 @@ namespace Ict.Tools.NAntTasks
 
                 process.StartInfo.FileName = exeName;
 
-                process.StartInfo.Arguments = "\"" + FAssemblyName + "\"";
+                process.StartInfo.Arguments = "\"" + FAssemblyName + "\" /result=../../log/TestResult.xml";
             }
 
             if (FTestCase.Length > 0)

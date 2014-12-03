@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,10 +22,12 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.IO;
+using System.Collections;
 using System.Data;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Threading;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -221,6 +223,60 @@ namespace Ict.Testing.NUnitTools
         }
 
         /// <summary>
+        /// execute commands in the server admin console
+        /// </summary>
+        public static string OpenPetraServerAdminConsole(string ACommand, string AParameters = "")
+        {
+            Process process = new Process();
+
+            string argument = "-Command:" + ACommand;
+
+            if (Ict.Common.Utilities.DetermineExecutingOS() >= TExecutingOSEnum.eosWinNTOrLater)
+            {
+                process.StartInfo.FileName = "PetraServerAdminConsole.exe";
+                process.StartInfo.Arguments = "-C:../../etc/ServerAdmin.config " + argument + " " + AParameters;
+            }
+            else
+            {
+                process.StartInfo.FileName = "mono";
+                process.StartInfo.Arguments = "PetraServerAdminConsole.exe -C:../../etc/ServerAdmin.config " + argument + " " + AParameters;
+            }
+
+            process.StartInfo.WorkingDirectory = rootPath + "/delivery/bin".Replace('/', Path.DirectorySeparatorChar);
+            process.StartInfo.UseShellExecute = false;
+            process.EnableRaisingEvents = false;
+            process.StartInfo.ErrorDialog = false;
+            process.StartInfo.RedirectStandardOutput = true;
+
+            if (!process.Start())
+            {
+                TLogging.Log("failed to start " + process.StartInfo.FileName + " " + process.StartInfo.Arguments);
+            }
+            else
+            {
+                process.WaitForExit(60000);
+                Debug.Print("OS says OpenPetraServerAdminConsole process is finished");
+            }
+
+            if (process.ExitCode != 0)
+            {
+                throw new Exception("OpenPetraServerAdminConsole did not succeed");
+            }
+
+            return process.StandardOutput.ReadToEnd();
+        }
+
+        /// <summary>
+        /// start the OpenPetra server
+        /// </summary>
+        public static void StartOpenPetraServer(string AParameters = "")
+        {
+            CommonNUnitFunctions.nant("startServer " + AParameters, false);
+            // wait a few seconds, otherwise the client will not connect
+            Thread.Sleep(Convert.ToInt32(TimeSpan.FromSeconds(5.0).TotalMilliseconds));
+        }
+
+        /// <summary>
         /// Actually this setting shall be done manually.
         /// </summary>
         private static string pathAndFileNameToNantExe = "nant";
@@ -230,7 +286,7 @@ namespace Ict.Testing.NUnitTools
         /// </summary>
         /// <param name="argument"></param>
         /// <param name="ignoreError"></param>
-        private static void nant(String argument, bool ignoreError)
+        public static void nant(String argument, bool ignoreError)
         {
             Process NantProcess = new Process();
 
@@ -245,12 +301,6 @@ namespace Ict.Testing.NUnitTools
             {
                 NantProcess.StartInfo.FileName = pathAndFileNameToNantExe;
                 NantProcess.StartInfo.Arguments = argument.Replace("\\", "/") + " -logfile:nant.txt";
-            }
-
-            // this is needed for running the NUnit tests with sqlite on Jenkins
-            if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "sqlite")
-            {
-                NantProcess.StartInfo.Arguments += " -D:DBMS.Type=sqlite -D:DBMS.Password=";
             }
 
             NantProcess.StartInfo.WorkingDirectory = rootPath;
@@ -270,16 +320,20 @@ namespace Ict.Testing.NUnitTools
 
             string nantLogFile = rootPath + Path.DirectorySeparatorChar + "nant.txt";
 
-            if (!File.Exists(nantLogFile))
+            if (File.Exists(nantLogFile))
             {
-                FileStream fs = File.Create(nantLogFile);
-                fs.Close();
+                try
+                {
+                    StreamReader sr = new StreamReader(nantLogFile);
+                    TLogging.Log(sr.ReadToEnd());
+                    sr.Close();
+                    File.Delete(nantLogFile);
+                }
+                catch (System.IO.IOException)
+                {
+                    TLogging.Log("Problem reading log file, but continuing anyway: " + nantLogFile);
+                }
             }
-
-            StreamReader sr = new StreamReader(nantLogFile);
-            TLogging.Log(sr.ReadToEnd());
-            sr.Close();
-            File.Delete(rootPath + Path.DirectorySeparatorChar + "nant.txt");
 
             if ((NantProcess.ExitCode != 0) && !ignoreError)
             {
@@ -346,7 +400,6 @@ namespace Ict.Testing.NUnitTools
     /// Actually the common date format looks like "dd-MMM-yyyy" and so we are dealing
     /// with strings like "This Date is valid from 17-JAN-2009 to 21-FEB-2010".
     /// </summary>
-
     public class DateConverter
     {
         MatchCollection matchCollection;

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         [RequireModulePermission("NONE")]
         public static bool GetCurrentState(out string ACaption, out string AStatusMessage, out int APercentageDone, out bool AJobFinished)
         {
-            TProgressTracker.TProgressState state = TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString());
+            TProgressState state = TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString());
 
             ACaption = state.Caption;
             AStatusMessage = state.StatusMessage;

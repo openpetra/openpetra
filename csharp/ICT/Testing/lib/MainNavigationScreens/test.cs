@@ -4,7 +4,7 @@
 // @Authors:
 //       timop and mitchvz
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,7 +60,7 @@ namespace Tests.MainNavigationScreens
             // nant ResetDatabase
             // nant startPetraServer
             // this may take some time ....
-            new TLogging("TestClient_MainNavigationTest.log");
+            new TLogging("../../log/TestClient_MainNavigationTest.log");
 
             // clear the log file
             using (FileStream stream = new FileStream("TestClient_MainNavigationTest.log", FileMode.Create))

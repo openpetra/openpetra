@@ -37,25 +37,6 @@ namespace Ict.Petra.Server.App.Core
     /// </summary>
     public class TProgressTracker
     {
-        /// <summary>
-        /// current state of the long-running procedure
-        /// </summary>
-        public class TProgressState
-        {
-            /// percentage done
-            public int PercentageDone = -1;
-            /// overall amount
-            public decimal AbsoluteOverallAmount = 100.0m;
-            /// status message, which changes during the procedure
-            public string StatusMessage = string.Empty;
-            /// caption, overall description of job
-            public string Caption = string.Empty;
-            /// the client can ask the procedure to stop
-            public bool CancelJob = false;
-            /// if the job has finished, this is set to true. note: sometimes percentage might be inaccurate, or not present at all
-            public bool JobFinished = false;
-        }
-
         private static SortedList <string, TProgressState>FProgressStates = new SortedList <string, TProgressState>();
 
         /// <summary>
@@ -91,7 +72,7 @@ namespace Ict.Petra.Server.App.Core
         /// <returns></returns>
         static public TProgressState GetCurrentState(string AClientID)
         {
-            if (FProgressStates.ContainsKey(AClientID))
+            if ((AClientID != null) && FProgressStates.ContainsKey(AClientID))
             {
                 if (FProgressStates[AClientID].PercentageDone > 100)
                 {
@@ -112,26 +93,24 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         /// <param name="AClientID"></param>
         /// <param name="AStatusMessage"></param>
-        /// <param name="ACurrentAbsolutAmount"></param>
-        static public void SetCurrentState(string AClientID, string AStatusMessage, Decimal ACurrentAbsolutAmount)
+        /// <param name="ACurrentAbsoluteAmount"></param>
+        static public void SetCurrentState(string AClientID, string AStatusMessage, Decimal ACurrentAbsoluteAmount)
         {
-            if (AClientID == null)
-            {
-                // see https://tracker.openpetra.org/view.php?id=1789
-                // this should not happen???
-                TLogging.Log("TProgressTracker.SetCurrentState: ClientID is null: " + (DomainManager.GClientID.ToString() == null).ToString());
-                return;
-            }
-
             if (FProgressStates.ContainsKey(AClientID))
             {
                 TProgressState state = FProgressStates[AClientID];
-                state.StatusMessage = AStatusMessage;
-                state.PercentageDone = Convert.ToInt32((ACurrentAbsolutAmount / state.AbsoluteOverallAmount) * 100.0m);
+
+                if (AStatusMessage.Length > 0)
+                {
+                    state.StatusMessage = AStatusMessage;
+                }
+
+                state.PercentageDone = Convert.ToInt32((ACurrentAbsoluteAmount / state.AbsoluteOverallAmount) * 100.0m);
 
                 if (TLogging.DebugLevel >= DEBUG_PROGRESS)
                 {
-                    TLogging.Log(state.PercentageDone.ToString() + "%: " + state.StatusMessage);
+                    // avoid recursive calls, especially during report calculation
+                    Console.WriteLine(state.PercentageDone.ToString() + "%: " + state.StatusMessage);
                 }
             }
         }

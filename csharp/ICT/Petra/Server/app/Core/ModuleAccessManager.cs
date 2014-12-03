@@ -359,4 +359,17 @@ namespace Ict.Petra.Server.App.Core.Security
         /// </summary>
         public readonly string RequiredModulesExpression;
     }
+
+    /// <summary>
+    /// attribute for annotation of server functions. Instantiator will check access permissions
+    /// </summary>
+    public class CheckServerAdminTokenAttribute : System.Attribute
+    {
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public CheckServerAdminTokenAttribute()
+        {
+        }
+    }
 }

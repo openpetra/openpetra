@@ -4,7 +4,7 @@
 // @Authors:
 //       petrih, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,6 +31,7 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
@@ -65,49 +66,47 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
     ///          are also UIConnectors are feasible.
     ///
     /// </summary>
-    public class TExtractsAddSubscriptionsUIConnector : TConfigurableMBRObject, IPartnerUIConnectorsExtractsAddSubscriptions
+    public class TExtractsAddSubscriptionsUIConnector : IPartnerUIConnectorsExtractsAddSubscriptions
     {
         private const Int32 MAX_PERCENTAGE_CHECKS = 70;
         private System.Int32 FExtractID;
         private DataTable FSubmissionDT;
-        private TAsynchronousExecutionProgress FAsyncExecProgress;
         private TVerificationResultCollection FVerificationResult;
         private TSubmitChangesResult FSubmitResult;
         private DataTable FResponseDT;
         private PSubscriptionTable FInspectDT;
         private Exception FSubmitException;
+        private string FProgressID;
 
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public IAsynchronousExecutionProgress AsyncExecProgress
+        /// <summary>Get the current state of progress</summary>
+        public TProgressState Progress
         {
             get
             {
                 if (FSubmitException == null)
                 {
-                    if (FAsyncExecProgress.ProgressPercentage >= MAX_PERCENTAGE_CHECKS)
+                    TProgressState state = TProgressTracker.GetCurrentState(FProgressID);
+
+                    if (state.PercentageDone >= MAX_PERCENTAGE_CHECKS)
                     {
                         if ((FSubmissionDT.Rows.Count > 0) && (TTypedDataAccess.RowCount > 0))
                         {
-                            FAsyncExecProgress.ProgressPercentage =
+                            state.PercentageDone =
                                 (Int16)(MAX_PERCENTAGE_CHECKS +
                                         Convert.ToInt16(((double)(TTypedDataAccess.RowCount) /
                                                          (double)(FSubmissionDT.Rows.Count)) * (100 - MAX_PERCENTAGE_CHECKS)));
+                            TProgressTracker.SetCurrentState(FProgressID, string.Empty, state.PercentageDone);
                         }
                     }
+
+                    return state;
                 }
                 else
                 {
                     throw FSubmitException;
                 }
-
-                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
-                    typeof(TAsynchronousExecutionProgressRemote),
-                    FAsyncExecProgress);
             }
         }
-
 
         /// <summary>
         /// constructor
@@ -129,15 +128,15 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
             // Cleanup (might be left in a certain state from a possible earlier call)
             FSubmitException = null;
             FSubmissionDT = null;
-            FAsyncExecProgress = null;
             FVerificationResult = null;
             FResponseDT = null;
             FInspectDT = null;
-            this.FAsyncExecProgress = new TAsynchronousExecutionProgress();
-            this.FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_ReadyToStart;
+            FProgressID = Guid.NewGuid().ToString();
+            TProgressTracker.InitProgressTracker(FProgressID, string.Empty, 100.0m);
             FInspectDT = AInspectDT;
             ThreadStart ThreadStartDelegate = new ThreadStart(SubmitChangesInternal);
             TheThread = new Thread(ThreadStartDelegate);
+            TheThread.Name = "ExtractsAddSubscriptionsSubmitChanges" + Guid.NewGuid().ToString();
             TheThread.Start();
             TLogging.LogAtLevel(6, "TExtractsAddSubscriptionsUIConnector.SubmitChangesAsync thread started.");
         }
@@ -199,8 +198,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 RowCounter = 0;
 
                 // Set up asynchronous execution
-                FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Executing;
-                FAsyncExecProgress.ProgressInformation = "Checking Partners' Subscriptions...";
+                TProgressTracker.SetCurrentState(FProgressID, "Checking Partners' Subscriptions...", 0.0m);
                 try
                 {
                     SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -215,8 +213,10 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                         RowCounter = RowCounter + 1;
 
                         // Calculate how much Partners we have checked. Let all Partners be a maximum of 70%.
-                        FAsyncExecProgress.ProgressPercentage =
-                            Convert.ToInt16((((double)RowCounter / (double)PartnersInExtract) * 100) * (MAX_PERCENTAGE_CHECKS / 100.0));
+                        TProgressTracker.SetCurrentState(
+                            FProgressID,
+                            string.Empty,
+                            Convert.ToInt16((((double)RowCounter / (double)PartnersInExtract) * 100) * (MAX_PERCENTAGE_CHECKS / 100.0)));
                         TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: loadbyPrimaryKey");
 
                         SubscriptionTable = PSubscriptionAccess.LoadByPrimaryKey(
@@ -255,8 +255,10 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                     if (FSubmissionDT.Rows.Count > 0)
                     {
                         // Submit the Partners with new Subscriptions to the PSubscription Table.
-                        FAsyncExecProgress.ProgressInformation = "Adding Subscriptions to " + FSubmissionDT.Rows.Count.ToString() + " Partners...";
-                        FAsyncExecProgress.ProgressPercentage = MAX_PERCENTAGE_CHECKS;
+                        TProgressTracker.SetCurrentState(
+                            FProgressID,
+                            "Adding Subscriptions to " + FSubmissionDT.Rows.Count.ToString() + " Partners...",
+                            MAX_PERCENTAGE_CHECKS);
 //                      TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: " + FAsyncExecProgress.ProgressInformation);
 
                         PSubscriptionAccess.SubmitChanges((PSubscriptionTable)FSubmissionDT, SubmitChangesTransaction);
@@ -280,7 +282,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
 
                     FSubmitResult = TSubmitChangesResult.scrError;
                     FSubmitException = Exp;
-                    FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
+                    TProgressTracker.CancelJob(FProgressID);
 
                     return;
                 }
@@ -296,8 +298,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 FResponseDT = new DataTable();
             }
 
-            FAsyncExecProgress.ProgressPercentage = 100;
-            FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Finished;
+            TProgressTracker.FinishJob(FProgressID);
             FSubmitResult = SubmissionResult;
         }
     }

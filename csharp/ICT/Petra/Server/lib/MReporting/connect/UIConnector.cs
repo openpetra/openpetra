@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Server.MCommon;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Server.MReporting.Calculator;
@@ -42,6 +43,7 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Printing;
 using Ict.Common.Verification;
+using Ict.Common.Session;
 using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Server.MReporting.UIConnectors
@@ -49,14 +51,14 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
     /// <summary>
     /// the connector for the report generation
     /// </summary>
-    public class TReportGeneratorUIConnector : TConfigurableMBRObject, IReportingUIConnectorsReportGenerator
+    public class TReportGeneratorUIConnector : IReportingUIConnectorsReportGenerator
     {
-        private TAsynchronousExecutionProgress FAsyncExecProgress;
         private TRptDataCalculator FDatacalculator;
         private TResultList FResultList;
         private TParameterList FParameterList;
-        private String FErrorMessage;
+        private String FErrorMessage = string.Empty;
         private Boolean FSuccess;
+        private String FProgressID;
 
         /// constructor needed for the interface
         public TReportGeneratorUIConnector()
@@ -65,32 +67,15 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
         /// <summary>
         /// to show the progress of the report calculation;
-        /// prints the current id of the row that is being calculated
-        /// </summary>
-        public IAsynchronousExecutionProgress AsyncExecProgress
-        {
-            get
-            {
-                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
-                    typeof(TAsynchronousExecutionProgressRemote),
-                    FAsyncExecProgress);
-            }
-        }
-
-        /// <summary>
-        /// to show the progress of the report calculation;
         /// prints the current id of the row that is being calculated;
-        /// this is not remoting the progress. useful for unit tests
         /// </summary>
-        [NoRemoting]
-        public IAsynchronousExecutionProgress AsyncExecProgressServerSide
+        public TProgressState Progress
         {
             get
             {
-                return FAsyncExecProgress;
+                return TProgressTracker.GetCurrentState(FProgressID);
             }
         }
-
 
         /// <summary>
         /// Calculates the report, which is specified in the parameters table
@@ -100,8 +85,8 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         public void Start(System.Data.DataTable AParameters)
         {
             TRptUserFunctionsFinance.FlushSqlCache();
-            this.FAsyncExecProgress = new TAsynchronousExecutionProgress();
-            this.FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Executing;
+            FProgressID = "ReportCalculation" + Guid.NewGuid();
+            TProgressTracker.InitProgressTracker(FProgressID, string.Empty, -1.0m);
             FParameterList = new TParameterList();
             FParameterList.LoadFromDataTable(AParameters);
             FSuccess = false;
@@ -109,9 +94,14 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             String PathCustomReports = TAppSettingsManager.GetValue("Reporting.PathCustomReports");
             FDatacalculator = new TRptDataCalculator(DBAccess.GDBAccessObj, PathStandardReports, PathCustomReports);
 
-            // setup the logging to go to the FAsyncExecProgress.ProgressInformation
+            // setup the logging to go to the TProgressTracker
             TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
-            Thread TheThread = new Thread(new ThreadStart(Run));
+            string session = TSession.GetSessionID();
+            ThreadStart myThreadStart = delegate {
+                Run(session);
+            };
+            Thread TheThread = new Thread(myThreadStart);
+            TheThread.Name = FProgressID;
             TheThread.CurrentCulture = Thread.CurrentThread.CurrentCulture;
             TheThread.Start();
         }
@@ -128,8 +118,10 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// <summary>
         /// run the report
         /// </summary>
-        private void Run()
+        private void Run(string ASessionID)
         {
+            // need to initialize the database session
+            TSession.InitThread(ASessionID);
             try
             {
                 if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "readuncommitted")
@@ -171,7 +163,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                 TLogging.Log(e.StackTrace, TLoggingType.ToLogfile);
             }
             DBAccess.GDBAccessObj.RollbackTransaction();
-            FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Finished;
+            TProgressTracker.FinishJob(FProgressID);
         }
 
         /// <summary>
@@ -212,7 +204,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// <returns>void</returns>
         private void WriteToStatusBar(String s)
         {
-            FAsyncExecProgress.ProgressInformation = s;
+            TProgressTracker.SetCurrentState(FProgressID, s, -1.0m);
         }
 
         private bool ExportToExcelFile(string AFilename)

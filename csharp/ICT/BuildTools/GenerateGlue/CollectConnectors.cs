@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -154,7 +154,7 @@ public class TCollectConnectorInterfaces
 //        TLogging.Log("implementing " + ANamespace);
         foreach (string key in AConnectors.Keys)
         {
-            if (key.StartsWith(ANamespace))
+            if (key.StartsWith(ANamespace) && (key.LastIndexOf(".") == ANamespace.Length))
             {
 //                TLogging.Log("   " + AConnectors[key]);
                 Result.Add(AConnectors[key]);
@@ -210,6 +210,11 @@ public class TCollectConnectorInterfaces
             {
                 // any class in the module can contain a connector
                 CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/lib/M" + AModuleName,
+                    SearchOption.AllDirectories);
+            }
+            else if (AModuleName == "ServerAdmin")
+            {
+                CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/app/Core",
                     SearchOption.AllDirectories);
             }
             else

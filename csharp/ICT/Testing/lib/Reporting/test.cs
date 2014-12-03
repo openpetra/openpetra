@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -65,7 +65,7 @@ namespace Tests.Reporting
         [SetUp]
         public void Init()
         {
-            new TLogging("test.log");
+            new TLogging("../../log/test.log");
 
             // TODO: what about different cultures?
             OrigCulture = new CultureInfo("en-GB", false);

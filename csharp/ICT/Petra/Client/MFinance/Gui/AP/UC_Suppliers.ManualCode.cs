@@ -206,7 +206,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <returns>void</returns>
         private void SearchFinishedCheckThread()
         {
-            TAsyncExecProgressState ThreadStatus;
+            TProgressState ThreadStatus;
 
             // Check whether this thread should still execute
             while (FKeepUpSearchFinishedCheck)
@@ -218,7 +218,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     /* The next line of code calls a function on the PetraServer
                      * > causes a bit of data traffic everytime! */
-                    ThreadStatus = FMainForm.SupplierFindObject.AsyncExecProgress.ProgressState;
+                    ThreadStatus = FMainForm.SupplierFindObject.Progress;
                 }
                 catch (NullReferenceException)
                 {
@@ -230,34 +230,32 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     throw;
                 }
 
-                switch (ThreadStatus)
+                if (ThreadStatus.JobFinished)
                 {
-                    case TAsyncExecProgressState.Aeps_Finished:
-                        FKeepUpSearchFinishedCheck = false;
+                    FKeepUpSearchFinishedCheck = false;
 
-                        try
+                    try
+                    {
+                        // see also http://stackoverflow.com/questions/6184/how-do-i-make-event-callbacks-into-my-win-forms-thread-safe
+                        if (InvokeRequired)
                         {
-                            // see also http://stackoverflow.com/questions/6184/how-do-i-make-event-callbacks-into-my-win-forms-thread-safe
-                            if (InvokeRequired)
-                            {
-                                Invoke(new SimpleDelegate(FinishThread));
-                            }
-                            else
-                            {
-                                FinishThread();
-                            }
+                            Invoke(new SimpleDelegate(FinishThread));
                         }
-                        catch (ObjectDisposedException)
+                        else
                         {
-                            // Another exception that can be caused when the main screen is closed while running this thread
-                            return;
+                            FinishThread();
                         }
-
-                        break;
-
-                    case TAsyncExecProgressState.Aeps_Stopped:
-                        FKeepUpSearchFinishedCheck = false;
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        // Another exception that can be caused when the main screen is closed while running this thread
                         return;
+                    }
+                }
+                else if (ThreadStatus.CancelJob)
+                {
+                    FKeepUpSearchFinishedCheck = false;
+                    return;
                 }
 
                 // Loop again while FKeepUpSearchFinishedCheck is true ...

@@ -42,10 +42,7 @@ Source: ..\..\..\delivery\bin\Ict.Common*.dll; DestDir: {app}/bin30; Flags: igno
 Source: ..\..\..\delivery\bin\Ict.Petra.Client*.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Shared*.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Server*.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\delivery\bin\Ict.Petra.ServerAdmin*.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\delivery\bin\PetraServerAdminConsole.exe; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\PetraClient.exe; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\delivery\bin\PetraServerConsole.exe; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\tmp\UINavigation.yml; DestDir: {app}/bin30
 Source: ..\..\..\delivery\bin\de-DE\OpenPetra.resources.dll; DestDir: {app}/bin30/de-DE
 Source: ..\..\..\delivery\bin\es-ES\OpenPetra.resources.dll; DestDir: {app}/bin30/es-ES
@@ -56,9 +53,7 @@ Source: ..\..\..\csharp\ICT\Petra\Server\sql\*.sql; DestDir: {app}/sql30
 Source: ..\..\..\csharp\ICT\Petra\Server\sql\*.yml; DestDir: {app}/sql30
 Source: ..\..\..\demodata\formletters\*.html; DestDir: {app}/formletters30
 Source: ..\..\..\demodata\formletters\*.png; DestDir: {app}/formletters30
-Source: PetraServerAdminConsole.config; DestDir: {app}; DestName: PetraServerAdminConsole-3.0.config
 Source: PetraClient.config; DestDir: {app}; DestName: PetraClient-3.0.config
-Source: PetraServerConsole-Sqlite.config; DestDir: {app}; DestName: PetraServerConsole-3.0.config
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 ; actual db will be copied to the user's userappdata directory
 Source: ..\petra.db; DestDir: {app}/db30; DestName: demo.db
@@ -132,24 +127,12 @@ begin
       SlashPosition := Pos('\', DirName);
     end;
 
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../db30/petra.db', '{userappdata}/' + Dirname + '\db30\petra.db', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../db30/demo.db', ExpandConstant('{app}\db30\demo.db'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../reports30', ExpandConstant('{app}\reports30'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../sql30', ExpandConstant('{app}\sql30'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../tmp30', '{userappdata}\' + Dirname + '\tmp30', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerAdminConsole-3.0.config'), '../tmp30', '{userappdata}\' + Dirname + '\tmp30', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '../db30/petra.db', '{userappdata}/' + Dirname + '\db30\petra.db', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '../db30/demo.db', ExpandConstant('{app}\db30\demo.db'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '../reports30', ExpandConstant('{app}\reports30'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '../sql30', ExpandConstant('{app}\sql30'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '../tmp30', '{userappdata}\' + Dirname + '\tmp30', true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '<add key="Reporting.PathReportSettings" value="../reports30/Settings" />', ExpandConstant('<add key="Reporting.PathReportSettings" value="{app}\reports30\Settings" />'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '<add key="Reporting.PathReportUserSettings" value="../reports30/Settings" />', '<add key="Reporting.PathReportUserSettings" value="{userappdata}\' + Dirname + '\reports30\Settings" />', true);
   end;
-
-  // allow the .net remoting communication between client and server
-  Exec(ExpandConstant('{sys}\cmd.exe'), '/C netsh firewall set allowedprogram program = '
-    + ExpandConstant('"{app}\bin30\PetraClient.exe" name = PetraClient mode = DISABLE'),
-    '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-
-  Exec(ExpandConstant('{sys}\cmd.exe'), '/C netsh firewall set allowedprogram program = '
-    + ExpandConstant('"{app}\bin30\PetraServerConsole.exe" name = PetraServer mode = DISABLE'),
-    '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-
 end;

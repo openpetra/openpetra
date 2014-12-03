@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,28 +32,31 @@ namespace Ict.Common.Remoting.Server
      * The TPollClientTasks Class contains a Method that returns a DataTable that
      * contains ClientTasks for the currently connected Client.
      */
-    public class TPollClientTasks : TConfigurableMBRObject, IPollClientTasksInterface
+    public class TPollClientTasks
     {
         /// <summary>Holds a reference to the ClientTasksManager</summary>
-        public static TClientTasksManager UClientTasksManager;
+        private TClientTasksManager FClientTasksManager;
 
         /// <summary>Holds Date and Time when the last Client call to 'PollClientTasks' was made.</summary>
-        public static DateTime ULastPollingTime;
+        private DateTime FLastPollingTime;
 
         /// <summary>
         /// access polling time
         /// </summary>
         /// <returns></returns>
-        public static DateTime GetLastPollingTime()
+        public DateTime GetLastPollingTime()
         {
-            return ULastPollingTime;
+            return FLastPollingTime;
         }
 
         /// <summary>
         /// constructor
         /// </summary>
-        public TPollClientTasks() : base()
+        public TPollClientTasks(TClientTasksManager AClientTasksManager)
         {
+            FLastPollingTime = DateTime.Now;
+            FClientTasksManager = AClientTasksManager;
+
             if (TLogging.DL >= 10)
             {
                 Console.WriteLine("{0} TPollClientTasks created", DateTime.Now);
@@ -73,64 +76,39 @@ namespace Ict.Common.Remoting.Server
          */
         public DataTable PollClientTasks()
         {
-            DataTable ReturnValue;
+            DataTable ReturnValue = null;
 
-            if (TLogging.DL >= 10)
-            {
-                Console.WriteLine("{0} TPollClientTasks: PollClientTasks called", DateTime.Now);
-            }
+//            if (TLogging.DL >= 10)
+//            {
+                TLogging.LogAtLevel(4, "TPollClientTasks: PollClientTasks called");
+//            }
 
-            ULastPollingTime = DateTime.Now;
+            FLastPollingTime = DateTime.Now;
 
             // Check whether new ClientTasks should be transferred to the Client
-            if (UClientTasksManager.ClientTasksNewDataTableEmpty)
+            if (FClientTasksManager.ClientTasksNewDataTableEmpty)
             {
                 // This argument is set to null instead of transfering an empty DataTable to
                 // reduce the number of bytes that are transfered to the Client!
                 ReturnValue = null;
 
-                if (TLogging.DL > 9)
-                {
-                    Console.WriteLine("{0} TPollClientTasks: Client Tasks Table is empty!", DateTime.Now);
-                }
+//                if (TLogging.DL > 9)
+//                {
+                    TLogging.LogAtLevel(4, "TPollClientTasks: Client Tasks Table is empty!");
+//                }
             }
             else
             {
                 // Retrieve new ClientTasks DataTable and pass it on the the Client
-                ReturnValue = UClientTasksManager.ClientTasksNewDataTable;
+                ReturnValue = FClientTasksManager.ClientTasksNewDataTable;
 
-                if (TLogging.DL >= 9)
-                {
-                    Console.WriteLine("TPollClientTasks: Client Tasks Table has " + (ReturnValue.Rows.Count).ToString() + " entries!");
-                }
+//                if (TLogging.DL >= 9)
+//                {
+                    TLogging.LogAtLevel(4, "TPollClientTasks: Client Tasks Table has " + (ReturnValue.Rows.Count).ToString() + " entries!");
+//                }
             }
 
             return ReturnValue;
-        }
-    }
-
-    /**
-     * Used to pass in a reference to the ClientTasksManager. That is used by
-     * the PollClientTasks function. Since the TPollClientTasks Class is re-created
-     * with every Client call to PollClientTasks, this helper Class is needed to
-     * set a Unit-wide variable.
-     *
-     */
-    public class TPollClientTasksParameters
-    {
-        /// <summary>
-        /// constructors
-        /// </summary>
-        /// <param name="AClientTasksManager"></param>
-        public TPollClientTasksParameters(TClientTasksManager AClientTasksManager)
-        {
-            if (TLogging.DL >= 10)
-            {
-                Console.WriteLine("{0} TPollClientTasksParameters created", DateTime.Now);
-            }
-
-            TPollClientTasks.UClientTasksManager = AClientTasksManager;
-            TPollClientTasks.ULastPollingTime = DateTime.Now;
         }
     }
 }

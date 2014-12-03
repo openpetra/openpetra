@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,7 +44,6 @@ namespace Ict.Common.Remoting.Server
         /// authenticate a user
         /// </summary>
         IPrincipal PerformUserAuthentication(string AUserName, string APassword,
-            out Int32 AProcessID,
             out Boolean ASystemEnabled);
     }
 
@@ -99,111 +98,6 @@ namespace Ict.Common.Remoting.Server
         /// get a welcome message
         /// </summary>
         string GetLogonMessage(IPrincipal UserInfo, Boolean AReturnEnglishIfNotFound);
-    }
-
-    /// <summary>
-    /// an interface for an implementation for an appdomain
-    /// </summary>
-    public interface IClientAppDomainConnection
-    {
-        /// <summary>
-        /// Executes the ClientTaskAdd procedure on the TClientDomainManager Object.
-        ///
-        /// </summary>
-        /// <param name="ATaskGroup">Group of the Task</param>
-        /// <param name="ATaskCode">Code of the Task (depending on the TaskGroup this can be
-        /// left empty)</param>
-        /// <param name="ATaskParameter1">Parameter #1 for the Task (depending on the TaskGroup
-        /// this can be left empty)</param>
-        /// <param name="ATaskParameter2">Parameter #2 for the Task (depending on the TaskGroup
-        /// this can be left empty)</param>
-        /// <param name="ATaskParameter3">Parameter #3 for the Task (depending on the TaskGroup
-        /// this can be left empty)</param>
-        /// <param name="ATaskParameter4">Parameter #4 for the Task (depending on the TaskGroup
-        /// this can be left empty)</param>
-        /// <param name="ATaskPriority">Priority of the Task</param>
-        /// <returns>TaskID
-        /// </returns>
-        Int32 ClientTaskAdd(String ATaskGroup,
-            String ATaskCode,
-            System.Object ATaskParameter1,
-            System.Object ATaskParameter2,
-            System.Object ATaskParameter3,
-            System.Object ATaskParameter4,
-            Int16 ATaskPriority);
-
-        /// <summary>
-        /// get the last time something happened in this appdomain
-        /// </summary>
-        DateTime LastActionTime
-        {
-            get;
-        }
-
-        /// <summary>
-        /// a string identifier of the appdomain
-        /// </summary>
-        string AppDomainName
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Creates a new AppDomain for a Client and remotes an instance of TRemoteLoader
-        /// into it.
-        /// </summary>
-        /// <param name="AClientName"></param>
-        IClientAppDomainConnection CreateAppDomain(string AClientName);
-
-        /// <summary>
-        /// Loads the ClientDomain DLL into the Client's AppDomain, instantiates the
-        /// main Class (TClientDomainManager) and initialises the AppDomain by calling
-        /// several functions of that Class.
-        ///
-        /// </summary>
-        /// <param name="AClientID">ClientID as assigned by the ClientManager</param>
-        /// <param name="AClientServerConnectionType">Tells in which way the Client connected
-        /// to the PetraServer</param>
-        /// <param name="AClientManagerRef">A reference to the ClientManager object
-        /// (Note: .NET Remoting will be working behind the scenes since calls to
-        /// this Object will cross AppDomains!)</param>
-        /// <param name="ASystemDefaultsCacheRef">A reference to the SystemDefaultsCache object
-        /// (Note: .NET Remoting will be working behind the scenes since calls to
-        /// this Object will cross AppDomains!)</param>
-        /// <param name="ACacheableTablesManagerRef"></param>
-        /// <param name="AUserInfo">An instantiated PetraPrincipal Object, containing User
-        /// information</param>
-        /// <param name="ARemotingURLPollClientTasks">he .NET Remoting URL of the
-        /// TPollClientTasks Class which the Client needs to calls to retrieve
-        /// ClientTasks.</param>
-        /// <returns>void</returns>
-        void LoadDomainManagerAssembly(Int32 AClientID,
-            TClientServerConnectionType AClientServerConnectionType,
-            TClientManagerCallForwarder AClientManagerRef,
-            object ASystemDefaultsCacheRef,
-            object ACacheableTablesManagerRef,
-            IPrincipal AUserInfo,
-            out String ARemotingURLPollClientTasks);
-
-        /// <summary>
-        /// load the assemblies for the modules
-        /// </summary>
-        void LoadAssemblies(string AClientID, IPrincipal AUserInfo, ref Hashtable ARemotingURLs);
-
-        /// <summary>
-        /// close the database connection
-        /// </summary>
-        void CloseDBConnection();
-
-        /// <summary>
-        /// stop the appdomain of the client
-        /// </summary>
-        void StopClientAppDomain();
-
-        /// <summary>
-        /// Unloads a Client's AppDomain.
-        /// </summary>
-        void Unload();
     }
 
     /// an interface for system defaults cache

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,7 +43,7 @@ namespace Tests.Reporting
         {
             new TAppSettingsManager("../../etc/TestClient.config");
 
-            new TLogging("test.log");
+            new TLogging("../../log/test.log");
         }
 
         /// <summary>

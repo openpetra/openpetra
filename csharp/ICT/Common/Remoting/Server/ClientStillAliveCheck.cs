@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,20 +23,22 @@
 //
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Ict.Common;
 using System.Threading;
+
+using Ict.Common;
+using Ict.Common.Session;
 
 namespace Ict.Common.Remoting.Server
 {
     /// <summary>Delegate declaration</summary>
-    public delegate void TDelegateTearDownAppDomain(String AToken, String AReason);
-
+    public delegate bool TDelegateTearDownAppDomain(System.Int32 AClientID, String AReason, out String ACantDisconnectReason);
+    
     /// <summary>
-    /// The TClientStillAliveCheck Class monitors whether the connected PetraClient is still 'alive'.
+    /// The ClientStillAliveCheck Class monitors whether the connected PetraClient is still 'alive'.
     /// </summary>
     /// <remarks>
-    /// If this Class finds out that the connected PetraClient isn't 'alive'
-    /// anymore, it will initiate the tearing down of the Client's AppDomain!
+    /// If this Class finds out that the connected client isn't 'alive'
+    /// anymore, it will close the session of the client
     /// </remarks>
     public class ClientStillAliveCheck
     {
@@ -51,9 +53,9 @@ namespace Ict.Common.Remoting.Server
              Justification = "Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
         private static TDelegateTearDownAppDomain UTearDownAppDomain;
 
-        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule",
-             Justification = "Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
-        private static String UTearDownAppDomainToken;
+//        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule",
+//             Justification = "Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
+//        private static String UTearDownAppDomainToken;
 
         [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule",
              Justification = "Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
@@ -82,28 +84,23 @@ namespace Ict.Common.Remoting.Server
          * anymore, it will initiate the tearing down of the Client's AppDomain!!!
          *
          */
-        public class TClientStillAliveCheck : object
+        public class TClientStillAliveCheck
         {
-            /**
-             * Constructor for passing in parameters.
-             *
-             * @param AClientServerConnectionType Type of Client connection
-             * @param ATearDownAppDomain Delegate that is called once
-             * ClientStillAliveCheckThread finds out that the Client is no longer 'alive'
-             * @param ATearDownAppDomainToken Security Token. Prevents against unauthorized
-             * tearing down of the Client's AppDomain.
-             *
-             */
-            public TClientStillAliveCheck(TClientServerConnectionType AClientServerConnectionType,
-                TDelegateTearDownAppDomain ATearDownAppDomain,
-                String ATearDownAppDomainToken)
+            private TConnectedClient FClientObject;
+            private string ClientName;
+
+            /// <summary>
+            /// Constructor for passing in parameters.
+            /// </summary>
+            public TClientStillAliveCheck(TConnectedClient AConnectedClient,
+                TClientServerConnectionType AClientServerConnectionType,
+                TDelegateTearDownAppDomain ATearDownAppDomain)
             {
+                FClientObject = AConnectedClient;
+                ClientName = FClientObject.ClientName;
                 Int32 ClientStillAliveTimeout;
 
-                if (TLogging.DL >= 10)
-                {
-                    Console.WriteLine("{0} TClientStillAliveCheck created", DateTime.Now);
-                }
+                TLogging.LogAtLevel(2, "TClientStillAliveCheck (for ClientName '" + ClientName + "'') created");
 
                 // Determine timeout limit (different for Clients connected via LAN or Remote)
                 if (AClientServerConnectionType == TClientServerConnectionType.csctRemote)
@@ -122,18 +119,20 @@ namespace Ict.Common.Remoting.Server
                 UClientStillAliveTimeout = ClientStillAliveTimeout;
                 UClientStillAliveCheckInterval = TSrvSetting.ClientKeepAliveCheckIntervalInSeconds;
                 UTearDownAppDomain = ATearDownAppDomain;
-                UTearDownAppDomainToken = ATearDownAppDomainToken;
+//                UTearDownAppDomainToken = ATearDownAppDomainToken;
+                
 
+                TLogging.LogAtLevel(2, "ClientStillAliveTimeout: " + ClientStillAliveTimeout.ToString() + "; " +
+                    "ClientKeepAliveCheckIntervalInSeconds: " + UClientStillAliveCheckInterval.ToString());
+                
                 // Start ClientStillAliveCheckThread
                 UKeepServerAliveCheck = true;
                 UClientStillAliveCheckThread = new Thread(new ThreadStart(ClientStillAliveCheckThread));
+                UClientStillAliveCheckThread.Name = "ClientStillAliveCheckThread" + Guid.NewGuid().ToString();
                 UClientStillAliveCheckThread.IsBackground = true;
                 UClientStillAliveCheckThread.Start();
 
-                if (TLogging.DL >= 10)
-                {
-                    Console.WriteLine("{0} TClientStillAliveCheck: started ClientStillAliveCheckThread.", DateTime.Now);
-                }
+                TLogging.LogAtLevel(2, "TClientStillAliveCheck (for ClientName '" + ClientName + "'): started ClientStillAliveCheckThread.");
             }
 
             /**
@@ -156,13 +155,10 @@ namespace Ict.Common.Remoting.Server
                 // Check whether this Thread should still execute
                 while (UKeepServerAliveCheck)
                 {
-                    if (TLogging.DL >= 10)
-                    {
-                        Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: checking...", DateTime.Now);
-                    }
+                    TLogging.LogAtLevel(2, "TClientStillAliveCheck (for ClientName '" + ClientName + "'): ClientStillAliveCheckThread: checking...");
 
                     // Get the time of the last call to TPollClientTasks.PollClientTasks
-                    LastPollingTime = TPollClientTasks.GetLastPollingTime();
+                    LastPollingTime = FClientObject.FPollClientTasks.GetLastPollingTime();
 
                     // Calculate time between the last call to TPollClientTasks.PollClientTasks and now
                     Duration = DateTime.Now.Subtract(LastPollingTime);
@@ -171,46 +167,28 @@ namespace Ict.Common.Remoting.Server
                     if (Duration.TotalSeconds < UClientStillAliveTimeout)
                     {
                         // No it hasn't
-                        if (TLogging.DL >= 10)
-                        {
-                            Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: timeout hasn't been exceeded.", DateTime.Now);
-                        }
+                        TLogging.LogAtLevel(2, "TClientStillAliveCheck (for ClientName '" + ClientName + "'): ClientStillAliveCheckThread: timeout hasn't been exceeded (Clients' last PollClientTasks was called " + Duration.TotalSeconds.ToString() + " ago).");
 
                         try
                         {
                             // Sleep for some time. After that, this procedure is called again automatically.
-                            if (TLogging.DL >= 10)
-                            {
-                                Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: going to sleep...", DateTime.Now);
-                            }
+                            TLogging.LogAtLevel(2, "TClientStillAliveCheck (for ClientName '" + ClientName + "'): ClientStillAliveCheckThread: going to sleep...");
 
                             Thread.Sleep(UClientStillAliveCheckInterval * 1000);
 
-                            if (TLogging.DL >= 10)
-                            {
-                                Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: re-awakening...", DateTime.Now);
-                            }
+                            TLogging.LogAtLevel(12, "TClientStillAliveCheck (for ClientName '" + ClientName + "'): ClientStillAliveCheckThread: re-awakening...");                            
                         }
                         catch (ThreadAbortException)
                         {
-                            if (TLogging.DL >= 10)
-                            {
-                                Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: ThreadAbortException occured!!!",
-                                    DateTime.Now);
-                            }
+                            TLogging.LogAtLevel(2, "TClientStillAliveCheck (for ClientName '" + ClientName + "'): ClientStillAliveCheckThread: ThreadAbortException occured!!!");
 
                             UKeepServerAliveCheck = false;
                         }
                     }
                     else
                     {
-                        if (TLogging.DL >= 5)
-                        {
-                            Console.WriteLine(
-                                "{0} TClientStillAliveCheck: ClientStillAliveCheckThread: timeout HAS been exceeded (last PollClientTasks call: " +
-                                LastPollingTime.ToString() + ") -> SignalTearDownAppDomain!",
-                                DateTime.Now);
-                        }
+                        TLogging.LogAtLevel(1, "TClientStillAliveCheck (for ClientName '" + ClientName + "'): ClientStillAliveCheckThread: timeout HAS been exceeded (last PollClientTasks call: " +
+                                LastPollingTime.ToString() + ") -> forcefully disconnecting the Client!");
 
                         /*
                          * Timeout has been exceeded, this means the Client didn't make a call
@@ -225,11 +203,14 @@ namespace Ict.Common.Remoting.Server
                          */
                         UKeepServerAliveCheck = false;
 
+                        // Forcefully disconnect the Client!                    
                         if (UTearDownAppDomain != null)
                         {
-                            UTearDownAppDomain(UTearDownAppDomainToken,
+                            string CantDisconnectReason;
+                            
+                            UTearDownAppDomain(FClientObject.ClientID,
                                 String.Format(StrClientFailedToContact, Duration.Hours.ToString() + ':' + Duration.Minutes.ToString() + ':' +
-                                    Duration.Seconds.ToString()));
+                                    Duration.Seconds.ToString()), out CantDisconnectReason);
                         }
                         else
                         {
@@ -239,67 +220,22 @@ namespace Ict.Common.Remoting.Server
                                     "{0} TClientStillAliveCheck: FTearDownAppDomain was not assigned -> can't tear down Client's AppDomain!",
                                     DateTime.Now);
                             }
-                        }
+                        }                        
                     }
                 }
 
                 // Thread stops here and doesn't get called again automatically.
-                if (TLogging.DL >= 10)
-                {
-                    Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: Thread stopped!", DateTime.Now);
-                }
+                TLogging.LogAtLevel(12, "TClientStillAliveCheck (for ClientName '" + ClientName + "'): ClientStillAliveCheckThread: Thread stopped!");
             }
-
-            /**
-             * Stops the ClientStillAliveCheckThread.
-             *
-             * @comment There is no way to start the ClientStillAliveCheckThread again.
-             * Since stopping the Thread is only done when the Client disconnects/is
-             * disconnected, re-starting the Thread is not necessary.
-             *
-             */
+            
+            /// <summary>
+            /// Causes the KeepServerAliveCheck Thread to no longer execute anything the next time it 'wakes up', 
+            /// and to end then.
+            /// </summary>
             public static void StopClientStillAliveCheckThread()
             {
-                Boolean JoinTimeoutNotExceeded;
-
-                if (UClientStillAliveCheckThread != null)
-                {
-                    if (TLogging.DL >= 5)
-                    {
-                        Console.WriteLine("{0} TClientStillAliveCheck: StopClientStillAliveCheckThread called: aborting Thread!", DateTime.Now);
-                    }
-
-                    UClientStillAliveCheckThread.Abort();
-
-                    if (TLogging.DL >= 5)
-                    {
-                        Console.WriteLine("{0} TClientStillAliveCheck: StopClientStillAliveCheckThread: aborting returned, now Joining...!",
-                            DateTime.Now);
-                    }
-
-                    // Wait until the Thread is finished Aborting. Continue anyway after 8 seconds if it doesn't (this should'n happen, but...)
-                    JoinTimeoutNotExceeded = UClientStillAliveCheckThread.Join(8000);
-
-                    if (TLogging.DL >= 5)
-                    {
-                        Console.WriteLine(
-                            "{0} TClientStillAliveCheck: StopClientStillAliveCheckThread: aborting returned, Join returned - JoinTimeoutNotExceeded: "
-                            +
-                            JoinTimeoutNotExceeded.ToString(),
-                            DateTime.Now);
-                    }
-
-                    UClientStillAliveCheckThread = null;
-                }
-                else
-                {
-                    if (TLogging.DL >= 5)
-                    {
-                        Console.WriteLine("{0} TClientStillAliveCheck: StopClientStillAliveCheckThread: Thread doesn't exist any longer.",
-                            DateTime.Now);
-                    }
-                }
+                UKeepServerAliveCheck = false;
             }
-        }
+        }        
     }
 }

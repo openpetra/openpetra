@@ -1,4 +1,4 @@
-<!-- This file describes how several PetraClients instances should be started.
+<!-- This file describes how several PetraClients (or PetraClient_Experimenting) instances should be started.
      There can be groups of clients, who operate under similar objectives. 
      They could represent different groups of users, 
      e.g. Partner vs. Finance, fulltime vs. part time/afternoon workers.
@@ -11,38 +11,22 @@
      There is the parameter testing that will start a certain test program for the client. (e.g. Partner, Finance)
 -->     
 <tests>
-  <test name="FullClient" app="PetraClient.exe" config="..\..\etc\Client.config">
-    <clientgroup name="Fulltime Workers Twins" startid="1" endid="20" time="0" active="true">
-        <event action="connect" time="0" random="0" testing="PartnerFind.testing" params="repeat:10;run_randomfind"/>
-        <event action="disconnect" time="1" random="0"/>
-        <event action="connect" time="1" random="0" testing="PartnerEdit.testing" params="repeat:2;PartnerKey:80025648"/>
-        <event action="disconnect" time="2" random="0"/>
-        <event action="connect" time="1" random="0" testing="GLBatch.testing" params="repeat:3;LedgerNumber:80"/>
-        <event action="disconnect" time="1" random="0"/>
+  <test name="FullClient" app="PetraClient.exe" config="PetraClient.exe.config">
+    <clientgroup name="Fulltime Workers Twins" startid="1" endid="7" time="0" active="true">
+        <event action="connect" time="0" random="0" testing="PartnerFind.testing"/>
+        <event action="disconnect" time="3" random="0"/>
+        <event action="connect" time="1" random="0" testing="PartnerEdit.testing" params="repeat:2;PartnerKey:29064535"/>
+        <event action="disconnect" time="3" random="0"/>
     </clientgroup>
-    <clientgroup name="Afternoon Workers" startid="21" endid="30" time="1" active="true">
-        <event action="connect" time="1" random="0" testing="PartnerEdit.testing" params="PartnerKey:80020503"/>
-        <event action="disconnect" time="2" random="0"/>
-        <event action="connect" time="0" random="0" testing="GLBatch.testing" params="repeat:1;LedgerNumber:80"/>
+    <clientgroup name="Afternoon Workers" startid="11" endid="12" time="1" active="true">
+        <event action="connect" time="0" random="0" testing="PartnerEdit.testing"/>
         <event action="disconnect" time="2" random="0"/>
     </clientgroup>    
   </test>
 
-  <test name="FullClient_only2" app="PetraClient.exe" config="..\..\etc\Client.config">
+  <test name="HeavyLoad" app="PetraClient_Experimenting.exe" config="PetraClient_Experimenting.exe.config"> 
     <clientgroup name="Fulltime Workers Twins" startid="1" endid="2" time="0" active="true">
-        <event action="connect" time="0" random="0" testing="PartnerFind.testing" params="repeat:4;run_randomfind"/>
-        <event action="disconnect" time="4" random="0"/>
-        <event action="connect" time="0" random="0" testing="GLBatch.testing" params="repeat:2;LedgerNumber:80"/>
-        <event action="disconnect" time="1" random="0"/>
-        <event action="connect" time=".4" random="0" testing="PartnerEdit.testing" params="repeat:2;PartnerKey:80025648"/>
-        <event action="disconnect" time="1" random="0"/>
-    </clientgroup>
-  </test>
-  
-  
-  <test name="HeavyLoad" app="PetraClient.exe" config="..\..\etc\Client.config"> 
-    <clientgroup name="Fulltime Workers Twins" startid="1" endid="2" time="0" active="true">
-        <event action="connect" time="0" random="0" testing="PartnerFind.testing"/>
+        <event action="connect" time="0" random="0" testing="PartnerFind.testing" params="run_randomfind" />
         <event action="disconnect" time="12" random="4"/>
         <event action="connect" time="4" random="0.80" testing="PartnerFind.testing" params="run_randomfind" />
         <event action="disconnect" time="12" random="0"/>
@@ -54,94 +38,92 @@
         <event action="disconnect" time="12" random="0"/>
     </clientgroup>
     <clientgroup name="Afternoon Workers" startid="11" endid="15" time="12" active="true">
-        <event action="connect" time="0.40" random="0.40" testing="PartnerEdit.testing" params="PartnerKey:80022446"/>
+        <event action="connect" time="0.40" random="0.40" testing="PartnerEdit.testing"/>
         <event action="disconnect" time="8" random="4"/>
-        <event action="connect" time="0" random="0" testing="PartnerEdit.testing" params="PartnerKey:80022446"/>
+        <event action="connect" time="0" random="0" testing="PartnerEdit.testing"/>
         <event action="disconnect" time="4" random="0"/>
     </clientgroup>
   </test>
-  
-  <test name="HighProbability" app="PetraClient.exe" config="..\..\etc\Client.config"> 
+  <test name="HighProbability" app="PetraClient_Experimenting.exe" config="PetraClient_Experimenting.exe.config"> 
     <clientgroup name="Fulltime Workers Twins" startid="1" endid="2" time="0" active="true">
-        <event action="connect" time="1" random="0.10" testing="PartnerEdit.testing"  params="repeat:3;PartnerKey:80022446" />
+        <event action="connect" time="1" random="0.10" testing="PartnerEdit.testing" params="repeat:3" />
         <event action="disconnect" time="2" random="0"/>
         <event action="connect" time="0" random="0" testing="PartnerFind.testing" params="repeat:11;run_randomfind" />
         <event action="disconnect" time="2" random="0.10"/>
     </clientgroup>
     <clientgroup name="Fulltime Workers" startid="3" endid="6" time="2" active="true">
-        <event action="connect" time="0" random="0.10" testing="PartnerEdit.testing" params="repeat:2;PartnerKey:80025648" />
+        <event action="connect" time="0" random="0.10" testing="PartnerEdit.testing" params="repeat:2;PartnerKey:29064535" />
         <event action="disconnect" time="3" random="1"/>
         <event action="connect" time="1" random="0.20" testing="PartnerFind.testing"/>
         <event action="disconnect" time="3" random="0"/>
     </clientgroup>
   </test>
-
   
-  <test name="OfficeDay" app="PetraClient.exe" config="..\..\etc\Client.config"> 
+  <test name="OfficeDay" app="PetraClient_Experimenting.exe" config="PetraClient_Experimenting.exe.config"> 
     <clientgroup name="Fulltime Workers twins" startid="1" endid="10" time="0" loop="false">
         <event action="connect" time="7" random="7" testing="PartnerFind.testing"/>
         <event action="disconnect" time="60" random="7"/>
     </clientgroup>
     <clientgroup name="Afternoon Workers" startid="11" endid="15" time="30" loop="false">
-        <event action="connect" time="7" random="7" testing="PartnerEdit.testing" params="PartnerKey:80022446"/>
+        <event action="connect" time="7" random="7" testing="PartnerEdit.testing"/>
         <event action="disconnect" time="30" random="7"/>
     </clientgroup>
   </test>
 
-  <test name="OfficeDay2" app="PetraClient.exe" config="..\..\etc\Client.config"> 
+  
+  <test name="OfficeDay2" app="PetraClient_Experimenting.exe" config="PetraClient_Experimenting.exe.config"> 
     <clientgroup name="Fulltime Workers Twins" startid="1" endid="15" time="0">
         <event action="connect" time="4" random="4" testing="PartnerFind.testing" params="repeat:5;run_randomfind" />
         <event action="disconnect" time="20" random="5"/>
-        <event action="connect" time="2" random="8" testing="PartnerEdit.testing" params="repeat:10;PartnerKey:80025648" />
+        <event action="connect" time="2" random="8" testing="PartnerEdit.testing" params="repeat:10;PartnerKey:29064535" />
         <event action="disconnect" time="40" random="7"/>        
     </clientgroup>
     
-    <clientgroup name="Short login" startid="20" endid="25" time="10">
-        <event action="connect" time="15" random="10" testing="PartnerEdit.testing" params="repeat:3;PartnerKey:80022446" />
+    <clientgroup name="Short login" startid="50" endid="55" time="10">
+        <event action="connect" time="15" random="10" testing="PartnerEdit.testing" params="repeat:3" />
         <event action="disconnect" time="10" random="3"/>
     </clientgroup>
     
-    <clientgroup name="Afternoon Workers" startid="30" endid="37" time="30">
+    <clientgroup name="Afternoon Workers" startid="60" endid="67" time="30">
         <event action="connect" time="6" random="6" testing="PartnerFind.testing" params="repeat:2;run_randomfind" />
         <event action="disconnect" time="10" random="5"/>
-        <event action="connect" time="4" random="4" testing="PartnerEdit.testing" params="repeat:10;PartnerKey:80020503" />
+        <event action="connect" time="4" random="4" testing="PartnerEdit.testing" params="repeat:10" />
         <event action="disconnect" time="20" random="7"/>
     </clientgroup>
   </test>
 
-  <test name="OfficeDay2_LessUsers1" app="PetraClient.exe" config="..\..\etc\Client.config"> 
+  <test name="OfficeDay2_LessUsers1" app="PetraClient_Experimenting.exe" config="PetraClient_Experimenting.exe.config"> 
     <clientgroup name="Fulltime Workers Twins" startid="1" endid="13" time="0">
         <event action="connect" time="4" random="4" testing="PartnerFind.testing" params="repeat:5;run_randomfind" />
         <event action="disconnect" time="20" random="5"/>
-        <event action="connect" time="2" random="8" testing="PartnerEdit.testing" params="repeat:10;PartnerKey:80025648" />
+        <event action="connect" time="2" random="8" testing="PartnerEdit.testing" params="repeat:10;PartnerKey:29064535" />
         <event action="disconnect" time="40" random="7"/>        
     </clientgroup>
     
-    <clientgroup name="Short login" startid="20" endid="24" time="10">
-        <event action="connect" time="15" random="10" testing="PartnerEdit.testing"  params="repeat:3;PartnerKey:80022446" />
+    <clientgroup name="Short login" startid="50" endid="54" time="10">
+        <event action="connect" time="15" random="10" testing="PartnerEdit.testing" params="repeat:3" />
         <event action="disconnect" time="10" random="3"/>
     </clientgroup>
     
-    <clientgroup name="Afternoon Workers" startid="30" endid="33" time="30">
+    <clientgroup name="Afternoon Workers" startid="60" endid="63" time="30">
         <event action="connect" time="6" random="6" testing="PartnerFind.testing" params="repeat:2;run_randomfind" />
         <event action="disconnect" time="10" random="5"/>
-        <event action="connect" time="4" random="4" testing="PartnerEdit.testing" params="repeat:10;PartnerKey:80020503" />
+        <event action="connect" time="4" random="4" testing="PartnerEdit.testing" params="repeat:10" />
         <event action="disconnect" time="20" random="7"/>
     </clientgroup>
   </test>
   
-  
-  <test name="PartnerEditMemLeak" app="PetraClient.exe" config="..\..\etc\Client.config"> 
+  <test name="PartnerEditMemLeak" app="PetraClient_Experimenting.exe" config="PetraClient_Experimenting.exe.config"> 
     <clientgroup name="Fulltime Workers" startid="0" endid="0" time="0" active="true">
-        <event action="connect" time="0" random="0" testing="PartnerEdit.testing" params="repeat:60;PartnerKey:80025648" />
+        <event action="connect" time="0" random="0" testing="PartnerEdit.testing" params="repeat:60;PartnerKey:29064535" />
         <event action="disconnect" time="6" random="0"/>
     </clientgroup>
   </test>  
-  
-  <test name="PartnerEditMemLeak_DoubleRepeats" app="PetraClient.exe" config="..\..\etc\Client.config"> 
+  <test name="PartnerEditMemLeak_FullClient" app="C:\Petra_Loadtests\PetraClient\PetraClient.exe" config="PetraClient.exe.config"> 
     <clientgroup name="Fulltime Workers" startid="0" endid="0" time="0" active="true">
-        <event action="connect" time="0" random="0" testing="PartnerEdit.testing" params="repeat:120;PartnerKey:80025648" />
+        <event action="connect" time="0" random="0" testing="PartnerEdit.testing" params="repeat:120;PartnerKey:29064535" />
         <event action="disconnect" time="12" random="0"/>
     </clientgroup>
   </test>  
 </tests>
+

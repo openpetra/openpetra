@@ -73,8 +73,6 @@ namespace {#NAMESPACE}
       {#INITACTIONSTATE}
       
       FUIConnector = {#UICONNECTORCREATE}();
-      // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
-      TEnsureKeepAlive.Register(FUIConnector);
 {#IFDEF MASTERTABLE OR DETAILTABLE}
 
       BuildValidationControlsDict();
@@ -145,8 +143,9 @@ namespace {#NAMESPACE}
     {
         if (FUIConnector != null)
         {
-            // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
-            TEnsureKeepAlive.UnRegister(FUIConnector);
+            // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
+            TUIConnectorLifetimeHandling.ReleaseUIConnector((IDisposable)FUIConnector);
+            // Make the client-side UIConnector Object elegible for Garbage Collection, too
             FUIConnector = null;
         }
     }

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -77,11 +77,15 @@ namespace Ict.Common
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(ALanguageCode);
 
             string ResourceDllFname = TAppSettingsManager.ApplicationDirectory +
-                                      "\\" + Thread.CurrentThread.CurrentUICulture.IetfLanguageTag + "\\OpenPetra.resources.dll";
+                                      Path.DirectorySeparatorChar +
+                                      Thread.CurrentThread.CurrentUICulture.Name +
+                                      Path.DirectorySeparatorChar +
+                                      "OpenPetra.resources.dll";
 
             if (File.Exists(ResourceDllFname))
             {
-                catalog = new GettextResourceManager("OpenPetra");
+                catalog = new GettextResourceManager("OpenPetra",
+                    TAppSettingsManager.ApplicationDirectory);
             }
             else
             {

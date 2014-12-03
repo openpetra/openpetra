@@ -177,48 +177,11 @@ namespace Ict.Petra.Client.App.PetraClient
         }
 
         /// <summary>
-        /// start the Petra server
+        /// start the Petra server. No need for standalone to start the server anymore, but perhaps to start the postgresql database?
         /// </summary>
         /// <returns></returns>
         public static Boolean StartServer()
         {
-            System.Diagnostics.Process PetraServerProcess;
-
-            // start the Petra server (e.g. c:\petra2\bin22\PetraServerConsole.exe C:C:\petra2\ServerStandalone.config RunWithoutMenu:true
-            try
-            {
-                FSplashScreen.ProgressText = Catalog.GetString("Starting OpenPetra Server...");
-                PetraServerProcess = new System.Diagnostics.Process();
-                PetraServerProcess.EnableRaisingEvents = false;
-                PetraServerProcess.StartInfo.FileName = TClientSettings.Petra_Path_Bin + "/PetraServerConsole.exe";
-                PetraServerProcess.StartInfo.WorkingDirectory = TClientSettings.Petra_Path_Bin;
-                PetraServerProcess.StartInfo.Arguments = "-C:\"" + TClientSettings.PetraServer_Configfile + "\" -RunWithoutMenu:true";
-                PetraServerProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                PetraServerProcess.EnableRaisingEvents = false;
-
-                if (!PetraServerProcess.Start())
-                {
-#if TESTMODE
-                    TLogging.Log("failed to start " + PetraServerProcess.StartInfo.FileName);
-#endif
-#if  TESTMODE
-#else
-                    FSplashScreen.ShowMessageBox("failed to start " + PetraServerProcess.StartInfo.FileName);
-#endif
-                    return false;
-                }
-            }
-            catch (Exception exp)
-            {
-#if TESTMODE
-                TLogging.Log("Exception while starting PetraServer process: " + exp.ToString());
-#endif
-#if  TESTMODE
-#else
-                FSplashScreen.ShowMessageBox("Exception while starting OpenPetra Server process: " + exp.ToString());
-#endif
-                return false;
-            }
 #if TODO
             // We can't minimize the command window for the PostgreSql server directly after starting.
             // So we do it here.
@@ -360,13 +323,16 @@ namespace Ict.Petra.Client.App.PetraClient
 #if DEBUG
                 TApplicationVCSInfo.DetermineApplicationVCSInfo();
 #endif
+
+                UserInfo.RunningOnClientSide = true;
+
                 // Register Types that can throw Error Codes (Ict.Common.CommonErrorCodes is automatically added)
                 ErrorCodeInventory.RegisteredTypes.Add(new Ict.Petra.Shared.PetraErrorCodes().GetType());
                 ErrorCodeInventory.RegisteredTypes.Add(new Ict.Common.Verification.TStringChecks().GetType());
 
                 // Initialize the client
                 TClientTasksQueue.ClientTasksInstanceType = typeof(TClientTaskInstance);
-                TConnectionManagementBase.ConnectorType = typeof(TConnector);
+
                 TConnectionManagementBase.GConnectionManagement = new TConnectionManagement();
                 new TCallForwarding();
 

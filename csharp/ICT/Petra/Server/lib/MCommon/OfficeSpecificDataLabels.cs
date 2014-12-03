@@ -31,7 +31,6 @@ using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
-using Ict.Petra.Shared.Interfaces.MPersonnel;
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
@@ -66,7 +65,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
     ///          are also UIConnectors are feasible.
     ///
     /// </summary>
-    public class TOfficeSpecificDataLabelsUIConnector : TConfigurableMBRObject, IDataElementsUIConnectorsOfficeSpecificDataLabels
+    public class TOfficeSpecificDataLabelsUIConnector : IDataElementsUIConnectorsOfficeSpecificDataLabels
     {
         private OfficeSpecificDataLabelsTDS FOfficeSpecificDataLabelsTDS;
         private System.Int64 FPartnerKey;

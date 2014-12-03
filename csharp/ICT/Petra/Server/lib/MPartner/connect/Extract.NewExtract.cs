@@ -38,7 +38,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
     /// New Extract User Interface Connector
     /// It contains methods to create new extracts in m_extract_master data table
     /// </summary>
-    public class TPartnerNewExtractUIConnector : TConfigurableMBRObject, IPartnerUIConnectorsPartnerNewExtract
+    public class TPartnerNewExtractUIConnector : IPartnerUIConnectorsPartnerNewExtract
     {
         Int32 FNewExtractID = -1;
 

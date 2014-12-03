@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,7 +55,6 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
     public class TestBudget
     {
         private const int FLedgerNumber = 43;
-        private BudgetTDS FMainDS;
 
         /// <summary>
         /// TestFixtureSetUp
@@ -212,21 +211,31 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
         /// <summary>
         /// test the budget autogeneration
         /// </summary>
+        private BudgetTDS LoadData()
+        {
+            BudgetTDS MainDS = new BudgetTDS();
+
+            MainDS.Merge(TBudgetAutoGenerateWebConnector.LoadBudgetForAutoGenerate(FLedgerNumber));
+
+            //Not needed
+            MainDS.RemoveTable("AGeneralLedgerMasterPeriod");
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// test the budget autogeneration
+        /// </summary>
         [Test]
         public void T1_AutoGenerationLoadData()
         {
-            FMainDS = new BudgetTDS();
-
-            FMainDS.Merge(TBudgetAutoGenerateWebConnector.LoadBudgetForAutoGenerate(FLedgerNumber));
-
-            //Not needed
-            FMainDS.RemoveTable("AGeneralLedgerMasterPeriod");
+            BudgetTDS MainDS = LoadData();
 
             string emptyTables = string.Empty;
 
-            foreach (DataTable tb in FMainDS.Tables)
+            foreach (DataTable tb in MainDS.Tables)
             {
-                if (FMainDS.Tables[tb.TableName].Rows.Count == 0)
+                if (MainDS.Tables[tb.TableName].Rows.Count == 0)
                 {
                     emptyTables += tb.TableName + "; ";
                 }
@@ -241,11 +250,12 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
         [Test]
         public void T2_AutoGenerationGenBudget()
         {
-            //FMainDS loaded in previous test
-            int budgetSequence = FMainDS.ABudget.Count > 0 ? FMainDS.ABudget[0].BudgetSequence : 0;
+            BudgetTDS MainDS = LoadData();
+
+            int budgetSequence = MainDS.ABudget.Count > 0 ? MainDS.ABudget[0].BudgetSequence : 0;
             string forecastType = MFinanceConstants.FORECAST_TYPE_BUDGET;
 
-            if (FMainDS.ABudget.Count == 0)
+            if (MainDS.ABudget.Count == 0)
             {
                 return;
             }
@@ -293,15 +303,16 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
         [Test]
         public void T4_AutoGenerationSetBudgetAmount()
         {
-            //FMainDS loaded in previous test
-            if (FMainDS.ABudget.Count == 0)
+            BudgetTDS MainDS = LoadData();
+
+            if (MainDS.ABudget.Count == 0)
             {
                 return;
             }
 
-            int budgetSequence = FMainDS.ABudget[0].BudgetSequence;
+            int budgetSequence = MainDS.ABudget[0].BudgetSequence;
 
-            ABudgetPeriodRow bPRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { budgetSequence, 1 });
+            ABudgetPeriodRow bPRow = (ABudgetPeriodRow)MainDS.ABudgetPeriod.Rows.Find(new object[] { budgetSequence, 1 });
 
             if (bPRow == null)
             {

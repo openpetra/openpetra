@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,7 +45,7 @@ namespace Ict.Common.Testing
         public void Init()
         {
             Catalog.Init();
-            new TLogging("test.log");
+            new TLogging("../../log/test.log");
         }
 
         #region Helper Methods for Test Cases of this Unit Test

@@ -4,7 +4,7 @@
 // @Authors:
 //       AlanP
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -70,7 +70,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public override void Setup()
         {
-            new TLogging("TestClient.log");
+            new TLogging("../../log/TestClient.log");
 
             FConnectedToServer = false;
             try
@@ -78,9 +78,9 @@ namespace Tests.MFinance.Client.ExchangeRates
                 TPetraConnector.Connect("../../etc/TestClient.config");
                 FConnectedToServer = true;
             }
-            catch (Exception)
+            catch (Exception Exc)
             {
-                Assert.Fail("Failed to connect to the Petra Server.  Have you forgotten to launch the Server Console");
+                Assert.Fail("Failed to connect to the Petra Server.  Have you forgotten to launch the Server Console? Exception: \r\n" + Exc.ToString());
             }
 
             // We use a special FIN. finance module error code which we need to register

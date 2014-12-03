@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,7 +49,7 @@ namespace Tests.Common.Controls
         public void Init()
         {
             Catalog.Init();
-            new TLogging("TestCommonControls.log");
+            new TLogging("../../log/TestCommonControls.log");
         }
 
         /// <summary>

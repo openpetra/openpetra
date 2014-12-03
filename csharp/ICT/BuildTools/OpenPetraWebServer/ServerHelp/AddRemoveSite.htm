@@ -1,0 +1,30 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>Add or Remove</title>
+        <link rel="Stylesheet" href="styles.css" type="text/css" />
+	</head>
+	<body style="font-family: Tahoma; font-size: 12pt;">
+	<h1>Adding or Removing Web Sites</h1>
+	
+    <h4>This topic applies only to the Full GUI</h4>
+
+    <p>You can run any number of web sites from the web server. The only restriction is that they must all use 
+    a different port number.  Add a new web site to the web server by clicking on the main window menu and selecting the <b>Add Site&nbsp;...</b> item.
+    The <b>Web Site Properties </b>dialog will be displayed.  You need to enter the following information.</p>
+    <ul><li><b>A Friendly Name</b>: this is a unique name that identifies this entry in the list of installed web sites.  The name does not form part of the web address.</li>
+    <li><b>The Physical Path</b>: this is the actual location on your hard drive that will be the root of the site.</li>
+    <li><b>The Virtual Path</b>: this is the name of the site that will appear after localhost in the URL.  You can leave this entry blank.</li>
+    <li><b>The Port Number</b>: this is the HTTP port that the server will listen on for web requests. The standard port is 80. Other favourite choices are 8080, 8888, 8088 
+    but you can use any number, usually above 50000.  
+    If you have more than one web site you must use a different port number for each one.</li>
+    <li><b>The Default Page</b>: You can leave this blank, but if you do the server will try to locate a 'default.htm' or 'default.aspx' page or similar.  
+    If it cannot find one of its default documents it will display a directory listing from which you can browse to a listed page.  
+    You will usually want to supply a default page if the site home page is not one of the standard documents.</li>
+    </ul>
+    <p>Note that you can only add a new web site when the server is stopped.</p>
+    <p>You can remove a web site by selecting the site in the main window list and clicking the <b>Remove </b>item from the <b>Seleced Site </b>menu.</p>
+    <p>The application saves your web site and option settings to disk.  When you run the application again it will start again from where you left off.</p>
+
+	</body>
+</html>

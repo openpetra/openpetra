@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -65,7 +66,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     /// </summary>
-    public class TPartnerFindUIConnector : TConfigurableMBRObject, IPartnerUIConnectorsPartnerFind
+    public class TPartnerFindUIConnector : IPartnerUIConnectorsPartnerFind
     {
         private TPartnerFind FPartnerFind = new TPartnerFind();
 
@@ -76,14 +77,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
         }
 
-        /// <summary>Returns reference to the Asynchronous execution control object to the caller</summary>
-        public IAsynchronousExecutionProgress AsyncExecProgress
+        /// <summary>Get the current state of progress</summary>
+        public TProgressState Progress
         {
             get
             {
-                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
-                    typeof(TAsynchronousExecutionProgressRemote),
-                    FPartnerFind.AsyncExecProgress);
+                return FPartnerFind.Progress;
             }
         }
 
@@ -134,8 +133,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <summary>
         /// Stops the query execution.
         ///
-        /// Is intended to be called as an Event from FAsyncExecProgress.Cancel.
-        ///
         /// @comment It might take some time until the executing query is cancelled by
         /// the DB, but this procedure returns immediately. The reason for this is that
         /// we consider the query cancellation as done since the application can
@@ -144,13 +141,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// errors that state that a ADO.NET command is still executing!).
         ///
         /// </summary>
-        /// <param name="ASender">Object that requested the stopping (not evaluated)</param>
-        /// <param name="AArgs">(not evaluated)
-        /// </param>
-        /// <returns>void</returns>
-        public void StopSearch(object ASender, EventArgs AArgs)
+        public void StopSearch()
         {
-            FPartnerFind.StopSearch(ASender, AArgs);
+            FPartnerFind.StopSearch();
         }
 
         /// <summary>

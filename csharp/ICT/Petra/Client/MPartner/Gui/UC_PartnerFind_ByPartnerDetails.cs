@@ -1393,7 +1393,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Application.DoEvents();
 
                 // Stop asynchronous search operation
-                FPartnerFindObject.AsyncExecProgress.Cancel();
+                FPartnerFindObject.StopSearch();
             }
         }
 
@@ -1789,7 +1789,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Enable/disable according to how the search operation ended
                 if (Convert.ToBoolean(AEnable))
                 {
-                    if (FPartnerFindObject.AsyncExecProgress.ProgressState != TAsyncExecProgressState.Aeps_Stopped)
+                    if (FPartnerFindObject.Progress.JobFinished)
                     {
                         // Search operation ended without interruption
                         if (FPagedDataTable.Rows.Count > 0)
@@ -1980,54 +1980,36 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void SearchFinishedCheckThread()
         {
-            TAsyncExecProgressState ProgressState;
-
-            /* Check whether this Thread should still execute */
+            // Check whether this thread should still execute
             while (FKeepUpSearchFinishedCheck)
             {
-                try
-                {
-                    /* The next line of code calls a function on the PetraServer
-                     * > causes a bit of data traffic everytime! */
-                    ProgressState = FPartnerFindObject.AsyncExecProgress.ProgressState;
-                }
-                catch (System.NullReferenceException)
-                {
-                    /*
-                     * This Exception occurs if the screen has been closed by the user
-                     * in the meantime -> don't try to do anything further - it will break!
-                     */
-                    return;  // Thread ends here!
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                /* The next line of code calls a function on the PetraServer
+                 * > causes a bit of data traffic everytime! */
+                TProgressState state = FPartnerFindObject.Progress;
 
-                switch (ProgressState)
+                if (state.JobFinished)
                 {
-                    case TAsyncExecProgressState.Aeps_Finished:
-                        FKeepUpSearchFinishedCheck = false;
+                    FKeepUpSearchFinishedCheck = false;
 
-                        // Fetch the first page of data
-                        try
-                        {
-                            // For speed reasons we must add the necessary amount of emtpy Rows only *after* .AutoSizeCells()
-                            // has already been run! See XML Comment on the called Method
-                            // TSgrdDataGridPaged.LoadFirstDataPage for details!
-                            FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult, false);
+                    // Fetch the first page of data
+                    try
+                    {
+                        // For speed reasons we must add the necessary amount of emtpy Rows only *after* .AutoSizeCells()
+                        // has already been run! See XML Comment on the called Method
+                        // TSgrdDataGridPaged.LoadFirstDataPage for details!
+                        FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult, false);
 //TLogging.Log("grdResult.LoadFirstDataPage finished. FPagedDataTable.Rows.Count: " + FPagedDataTable.Rows.Count.ToString());
-                        }
-                        catch (Exception E)
-                        {
-                            MessageBox.Show(E.ToString());
-                        }
-                        break;
-
-                    case TAsyncExecProgressState.Aeps_Stopped:
-                        FKeepUpSearchFinishedCheck = false;
-                        EnableDisableUI(true);
-                        return;
+                    }
+                    catch (Exception E)
+                    {
+                        MessageBox.Show(E.ToString());
+                    }
+                }
+                else if (state.CancelJob)
+                {
+                    FKeepUpSearchFinishedCheck = false;
+                    EnableDisableUI(true);
+                    return;
                 }
 
                 // Sleep for some time. After that, this function is called again automatically.

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -137,8 +137,14 @@ namespace Ict.Petra.Server.MReporting.Calculator
                 // to avoid still having in the status line: loading common.xml, although he is already working on the report
                 TLogging.Log("Preparing data for the report... ", TLoggingType.ToStatusBar);
 
-                if (Calculate() && (Parameters.Get("CancelReportCalculation").ToBool() != true))
+                if (Calculate())
                 {
+                    if (Parameters.Get("CancelReportCalculation").ToBool() == true)
+                    {
+                        AErrorMessage = "Report calculation was cancelled";
+                        return false;
+                    }
+
                     resultlist = this.Results;
 
                     if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)

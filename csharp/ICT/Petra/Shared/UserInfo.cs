@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common;
+using Ict.Common.Session;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 
@@ -33,53 +35,55 @@ namespace Ict.Petra.Shared
     /// </summary>
     public class UserInfo
     {
-        /// <summary>used internally to hold User Information</summary>
+        /// <summary>used internally to hold User Information - but only when this class is used client-side!</summary>
         private static TPetraPrincipal MUserInfo = null;
-
+        
         /// <summary>
-        /// delegate for setting the object for this current session
+        /// True if the <see cref="UserInfo" /> Class is used on the client side, false otherwise.
         /// </summary>
-        public delegate void ObjectSetter(TPetraPrincipal value);
+        private static bool FRunningOnClientSide = false;
+        
         /// <summary>
-        /// delegate for getting the object for this current session
+        /// True if the <see cref="UserInfo" /> Class is used on the client side, false otherwise.
         /// </summary>
-        public delegate TPetraPrincipal ObjectGetter();
-
-        private static ObjectSetter ObjDelegateSet = null;
-        private static ObjectGetter ObjDelegateGet = null;
-
-        /// we cannot have a reference to System.Web for Session here, so we use a delegate
-        public static void SetFunctionForRetrievingCurrentObjectFromWebSession(
-            ObjectSetter setter,
-            ObjectGetter getter)
+        static public bool RunningOnClientSide
         {
-            ObjDelegateSet = setter;
-            ObjDelegateGet = getter;
+            get
+            {
+                return FRunningOnClientSide;
+            }
+            
+            set
+            {
+                FRunningOnClientSide = value;
+            }
         }
-
+        
         /// <summary>used internally to hold User Information</summary>
         public static TPetraPrincipal GUserInfo
         {
             set
             {
-                if (ObjDelegateSet == null)
+                if (FRunningOnClientSide) 
                 {
-                    MUserInfo = value;
+//                    TLogging.Log("GUserInfo gets written to from server-side");
+                    MUserInfo = value;      
                 }
                 else
                 {
-                    ObjDelegateSet(value);
+                    TSession.SetVariable("UserInfo", value);
                 }
             }
             get
             {
-                if (ObjDelegateGet == null)
+                if (FRunningOnClientSide) 
                 {
                     return MUserInfo;
                 }
                 else
-                {
-                    return ObjDelegateGet();
+                {   
+//                    TLogging.Log("GUserInfo requested from server-side");                    
+                    return (TPetraPrincipal)TSession.GetVariable("UserInfo");
                 }
             }
         }

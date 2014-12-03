@@ -145,11 +145,10 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
 
         /// RefreshCacheableTable
         [RequireModulePermission("NONE")]
-        public static void RefreshCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
-                                          out System.Data.DataTable ADataTable)
+        public static System.Data.DataTable RefreshCacheableTableAndGet(TCacheable{#SUBMODULE}TablesEnum ACacheableTable)
         {
             System.Type TmpType;
-            ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
+            return GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
         }
 
         /// SaveChangedStandardCacheableTable

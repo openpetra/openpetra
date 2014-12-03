@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -127,6 +127,18 @@ namespace Ict.Tools.NAntTasks
             set
             {
                 FLimitToNamespaces = new List <string>(value.Split(new char[] { ',' }));
+            }
+        }
+
+        private bool FCompilingForStandalone = false;
+        /// <summary>
+        /// if we are compiling for standalone, we are allowed to reference the server namespaces from the client
+        /// </summary>
+        [TaskAttribute("CompilingForStandalone", Required = false)]
+        public bool CompilingForStandalone {
+            set
+            {
+                FCompilingForStandalone = value;
             }
         }
 
@@ -293,7 +305,11 @@ namespace Ict.Tools.NAntTasks
                                 ReferencesWinForms = true;
                             }
 
-                            if (Namespace.StartsWith("System.Web") && !Path.GetDirectoryName(filename).EndsWith("WebService"))
+                            if (Namespace.StartsWith("System.Web")
+                                && !Path.GetDirectoryName(filename).EndsWith("WebService")
+                                && !Path.GetDirectoryName(filename).EndsWith("Session")
+                                && !Path.GetDirectoryName(filename).EndsWith("Server")
+                                && !Path.GetDirectoryName(filename).EndsWith("RuntimeHost"))
                             {
                                 Console.WriteLine(
                                     "Warning: we should not reference System.Web since that is not part of the client profile of .net 4.0! in " +
@@ -309,7 +325,7 @@ namespace Ict.Tools.NAntTasks
                                     filename);
                             }
 
-                            if (Namespace.StartsWith("Ict.Petra.Server")
+                            if (!FCompilingForStandalone && Namespace.StartsWith("Ict.Petra.Server")
                                 && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Client"))
                             {
                                 Console.WriteLine(
@@ -318,7 +334,7 @@ namespace Ict.Tools.NAntTasks
                                     filename);
                             }
 
-                            if (Namespace.StartsWith("Ict.Petra.Server")
+                            if (!FCompilingForStandalone && Namespace.StartsWith("Ict.Petra.Server")
                                 && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Shared"))
                             {
                                 Console.WriteLine(
@@ -347,7 +363,17 @@ namespace Ict.Tools.NAntTasks
 
                             if (!DetailsOfDll.UsedNamespaces.Contains(Namespace))
                             {
-                                DetailsOfDll.UsedNamespaces.Add(Namespace);
+                                if (Namespace.StartsWith("Microsoft.Win32")
+                                    && Path.GetDirectoryName(filename).EndsWith("RuntimeHost"))
+                                {
+                                    // we can ignore special Microsoft features on this project because it is for Windows developers only
+                                    Console.WriteLine(
+                                        "Info: ignoring Microsoft.Win32 reference when building namespace map in " + filename);
+                                }
+                                else
+                                {
+                                    DetailsOfDll.UsedNamespaces.Add(Namespace);
+                                }
                             }
                         }
                     }

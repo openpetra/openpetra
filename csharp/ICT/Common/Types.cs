@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -167,37 +167,6 @@ namespace Ict.Common
         /// standalones run the client and the server on one machine
         /// </summary>
         csctLocal
-    };
-
-    /// <summary>
-    /// enum for states in the asynchronous execution
-    /// </summary>
-    public enum TAsyncExecProgressState
-    {
-        /// <summary>
-        /// read to start
-        /// </summary>
-        Aeps_ReadyToStart,
-
-        /// <summary>
-        /// currently running
-        /// </summary>
-        Aeps_Executing,
-
-        /// <summary>
-        /// finished
-        /// </summary>
-        Aeps_Finished,
-
-        /// <summary>
-        /// is stopping at the moment
-        /// </summary>
-        Aeps_Stopping,
-
-        /// <summary>
-        /// stopped
-        /// </summary>
-        Aeps_Stopped
     };
 
     /// <summary>
@@ -488,6 +457,84 @@ namespace Ict.Common
         }
     }
 
+    /// <summary>
+    /// return values when the user logs in
+    /// </summary>
+    public enum eLoginEnum
+    {
+        #region eLoginEnum
+        /// <summary>
+        /// everything is fine
+        /// </summary>
+        eLoginSucceeded,
+
+        /// <summary>
+        /// wrong username or password
+        /// </summary>
+        eLoginAuthenticationFailed,
+
+        /// <summary>
+        /// user is retired and therefore not allowed to login
+        /// </summary>
+        eLoginUserIsRetired,
+
+        /// <summary>
+        /// user record is locked for some reason
+        /// </summary>
+        eLoginUserRecordLocked,
+
+        /// <summary>
+        /// server cannot accept more users, too busy
+        /// </summary>
+        eLoginServerTooBusy,
+
+        /// <summary>
+        /// for hosted OpenPetra: too many users logged in at the same time. sign up for a better plan!
+        /// </summary>
+        eLoginExceedingConcurrentUsers,
+
+        /// <summary>
+        /// System is disabled for the moment
+        /// </summary>
+        eLoginSystemDisabled,
+
+        /// <summary>
+        /// version of dlls (or version.txt) of the client does not match the version of the program on the server
+        /// </summary>
+        eLoginVersionMismatch,
+
+        /// <summary>
+        /// cannot reach the server
+        /// </summary>
+        eLoginServerNotReachable,
+
+        /// <summary>
+        /// catch all for any other exception
+        /// </summary>
+        eLoginFailedForUnspecifiedError
+        #endregion
+    }
+
+
+    /// <summary>
+    /// current state of the long-running procedure
+    /// </summary>
+    [Serializable]
+    public class TProgressState
+    {
+        /// percentage done
+        public int PercentageDone = -1;
+        /// overall amount
+        public decimal AbsoluteOverallAmount = 100.0m;
+        /// status message, which changes during the procedure
+        public string StatusMessage = string.Empty;
+        /// caption, overall description of job
+        public string Caption = string.Empty;
+        /// the client can ask the procedure to stop
+        public bool CancelJob = false;
+        /// if the job has finished, this is set to true. note: sometimes percentage might be inaccurate, or not present at all
+        public bool JobFinished = false;
+    }
 
     /// <summary>
     /// Thrown when OpenPetra encounters a problem when trying to launch a Hyperlink.

@@ -272,7 +272,7 @@ namespace Ict.Tools.NAntTasks
                     "Ict.Common,Ict.Petra.Shared,Ict.Petra.Client,Ict.Petra.PetraClient");
                 WriteSolutionFile(FTemplateDir, ide.Trim(),
                     "OpenPetra.Tools.sln",
-                    "Ict.Common,Ict.Tools");
+                    "Ict.Common.csproj,Ict.Common.IO,Ict.Tools");
                 WriteSolutionFile(FTemplateDir, ide.Trim(),
                     "OpenPetra.Testing.sln",
                     "Ict.Common,Ict.Petra,Ict.Testing");
@@ -447,7 +447,7 @@ namespace Ict.Tools.NAntTasks
 
                 foreach (string incNamespace in IncludeNamespaces)
                 {
-                    if (projectName.StartsWith(incNamespace))
+                    if (projectName.StartsWith(incNamespace) || (projectName + ".csproj" == incNamespace))
                     {
                         includeProject = true;
                         break;

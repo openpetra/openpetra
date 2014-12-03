@@ -204,7 +204,7 @@ namespace Ict.Petra.Client.App.Core
                 out Boolean AIsMergedPartner,
                 out Boolean AUserCanAccessPartner)
             {
-                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartner(APartnerKey,
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartnerAndGetDetails(APartnerKey,
                     out APartnerShortName,
                     out APartnerClass,
                     out AIsMergedPartner,

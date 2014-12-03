@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,7 +38,7 @@ namespace Ict.Testing.Common.Printing
         [STAThread]
         private static void Main(string[] args)
         {
-            new Ict.Common.TLogging("testPrinting.log");
+            new Ict.Common.TLogging("../testPrinting.log");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());

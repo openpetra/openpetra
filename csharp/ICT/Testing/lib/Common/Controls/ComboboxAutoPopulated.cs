@@ -56,7 +56,7 @@ namespace Tests.Common.Controls
         [SetUp]
         public void Init()
         {
-            new TLogging("TestCommonControls.log");
+            new TLogging("../../log/TestCommonControls.log");
 
             TPetraConnector.Connect("../../etc/TestClient.config");
             FLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValue("LedgerNumber"));
@@ -65,6 +65,7 @@ namespace Tests.Common.Controls
         /// <summary>
         /// clean up, disconnect from OpenPetra server
         /// </summary>
+        [TearDown]
         public void TearDown()
         {
             TPetraConnector.Disconnect();

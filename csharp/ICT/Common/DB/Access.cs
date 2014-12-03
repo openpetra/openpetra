@@ -40,6 +40,7 @@ using Ict.Common.DB.DBCaching;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.IO;
 using Npgsql;
+using Ict.Common.Session;
 
 namespace Ict.Common.DB
 {
@@ -81,58 +82,17 @@ namespace Ict.Common.DB
         /// <summary>DebugLevel for tracing (most verbose log output): is 10 (was 4 before)</summary>
         public const Int32 DB_DEBUGLEVEL_TRACE = 10;
 
-        /// <summary>
-        /// store the current object for access to the database
-        /// </summary>
-        private static TDataBase MGDBAccessObj = null;
-
-        /// <summary>
-        /// delegate for setting the database object for this current session
-        /// </summary>
-        public delegate void DBAccessObjectSetter(TDataBase ADatabaseForUser);
-
-        /// <summary>
-        /// delegate for getting the database object for this current session
-        /// </summary>
-        public delegate TDataBase DBAccessObjectGetter();
-
-        private static DBAccessObjectSetter MGDBAccessObjDelegateSet = null;
-        private static DBAccessObjectGetter MGDBAccessObjDelegateGet = null;
-
-        /// we cannot have a reference to System.Web for Session here, so we use a delegate
-        public static void SetFunctionForRetrievingCurrentObjectFromWebSession(
-            DBAccessObjectSetter setter,
-            DBAccessObjectGetter getter)
-        {
-            MGDBAccessObjDelegateSet = setter;
-            MGDBAccessObjDelegateGet = getter;
-        }
-
         /// <summary>Global Object in which the Application can store a reference to an Instance of
         /// <see cref="TDataBase" /></summary>
         public static TDataBase GDBAccessObj
         {
             set
             {
-                if (MGDBAccessObjDelegateSet == null)
-                {
-                    MGDBAccessObj = value;
-                }
-                else
-                {
-                    MGDBAccessObjDelegateSet(value);
-                }
+                TSession.SetVariable("DBAccessObj", value);
             }
             get
             {
-                if (MGDBAccessObjDelegateGet == null)
-                {
-                    return MGDBAccessObj;
-                }
-                else
-                {
-                    return MGDBAccessObjDelegateGet();
-                }
+                return (TDataBase)TSession.GetVariable("DBAccessObj");
             }
         }
     }
@@ -455,7 +415,7 @@ namespace Ict.Common.DB
         /// <param name="APassword">Password of the User which should be used for connecting to the DB server</param>
         /// <param name="AConnectionString">If this is not empty, it is prefered over the Dsn and Username and Password</param>
         /// <returns>void</returns>
-        /// <exception cref="EDBConnectionNotEstablishedException">Thrown when a connection cannot be established</exception>
+        /// <exception cref="EDBConnectionNotAvailableException">Thrown when a connection cannot be established</exception>
         public void EstablishDBConnection(TDBType ADataBaseType,
             String ADsnOrServer,
             String ADBPort,
@@ -505,17 +465,17 @@ namespace Ict.Common.DB
 
                 FSqlConnection = CurrentConnectionInstance.GetConnection(
                     FDataBaseRDBMS,
-                    ADsnOrServer,
-                    ADBPort,
-                    ADatabaseName,
-                    AUsername,
-                    ref APassword,
-                    AConnectionString,
+                    FDsnOrServer,
+                    FDBPort,
+                    FDatabaseName,
+                    FUsername,
+                    ref FPassword,
+                    FConnectionString,
                     new StateChangeEventHandler(this.OnStateChangedHandler));
 
                 if (FSqlConnection == null)
                 {
-                    throw new EDBConnectionNotEstablishedException();
+                    throw new EDBConnectionNotAvailableException();
                 }
             }
             else
@@ -527,7 +487,7 @@ namespace Ict.Common.DB
             {
                 // always log to console and log file, which database we are connecting to.
                 // see https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=156
-                TLogging.Log("    Connecting to database " + ADataBaseType + ": " + CurrentConnectionInstance.GetConnectionString());
+                TLogging.Log("    Connecting to database " + FDbType + ": " + CurrentConnectionInstance.GetConnectionString());
 
                 FSqlConnection.Open();
                 FDataBaseRDBMS.InitConnection(FSqlConnection);
@@ -546,7 +506,7 @@ namespace Ict.Common.DB
                 LogException(exp,
                     String.Format("Exception occured while establishing a connection to Database Server. DB Type: {0}", FDbType));
 
-                throw new EDBConnectionNotEstablishedException(CurrentConnectionInstance.GetConnectionString() + ' ' + exp.ToString());
+                throw new EDBConnectionNotAvailableException(CurrentConnectionInstance.GetConnectionString() + ' ' + exp.ToString());
             }
 
             // only check database version once when working with multiple connections
@@ -600,7 +560,7 @@ namespace Ict.Common.DB
         /// Closes the DB connection.
         /// </summary>
         /// <returns>void</returns>
-        /// <exception cref="EDBConnectionNotEstablishedException">Thrown if an attempt is made to close an
+        /// <exception cref="EDBConnectionNotAvailableException">Thrown if an attempt is made to close an
         /// already/still closed connection.</exception>
         public void CloseDBConnection()
         {
@@ -614,7 +574,7 @@ namespace Ict.Common.DB
         /// Closes the DB connection.
         /// </summary>
         /// <returns>void</returns>
-        /// <exception cref="EDBConnectionNotEstablishedException">Thrown if an attempt is made to close an
+        /// <exception cref="EDBConnectionNotAvailableException">Thrown if an attempt is made to close an
         /// already/still closed connection.</exception>
         private void CloseDBConnectionInternal()
         {
@@ -1325,7 +1285,7 @@ namespace Ict.Common.DB
                     //
                     // Reconnect to the database
                     //
-                    TLogging.Log(exp.Message);
+                    TLogging.Log("BeginTransaction: Trying to reconnect to the Database because an Exception occured: " + exp.ToString());
 
                     if (FSqlConnection == null)
                     {

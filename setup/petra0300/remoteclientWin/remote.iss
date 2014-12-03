@@ -173,9 +173,4 @@ begin
     ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'PETRAHOST', strServer, true);
     ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'PETRAPORT', IntToStr(NetPort), true);
   end;
-
-  // allow the .net remoting communication between client and server
-  Exec(ExpandConstant('{sys}\cmd.exe'), '/C netsh firewall set allowedprogram program = '
-    + ExpandConstant('"{userappdata}/OpenPetra{#ORGNAME}\bin30\PetraClient.exe" name = PetraClient mode = DISABLE'),
-    '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
 end;

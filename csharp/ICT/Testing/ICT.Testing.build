@@ -3,14 +3,23 @@
 
 <include buildfile="../../../inc/nant/OpenPetra.csharp.xml"/> 
 
+<target name="cleanup">
+    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+</target>
+
 <target name="test-client">
+    <property name="nant.onfailure" value="cleanup" />
+
+    <!-- this test will start and stop the server itself -->
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.ClientServerRemoting.dll" />
+
     <echo message="Target test-client started at: ${datetime::now()}" /> 
     
     <!-- stop old server that might still be running from earlier (failed) builds -->
-    <nant inheritall="false" target="stopPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
-    <nant inheritall="false" target="startPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+    <nant inheritall="false" target="startServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Controls.dll" />
-    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" testcase="Tests.MFinance.GLBatches.TGLBatchesTest.TestCreateBatchAndPost"/>
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.ExchangeRates.dll" />
 
 <!-- TODO
@@ -18,7 +27,7 @@
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GiftForm.dll" />
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" />
 -->
-    <nant inheritall="false" target="stopPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
+    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
     
     <echo message="Target test-client finished at: ${datetime::now()}" /> 
 </target>
@@ -104,14 +113,16 @@
 
 <target name="test-main-navigation-screens">
     <echo message="Target test-main-navigation-screens started at: ${datetime::now()}" /> 
-    
+
+    <property name="nant.onfailure" value="cleanup" />
+
     <!-- stop old server that might still be running from earlier (failed) builds -->
-    <nant inheritall="false" target="stopPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
-    <nant inheritall="false" target="startPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+    <nant inheritall="false" target="startServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
     
     <call target="test-main-navigation-screens-core" />
     
-    <nant inheritall="false" target="stopPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
+    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
     
     <echo message="Target test-main-navigation-screens finished at: ${datetime::now()}" /> 
 </target>

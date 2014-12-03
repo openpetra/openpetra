@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,7 +43,7 @@ namespace Ict.Testing.TxtPetraDate
             Application.SetCompatibleTextRenderingDefault(true);
 
 
-            new TLogging("TextBoxNumberFormatting.log");
+            new TLogging("../../log/TextBoxNumberFormatting.log");
             Application.Run(new MainForm());
         }
     }

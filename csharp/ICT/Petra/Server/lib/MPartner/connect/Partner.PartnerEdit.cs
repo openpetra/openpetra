@@ -83,7 +83,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
     ///          are also UIConnectors are feasible.
     ///
     /// </summary>
-    public partial class TPartnerEditUIConnector : TConfigurableMBRObject, IPartnerUIConnectorsPartnerEdit
+    public partial class TPartnerEditUIConnector : IPartnerUIConnectorsPartnerEdit
     {
         private const String DATASETNAME = "PartnerEditScreen";
 

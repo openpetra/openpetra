@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             /* load available ledgers into listbox */
             DataTable LedgerTable;
 
-            TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTable(TCacheableFinanceTablesEnum.LedgerNameList, out LedgerTable);
+            LedgerTable = TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTableAndGet(TCacheableFinanceTablesEnum.LedgerNameList);
 
             foreach (DataRow Row in LedgerTable.Rows)
             {

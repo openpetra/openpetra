@@ -134,7 +134,7 @@ namespace Tests.MFinance.Server.ICH
             int PeriodNumber = 5;
             int ICHProcessingNumber = 1;
             int CurrencyType = 1; //base
-            string FileName = TAppSettingsManager.GetValue("OpenPetra.PathTemp") + Path.DirectorySeparatorChar + "Test.csv";
+            string FileName = TAppSettingsManager.GetValue("Server.PathTemp") + Path.DirectorySeparatorChar + "Test.csv";
             bool SendEmail = false;
 
             TGenFilesReports.GenerateStewardshipFile(FLedgerNumber,
@@ -161,7 +161,7 @@ namespace Tests.MFinance.Server.ICH
             int PeriodNumber = 5;
             int ICHProcessingNumber = 1;
             int CurrencyType = 1; //base
-            string FileName = TAppSettingsManager.GetValue("OpenPetra.PathTemp") + Path.DirectorySeparatorChar + "TestGenerateICHEmail.csv";
+            string FileName = TAppSettingsManager.GetValue("Server.PathTemp") + Path.DirectorySeparatorChar + "TestGenerateICHEmail.csv";
             bool SendEmail = true;
 
             // make sure there is a valid email destination

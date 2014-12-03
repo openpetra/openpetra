@@ -49,7 +49,7 @@ namespace Ict.Petra.Server.App.Core
     /// @Comment The System Defaults are retrieved from the s_system_defaults table
     ///   and are put into a Typed DataTable that has the structure of this table.
     /// </summary>
-    public class TSystemDefaultsCache : MarshalByRefObject, ISystemDefaultsCache
+    public class TSystemDefaultsCache : ISystemDefaultsCache
     {
         /// a static variable for global access to the system defaults
         public static TSystemDefaultsCache GSystemDefaultsCache;
@@ -86,16 +86,6 @@ namespace Ict.Petra.Server.App.Core
         }
 
         /// <summary>
-        /// for remoting
-        /// </summary>
-        /// <returns></returns>
-        public override object InitializeLifetimeService()
-        {
-            // make sure that the TSystemDefaultsCache object exists until this AppDomain is unloaded!
-            return null;
-        }
-
-        /// <summary>
         /// Returns the System Defaults as a Typed DataTable.
         ///
         /// The caller doesn't need to know whether the Cache is already populated - if
@@ -105,7 +95,7 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         /// <returns>System Defaults as a Typed DataTable.
         /// </returns>
-        public Ict.Petra.Shared.MSysMan.Data.SSystemDefaultsTable GetSystemDefaultsTable()
+        public SSystemDefaultsTable GetSystemDefaultsTable()
         {
             SSystemDefaultsTable ReturnValue;
 

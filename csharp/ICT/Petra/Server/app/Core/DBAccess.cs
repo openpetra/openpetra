@@ -22,7 +22,6 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Runtime.Serialization;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.DB.DBCaching;

@@ -68,16 +68,24 @@ namespace Ict.Petra.Server.App.Core
         private IUserManager FUserManager;
 
         /// <summary>
+        /// get a casted version of the static variable
+        /// </summary>
+        public static TServerManager TheCastedServerManager
+        {
+            get
+            {
+                return (TServerManager)TheServerManager;
+            }
+        }
+
+
+        /// <summary>
         /// Initialises Logging and parses Server settings from different sources.
         /// </summary>
         public TServerManager() : base()
         {
             // Create SystemDefaults Cache
             FSystemDefaultsCache = new TSystemDefaultsCache();
-
-            TRemoteLoader.CLIENTDOMAIN_DLLNAME = "Ict.Petra.Server.app.Core";
-            TRemoteLoader.CLIENTDOMAIN_CLASSNAME = "Ict.Petra.Server.App.Core.TClientDomainManager";
-            TClientAppDomainConnectionBase.ClientAppDomainConnectionType = typeof(TClientAppDomainConnection);
 
             TCacheableTablesManager.InitializeUnit();
             TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
@@ -98,11 +106,9 @@ namespace Ict.Petra.Server.App.Core
                 null);
 
             TClientManager.InitializeStaticVariables(FSystemDefaultsCache,
-                TCacheableTablesManager.GCacheableTablesManager,
                 FUserManager,
                 new TErrorLog(),
-                new TMaintenanceLogonMessage(),
-                new TClientAppDomainConnection());
+                new TMaintenanceLogonMessage());
 
             TTimedProcessing.DailyStartTime24Hrs = TAppSettingsManager.GetValue("Server.Processing.DailyStartTime24Hrs", "00:30");
 

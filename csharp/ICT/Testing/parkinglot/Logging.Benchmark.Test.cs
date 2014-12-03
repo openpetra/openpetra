@@ -4,7 +4,7 @@
 // @Authors:
 //       Wolfgang Uhr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -62,7 +62,7 @@ namespace Tests.Common
         [TestFixtureSetUp]
         public void Init()
         {
-            new TLogging("test.log");
+            new TLogging("../../log/test.log");
         }
 
         /// <summary>

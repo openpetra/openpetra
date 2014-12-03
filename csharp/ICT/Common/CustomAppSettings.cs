@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -73,6 +73,13 @@ namespace Ict.Common
         {
             get
             {
+                // in ASP, the directory of the starting assembly is somewhere in a tmp directory, not our bin directory
+                // therefore the option to define the ApplicationDirectory in the config file
+                if (TAppSettingsManager.HasValue("ApplicationDirectory"))
+                {
+                    return TAppSettingsManager.GetValue("ApplicationDirectory");
+                }
+
                 if (FApplicationDirectory.StartsWith("file:\\"))
                 {
                     FApplicationDirectory = FApplicationDirectory.Substring("file:\\".Length);
@@ -219,7 +226,7 @@ namespace Ict.Common
 
             ReturnValue = false;
 
-            if (FCmdOpts.IsFlagSet(Key))
+            if ((FCmdOpts != null) && FCmdOpts.IsFlagSet(Key))
             {
                 ReturnValue = true;
             }
@@ -289,9 +296,12 @@ namespace Ict.Common
                 }
             }
 
-            ReturnValue = ReturnValue.Replace("{userappdata}",
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-            ReturnValue = ReturnValue.Replace("{applicationbindir}", ApplicationDirectory);
+            if (AKey != "ApplicationDirectory")
+            {
+                ReturnValue = ReturnValue.Replace("{userappdata}",
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+                ReturnValue = ReturnValue.Replace("{applicationbindir}", ApplicationDirectory);
+            }
 
             return ReturnValue;
         }

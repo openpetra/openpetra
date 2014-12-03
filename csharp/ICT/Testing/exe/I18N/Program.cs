@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -54,7 +54,7 @@ namespace Ict.Testing.I18N
                         Directory.CreateDirectory("de-DE");
                     }
 
-                    File.Copy("../../Common/I18N/Sample-de-DE/OpenPetra.resources.dll", "de-DE/OpenPetra.resources.dll");
+                    File.Copy("../../csharp/ICT/Testing/exe/I18N/Sample-de-DE/OpenPetra.resources.dll", "de-DE/OpenPetra.resources.dll");
                 }
 
                 Catalog.Init("de-DE", "de-DE");

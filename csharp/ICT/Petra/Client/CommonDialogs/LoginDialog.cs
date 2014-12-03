@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,10 +68,7 @@ namespace Ict.Petra.Client.CommonDialogs
 
         private readonly String StrPetraLoginFormTitle = Catalog.GetString("OpenPetra Login");
         private readonly String StrDetailsInLogfile = Catalog.GetString("For details see the log file");
-// TODO  private readonly String StrConnectionNotYetEst = Catalog.GetString("Please try again, \r\nthe connection has not" + " been established yet");
-// TODO  private readonly String StrConnectionNotYetEstTitle = Catalog.GetString("Connection Problem");
-// TODO  private readonly String StrConnToServerCouldntEst = Catalog.GetString("Connection to the Server could not be established!");
-// TODO  private readonly String StrLoginFailed = Catalog.GetString("Login failed!");
+        private readonly String StrLoginFailed = Catalog.GetString("Login failed!");
 
         #endregion
 
@@ -83,12 +80,20 @@ namespace Ict.Petra.Client.CommonDialogs
         private Int32 FProcessID;
         private Boolean FConnectionEstablished;
 
-        private void DisplayLoginFailedMessage(string AMessage)
+        private void DisplayLoginFailedMessage(string AMessage, string ATitle = null)
         {
-            if (!((AMessage == null) || (AMessage == "")))
+            if (ATitle == null)
             {
-                MessageBox.Show(AMessage, StrPetraLoginFormTitle, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                ATitle = StrLoginFailed;
             }
+
+#if TESTMODE
+            TLogging.Log(AMessage);
+#endif
+#if  TESTMODE
+#else
+            MessageBox.Show(AMessage, ATitle, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+#endif
         }
 
         /// <summary>
@@ -333,8 +338,8 @@ namespace Ict.Petra.Client.CommonDialogs
 
                 UpdateUI(false);
 
-                // TODO what todo on connection failure?
-                if (ConnectionError.Length > 0)
+                // TODORemoting do not show the error code???
+                if ((ConnectionError.Length > 0) && (ConnectionError.IndexOf(" ") != -1))
                 {
                     // this message box shows if the password is wrong
                     // otherwise there has already been a message box usually
@@ -347,79 +352,42 @@ namespace Ict.Petra.Client.CommonDialogs
 
         private bool ConnectToPetraServer(String AUserName, String APassWord, out String AError)
         {
-            bool ReturnValue = false;
+            eLoginEnum ReturnValue = eLoginEnum.eLoginFailedForUnspecifiedError;
 
-            AError = "";
-            try
-            {
-                ReturnValue = ((TConnectionManagement)TConnectionManagement.GConnectionManagement).ConnectToServer(AUserName, APassWord,
-                    out FProcessID,
-                    out FWelcomeMessage,
-                    out FSystemEnabled,
-                    out AError);
-            }
-            catch (EClientVersionMismatchException exp)
-            {
-                MessageBox.Show(exp.Message, Catalog.GetString("OpenPetra Client/Server Program Version Mismatch!"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return false;
-            }
-            catch (ELoginFailedServerTooBusyException)
-            {
-#if TESTMODE
-                TLogging.Log("The OpenPetra Server is too busy to accept the Login request.");
-#endif
-#if  TESTMODE
-#else
-                MessageBox.Show(Catalog.GetString(
-                        "The OpenPetra Server is too busy to accept the Login request.\r\n\r\nPlease try again after a short time!"),
-                    Catalog.GetString("OpenPetra Server Busy"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-#endif
-                return false;
-            }
-            catch (EDBConnectionNotEstablishedException exp)
-            {
-                if (exp.Message.IndexOf("Exceeding permissible number of connections") != -1)
-                {
-                    TLogging.Log("Login failed because too many users are logged in.");
-#if  TESTMODE
-#else
-                    MessageBox.Show(
-                        Catalog.GetString("Too many users are logged in."),
-                        Catalog.GetString("Too Many Users"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Stop);
-#endif
-                }
-                else
-                {
-                    TLogging.Log(
-                        Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
-                        TLoggingType.ToLogfile);
-#if  TESTMODE
-#else
-                    MessageBox.Show(
-                        Catalog.GetString(
-                            "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile +
-                        ": " +
-                        TLogging.GetLogFileName(),
-                        Catalog.GetString("Server Connection Error"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Stop);
-#endif
-                }
+            ReturnValue = ((TConnectionManagement)TConnectionManagement.GConnectionManagement).ConnectToServer(AUserName, APassWord,
+                out FProcessID,
+                out FWelcomeMessage,
+                out FSystemEnabled,
+                out AError);
 
+            if (ReturnValue == eLoginEnum.eLoginSucceeded)
+            {
+                return true;
+            }
+            else if (ReturnValue == eLoginEnum.eLoginVersionMismatch)
+            {
+                DisplayLoginFailedMessage(Catalog.GetString("OpenPetra Client/Server Program Version Mismatch!"));
                 return false;
             }
-            catch (EServerConnectionServerNotReachableException)
+            else if (ReturnValue == eLoginEnum.eLoginServerTooBusy)
             {
-#if TESTMODE
-                TLogging.Log("The OpenPetra Server cannot be reached!");
-#endif
-#if  TESTMODE
-#else
+                DisplayLoginFailedMessage(
+                    Catalog.GetString(
+                        "The OpenPetra Server is too busy to accept the Login request.\r\n\r\nPlease try again after a short time!"));
+                return false;
+            }
+            else if (ReturnValue == eLoginEnum.eLoginExceedingConcurrentUsers)
+            {
+                DisplayLoginFailedMessage(
+                    Catalog.GetString(
+                        "Too many users are logged in."));
+                return false;
+            }
+            else if (ReturnValue == eLoginEnum.eLoginServerNotReachable)
+            {
+                string Message = Catalog.GetString("The OpenPetra Server cannot be reached!");
+                string Title = null;
+
                 // on Standalone, we can find the Server.log file, and check the last 10 lines for "System.Exception: Unsupported upgrade"
                 string ServerLog = Path.GetDirectoryName(TLogging.GetLogFileName()) + Path.DirectorySeparatorChar + "Server.log";
 
@@ -449,67 +417,65 @@ namespace Ict.Petra.Client.CommonDialogs
 
                     if (countExceptionLine > 0)
                     {
-                        MessageBox.Show(ErrorMessage.Replace('/', Path.DirectorySeparatorChar),
-                            Catalog.GetString("Unsupported upgrade"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Stop);
+                        Message = ErrorMessage.Replace('/', Path.DirectorySeparatorChar);
+                        Title = Catalog.GetString("Unsupported upgrade");
                     }
                     else
                     {
-                        MessageBox.Show(
+                        Message =
                             Catalog.GetString(
                                 "The OpenPetra Server cannot be reached!") + Environment.NewLine + StrDetailsInLogfile + ": " +
-                            ServerLog,
-                            Catalog.GetString("No Server Response"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Stop);
+                            ServerLog;
+                        Title = Catalog.GetString("No Server Response");
                     }
-
-                    return false;
                 }
 
-                MessageBox.Show(Catalog.GetString("The OpenPetra Server cannot be reached!"),
-                    Catalog.GetString("No Server Response"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
-#endif
+                DisplayLoginFailedMessage(Message, Title);
+
                 return false;
             }
-            catch (EServerConnectionGeneralException exp)
+            else if (ReturnValue == eLoginEnum.eLoginAuthenticationFailed)
             {
-                TLogging.Log(
-                    Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
-                    TLoggingType.ToLogfile);
-#if  TESTMODE
-#else
-                MessageBox.Show(Catalog.GetString(
-                        "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
-                    TLogging.GetLogFileName(),
-                    "Server Connection Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Stop);
-#endif
-                return false;
-            }
-            catch (Exception exp)
-            {
-                TLogging.Log(
-                    Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
-                    TLoggingType.ToLogfile);
-#if  TESTMODE
-#else
-                MessageBox.Show(
+                DisplayLoginFailedMessage(
                     Catalog.GetString(
-                        "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
-                    TLogging.GetLogFileName(),
-                    Catalog.GetString("Server Connection Error"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Stop);
-#endif
+                        "Wrong username or password"));
+                return false;
+            }
+            else if (ReturnValue == eLoginEnum.eLoginUserIsRetired)
+            {
+                DisplayLoginFailedMessage(
+                    Catalog.GetString(
+                        "User is retired"));
+                return false;
+            }
+            else if (ReturnValue == eLoginEnum.eLoginUserRecordLocked)
+            {
+                DisplayLoginFailedMessage(
+                    Catalog.GetString(
+                        "User record is locked at the moment"));
+                return false;
+            }
+            else if (ReturnValue == eLoginEnum.eLoginSystemDisabled)
+            {
+                DisplayLoginFailedMessage(
+                    Catalog.GetString(
+                        "The system is disabled at the moment for maintenance"));
+                return false;
+            }
+            else if (ReturnValue == eLoginEnum.eLoginVersionMismatch)
+            {
+                DisplayLoginFailedMessage(
+                    Catalog.GetString(
+                        "Please update the client, the version does not match the server version!"));
                 return false;
             }
 
-            // TODO: exception for authentication failure
-            // TODO: exception for retired user
-            return ReturnValue;
+            // catching all other login failures, eg. eLoginEnum.eLoginFailedForUnspecifiedError
+            DisplayLoginFailedMessage(
+                Catalog.GetString(
+                    "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
+                TLogging.GetLogFileName());
+            return false;
         }
 
         #region Get user names

@@ -204,7 +204,7 @@ namespace Ict.Common.Exceptions
         }
 
         /// <summary>
-        /// Initializes a new instance of this Exception Class with a a reference to the inner <see cref="Exception" />
+        /// Initializes a new instance of this Exception Class with a reference to the inner <see cref="Exception" />
         /// that is the cause of this <see cref="Exception" />.
         /// </summary>
         /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
@@ -259,6 +259,155 @@ namespace Ict.Common.Exceptions
 
     #endregion
 
+    #region EOPDBSessionException
+
+    /// <summary>
+    /// Base Class for OpenPetra-specific Session Exceptions.
+    /// </summary>
+    [Serializable()]
+    public class EOPDBSessionException : EOPException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EOPDBSessionException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EOPDBSessionException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a reference to the inner <see cref="Exception" />
+        /// that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EOPDBSessionException(Exception AInnerException) : base("Session Exception occured", AInnerException)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EOPDBSessionException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EOPDBSessionException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EOPDBInvalidSessionException
+
+    /// <summary>
+    /// Thrown if a Session that is asked for is invalid.
+    /// </summary>
+    [Serializable()]
+    public class EOPDBInvalidSessionException : EOPDBSessionException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EOPDBInvalidSessionException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EOPDBInvalidSessionException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EOPDBInvalidSessionException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EOPDBInvalidSessionException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+    
+    #endregion
+    
     #region EOutOfRangeException
 
     /// <summary>

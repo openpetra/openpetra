@@ -115,7 +115,8 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <target name="generateGlue" depends="" description="Generate the glue between client and server, ie. interfaces and instantiators">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
   <property name="module" value="all" overwrite="false"/>
-  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateGlue.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.incdir.template.src} -module:${module}"/>
+  <property name="compileForStandalone" value="false" overwrite="false"/>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateGlue.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.incdir.template.src} -module:${module} -compileForStandalone:${compileForStandalone}"/>
 </target>
 
 <!-- Some database settings -->
@@ -144,6 +145,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <if test="${'win32'!=platform::get-name()}">
   <if test="${'unix'==platform::get-name()}">
     <echo>Running on Unix</echo>
+    <property name="PostgreSQL.Version" value="9.1" overwrite="false"/>
     <property name="PostgreSQL.exe" value="psql" overwrite="false"/>
     <property name="pgdump.exe" value="pg_dump" overwrite="false"/>
     <property name="MySQL.exe" value="mysql" overwrite="false"/>

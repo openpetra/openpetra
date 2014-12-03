@@ -3115,11 +3115,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             } while (!(ServerCallSuccessful));
 
-            if (ServerCallSuccessful)
-            {
-                // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
-                TEnsureKeepAlive.Register(FPartnerEditUIConnector);
-            }
 
             return ServerCallSuccessful;
         }
