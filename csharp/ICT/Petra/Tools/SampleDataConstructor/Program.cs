@@ -62,9 +62,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
     /// </remarks>
     class TSampleDataConstructor
     {
-        private enum eOperations : int {
-            nothing = 0, importPartners = 1, importRecipients = 2, ledgerOneYear = 4, ledgerMultipleYears = 8, secondLedger = 16,
-            conferenceApplications = 32
+        private enum eOperations : int
+        {
+            nothing = 0, importPartners = 1, importRecipients = 2, ledgerOneYear = 4, ledgerMultipleYears = 8, secondLedger = 16
         };
 
         /// <summary>
@@ -92,10 +92,6 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 if (TAppSettingsManager.GetValue("operation", false) == "secondLedger")
                 {
                     operation = eOperations.secondLedger;
-                }
-                else if (TAppSettingsManager.GetValue("operation", false) == "conferenceApplications")
-                {
-                    operation = eOperations.conferenceApplications;
                 }
                 else if (TAppSettingsManager.GetValue("operation", false) == "ledgerMultipleYears")
                 {
@@ -163,17 +159,6 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                         Path.Combine(datadirectory, "fields.csv"));
 
                     SampleDataLedger.PopulateData(datadirectory);
-                }
-
-                TLogging.Log("(9) Creating applications for conference");
-
-                if ((int)(operation & eOperations.conferenceApplications) > 0)
-                {
-                    SampleDataConferenceApplicants.GenerateApplications(Path.Combine(datadirectory, "conferenceApplications.csv"));
-                }
-                else
-                {
-                    TLogging.Log("Please explicitely run nant importDemodata -D:operation=conferenceApplications");
                 }
 
                 TLogging.Log("Completed.");
