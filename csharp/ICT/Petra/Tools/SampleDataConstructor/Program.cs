@@ -99,7 +99,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 }
                 else if (TAppSettingsManager.GetValue("operation", false) == "ledgerMultipleYears")
                 {
-                    operation |= eOperations.ledgerMultipleYears;
+                    operation = eOperations.importPartners | eOperations.importRecipients | eOperations.ledgerMultipleYears;
                 }
 
                 if ((int)(operation & eOperations.importPartners) > 0)

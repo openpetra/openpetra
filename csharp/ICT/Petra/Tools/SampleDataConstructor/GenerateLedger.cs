@@ -62,12 +62,12 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         {
             TVerificationResultCollection VerificationResult;
 
-            if (!TGLSetupWebConnector.DeleteLedger(FLedgerNumber, out VerificationResult))
+            if (ALedgerAccess.Exists(FLedgerNumber, null) && !TGLSetupWebConnector.DeleteLedger(FLedgerNumber, out VerificationResult))
             {
                 throw new Exception("could not delete ledger");
             }
 
-            TGLSetupWebConnector.CreateNewLedger(FLedgerNumber, "SecondLedger", "GB", "GBP", "USD", new DateTime(DateTime.Now.Year,
+            TGLSetupWebConnector.CreateNewLedger(FLedgerNumber, "SecondLedger", "GB", "EUR", "EUR", new DateTime(DateTime.Now.Year,
                     4,
                     1), 12, 1, 8, false, true, 1, true, out VerificationResult);
         }
@@ -123,7 +123,10 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             row.RateOfExchange = 1.57m;
             dailyrates.Rows.Add(row);
 
-            ADailyExchangeRateAccess.SubmitChanges(dailyrates, null);
+            if (!ADailyExchangeRateAccess.Exists(row.FromCurrencyCode, row.ToCurrencyCode, row.DateEffectiveFrom, row.TimeEffectiveFrom, null))
+            {
+                ADailyExchangeRateAccess.SubmitChanges(dailyrates, null);
+            }
         }
 
         /// <summary>
@@ -136,6 +139,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             int period = 1;
             int YearAD = DateTime.Today.Year - (FNumberOfClosedPeriods / 12);
 
+            SampleDataGiftBatches.FLedgerNumber = FLedgerNumber;
+            SampleDataAccountsPayable.FLedgerNumber = FLedgerNumber;
             SampleDataGiftBatches.LoadBatches(Path.Combine(datadirectory, "donations.csv"), smallNumber);
             SampleDataAccountsPayable.GenerateInvoices(Path.Combine(datadirectory, "invoices.csv"), YearAD, smallNumber);
 
