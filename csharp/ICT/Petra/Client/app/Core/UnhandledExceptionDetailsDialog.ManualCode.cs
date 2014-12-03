@@ -1,9 +1,9 @@
 ﻿// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       jomammele
+//       jomammele, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,7 +22,7 @@
 //
 using System;
 using System.Windows.Forms;
-
+using Ict.Common;
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -70,6 +70,12 @@ namespace Ict.Petra.Client.App.Core
         private void Form_Load(System.Object sender, System.EventArgs e)
         {
             txtErrorDetails.Text = FErrorDetails;
+
+            if (TAppSettingsManager.GetBoolean("RunAsStandalone", false) == true)
+            {
+                btnShowClientLog.Text = Catalog.GetString("Show Log file");
+                btnShowServerLog.Enabled = false;
+            }
         }
 
         private void OpenExtendedMessageBox(string FWhatToOpen)
