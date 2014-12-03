@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -321,7 +321,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
 
                 // If the GL date was good we need to have a corporate exchange rate for base currency to Intl for the first day of the period
-                if ((VerificationResult == null) && (ACorporateExchangeTableRef != null) && !ARow.IsGlEffectiveDateNull())
+                if ((VerificationResult == null) && (ACorporateExchangeTableRef != null) && !ARow.IsGlEffectiveDateNull()
+                    && (ABaseCurrency != AInternationalCurrency))
                 {
                     DateTime firstOfMonth;
 

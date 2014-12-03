@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,6 +47,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
     {
         /// LedgerNumber to be set from outside
         public static int FLedgerNumber = 43;
+        /// limit the amount of gifts per batch
+        public static int MaxGiftsPerBatch = 25;
 
         private static SortedList <DateTime, List <XmlNode>>GiftsPerDate;
 
@@ -54,8 +56,10 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// load the gift batches from a text file that was generated with Benerator
         /// </summary>
         /// <param name="AInputBeneratorFile"></param>
-        public static void LoadBatches(string AInputBeneratorFile)
+        /// <param name="ASmallNumber">boolean to keep the size of the demo database down</param>
+        public static void LoadBatches(string AInputBeneratorFile, bool ASmallNumber)
         {
+            SampleDataGiftBatches.MaxGiftsPerBatch = (ASmallNumber ? 5 : 25);
             GiftsPerDate = SortGiftsByDate(AInputBeneratorFile);
         }
 
@@ -219,6 +223,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                         FLedgerNumber,
                         GlEffectiveDate);
 
+                    TLogging.LogAtLevel(1, "create gift batch for " + GlEffectiveDate.ToShortDateString());
                     giftBatch.BatchDescription = "Benerator Batch for " + GlEffectiveDate.ToShortDateString();
                     giftBatch.BatchTotal = 0.0m;
 
@@ -264,10 +269,14 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                                             counter.ToString())) % WorkerKeys.Rows.Count;
                                 giftDetail.RecipientKey = Convert.ToInt64(WorkerKeys.Rows[recipientID].ItemArray[0]);
 
-                                // TODO: ignore this gift detail, if there is no valid commitment period for the worker
-                                // if (InvalidCommitment(giftBatch.GlEffectiveDate)) continue;
+                                giftDetail.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(giftDetail.RecipientKey,
+                                    giftBatch.GlEffectiveDate);
 
-                                // TODO giftDetail.RecipientLedgerNumber =
+                                // ignore this gift detail, if there is no valid commitment period for the worker
+                                if (giftDetail.RecipientLedgerNumber == 0)
+                                {
+                                    continue;
+                                }
                             }
                             else if (motivation == "FIELD")
                             {
@@ -312,6 +321,11 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                         {
                             MainDS.AGift.Rows.Add(gift);
                             giftBatch.LastGiftNumber = gift.GiftTransactionNumber;
+                        }
+
+                        if (giftBatch.LastGiftNumber >= MaxGiftsPerBatch)
+                        {
+                            break;
                         }
                     }
 

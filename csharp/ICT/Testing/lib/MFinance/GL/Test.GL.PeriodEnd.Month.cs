@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -182,7 +182,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             new ChangeSuspenseAccount(FLedgerNumber, strAccountBank).Unsuspense();
         }
 
-        private void ImportGiftBatch()
+        private void ImportGiftBatch(DateTime AEffectiveDate)
         {
             TGiftImporting importer = new TGiftImporting();
 
@@ -191,7 +191,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string FileContent = sr.ReadToEnd();
 
             FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
-            FileContent = FileContent.Replace("{thisyear}-01-01", DateTime.Today.AddMonths(1).ToString("yyyy-MM-dd"));
+            FileContent = FileContent.Replace("{thisyear}-01-01", AEffectiveDate.ToString("yyyy-MM-dd"));
 
             sr.Close();
 
@@ -207,7 +207,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult);
             Assert.True(TVerificationHelper.IsNullOrOnlyNonCritical(VerificationResult),
-                "Failed to import the test gift batch.  The file contains critical error(s).");
+                "Failed to import the test gift batch.  The file contains critical error(s): " + VerificationResult.BuildVerificationResultString());
         }
 
         /// <summary>
@@ -216,7 +216,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_04_UnpostedGifts()
         {
-            ImportGiftBatch();
+            TAccountPeriodInfo getAccountingPeriodInfo =
+                new TAccountPeriodInfo(FLedgerNumber, new TLedgerInfo(
+                        FLedgerNumber).CurrentPeriod);
+
+            ImportGiftBatch(getAccountingPeriodInfo.PeriodStartDate);
 
             TVerificationResultCollection verificationResult;
             bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(

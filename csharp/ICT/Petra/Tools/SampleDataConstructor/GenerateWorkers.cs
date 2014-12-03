@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -359,6 +359,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             }
         }
 
+        private static int NextKeyForGiftDestination = -1;
+
         private static void GenerateCommitmentRecord(
             XmlNode ACurrentNode,
             PFamilyRow AFamilyRow,
@@ -377,8 +379,20 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             long FieldPartnerKey = Convert.ToInt64(AFieldKeys.Rows[FieldID].ItemArray[0]);
 
             PPartnerGiftDestinationRow giftDestination = AMainDS.PPartnerGiftDestination.NewRowTyped();
-            giftDestination.Key = TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination();
+
+            if (NextKeyForGiftDestination == -1)
+            {
+                NextKeyForGiftDestination = TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination();
+            }
+            else
+            {
+                NextKeyForGiftDestination++;
+            }
+
+            giftDestination.Key = NextKeyForGiftDestination;
             giftDestination.FieldKey = FieldPartnerKey;
+            giftDestination.PartnerKey = AFamilyRow.PartnerKey;
+            giftDestination.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
             giftDestination.DateEffective = Convert.ToDateTime(TXMLParser.GetAttribute(ACurrentNode, "startDateCommitment"));
 
             PmStaffDataRow staffData = APersonnelDS.PmStaffData.NewRowTyped();
