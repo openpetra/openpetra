@@ -2621,7 +2621,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 AVerifications.Add(
                     new TVerificationResult(
                         "Posting Gift Batch",
-                        String.Format(Catalog.GetString("No Corporate Exchange rate exists for the month: {2:MMMM yyyy}!"),
+                        String.Format(Catalog.GetString("No Corporate Exchange rate exists for the month: {0:MMMM yyyy}!"),
                             GLEffectiveDate),
                         TResultSeverity.Resv_Critical));
                 return null;
