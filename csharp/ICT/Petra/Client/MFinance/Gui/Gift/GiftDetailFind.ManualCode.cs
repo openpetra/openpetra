@@ -394,26 +394,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (ProgressState.JobFinished)
                 {
-                        FKeepUpSearchFinishedCheck = false;
+                    FKeepUpSearchFinishedCheck = false;
 
-                        // Fetch the first page of data
-                        try
-                        {
-                            // For speed reasons we must add the necessary amount of emtpy Rows only *after* .AutoSizeCells()
-                            // has already been run! See XML Comment on the called Method
-                            // TSgrdDataGridPaged.LoadFirstDataPage for details!
-                            FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult, false);
-                        }
-                        catch (Exception E)
-                        {
-                            MessageBox.Show(E.ToString());
-                        }
+                    // Fetch the first page of data
+                    try
+                    {
+                        // For speed reasons we must add the necessary amount of emtpy Rows only *after* .AutoSizeCells()
+                        // has already been run! See XML Comment on the called Method
+                        // TSgrdDataGridPaged.LoadFirstDataPage for details!
+                        FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult, false);
+                    }
+                    catch (Exception E)
+                    {
+                        MessageBox.Show(E.ToString());
+                    }
                 }
                 else if (ProgressState.CancelJob)
                 {
-                        FKeepUpSearchFinishedCheck = false;
-                        EnableDisableUI(true);
-                        return;
+                    FKeepUpSearchFinishedCheck = false;
+                    EnableDisableUI(true);
+                    return;
                 }
 
                 // Sleep for some time. After that, this function is called again automatically.
@@ -456,6 +456,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (Convert.ToBoolean(AEnable))
                 {
                     TProgressState ThreadStatus = FGiftDetailFindObject.Progress;
+
                     if (ThreadStatus.JobFinished)
                     {
                         // Search operation ended without interruption

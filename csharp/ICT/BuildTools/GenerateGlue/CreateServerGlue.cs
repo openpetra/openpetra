@@ -177,6 +177,7 @@ public class GenerateServerGlue
 
                 parametertype = parametertype == "string" || parametertype == "String" ? "System.String" : parametertype;
                 parametertype = parametertype == "bool" || parametertype == "Boolean" ? "System.Boolean" : parametertype;
+
                 if (parametertype.Contains("UINT") || parametertype.Contains("unsigned"))
                 {
                     parametertype = parametertype.Contains("UInt32") || parametertype == "unsigned int" ? "System.UInt32" : parametertype;
@@ -189,6 +190,7 @@ public class GenerateServerGlue
                     parametertype = parametertype.Contains("Int16") || parametertype == "short" ? "System.Int16" : parametertype;
                     parametertype = parametertype.Contains("Int64") || parametertype == "long" ? "System.Int64" : parametertype;
                 }
+
                 parametertype = parametertype.Contains("Decimal") || parametertype == "decimal" ? "System.Decimal" : parametertype;
 
                 if (ArrayParameter
@@ -297,10 +299,10 @@ public class GenerateServerGlue
             if (((ParameterModifiers.Ref & p.ParamModifier) > 0) || ((ParameterModifiers.Out & p.ParamModifier) > 0))
             {
                 returnCodeFatClient +=
-                     (returnCodeFatClient.Length > 0 ? "+\",\"+" : string.Empty) +
-                     "THttpBinarySerializer.SerializeObjectWithType(" +
-                     (((ParameterModifiers.Ref & p.ParamModifier) > 0 && BinaryParameter) ? "Local" : string.Empty) +
-                     p.ParameterName + ")";
+                    (returnCodeFatClient.Length > 0 ? "+\",\"+" : string.Empty) +
+                    "THttpBinarySerializer.SerializeObjectWithType(" +
+                    (((ParameterModifiers.Ref & p.ParamModifier) > 0 && BinaryParameter) ? "Local" : string.Empty) +
+                    p.ParameterName + ")";
 
                 if (returnCounter == 1)
                 {
@@ -329,6 +331,7 @@ public class GenerateServerGlue
             {
                 returntype = returntype == "string" || returntype == "String" ? "System.String" : returntype;
                 returntype = returntype == "bool" || returntype == "Boolean" ? "System.Boolean" : returntype;
+
                 if (returntype.Contains("UINT") || returntype.Contains("unsigned"))
                 {
                     returntype = returntype.Contains("UInt32") || returntype == "unsigned int" ? "System.UInt32" : returntype;
@@ -341,6 +344,7 @@ public class GenerateServerGlue
                     returntype = returntype.Contains("Int16") || returntype == "short" ? "System.Int16" : returntype;
                     returntype = returntype.Contains("Int64") || returntype == "long" ? "System.Int64" : returntype;
                 }
+
                 returntype = returntype.Contains("Decimal") || returntype == "decimal" ? "System.Decimal" : returntype;
             }
 
@@ -348,14 +352,16 @@ public class GenerateServerGlue
             {
                 if (returntype != "void")
                 {
-                    returnCodeFatClient += (returnCodeFatClient.Length > 0 ? "+\",\"+" : string.Empty) + "THttpBinarySerializer.SerializeObjectWithType(Result)";
+                    returnCodeFatClient +=
+                        (returnCodeFatClient.Length > 0 ? "+\",\"+" : string.Empty) + "THttpBinarySerializer.SerializeObjectWithType(Result)";
 
                     if (returnCounter == 1)
                     {
                         returnCodeJSClient = "\"{ \\\"0\\\": \" + " + returnCodeJSClient;
                     }
 
-                    returnCodeJSClient += "+\", \\\"" + returnCounter.ToString() + "\\\": \"+" + "THttpBinarySerializer.SerializeObjectWithType(Result)";
+                    returnCodeJSClient += "+\", \\\"" + returnCounter.ToString() + "\\\": \"+" +
+                                          "THttpBinarySerializer.SerializeObjectWithType(Result)";
 
                     returnCounter++;
                 }
@@ -383,7 +389,7 @@ public class GenerateServerGlue
             {
                 localreturn = string.Empty;
             }
-            else if (returnCodeFatClient.Length > 0 || returnCodeJSClient.Length > 0)
+            else if ((returnCodeFatClient.Length > 0) || (returnCodeJSClient.Length > 0))
             {
                 localreturn += " Result = ";
             }
@@ -399,9 +405,10 @@ public class GenerateServerGlue
 
             snippet.SetCodelet("RETURN", string.Empty);
 
-            if (returnCodeFatClient.Length > 0 || returnCodeJSClient.Length > 0)
+            if ((returnCodeFatClient.Length > 0) || (returnCodeJSClient.Length > 0))
             {
-                snippet.SetCodelet("RETURN", returntype != "void" ? "return isJSClient()?" + returnCodeJSClient + ":" + returnCodeFatClient + ";" : string.Empty);
+                snippet.SetCodelet("RETURN",
+                    returntype != "void" ? "return isJSClient()?" + returnCodeJSClient + ":" + returnCodeFatClient + ";" : string.Empty);
             }
 
             snippet.SetCodelet("RETURNTYPE", returntype);
@@ -539,6 +546,7 @@ public class GenerateServerGlue
             {
                 propertytype = propertytype == "string" || propertytype == "String" ? "System.String" : propertytype;
                 propertytype = propertytype == "bool" || propertytype == "Boolean" ? "System.Boolean" : propertytype;
+
                 if (propertytype.Contains("UINT") || propertytype.Contains("unsigned"))
                 {
                     propertytype = propertytype.Contains("UInt32") || propertytype == "unsigned int" ? "System.UInt32" : propertytype;
@@ -551,6 +559,7 @@ public class GenerateServerGlue
                     propertytype = propertytype.Contains("Int16") || propertytype == "short" ? "System.Int16" : propertytype;
                     propertytype = propertytype.Contains("Int64") || propertytype == "long" ? "System.Int64" : propertytype;
                 }
+
                 propertytype = propertytype.Contains("Decimal") || propertytype == "decimal" ? "System.Decimal" : propertytype;
             }
 

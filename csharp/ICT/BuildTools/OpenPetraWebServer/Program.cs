@@ -214,13 +214,13 @@ namespace Ict.Tools.OpenPetraWebServer
                             ThreadStart stopThread = delegate {
                                 StopApplication(commandLineArgs.MaxRuntimeInMinutes);
                             };
-                            
+
                             Thread thread = new Thread(stopThread);
-                            
+
                             // The next line is vital!!  It ensures that when the application stops 'normally' the stopThread will terminate.
                             // Otherwise the program will be left in memory
                             thread.IsBackground = true;
-                            
+
                             thread.Start();
                         }
 

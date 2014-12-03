@@ -72,7 +72,7 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
         {
             get
             {
-		return FGiftDetailFind.Progress;
+                return FGiftDetailFind.Progress;
             }
         }
 

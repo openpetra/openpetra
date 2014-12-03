@@ -94,18 +94,18 @@ namespace Ict.Common.Remoting.Client
         private DataTable RemotePollClientTasks()
         {
             DataTable ResultDT = null;
-            
+
             // TODORemoting --- The following call breaks NUnitForms Tests 'at random'!
             TLogging.LogAtLevel(4, "RemotePollClientTasks: About to call SessionManager.PollClientTasks...");
             ResultDT = (DataTable)THttpConnector.CallWebConnector("SessionManager", "PollClientTasks", null, "binary")[0];
             TLogging.LogAtLevel(4, "RemotePollClientTasks: Finished calling SessionManager.PollClientTasks...");
-            
-            if (ResultDT != null) 
+
+            if (ResultDT != null)
             {
                 TLogging.LogAtLevel(4, "RemotePollClientTasks: ResultDT has " + ResultDT.Rows.Count.ToString() + " rows!");
             }
-            
-            return ResultDT; 
+
+            return ResultDT;
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Ict.Common.Remoting.Client
                     if (ClientTasksDataTable != null)
                     {
                         TLogging.LogAtLevel(4, "Client Tasks Table has " + ClientTasksDataTable.Rows.Count.ToString() + " entries!");
-                        
+
                         // Queue new ClientTasks and execute them.
                         // This is done in a separate Thread to make sure the PollClientTasks thread can run
                         // without the risk of being interrupted!
@@ -167,13 +167,13 @@ namespace Ict.Common.Remoting.Client
                 catch (Exception Exp)
                 {
                     TLogging.Log("Exception in TPollClientTasks.PollClientTasksThread: " + Exp.ToString(), TLoggingType.ToLogfile);
-                    
+
                     if (Exp.Message == THTTPUtils.SESSION_ALREADY_CLOSED)
                     {
                         // TODORemoting close the client
-                        
+
                         TLogging.Log("TPollClientTasks: Should have closed the Client here!!!");
-                        
+
                         return;
                     }
                 }

@@ -1129,6 +1129,7 @@ namespace Ict.Common.Remoting.Server
 
             SessionEntry = (TConnectedClient)UClientObjects[(object)AClientID];
             TLogging.Log("DisconnectClient: SessionEntry.ClientName='" + SessionEntry.ClientName + "'");
+
             if (SessionEntry == null)
             {
                 ACantDisconnectReason = "Can't disconnect ClientID: " + AClientID.ToString() +

@@ -238,14 +238,14 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 ParametersArray);
 
             string session = TSession.GetSessionID();
-            
+
             //
             // Start the Find Thread
             //
             try
             {
                 ThreadStart myThreadStart = delegate {
-                                FPagedDataSetObject.ExecuteQuery(session);
+                    FPagedDataSetObject.ExecuteQuery(session);
                 };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Name = "PartnerFindPerformSearch" + Guid.NewGuid().ToString();
@@ -359,15 +359,15 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 ParametersArray);
 
             string session = TSession.GetSessionID();
-            
+
             //
             // Start the Find Thread
             //
             try
             {
                 ThreadStart myThreadStart = delegate {
-                                FPagedDataSetObject.ExecuteQuery(session);
-                };                
+                    FPagedDataSetObject.ExecuteQuery(session);
+                };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Start();
             }

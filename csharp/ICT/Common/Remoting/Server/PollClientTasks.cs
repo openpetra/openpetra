@@ -80,7 +80,7 @@ namespace Ict.Common.Remoting.Server
 
 //            if (TLogging.DL >= 10)
 //            {
-                TLogging.LogAtLevel(4, "TPollClientTasks: PollClientTasks called");
+            TLogging.LogAtLevel(4, "TPollClientTasks: PollClientTasks called");
 //            }
 
             FLastPollingTime = DateTime.Now;
@@ -94,7 +94,7 @@ namespace Ict.Common.Remoting.Server
 
 //                if (TLogging.DL > 9)
 //                {
-                    TLogging.LogAtLevel(4, "TPollClientTasks: Client Tasks Table is empty!");
+                TLogging.LogAtLevel(4, "TPollClientTasks: Client Tasks Table is empty!");
 //                }
             }
             else
@@ -104,7 +104,7 @@ namespace Ict.Common.Remoting.Server
 
 //                if (TLogging.DL >= 9)
 //                {
-                    TLogging.LogAtLevel(4, "TPollClientTasks: Client Tasks Table has " + (ReturnValue.Rows.Count).ToString() + " entries!");
+                TLogging.LogAtLevel(4, "TPollClientTasks: Client Tasks Table has " + (ReturnValue.Rows.Count).ToString() + " entries!");
 //                }
             }
 

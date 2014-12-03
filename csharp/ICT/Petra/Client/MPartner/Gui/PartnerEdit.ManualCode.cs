@@ -3115,7 +3115,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             } while (!(ServerCallSuccessful));
 
-
             return ServerCallSuccessful;
         }
 

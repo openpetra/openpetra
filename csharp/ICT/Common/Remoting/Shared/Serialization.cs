@@ -43,16 +43,15 @@ namespace Ict.Common.Remoting.Shared
     /// TODO: rename the class
     public class THttpBinarySerializer
     {
-
         /// <summary>
         /// determine if the server is contacted from the fat client or from the js client
         /// </summary>
         static public bool isJSClient()
         {
-            return HttpContext.Current!=null && 
-                HttpContext.Current.Request !=null && 
-                HttpContext.Current.Request.UserAgent !=null && 
-                !HttpContext.Current.Request.UserAgent.Contains("OpenPetra");
+            return HttpContext.Current != null
+                   && HttpContext.Current.Request != null
+                   && HttpContext.Current.Request.UserAgent != null
+                   && !HttpContext.Current.Request.UserAgent.Contains("OpenPetra");
         }
 
         static private string DataSetToJson(DataSet ADataset)
@@ -115,7 +114,7 @@ namespace Ict.Common.Remoting.Shared
         /// </summary>
         static public string SerializeObject(object o, bool binary)
         {
-            return THttpBinarySerializer.isJSClient()? SerializeObjectJSON(o, binary): SerializeObjectBase64(o, binary);
+            return THttpBinarySerializer.isJSClient() ? SerializeObjectJSON(o, binary) : SerializeObjectBase64(o, binary);
         }
 
         /// <summary>
@@ -241,10 +240,10 @@ namespace Ict.Common.Remoting.Shared
 //                       || o.GetType() == typeof(Int64[])
                        || o.GetType() == typeof(bool)
 //                       || o.GetType() == typeof(bool[])
-                       ||o.GetType() == typeof(UInt16)
-                       ||o.GetType() == typeof(UInt32)
-                       ||o.GetType() == typeof(UInt64)
-                       ||o.GetType() == typeof(Decimal)
+                       || o.GetType() == typeof(UInt16)
+                       || o.GetType() == typeof(UInt32)
+                       || o.GetType() == typeof(UInt64)
+                       || o.GetType() == typeof(Decimal)
                        );
         }
 
@@ -280,7 +279,7 @@ namespace Ict.Common.Remoting.Shared
 
                 return result;
             }
-            
+
             // fat client
             if (result.EndsWith(":binary"))
             {

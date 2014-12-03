@@ -95,9 +95,9 @@ namespace Ict.Common.IO
             protected override WebRequest GetWebRequest(Uri address)
             {
                 TLogging.LogAtLevel(1, "GetWebRequest: got called for URI: " + address.ToString());
-                HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
+                HttpWebRequest request = (HttpWebRequest) base.GetWebRequest(address);
 
-                request.UserAgent="Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/6.0; OpenPetraFatClient)";
+                request.UserAgent = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/6.0; OpenPetraFatClient)";
 
                 request.Timeout = Convert.ToInt32(
                     TimeSpan.FromMinutes(TAppSettingsManager.GetInt32("WebRequestTimeOutInMinutes", 15)).
@@ -125,7 +125,7 @@ namespace Ict.Common.IO
                 return request;
             }
         }
-        
+
         /// <summary>
         /// Storage of the single cookie that stores the Session ID.
         /// </summary>

@@ -166,17 +166,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // where
             // order by
             // both empty for now
-            
+
             string session = TSession.GetSessionID();
-            
+
             //
             // Start the Find Thread
             //
             try
             {
                 ThreadStart myThreadStart = delegate {
-                                FPagedDataSetObject.ExecuteQuery(session);
-                };                
+                    FPagedDataSetObject.ExecuteQuery(session);
+                };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Name = "PartnerLocationFind" + Guid.NewGuid().ToString();
                 FFindThread.Start();
@@ -184,7 +184,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             catch (Exception)
             {
                 throw;
-            }            
+            }
         }
 
 /*

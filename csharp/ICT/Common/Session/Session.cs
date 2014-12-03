@@ -55,24 +55,27 @@ namespace Ict.Common.Session
 
             // Session ID not found in the http context, checking the thread
             TLogging.LogAtLevel(4, "(HttpContext.Current != null) : " + (HttpContext.Current != null).ToString());
+
             if (HttpContext.Current != null)
             {
-                TLogging.LogAtLevel(4, "(HttpContext.Current.Request.Cookies[OpenPetraSessionID] != null) : " + (HttpContext.Current.Request.Cookies["OpenPetraSessionID"] != null).ToString());
+                TLogging.LogAtLevel(4, "(HttpContext.Current.Request.Cookies[OpenPetraSessionID] != null) : " +
+                    (HttpContext.Current.Request.Cookies["OpenPetraSessionID"] != null).ToString());
             }
-            
+
             // only look in thread if there is no HttpContext.Current; otherwise Threads are reused.
             if (HttpContext.Current == null)
             {
                 string sessionId = FSessionID;
-    
+
                 if ((sessionId != null) && (sessionId.Length > 0))
                 {
                     TLogging.LogAtLevel(4, "FindSessionID: Session ID found in thread. SessionID = " + sessionId);
-                    
+
                     return sessionId;
                 }
-                
-                TLogging.LogAtLevel(1, "FindSessionID: Session ID not found in the thread!!! thread id: " + Thread.CurrentThread.ManagedThreadId.ToString());
+
+                TLogging.LogAtLevel(1,
+                    "FindSessionID: Session ID not found in the thread!!! thread id: " + Thread.CurrentThread.ManagedThreadId.ToString());
             }
             else
             {
@@ -90,7 +93,7 @@ namespace Ict.Common.Session
         {
             TLogging.LogAtLevel(1, "Running InitThread for ASessionID = " + ASessionID);
             TLogging.LogAtLevel(1, "thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
-                         
+
             FSessionID = ASessionID;
         }
 
@@ -103,8 +106,11 @@ namespace Ict.Common.Session
 
             if ((sessionID != string.Empty) && !FSessionObjects.ContainsKey(sessionID))
             {
-                TLogging.LogAtLevel(1, "GetSessionID: client is using a session ID that is not valid anymore! (sessionID = " + sessionID + ") => throwing away current session id!");
-                
+                TLogging.LogAtLevel(
+                    1,
+                    "GetSessionID: client is using a session ID that is not valid anymore! (sessionID = " + sessionID +
+                    ") => throwing away current session id!");
+
                 // the client is using a session ID that is not valid anymore
                 // throw away current session id
                 InitThread(string.Empty);
@@ -131,9 +137,9 @@ namespace Ict.Common.Session
                 }
 
                 FSessionObjects.Add(sessionID, new SortedList <string, object>());
-                
+
                 TLogging.LogAtLevel(1, "GetSessionID: new sessionID = " + sessionID);
-                
+
                 InitThread(sessionID);
             }
             else
@@ -212,13 +218,13 @@ namespace Ict.Common.Session
         static public void Clear()
         {
             // HttpContext.Current.Session.Clear();
-            
+
             TLogging.LogAtLevel(1, "TSession.Clear got called");
-            
+
             string sessionId = GetSessionID();
 
             TLogging.LogAtLevel(1, "TSession.Clear: sessionID = " + sessionId);
-                
+
             if (sessionId.Length > 0)
             {
                 FSessionObjects.Remove(sessionId);
@@ -231,4 +237,3 @@ namespace Ict.Common.Session
         }
     }
 }
-

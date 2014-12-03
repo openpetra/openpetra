@@ -44,7 +44,9 @@ namespace Ict.Common.Remoting.Client
         public static void ReleaseUIConnector(IDisposable ARemotedObject)
         {
             ARemotedObject.Dispose();
-            TLogging.LogAtLevel(4, "TUIConnectorLifetimeHandling.ReleaseUIConnector: " + ARemotedObject.GetType().ToString() + ": Dispose() got called on the 'client-glue' Object.");
+            TLogging.LogAtLevel(4,
+                "TUIConnectorLifetimeHandling.ReleaseUIConnector: " + ARemotedObject.GetType().ToString() +
+                ": Dispose() got called on the 'client-glue' Object.");
         }
     }
 }

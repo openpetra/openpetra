@@ -272,17 +272,17 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     FPagedDataSetObject.FindParameters.FSearchName = "Suppliers";
                 }
             }
-            
+
             string session = TSession.GetSessionID();
-            
+
             //
             // Start the Find Thread
             //
             try
             {
                 ThreadStart myThreadStart = delegate {
-                                FPagedDataSetObject.ExecuteQuery(session);
-                };                
+                    FPagedDataSetObject.ExecuteQuery(session);
+                };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Name = "APFind" + Guid.NewGuid().ToString();
                 FFindThread.Start();

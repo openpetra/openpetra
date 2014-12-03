@@ -91,8 +91,8 @@ namespace Ict.Common.Remoting.Client
         private static string TrimResult(string result)
         {
             // returns <string xmlns="...">someresulttext</string>
-            TLogging.LogAtLevel(1, "returned from server (unmodified): " + 
-                                (result.Length > 600 ? result.Substring(0, 600) + " ...":result));
+            TLogging.LogAtLevel(1, "returned from server (unmodified): " +
+                (result.Length > 600 ? result.Substring(0, 600) + " ..." : result));
 
             string OrigResult = result;
             try
@@ -242,7 +242,7 @@ namespace Ict.Common.Remoting.Client
             result = TrimResult(result);
 
             TLogging.LogAtLevel(4, String.Format("CreateUIConnector called for Module '{0}' and Class '{1}'",
-                AModuleName, classname));
+                    AModuleName, classname));
 
             return THttpBinarySerializer.DeserializeObject(result, "System.String").ToString();
         }
@@ -256,10 +256,9 @@ namespace Ict.Common.Remoting.Client
             Parameters.Add("UIConnectorObjectID", ObjectID.ToString());
 
             TLogging.LogAtLevel(4, String.Format("DisconnectUIConnector called for Module '{0}' with ObjectID '{1}'",
-                AModuleName, ObjectID));
-            
+                    AModuleName, ObjectID));
+
             CallWebConnector(AModuleName, "DisconnectUIConnector", Parameters, "void");
         }
     }
 }
-

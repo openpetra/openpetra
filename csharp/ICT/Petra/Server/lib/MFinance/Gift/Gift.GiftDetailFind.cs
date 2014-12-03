@@ -157,8 +157,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             try
             {
                 ThreadStart myThreadStart = delegate {
-                                FPagedDataSetObject.ExecuteQuery(session);
-                };                
+                    FPagedDataSetObject.ExecuteQuery(session);
+                };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Name = "GiftDetailFind" + Guid.NewGuid().ToString();
                 FFindThread.Start();

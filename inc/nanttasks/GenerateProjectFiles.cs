@@ -448,6 +448,7 @@ namespace Ict.Tools.NAntTasks
                 foreach (string incNamespace in IncludeNamespaces)
                 {
                     Regex regex = new Regex(incNamespace.Replace(".", "\\.").Replace("*", ".*"));
+
                     if (projectName.StartsWith(incNamespace) || (projectName + ".csproj" == incNamespace) || regex.Match(projectName).Success)
                     {
                         includeProject = true;

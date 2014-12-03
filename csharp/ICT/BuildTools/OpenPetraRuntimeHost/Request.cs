@@ -199,7 +199,8 @@ namespace Ict.Tools.OpenPetraRuntimeHost
                     lock (_logfileLock)
                     {
                         DateTime dtNow = DateTime.Now;
-                        _host.LogfileWriter.WriteLine("{0} {1}: {2}  {3}  {4}", dtNow.ToShortDateString(), dtNow.ToLongTimeString(), this.GetRemoteAddress(), this._verb, this._url);
+                        _host.LogfileWriter.WriteLine("{0} {1}: {2}  {3}  {4}", dtNow.ToShortDateString(),
+                            dtNow.ToLongTimeString(), this.GetRemoteAddress(), this._verb, this._url);
                         _host.LogfileWriter.Flush();
                     }
                 }

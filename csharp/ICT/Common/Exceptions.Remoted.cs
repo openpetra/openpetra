@@ -405,9 +405,9 @@ namespace Ict.Common.Exceptions
 
         #endregion
     }
-    
+
     #endregion
-    
+
     #region EOutOfRangeException
 
     /// <summary>

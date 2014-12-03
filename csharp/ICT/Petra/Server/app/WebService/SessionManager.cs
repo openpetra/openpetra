@@ -111,7 +111,7 @@ namespace Ict.Petra.Server.App.WebService
             }
 
             // if the Login Method is called: reset cookie, ignore any old session
-            if (HttpContext.Current != null && HttpContext.Current.Request.PathInfo == "/Login")
+            if ((HttpContext.Current != null) && (HttpContext.Current.Request.PathInfo == "/Login"))
             {
                 TSession.Clear();
             }
@@ -158,11 +158,11 @@ namespace Ict.Petra.Server.App.WebService
                 }
 
 //                TLogging.Log("Init(): WebService Method name that got called: " + HttpContext.Current.Request.PathInfo);
-                
-                if (HttpContext.Current.Request.PathInfo != "/PollClientTasks") 
+
+                if (HttpContext.Current.Request.PathInfo != "/PollClientTasks")
                 {
-                    DomainManager.CurrentClient.UpdateLastAccessTime();    
-                }                
+                    DomainManager.CurrentClient.UpdateLastAccessTime();
+                }
             }
 
             return false;

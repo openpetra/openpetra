@@ -86,7 +86,7 @@ namespace Ict.Testing.NUnitPetraClient
 
             // Ensure we throw away the previous client session cookies!
             THTTPUtils.ResetSession();
-            
+
             eLoginEnum Result = Connect(TAppSettingsManager.GetValue("AutoLogin"), TAppSettingsManager.GetValue("AutoLoginPasswd"),
                 TAppSettingsManager.GetInt64("SiteKey"));
 

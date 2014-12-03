@@ -472,7 +472,8 @@ namespace Ict.Petra.Client.MReporting.Logic
             Thread ProgressCheckThread;
 
             ReturnValue = false;
-            FReportingGenerator = (TMReportingNamespace.TReportingUIConnectorsNamespace.TReportGeneratorUIConnector)TRemote.MReporting.UIConnectors.ReportGenerator();
+            FReportingGenerator =
+                (TMReportingNamespace.TReportingUIConnectorsNamespace.TReportGeneratorUIConnector)TRemote.MReporting.UIConnectors.ReportGenerator();
             FKeepUpProgressCheck = true;
 
             try

@@ -285,13 +285,13 @@ namespace Ict.Common.Remoting.Server
             }
 
             TLogging.Log("EndSession (for client '" + this.ClientName + "'): Session is about to getting stopped!");
-            
+
             // TODORemoting
             // release all UIConnector objects
             ClientStillAliveCheck.TClientStillAliveCheck.StopClientStillAliveCheckThread();
-            
+
             TLogging.Log("EndSession (for client '" + this.ClientName + "'): Checking whether there is a DB connection");
-            
+
             // close db connection
             if (DBAccess.GDBAccessObj != null)
             {
@@ -300,7 +300,7 @@ namespace Ict.Common.Remoting.Server
             }
 
             TLogging.Log("EndSession (for client '" + this.ClientName + "'): Checking whether there is a HttpSession.Current object");
-            
+
             // clear the session object
             if (HttpContext.Current != null)
             {

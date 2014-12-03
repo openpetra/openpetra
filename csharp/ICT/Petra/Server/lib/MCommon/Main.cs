@@ -371,7 +371,7 @@ namespace Ict.Petra.Server.MCommon
 
             // need to initialize the database session
             TSession.InitThread(ASessionID);
-            
+
             if (!DBAccess.GDBAccessObj.ConnectionOK)
             {
                 // we need a separate database object for this thread, since we cannot access the session object

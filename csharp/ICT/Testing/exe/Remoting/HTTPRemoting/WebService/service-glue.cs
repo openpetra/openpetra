@@ -60,46 +60,50 @@ namespace Tests.HTTPRemoting.Service
         {
             TOpenPetraOrgSessionManagerTest.Init();
         }
-        
+
         /// disconnect an UIConnector object
         [WebMethod(EnableSession = true)]
         public void DisconnectUIConnector(string UIConnectorObjectID)
         {
             string ObjectID = String.Empty;
-            
-            try 
+
+            try
             {
-                ObjectID = UIConnectorObjectID + " " + DomainManager.GClientID;    
+                ObjectID = UIConnectorObjectID + " " + DomainManager.GClientID;
             }
             catch (EOPDBInvalidSessionException)
             {
-                // Don't do anything in this scenario as in this case the request to disconnect an UIConnector 
-                // has likely come after the Client has disconnected: UIConnector Objects' Finalizers in the 
-                // 'Client Glue' call the UIConnector Objects' Dispose Methods, which call the present Method. 
-                // Those UIConnector Object Finalizers are not only executed when a screen gets closed by the user  
-                // (where that screen uses UIConnectors) and the Garbage Collector executes the Finalizer (whenever 
-                // the GC gets to that!), but also when a Client gets closed while screens that use UIConnectors 
+                // Don't do anything in this scenario as in this case the request to disconnect an UIConnector
+                // has likely come after the Client has disconnected: UIConnector Objects' Finalizers in the
+                // 'Client Glue' call the UIConnector Objects' Dispose Methods, which call the present Method.
+                // Those UIConnector Object Finalizers are not only executed when a screen gets closed by the user
+                // (where that screen uses UIConnectors) and the Garbage Collector executes the Finalizer (whenever
+                // the GC gets to that!), but also when a Client gets closed while screens that use UIConnectors
                 // were still open when the Client gets closed...
-                TLogging.Log("DisconnectUIConnector for Sample for UIConnectorObjectID '" + UIConnectorObjectID + "' got called, but there is no Client Session anymore for that client...");
-                
+                TLogging.Log(
+                    "DisconnectUIConnector for Sample for UIConnectorObjectID '" + UIConnectorObjectID +
+                    "' got called, but there is no Client Session anymore for that client...");
+
                 return;
             }
-            catch (Exception Exc) 
-            {           
-                TLogging.Log("DisconnectUIConnector for Sample for UIConnectorObjectID '" + UIConnectorObjectID + "': encountered Exception:\r\n" + Exc.ToString());
+            catch (Exception Exc)
+            {
+                TLogging.Log(
+                    "DisconnectUIConnector for Sample for UIConnectorObjectID '" + UIConnectorObjectID + "': encountered Exception:\r\n" +
+                    Exc.ToString());
                 throw;
-            }         
+            }
 
-            TLogging.Log("DisconnectUIConnector for Sample: ObjectID is '" + ObjectID + "' for UIConnectorObjectID '" + ObjectID +"'!");
-            
+            TLogging.Log("DisconnectUIConnector for Sample: ObjectID is '" + ObjectID + "' for UIConnectorObjectID '" + ObjectID + "'!");
+
             if (FUIConnectors.ContainsKey(ObjectID))
             {
                 // FUIConnectors[ObjectID].Dispose();
                 FUIConnectors.Remove(ObjectID);
-                TLogging.Log("DisconnectUIConnector for Sample: removed UIConnectorObjectID '" + ObjectID +"'!");               
+                TLogging.Log("DisconnectUIConnector for Sample: removed UIConnectorObjectID '" + ObjectID + "'!");
             }
         }
-        
+
         /// <summary>
         /// print hello world
         /// </summary>

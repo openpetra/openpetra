@@ -655,8 +655,7 @@ public class TAdminConsole
                                Path.DirectorySeparatorChar + "ServerAdminToken" + SecurityToken + ".txt";
 
         File.Delete(TokenFilename);
-     }
-
+    }
 
     /// <summary>
     /// Displays information about the Server we are connected to.

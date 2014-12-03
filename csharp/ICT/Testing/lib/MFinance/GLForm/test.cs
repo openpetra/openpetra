@@ -87,7 +87,7 @@ namespace Tests.MFinance.GLBatches
 
             Assert.AreEqual(true, btnSave.Properties.Enabled, "Save button should be enabled since there was a change");
             btnSave.Click();
-            
+
             frmBatch.Close();
         }
 
@@ -139,7 +139,7 @@ namespace Tests.MFinance.GLBatches
             btnSave.Click();
 
             Assert.AreEqual(false, btnSave.Properties.Enabled, "Save button should be disabled because all changes have been saved");
-            
+
             frmBatch.Close();
         }
 
@@ -236,7 +236,7 @@ namespace Tests.MFinance.GLBatches
             // and now try to create a new batch, bug https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=1058
             btnNewBatch.Click();
             btnSave.Click();
-            
+
             frmBatch.Close();
         }
 

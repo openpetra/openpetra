@@ -57,6 +57,7 @@ public class GenerateClientGlue
         {
             returntype = returntype == "string" || returntype == "String" ? "System.String" : returntype;
             returntype = returntype == "bool" || returntype == "Boolean" ? "System.Boolean" : returntype;
+
             if (returntype.Contains("UINT") || returntype.Contains("unsigned"))
             {
                 returntype = returntype.Contains("UInt32") || returntype == "unsigned int" ? "System.UInt32" : returntype;
@@ -69,6 +70,7 @@ public class GenerateClientGlue
                 returntype = returntype.Contains("Int16") || returntype == "short" ? "System.Int16" : returntype;
                 returntype = returntype.Contains("Int64") || returntype == "long" ? "System.Int64" : returntype;
             }
+
             returntype = returntype.Contains("Decimal") || returntype == "decimal" ? "System.Decimal" : returntype;
         }
 
@@ -130,6 +132,7 @@ public class GenerateClientGlue
         {
             returntype = returntype == "string" || returntype == "String" ? "System.String" : returntype;
             returntype = returntype == "bool" || returntype == "Boolean" ? "System.Boolean" : returntype;
+
             if (returntype.Contains("UINT") || returntype.Contains("unsigned"))
             {
                 returntype = returntype.Contains("UInt32") || returntype == "unsigned int" ? "System.UInt32" : returntype;
@@ -142,6 +145,7 @@ public class GenerateClientGlue
                 returntype = returntype.Contains("Int16") || returntype == "short" ? "System.Int16" : returntype;
                 returntype = returntype.Contains("Int64") || returntype == "long" ? "System.Int64" : returntype;
             }
+
             returntype = returntype.Contains("Decimal") || returntype == "decimal" ? "System.Decimal" : returntype;
         }
 

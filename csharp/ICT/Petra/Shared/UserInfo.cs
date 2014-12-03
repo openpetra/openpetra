@@ -37,12 +37,12 @@ namespace Ict.Petra.Shared
     {
         /// <summary>used internally to hold User Information - but only when this class is used client-side!</summary>
         private static TPetraPrincipal MUserInfo = null;
-        
+
         /// <summary>
         /// True if the <see cref="UserInfo" /> Class is used on the client side, false otherwise.
         /// </summary>
         private static bool FRunningOnClientSide = false;
-        
+
         /// <summary>
         /// True if the <see cref="UserInfo" /> Class is used on the client side, false otherwise.
         /// </summary>
@@ -52,22 +52,22 @@ namespace Ict.Petra.Shared
             {
                 return FRunningOnClientSide;
             }
-            
+
             set
             {
                 FRunningOnClientSide = value;
             }
         }
-        
+
         /// <summary>used internally to hold User Information</summary>
         public static TPetraPrincipal GUserInfo
         {
             set
             {
-                if (FRunningOnClientSide) 
+                if (FRunningOnClientSide)
                 {
 //                    TLogging.Log("GUserInfo gets written to from server-side");
-                    MUserInfo = value;      
+                    MUserInfo = value;
                 }
                 else
                 {
@@ -76,13 +76,13 @@ namespace Ict.Petra.Shared
             }
             get
             {
-                if (FRunningOnClientSide) 
+                if (FRunningOnClientSide)
                 {
                     return MUserInfo;
                 }
                 else
-                {   
-//                    TLogging.Log("GUserInfo requested from server-side");                    
+                {
+//                    TLogging.Log("GUserInfo requested from server-side");
                     return (TPetraPrincipal)TSession.GetVariable("UserInfo");
                 }
             }

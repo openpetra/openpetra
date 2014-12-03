@@ -1015,7 +1015,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPartnerFindObject = null;
             }
         }
-        
+
         #endregion
 
         #region Screen Parameters
