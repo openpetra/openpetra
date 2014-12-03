@@ -6,10 +6,6 @@ INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password
 INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('ANONYMOUS', '{#PASSWORDHASHANONYMOUS}', '{#PASSWORDSALTANONYMOUS}', false);
 
 INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('LEDGER0043', 'LEDGER0043');
-INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('HEADSET', 'Headset Management');
-INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('MEDICAL', 'Medical can write and read medical info');
-INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('BOUNDARIES', 'Boundaries Team can write rebukes');
-INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('SEMINARS', 'access for seminar registrations');
 
 -- setup the sample user DEMO
 INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('DEMO', 'PTNRUSER', true);
@@ -31,35 +27,6 @@ INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('D
 INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_bank');
 INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_venue');
 INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_organisation');
-
--- setup the user HEADSET for the headsets management
-INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('HEADSET', 'HEADSET', true);
-INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('MEDICAL', 'MEDICAL', true);
-INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('BOUNDARIES', 'BOUNDARIES', true);
-insert into p_data_label(p_key_i, p_text_c, p_data_type_c, p_char_length_i, p_restricted_l) values(1, 'Rebukes', 'char', 8000, false);
-insert into p_data_label(p_key_i, p_text_c, p_data_type_c, p_char_length_i, p_restricted_l) values(2, 'MedicalNotes', 'char', 8000, false);
-
-
--- setup the user ANONYMOUS for the webforms
-INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'PTNRUSER', true);
-INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'CONFERENCE', true);
-INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'DEVUSER', true);
-INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'PERSONNEL', true);
-INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'FINANCE-1', true);
-INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'FINANCE-2', true);
-INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'FINANCE-3', true);
-INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'LEDGER0043', true);
-INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_partner');
-INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_partner_location');
-INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_partner_type');
-INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_location');
-INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_church');
-INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_family');
-INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_person');
-INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_unit');
-INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_bank');
-INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_venue');
-INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_organisation');
 
 -- setup the sample site Germany 43000000
 INSERT INTO s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c) VALUES ('CurrentDatabaseVersion', 'the currently installed release number, set by installer/patchtool', '{#RELEASEVERSION}');
@@ -135,11 +102,6 @@ INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(1110
 INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(1110198, 0, 0);
 INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(43000000,1110198);
 INSERT INTO pc_conference(pc_conference_key_n, pc_outreach_prefix_c, pc_start_d, pc_end_d, a_currency_code_c) values( 1110198, 'DEMO77', '2013-01-01', '2013-01-14', 'EUR');
-
--- prepare for the headset management at conferences
-INSERT INTO p_contact_attribute(p_contact_attribute_code_c, p_contact_attribute_descr_c) VALUES('SESSION', 'a name for a session where people can use headsets');
-INSERT INTO p_method_of_contact(p_method_of_contact_code_c, p_description_c) VALUES('HEADSET_OUT', 'handing out the headset');
-INSERT INTO p_method_of_contact(p_method_of_contact_code_c, p_description_c) VALUES('HEADSET_RETURN', 'participant has returned the headset');
 
 -- import sample partners (donor and supplier)
 COPY p_partner FROM '{#ABSOLUTEBASEDATAPATH}/p_partner.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
