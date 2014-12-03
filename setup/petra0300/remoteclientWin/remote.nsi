@@ -99,6 +99,8 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\csharp\ThirdParty\OrientedTextControls\CustomControl.OrientedTextControls.dll
   File ..\..\..\delivery\bin\Ict.Common*dll
   File ..\..\..\delivery\bin\Ict.Petra.Client*dll
+  File ..\..\..\delivery\bin\Ict.Petra.Plugins.*.data.dll
+  File ..\..\..\delivery\bin\Ict.Petra.Plugins.*.Client.dll
   File ..\..\..\delivery\bin\Ict.Petra.Shared*dll
   File ..\..\..\delivery\bin\PetraClient.exe
   File ..\..\..\delivery\bin\Ict.Tools.PatchTool.exe
@@ -134,7 +136,7 @@ Section "Main Section" SecInstallFiles
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\OpenPetra.org Client.lnk" "$INSTDIR\bin30\PetraClient.exe" '-C:"$INSTDIR\etc30\PetraClientRemote.config"' $INSTDIR\petraico-big.ico 0 SW_SHOWNORMAL
   ; avoid problems with empty hotkey. so no comment for the moment for the shortcut: "Start OpenPetra.org (connecting to your OpenPetra server)"
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
-
+ 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 SectionEnd

@@ -116,6 +116,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
   <property name="module" value="all" overwrite="false"/>
   <property name="compileForStandalone" value="false" overwrite="false"/>
+  <nant inheritall="false" target="custdependGlue" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Plugins/Plugins.build')}" verbose="${verbose}"/>
   <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateGlue.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.incdir.template.src} -module:${module} -compileForStandalone:${compileForStandalone}"/>
 </target>
 

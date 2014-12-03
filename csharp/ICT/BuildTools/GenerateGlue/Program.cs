@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,7 +57,22 @@ namespace Ict.Tools.GenerateGlue
                 return;
             }
 
-            if (cmd.IsFlagSet("outputdir"))
+            if (cmd.IsFlagSet("plugin"))
+            {
+                OutputDir = cmd.GetOptValue("plugindir");
+
+                // calculate ICTPath from outputdir
+                string fullOutputPath = Path.GetFullPath(OutputDir).Replace("\\", "/");
+
+                if (!fullOutputPath.Contains("csharp/ICT"))
+                {
+                    Console.WriteLine("Output path must be below the csharp/ICT directory");
+                }
+
+                CSParser.ICTPath = fullOutputPath.Substring(0, fullOutputPath.IndexOf("csharp/ICT") + "csharp/ICT".Length);
+                GenerateGlueForPlugin(cmd, OutputDir);
+            }
+            else if (cmd.IsFlagSet("outputdir"))
             {
                 OutputDir = cmd.GetOptValue("outputdir");
 
@@ -70,23 +85,28 @@ namespace Ict.Tools.GenerateGlue
                 }
 
                 CSParser.ICTPath = fullOutputPath.Substring(0, fullOutputPath.IndexOf("csharp/ICT") + "csharp/ICT".Length);
+
+                GenerateGlueForOpenPetraCore(cmd, OutputDir);
             }
             else
             {
                 Console.WriteLine("call: " + sampleCall);
                 return;
             }
+        }
 
+        private static void GenerateGlueForOpenPetraCore(TCmdOpts ACmd, string AOutputDir)
+        {
             TNamespace namespaceRoot;
 
             try
             {
                 Console.WriteLine("parsing all cs files for namespaces...");
-                namespaceRoot = TNamespace.ParseFromDirectory(OutputDir + "/Server/lib/");
+                namespaceRoot = TNamespace.ParseFromDirectory(AOutputDir + "/Server/lib/");
 
                 if (namespaceRoot.Children.Count < 1)
                 {
-                    Console.WriteLine("problems with parsing namespaces from " + OutputDir + "/Server/lib/");
+                    Console.WriteLine("problems with parsing namespaces from " + AOutputDir + "/Server/lib/");
                     Environment.Exit(-1);
                 }
             }
@@ -108,10 +128,10 @@ namespace Ict.Tools.GenerateGlue
                  */
 
                 CreateInterfaces interfaces = new CreateInterfaces();
-                interfaces.CreateFiles(namespaceRoot, OutputDir + "/Shared/lib/Interfaces", cmd.GetOptValue("TemplateDir"));
-                GenerateClientGlue.GenerateCode(namespaceRoot, OutputDir + "/Client/app/Core/Remoteobjects", cmd.GetOptValue("TemplateDir"));
-                GenerateClientGlue.GenerateConnectorCode(OutputDir + "/../Common/Remoting/Client", cmd.GetOptValue("TemplateDir"));
-                GenerateServerGlue.GenerateCode(namespaceRoot, OutputDir + "/Server/app/WebService", cmd.GetOptValue("TemplateDir"));
+                interfaces.CreateFiles(namespaceRoot, AOutputDir + "/Shared/lib/Interfaces", ACmd.GetOptValue("TemplateDir"));
+                GenerateClientGlue.GenerateCode(namespaceRoot, AOutputDir + "/Client/app/Core/Remoteobjects", ACmd.GetOptValue("TemplateDir"));
+                GenerateClientGlue.GenerateConnectorCode(AOutputDir + "/../Common/Remoting/Client", ACmd.GetOptValue("TemplateDir"));
+                GenerateServerGlue.GenerateCode(namespaceRoot, AOutputDir + "/Server/app/WebService", ACmd.GetOptValue("TemplateDir"));
 
                 namespaceRoot = new TNamespace();
                 TNamespace ServerAdminNamespace = new TNamespace("ServerAdmin");
@@ -119,8 +139,55 @@ namespace Ict.Tools.GenerateGlue
                 TNamespace ServerAdminWebConnectorNamespace = new TNamespace("WebConnectors");
                 ServerAdminNamespace.Children.Add("WebConnectors", ServerAdminWebConnectorNamespace);
 
-                GenerateServerGlue.GenerateCode(namespaceRoot, OutputDir + "/Server/app/WebService", cmd.GetOptValue("TemplateDir"));
-                GenerateClientGlue.GenerateCode(namespaceRoot, OutputDir + "/ServerAdmin/app/Core", cmd.GetOptValue("TemplateDir"));
+                GenerateServerGlue.GenerateCode(namespaceRoot, AOutputDir + "/Server/app/WebService", ACmd.GetOptValue("TemplateDir"));
+                GenerateClientGlue.GenerateCode(namespaceRoot, AOutputDir + "/ServerAdmin/app/Core", ACmd.GetOptValue("TemplateDir"));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                Environment.Exit(-1);
+            }
+        }
+
+        private static void GenerateGlueForPlugin(TCmdOpts ACmd, string AOutputDir)
+        {
+            TNamespace namespaceRoot;
+
+            AOutputDir = AOutputDir.Replace("\\", "/");
+
+            try
+            {
+                Console.WriteLine("parsing plugin cs files for namespaces...");
+                namespaceRoot = TNamespace.ParseFromDirectory(AOutputDir + "/Server/");
+
+                if (namespaceRoot.Children.Count < 1)
+                {
+                    Console.WriteLine("There are no connectors in " + AOutputDir + "/Server/");
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                Environment.Exit(-1);
+                return;
+            }
+
+            try
+            {
+                CreateInterfaces interfaces = new CreateInterfaces();
+#if disabled
+                // at the moment, we do not support UIConnectors for plugins. Better to focus on Webconnectors!
+                if (!Directory.Exists(AOutputDir + "/Shared"))
+                {
+                    Directory.CreateDirectory(AOutputDir + "/Shared");
+                }
+                interfaces.CreateFiles(namespaceRoot, AOutputDir + "/Shared", ACmd.GetOptValue("TemplateDir"));
+#endif
+                GenerateClientGlue.GenerateCode(namespaceRoot, AOutputDir + "/Client", ACmd.GetOptValue("TemplateDir"));
+                GenerateServerGlue.GenerateCode(namespaceRoot, AOutputDir + "/Server", ACmd.GetOptValue("TemplateDir"));
             }
             catch (Exception e)
             {

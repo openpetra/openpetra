@@ -612,13 +612,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// Creates from the template resource file and the generated resource data
         /// a new resource file
         /// </summary>
-        /// <param name="AYamlFilename">The path of the yaml file is used to calculate the name of the resource file</param>
         /// <param name="ATemplateDir">The path to the templates</param>
-        public override void CreateResourceFile(string AYamlFilename, string ATemplateDir)
+        public override void CreateResourceFile(string ATemplateDir)
         {
-            string ResourceFile = System.IO.Path.GetDirectoryName(AYamlFilename) +
+            string ResourceFile = System.IO.Path.GetDirectoryName(YamlFilename) +
                                   System.IO.Path.DirectorySeparatorChar +
-                                  System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                                  System.IO.Path.GetFileNameWithoutExtension(YamlFilename) +
                                   "-generated.resx";
 
             XmlDocument OrigResourceDoc = null;
@@ -671,11 +670,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// write the designer code using the definitions in the yaml file
-        public override void CreateDesignerFile(string AYamlFilename, XmlNode ARootNode, string ATemplateDir)
+        public override void CreateDesignerFile(XmlNode ARootNode, string ATemplateDir)
         {
-            string DesignerFile = System.IO.Path.GetDirectoryName(AYamlFilename) +
+            string DesignerFile = System.IO.Path.GetDirectoryName(YamlFilename) +
                                   System.IO.Path.DirectorySeparatorChar +
-                                  System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                                  System.IO.Path.GetFileNameWithoutExtension(YamlFilename) +
                                   "-generated.Designer.cs";
 
             string designerTemplate = String.Empty;
@@ -695,20 +694,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>get the name of the destination generated file</summary>
-        public override string CalculateDestinationFilename(string AYamlFilename)
+        public override string CalculateDestinationFilename()
         {
-            return System.IO.Path.GetDirectoryName(AYamlFilename) +
+            return System.IO.Path.GetDirectoryName(YamlFilename) +
                    System.IO.Path.DirectorySeparatorChar +
-                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                   System.IO.Path.GetFileNameWithoutExtension(YamlFilename) +
                    "-generated" + this.CodeFileExtension;
         }
 
         /// <summary>get the name of the file with the manual code</summary>
-        public override string CalculateManualCodeFilename(string AYamlFilename)
+        public override string CalculateManualCodeFilename()
         {
-            return System.IO.Path.GetDirectoryName(AYamlFilename) +
+            return System.IO.Path.GetDirectoryName(YamlFilename) +
                    System.IO.Path.DirectorySeparatorChar +
-                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                   System.IO.Path.GetFileNameWithoutExtension(YamlFilename) +
                    ".ManualCode" + this.CodeFileExtension;
         }
 
@@ -1018,7 +1017,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         /// based on the code model, create the code;
         /// using the code generators that have been loaded
-        public override void CreateCode(TCodeStorage ACodeStorage, string AXAMLFilename, string ATemplateFile)
+        public override void CreateCode(TCodeStorage ACodeStorage, string ATemplateFile)
         {
             ResetAllValues();
             FCodeStorage = ACodeStorage;
@@ -1218,7 +1217,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // load the dataset if there is a dataset defined for this screen. this allows us to reference customtables and custom fields
             if (FCodeStorage.HasAttribute("DatasetType"))
             {
-                DataSetTables = TDataBinding.LoadDatasetTables(CSParser.ICTPath, FCodeStorage.GetAttribute("DatasetType"), FCodeStorage);
+                // also check the plugin directory of the yaml file, for plugins can have a file TypedDataSets.xml
+                string PluginPath =
+                    (YamlFilename.Contains("Plugins")) ?
+                    Path.GetFullPath(Path.GetDirectoryName(
+                            YamlFilename) + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "TypedDataSets.xml")
+                    : string.Empty;
+
+                DataSetTables = TDataBinding.LoadDatasetTables(CSParser.ICTPath, FCodeStorage.GetAttribute("DatasetType"), FCodeStorage,
+                    PluginPath);
             }
             else
             {
@@ -1706,7 +1713,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.SetCodelet("GETSELECTEDDETAILROW", getSelectedDetailRow);
             }
 
-            InsertCodeIntoTemplate(AXAMLFilename);
+            InsertCodeIntoTemplate(YamlFilename);
         }
 
         /// <summary>

@@ -101,6 +101,12 @@
     </fileset>
   </copy>
 
+  <copy todir="${dir.delivery}" overwrite="true" flatten="true">
+    <fileset basedir="${dir.csharp}/ICT/Petra/Plugins/">
+      <include name="**/*.asmx" />
+    </fileset>
+  </copy>
+
   <if test="${'win32'==platform::get-name()}" >
     <!-- make sure that the Mono files for sqlite are in the bin directory; needed for devzip -->
     <if test="${(DBMS.Type=='sqlite') and (not file::exists(dir.bin + '/Mono.Data.Sqlite.dll'))}">

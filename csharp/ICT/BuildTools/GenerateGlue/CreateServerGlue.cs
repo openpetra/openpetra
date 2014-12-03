@@ -626,6 +626,15 @@ public class GenerateServerGlue
         InterfacePath = InterfacePath.Substring(0, InterfacePath.IndexOf("csharp/ICT/Petra")) + "csharp/ICT/Petra/Shared/lib/Interfaces";
         Template.AddToCodelet("USINGNAMESPACES", CreateInterfaces.AddNamespacesFromYmlFile(InterfacePath, tn.Name));
 
+        if (AOutputPath.Contains("ICT/Petra/Plugins/"))
+        {
+            Template.AddToCodelet("USINGNAMESPACES", "using Ict.Petra.Server.App.WebService;" + Environment.NewLine);
+
+            // add namespaces that are required by the plugin
+            InterfacePath = Path.GetFullPath(AOutputPath + "/../").Replace(Path.DirectorySeparatorChar, '/');
+            Template.AddToCodelet("USINGNAMESPACES", CreateInterfaces.AddNamespacesFromYmlFile(InterfacePath, "Plugin"));
+        }
+
         FUsingNamespaces = new SortedList <string, string>();
         FContainsAsynchronousExecutionProgress = false;
 
@@ -656,6 +665,16 @@ public class GenerateServerGlue
             Template.AddToCodelet("USINGNAMESPACES", "using " + usingNamespace + ";" + Environment.NewLine);
         }
 
+        if (OutputFile.Replace("\\", "/").Contains("ICT/Petra/Plugins"))
+        {
+            string pluginWithNamespace = TAppSettingsManager.GetValue("plugin");
+            Template.SetCodelet("WEBSERVICENAMESPACE", pluginWithNamespace + ".WebService");
+        }
+        else
+        {
+            Template.SetCodelet("WEBSERVICENAMESPACE", "Ict.Petra.Server.App.WebService");
+        }
+
         Template.FinishWriting(OutputFile, ".cs", true);
     }
 
@@ -678,7 +697,7 @@ public class GenerateServerGlue
 
             if ((module == "all") || (tn.Name == module))
             {
-                SortedList <string, TypeDeclaration>connectors = TCollectConnectorInterfaces.GetConnectors(tn.Name);
+                SortedList <string, TypeDeclaration>connectors = TCollectConnectorInterfaces.GetConnectors(AOutputPath, tn.Name);
                 CreateServerGlue(tn, connectors, AOutputPath);
             }
         }

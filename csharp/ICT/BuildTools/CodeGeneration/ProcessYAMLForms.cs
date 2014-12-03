@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -144,6 +144,8 @@ namespace Ict.Tools.CodeGeneration
                     return false;
                 }
 
+                writer.YamlFilename = FYamlFilename;
+
                 string templateDir = TAppSettingsManager.GetValue("TemplateDir", true);
                 string template = TYml2Xml.GetAttribute(rootNode, "Template");
 
@@ -152,17 +154,17 @@ namespace Ict.Tools.CodeGeneration
                     template = templateDir + Path.DirectorySeparatorChar + template + writer.CodeFileExtension;
                 }
 
-                string destinationFile = writer.CalculateDestinationFilename(FYamlFilename);
-                string manualCodeFile = writer.CalculateManualCodeFilename(FYamlFilename);
+                string destinationFile = writer.CalculateDestinationFilename();
+                string manualCodeFile = writer.CalculateManualCodeFilename();
 
                 // need to know the path to the manual code file in order to call manual functions which would not be called if they do not exist
                 codeStorage.ManualCodeFilename = manualCodeFile;
 
-                writer.CreateCode(codeStorage, FYamlFilename, template);
+                writer.CreateCode(codeStorage, template);
 
-                writer.CreateResourceFile(FYamlFilename, templateDir);
+                writer.CreateResourceFile(templateDir);
 
-                writer.CreateDesignerFile(FYamlFilename, rootNode, templateDir);
+                writer.CreateDesignerFile(rootNode, templateDir);
 
                 return writer.WriteFile(destinationFile);
             }

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -343,18 +343,28 @@ public class CreateInterfaces
     /// </summary>
     public static string AddNamespacesFromYmlFile(String AOutputPath, string AModuleName)
     {
-        TYml2Xml reader = new TYml2Xml(AOutputPath + Path.DirectorySeparatorChar + "InterfacesUsingNamespaces.yml");
-        XmlDocument doc = reader.ParseYML2XML();
-
-        XmlNode RootNode = doc.DocumentElement.FirstChild;
-
-        StringCollection usingNamespaces = TYml2Xml.GetElements(RootNode, AModuleName);
-
         string result = string.Empty;
 
-        foreach (string s in usingNamespaces)
+        if (AOutputPath.Contains("ICT/Petra/Plugins"))
         {
-            result += "using " + s.Trim() + ";" + Environment.NewLine;
+            // for plugins
+            string pluginWithNamespace = TAppSettingsManager.GetValue("plugin");
+            result += "using " + pluginWithNamespace + ".Data;" + Environment.NewLine;
+        }
+
+        if (File.Exists(AOutputPath + Path.DirectorySeparatorChar + "InterfacesUsingNamespaces.yml"))
+        {
+            TYml2Xml reader = new TYml2Xml(AOutputPath + Path.DirectorySeparatorChar + "InterfacesUsingNamespaces.yml");
+            XmlDocument doc = reader.ParseYML2XML();
+
+            XmlNode RootNode = doc.DocumentElement.FirstChild;
+
+            StringCollection usingNamespaces = TYml2Xml.GetElements(RootNode, AModuleName);
+
+            foreach (string s in usingNamespaces)
+            {
+                result += "using " + s.Trim() + ";" + Environment.NewLine;
+            }
         }
 
         return result;
@@ -384,7 +394,13 @@ public class CreateInterfaces
         // get all csharp files that might hold implementations of remotable classes
         List <CSParser>CSFiles = null;
 
-        if (Directory.Exists(CSParser.ICTPath + "/Petra/Server/lib/M" + tn.Name))
+        if (AOutputPath.Contains("ICT/Petra/Plugins"))
+        {
+            // search for webconnectors in the directory of the plugin
+            CSFiles = CSParser.GetCSFilesForDirectory(Path.GetFullPath(AOutputPath + "/../Server"),
+                SearchOption.AllDirectories);
+        }
+        else if (Directory.Exists(CSParser.ICTPath + "/Petra/Server/lib/M" + tn.Name))
         {
             // any class in the module can contain a webconnector
             CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/lib/M" + tn.Name,

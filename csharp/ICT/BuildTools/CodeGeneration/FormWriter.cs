@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,15 +41,15 @@ namespace Ict.Tools.CodeGeneration
     public abstract class TFormWriter
     {
         /// <summary>main function for generating the code</summary>
-        public abstract void CreateCode(TCodeStorage AStorage, string AXamlFilename, string ATemplate);
+        public abstract void CreateCode(TCodeStorage AStorage, string ATemplate);
         /// <summary>create the file with the resources</summary>
-        public abstract void CreateResourceFile(string AResourceFile, string AResourceTemplate);
+        public abstract void CreateResourceFile(string AResourceTemplate);
         /// <summary>get the name of the designer file</summary>
-        public abstract void CreateDesignerFile(string AYamlFilename, XmlNode ARootNode, string ATemplateDir);
+        public abstract void CreateDesignerFile(XmlNode ARootNode, string ATemplateDir);
         /// <summary>get the name of the destination generated file</summary>
-        public abstract string CalculateDestinationFilename(string AYamlFilename);
+        public abstract string CalculateDestinationFilename();
         /// <summary>get the name of the file with the manual code</summary>
-        public abstract string CalculateManualCodeFilename(string AYamlFilename);
+        public abstract string CalculateManualCodeFilename();
         /// <summary>remove the current value of a control property</summary>
         public virtual void ClearControlProperty(string AControlName, string APropertyName)
         {
@@ -141,6 +141,22 @@ namespace Ict.Tools.CodeGeneration
             get
             {
                 return FTemplate;
+            }
+        }
+
+        private string FYamlFilename = string.Empty;
+        /// <summary>
+        /// the filename of the yaml file that contains the instructions for this screen
+        /// </summary>
+        public string YamlFilename
+        {
+            get
+            {
+                return FYamlFilename;
+            }
+            set
+            {
+                FYamlFilename = value;
             }
         }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Windows.Forms;
 using System.Xml;
+using System.IO;
 using Ict.Tools.CodeGeneration;
 using Ict.Common.IO;
 using Ict.Common;
@@ -1953,7 +1954,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // load the dataset if there is a dataset defined for this screen. this allows us to reference customtables and custom fields
             if (codeStorage.HasAttribute("DatasetType"))
             {
-                DataSetTables = TDataBinding.LoadDatasetTables(CSParser.ICTPath, codeStorage.GetAttribute("DatasetType"), codeStorage);
+                // also check the plugin directory of the yaml file, for plugins can have a file TypedDataSets.xml
+                string PluginPath =
+                    (writer.YamlFilename.Contains("Plugins")) ?
+                    Path.GetFullPath(Path.GetDirectoryName(
+                            writer.YamlFilename) + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "TypedDataSets.xml")
+                    : string.Empty;
+
+                DataSetTables = TDataBinding.LoadDatasetTables(CSParser.ICTPath, codeStorage.GetAttribute("DatasetType"), codeStorage, PluginPath);
             }
 
             if ((DataSetTables != null) && DataSetTables.ContainsKey(codeStorage.GetAttribute("DetailTable")))

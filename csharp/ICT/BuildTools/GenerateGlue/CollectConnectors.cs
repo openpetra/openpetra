@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -199,14 +199,20 @@ public class TCollectConnectorInterfaces
     /// <summary>
     /// main function to collect the connectors from the code.
     /// </summary>
-    public static SortedList <string, TypeDeclaration>GetConnectors(string AModuleName)
+    public static SortedList <string, TypeDeclaration>GetConnectors(string AOutputPath, string AModuleName)
     {
         if (!ConnectorsByModule.ContainsKey(AModuleName))
         {
             // get all csharp files that might hold implementations of remotable classes
             List <CSParser>CSFiles = null;
 
-            if (Directory.Exists(CSParser.ICTPath + "/Petra/Server/lib/M" + AModuleName))
+            if (AOutputPath.Contains("ICT/Petra/Plugins"))
+            {
+                // search for connectors in the directory of the plugin
+                CSFiles = CSParser.GetCSFilesForDirectory(Path.GetFullPath(AOutputPath + "/../Server"),
+                    SearchOption.AllDirectories);
+            }
+            else if (Directory.Exists(CSParser.ICTPath + "/Petra/Server/lib/M" + AModuleName))
             {
                 // any class in the module can contain a connector
                 CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/lib/M" + AModuleName,

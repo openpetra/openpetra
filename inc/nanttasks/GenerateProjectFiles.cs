@@ -266,10 +266,10 @@ namespace Ict.Tools.NAntTasks
                     "Ict.Common,Ict.Petra,Ict.Tools,Ict.Testing");
                 WriteSolutionFile(FTemplateDir, ide.Trim(),
                     "OpenPetra.Server.sln",
-                    "Ict.Common,Ict.Petra.Shared,Ict.Petra.Server,Ict.Petra.PetraServerConsole");
+                    "Ict.Common,Ict.Petra.Shared,Ict.Petra.Server,Ict.Petra.PetraServerConsole,Ict.Petra.Plugins.*.data,Ict.Petra.Plugins.*.Server");
                 WriteSolutionFile(FTemplateDir, ide.Trim(),
                     "OpenPetra.Client.sln",
-                    "Ict.Common,Ict.Petra.Shared,Ict.Petra.Client,Ict.Petra.PetraClient");
+                    "Ict.Common,Ict.Petra.Shared,Ict.Petra.Client,Ict.Petra.PetraClient,Ict.Petra.Plugins.*.data,Ict.Petra.Plugins.*.Client");
                 WriteSolutionFile(FTemplateDir, ide.Trim(),
                     "OpenPetra.Tools.sln",
                     "Ict.Common.csproj,Ict.Common.IO,Ict.Tools");
@@ -447,7 +447,8 @@ namespace Ict.Tools.NAntTasks
 
                 foreach (string incNamespace in IncludeNamespaces)
                 {
-                    if (projectName.StartsWith(incNamespace) || (projectName + ".csproj" == incNamespace))
+                    Regex regex = new Regex(incNamespace.Replace(".", "\\.").Replace("*", ".*"));
+                    if (projectName.StartsWith(incNamespace) || (projectName + ".csproj" == incNamespace) || regex.Match(projectName).Success)
                     {
                         includeProject = true;
                         break;

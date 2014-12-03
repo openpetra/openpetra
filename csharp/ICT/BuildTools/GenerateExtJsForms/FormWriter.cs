@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -118,7 +118,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         /// <summary>
         /// not needed for ext.js
         /// </summary>
-        public override void CreateResourceFile(string AYamlFilename, string ATemplateDir)
+        public override void CreateResourceFile(string ATemplateDir)
         {
             // not implemented
         }
@@ -126,15 +126,15 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         /// <summary>
         /// not needed for ext.js
         /// </summary>
-        public override void CreateDesignerFile(string AYamlFilename, XmlNode ARootNode, string ATemplateDir)
+        public override void CreateDesignerFile(XmlNode ARootNode, string ATemplateDir)
         {
             // not implemented
         }
 
         /// <summary>get the name of the destination generated file</summary>
-        public override string CalculateDestinationFilename(string AYamlFilename)
+        public override string CalculateDestinationFilename()
         {
-            string relativePath = Path.GetDirectoryName(Path.GetFullPath(AYamlFilename)).
+            string relativePath = Path.GetDirectoryName(Path.GetFullPath(YamlFilename)).
                                   Substring(Path.GetFullPath(TAppSettingsManager.GetValue("ymlroot")).Length);
 
             string generatedFilesPath = TAppSettingsManager.GetValue("deliveryPath") +
@@ -150,16 +150,16 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
             return generatedFilesPath +
                    System.IO.Path.DirectorySeparatorChar +
-                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                   System.IO.Path.GetFileNameWithoutExtension(YamlFilename) +
                    this.CodeFileExtension;
         }
 
         /// <summary>get the name of the file with the manual code</summary>
-        public override string CalculateManualCodeFilename(string AYamlFilename)
+        public override string CalculateManualCodeFilename()
         {
-            return System.IO.Path.GetDirectoryName(AYamlFilename) +
+            return System.IO.Path.GetDirectoryName(YamlFilename) +
                    System.IO.Path.DirectorySeparatorChar +
-                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                   System.IO.Path.GetFileNameWithoutExtension(YamlFilename) +
                    ".ManualCode" + this.CodeFileExtension;
         }
 
@@ -407,12 +407,12 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
         /// based on the code model, create the code;
         /// using the code generators that have been loaded
-        public override void CreateCode(TCodeStorage ACodeStorage, string AXAMLFilename, string ATemplateFile)
+        public override void CreateCode(TCodeStorage ACodeStorage, string ATemplateFile)
         {
             FCodeStorage = ACodeStorage;
             TControlGenerator.FCodeStorage = ACodeStorage;
             FTemplate = new ProcessTemplate(ATemplateFile);
-            FFormName = Path.GetFileNameWithoutExtension(AXAMLFilename).Replace("-", "_");
+            FFormName = Path.GetFileNameWithoutExtension(YamlFilename).Replace("-", "_");
 
             // drop language specific part of the name
             if (FFormName.Contains("."))
@@ -440,10 +440,10 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 AddRootControl("content");
             }
 
-            InsertCodeIntoTemplate(AXAMLFilename);
+            InsertCodeIntoTemplate(YamlFilename);
 
-            string languagefilepath = Path.GetDirectoryName(AXAMLFilename) + Path.DirectorySeparatorChar +
-                                      Path.GetFileNameWithoutExtension(AXAMLFilename) + "-lang-template.js";
+            string languagefilepath = Path.GetDirectoryName(YamlFilename) + Path.DirectorySeparatorChar +
+                                      Path.GetFileNameWithoutExtension(YamlFilename) + "-lang-template.js";
             File.WriteAllText(languagefilepath, FLanguageFileTemplate.FinishWriting(true));
         }
 

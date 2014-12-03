@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<project name="Plugins-Build">
+
+<target name="custdepend">
+  <!-- Generate winforms --> 
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -Server.DebugLevel:${Server.DebugLevel}"/>
+  <property name="ClientPath" value="${dir.root}/csharp/ICT/Petra/Plugins"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymldir:${ClientPath} ${generateWinformsParameters}"/>
+</target>
+
+<target name="custdependORM">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+
+  <property name="StartTableId" value="9000"/>
+  <foreach item="Folder" property="foldername" in="${dir.root}/csharp/ICT/Petra/Plugins/">
+    <property name="MyPlugin" value="${path::get-file-name(foldername)}"/>
+    <property name="typedatasetsfile" value="${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin}/data/TypedDataSets.xml"/>
+    <if test="${file::exists(typedatasetsfile)}">
+        <!-- generate typed datasets -->
+        <ExecDotNet program="${tool-generateORM}" commandline="-do:dataset
+            -petraxml:${PetraXML.file}
+            -input:${typedatasetsfile}
+            -outputNamespace:Ict.Petra.Plugins.${MyPlugin}.Data
+            -outputdir:${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin}/data
+            -outputFilename:${MyPlugin}.DataSets -StartTableId:${StartTableId}
+            -TemplateDir:${dir.incdir.template.src}"/>
+        <property name="StartTableId" value="${int::parse(StartTableId) + 100}"/>
+        <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess
+            -petraxml:${PetraXML.file}
+            -input:${typedatasetsfile}
+            -outputNamespace:Ict.Petra.Plugins.${MyPlugin}.Data
+            -outputdir:${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin}/data
+            -outputFilename:${MyPlugin}.DataSets.Access
+            -StartTableId:${StartTableId}
+            -TemplateDir:${dir.incdir.template.src}"/>
+        <property name="StartTableId" value="${int::parse(StartTableId) + 100}"/>
+    </if>
+  </foreach>
+</target>
+
+<target name="custdependGlue">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+
+  <foreach item="Folder" property="foldername" in="${dir.root}/csharp/ICT/Petra/Plugins/">
+    <property name="MyPlugin" value="${path::get-file-name(foldername)}"/>
+    <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateGlue.exe" commandline="-plugin:Ict.Petra.Plugins.${MyPlugin} -plugindir:${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin} -TemplateDir:${dir.incdir.template.src} -compileForStandalone:${compileForStandalone}"/>
+  </foreach>
+</target>
+
+<target name="generateWinform">
+  <!-- Generate winforms -->
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -Server.DebugLevel:${Server.DebugLevel}"/>
+  <property name="file_fullpath" value="${path::get-full-path(file)}"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymlfile:${file_fullpath} ${generateWinformsParameters}"/>
+  
+  <property name="file_fullpath" value="${path::get-full-path(file)}"/>
+  <CompileProject CSFile="${string::replace(file_fullpath,'.yaml', '-generated.cs')}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
+</target>
+
+<target name="previewWinform">
+  <!-- Generate winforms -->
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -Server.DebugLevel:${Server.DebugLevel}"/>
+  <property name="file_fullpath" value="${path::get-full-path(file)}"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:preview -ymlfile:${file_fullpath} ${generateWinformsParameters}"/>
+</target>
+
+<include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
+
+</project>

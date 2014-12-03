@@ -57,7 +57,8 @@ namespace Ict.Tools.CodeGeneration
         /// <summary>
         /// load the dataset tables
         /// </summary>
-        public static SortedList <string, TTable>LoadDatasetTables(string AICTPath, string ADataSetTypeWithNamespace, TCodeStorage ACodeStorage)
+        public static SortedList <string, TTable>LoadDatasetTables(string AICTPath, string ADataSetTypeWithNamespace, TCodeStorage ACodeStorage,
+            string APluginPath)
         {
             if (FDatasetTables == null)
             {
@@ -66,9 +67,9 @@ namespace Ict.Tools.CodeGeneration
 
             FCodeStorage = ACodeStorage;
 
-            if (!ADataSetTypeWithNamespace.StartsWith("Ict.Petra.Shared"))
+            if (!ADataSetTypeWithNamespace.StartsWith("Ict.Petra.Shared") && !ADataSetTypeWithNamespace.StartsWith("Ict.Petra.Plugins"))
             {
-                throw new Exception("the DatasetType must contain the full namespace, starting with Ict.Petra.Shared");
+                throw new Exception("the DatasetType must contain the full namespace, starting with Ict.Petra.Shared or Ict.Petra.Plugins");
             }
 
             if (FDatasetTables.ContainsKey(ADataSetTypeWithNamespace))
@@ -86,6 +87,14 @@ namespace Ict.Tools.CodeGeneration
             // look in Ict/Petra/Shared/lib/MODULE/data
             string dataPath = AICTPath + "/Petra/Shared/lib/" + module + "/data/";
 
+            if (ADataSetTypeWithNamespace.StartsWith("Ict.Petra.Plugins"))
+            {
+                int start = "Ict.Petra.Plugins.".Length;
+                int end = ADataSetTypeWithNamespace.IndexOf(".", start);
+                string PluginName = ADataSetTypeWithNamespace.Substring(start, end - start);
+                dataPath = AICTPath + "/Petra/Plugins/" + PluginName + "/data/";
+            }
+
             DirectoryInfo directory = new DirectoryInfo(dataPath);
             FileInfo[] xmlFiles = directory.GetFiles("*.xml");
             XmlNode datasetNode = null;
@@ -97,6 +106,13 @@ namespace Ict.Tools.CodeGeneration
                     TXMLParser parser = new TXMLParser(dataPath + "/" + fileinfo.Name, false);
                     datasetNode = parser.GetDocument().SelectSingleNode(String.Format("//DataSet[@name='{0}']", datasetName));
                 }
+            }
+
+            if ((datasetNode == null) && File.Exists(APluginPath))
+            {
+                // also check the plugin directory of the yaml file, for plugins can have a file TypedDataSets.xml
+                TXMLParser parser = new TXMLParser(APluginPath, false);
+                datasetNode = parser.GetDocument().SelectSingleNode(String.Format("//DataSet[@name='{0}']", datasetName));
             }
 
             if (datasetNode == null)

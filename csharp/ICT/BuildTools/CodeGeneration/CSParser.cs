@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -554,17 +554,20 @@ namespace Ict.Tools.CodeGeneration
             {
                 List <CSParser>CSFiles = new List <CSParser>();
 
-                foreach (string filename in Directory.GetFiles(dir, "*.cs", option))
+                if (Directory.Exists(dir))
                 {
-                    if (!filename.EndsWith("-generated.cs") || filename.EndsWith("Cacheable-generated.cs")
-                        || filename.EndsWith("ReferenceCount-generated.cs"))
+                    foreach (string filename in Directory.GetFiles(dir, "*.cs", option))
                     {
-                        if (!FParsedFiles.ContainsKey(filename))
+                        if (!filename.EndsWith("-generated.cs") || filename.EndsWith("Cacheable-generated.cs")
+                            || filename.EndsWith("ReferenceCount-generated.cs"))
                         {
-                            FParsedFiles.Add(filename, new CSParser(filename));
-                        }
+                            if (!FParsedFiles.ContainsKey(filename))
+                            {
+                                FParsedFiles.Add(filename, new CSParser(filename));
+                            }
 
-                        CSFiles.Add(FParsedFiles[filename]);
+                            CSFiles.Add(FParsedFiles[filename]);
+                        }
                     }
                 }
 

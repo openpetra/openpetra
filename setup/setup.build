@@ -446,6 +446,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <delete>
       <fileset>
         <include name="${setupDir}/bin30/Ict.Petra.Client*" />
+        <include name="${setupDir}/bin30/Ict.Petra.Plugins.*.Client.dll" />
         <include name="${setupDir}/bin30/PetraClient*" />
         <include name="${setupDir}/bin30/UINavigation.yml" />
         <include name="${setupDir}/bin30/sqlite3.dll" />
@@ -457,6 +458,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <delete>
       <fileset>
         <exclude name="${setupDir}/bin30/Ict.Petra.Server*.connect.dll" />
+        <include name="${setupDir}/bin30/Ict.Petra.Plugins.*.Server.dll" />
         <include name="${setupDir}/bin30/Ict.Petra.Server*" />
         <include name="${setupDir}/bin30/PetraServer*" />
         <include name="${setupDir}/*.sh" />
@@ -501,6 +503,11 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <copy todir="${setupDir}/asmx">
       <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/app/WebService">
          <include name="*.asmx" />
+      </fileset>
+    </copy>
+    <copy todir="${setupDir}/asmx" flatten="true">
+      <fileset basedir="${dir.root}/csharp/ICT/Petra/Plugins">
+         <include name="**/*.asmx" />
       </fileset>
     </copy>
 
