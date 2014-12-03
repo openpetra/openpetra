@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -50,14 +50,19 @@ namespace Ict.Petra.Tools.SampleDataConstructor
     {
         /// LedgerNumber to be set from outside
         public static int FLedgerNumber = 43;
+        /// limit the amount of invoices per year
+        public static int MaxInvoicesPerYear = 200;
 
         /// <summary>
         /// generate the invoices from a text file that was generated with Benerator
         /// </summary>
         /// <param name="AInputBeneratorFile"></param>
         /// <param name="AYear">eg. 2013</param>
-        public static void GenerateInvoices(string AInputBeneratorFile, int AYear)
+        /// <param name="ASmallNumber">boolean to keep the size of the demo database down</param>
+        public static void GenerateInvoices(string AInputBeneratorFile, int AYear, bool ASmallNumber)
         {
+            MaxInvoicesPerYear = (ASmallNumber ? 25 : 200);
+
             XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AInputBeneratorFile, ",");
 
             XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
@@ -114,10 +119,14 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
                 MainDS.AApDocumentDetail.Rows.Add(detailRow);
 
+                if (MainDS.AApDocument.Rows.Count > MaxInvoicesPerYear)
+                {
+                    break;
+                }
+
                 RecordNode = RecordNode.NextSibling;
             }
 
-            ;
             AccountsPayableTDSAccess.SubmitChanges(MainDS);
         }
 
@@ -126,6 +135,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// </summary>
         public static bool PostAndPayInvoices(int AYear, int APeriod, int ALeaveInvoicesUnposted = 0)
         {
+            TLogging.LogAtLevel(1, "PostAndPayInvoices for year " + AYear.ToString() + " / period " + APeriod.ToString());
+
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
             string sqlLoadDocuments =
@@ -168,7 +179,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             TVerificationResultCollection VerificationResult;
 
-            if (!TAPTransactionWebConnector.PostAPDocuments(FLedgerNumber, DocumentIdsToPost, PeriodEndDate, false, out VerificationResult))
+            if ((DocumentIdsToPost.Count > 0)
+                && !TAPTransactionWebConnector.PostAPDocuments(FLedgerNumber, DocumentIdsToPost, PeriodEndDate, false, out VerificationResult))
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
                 return false;

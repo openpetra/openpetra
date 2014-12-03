@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -129,22 +129,32 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// <summary>
         /// Populate ledger with gifts and invoices, post batches, close periods and years, according to FNumberOfClosedPeriods
         /// </summary>
-        /// <param name="datadirectory"></param>
-        public static void PopulateData(string datadirectory)
+        public static void PopulateData(string datadirectory, bool smallNumber = false)
         {
             int periodOverall = 0;
             int yearCounter = 0;
             int period = 1;
             int YearAD = DateTime.Today.Year - (FNumberOfClosedPeriods / 12);
 
-            SampleDataGiftBatches.LoadBatches(Path.Combine(datadirectory, "donations.csv"));
-            SampleDataAccountsPayable.GenerateInvoices(Path.Combine(datadirectory, "invoices.csv"), YearAD);
+            SampleDataGiftBatches.LoadBatches(Path.Combine(datadirectory, "donations.csv"), smallNumber);
+            SampleDataAccountsPayable.GenerateInvoices(Path.Combine(datadirectory, "invoices.csv"), YearAD, smallNumber);
 
             while (periodOverall <= FNumberOfClosedPeriods)
             {
+                TLogging.LogAtLevel(1, "working on year " + yearCounter.ToString() + " / period " + period.ToString());
+
                 SampleDataGiftBatches.CreateGiftBatches(period);
-                SampleDataGiftBatches.PostBatches(yearCounter, period, periodOverall == FNumberOfClosedPeriods ? 1 : 0);
-                SampleDataAccountsPayable.PostAndPayInvoices(yearCounter, period, periodOverall == FNumberOfClosedPeriods ? 1 : 0);
+
+                if (!SampleDataGiftBatches.PostBatches((yearCounter, period, periodOverall == FNumberOfClosedPeriods) ? 1 : 0))
+                {
+                    throw new Exception("could not post gift batches");
+                }
+
+                if (!SampleDataAccountsPayable.PostAndPayInvoices((yearCounter, period, periodOverall == FNumberOfClosedPeriods) ? 1 : 0))
+                {
+                    throw new Exception("could not post invoices");
+                }
+
                 TLedgerInfo LedgerInfo = new TLedgerInfo(FLedgerNumber);
 
                 if (periodOverall < FNumberOfClosedPeriods)
@@ -174,7 +184,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
                         YearAD++;
                         yearCounter++;
-                        SampleDataAccountsPayable.GenerateInvoices(Path.Combine(datadirectory, "invoices.csv"), YearAD);
+                        SampleDataAccountsPayable.GenerateInvoices(Path.Combine(datadirectory, "invoices.csv"), YearAD, smallNumber);
                         period = 0;
                     }
                 }
