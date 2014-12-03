@@ -213,7 +213,9 @@
 </target>
 <target name="startClient" depends="initConfigFiles-client" description="start the OpenPetra Client">
   <if test="${platform::is-windows()}">
-    <call target="startServer-internal" />
+    <if test="${compileForStandalone == 'false'}">
+        <call target="startServer-internal" />
+    </if>
     <exec program="cmd.exe" 
           workingdir="${dir.bin}"
           spawn="true">

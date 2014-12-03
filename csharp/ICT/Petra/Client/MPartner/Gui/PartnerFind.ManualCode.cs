@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timh
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1008,12 +1008,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ReleaseServerObject()
         {
-            if (FPartnerFindObject != null)
-            {
-                // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
-                TUIConnectorLifetimeHandling.ReleaseUIConnector((IDisposable)FPartnerFindObject);
-                FPartnerFindObject = null;
-            }
+            FPartnerFindObject = null;
         }
 
         #endregion

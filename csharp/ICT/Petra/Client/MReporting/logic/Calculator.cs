@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,7 +61,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>how long did it take to calculate the report</summary>
         protected TimeSpan Duration;
-        private TMReportingNamespace.TReportingUIConnectorsNamespace.TReportGeneratorUIConnector FReportingGenerator;
+        private IReportingUIConnectorsReportGenerator FReportingGenerator;
         private Boolean FKeepUpProgressCheck;
 
         /// <summary>
@@ -472,8 +472,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             Thread ProgressCheckThread;
 
             ReturnValue = false;
-            FReportingGenerator =
-                (TMReportingNamespace.TReportingUIConnectorsNamespace.TReportGeneratorUIConnector)TRemote.MReporting.UIConnectors.ReportGenerator();
+            FReportingGenerator = TRemote.MReporting.UIConnectors.ReportGenerator();
             FKeepUpProgressCheck = true;
 
             try
@@ -487,8 +486,8 @@ namespace Ict.Petra.Client.MReporting.Logic
             {
                 TLogging.Log(e.Message);
 
-                // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
-                TUIConnectorLifetimeHandling.ReleaseUIConnector(FReportingGenerator);
+                // Release the server object
+                FReportingGenerator = null;
 
                 return false;
             }
@@ -501,8 +500,8 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             ReturnValue = FReportingGenerator.GetSuccess();
 
-            // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
-            TUIConnectorLifetimeHandling.ReleaseUIConnector(FReportingGenerator);
+            // Release the server object
+            FReportingGenerator = null;
 
             if (ReturnValue)
             {

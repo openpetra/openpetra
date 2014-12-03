@@ -44,9 +44,16 @@ namespace Ict.Common.Session
         [ThreadStaticAttribute]
         private static string FSessionID;
 
+        private static string FStandaloneSessionID = string.Empty;
+
         /// get the current session id. if it is not stored in the http context, check the thread
         private static string FindSessionID()
         {
+            if (TAppSettingsManager.GetBoolean("RunAsStandalone", false) == true)
+            {
+                return FStandaloneSessionID;
+            }
+
             if ((HttpContext.Current != null) && (HttpContext.Current.Request.Cookies["OpenPetraSessionID"] != null))
             {
                 TLogging.LogAtLevel(4, "using session id from HttpContext");
@@ -95,6 +102,7 @@ namespace Ict.Common.Session
             TLogging.LogAtLevel(1, "thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
 
             FSessionID = ASessionID;
+            FStandaloneSessionID = ASessionID;
         }
 
         /// <summary>

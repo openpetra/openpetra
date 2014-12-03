@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -330,19 +330,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void Form_Closed(object sender, EventArgs e)
         {
-            if (FSupplierFindObject != null)
-            {
-                // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
-                TUIConnectorLifetimeHandling.ReleaseUIConnector((IDisposable)FSupplierFindObject);
-                FSupplierFindObject = null;
-            }
-
-            if (FInvoiceFindObject != null)
-            {
-                // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
-                TUIConnectorLifetimeHandling.ReleaseUIConnector((IDisposable)FInvoiceFindObject);
-                FInvoiceFindObject = null;
-            }
+            FSupplierFindObject = null;
+            FInvoiceFindObject = null;
         }
 
         #region Menu and command key handlers for our user controls

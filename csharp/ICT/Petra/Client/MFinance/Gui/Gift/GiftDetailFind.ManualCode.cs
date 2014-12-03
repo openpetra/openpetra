@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -589,12 +589,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void TGiftDetailFindScreen_Closed(object sender, EventArgs e)
         {
             // ReleaseServerObject
-            if (FGiftDetailFindObject != null)
-            {
-                // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
-                TUIConnectorLifetimeHandling.ReleaseUIConnector((IDisposable)FGiftDetailFindObject);
-                FGiftDetailFindObject = null;
-            }
+            FGiftDetailFindObject = null;
         }
 
         private DataRow GetCurrentDataRow()

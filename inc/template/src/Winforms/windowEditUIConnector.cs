@@ -141,13 +141,8 @@ namespace {#NAMESPACE}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
-        if (FUIConnector != null)
-        {
-            // 'Release' instantiated UIConnector Object on the server side so it can get Garbage Collected there
-            TUIConnectorLifetimeHandling.ReleaseUIConnector((IDisposable)FUIConnector);
-            // Make the client-side UIConnector Object elegible for Garbage Collection, too
-            FUIConnector = null;
-        }
+        // release the object
+        FUIConnector = null;
     }
 
 {#IFDEF SHOWDATA}
