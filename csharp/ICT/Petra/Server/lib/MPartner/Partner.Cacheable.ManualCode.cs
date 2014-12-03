@@ -5,6 +5,7 @@
 //       timop
 //
 // Copyright 2004-2012 by OM International
+// Copyright 2013-2014 by SolidCharity
 //
 // This file is part of OpenPetra.org.
 //
@@ -140,7 +141,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
         private DataTable GetCountryListFromExistingLocationsTable(TDBTransaction AReadTransaction, string ATableName)
         {
             // Used eg. in Report Gift Data Export for finding donors.
-            return DBAccess.GDBAccessObj.SelectDT("SELECT DISTINCT " + "PUB." + PCountryTable.GetTableDBName() + '.' +
+            return DBAccess.GDBAccessObj.SelectDT("SELECT DISTINCT c." +
                 PCountryTable.GetCountryCodeDBName() + ", " +
                 PCountryTable.GetCountryNameDBName() + " FROM PUB." +
                 PCountryTable.GetTableDBName() + " c, PUB." +

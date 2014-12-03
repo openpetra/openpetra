@@ -1,0 +1,193 @@
+                      <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Bootstrap core CSS -->
+    <link href="../ThirdParty/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="../ThirdParty/jQueryUI/css/default/jquery-ui.custom.min.css">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../ThirdParty/html5shiv/html5shiv.js"></script>
+      <script src="../ThirdParty/Respond/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="../ThirdParty/jQuery/jquery.min.js"></script>
+    <script type="text/javascript" src="../ThirdParty/jQueryUI/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../ThirdParty/Bootstrap/js/bootstrap.min.js"></script>
+  </head>
+<body>
+<script>
+$(function() {
+$( "#tabsPartnerEdit" ).tabs();
+});
+</script>
+<!-- ab hier kommt das Formular -->
+<form class="form-horizontal" id="formPartnerEdit">
+<fieldset>
+<legend></legend>
+<span class="input-group-addon">
+    <div class="form-group row">
+        <!-- Cerate Ledger -->
+        <div class="form-group row">
+            <div >
+                <label class="col-sm-3 control-label" for="showbatchesavailablefor"><h3>Cerate Ledger</h3></label>
+            </div>
+        </div>
+		<!-- Ledger Numbe -->
+		<div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="ledgernumbe">Ledger Number:</label>
+                <div class="col-sm-3">
+                    <input name="ledgernumbe" type="number" id="ledgernumbe" min="1" max="10" value="1"  class="form-control"/>
+                </div>
+            </div>
+	   </div>
+		<!-- Ledger Name -->
+		<div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="ledgername">Ledger Name:</label>
+                <div class="col-sm-3">
+                    <input name="ledgername" type="text" value=""  class="form-control"/>
+                </div>
+            </div>
+	   </div>
+		<!-- Country Code -->
+		<div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="countrycode">Country Code:</label>
+                <div class="col-sm-3">
+                    <select   name="countrycode" id="countrycode" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>
+                </div>
+            <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable:</label>
+            </div>
+	   </div>
+	   <div class="form-group row">
+            <!-- Bsce Currency -->
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="bscecurrency">Base Currency:</label>
+                <div class="col-sm-3">
+                    <select   name="bscecurrency" id="bscecurrency" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>
+                </div>
+            <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable:</label>
+            </div>
+	   </div>
+        <!-- Intel Currenc -->
+	   <div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="tntelcurrenc">Intel Currency:</label>
+                <div class="col-sm-3">
+                    <select   name="tntelcurrenc" id="tntelcurrenc" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>
+                </div>
+            <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable:</label>
+            </div>
+	   </div>
+	   <!-- First Day of the Financial Year -->
+	   <div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="ledgername">First Day of the Financial Year:</label>
+                <div class="col-sm-3">
+                    <input name="ledgername" type="text" value="Date"  class="form-control"/>
+                </div>
+            </div>
+	   </div>
+	   <!-- Number Of Periods -->
+	   <div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="numberofperiods">Number Of Periods:</label>
+                <div class="col-sm-3">
+                    <input name="numberofperiods" type="number" id="numberofperiods" min="1" max="10" value="2"  class="form-control"/>
+                </div>
+            </div>
+	   </div>
+	   <!-- Current Period -->
+	   <div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="currentperiod">Current Period:</label>
+                <div class="col-sm-3">
+                    <input name="currentperiod" type="number" id="currentperiod" min="1" max="10" value="3"  class="form-control"/>
+                </div>
+            </div>
+	   </div>
+	   <!-- Number Of Fwd Posting Periods -->
+	   <div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="numberoffwdpostingperiods">Number Of Fwd Posting Periods:</label>
+                <div class="col-sm-3">
+                    <input name="numberoffwdpostingperiods" type="number" id="numberoffwdpostingperiods" min="1" max="10" value="4"  class="form-control"/>
+                </div>
+            </div>
+	   </div>
+	   <!-- Activate Gift Receipting Subsystem -->
+	   <div class="form-group row">
+            <div class="col-md-11">
+                <div class="col-sm-3">
+                    <label class=" control-label" for="activategiftreceiptingsubsystem">Activate Gift Receipting Subsystem:</label>
+                    <input   id="activategiftreceiptingsubsystem" name="activategiftreceiptingsubsystem" type="checkbox" class="">
+                </div>
+            </div>
+	   </div>
+	   <!-- Starting Receipt Number -->
+	   <div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="startingreceiptnumber">Starting Receipt Number:</label>
+                <div class="col-sm-3">
+                    <input name="startingreceiptnumber" type="text" value=""  class="form-control"/>
+                </div>
+            </div>
+	   </div>
+	   <!-- Activate Accounts Payable Subsystem -->
+	   <div class="form-group row">
+            <div class="col-md-11">
+                <div class="col-sm-3">
+                    <label class=" control-label" for="activateaccountspayablesubsystem">Activate Accounts Payable Subsystem:</label>
+                    <input   id="activateaccountspayablesubsystem" name="activateaccountspayablesubsystem" type="checkbox" class="">
+                </div>
+            </div>
+	   </div>
+    </div>
+</span>
+<legend></legend>
+<div class="form-group row">
+    <div class="col-xs-1">
+        <!-- Help Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Help</button>
+        </div>
+	</div>
+	<div class="col-xs-3"></div>
+	<div class="col-xs-1">
+        <!-- Create Ledger Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Create Ledger</button>
+        </div>
+	</div>
+	<div class="col-xs-3"></div>
+	<div class="col-xs-1">
+	   <!-- Cancel Butten -->
+	   <div class="col-lg-10">
+	       <button class="btn btn-primary" class="form-control">Cancel</button>
+	   </div>
+	</div>
+</div>
+</fieldset>
+</form>
+</body>
+</html>

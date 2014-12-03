@@ -304,6 +304,25 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <!-- result is in setupDir for building the rpm package -->
 </target>
 
+<target name="buildServerDebianPostgresqlOBS">
+  <property name="WithLinuxClient" value="false"/>
+  <property name="WithWindowsClient" value="false"/>
+  <property name="LinuxTargetDistribution-list" value="debian-postgresql"/>
+  <property name="HostedPort" value="9000"/>
+  <property name="PostgreSQL.Version" value="9.2"/>
+  <call target="nanttasks"/>
+  <call target="minimalGenerateSolution"/>
+  <property name="solution" value="Server"/>
+  <call target="quickCompile"/>
+  <property name="DBMS.Type" value="postgresql"/>
+  <call target="createSQLStatements"/>
+  <property name="BuildArchive" value="server" overwrite="true"/>
+  <call target="prepareSetupDirForTarFile"/>
+  <move file="${setupDir}/debian/openpetraorg-server.sh" tofile="${setupDir}/openpetraorg-server.sh"/>
+
+  <!-- result is in setupDir for building the rpm package -->
+</target>
+
 <target name="buildWindowsRemoteClient" help="build the windows remote client, and the patches">
   <property name="WithLinuxClient" value="false"/>
   <property name="WithWindowsClient" value="true"/>
@@ -423,6 +442,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <mkdir dir="${setupDir}/formletters30"/>
   <mkdir dir="${setupDir}/resources30"/>
   <mkdir dir="${setupDir}/bin30"/>
+  <mkdir dir="${setupDir}/js30"/>
 
   <echo file="${setupDir}/bin30/version.txt">${ReleaseVersion}</echo>
   <copy todir="${setupDir}/bin30">
@@ -442,13 +462,18 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <copy file="${dir.bin}/Ict.Tools.PatchTool.exe" tofile="${setupDir}/bin30/Ict.Tools.PatchTool.exe" overwrite="true"/>
   <copy file="${dir.bin}/Ict.Tools.PatchTool.Library.dll" tofile="${setupDir}/bin30/Ict.Tools.PatchTool.Library.dll" overwrite="true"/>
 
+  <copy todir="${setupDir}/js30">
+    <fileset basedir="${dir.root}/js">
+      <include name="**/*"/>
+    </fileset>
+  </copy>
+
   <if test="${BuildArchive == 'server'}">
     <delete>
       <fileset>
         <include name="${setupDir}/bin30/Ict.Petra.Client*" />
         <include name="${setupDir}/bin30/Ict.Petra.Plugins.*.Client.dll" />
         <include name="${setupDir}/bin30/PetraClient*" />
-        <include name="${setupDir}/bin30/UINavigation.yml" />
         <include name="${setupDir}/bin30/sqlite3.dll" />
       </fileset>
     </delete>
@@ -476,13 +501,23 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <property name="UINavigation.file" value="${dir.root}/csharp/ICT/Petra/Definitions/UINavigation.yml"/>
       <copy file="${UINavigation.file}" tofile="${setupDir}/bin30/UINavigation.yml" overwrite="true"/>
     </if>
-    <copy todir="${setupDir}/resources30">
-      <fileset basedir="${dir.root}/resources">
-        <include name="*.ico" />
-        <include name="*.png" />
-      </fileset>
-    </copy>       
   </if>
+  <if test="${BuildArchive == 'server'}">
+    <property name="UINavigation.file" value="${dir.root}/js/UINavigation.yml.my"/>
+    <if test="${file::exists(UINavigation.file)}">
+      <copy file="${UINavigation.file}" tofile="${setupDir}/bin30/UINavigation.yml" overwrite="true"/>
+    </if>
+    <if test="${not file::exists(UINavigation.file)}">
+      <property name="UINavigation.file" value="${dir.root}/js/UINavigation.yml"/>
+      <copy file="${UINavigation.file}" tofile="${setupDir}/bin30/UINavigation.yml" overwrite="true"/>
+    </if>
+  </if>
+  <copy todir="${setupDir}/resources30">
+    <fileset basedir="${dir.root}/resources">
+      <include name="*.ico" />
+      <include name="*.png" />
+    </fileset>
+  </copy>       
   
   <copy todir="${setupDir}/manuals30">
     <fileset basedir="${dir.root}/setup/petra${PetraRelease}/releasenotes/">

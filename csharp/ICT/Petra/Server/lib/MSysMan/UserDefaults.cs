@@ -46,6 +46,13 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
     /// </summary>
     public class TUserDefaults
     {
+        /*------------------------------------------------------------------------------
+         *  Finance User Default Constants
+         * -------------------------------------------------------------------------------*/
+
+        /// <summary>todoComment</summary>
+        public const String FINANCE_DEFAULT_LEDGERNUMBER = "a_default_ledger_number_i";
+
         private const String USERDEFAULTSDT_NAME = "UserDefaultsCacheDT";
 
         /// <summary>internal cache DataSet of the UserDefaults  for current user only</summary>

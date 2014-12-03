@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Bootstrap core CSS -->
+    <link href="../ThirdParty/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="../ThirdParty/jQueryUI/css/default/jquery-ui.custom.min.css">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../ThirdParty/html5shiv/html5shiv.js"></script>
+      <script src="../ThirdParty/Respond/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="../ThirdParty/jQuery/jquery.min.js"></script>
+    <script type="text/javascript" src="../ThirdParty/jQueryUI/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../ThirdParty/Bootstrap/js/bootstrap.min.js"></script>
+  </head>
+<body>
+<script> 
+$(function() {
+$( "#tabsGLBatch" ).tabs();
+});
+</script>
+<!-- ab hier kommt das Formular -->
+<form class="form-horizontal" id="formGLBatch">
+<fieldset>
+<div class="row">
+  <div class="btn-group">
+    <!-- File Butten -->
+    <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          File
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a href="#" ><span class="glyphicon glyphicon-floppy-saved"></span>Save</a></li>
+          <li><a href="#"><span class="glyphicon glyphicon-print"></span>Print...</a></li>
+          <li><a href="#"><span class="glyphicon glyphicon-folder-close"></span>Close</a></li>
+        </ul>
+    </div>
+    <!-- Edit Butten -->
+    <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          Edit
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="#">Undo Current Field</a></li>
+          <li><a href="#">Undo Screen</a></li>
+          <li><a href="#">Find</a></li>
+        </ul>
+    </div>
+    <!-- Batch Butten -->
+    <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          Batch
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="#">Post Batch</a></li>
+          <li><a href="#">Test Batch</a></li>
+          <li><a href="#">Reverse Batch</a></li>
+          <li><a href="#">Import Batches</a></li>
+          <li><a href="#">Import from Clipboard</a></li>
+          <li><a href="#">Export Batches</a></li>
+        </ul>
+    </div>
+    <!-- Help Butten -->
+    <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          Help
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="#">OpenPetra Help</a></li>
+          <li><a href="#">Bug Report</a></li>
+          <li><a href="#">About OpenPetra</a></li>
+          <li><a href="#">The Development Team</a></li>
+        </ul>
+    </div>
+</div>
+</div>
+<div class="row">
+    <div class="btn-group">
+        <!-- Save Butten -->
+        <button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-floppy-saved"></span> Save</button>
+        </button>
+        <!-- Test Batch Butten -->
+        <button type="button" class="btn btn-default btn-sm">TestBatch</button>
+        </button>
+        <!-- Post Batch Butten -->
+        <button type="button" class="btn btn-default btn-sm">Post Batch</button>
+        </button>
+        <!-- Reverse Batch Butten -->
+        <button type="button" class="btn btn-default btn-sm">Reverse Batch</button>
+        </button>
+        <!-- Import Baches Butten -->
+        <button type="button" class="btn btn-default btn-sm">Import Batches</button>
+        </button>
+        <!-- Import from Clipboard Butten -->
+        <button type="button" class="btn btn-default btn-sm">Import from Clipboard</button>
+        </button>
+        <!-- Export Baches Butten -->
+        <button type="button" class="btn btn-default btn-sm">Export Batches</button>
+        </button>
+    </div>
+</div>
+</div>
+<div id="tabsGLBatch">
+    <ul>
+        <li><a href="#tabsGLBatch-1">Batches</a></li>
+        <li><a href="#tabsGLBatch-2">Journals</a></li>
+        <li><a href="#tabsGLBatch-3">Transactions</a></li>
+    </ul>
+    <!-- Batches Tab -->
+<div  id="tabsGLBatch-1">
+<div></div>
+    
+    <span class="input-group-addon">
+        <!-- Show batches available for -->
+        <div class="form-group row">
+            <div >
+                <label class="col-sm-1 control-label" for="showbatchesavailablefor"><h3>Show batches available for</h3></label>
+            </div>
+        </div>
+        <div class="form-group row"> 
+            <div class="form-group row">
+                <div class="col-md-9">            
+                    <!-- Positing -->
+                    <div class="col-sx-2 col-sm-3">
+                        <input name="positing" type="radio" value="" />
+                        <label class=" control-label" for="positing">Positing</label>
+                    </div>
+                    <!-- Editing -->
+                    <div class="col-sx-2 col-sm-2">
+                        <input name="editing" type="radio" value="" />
+                        <label class=" control-label" for="editing">Editing</label>
+                    </div>
+                    <!-- All -->
+                    <div class="col-sx-2 col-sm-2">
+                        <input name="all" type="radio" value="" />
+                        <label class=" control-label" for="All">All</label>
+                    </div>
+                    <!-- Year Filter -->
+                    <div class="col-sx-2 col-sm-2">
+                        <label class="  control-label" for="Year Filter">Year Filter:</label>
+                    </div>
+                    <div class="col-sx-2 col-sm-3">
+                        <select   name="Year Filter" id="Year Filter" class="form-control">
+                            <option></option>
+                            <option value="01">ACTIVE</option>
+                            <option value="02">DIED</option>
+                            <option value="03">INACTIVE</option>
+                            <option value="04">MERGED</option>
+                        </select>
+                    </div>                
+                </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-9">
+            <!-- Period Filter -->
+            <div class="col-sx-2 col-sm-7"></div>
+                <div class="col-sx-2 col-sm-2">
+                    <label class="  control-label" for="periodfilter">Period Filter:</label>
+                </div>
+                <div class="col-sx-2 col-sm-3">
+                    <select   name="partnerstatus" id="periodfilter" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>
+                </div>
+            </div>    
+        </div>
+            <div class="col-md-12">
+                <!-- Table -->
+                <div class="form-group row">
+                    <div class="col-md-12">
+                		<table class="table table-striped">
+                			<tr>
+                				<td class="active">Batch</td>
+                				<td class="success">Status</td>
+                				<td class="warning">Effective Date</td>
+                				<td class="danger">Debit Total</td>
+                				<td class="active">Credit Total</td>
+                				<td class="success">Hash Total</td>
+                				<td class="warning">Description</td>
+                			</tr>
+                		</table>
+                	</div>
+                </div>    
+            </div>
+        </div>
+    </span>
+<legend></legend>
+<div class="form-group row">
+    <div class="col-xs-1">
+        <!-- Add Batch Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Add Batch</button>
+        </div>
+	</div>
+	<div class="col-xs-2"></div>
+	<div class="col-xs-1">
+        <!-- Cancel Batch Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Cancel Batch</button>
+        </div>
+	</div>
+	<div class="col-xs-2"></div>
+	<div class="col-xs-1">
+	   <!-- Test Batch Butten -->
+	   <div class="col-lg-10">
+	       <button class="btn btn-primary" class="form-control">Test Batch</button>
+	   </div>
+	</div>
+	<div class="col-xs-2"></div>
+	<div class="col-xs-1">
+	   <!-- Post Batch Butten -->
+	   <div class="col-lg-10">
+	       <button class="btn btn-primary" class="form-control">Post Batch</button>
+	   </div>
+	</div>
+</div>
+<span class="input-group-addon">
+    <div class="form-group row">       
+		<!-- Batch Description -->
+		<div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="batchdescription">Batch Description:</label>
+                <div class="col-sm-5">
+                    <input name="batchdescription" type="text" value=""  class="form-control"/>
+                </div>
+            </div>
+	   </div>
+		<!-- Batch Hash Total -->
+		<div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="batchhashtotal">Batch Hash Total:</label>
+                <div class="col-sm-4">
+                    <input name="batchhashtotal" type="text" value=""  class="form-control"/>
+                </div>
+            </div>
+	   </div>
+		<!-- Effective Date -->
+		<div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-3 control-label" for="towncity">Effective Date:</label>
+                <div class="col-sm-3">
+                    <input name="towncity" type="text" value=""  class="form-control"/>
+                </div>
+            <label class="col-sx-4 col-sm-2 control-label" for="towncity">lable:</label>
+            </div>
+	   </div>
+    </div>
+</span>
+<legend></legend>
+</div>
+<!-- Journals Tab -->
+<div id="tabsGLBatch-2">
+<div></div>
+<span class="input-group-addon">
+    <div class="form-group row">
+        <!-- Current Period -->
+        <div class="form-group row">
+            <div class="col-md-11">
+                <label class="col-sx-2 col-sm-2 control-label" for="currentperiod">Current Period:</label>
+                    <div class="col-sm-3">
+                        <input name="currentperiod" type="text" value=""  class="form-control"/>
+                    </div>
+            </div>    
+    	</div>
+    	<div class="form-group row">
+            <div class="col-md-11">
+            <!-- Ledger -->
+            <label class="col-sx-4 col-sm-2 control-label" for="ledger">Ledger:</label>
+                <div class="col-sm-4">
+                    <input id="from" name="ledger" type="text" placeholder="" class="form-control">
+                </div>
+            <!-- Batch -->
+            <label class="col-sx-2 col-sm-1 control-label" for="batch">Batch:</label>
+                <div class="col-sm-3">
+                    <input id="to" name="batch" type="text" placeholder="" class="form-control">
+                </div>
+	        </div>
+	    </div>
+	    <div class="form-group row">
+            <div class="col-md-11">
+            <!-- Debit -->
+            <label class="col-sx-2 col-sm-2 control-label" for="debit">Debit:</label>
+                <div class="col-sm-2">
+                    <input id="from" name="debit" type="text" placeholder="" class="form-control">
+                </div>
+            <!-- Credit -->
+            <label class="col-sx-2 col-sm-1 control-label" for="credit">Credit:</label>
+                <div class="col-sm-2">
+                    <input id="to" name="credit" type="text" placeholder="" class="form-control">
+                </div>
+            <!-- Hash -->
+            <label class="col-sx-2 col-sm-1 control-label" for="nash">Hash:</label>
+                <div class="col-sm-2">
+                    <input id="to" name="hash" type="text" placeholder="" class="form-control">
+                </div>
+	        </div>
+	    </div>
+        <div class="col-md-12">
+            <!-- Table -->
+            <div class="form-group row">
+                <div class="col-md-12"> 
+                    <table class="table table-striped">
+                    	<tr>
+                    		<td class="active">Journal</td>
+                    		<td class="success">Journal Status</td>
+                    		<td class="warning">Debit Total</td>
+                    		<td class="danger">Credit Total</td>
+                    		<td class="active">Currency</td>
+                    		<td class="success">Description</td>
+                    		<td class="warning">Subsystem Code</td>
+                    		<td class="danger">Transaction Type</td>
+                    	</tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</span>
+<legend></legend>
+<div class="form-group row">
+    <div class="col-xs-1">
+        <!-- Add Journal Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Add Journal</button>
+        </div>
+	</div>
+	<div class="col-xs-1"></div>
+	<div class="col-xs-1">
+        <!-- Cancel Journal Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Cancel Journal</button>
+        </div>
+	</div>
+</div>
+<span class="input-group-addon">
+    <div class="form-group row">
+		<!-- Journal Description -->
+        <div class="form-group row">
+            <div class="col-md-8">
+            <label class="col-sx-4 col-sm-4 control-label" for="journaldescription">Journal Description:</label>
+                <div class="col-sm-5">
+                    <input name="journaldescription" type="text" value=""  class="form-control"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-8">
+                <!-- Sub System -->               
+                <label class=" col-sm-4 control-label" for="v">subsystem:</label>               
+                <div class="col-sm-3">
+                    <select   name="subsystem" id="subsystem" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-8">
+            <!-- Transaction Type -->                
+                <label class=" col-sm-4 control-label" for="transactiontype">Transaction Type:</label>
+                <div class="col-sx-2 col-sm-3">
+                    <select   name="transactiontype" id="transactiontype" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>
+                </div>
+                <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable:</label>
+            </div>
+        </div>
+        <div class="form-group row">
+        <div class="col-md-8">
+                <!-- Currency -->                
+                <label class=" col-sm-4 control-label" for="currency">Currency:</label>
+                <div class="col-sx-2 col-sm-2">
+                    <select   name="currency" id="currency" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>                
+                </div>
+                <div class="form-group row">
+    				<div class="col-md-12">
+                <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable:</label>
+                </div>
+                </div>
+        </div>
+        </div>
+		<!-- Effective Date -->
+		<div class="form-group row">
+            <div class="col-md-8">
+            <label class="col-sx-4 col-sm-4 control-label" for="effective Date">Effective Date:</label>
+                <div class="col-sm-4">
+                    <input name="effective Date" type="text" value=""  class="form-control"/>
+                </div>
+            </div>
+        </div>		
+		<!-- Exchange Rate to Base -->
+		<div class="form-group row">
+            <div class="col-md-8">
+            <label class="col-sx-4 col-sm-4 control-label" for="exchangeratetobase">Exchange Rate to Base:</label>
+                <div class="col-sm-4">
+                    <input name="exchangeratetobase" type="text" value=""  class="form-control"/>
+                </div>
+            <div class="col-xs-4"></div>
+            <button class="btn btn-primary">Get/Set Exchange Rate</button>            
+            </div>
+	   </div>
+    </div>    
+</span>
+<legend></legend>
+</div>
+<!-- Transaction Tab -->
+<div id="tabsGLBatch-3">
+<div></div>
+<span class="input-group-addon">
+    <div class="form-group row">
+	    <div class="form-group row">
+            <div class="col-md-11">
+            <!-- Ledger -->
+            <label class="col-sx-2 col-sm-2 control-label" for="ledger">Ledger:</label>
+                <div class="col-sm-2">
+                    <input id="ledger" name="ledger" type="text" placeholder="" class="form-control">
+                </div>
+            <!-- Batch -->
+            <label class="col-sx-2 col-sm-1 control-label" for="batch">Batch:</label>
+                <div class="col-sm-2">
+                    <input id="batch" name="batch" type="text" placeholder="" class="form-control">
+                </div>
+            <!-- Journal -->
+            <label class="col-sx-2 col-sm-1 control-label" for="journal">Journal:</label>
+                <div class="col-sm-2">
+                    <input id="journal" name="journal" type="text" placeholder="" class="form-control">
+                </div>
+	        </div>
+	    </div>
+        <div class="col-md-12">
+            <!-- Table -->
+            <div class="form-group row">
+                <div class="col-md-12">
+                	<table class="table table-striped">
+                		<tr>
+                			<td class="active">Journal</td>
+                			<td class="success">Journal Status</td>
+                			<td class="warning">Debit Total</td>
+                			<td class="danger">Credit Total</td>
+                			<td class="active">Currency</td>
+                			<td class="success">Description</td>
+                			<td class="warning">Subsystem Code</td>
+                			<td class="danger">Transaction Type</td>
+                		</tr>
+                	</table>
+                </div>
+            </div>
+        </div>
+    </div>
+</span>
+<legend></legend>
+<div class="form-group row">
+    <div class="col-xs-1">
+        <!-- Add Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Add</button>
+        </div>
+	</div>
+	<div class="col-xs-1"></div>
+	<div class="col-xs-1">
+        <!-- Delete Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Delete</button>
+        </div>
+	</div>
+	<div class="col-xs-1"></div>
+	<div class="col-xs-1">
+        <!-- delete All Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Delete All</button>
+        </div>
+	</div>
+</div>
+<span class="input-group-addon">
+    <div class="form-group row">
+        <div class="form-group row">
+            <div class="col-md-10">
+                <!-- Cost Centre Coder -->
+                <label class=" col-sm-3 control-label" for="costcentrecoder">Cost Centre Coder:</label>
+                <div class="col-sm-3">
+                    <select   name="costcentrecoder" id="costcentrecoder" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-10">
+                <!-- Account Code -->
+                <label class=" col-sm-3 control-label" for="accountcode">Account Code:</label>
+                <div class="col-sx-2 col-sm-3">
+                    <select   name="accountcode" id="accountcode" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-10">
+                <!-- Narrative -->
+                <label class=" col-sm-3 control-label" for="narrative">Narrative:</label>                
+                <div class="col-sx-2 col-sm-3">
+                    <select  multiple class="form-control" name="narrative" id="partnerstatus" >
+                        
+                    </select>
+                </div>
+                <!-- Analysisi Attribute -->
+                <label class=" col-sm-3 control-label" for="analysisiattribute">Analysisi Attribute:</label>
+                <div class="col-sx-2 col-sm-3">
+                    <textarea class="form-control" rows="3">
+                   
+                    </textarea>
+                </div>
+            </div>
+        </div>
+        <!-- Reference -->
+        <div class="form-group row">
+            <div class="col-md-10">
+            <label class="col-sx-4 col-sm-3 control-label" for="reference">Reference:</label>
+                <div class="col-sm-3">
+                    <input name="reference" type="text" value=""  class="form-control"/>
+                </div>
+            </div>
+        </div>
+        <!-- Transaction Date -->
+		<div class="form-group row">
+            <div class="col-md-10">
+            <label class="col-sx-4 col-sm-3 control-label" for="transactiondate">Transaction Date:</label>
+                <div class="col-sm-3">
+                    <input name="transactiondate" type="text" value=""  class="form-control"/>
+                </div>
+            </div>
+	   </div>
+        <div class="form-group row">
+            <div class="col-md-10">
+                <!-- Key Ministry -->
+                <label class=" col-sm-3 control-label" for="keyministry">Key Ministry:</label>
+                <div class="col-sx-2 col-sm-2">
+                    <select   name="keyministry" id="keyministry" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>
+                </div>
+                <div class="form-group row"></div>
+            </div>
+        </div>       
+        <div class="form-group row">
+            <div class="col-md-11">
+                <!-- AUD (Transaction Currency) -->
+                <label class="col-sx-2 col-sm-4 control-label" for="postcodefrom">lable (Transaction Currency)</label>    
+                <!-- EUR (Base Currency) -->
+                <label class="col-sx-2 col-sm-5 control-label" for="to">EUR (Base Currency)</label>
+	       </div>
+	    </div>
+		<div class="form-group row">
+		    <!-- Dr Amount-1 -->
+            <div class="col-md-5">
+            <label class="col-sx-4 col-sm-3 control-label" for="dramount-1">Dr Amount:</label>
+                <div class="col-sm-6">
+                    <input name="dramount-1" type="text" value=""  class="form-control"/>
+                </div>
+                <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable</label>
+            </div>
+            <!-- Dr Amount-2 -->
+            <div class="col-md-5">
+            <label class="col-sx-4 col-sm-3 control-label" for="dramount-2">Dr Amount:</label>
+                <div class="col-sm-6">
+                    <input name="dramount-2" type="text" value=""  class="form-control"/>
+                </div>
+                <label class="col-sx-4 col-sm-1 control-label" for="towncity">ERU</label>
+            </div>            
+	   </div>
+		<div class="form-group row">
+		    <!-- Cr Amount-1 -->
+            <div class="col-md-5">
+            <label class="col-sx-4 col-sm-3 control-label" for="cramount-1">Cr Amount:</label>
+                <div class="col-sm-6">
+                    <input name="cramount-1" type="text" value=""  class="form-control"/>
+                </div>
+                <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable</label>
+            </div>	   
+	       <!-- Cr Amount-2 -->
+    	   <div class="col-md-5">
+                <label class="col-sx-4 col-sm-3 control-label" for="cramount-2">Cr Amount:</label>
+                    <div class="col-sm-6">
+                        <input name="cramount-2" type="text" value=""  class="form-control"/>
+                    </div>
+                    <!-- EUR -->
+                    <label class="col-sx-4 col-sm-1 control-label" for="towncity">ERU</label>
+            </div>
+        </div>
+		<div class="form-group row">
+		    <!-- Debit Total-1 -->
+            <div class="col-md-5">
+            <label class="col-sx-4 col-sm-3 control-label" for="debittotal-1">Debit Total:</label>
+                <div class="col-sm-6">
+                    <input name="debittotal-1" type="text" value=""  class="form-control"/>
+                </div>
+                <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable</label>
+            </div>	   
+            <!-- Dedit Total-2 -->
+            <div class="col-md-5">
+            <label class="col-sx-4 col-sm-3 control-label" for="debittotal-2">Debit Total:</label>
+                <div class="col-sm-6">
+                    <input name="debittotal-2" type="text" value=""  class="form-control"/>
+                </div>
+                <!-- EUR -->
+                <label class="col-sx-4 col-sm-1 control-label" for="towncity">ERU</label>
+            </div>
+	   </div>
+	   	<div class="form-group row">
+		    <!-- Debit Total-1 -->
+            <div class="col-md-5">
+            <label class="col-sx-4 col-sm-3 control-label" for="debittotal-1">Credit Total:</label>
+                <div class="col-sm-6">
+                    <input name="debittotal-1" type="text" value=""  class="form-control"/>
+                </div>
+                <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable</label>
+            </div>
+	       <!-- Credit Total-2 -->
+            <div class="col-md-5">
+            <label class="col-sx-4 col-sm-3 control-label" for="debittotal-2">Credit Total:</label>
+                <div class="col-sm-6">
+                    <input name="debittotal-2" type="text" value=""  class="form-control"/>
+                </div>
+                <!-- EUR -->
+                <label class="col-sx-4 col-sm-1 control-label" for="towncity">ERU</label>
+            </div>
+	   </div>
+    </div>
+</span>
+<div></div>
+</div>
+</div>
+</fieldset>
+</form>
+</body>
+</html>

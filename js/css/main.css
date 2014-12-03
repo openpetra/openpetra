@@ -1,0 +1,60 @@
+body {
+  min-height: 2000px;
+  padding-top: 70px;
+}
+
+.list-group .nav {
+  display: none;
+}
+
+.nav-tabs > li .close {
+  margin: -2px 0 0 10px;
+  font-size: 18px;
+}
+
+#TabbedWindows {
+  margin-left: 10px;
+}
+
+.OpenPetraWindow {
+  padding-top: 10px;
+  padding-left: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+.openpetraiframe {
+  width: 100%;
+  height: 2000px;
+  overflow: hidden;
+  border: none;
+}
+
+/*
+ * Off Canvas
+ * --------------------------------------------------
+ */
+@media screen and (max-width: 7680px) {
+  .row-offcanvas {
+    position: relative;
+    -webkit-transition: all 0.25s ease-out;
+    -moz-transition: all 0.25s ease-out;
+    transition: all 0.25s ease-out;
+  }
+
+  .row-offcanvas-left
+  .sidebar-offcanvas {
+    left: -200px;
+  }
+
+  .row-offcanvas-left.active {
+    left: 200px;
+  }
+
+  .sidebar-offcanvas {
+    position: absolute;
+    top: 0;
+    width: 200px;
+    margin-left: 12px;
+  }
+}

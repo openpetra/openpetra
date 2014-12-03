@@ -124,7 +124,7 @@
               spawn="true">
         <environment>
           <variable name="PATH" path="${MonoBinPath};${environment::get-variable('PATH')}"/>
-          <variable name="MONO_PATH" path="${MonoBinPath}\..\lib\mono\4.0"/>
+          <variable name="MONO_PATH" path="${MonoBinPath}\.."/>
           <variable name="MONO_OPTIONS" value="--debug"/>
           <!-- see http://www.mono-project.com/IOMap -->
           <!-- <variable name="MONO_IOMAP" value="all"/> -->
@@ -181,6 +181,19 @@
     </if>
   </if>
   <if test="${'unix'==platform::get-name()}" >
+      <!-- create symbolic link for Samples -->
+      <if test="${not directory::exists(dir.delivery + '/Samples')}">
+        <exec program="bash"
+            workingdir="${dir.delivery}"
+            commandline="-c &quot;ln -s ../webserver/Samples&quot;"/>
+      </if>
+      <!-- create symbolic links for OpenPetra.js -->
+      <if test="${not directory::exists(dir.delivery + '/ThirdParty')}">
+        <exec program="bash"
+            workingdir="${dir.delivery}"
+            commandline="-c &quot;for f in ../js/*;do ln -s $f; done&quot;"/>
+      </if>
+      <delete file="${dir.bin}/sqlite3.dll"/>
       <echo message="in your browser, go to http://localhost:${Server.Port}/"/>
       <exec program="xsp4" 
               workingdir="${dir.delivery}"
@@ -188,7 +201,7 @@
               spawn="false">
         <environment>
           <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
-          <variable name="MONO_PATH" path="${MonoBinPath}\..\lib\mono\4.0"/>
+          <variable name="MONO_PATH" path="${MonoBinPath}\.."/>
           <variable name="MONO_OPTIONS" value="--debug"/>
         </environment>
       </exec>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Bootstrap core CSS -->
+    <link href="../ThirdParty/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="../ThirdParty/jQueryUI/css/default/jquery-ui.custom.min.css">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../ThirdParty/html5shiv/html5shiv.js"></script>
+      <script src="../ThirdParty/Respond/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="../ThirdParty/jQuery/jquery.min.js"></script>
+    <script type="text/javascript" src="../ThirdParty/jQueryUI/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../ThirdParty/Bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="frmIncomeExpenseStatement.js"></script>
+  </head>
+<body onload="init()">
+<script>
+$(function() {
+$( "#tabsIncomeExpense" ).tabs();
+});
+</script>
+
+<!-- ab hier kommt das Formular -->
+<form class="form-horizontal" id="formIncomeExpense">
+<fieldset>
+<div id="tabsIncomeExpense" >
+    <ul>
+        <li><a href="#tabsIncomeExpense-1">General Settings</a></li>
+        <li><a href="#tabsIncomeExpense-2">Cost Centre Settings</a></li>
+        <li><a href="#tabsIncomeExpense-3">Columen Settings</a></li>
+        <li><a href="#tabsIncomeExpense-4">Additional Settings</a></li>
+    </ul>
+<!-- General Settings Tab -->	
+<div id="tabsIncomeExpense-1">
+<div></div>
+<!-- Ledger Details -->
+<span class="input-group-addon">
+<div class="form-group row">
+	<div >
+		<label class="col-md-1 control-label" for="ledgerdetails"><h4>Ledger Details</h4></label>
+	</div>
+	<div class="form-group row">
+		<div class="col-md-11">
+			<label class="col-sm-1 control-label" for="ledger">Ledger:</label>
+			<div class="col-sm-4">
+				<input id="ledger" name="ledger" type="text" placeholder="" class="form-control"/>
+			</div>
+    		<div class="form-group row">
+    			<div class="col-md-12">
+    			<label class="col-sm-3 control-label" for="accounthierarchy">Account Hierarchy:</label>
+    				<div class="col-sm-3">
+        				<select    name="accounthierarchy" id="accounthierarchy" class="form-control">
+        					<option></option>
+        					<option value="01">STANDARD</option>
+        				</select>
+    				</div>
+    			</div>
+    		</div>
+		</div>
+	</div>
+</div>
+</span>
+<legend></legend>
+<!-- Currency -->
+<span class="input-group-addon">
+<div class="form-group row">
+    <div >
+		<label class="col-md-1 control-label" for="currency"><h4>Currency</h4></label>
+	</div>
+	<div class="form-group row">
+			<div class="col-md-11">
+			<label class="col-sm-1 control-label" for="currency-1">Currency:</label>
+				<div class="col-sm-3">
+    				<select    name="currency-1" id="currency-1" class="form-control">
+    					<option></option>
+    					<option value="01">Base</option>
+    					<option value="01">International</option>
+    					<option value="01">Transcation</option>
+    				</select>
+				</div>
+			</div>
+	</div>
+</div>
+</span>
+<legend></legend>
+<!-- Period Range -->
+<span class="input-group-addon">
+<div class="form-group row">
+    <div >
+		<label class="col-md-1 control-label" for="periodrange"><h4>Period Range</h4></label>
+	</div>
+	<!-- Period -->
+	<div class="form-group row">
+	   <div class="col-md-11">
+        <div class="col-sx-2 col-sm-1 control-label">
+	       <input name="periodrange" type="radio" value="period" id="period" />
+        <label for="period">Period</label>
+        </div>
+        <div id="divPeriod">
+		<label class="col-sx-2 col-sm-2 control-label" for="from">from</label>
+		<div class="col-sm-1">
+			<input id="from" name="form"  type="text" placeholder="" class="form-control" >
+		</div>
+		<label class="col-sx-2 col-sm-1 control-label" for="to">to</label>
+		<div class="col-sm-1">
+			<input id="to" name="to" type="text" placeholder="" class="form-control">
+		</div>
+		<label class="col-sx-2 col-sm-1 control-label" for="year">Year</label>
+		<div class="col-sm-2">
+			<select    name="year" id="year" class="form-control">
+				<option></option>
+				<option value="01">2013</option>
+
+			</select>
+		</div>
+		</div>
+		</div>
+	</div>
+	<!-- Quarter -->
+    <div class="form-group row">
+        <div class="col-md-11">
+        <div class="col-sx-2 col-sm-1 control-label">
+	       <input  name="periodrange" type="radio" value="quarter" id="quarter"/>
+        <label for="quarter">Quarter</label>
+        </div>
+        <div id="divQuarter">
+		<label class="col-sx-2 col-sm-2 control-label" for="from-1">from</label>
+		<div class="col-sm-1">
+			<input id="from-1" name="form-1" type="text" placeholder="" class="form-control">
+		</div>
+		<label class="col-sx-2 col-sm-1 control-label" for="year-1">Year</label>
+		<div class="col-sm-2">
+			<select    name="year-1" id="year-1" class="form-control">
+				<option></option>
+				<option value="01">2013</option>
+			</select>
+		</div>
+		</div>
+        </div>
+    </div>
+    <!-- Date -->
+    <div  class="form-group row">
+        <div class="col-md-11">
+        <div class="col-sx-2 col-sm-1 control-label">
+	       <input  name="periodrange"   type="radio" value="date" id="date"/>
+        <label for="date">Date</label>
+        </div>
+        <div id="divDate">
+		<label class="col-sx-2 col-sm-2 control-label" for="from-2">from</label>
+		<div class="col-sm-2">
+			<input id="from-2" name="from-2" type="text" placeholder="" class="form-control">
+		</div>
+		<label class="col-sx-2 col-sm-1 control-label" for="to-2">to</label>
+		<div class="col-sm-2">
+			<input id="to-2" name="to-2" type="text" placeholder="" class="form-control">
+		</div>
+		</div>
+		</div>
+    </div>
+</div>
+</span>
+<legend></legend>
+</div>
+<!-- Cost Centre Settings -->
+<div id="tabsIncomeExpense-2">
+<div></div>
+<span class="input-group-addon">
+	<div class="form-group row">
+        <div >
+        	<label class="col-md-1 control-label" for="periodrabge"><h4>Cost Centre Options</h4></label>
+        </div> 
+        <div class="form-group row">
+            <div class="col-md-11"> 
+                <div class="col-sx-2 col-sm-1">
+        	        <input name="allradio" type="radio" value="fromlist" id="fromlist"/>
+        	    <!-- Selected Cost Centres -->
+                <label for="fromlist">Selected Cost Centres</label>
+                </div>
+                <div id="divSelected_Cost_Centres">
+                <label class="col-sx-2 col-sm-2 control-label" for="fromlist" ></label>
+                    <div class="col-sm-8">
+                        <table class="table table-bordered">
+                            <tr>
+                            <td class=""></td>
+                            <td class="success">Code</td>
+                            <td class="warning">Cost Contre Description </td>
+                            </tr>
+                        </table>
+                       </div>
+                <div>
+                    <button type="button" class="btn btn-default">Unselect All</button>
+                </div>
+                </div>
+                <!-- All Cost Centres -->
+        	    <div class="form-group row">
+            	    <div class="col-md-11">
+                        <div class="col-sx-2 col-sm-1">
+                	        <input name="allradio" type="radio" value="" id="allradio-1"/>
+                            <label for="allradio-1">All Cost Centres</label>
+                        </div>
+            		</div>
+        	    </div>       	
+        	    <!-- All Active Cost Centres -->
+        	    <div class="form-group row">
+            	   <div class="col-md-11">
+                        <div class="col-sx-2 col-sm-1">
+                	        <input name="allradio" type="radio" value="" id="allradio-2"/>
+                            <label for="allradio-2">All Active Cost Centres</label>
+                        </div>
+            		</div>
+        	    </div>
+        	    <!-- Account Level -->
+                <div class="form-group row">
+            	    <div class="col-md-11">
+                        <div class="col-sx-2 col-sm-1">
+                	        <input name="allradio" type="radio" value="" id="allradio-3"/>
+                            <label for="allradio-3">Account Level</label>
+                        </div>
+            		</div>
+        	    </div>
+        	    
+        	    <!-- Exclude inactive Cost Centres -->
+                <div class="form-group row">
+            	    <div class="col-md-11">
+                        <div class="col-sx-2 col-sm-1">
+                    	    <input name="" type="checkbox" value="" id="excludeinactivecostcentres"/>
+                            <label for="excludeinactivecostcentres">Exclude inactive Cost Centres</label>
+                        </div>
+                    </div>
+        	    </div>  
+                </div>
+            </div>
+<div></div>
+    </div>
+</span>
+<legend></legend>
+    <!-- Cost Centre Breakdown -->	   
+	<div class="form-group row">
+        <div class="col-md-11">
+            <div class="col-sx-2 col-sm-4">
+                <input name="" type="checkbox" value="" id="costcentrebreakdown"/>
+                <label for="costcentrebreakdown">Cost Centre Breakdown</label>
+            </div>
+        </div>
+    </div>        	       
+<!-- Depth -->
+<span class="input-group-addon">
+    <div class="form-group row">
+        <div >
+            <label class="col-md-1 control-label" for="depth"><h4>Depth</h4></label>
+    	</div>
+    <!-- Detail -->
+    <div class="form-group row">
+        <div class="col-md-11">
+            <div class="col-sx-2 col-sm-1">
+        	    <input  name="allradiodepth" type="radio" checked="checked" value="" id="detail">
+                    <label   for="detail">Detail</label>
+            </div>
+        </div>
+    </div>
+    <!-- Standard -->
+    <div class="form-group row">
+        <div class="col-md-11">
+            <div class="col-sx-2 col-sm-1">
+        	    <input name="allradiodepth" type="radio" value="" id="standard">
+                    <label  for="standard">Standard</label>
+            </div>
+        </div>
+    </div>
+    <!-- Summary -->
+    <div class="form-group row">
+        <div class="col-md-11">
+            <div class="col-sx-2 col-sm-1">
+        	    <input name="allradiodepth"  type="radio" value="" id="summary">
+                <label  for="summary">Summary</label>
+            </div>
+        </div>
+    </div>
+    </div>
+</span>
+<legend></legend>
+</div>
+<!-- Columen Setting -->
+<div id="tabsIncomeExpense-3">
+<div></div>
+<span class="input-group-addon">
+    <div class="form-group row">
+    <div class="form-group row">
+        <div class="col-md-11">
+        <!-- Button Left -->
+        <div class="col-sx-2 col-sm-1">
+            <button type="button" class="btn btn-default">Left</button>
+        </div>
+        <div class="col-sm-11">
+            <table class="table table-bordered">
+                <tr>
+                    <td class="active">Columm 1</td>
+    				<td class="success">Columm 2</td>
+    				<td class="warning">Columm 3</td>
+    				<td class="danger">Columm 4</td>
+				    <td class="active">Colum 5</td>
+				    <td class="success">Columm 6</td>
+				    <td class="warning">Columm 7</td>
+                </tr>
+            </table>
+        </div>
+		</div>
+	</div>
+    <div class="form-group row">
+        <div class="col-md-11">
+            <!-- Button Right -->
+            <div class="col-sx-2 col-sm-1">
+            <button type="button" class="btn btn-default">Right</button>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-11">
+            <!-- Button Add & Remove -->
+            <div class="col-sx-2 col-sm-1">
+            <button type="button" name="addbutten" id="idaddbutten" value="addbutten" class="btn btn-default">Add</button>
+            <button type="button" class="btn btn-default">Remove</button>
+            </div>
+        </div>
+    </div>
+    <div></div>
+    </div>
+</span>
+<legend></legend>
+<div></div>
+<span class="input-group-addon" id="definecolumn">
+    <div class="form-group row">
+    <!-- Define Column -->
+    <div >
+		<label class="col-md-1 control-label" for="definecolumn"><h4>Define Column</h4></label>
+	</div>
+	<!-- Get from GL -->
+	<div class="form-group row">
+	   <div class="col-md-11">
+        <div class="col-sx-2 col-sm-2">
+	       <input name="definecolumn" type="radio" id="getfromgl" value="" checked="checked"/>
+        <label for="getfromgl">Get from GL</label>
+        </div>
+		<div class="col-sm-3">
+			<select    name="" id="" class="form-control">
+				<option></option>
+				<option value="01">2013</option>
+			</select>
+		</div>
+		<div></div>
+		<!-- Calculate from existing column(s) -->
+		<div class="col-sx-2 col-sm-4">
+	       <input name="definecolumn" type="radio" id="calculatefromexistingcolumn" value="" checked="checked"/>
+        <label for="calculatefromexistingcolumn">Calculate from existing column(s)</label>
+        </div>
+		<div class="col-sm-3">
+			<select    name="calculatefromexistingcolumn-1" id="calculatefromexistingcolumn-1" class="form-control">
+				<option></option>
+				<option value="01">2012a</option>
+			</select>
+		</div>
+        <div class="col-xs-0 col-sm-2">
+	       <input   id="ytd" name="ytd" type="checkbox" class="">
+            <label  for="ytd">YTD</label>    
+        </div>
+         <label class="col-sx-2 col-sm-7"  for=""></label>
+		<div class="col-sm-3">
+			<select    name="calculatefromexistingcolumn-2" id="calculatefromexistingcolumn-2" class="form-control">
+				<option></option>
+				<option value="01">2012b</option>
+			</select>
+		</div>
+		<label class="col-sx-2 col-sm-9"  for=""></label>
+		<div class="col-sm-3">
+			<select    name="calculatefromexistingcolumn-3" id="calculatefromexistingcolumn-3" class="form-control">
+				<option></option>
+				<option value="01">2012c</option>
+			</select>
+		</div>
+		</div>
+	</div>
+	<div class="form-group row">
+        <div class="col-md-11">
+            <!-- Button Cancel & Apply -->
+            <div class="col-sx-2 col-sm-1">
+            <button type="button" class="btn btn-default">Cancel</button>
+            <button type="button" class="btn btn-default">Apply</button>
+            </div>
+        </div>
+    </div>
+    <div></div>
+    </div>
+</span>
+<legend></legend>
+</div>
+<!-- Additional Setting -->
+<div id="tabsIncomeExpense-4">
+<div></div>
+<!-- Format Currency -->
+<span class="input-group-addon">
+    <div class="form-group row">
+    <div >
+		<label class="col-md-1 control-label" for="formatcurrency"><h4>Format Currency</h4></label>
+	</div>
+	<!-- Complete -->
+    <div class="form-group row">
+    	<div class="col-md-11">
+            <div class="col-sx-2 col-sm-1">
+    	       <input  name="radioformatcurrency" type="radio"  value="" id="complete" checked="checked">
+            <label   for="complete">Complete</label>
+            </div>
+        </div>
+    </div>
+    <!-- Without decimals -->
+    <div class="form-group row">
+        <div class="col-md-11">
+            <div class="col-sx-2 col-sm-1">
+    	       <input name="radioformatcurrency" type="radio" value="" id="withoutdecimals">
+            <label  for="withoutdecimals">Without decimals</label>
+            </div>
+        </div>
+    </div>
+    <!-- Only Thousands -->
+    <div class="form-group row">
+        <div class="col-md-11">
+            <div class="col-sx-2 col-sm-1">
+    	       <input name="radioformatcurrency"  type="radio" value="" id="onlythousands">
+            <label  for="onlythousands">Only Thousands</label>
+            </div>
+    	</div>
+	</div>
+    </div>
+</span>    
+<legend></legend>
+</div>
+</div>
+</fieldset>
+</form>
+</body>
+</html>

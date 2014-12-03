@@ -505,7 +505,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         "",
                         Ict.Petra.Shared.MPartner.Calculations.FormatShortName(FCurrentPartner.PartnerShortName, eShortNameFormat.eOnlySurname),
                         BestLocation.City,
-                        new StringCollection());
+                        string.Empty);
 
                 if (result.SearchResult.DefaultView.Count > 0)
                 {

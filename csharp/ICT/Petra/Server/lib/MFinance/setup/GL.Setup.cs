@@ -5,6 +5,7 @@
 //       timop
 //
 // Copyright 2004-2013 by OM International
+// Copyright 2013-2014 by SolidCharity
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +30,7 @@ using System.Data.Odbc;
 using System.Globalization;
 using System.Xml;
 using System.IO;
+using System.Text;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
@@ -732,6 +734,94 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             MainDS.RemoveEmptyTables();
 
             return MainDS;
+        }
+
+        private static string InsertNodeIntoHTMLTreeView(GLSetupTDS AMainDS,
+            Int32 ALedgerNumber,
+            AAccountHierarchyDetailRow ADetailRow,
+            bool AIsRootNode = false)
+        {
+            StringBuilder result = new StringBuilder();
+
+            AAccountRow AccountRow = (AAccountRow)AMainDS.AAccount.Rows.Find(
+                new object[] { ALedgerNumber, ADetailRow.ReportingAccountCode });
+
+            string nodeLabel = ADetailRow.ReportingAccountCode;
+
+            if (!AccountRow.IsAccountCodeShortDescNull())
+            {
+                nodeLabel += " (" + AccountRow.AccountCodeShortDesc + ")";
+            }
+
+            if (AIsRootNode)
+            {
+                result.Append("<ul><li id='acct" + AccountRow.AccountCode + "'><span><i class=\"icon-folder-open\"></i>" + nodeLabel + "</span><ul>");
+            }
+            else if (!AccountRow.PostingStatus)
+            {
+                result.Append("<li id='acct" + AccountRow.AccountCode + "'><span><i class=\"icon-minus-sign\"></i>" + nodeLabel + "</span><ul>");
+            }
+            else if (AccountRow.PostingStatus)
+            {
+                result.Append("<li id='acct" + AccountRow.AccountCode + "'><span><i class=\"icon-leaf\"></i>" + nodeLabel + "</span></<li>");
+            }
+
+            // Now add the children of this node:
+            DataView view = new DataView(AMainDS.AAccountHierarchyDetail);
+            view.Sort = AAccountHierarchyDetailTable.GetReportOrderDBName() + ", " + AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
+            view.RowFilter =
+                AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + ADetailRow.AccountHierarchyCode + "' AND " +
+                AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + ADetailRow.ReportingAccountCode + "'";
+
+            if (view.Count > 0)
+            {
+                foreach (DataRowView rowView in view)
+                {
+                    AAccountHierarchyDetailRow accountDetail = (AAccountHierarchyDetailRow)rowView.Row;
+                    result.Append(InsertNodeIntoHTMLTreeView(AMainDS, ALedgerNumber, accountDetail));
+                }
+            }
+
+            if (AIsRootNode)
+            {
+                result.Append("</ul></li></ul>");
+            }
+            else if (!AccountRow.PostingStatus)
+            {
+                result.Append("</ul></li>");
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// returns the selected account hierarchy available for this ledger, formatted for the html client
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static string LoadAccountHierarchyHtmlCode(Int32 ALedgerNumber, string AAccountHierarchyCode)
+        {
+            GLSetupTDS MainDS = LoadAccountHierarchies(ALedgerNumber);
+
+            AAccountHierarchyRow accountHierarchy = (AAccountHierarchyRow)MainDS.AAccountHierarchy.Rows.Find(new object[] { ALedgerNumber,
+                                                                                                                            AAccountHierarchyCode });
+
+            StringBuilder result = new StringBuilder();
+
+            if (accountHierarchy != null)
+            {
+                // find the BALSHT account that is reporting to the root account
+                MainDS.AAccountHierarchyDetail.DefaultView.RowFilter =
+                    AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + AAccountHierarchyCode + "' AND " +
+                    AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + accountHierarchy.RootAccountCode + "'";
+
+                result.Append(InsertNodeIntoHTMLTreeView(
+                        MainDS,
+                        ALedgerNumber,
+                        (AAccountHierarchyDetailRow)MainDS.AAccountHierarchyDetail.DefaultView[0].Row,
+                        true));
+            }
+
+            return result.ToString();
         }
 
         /// <summary>
@@ -1765,23 +1855,20 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                    AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountHierarchyAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, AAccountHierarchyName, Transaction);
+                    AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(MainDS, ALedgerNumber, AAccountHierarchyName, Transaction);
                     AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                     AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                 });
 
             XmlDocument doc = TYml2Xml.CreateXmlDocument();
 
-            AAccountHierarchyRow accountHierarchy = (AAccountHierarchyRow)MainDS.AAccountHierarchy.Rows.Find(new object[] { ALedgerNumber,
-                                                                                                                            AAccountHierarchyName });
-
-            if (accountHierarchy != null)
+            if (MainDS.AAccountHierarchy.Rows.Count == 1)
             {
                 // find the BALSHT account that is reporting to the root account
                 MainDS.AAccountHierarchyDetail.DefaultView.RowFilter =
                     AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + AAccountHierarchyName + "' AND " +
-                    AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + accountHierarchy.RootAccountCode + "'";
+                    AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + MainDS.AAccountHierarchy[0].RootAccountCode + "'";
 
                 InsertNodeIntoXmlDocument(MainDS, doc, doc.DocumentElement,
                     (AAccountHierarchyDetailRow)MainDS.AAccountHierarchyDetail.DefaultView[0].Row);
@@ -1789,6 +1876,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             // XmlDocument is not serializable, therefore print it to string and return the string
             return TXMLParser.XmlToString(doc);
+        }
+
+        /// export account hierarchy as base64 encoded yml.gz file
+        [RequireModulePermission("FINANCE-1")]
+        public static string ExportAccountHierarchyYmlGz(Int32 ALedgerNumber, string AAccountHierarchyName)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            doc.LoadXml(ExportAccountHierarchy(ALedgerNumber, AAccountHierarchyName));
+
+            return TYml2Xml.Xml2YmlGz(doc);
         }
 
         /// <summary>
@@ -1964,16 +2062,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AHierarchyName"></param>
-        /// <param name="AXmlAccountHierarchy"></param>
+        /// <param name="AYmlAccountHierarchy"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
-        public static bool ImportAccountHierarchy(Int32 ALedgerNumber, string AHierarchyName, string AXmlAccountHierarchy)
+        public static bool ImportAccountHierarchy(Int32 ALedgerNumber, string AHierarchyName, string AYmlAccountHierarchy)
         {
             XmlDocument doc = new XmlDocument();
 
             try
             {
-                doc.LoadXml(AXmlAccountHierarchy);
+                TYml2Xml ymlParser = new TYml2Xml(AYmlAccountHierarchy.Split(new char[] { '\n' }));
+                doc = ymlParser.ParseYML2XML();
             }
             catch (XmlException exp)
             {
@@ -1982,7 +2081,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     Environment.NewLine +
                     exp.Message +
                     Environment.NewLine +
-                    AXmlAccountHierarchy);
+                    AYmlAccountHierarchy);
             }
 
             GLSetupTDS MainDS = LoadAccountHierarchies(ALedgerNumber);

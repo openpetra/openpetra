@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Bootstrap core CSS -->
+    <link href="../ThirdParty/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../ThirdParty/DataTables/css/dataTables.bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="../ThirdParty/jQueryUI/css/default/jquery-ui.custom.min.css">
+    <link href="../css/window.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+           <script src="../ThirdParty/html5shiv/html5shiv.js"></script>
+           <script src="../ThirdParty/Respond/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="../ThirdParty/jQuery/jquery.min.js"></script>
+    <script type="text/javascript" src="../ThirdParty/jQueryUI/jquery-ui.min.js"></script>
+    <script class="include" type="text/javascript" charset="utf-8" src="../ThirdParty/DataTables/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="../ThirdParty/Bootstrap/js/bootstrap.min.js"></script>
+    <script class="include" type="text/javascript" charset="utf-8" src="../ThirdParty/DataTables/js/dataTables.bootstrap.js"></script>
+    <script class="include" type="text/javascript" charset="utf-8" src="../js/comboboxInitValues.js"></script>
+  </head>
+<body onload="Init()">
+<!-- ab hier kommt das Formular -->
+<div class="container">
+    <div class="row col-md-11">
+        <form class="form-horizontal" id="partnerfind_form">
+            <fieldset>
+                <!-- Form Name -->
+                <div class="collapseLegend"> <a data-toggle="collapse" data-target="#collapseFindCriteria" href="#collapseFindCriteria" class="collapsed">
+                    <legend> Find Criteria</legend>                  
+                </a>
+
+                </div>
+                <!-- Text input-->
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="partnername">Partner name</label>
+                    <div class="col-md-4">
+                        <input id="partnername" name="textinput" type="text" placeholder="" class="form-control input-md">
+                    </div>
+                </div>
+                <div id="collapseFindCriteria" class="panel-collapse collapse out">
+    <!-- Firstname -->
+    <div class="form-group">
+		  <label class="col-md-4 control-label" for="Firstname">Firstname:</label>
+		      <div class="col-md-4">
+			     <input id="Firstname" name="Firstname" type="text" placeholder="" class="form-control"/>
+              </div>
+    </div>
+    <!-- Address 1 -->
+    <div class="form-group">
+            <label class="col-md-4 control-label" for="address1">Address 1:</label>
+                <div class="col-md-4">
+                    <input id="address1" name="address1" type="text" placeholder="" class="form-control">
+                </div>
+    </div>
+    <!-- City/Town -->
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="city/town">City/Town:</label>
+            <div class="col-md-4">
+                <input  id="city/town" name="city/town" type="text" placeholder="" class="form-control"/>
+            </div>
+    </div>
+    <!-- Post Code -->
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="postcode">Post Code:</label>
+            <div class="col-md-4">
+                <input  id="postcode" name="postcode" type="text" placeholder="" class="form-control"/>
+            </div>
+    </div>
+    <!-- Country -->
+    <div class="form-group">
+            <label class="col-md-4 control-label" for="country">Country:</label>        
+                <div class="col-md-4">
+                    <select id="country" name="country" class="form-control">
+                    </select>
+                </div>
+            </div> 
+                        <!-- Prepended checkbox -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="chkMailingAddressesOnly">Mailing Address</label>
+                            <div class="col-md-4">
+                                <input type="checkbox" id="chkMailingAddressesOnly" name="chkMailingAddressesOnly">
+                                <label>only find mailing addresses</label>
+                            </div>
+                        </div>
+        
+                        <div class="form-group">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4">
+                                <button id="btnSearch" name="btnSearch" class="btn btn-primary">Search</button>
+                            </div>
+                            <div class="col-md-4">
+                                <button id="btnClear" name="btnClear" class="btn btn-primary">Clear</button>
+                            </div>
+                        </div>
+
+            </fieldset>
+        </form>
+        <legend>Found Partners:</legend>
+
+ 
+<div class="input-group-addon">
+    <div class="row">
+    <div class="col-md-11">
+        <!-- Table -->
+        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="result" width="100%">
+            <thead>
+                <tr>
+                    <th width="7%">Class</th>
+                    <th width="20%">Partner Name</th>
+                    <th width="18%">City</th>
+                    <th width="20%">Address2</th>
+                    <th width="7%">Partner Key</th>
+                    <th width="7%">Partner Status</th>
+                    <th width="7%">Location Key</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    </div>
+    <div class="row">
+    <div class="col-md-11">
+        <div>
+            <button class="btn btn-primary" id="btnEditPartner">Edit Partner</button>
+        </div>
+    </div>
+    </div>        
+</div>
+
+</div></div>
+</body>
+</html>
+

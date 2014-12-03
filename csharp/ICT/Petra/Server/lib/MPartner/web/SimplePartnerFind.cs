@@ -5,6 +5,7 @@
 //       timop
 //
 // Copyright 2004-2011 by OM International
+// Copyright 2013-2014 by SolidCharity
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,7 +52,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// Return all partners that match the given criteria. This is used for the partner import screen.
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
-        public static PartnerFindTDS FindPartners(string AFirstName, string AFamilyNameOrOrganisation, string ACity, StringCollection APartnerClasses)
+        public static PartnerFindTDS FindPartners(string AFirstName, string AFamilyNameOrOrganisation, string ACity, string APartnerClass)
         {
             TPartnerFind PartnerFind = new TPartnerFind();
 
@@ -65,9 +66,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             CriteriaRow.City = ACity;
 
             // TODO: only works for one partner class at the moment
-            if (APartnerClasses.Count == 1)
+            if (APartnerClass.Length > 0)
             {
-                CriteriaRow.PartnerClass = APartnerClasses[0];
+                CriteriaRow.PartnerClass = APartnerClass;
             }
             else
             {

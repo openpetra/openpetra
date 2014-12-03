@@ -1,0 +1,587 @@
+    <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Bootstrap core CSS -->
+    <link href="../ThirdParty/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="../ThirdParty/jQueryUI/css/default/jquery-ui.custom.min.css">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../ThirdParty/html5shiv/html5shiv.js"></script>
+      <script src="../ThirdParty/Respond/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="../ThirdParty/jQuery/jquery.min.js"></script>
+    <script type="text/javascript" src="../ThirdParty/jQueryUI/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../ThirdParty/Bootstrap/js/bootstrap.min.js"></script>
+    <script class="include" type="text/javascript" charset="utf-8" src="../js/comboboxInitValues.js"></script>
+  </head>
+<body onload="Init()">
+<script>
+$(function() {
+$( "#tabsGiftBatches" ).tabs();
+});
+</script>
+<!-- ab hier kommt das Formular -->
+<form class="form-horizontal" id="formGiftBatches">
+<fieldset>
+<div id="tabsGiftBatches" >
+    <ul>
+        <li><a href="#tabsGiftBatches-1">Batches</a></li>
+        <li><a href="#tabsGiftBatches-2">Details</a></li>
+    </ul>
+    <!-- Batches Tab -->
+<div  id="tabsGiftBatches-1">
+<div></div>
+<span class="input-group-addon">    
+    <div class="form-group row">
+        <div class="form-group row">
+            <div class="col-md-12">                    
+                <!-- Show batches available for -->
+                <div class="form-group row">
+                    <div >
+                     <label class="col-sm-6 control-label" for="showbatchesavailablefor">Show batches</label>
+                    </div>
+                </div>        
+                <div class="col-sx-2 col-sm-4">
+                <!-- Ledger -->
+                    <label class="col-sx-2 col-sm-3 control-label" for="ledger">Ledger:</label>
+                        <div class="col-sm-8">
+                            <input name="ledger" type="text" value=""  class="form-control"/>
+                        </div>
+                </div>	  
+                <!-- Positing -->
+                <div class="col-sx-2 col-sm-2">
+                    <input name="positing" type="radio" value="" />
+                    <label class=" control-label" for="positing">Positing</label>
+                </div>
+                <!-- Editing -->
+                <div class="col-sx-2 col-sm-2">
+                    <input name="editing" type="radio" value="" />
+                    <label class=" control-label" for="editing">Editing</label>
+                </div>
+                <!-- All -->
+                <div class="col-sx-2 col-sm-2">
+                    <input name="all" type="radio" value="" />
+                    <label class=" control-label" for="All">All</label>
+                </div>
+            </div>                
+        </div>
+        <div class="form-group row">
+            <div class="col-md-8">
+                <!-- Year -->
+                <div class="col-sx-2 col-sm-2">
+                    <label class=" col-sx-2 col-sm-3 control-label" for="year">Year:</label>
+                </div>
+                <div class="col-sx-2 col-sm-3">
+                    <select   name="year" id="year" class="form-control">
+                    </select>
+                </div>
+                <!-- Period -->
+                <div class="col-sx-2 col-sm-2">
+                    <label class=" col-sx-2 col-sm-3 control-label" for="period">Period:</label>
+                </div>
+                <div class="col-sx-2 col-sm-3">
+                    <select   name="Year Filter" id="Year Filter" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <!-- Table -->
+            <div class="form-group row">
+                <div class="col-md-12">
+                	<table class="table table-striped">
+                		<tr>
+                			<td class="active">Batch</td>
+                			<td class="success">Status</td>
+                			<td class="warning">Effective Date</td>
+                			<td class="danger">Debit Total</td>
+                			<td class="active">Credit Total</td>
+                			<td class="success">Hash Total</td>
+                			<td class="warning">Description</td>
+                		</tr>
+                	</table>
+                </div>
+            </div>
+        </div>
+    </div>
+</span>
+<legend></legend>
+<div class="form-group row">
+    <div class="col-xs-1">
+        <!-- Add Batch Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Add Batch</button>
+        </div>
+	</div>
+	<div class="col-xs-2"></div>
+	<div class="col-xs-1">
+        <!-- Cancel Batch Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Cancel Batch</button>
+        </div>
+	</div>
+	<div class="col-xs-2"></div>
+	<div class="col-xs-1">
+	   <!-- Post Batch Butten -->
+	   <div class="col-lg-10">
+	       <button class="btn btn-primary" class="form-control">Post Batch</button>
+	   </div>
+	</div>
+</div>
+<span class="input-group-addon">
+    <div class="form-group row">
+		<!-- Batch Description -->
+		<div class="form-group row">
+            <div class="col-md-11">
+            <label class="col-sx-4 col-sm-2 control-label" for="batchdescription">Batch Description:</label>
+                <div class="col-sm-5">
+                    <input name="batchdescription" type="text" value=""  class="form-control"/>
+                </div>
+            </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-11">
+            <!-- Cost Centre -->
+            <label class=" col-sx-4 col-sm-2 control-label" for="costcentre">Cost Centre:</label>        
+            <div class="col-sm-3">
+                <select   name="costcentre" id="costcentre" class="form-control">
+                </select>
+            </div>
+            <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable:</label>
+        </div>    
+    </div>
+    <!-- Bank Account -->
+    <div class="form-group row">
+        <div class="col-md-11">
+            <!-- Bank Account -->
+            <label class=" col-sx-4 col-sm-2 control-label" for="bankaccount">Bank Account:</label>
+                <div class="col-sm-3">
+                    <select   name="bankaccount" id="bankaccount" class="form-control">
+                    </select>
+                </div>
+            <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable:</label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-11">
+        <!-- GL Effective Date -->
+        <label class="col-sx-4 col-sm-2 control-label" for="gleffectivedate">GL Effective Date:</label>
+            <div class="col-sm-3">
+                <input name="gleffectivedate" type="text" value=""  class="form-control"/>
+            </div>
+        <label class="col-sx-4 col-sm-4 control-label" for="towncity">lable:</label>
+        </div>
+	</div>            
+	<div class="form-group row">
+        <div class="col-md-11">
+        <!-- Hash Total -->
+        <label class="col-sx-4 col-sm-2 control-label" for="hashtotal">Hash Total:</label>
+            <div class="col-sm-3">
+                <input name="hashtotal" type="text" value=""  class="form-control"/>
+            </div>
+            <!-- EUR -->
+            <div>
+                <label class="col-sx-4 col-sm-1 control-label" for="eur">EUR</label>
+            </div>
+            <!-- Currency Code -->
+            <label class=" col-sx-4 col-sm-3 control-label" for="currencycode">Currency Code:</label>
+            <div class="col-sm-2">
+                <select   name="currencycode" id="currencycode" class="form-control">
+                </select>
+            </div>
+            <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable:</label>      
+        </div>      
+	</div>
+    <div class="form-group row">
+        <div class="col-md-11">
+            <!-- Exchange Rate To Base -->
+            <label class="col-sx-4 col-sm-3 control-label" for="exchangeratetobase">Exchange Rate To Base:</label>
+                <div class="col-sm-3">
+                    <input name="exchangeratetobase" type="text" value=""  class="form-control"/>
+                </div>
+                <div>
+                <button class="btn btn-primary">Get/Set Exchange Rate</button>
+                </div>        
+        </div>		
+    </div>
+    <div class="form-group row">
+        <div class="col-md-11">
+            <!-- Method of Payment -->
+            <label class=" col-sx-4 col-sm-2 control-label" for="methodofpayment">Method of Payment:</label>
+            <div class="col-sm-3">
+                <select   name="methodofpayment" id="methodofpayment" class="form-control">
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <!-- Gift Type -->
+        <div class="col-md-11">
+            <div >
+                <label class="col-sm-2 control-label" for="gifttype">Gift Type</label>
+            </div>
+        </div>
+        <!-- Gift -->
+        <div class="col-md-11">
+            <div class="col-sx-2 col-sm-2">
+                <input name="gift" type="radio" value="" />
+                    <label class=" control-label" for="gift">Gift</label>
+            </div>
+            <!-- Gift In Kind -->
+            <div class="col-sx-2 col-sm-2">
+                <input name="giftinkind" type="radio" value="" />
+                    <label class=" control-label" for="giftinkind">Gift In Kind</label>
+            </div>
+            <!-- All -->
+            <div class="col-sx-2 col-sm-2">
+                <input name="all" type="radio" value="" />
+                    <label class=" control-label" for="all">Other</label>
+            </div>
+        </div>
+    </div>         
+</div>
+</span>
+<legend></legend>
+</div>
+<!-- Details Tab -->
+<div id="tabsGiftBatches-2">
+<div></div>
+<span class="input-group-addon">
+    <div class="form-group row">
+        <div class="form-group row">
+            <div class="col-md-11">
+            <!-- Ledger -->
+            <label class="col-sx-4 col-sm-2 control-label" for="ledger">Ledger:</label>
+                <div class="col-sm-4">
+                    <input id="from" name="ledger" type="text" placeholder="" class="form-control">
+                </div>
+            <!-- Batch Total-->
+            <label class="col-sx-2 col-sm-3 control-label" for="batchtotal">Batch Total:</label>
+                <div class="col-sm-2">
+                    <input id="batchtotal" name="batchtotal" type="text" placeholder="" class="form-control">
+                </div>
+                <!-- EUR -->
+            <label class="col-sx-2 col-sm-1 control-label" for="eur">EUR</label>
+	        </div>
+	    </div>
+	    <div class="form-group row">
+            <div class="col-md-11">
+            <!-- Gift Bach -->
+            <label class="col-sx-2 col-sm-2 control-label" for="giftbach">Gift Bach:</label>
+                <div class="col-sm-2">
+                    <input id="giftbach" name="giftbach" type="text" placeholder="" class="form-control">
+                </div>
+                <div class="col-sm-3">
+                    <input id="giftbach" name="giftbach" type="text" placeholder="" class="form-control">
+                </div>
+            <!-- Hash Total-->
+            <label class="col-sx-2 col-sm-2 control-label" for="hashtotal">Hash Total:</label>
+                <div class="col-sm-2">
+                    <input id="hashtotal" name="hashtotal" type="text" placeholder="" class="form-control">
+                </div>
+                <!-- EUR -->
+            <label class="col-sx-2 col-sm-1 control-label" for="eur">EUR</label>
+	        </div>
+	    </div>
+        <div class="col-md-12">
+            <!-- Table -->
+            <div class="form-group row">
+                <div class="col-md-12">
+                    <table class="table table-striped">
+                    	<tr>
+                    		<td class="active">Journal</td>
+                    		<td class="success">Journal Status</td>
+                    		<td class="warning">Debit Total</td>
+                    		<td class="danger">Credit Total</td>
+                    		<td class="active">Currency</td>
+                    		<td class="success">Description</td>
+                    		<td class="warning">Subsystem Code</td>
+                    		<td class="danger">Transaction Type</td>
+                    	</tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</span>
+<legend></legend>
+<div class="form-group row">
+    <div class="col-xs-1">
+        <!-- Add Gift Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Add Gift</button>
+        </div>
+	</div>
+	<div class="col-xs-2"></div>
+	<div class="col-xs-1">
+        <!-- Add Detail Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Add Detail</button>
+        </div>
+	</div>
+	<div class="col-xs-2"></div>
+	<div class="col-xs-1">
+        <!-- Delete Detail Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Delete Detail</button>
+        </div>
+	</div>
+	<div class="col-xs-2"></div>
+	<div class="col-xs-1">
+        <!-- Delete All Butten -->
+        <div class="col-lg-10">
+	       <button class="btn btn-primary">Delete All</button>
+        </div>
+	</div>
+</div>
+<span class="input-group-addon">
+    <div class="form-group row">
+        <div class="form-group row">
+            <div class="col-md-8">
+            <!-- Donor -->
+            <label class="col-sx-4 col-sm-3 control-label" for="donor">Donor:</label>
+                <!-- Find Butten -->
+                <div class="col-sm-1">
+	                <button class="btn btn-primary">Find</button>
+                </div>
+                <div class="col-sm-3">
+                    <input name="find" type="text" value=""  class="form-control"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-11">
+                <!-- Method of Giving -->
+                <label class=" col-sx-4 col-sm-2 control-label" for="methodofgiving">Method of Giving:</label>
+                <div class="col-sm-3">
+                    <select   name="methodofgiving" id="methodofgiving" class="form-control">
+                    </select>
+                </div>
+                <div class="col-xs-1"></div>
+                <!-- Method of Payment -->
+                <label class=" col-sx-4 col-sm-2 control-label" for="methodofpayment">Method of Payment:</label>
+                <div class="col-sm-3">
+                    <select   name="methodofpayment" id="detailsmethodofpayment" class="form-control">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-11">
+            <!-- Reference -->
+            <label class="col-sx-4 col-sm-2 control-label" for="reference">Reference:</label>
+                <div class="col-sm-3">
+                    <input name="reference" type="text" value=""  class="form-control"/>
+                </div>
+                <div class="col-xs-1"></div>
+             <!-- Letter Code -->
+            <label class=" col-sx-4 col-sm-2 control-label" for="v">Letter Code:</label>
+            <div class="col-sm-3">
+                <select   name="lettercode" id="lettercode" class="form-control">
+                    <option></option>
+                    <option value="01">NO*RECET</option>
+                </select>
+            </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-11">
+            <!-- Gift Date -->
+            <label class="col-sx-4 col-sm-2 control-label" for="giftdate">Gift Date:</label>
+                <div class="col-sm-3">
+                    <input name="giftdate" type="text" value=""  class="form-control"/>
+                </div>
+                <div class="col-xs-1"></div>
+             <!-- Total -->
+            <label class=" col-sx-4 col-sm-2 control-label" for="total">Total:</label>
+            <div class="col-sm-3">
+                <input name="total" type="text" value=""  class="form-control"/>
+            </div>
+            <!-- EUR -->
+            <label class=" col-sx-4 col-sm-1 control-label" for="eur">EUR</label>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-11">
+            <!-- Amount -->
+            <label class="col-sx-4 col-sm-2 control-label" for="amount">Amount:</label>
+                <div class="col-sm-3">
+                    <input name="amount" type="text" value=""  class="form-control"/>
+                </div>
+                <div class="col-xs-1"></div>
+             <!-- Confidential -->
+            <label class=" col-sx-4 col-sm-2 control-label" for="confidential">Confidential?:</label>
+                <div class=" col-sm-1">
+                    <input   id="confidential" name="confidential" type="checkbox" class="form-control">
+                </div>
+            </div>
+        </div> 
+		<!-- Recipient -->
+        <div class="form-group row">
+            <div class="col-md-8">
+            <!-- Recipient -->
+            <label class="col-sx-4 col-sm-3 control-label" for="recipient">Recipient:</label>
+                <!-- Find Butten -->
+                <div class="col-sm-1">
+	                <button class="btn btn-primary">Find</button>
+                </div>                
+                <div class=" col-sm-3">
+                    <input name="find" type="text" value=""  class="form-control"/>
+                </div>                                            
+                <!-- Admin Grants -->
+                <label class=" col-sx-4 col-sm-4 control-label" for="admingrants">Admin Grants? :</label>              
+                <div class=" col-sm-1">
+                    <input   id="admingrants" name="admingrants" type="checkbox" class="form-control" />
+                </div>                
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-11">
+            <!-- Field -->
+            <label class="col-sx-4 col-sm-2 control-label" for="field">Field:</label>
+                <div class="col-sm-3">
+                    <label class=" col-sx-4 col-sm-2 control-label" for="field">Lable:</label>
+                </div>
+            <div class="col-xs-1"></div>
+             <!-- Confidential -->
+            <label class=" col-sx-4 col-sm-2 control-label" for="taxdeductable">Tax deductable?:</label>
+                <div class=" col-sm-1">
+                    <input   id="taxdeductable" name="taxdeductable" type="checkbox" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-11">
+            <!-- Key Ministry -->
+            <label class="col-sx-4 col-sm-2 control-label" for="keyministry">Key Ministry:</label>
+                <div class="col-sm-3">
+                    <select   name="mailing" id="mailing" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>
+                </div>
+                <div class="col-xs-1"></div>
+                <!-- Mailing -->
+                <label class=" col-sx-4 col-sm-2 control-label" for="v">Mailing:</label>
+                <div class="col-sm-3">
+                    <select   name="mailing" id="mailing" class="form-control">
+                        <option></option>
+                        <option value="01">ACTIVE</option>
+                        <option value="02">DIED</option>
+                        <option value="03">INACTIVE</option>
+                        <option value="04">MERGED</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-11">
+                <!-- Motivation Group -->
+                <label class=" col-sx-4 col-sm-2 control-label" for="motivationgroup">Motivation Group:</label>
+                <div class="col-sx-2 col-sm-3">
+                    <select   name="motivationgroup" id="motivationgroup" class="form-control">
+                    </select>
+                </div>
+                <label class="col-sx-4 col-sm-1 control-label" for="towncity">lable:</label>
+                <div></div>                
+                <!-- Motivation Detail -->
+                <label class=" col-sx-4 col-sm-2 control-label" for="motivationdetail">Motivation Detail:</label>
+                <div class="col-sm-3">
+                    <select   name="motivationdetail" id="motivationdetail" class="form-control">
+                    </select>
+                </div>
+            </div>
+        </div>
+		<div class="form-group row">
+            <div class="col-md-11">
+            <!-- Cost Centre -->
+            <label class="col-sx-4 col-sm-2 control-label" for="costcentre">Cost Centre:</label>
+                <div class="col-sm-3">
+                    <select   name="detailcostcentre" id="detailcostcentre" class="form-control">
+                    </select>
+                </div>
+            <div class="col-xs-1"></div>
+            <!-- Account -->
+            <label class="col-sx-4 col-sm-2 control-label" for="account">Account:</label>
+                <div class="col-sm-3">
+                    <select   name="detailsaccount" id="detailsaccount" class="form-control">
+                    </select>
+                </div>
+            </div>
+        </div>
+		<div class="form-group row">
+            <div class="col-md-11">
+                <!-- Comment 1 -->
+                <label class=" col-sx-4 col-sm-2 control-label" for="comment1">Comment 1:</label>
+                <div class="col-sm-4">
+                    <input name="comment1" type="text" value=""  class="form-control"/>    
+                </div>
+                <!-- for -->
+                <label class=" col-sx-4 col-sm-2 control-label" for="for">for:</label>
+                <div class="col-sm-3">
+                    <select   name="for" id="for" class="form-control">
+                        <option value="01">Donor</option>
+                        <option value="02">Recipient</option>
+                        <option value="03">Both</option>
+                        <option value="04">Office</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-11">
+                <!-- Comment 2 -->
+                <label class=" col-sx-4 col-sm-2 control-label" for="comment2">Comment 2:</label>
+                <div class="col-sm-4">
+                    <input name="comment2" type="text" value=""  class="form-control"/>
+                </div>
+                <!-- for -->
+                <label class=" col-sx-4 col-sm-2 control-label" for="for">for:</label>
+                <div class="col-sm-3">
+                    <select   name="for" id="for" class="form-control">
+                        <option value="01">Donor</option>
+                        <option value="02">Recipient</option>
+                        <option value="03">Both</option>
+                        <option value="04">Office</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-11">
+                <!-- Comment 3 -->
+                <label class=" col-sx-4 col-sm-2 control-label" for="comment3">Comment 3:</label>
+                <div class="col-sm-4">
+                    <input name="comment3" type="text" value=""  class="form-control"/>
+                </div>
+                <!-- for -->
+                <label class=" col-sx-4 col-sm-2 control-label" for="for">for:</label>
+                <div class="col-sm-3">
+                    <select   name="for" id="for" class="form-control">
+                        <option value="01">Donor</option>
+                        <option value="02">Recipient</option>
+                        <option value="03">Both</option>
+                        <option value="04">Office</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</span>
+<legend></legend>
+
+</div>
+</fieldset>
+</form>
+</body>
+</html>

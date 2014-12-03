@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Bootstrap core CSS -->
+    <link href="../ThirdParty/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="../ThirdParty/jQueryUI/css/default/jquery-ui.custom.min.css">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../ThirdParty/html5shiv/html5shiv.js"></script>
+      <script src="../ThirdParty/Respond/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="../ThirdParty/jQuery/jquery.min.js"></script>
+    <script type="text/javascript" src="../ThirdParty/jQueryUI/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../ThirdParty/Bootstrap/js/bootstrap.min.js"></script>
+  </head>
+<body>
+<script>
+$(function() {
+$( "#tabsPartnerBySubscription" ).tabs();
+});
+</script>
+
+<!-- ab hier kommt das Formular -->
+<form class="form-horizontal" id="formPartnerBySubscription">
+<fieldset>
+<div id="tabsPartnerBySubscription" >
+    <ul>
+        <li><a href="#tabsPartnerBySubscription-1">General Settings</a></li>
+        <li><a href="#tabsPartnerBySubscription-2">Sorting</a></li>
+        <li><a href="#tabsPartnerBySubscription-3">Columns</a></li>
+    </ul>
+    <!-- General Settings Tap -->
+	<div  id="tabsPartnerBySubscription-1">
+    <div></div>
+    <!-- Report on all subscriptions -->
+    <span class="input-group-addon">
+    <div class="form-group row">
+        <div class="col-md-11">
+        <div class="col-sx-2 col-sm-1">
+        <label for="Report on all subscriptions">Report on all partners that have one of these subscriptions:</label>
+        </div>
+        </div>
+        <!-- Table -->
+        <div class="col-sm-11">
+            <table class="table table-bordered">
+                <tr>
+                    <td class="active"></td>
+    				<td class="success">Publication Code</td>
+    				<td class="warning">Publication Discription</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    </span>
+    <legend></legend>
+    <!-- Date Of Sending Copy -->
+    <div class="form-group row">
+	   <div class="col-md-11">
+        <div class="col-sx-4 col-sm-3">
+            <label for="dateofsendingcopy">Date Of Sending Copy:</label>
+        </div>
+        <div class="col-sm-3">
+            <input name="dateofsendingcopy" type="text" value=""  class="form-control"/>
+        </div>
+		</div>
+	</div>
+    <span class="input-group-addon">
+    <div class="form-group row">
+	<!-- Current Addresses Only -->
+	<div class="form-group row">
+	   <div class="col-md-11">
+        <div class="col-sx-2 col-sm-1">
+            <label for="currentaddressesonly">Current Addresses Only:</label>
+            <input name="currentaddressesonly" type="checkbox" value="" checked="checked"/>
+        </div>
+		</div>
+	</div>
+	<!-- Town/City -->
+	<div class="form-group row">
+	   <div class="col-md-11">
+	    <label class="col-sx-4 col-sm-2 control-label" for="towncity">Town/City:</label>
+        <div class="col-sm-4">  
+            <input name="towncity" type="text" value=""  class="form-control"/>
+        </div>
+		</div>
+	</div>
+	<!-- Post Code From -->
+	<div class="form-group row">
+	   <div class="col-md-11">
+        <label class="col-sx-4 col-sm-2 control-label" for="postcodefrom">Post Code From:</label>
+            <div class="col-sm-2">
+    			<input id="from" name="postcodefrom" type="text" placeholder="" class="form-control">
+    		</div>
+		<label class="col-sx-2 col-sm-1 control-label" for="to">To:</label>
+		<div class="col-sm-2">
+			<input id="to" name="to" type="text" placeholder="" class="form-control">
+		</div>
+		</div>
+	</div>
+	<!-- Region -->
+	<div class="form-group row">
+	   <div class="col-md-11">
+            <label class="col-sx-4 col-sm-2 control-label" for="region">Region:</label>
+        <div class="col-sm-5">
+			<select name="region" id="" class="form-control">
+				<option></option>
+				<option value="01">2013</option>
+			</select>
+		</div>
+		</div>
+	</div>
+	<!-- Country -->
+	<div class="form-group row">
+	   <div class="col-md-11">
+            <label class="col-sx-4 col-sm-2 control-label" for="country">Country:</label>
+        <div class="col-sm-2">
+			<select    name="country" id="" class="form-control">
+				<option></option>
+				<option value="01">2013</option>
+			</select>
+		</div>
+		<label class="col-sx-2 col-sm-1 control-label" for="">Label</label>
+		</div>
+	</div>
+    </div>
+    </span>
+    <legend></legend>
+    </div>
+    <!-- Sorting Tap -->
+    <div id="tabsPartnerBySubscription-2">
+    <div></div>
+	<!-- Format Currency -->
+    <span class="input-group-addon">
+    <div class="form-group row">
+        <div class="col-md-8">
+		<label class="col-sx-4 col-sm-2 control-label" for="sortfirstby">Sort First By:</label>
+			 <div class="col-sm-4">
+				<select    name="sortfirstby" id="sortfirstby" class="form-control">
+					<option></option>
+					<option value="01">Base</option>
+					<option value="01">International</option>
+					<option value="01">Transcation</option>
+				</select>
+            </div>
+		</div>
+        <!-- Sort First By -->
+        <div class="col-md-8">
+		<label class="col-sx-4 col-sm-2 control-label" for="Sort Then By">Sort Then By:</label>
+			 <div class="col-sm-4">
+				<select    name="sortthenby" id="sortthenby" class="form-control">
+					<option></option>
+					<option value="01">Base</option>
+					<option value="01">International</option>
+					<option value="01">Transcation</option>
+				</select>
+            </div>
+		</div>
+        <div class="col-md-8">
+		<label class="col-sx-4 col-sm-2 control-label" for="sortlastby">Sort Last By:</label>
+			 <div class="col-sm-4">
+				<select    name="sortlastby" id="sortlastby" class="form-control">
+					<option></option>
+					<option value="01">Base</option>
+					<option value="01">International</option>
+					<option value="01">Transcation</option>
+				</select>
+            </div>
+		</div>
+    </div>
+    </span>
+    <legend></legend>
+    </div>
+    <!-- Columen Tap -->
+    <div id="tabsPartnerBySubscription-3">
+	<div></div>
+	 <span class="input-group-addon">
+	  <div class="form-group row">
+	   <div class="form-group row">
+	   <div class="col-md-11">
+	   <!-- Button Left -->
+        <div class="col-sx-2 col-sm-1">
+         <button type="button" class="btn btn-default">Left</button>
+        </div>
+        <div class="col-sm-11">
+            <table class="table table-bordered">
+                <tr>
+                    <td class="active">Columm 1</td>
+    				<td class="success">Columm 2</td>
+    				<td class="warning">Columm 3</td>
+    				<td class="danger">Columm 4</td>
+				    <td class="active">Colum 5</td>
+				    <td class="success">Columm 6</td>
+				    <td class="warning">Columm 7</td>
+				    <td class="active">Columm 8</td>
+    				<td class="success">Columm 9</td>
+                </tr>
+            </table>
+        </div>
+		</div>
+	   </div>
+    <div class="form-group row">
+        <div class="col-md-11">
+            <!-- Button Right -->
+            <div class="col-sx-2 col-sm-1">
+            <button type="button" class="btn btn-default">Right</button>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-11">
+            <!-- Button Add & Remove -->
+            <div class="col-sx-2 col-sm-1">
+            <button type="button" class="btn btn-default">Add</button>
+            <button type="button" class="btn btn-default">Remove</button>
+            </div>
+        </div>
+    </div>
+    <div></div>
+    </div>
+    </span>
+    <legend></legend>
+    <div></div>
+	 <span class="input-group-addon">
+	 <!-- Define Column -->
+	  <div class="form-group row">
+    <div >
+		<label class="col-md-1 control-label" for="definecolumn"><h4>Define Column</h4></label>
+	</div>
+	<!-- Content of Column -->
+	<div class="form-group row">
+	   <div class="col-md-11">
+        <label class="col-sx-4 col-sm-2 control-label" for="contentofcolumn">Content of Column:</label>
+		<div class="col-sm-3">
+			<select  name="contentofcolumn" id="contentofcolumn" class="form-control">
+				<option></option>
+				<option value="01">2013</option>
+			</select>
+		</div>
+		</div>
+		<!-- Width of Column -->
+		<div class="col-md-11">
+        <label class="col-sx-4 col-sm-2 control-label" for="widthofcolumn">Width of Column:</label>
+    		<div class="col-sm-3">
+    			<select    name="widthofcolumn" id="widthofcolumn" class="form-control">
+    				<option></option>
+    				<option value="01">2012</option>
+    			</select>
+    		</div>
+                <label class="col-sx-2 col-sm-1 control-label" for="cm">cm</label>
+		</div>
+	</div>
+	<div class="form-group row">
+        <div class="col-md-11">
+            <!-- Button Cancel & Apply -->
+            <div class="col-sx-2 col-sm-1">
+            <button type="button" class="btn btn-default">Cancel</button>
+            <button type="button" class="btn btn-default">Apply</button>
+            </div>
+        </div>
+    </div>
+    <div></div>
+    </div>
+    </span>
+    <legend></legend>
+    </div>
+</dir>
+</fieldset>
+</form>
+</body>
+</html>

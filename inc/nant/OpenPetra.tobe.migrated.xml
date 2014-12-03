@@ -151,7 +151,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
     <property name="pgdump.exe" value="pg_dump" overwrite="false"/>
     <property name="MySQL.exe" value="mysql" overwrite="false"/>
     <property name="makensis.exe" value="makensis" overwrite="false"/>
-    <property name="MonoBinPath" value="/usr/bin" overwrite="false"/>
+    <property name="MonoBinPath" value="/opt/mono/bin" overwrite="false"/>
     <property name="Dia.exe" value="doesnotexist/dia.exe" overwrite="false"/>
     <property name="sql2dia" value="${dir.3rdParty}/sql2dia/sql2dia32" overwrite="false"/>
 
