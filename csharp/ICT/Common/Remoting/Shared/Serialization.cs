@@ -317,6 +317,11 @@ namespace Ict.Common.Remoting.Shared
                 s = s.Substring(0, s.Length - ":binary".Length);
             }
 
+            if (s.EndsWith(":System.String"))
+            {
+                s = s.Substring(0, s.Length - ":System.String".Length);
+            }
+
             if (type == "System.Int64")
             {
                 return Convert.ToInt64(s);

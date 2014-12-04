@@ -82,11 +82,6 @@ list of commands, which works in the specific csharp directories:
   indent: beautify the code according to coding style guide
   uncrustify: calls indent
 
-not supported
-  loc, ploc: count the lines of code, to be used for COCOMO etc
-  generateWebforms: generates the User Interface using the Ext.js AJAX framework
-  generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm
-
 useful parameters
   -logfile:test.log
 </echo>
@@ -584,8 +579,12 @@ useful parameters
 </target>
 
 <target name="pullVCSVersionInfo">
+<!-- TODO should we have this for git? but how to define where git.exe lives?
+    eg C:\Users\tpokorra\AppData\Local\Programs\Git\bin\git.exe
+    and it is not on the path
     <exec program="bzr" commandline="version-info" output="${dir.delivery}/bin/vcs-revision.txt" failonerror="false"/>
     <echo message="Version Control System version updated in file ${dir.delivery}/bin/vcs-revision.txt" />
+-->
 </target>
 
 </project>

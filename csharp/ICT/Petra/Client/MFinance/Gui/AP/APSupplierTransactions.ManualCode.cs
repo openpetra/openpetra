@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -990,7 +990,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     && (rv.Row["Currency"].ToString() == txtSupplierCurrency.Text)
                     )
                 {
-                    TaggedDocuments.Add((int)rv.Row["ApDocumentId"]);
+                    TaggedDocuments.Add(Convert.ToInt32(rv.Row["ApDocumentId"]));
                 }
             }
 

@@ -361,6 +361,23 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void InitialiseGrid()
         {
             grdInvoices.Columns.Clear();
+
+            string SelectedColumn = "Selected";
+
+            if (FInvoiceTable.Columns["Selected"].DataType != typeof(bool))
+            {
+                SelectedColumn = "SelectedBool";
+                FInvoiceTable.Columns.Add(new DataColumn(SelectedColumn, typeof(Boolean)));
+
+                foreach (DataRow r in FInvoiceTable.Rows)
+                {
+                    r[SelectedColumn] = (Convert.ToInt32(r["Selected"]) == 1);
+                }
+
+                FInvoiceTable.Columns["Selected"].ColumnName = "SelectedOld";
+                FInvoiceTable.Columns["SelectedBool"].ColumnName = "Selected";
+            }
+
             grdInvoices.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], -1, false);
             grdInvoices.AddTextColumn(Catalog.GetString("AP#"), FInvoiceTable.Columns["ApNumber"]);
             grdInvoices.AddTextColumn(Catalog.GetString("Inv#"), FInvoiceTable.Columns["DocumentCode"]);
@@ -638,7 +655,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     {
                         TFrmAPEditDocument frm = new TFrmAPEditDocument(FMainForm);
 
-                        if (frm.LoadAApDocument(FMainForm.LedgerNumber, (int)rv.Row["ApDocumentId"]))
+                        if (frm.LoadAApDocument(FMainForm.LedgerNumber, Convert.ToInt32(rv.Row["ApDocumentId"])))
                         {
                             frm.Show();
                         }
@@ -744,7 +761,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     if (rv.Row["DocumentStatus"].ToString() == "OPEN")
                     {
-                        ApproveTheseDocs.Add((int)rv.Row["ApDocumentId"]);
+                        ApproveTheseDocs.Add(Convert.ToInt32(rv.Row["ApDocumentId"]));
                     }
                     else
                     {
@@ -808,7 +825,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + rv.Row["DocumentStatus"].ToString()) < 0)
                     {
-                        DeleteTheseDocs.Add((int)rv.Row["ApDocumentId"]);
+                        DeleteTheseDocs.Add(Convert.ToInt32(rv.Row["ApDocumentId"]));
                     }
                     else
                     {
@@ -867,7 +884,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if ((rv.Row["Selected"].Equals(true) && (testString.IndexOf("|" + rv.Row["DocumentStatus"].ToString()) < 0)))
                 {
-                    int DocId = (int)rv.Row["ApDocumentId"];
+                    int DocId = Convert.ToInt32(rv.Row["ApDocumentId"]);
 
                     int RowIdx = TempDS.AApDocument.DefaultView.Find(DocId);
 
@@ -933,7 +950,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     if ("POSTED" == rv.Row["DocumentStatus"].ToString())
                     {
-                        ReverseTheseDocs.Add((int)rv.Row["ApDocumentId"]);
+                        ReverseTheseDocs.Add(Convert.ToInt32(rv.Row["ApDocumentId"]));
                     }
                 }
             }
@@ -1023,7 +1040,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if ((rv.Row["Selected"].Equals(true)
                      && ("|POSTED|PARTPAID|".IndexOf("|" + rv.Row["DocumentStatus"].ToString() + "|") >= 0)))
                 {
-                    PayTheseDocs.Add((int)rv.Row["ApDocumentId"]);
+                    PayTheseDocs.Add(Convert.ToInt32(rv.Row["ApDocumentId"]));
                 }
             }
 
@@ -1056,7 +1073,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (rv.Row["Selected"].Equals(true))
                 {
-                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FMainForm.LedgerNumber, (int)rv.Row["ApDocumentId"]));
+                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FMainForm.LedgerNumber, Convert.ToInt32(rv.Row["ApDocumentId"])));
                 }
             }
 
