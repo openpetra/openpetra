@@ -82,11 +82,6 @@ list of commands, which works in the specific csharp directories:
   indent: beautify the code according to coding style guide
   uncrustify: calls indent
 
-not supported
-  loc, ploc: count the lines of code, to be used for COCOMO etc
-  generateWebforms: generates the User Interface using the Ext.js AJAX framework
-  generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm
-
 useful parameters
   -logfile:test.log
 </echo>
