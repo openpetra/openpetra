@@ -584,8 +584,12 @@ useful parameters
 </target>
 
 <target name="pullVCSVersionInfo">
+<!-- TODO should we have this for git? but how to define where git.exe lives?
+    eg C:\Users\tpokorra\AppData\Local\Programs\Git\bin\git.exe
+    and it is not on the path
     <exec program="bzr" commandline="version-info" output="${dir.delivery}/bin/vcs-revision.txt" failonerror="false"/>
     <echo message="Version Control System version updated in file ${dir.delivery}/bin/vcs-revision.txt" />
+-->
 </target>
 
 </project>
