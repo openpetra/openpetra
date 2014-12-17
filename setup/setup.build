@@ -45,6 +45,13 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
                         numbers[0], numbers[1], numbers[2]);
     }
 
+    if (numbers[0] == "2014" && numbers[1] == "12" && numbers[2] == "0")
+    {
+        return String.Format("patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
+                        0, 3, 1,
+                        numbers[0], numbers[1], numbers[2]);
+    }
+
     // this is for smaller patches
     return String.Format("patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
                         numbers[0], numbers[1], Convert.ToInt16(numbers[2]) - 1,

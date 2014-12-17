@@ -181,12 +181,6 @@
     </if>
   </if>
   <if test="${'unix'==platform::get-name()}" >
-      <!-- create symbolic link for Samples -->
-      <if test="${not directory::exists(dir.delivery + '/Samples')}">
-        <exec program="bash"
-            workingdir="${dir.delivery}"
-            commandline="-c &quot;ln -s ../webserver/Samples&quot;"/>
-      </if>
       <!-- create symbolic links for OpenPetra.js -->
       <if test="${not directory::exists(dir.delivery + '/ThirdParty')}">
         <exec program="bash"
