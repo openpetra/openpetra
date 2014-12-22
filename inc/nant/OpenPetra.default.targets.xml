@@ -224,6 +224,8 @@
   </if>
 
   <if test="${not platform::is-windows()}">
+   <delete file="${dir.bin}/Mono.Security.dll" failonerror="false"/>
+   <delete file="${dir.bin}/Mono.Data.Sqlite.dll" failonerror="false"/>
    <!-- Open a xterm with OpenPetra Server? -->
    <exec program="${MonoExecutable.file}" 
               workingdir="${dir.bin}"
