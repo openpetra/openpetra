@@ -25,10 +25,15 @@ using System;
 using System.Data;
 using System.IO;
 using System.Collections;
+using System.Security.Principal;
+using System.Web;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.Remoting.Server;
+using Ict.Common.DB;
+using Ict.Common.Session;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
 {
@@ -38,9 +43,51 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
     public class TServerAdminWebConnector
     {
         /// <summary>
-        /// get the number of clients that have connected to this server since the last restart
+        /// login the server admin console without a password
         /// </summary>
         [CheckServerAdminToken]
+        public static bool LoginServerAdmin()
+        {
+            // create a new session, with database connection and everything that is needed
+            // see also Ict.Petra.Server.App.WebService.TOpenPetraOrgSessionManager.Login()
+            if (DBAccess.GDBAccessObj == null)
+            {
+                TServerManager.TheCastedServerManager.EstablishDBConnection();
+            }
+
+            string WelcomeMessage;
+            bool SystemEnabled;
+            IPrincipal LocalUserInfo;
+            Int32 ClientID;
+
+            TConnectedClient CurrentClient = TClientManager.ConnectClient(
+                "SYSADMIN", string.Empty,
+                HttpContext.Current.Request.UserHostName,
+                HttpContext.Current.Request.UserHostAddress,
+                TFileVersionInfo.GetApplicationVersion().ToVersion(),
+                TClientServerConnectionType.csctRemote,
+                out ClientID,
+                out WelcomeMessage,
+                out SystemEnabled,
+                out LocalUserInfo);
+            TSession.SetVariable("LoggedIn", true);
+
+            // the following values are stored in the session object
+            DomainManager.GClientID = ClientID;
+            DomainManager.CurrentClient = CurrentClient;
+            UserInfo.GUserInfo = (TPetraPrincipal)LocalUserInfo;
+
+            DBAccess.GDBAccessObj.UserID = "SYSADMIN";
+
+            TServerManager.TheCastedServerManager.AddDBConnection(DBAccess.GDBAccessObj);
+
+            return true;
+        }
+
+        /// <summary>
+        /// get the number of clients that have connected to this server since the last restart
+        /// </summary>
+        [RequireModulePermission("SYSMAN")]
         public static int GetClientsConnectedTotal()
         {
             return TServerManagerBase.TheServerManager.ClientsConnectedTotal;
@@ -49,7 +96,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// <summary>
         /// get number of currently connected clients
         /// </summary>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static int GetClientsConnected()
         {
             return TServerManagerBase.TheServerManager.ClientsConnected;
@@ -58,7 +105,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// <summary>
         /// get list of clients
         /// </summary>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static ArrayList GetClientList()
         {
             return TServerManagerBase.TheServerManager.ClientList;
@@ -67,7 +114,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// <summary>
         /// version of the server
         /// </summary>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static String GetServerInfoVersion()
         {
             return TServerManagerBase.TheServerManager.ServerInfoVersion;
@@ -76,7 +123,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// <summary>
         /// state of the server
         /// </summary>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static String GetServerInfoState()
         {
             return TServerManagerBase.TheServerManager.ServerInfoState;
@@ -85,7 +132,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// <summary>
         /// how much memory is used by the server
         /// </summary>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static System.Int64 GetServerInfoMemory()
         {
             return TServerManagerBase.TheServerManager.ServerInfoMemory;
@@ -94,7 +141,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// <summary>
         /// command to stop the server in a more controlled way than <see cref="StopServer" /> (gets all connected clients to disconnect)
         /// </summary>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static bool StopServerControlled(bool AForceAutomaticClosing)
         {
             return TServerManagerBase.TheServerManager.StopServerControlled(AForceAutomaticClosing);
@@ -103,7 +150,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// <summary>
         /// command to stop the server unconditionally (forces 'hard' disconnection of all Clients!)
         /// </summary>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static void StopServer()
         {
             TServerManagerBase.TheServerManager.StopServer();
@@ -113,7 +160,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// perform garbage collection on the server
         /// </summary>
         /// <returns></returns>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static System.Int64 PerformGC()
         {
             return TServerManagerBase.TheServerManager.PerformGC();
@@ -124,7 +171,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// </summary>
         /// <param name="AListDisconnectedClients"></param>
         /// <returns></returns>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static String FormatClientList(Boolean AListDisconnectedClients)
         {
             return TServerManagerBase.TheServerManager.FormatClientList(AListDisconnectedClients);
@@ -135,7 +182,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// </summary>
         /// <param name="AListDisconnectedClients"></param>
         /// <returns></returns>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static String FormatClientListSysadm(Boolean AListDisconnectedClients)
         {
             return TServerManagerBase.TheServerManager.FormatClientListSysadm(AListDisconnectedClients);
@@ -149,7 +196,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// <param name="ATaskCode"></param>
         /// <param name="ATaskPriority"></param>
         /// <returns></returns>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static bool QueueClientTask(System.Int16 AClientID, String ATaskGroup, String ATaskCode, System.Int16 ATaskPriority)
         {
             return TServerManagerBase.TheServerManager.QueueClientTask(AClientID, ATaskGroup, ATaskCode, ATaskPriority);
@@ -161,7 +208,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// <param name="AClientID"></param>
         /// <param name="ACantDisconnectReason"></param>
         /// <returns></returns>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static bool DisconnectClient(System.Int16 AClientID, out String ACantDisconnectReason)
         {
             return TServerManagerBase.TheServerManager.DisconnectClient(AClientID, out ACantDisconnectReason);
@@ -171,7 +218,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// returns a string with yml.gz data
         /// </summary>
         /// <returns></returns>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static string BackupDatabaseToYmlGZ()
         {
             return TServerManagerBase.TheServerManager.BackupDatabaseToYmlGZ();
@@ -181,7 +228,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// restore the database from a string with yml.gz data
         /// </summary>
         /// <returns></returns>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static bool RestoreDatabaseFromYmlGZ(string AYmlGzData)
         {
             // set the client id to avoid problems with missing ClientID for InitProgressTracker during restore of database
@@ -194,7 +241,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// Marks all DataTables in the Cache to be no longer up-to-date (=out of sync
         /// with the data that was originally placed in the DataTable).
         /// </summary>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static void RefreshAllCachedTables()
         {
             TServerManagerBase.TheServerManager.RefreshAllCachedTables();
@@ -204,7 +251,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// add a new user
         /// </summary>
         /// <returns></returns>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static bool AddUser(string AUserID)
         {
             return TServerManagerBase.TheServerManager.AddUser(AUserID);
@@ -214,14 +261,14 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// add a new user
         /// </summary>
         /// <returns></returns>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static bool AddUser(string AUserID, string APassword = "")
         {
             return TServerManagerBase.TheServerManager.AddUser(AUserID, APassword);
         }
 
         /// Allows the admin console to run a timed job now
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static void PerformTimedProcessingNow(string AProcessName)
         {
             TServerManagerBase.TheServerManager.PerformTimedProcessingNow(AProcessName);
@@ -230,7 +277,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// <summary>
         /// the host name of the smtp server
         /// </summary>
-        [CheckServerAdminToken]
+        [RequireModulePermission("SYSMAN")]
         public static string GetSMTPServer()
         {
             return TServerManagerBase.TheServerManager.SMTPServer;
