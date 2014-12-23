@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -728,6 +728,7 @@ public class TAdminConsole
             THttpConnector.ServerAdminSecurityToken = NewSecurityToken();
             THttpConnector.InitConnection(TAppSettingsManager.GetValue("OpenPetra.HTTPServer"));
             TRemote = new TMServerAdminNamespace().WebConnectors;
+            TRemote.LoginServerAdmin();
 
             if (TAppSettingsManager.HasValue("Command"))
             {
@@ -791,6 +792,8 @@ public class TAdminConsole
             return;
         }
 
+        string CannotDisconnectMessage;
+        new THTTPClientManager().DisconnectClient(out CannotDisconnectMessage);
         ClearSecurityToken();
         // THE VERY END OF SERVERADMIN :(
     }

@@ -41,6 +41,7 @@ using System.Web;
 using Ict.Common;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Session;
 
 namespace Ict.Common.Remoting.Server
 {
@@ -221,6 +222,7 @@ namespace Ict.Common.Remoting.Server
 
                     if (content.Trim() == AServerAdminToken)
                     {
+                        TSession.SetVariable("ServerAdminToken", AServerAdminToken);
                         return true;
                     }
                 }

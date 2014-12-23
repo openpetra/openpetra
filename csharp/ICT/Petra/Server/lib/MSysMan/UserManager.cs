@@ -32,6 +32,7 @@ using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Session;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan.Data;
@@ -318,40 +319,47 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                     }
                 }
 
-                string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
-
-                if (UserAuthenticationMethod == "OpenPetraDBSUser")
+                if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
                 {
-                    // TODO 1 oChristianK cSecurity : Perform user authentication by verifying password hash in the DB
-                    // see also ICTPetraWiki: Todo_Petra.NET#Implement_Security_.7B2.7D_.5BChristian.5D
-                    if (CreateHashOfPassword(String.Concat(APassword,
-                                UserDR.PasswordSalt)) != UserDR.PasswordHash)
-                    {
-                        // increase failed logins
-                        UserDR.FailedLogins++;
-                        LoginDateTime = DateTime.Now;
-                        UserDR.FailedLoginDate = LoginDateTime;
-                        UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
-                        SaveUser(AUserID, (SUserTable)UserDR.Table);
-
-                        throw new EPasswordWrongException(StrInvalidUserIDPassword);
-                    }
+                    // Login via server admin console authenticated by file token
                 }
                 else
                 {
-                    IUserAuthentication auth = LoadAuthAssembly(UserAuthenticationMethod);
+                    string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
-                    string ErrorMessage;
-
-                    if (!auth.AuthenticateUser(EmailAddress, APassword, out ErrorMessage))
+                    if (UserAuthenticationMethod == "OpenPetraDBSUser")
                     {
-                        UserDR.FailedLogins++;
-                        LoginDateTime = DateTime.Now;
-                        UserDR.FailedLoginDate = LoginDateTime;
-                        UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
-                        SaveUser(AUserID, (SUserTable)UserDR.Table);
+                        // TODO 1 oChristianK cSecurity : Perform user authentication by verifying password hash in the DB
+                        // see also ICTPetraWiki: Todo_Petra.NET#Implement_Security_.7B2.7D_.5BChristian.5D
+                        if (CreateHashOfPassword(String.Concat(APassword,
+                                    UserDR.PasswordSalt)) != UserDR.PasswordHash)
+                        {
+                            // increase failed logins
+                            UserDR.FailedLogins++;
+                            LoginDateTime = DateTime.Now;
+                            UserDR.FailedLoginDate = LoginDateTime;
+                            UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
+                            SaveUser(AUserID, (SUserTable)UserDR.Table);
 
-                        throw new EPasswordWrongException(ErrorMessage);
+                            throw new EPasswordWrongException(StrInvalidUserIDPassword);
+                        }
+                    }
+                    else
+                    {
+                        IUserAuthentication auth = LoadAuthAssembly(UserAuthenticationMethod);
+
+                        string ErrorMessage;
+
+                        if (!auth.AuthenticateUser(EmailAddress, APassword, out ErrorMessage))
+                        {
+                            UserDR.FailedLogins++;
+                            LoginDateTime = DateTime.Now;
+                            UserDR.FailedLoginDate = LoginDateTime;
+                            UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
+                            SaveUser(AUserID, (SUserTable)UserDR.Table);
+
+                            throw new EPasswordWrongException(ErrorMessage);
+                        }
                     }
                 }
 
