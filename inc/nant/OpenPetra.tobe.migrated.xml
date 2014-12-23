@@ -97,7 +97,6 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   </code>
 </script>             
 
-<target name="cleanPetra" depends="clean,quickClean" />
 <target name="compilePetra" depends="compile" />
 
 <target name="generateORMCachedTables" depends="" description="Generates the cached tables">
@@ -139,6 +138,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
             overwrite="false"/> 
   <property name="Innosetup.ISCC" value="${OP::GetFileInProgramDirectory('/Inno Setup 5/ISCC.exe')}" overwrite="false"/>
   <property name="makensis.exe" value="${OP::GetFileInProgramDirectory('/NSIS/makensis.exe')}" overwrite="false"/>
+  <property name="git" value="${environment::get-variable('AppData')}\..\Local\Programs\Git\bin\git" overwrite="false"/>
 
   <!-- For Windows, we do not need the XSP server anymore, but use the SimpleASPHost -->
   <property name="MonoBinPath" value="" overwrite="false"/>
@@ -154,6 +154,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
     <property name="MonoBinPath" value="/opt/mono/bin" overwrite="false"/>
     <property name="Dia.exe" value="doesnotexist/dia.exe" overwrite="false"/>
     <property name="sql2dia" value="${dir.3rdParty}/sql2dia/sql2dia32" overwrite="false"/>
+    <property name="git" value="git" overwrite="false"/>
 
     <property name="MonoExecutable.file" value="/opt/mono-openpetra/bin/mono" overwrite="false"/>
     <if test="${not file::exists(MonoExecutable.file)}">

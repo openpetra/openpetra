@@ -28,6 +28,7 @@ list of available commands:
   startStandalone: run the OpenPetra standalone application, if generateSolution was run with -D:compileForStandalone=true
   deleteBakFiles: delete all backup files
   initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
+  initPlugins: install some default plugins
   test: will run the NUnit tests (smaller tests: test-without-display, test-main-navigation-screens, test-client)
       nant test-without-display             runs all basic tests (excl. GUI tests)
       nant test-main-navigation-screens     tests the opening of all screens from the main menu
@@ -585,6 +586,10 @@ useful parameters
     <exec program="bzr" commandline="version-info" output="${dir.delivery}/bin/vcs-revision.txt" failonerror="false"/>
     <echo message="Version Control System version updated in file ${dir.delivery}/bin/vcs-revision.txt" />
 -->
+</target>
+
+<target name="initPlugins">
+    <nant inheritall="false" target="initPlugins" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Plugins/Plugins.build')}" verbose="${verbose}"/>
 </target>
 
 </project>
