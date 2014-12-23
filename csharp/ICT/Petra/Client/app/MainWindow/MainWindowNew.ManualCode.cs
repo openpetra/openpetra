@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Data;
 using System.Drawing;
 using System.Collections.Generic;
@@ -568,6 +569,18 @@ namespace Ict.Petra.Client.App.PetraClient
             }
         }
 
+        private static void MergePluginUINavigation(ref XmlDocument AUINavigation)
+        {
+            string[] UINavigationFiles = Directory.GetFiles("../../csharp/ICT/Petra/Plugins", "UINavigation.yml", SearchOption.AllDirectories);
+
+            foreach (string UINavFile in UINavigationFiles)
+            {
+                TYml2Xml parser = new TYml2Xml(UINavFile);
+                XmlDocument UINavigation = parser.ParseYML2XML();
+                TYml2Xml.Merge(ref AUINavigation, UINavigation, 1);
+            }
+        }
+
         /// <summary>
         /// build an XML document which includes all ledgers etc.
         /// </summary>
@@ -575,6 +588,12 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("UINavigation.File"));
             XmlDocument UINavigation = parser.ParseYML2XML();
+
+            // look for plugin UINavigation files, only for development mode in the OpenPetra source code working tree
+            if (Directory.Exists("../../csharp/ICT/Petra/Plugins"))
+            {
+                MergePluginUINavigation(ref UINavigation);
+            }
 
             ALedgerTable AvailableLedgers = new ALedgerTable();
 
