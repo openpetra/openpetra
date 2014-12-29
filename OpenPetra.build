@@ -570,6 +570,7 @@ useful parameters
     <zip zipfile="${zipfile}">
        <fileset basedir="${dir.root}" prefix="openpetra">
          <include name="**/*" />
+         <exclude name="tmp/**"/>
          <exclude name="**/.bzr/**"/>
          <exclude name="**/.git/**"/>
        </fileset>
