@@ -683,6 +683,7 @@ public class TAdminConsole
     public static void Start()
     {
         String ClientID;
+        bool ExitError = false;
         Boolean SilentSysadm;
 
         SilentSysadm = false;
@@ -789,12 +790,18 @@ public class TAdminConsole
                 Console.WriteLine("Exception occured while connecting/communicating to PETRAServer: " + exp.ToString());
             }
 
-            return;
+            ExitError = true;
         }
 
         string CannotDisconnectMessage;
         new THTTPClientManager().DisconnectClient(out CannotDisconnectMessage);
         ClearSecurityToken();
+
+        if (ExitError)
+        {
+            System.Environment.Exit(-1);
+        }
+
         // THE VERY END OF SERVERADMIN :(
     }
 }

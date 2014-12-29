@@ -94,6 +94,11 @@
   </if>
 </target>
 
+<target name="startServerBackground" description="Starts the OpenPetra Server in the background">
+  <property name="spawnxsp" value="true" overwrite="true"/>
+  <call target="startServer"/>
+</target>
+
 <target name="startServer-internal" depends="initConfigFiles-server" description="Starts a local Petra Server">
   <copy todir="${dir.delivery}" overwrite="true">
     <fileset basedir="${dir.csharp}/ICT/Petra/Server/app/WebService/">
@@ -187,12 +192,15 @@
             workingdir="${dir.delivery}"
             commandline="-c &quot;for f in ../js/*;do ln -s $f; done&quot;"/>
       </if>
+      <delete file="${dir.bin}/Mono.Security.dll" failonerror="false"/>
+      <delete file="${dir.bin}/Mono.Data.Sqlite.dll" failonerror="false"/>
       <delete file="${dir.bin}/sqlite3.dll"/>
       <echo message="in your browser, go to http://localhost:${Server.Port}/"/>
+      <property name="spawnxsp" value="false" overwrite="false"/>
       <exec program="xsp4" 
               workingdir="${dir.delivery}"
-              commandline="--verbose --root . --port ${Server.Port} --applications /:."
-              spawn="false">
+              commandline="--verbose --nonstop --root . --port ${Server.Port} --applications /:."
+              spawn="${spawnxsp}">
         <environment>
           <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
           <variable name="MONO_PATH" path="${MonoBinPath}\.."/>
@@ -288,7 +296,7 @@
   </if>
 </target> 
 
-<target name="start" depends="initConfigFiles, startServer, startClient">
+<target name="start" depends="initConfigFiles, startServerBackground, startClient">
 </target>
 
 <target name="startStandalone">
