@@ -544,13 +544,14 @@ useful parameters
     <call target="resetDatabase"/>
 
     <!-- download another demo database, and load it -->
-    <delete file="demoWith2ledgers.yml.gz" />
-    <exec program="wget" commandline="http://sourceforge.net/projects/openpetraorg/files/openpetraorg/demodata/demoWith2ledgers.yml.gz/download -OdemoWith2ledgers.yml.gz"/>
-    <call target="startPetraServer"/>
-    <sleep seconds="3"/>
+    <delete file="demoWith1ledger.yml.gz" />
+    <exec program="wget" commandline="http://sourceforge.net/projects/openpetraorg/files/openpetraorg/demodata/demoWith1ledger.yml.gz/download -OdemoWith1ledger.yml.gz"/>
     <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+    <call target="initConfigFiles"/>
+    <call target="startServerBackground"/>
+    <sleep seconds="3"/>
     <ExecDotNet program="${dir.bin}/PetraServerAdminConsole.exe" 
-        commandline="-C:${dir.root}/etc/ServerAdmin.config -Command:LoadYmlGz -YmlGzFile:${dir.root}/demoWith2ledgers.yml.gz"/>
+        commandline="-C:${dir.root}/etc/ServerAdmin.config -Command:LoadYmlGz -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
     <call target="stopPetraServer"/>
 
     <copy file="${dir.delivery}/bin/Ict.Tools.DevelopersAssistant.exe" todir="${dir.root}"/>
