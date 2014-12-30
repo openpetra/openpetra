@@ -609,9 +609,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().DeleteCurrentRecurringBatchGiftData(batchNumber);
 
-                //Affect a change in the batch row, required by deletion process.
-                ARowToDelete.DateModified = DateTime.Now;
-
                 // Delete the recurring batch row.
                 ARowToDelete.Delete();
 

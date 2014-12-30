@@ -728,7 +728,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     txtDebitTotalAmountBase.NumberValueDecimal = 0;
                 }
 
-                //Iterate thuogh all trnsactions in Journal
+                //Iterate through all transactions in Journal
                 foreach (DataRowView trv in TransactionsToUpdateDV)
                 {
                     ATransactionRow tr = (ATransactionRow)trv.Row;

@@ -583,8 +583,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            bool AmountsChanged = false;
-
             if (FPreviouslySelectedDetailRow != null)
             {
                 if (FPreviouslySelectedDetailRow.DebitCreditIndicator)
@@ -597,7 +595,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     if (FPreviouslySelectedDetailRow.TransactionAmount != Convert.ToDecimal(txtDebitAmount.NumberValueDecimal))
                     {
                         FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtDebitAmount.NumberValueDecimal);
-                        AmountsChanged = true;
                     }
                 }
                 else
@@ -610,7 +607,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     if (FPreviouslySelectedDetailRow.TransactionAmount != Convert.ToDecimal(txtCreditAmount.NumberValueDecimal))
                     {
                         FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtCreditAmount.NumberValueDecimal);
-                        AmountsChanged = true;
                     }
                 }
             }
@@ -627,14 +623,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            if (AmountsChanged)
+            if (GLRoutines.UpdateTotalsOfRecurringBatchForJournal(ref FMainDS, FBatchRow, FJournalRow))
             {
-                GLRoutines.UpdateTotalsOfRecurringBatch(ref FMainDS, FBatchRow);
                 FPetraUtilsObject.SetChangedFlag();
             }
 
-            txtCreditTotalAmount.NumberValueDecimal = FJournalRow.JournalCreditTotal;
-            txtDebitTotalAmount.NumberValueDecimal = FJournalRow.JournalDebitTotal;
+            if ((txtCreditTotalAmount.NumberValueDecimal != FJournalRow.JournalCreditTotal)
+                || (txtDebitTotalAmount.NumberValueDecimal != FJournalRow.JournalDebitTotal))
+            {
+                txtCreditTotalAmount.NumberValueDecimal = FJournalRow.JournalCreditTotal;
+                txtDebitTotalAmount.NumberValueDecimal = FJournalRow.JournalDebitTotal;
+            }
 
             // refresh the currency symbols
             ShowDataManual();

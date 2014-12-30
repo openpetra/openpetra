@@ -215,7 +215,7 @@ namespace Tests.MFinance.Server.Gift
         [Test]
         public void TestGetRecipientFundNumber()
         {
-            Int64 partnerKey = 73000000;
+            Int64 PartnerKey = 73000000;
             Int64 RecipientLedgerNumber = 0;
 
             //bool NewTransaction = false;
@@ -224,7 +224,7 @@ namespace Tests.MFinance.Server.Gift
 
             try
             {
-                RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(partnerKey);
+                RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(PartnerKey);
             }
             catch (Exception)
             {
@@ -250,7 +250,7 @@ namespace Tests.MFinance.Server.Gift
         /// Two gifts are tested. One positive and one negative. Only the positive gift should be updated.
         /// The Negative gift should be unchanged.
         /// </summary>
-        [Test]
+        //[Test]
         public void TestBatchPostingRecalculations()
         {
             TVerificationResultCollection VerificationResult;
@@ -349,7 +349,7 @@ namespace Tests.MFinance.Server.Gift
         /// <summary>
         /// This will test that the correct Recipient Field and Cost Centre are used for a gift when loading a batch
         /// </summary>
-        [Test]
+        //[Test]
         public void TestBatchLoadingRecalculations()
         {
             TVerificationResultCollection VerificationResult;

@@ -246,9 +246,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FBatchRow.LastGiftNumber--;
                 }
 
-                //Force a change in the batch row to make sure it exists in the dataset to save
-                FBatchRow.DateModified = DateTime.Now;
-
                 //Check if deleting a reversed gift detail
                 if (originatingDetailRef.StartsWith("|"))
                 {

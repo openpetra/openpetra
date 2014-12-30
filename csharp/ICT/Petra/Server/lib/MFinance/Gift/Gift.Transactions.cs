@@ -1204,12 +1204,53 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             //Get a list of all batches involved
             List <Int32>ListAllGiftBatchesToProcess = new List <int>();
 
-            DataView AllBatchesToProcess = new DataView(AInspectDS.AGiftBatch);
-            AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
-
-            foreach (DataRowView drv in AllBatchesToProcess)
+            if (GiftDetailTableInDataSet)
             {
-                ListAllGiftBatchesToProcess.Add((int)(drv[AGiftBatchTable.ColumnBatchNumberId]));
+                DataView AllBatchesToProcess = new DataView(AInspectDS.AGiftDetail);
+                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
+
+                foreach (DataRowView drv in AllBatchesToProcess)
+                {
+                    AGiftDetailRow gdr = (AGiftDetailRow)drv.Row;
+                    int batchNumber = gdr.BatchNumber;
+
+                    if (!ListAllGiftBatchesToProcess.Contains(batchNumber))
+                    {
+                        ListAllGiftBatchesToProcess.Add(batchNumber);
+                    }
+                }
+            }
+            else if (GiftTableInDataSet)
+            {
+                DataView AllBatchesToProcess = new DataView(AInspectDS.AGift);
+                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
+
+                foreach (DataRowView drv in AllBatchesToProcess)
+                {
+                    AGiftRow gdr = (AGiftRow)drv.Row;
+                    int batchNumber = gdr.BatchNumber;
+
+                    if (!ListAllGiftBatchesToProcess.Contains(batchNumber))
+                    {
+                        ListAllGiftBatchesToProcess.Add(batchNumber);
+                    }
+                }
+            }
+            else if (GiftBatchTableInDataSet)
+            {
+                DataView AllBatchesToProcess = new DataView(AInspectDS.AGiftBatch);
+                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
+
+                foreach (DataRowView drv in AllBatchesToProcess)
+                {
+                    AGiftBatchRow gdr = (AGiftBatchRow)drv.Row;
+                    int batchNumber = gdr.BatchNumber;
+
+                    if (!ListAllGiftBatchesToProcess.Contains(batchNumber))
+                    {
+                        ListAllGiftBatchesToProcess.Add(batchNumber);
+                    }
+                }
             }
 
             if (GiftBatchTableInDataSet)
@@ -1262,7 +1303,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetailCount = AInspectDS.AGiftDetail.Count;
                 }
 
-                if ((giftBatchCount > 0) && (giftCount > 0) && (giftDetailCount > 1))
+                if ((giftCount > 0) && (giftDetailCount > 1))
                 {
                     //The Gift Detail table must be in ascending order
                     AGiftDetailTable cloneDetail = (AGiftDetailTable)AInspectDS.AGiftDetail.Clone();
@@ -1441,11 +1482,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             bool AllValidationsOK = true;
 
-            bool RecurrGiftBatchTableInDataSet = (AInspectDS.ARecurringGiftBatch != null);
-            bool RecurrGiftTableInDataSet = (AInspectDS.ARecurringGift != null);
-            bool RecurrGiftDetailTableInDataSet = (AInspectDS.ARecurringGiftDetail != null);
+            bool RecurringGiftBatchTableInDataSet = (AInspectDS.ARecurringGiftBatch != null);
+            bool RecurringGiftTableInDataSet = (AInspectDS.ARecurringGift != null);
+            bool RecurringGiftDetailTableInDataSet = (AInspectDS.ARecurringGiftDetail != null);
 
-            if (RecurrGiftBatchTableInDataSet)
+            if (RecurringGiftBatchTableInDataSet)
             {
                 ValidateRecurringGiftBatch(ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
                 ValidateRecurringGiftBatchManual(ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
@@ -1456,7 +1497,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            if (RecurrGiftDetailTableInDataSet)
+            if (RecurringGiftDetailTableInDataSet)
             {
                 ValidateRecurringGiftDetail(ref AVerificationResult, AInspectDS.ARecurringGiftDetail);
                 ValidateRecurringGiftDetailManual(ref AVerificationResult, AInspectDS.ARecurringGiftDetail);
@@ -1477,12 +1518,53 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             //Get a list of all batches involved
             List <Int32>ListAllGiftBatchesToProcess = new List <int>();
 
-            DataView AllBatchesToProcess = new DataView(AInspectDS.ARecurringGiftBatch);
-            AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
-
-            foreach (DataRowView drv in AllBatchesToProcess)
+            if (RecurringGiftDetailTableInDataSet)
             {
-                ListAllGiftBatchesToProcess.Add((int)(drv[ARecurringGiftBatchTable.ColumnBatchNumberId]));
+                DataView AllBatchesToProcess = new DataView(AInspectDS.ARecurringGiftDetail);
+                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
+
+                foreach (DataRowView drv in AllBatchesToProcess)
+                {
+                    ARecurringGiftDetailRow gdr = (ARecurringGiftDetailRow)drv.Row;
+                    int batchNumber = gdr.BatchNumber;
+
+                    if (!ListAllGiftBatchesToProcess.Contains(batchNumber))
+                    {
+                        ListAllGiftBatchesToProcess.Add(batchNumber);
+                    }
+                }
+            }
+            else if (RecurringGiftTableInDataSet)
+            {
+                DataView AllBatchesToProcess = new DataView(AInspectDS.ARecurringGift);
+                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
+
+                foreach (DataRowView drv in AllBatchesToProcess)
+                {
+                    ARecurringGiftRow gdr = (ARecurringGiftRow)drv.Row;
+                    int batchNumber = gdr.BatchNumber;
+
+                    if (!ListAllGiftBatchesToProcess.Contains(batchNumber))
+                    {
+                        ListAllGiftBatchesToProcess.Add(batchNumber);
+                    }
+                }
+            }
+            else if (RecurringGiftBatchTableInDataSet)
+            {
+                DataView AllBatchesToProcess = new DataView(AInspectDS.ARecurringGiftBatch);
+                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
+
+                foreach (DataRowView drv in AllBatchesToProcess)
+                {
+                    ARecurringGiftBatchRow gdr = (ARecurringGiftBatchRow)drv.Row;
+                    int batchNumber = gdr.BatchNumber;
+
+                    if (!ListAllGiftBatchesToProcess.Contains(batchNumber))
+                    {
+                        ListAllGiftBatchesToProcess.Add(batchNumber);
+                    }
+                }
             }
 
             //Get a list of all batches to delete - for multi-delete
@@ -1502,22 +1584,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 int recurrGiftCount = 0;
                 int recurrGiftDetailCount = 0;
 
-                if (RecurrGiftBatchTableInDataSet)
+                if (RecurringGiftBatchTableInDataSet)
                 {
                     recurrGiftBatchCount = AInspectDS.ARecurringGiftBatch.Count;
                 }
 
-                if (RecurrGiftTableInDataSet)
+                if (RecurringGiftTableInDataSet)
                 {
                     recurrGiftCount = AInspectDS.ARecurringGift.Count;
                 }
 
-                if (RecurrGiftDetailTableInDataSet)
+                if (RecurringGiftDetailTableInDataSet)
                 {
                     recurrGiftDetailCount = AInspectDS.ARecurringGiftDetail.Count;
                 }
 
-                if ((recurrGiftBatchCount > 0) && (recurrGiftCount > 0) && (recurrGiftDetailCount > 1))
+                if ((recurrGiftCount > 0) && (recurrGiftDetailCount > 1))
                 {
                     //The Gift Detail table must be in ascending order
                     ARecurringGiftDetailTable cloneDetail = (ARecurringGiftDetailTable)AInspectDS.ARecurringGiftDetail.Clone();
@@ -1569,9 +1651,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
-                if (RecurrGiftTableInDataSet)
+                if (RecurringGiftTableInDataSet)
                 {
-                    if (RecurrGiftDetailTableInDataSet)
+                    if (RecurringGiftDetailTableInDataSet)
                     {
                         AInspectDS.ARecurringGiftDetail.AcceptChanges();
                     }
