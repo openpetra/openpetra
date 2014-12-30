@@ -34,7 +34,7 @@ ENDLOCAL
   <property name="OpenBuildService" value="false" overwrite="false"/>
   <!-- on open build service, we cannot download any files. use the translation files from the git, or add to download _services -->
   <if test="${OpenBuildService == 'false'}">
-    <exec program="bzr" commandline="checkout http://bazaar.launchpad.net/~jomammele/openpetraorg/translationfiles" workingdir="${tempdir}"/>
+    <exec program="bzr" commandline="checkout lp:~jomammele/openpetraorg/translationfiles" workingdir="${tempdir}"/>
     <move todir="${dir.root}/i18n/">
       <fileset basedir="${tempdir}/translationfiles/i18n">
         <include name="*.po" />
