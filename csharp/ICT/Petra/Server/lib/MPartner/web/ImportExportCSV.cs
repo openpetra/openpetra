@@ -29,6 +29,7 @@ using System.Xml;
 
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;

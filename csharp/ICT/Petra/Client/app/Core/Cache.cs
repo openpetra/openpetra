@@ -135,7 +135,7 @@ namespace Ict.Petra.Client.App.Core
                 DataTable TmpDT;
 
                 // Refresh the Cacheble DataTable on the Serverside and return it
-                TRemote.MCommon.Cacheable.WebConnectors.RefreshCacheableTable(ACacheableTable, out TmpDT);
+                TmpDT = TRemote.MCommon.Cacheable.WebConnectors.RefreshCacheableTableAndGet(ACacheableTable);
                 UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
                 Cache_Lookup.TMCommon.RefreshCacheableCommonTable(ACacheableTable);
 
