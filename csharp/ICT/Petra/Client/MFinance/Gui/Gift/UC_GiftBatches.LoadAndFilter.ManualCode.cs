@@ -392,9 +392,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (FrbtPosting.Checked)
             {
-                StringHelper.JoinAndAppend(ref workingFilter, String.Format("({0} = '{1}') AND ({2} <> 0) AND (({3} = 0) OR ({3} = {2}))",
+                // note: batches
+                StringHelper.JoinAndAppend(ref workingFilter, String.Format("({0} = '{1}') AND ({2} > 0) AND (({4} = 0) OR ({4} = {3}))",
                         AGiftBatchTable.GetBatchStatusDBName(),
                         MFinanceConstants.BATCH_UNPOSTED,
+                        AGiftBatchTable.GetLastGiftNumberDBName(),
                         AGiftBatchTable.GetBatchTotalDBName(),
                         AGiftBatchTable.GetHashTotalDBName()),
                     CommonJoinString.JOIN_STRING_SQL_AND);
@@ -412,6 +414,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPrevFilter = AFilterString;
 
             //TLogging.Log(String.Format("working filter: {0}", workingFilter));
+        }
+
+        /// <summary>
+        /// Finds the ComboBox index corresponding to the specified database year index
+        /// </summary>
+        /// <param name="ADBYearIndex">The year index as stored in the database</param>
+        /// <returns>The ComboBox index</returns>
+        public Int32 FindYearAsIndex(Int32 ADBYearIndex)
+        {
+            return FcmbYearEnding.FindInt32InComboBox(ADBYearIndex);
+        }
+
+        /// <summary>
+        /// Finds the ComboBox index corresponding to the specified database period index
+        /// </summary>
+        /// <param name="ADBPeriodIndex">The period index as stored in the database (typically a number between 1 and 20)</param>
+        /// <returns>The ComboBox index</returns>
+        public Int32 FindPeriodAsIndex(Int32 ADBPeriodIndex)
+        {
+            return FcmbPeriod.FindInt32InComboBox(ADBPeriodIndex);
         }
 
         #endregion

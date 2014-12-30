@@ -4,8 +4,9 @@
 // @Authors:
 //       timop
 //       Tim Ingham
+//       ChristianK
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,6 +35,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
@@ -68,6 +70,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private bool FIgnorePartner = false;
         private bool FIgnoreApplication = false;
         private static String ImportContext;
+        private bool FParsingOfPartnerLocationsForContactDetailsNecessary = true;
 
         private void AddVerificationResult(String AResultText, TResultSeverity ASeverity)
         {
@@ -656,7 +659,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         {
             PLocationRow LocationRow = FMainDS.PLocation.NewRowTyped();
 
-
             LocationRow.SiteKey = ReadInt64();
             LocationRow.Locality = ReadString();
             LocationRow.StreetName = ReadString();
@@ -688,6 +690,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             PPartnerLocationRow PartnerLocationRow = FMainDS.PPartnerLocation.NewRowTyped();
 
+            TPartnerContactDetails_LocationConversionHelper.AddOldDBTableColumnsToPartnerLocation(FMainDS.PPartnerLocation);
+
             int? Extension;
 
             PartnerLocationRow.PartnerKey = FPartnerKey;
@@ -697,33 +701,33 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerLocationRow.DateGoodUntil = ReadNullableDate();
             PartnerLocationRow.LocationType = ReadString();
             PartnerLocationRow.SendMail = ReadBoolean();
-            PartnerLocationRow.EmailAddress = ReadString();
-            PartnerLocationRow.TelephoneNumber = ReadString();
+            PartnerLocationRow["p_email_address_c"] = ReadString();     // Important: Do not use 'PartnerLocationRow.EmailAddress' as this Column will get removed once Contact Details conversion is finished!
+            PartnerLocationRow["p_telephone_number_c"] = ReadString();  // Important: Do not use 'PartnerLocationRow.TelephoneNumber' as this Column will get removed once Contact Details conversion is finished!
 
             // prevent problems in case Phone Extension is set to null
             Extension = ReadNullableInt32();
 
             if (Extension.HasValue)
             {
-                PartnerLocationRow.Extension = Extension.Value;
+                PartnerLocationRow["p_extension_i"] = Extension.Value;  // Important: Do not use 'PartnerLocationRow.Extension' as this Column will get removed once Contact Details conversion is finished!
             }
             else
             {
-                PartnerLocationRow.Extension = 0;
+                PartnerLocationRow["p_extension_i"] = 0;                // Important: Do not use 'PartnerLocationRow.Extension' as this Column will get removed once Contact Details conversion is finished!
             }
 
-            PartnerLocationRow.FaxNumber = ReadString();
+            PartnerLocationRow["p_fax_number_c"] = ReadString();        // Important: Do not use 'PartnerLocationRow.FaxNumber' as this Column will get removed once Contact Details conversion is finished!
 
             // prevent problems in case Fax Extension is set to null
             Extension = ReadNullableInt32();
 
             if (Extension.HasValue)
             {
-                PartnerLocationRow.FaxExtension = Extension.Value;
+                PartnerLocationRow["p_fax_extension_i"] = Extension.Value;  // Important: Do not use 'PartnerLocationRow.FaxExtension' as this Column will get removed once Contact Details conversion is finished!
             }
             else
             {
-                PartnerLocationRow.FaxExtension = 0;
+                PartnerLocationRow["p_fax_extension_i"] = 0;                // Important: Do not use 'PartnerLocationRow.FaxExtension' as this Column will get removed once Contact Details conversion is finished!
             }
 
             if (!FIgnorePartner)
@@ -1575,6 +1579,42 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
+        private PPartnerAttributeTypeTable FPartnerAttributeTypeTable = null;
+
+        private void ImportPartnerAttribute(TDBTransaction ATransaction)
+        {
+            PPartnerAttributeRow PartnerAttributeRow = FMainDS.PPartnerAttribute.NewRowTyped();
+
+            PartnerAttributeRow.PartnerKey = FPartnerKey;
+
+            PartnerAttributeRow.AttributeType = ReadString();
+            PartnerAttributeRow.Sequence = (Int32)MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(
+                TSequenceNames.seq_partner_attribute_index);
+            PartnerAttributeRow.Index = ReadInt32();
+            PartnerAttributeRow.Value = ReadString();
+            PartnerAttributeRow.Comment = ReadString();
+            PartnerAttributeRow.Primary = ReadBoolean();
+            PartnerAttributeRow.WithinOrgansiation = ReadBoolean();
+            PartnerAttributeRow.Specialised = ReadBoolean();
+            PartnerAttributeRow.Confidential = ReadBoolean();
+            PartnerAttributeRow.Current = ReadBoolean();
+            PartnerAttributeRow.NoLongerCurrentFrom = ReadNullableDate();
+
+            if (FPartnerAttributeTypeTable == null)
+            {
+                FPartnerAttributeTypeTable = PPartnerAttributeTypeAccess.LoadAll(
+                    StringHelper.StrSplit(PPartnerAttributeTypeTable.GetAttributeTypeDBName(), ","), ATransaction);
+            }
+
+            // Ignore Attribute Types that are not in the database. avoid constraint violation
+            if (!FIgnorePartner && (FPartnerAttributeTypeTable.Rows.Find(PartnerAttributeRow.AttributeType) != null))
+            {
+                FMainDS.PPartnerAttribute.Rows.Add(PartnerAttributeRow);
+            }
+
+            Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerContactDetailAttributes(FMainDS.PPartnerAttribute);
+        }
+
         private void ImportInterest(TDBTransaction ATransaction)
         {
             PartnerImportExportTDSPPartnerInterestRow PartnerInterestRow = FMainDS.PPartnerInterest.NewRowTyped();
@@ -2039,6 +2079,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     ImportPartnerType(ATransaction);
                 }
+                else if (KeyWord == "PARTNERATTRIBUTE")
+                {
+                    ImportPartnerAttribute(ATransaction);
+
+                    FParsingOfPartnerLocationsForContactDetailsNecessary = false;
+                }
                 else if (KeyWord == "INTEREST")
                 {
                     ImportInterest(ATransaction);
@@ -2110,9 +2156,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         /// <summary>
         /// Import all data of a partner from a text file, using a format used by Petra 2.x.
-        /// containing: partner, person/family/church/etc record, valid locations, special types,
-        ///             interests, personnel data, commitments, applications
-        /// for units there is more specific data, used eg. for the events file
+        /// Containing: partner, person/family/church/etc record, valid locations, contact details, special types,
+        ///             interests, personnel data, commitments, applications, etc.
+        /// For UNITs there is more specific data, used eg. for the events file.
         /// </summary>
         /// <param name="ALinesToImport"></param>
         /// <param name="ALimitToOption">if this is not an empty string, only the applications for this conference will be imported, historic applications will be ignored</param>
@@ -2165,6 +2211,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     CheckRequiredUnits(Transaction);
                     //                AddRequiredUnits(FRequiredOfficeKeys, "F", 1000000, "Office", Transaction);
                     //                AddRequiredUnits(FRequiredOptionKeys, "CONF", 1000000, "Conference", Transaction);
+
+                    if (FParsingOfPartnerLocationsForContactDetailsNecessary)
+                    {
+                        TPartnerContactDetails_LocationConversionHelper.PartnerAttributeLoadUsingTemplate =
+                            PPartnerAttributeAccess.LoadUsingTemplate;
+                        TPartnerContactDetails_LocationConversionHelper.SequenceGetter =
+                            MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence;
+
+                        TPartnerContactDetails_LocationConversionHelper.ParsePartnerLocationsForContactDetails(FMainDS,
+                            Transaction);
+                    }
                 }
                 catch (Exception e)
                 {

@@ -172,7 +172,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         [Test]
         public void LoadModalEmptyTable()
         {
-            // Initialse data - create an empty table and our test ledger
+            // Initialise data - create an empty table and our test ledger
             FMainDS.LoadAll();
             FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
@@ -233,8 +233,6 @@ namespace Tests.MFinance.Client.ExchangeRates
             Button btnNew = btnNewTester.Properties;
             Button btnClose = btnCloseTester.Properties;
             Button btnDelete = (new ButtonTester("btnDelete", FModalFormName)).Properties;
-            Button btnEditDelete = (new ButtonTester("btnEnableEdit", FModalFormName)).Properties;
-            Label lblEditDelete = (new LabelTester("lblEnableEditDelete", FModalFormName)).Properties;
             TSgrdDataGrid grdDetails = (TSgrdDataGrid)((new TSgrdDataGridPagedTester("grdDetails", FModalFormName)).Properties);
             Panel pnlDetails = (new PanelTester("pnlDetails", FModalFormName)).Properties;
             TCmbAutoPopulated cmbFromCurrency = (new TCmbAutoPopulatedTester("cmbDetailFromCurrencyCode", FModalFormName)).Properties;
@@ -247,8 +245,6 @@ namespace Tests.MFinance.Client.ExchangeRates
             {
                 Assert.IsFalse(btnClose.Enabled);
                 Assert.IsFalse(btnDelete.Enabled);
-                Assert.IsTrue(btnEditDelete.Visible);
-                Assert.IsFalse(lblEditDelete.Visible);
                 Assert.IsFalse(dtpDateEffective.Date.HasValue);
                 Assert.IsFalse(pnlDetails.Enabled);
                 Assert.AreEqual(1, grdDetails.Rows.Count);
@@ -264,8 +260,6 @@ namespace Tests.MFinance.Client.ExchangeRates
                 Assert.IsFalse(cmbToCurrency.Enabled);
                 Assert.IsTrue(btnClose.Enabled);
                 Assert.IsTrue(btnDelete.Enabled);
-                Assert.IsTrue(btnEditDelete.Visible);
-                Assert.IsFalse(lblEditDelete.Visible);
                 Assert.IsTrue(pnlDetails.Enabled);
                 Assert.AreEqual(2, grdDetails.Rows.Count);
 
@@ -343,8 +337,6 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             Button btnClose = btnCloseTester.Properties;
             Button btnDelete = (new ButtonTester("btnDelete", FModalFormName)).Properties;
-            Button btnEditDelete = (new ButtonTester("btnEnableEdit", FModalFormName)).Properties;
-            Label lblEditDelete = (new LabelTester("lblEnableEditDelete", FModalFormName)).Properties;
             TSgrdDataGrid grdDetails = (TSgrdDataGrid)((new TSgrdDataGridPagedTester("grdDetails", FModalFormName)).Properties);
             Panel pnlDetails = (new PanelTester("pnlDetails", FModalFormName)).Properties;
             TCmbAutoPopulated cmbFromCurrency = (new TCmbAutoPopulatedTester("cmbDetailFromCurrencyCode", FModalFormName)).Properties;
@@ -364,9 +356,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                 Assert.IsTrue(btnClose.Enabled);
                 Assert.IsTrue(btnClose.Visible);
                 Assert.IsTrue(btnCancelTester.Properties.Visible);
-                Assert.IsFalse(btnDelete.Enabled);
-                Assert.IsTrue(btnEditDelete.Visible);
-                Assert.IsFalse(lblEditDelete.Visible);
+                Assert.IsTrue(btnDelete.Enabled);
                 Assert.IsTrue(pnlDetails.Enabled);
                 Assert.AreEqual(3, grdDetails.Rows.Count);
 
@@ -492,13 +482,13 @@ namespace Tests.MFinance.Client.ExchangeRates
 
         #endregion
 
-        #region GiftBatch and Journal rate usage test #1
+        #region GiftBatch and Journal rate usage test
 
         /// <summary>
         /// Test for usage of a specific rate in Journal and Gift Batch
         /// </summary>
         [Test]
-        public void ExchangeRateUsage1()
+        public void ExchangeRateUsage()
         {
             FMainDS.LoadAll();
             FMainDS.DeleteAllRows();
@@ -513,10 +503,11 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
+            mainScreen.ShowUsedRates();
 
             DialogBoxHandler = delegate(string name, IntPtr hWnd)
             {
-                ExchangeRateUsage1Handler();
+                ExchangeRateUsageHandler();
             };
 
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
@@ -538,703 +529,163 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// <summary>
         /// Handler for the ExchangeRateUsage1 test
         /// </summary>
-        public void ExchangeRateUsage1Handler()
+        public void ExchangeRateUsageHandler()
         {
             FormTester formTester = new FormTester(FModalFormName);
 
             // Controls
-            ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
+            //ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
             ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
             ButtonTester btnCancelTester = new ButtonTester("btnCancel", FModalFormName);
-            ButtonTester btnEnableEditTester = new ButtonTester("btnEnableEdit", FModalFormName);
 
-            Button btnEnableEdit = btnEnableEditTester.Properties;
-            Label lblEditDelete = (new LabelTester("lblEnableEditDelete", FModalFormName)).Properties;
             TtxtPetraDate dtpDateEffective = (new TTxtPetraDateTester("dtpDetailDateEffectiveFrom", FModalFormName)).Properties;
             TTxtNumericTextBox txtRateOfExchange = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", FModalFormName)).Properties;
 
             try
             {
-                // Create a new rate of GBP->BEF of 0.5155 on 08 Aug 2000
-                // This should catch 2 posted gift/journal rows (8/8-28/8) + 1 unposted gift (1/10) + no unposted journals
-                btnNewTester.Click();
-                dtpDateEffective.Date = new DateTime(2000, 8, 8);
-                txtRateOfExchange.NumberValueDecimal = 0.5155m;
-
-                // To make things tricky create another row for the same date at a later time
-                // This should not spoil catching our previous row's matches
-                btnNewTester.Click();
-                dtpDateEffective.Focus();
-                dtpDateEffective.Date = new DateTime(2000, 8, 8);
-                txtRateOfExchange.Focus();
-                txtRateOfExchange.NumberValueDecimal = 0.5175m;
-
-
-                // Create a rate of 0.5225 on 09 Oct 2000
-                // This should catch 2 unposted gift rows (9/10-15/10) + 3 unposted journals (22/10-30/10)
-                btnNewTester.Click();
-                dtpDateEffective.Date = new DateTime(2000, 10, 9);
-                txtRateOfExchange.NumberValueDecimal = 0.5225m;
-
-                (new ToolStripButtonTester("tbbSave", FModalFormName)).Click();
-
-                btnEnableEditTester.Click();
-                Assert.IsFalse(btnEnableEdit.Visible);
-                Assert.IsTrue(lblEditDelete.Visible);
-
-                for (int i = 5; i > 0; i--)
+                for (int i = 7; i > 0; i--)
                 {
                     SelectRowInGrid(i);
                     string Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
                     Console.WriteLine("Grid row {0}: rate: {1}: {2}", i, txtRateOfExchange.NumberValueDecimal.Value.ToString(), Usage);
+                    // Usage is of form "Ledger:{0} Batch:{1} Journal:{2} Status:{3} at Rate:{4} on Date:{5} at Time:{6}"
+
+                    Assert.IsTrue(Usage.Contains("Ledger:9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
 
                     switch (i)
                     {
                         case 1:             // 0.5225
-                            Assert.IsTrue(Usage.Contains("2 row(s)"), "Expected 2 rows in Gift Table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("3 unposted"), "Expected 3 unposted rows in Journal table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.ToLower().Contains(
+                                "status:unposted"), "Expected an unposted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:113"), "Expected a reference to Batch 113, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:1"), "Expected a reference to Journal 1, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5225"), "Expected a reference to a rate of 0.5225, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-10-30"), "Expected a reference to a date of 2000-10-30, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:0"), "Expected a reference to Time 0, but was: " + Usage);
                             break;
 
-                        case 3:             // 0.5155
-                            Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 rows in Gift Table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("2 posted"), "Expected 2 posted rows in Journal table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
-                            Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references, but was: " + Usage);
+                        case 2:             // 0.5225
+                            Assert.IsTrue(Usage.ToLower().Contains(
+                                "status:unposted"), "Expected an unposted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:112"), "Expected a reference to Batch 112, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:1"), "Expected a reference to Journal 1, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5225"), "Expected a reference to a rate of 0.5225, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-10-26"), "Expected a reference to a date of 2000-10-26, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:0"), "Expected a reference to Time 0, but was: " + Usage);
                             break;
 
-                        default:
-                            Assert.AreEqual(String.Empty, Usage);
-                            break;
-                    }
-                }
-
-                btnCloseTester.Click();
-            }
-            catch (Exception ex)
-            {
-                HandleModalException(ex);
-                btnCancelTester.Properties.DialogResult = DialogResult.Abort;
-                btnCancelTester.Click();
-            }
-        }
-
-        #endregion
-
-        #region GiftBatch and Journal rate usage test #2
-
-        /// <summary>
-        /// Test for usage of a specific rate in Journal and Gift Batch
-        /// </summary>
-        [Test]
-        public void ExchangeRateUsage2()
-        {
-            FMainDS.LoadAll();
-            FMainDS.DeleteAllRows();
-            FMainDS.InsertStandardModalRows();
-            FMainDS.SaveChanges();
-            FLedgerDS.CreateTestLedger();
-
-            FGiftAndJournal.InitialiseData("load-data.sql");
-
-            decimal selectedRate;
-            DateTime selectedDate;
-            int selectedTime;
-
-            // Open the screen modally on our test ledger and a from currency of GBP
-            TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-
-            DialogBoxHandler = delegate(string name, IntPtr hWnd)
-            {
-                ExchangeRateUsage2Handler();
-            };
-
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
-                FStandardEffectiveDate,
-                "GBP",
-                1.0m,
-                out selectedRate,
-                out selectedDate,
-                out selectedTime);
-
-            if (dlgResult == DialogResult.Abort)
-            {
-                Assert.Fail(FModalAssertResult);
-            }
-
-            Assert.AreEqual(DialogResult.OK, dlgResult);
-        }
-
-        /// <summary>
-        /// Handler for the ExchangeRateUsage2 test
-        /// </summary>
-        public void ExchangeRateUsage2Handler()
-        {
-            FormTester formTester = new FormTester(FModalFormName);
-
-            // Controls
-            ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
-            ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
-            ButtonTester btnCancelTester = new ButtonTester("btnCancel", FModalFormName);
-            ButtonTester btnEnableEditTester = new ButtonTester("btnEnableEdit", FModalFormName);
-
-            Button btnEnableEdit = btnEnableEditTester.Properties;
-            Label lblEditDelete = (new LabelTester("lblEnableEditDelete", FModalFormName)).Properties;
-            TtxtPetraDate dtpDateEffective = (new TTxtPetraDateTester("dtpDetailDateEffectiveFrom", FModalFormName)).Properties;
-            TTxtNumericTextBox txtRateOfExchange = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", FModalFormName)).Properties;
-
-            try
-            {
-                // Create a new rate of GBP->BEF of 0.5155 on 1 Aug 2000
-                // This should catch 3 posted gift/journal rows (1/8-28/8) + 1 unposted gift (1/10) + no unposted journals
-                btnNewTester.Click();
-                dtpDateEffective.Date = new DateTime(2000, 8, 1);
-                txtRateOfExchange.NumberValueDecimal = 0.5155m;
-
-                // Create a rate of 0.5225 on 1 Oct 2000
-                // This should catch 3 unposted gift rows (9/10-15/10) + 3 unposted journals (22/10-30/10)
-                btnNewTester.Click();
-                dtpDateEffective.Date = new DateTime(2000, 10, 1);
-                txtRateOfExchange.NumberValueDecimal = 0.5225m;
-
-                (new ToolStripButtonTester("tbbSave", FModalFormName)).Click();
-
-                btnEnableEditTester.Click();
-                Assert.IsFalse(btnEnableEdit.Visible);
-                Assert.IsTrue(lblEditDelete.Visible);
-
-                for (int i = 4; i > 0; i--)
-                {
-                    SelectRowInGrid(i);
-                    string Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
-                    Console.WriteLine("Grid row {0}: rate: {1}: {2}", i, txtRateOfExchange.NumberValueDecimal.Value.ToString(), Usage);
-
-                    switch (i)
-                    {
-                        case 1:             // 0.5225
-                            Assert.IsTrue(Usage.Contains("3 row(s)"), "Expected 3 rows in Gift Table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("3 unposted"), "Expected 3 unposted rows in Journal table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
+                        case 3:             // 0.5225
+                            Assert.IsTrue(Usage.ToLower().Contains(
+                                "status:unposted"), "Expected an unposted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:111"), "Expected a reference to Batch 111, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:1"), "Expected a reference to Journal 1, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5225"), "Expected a reference to a rate of 0.5225, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-10-22"), "Expected a reference to a date of 2000-10-22, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:0"), "Expected a reference to Time 0, but was: " + Usage);
                             break;
 
-                        case 2:             // 0.5155
-                            Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 rows in Gift Table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("3 posted"), "Expected 3 posted rows in Journal table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
-                            Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references, but was: " + Usage);
+                        case 4:             // 0.5225
+                            Assert.IsTrue(Usage.ToLower().Contains(
+                                "status:unposted"), "Expected an unposted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:24"), "Expected a reference to Batch 24, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:0"), "Expected a reference to Journal 0, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5225"), "Expected a reference to a rate of 0.5225, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-10-15"), "Expected a reference to a date of 2000-10-15, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:0"), "Expected a reference to Time 0, but was: " + Usage);
+                            break;
+
+                        case 5:             // 0.5225
+                            Assert.IsTrue(Usage.ToLower().Contains(
+                                "status:unposted"), "Expected an unposted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:23"), "Expected a reference to Batch 23, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:0"), "Expected a reference to Journal 0, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5225"), "Expected a reference to a rate of 0.5225, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-10-09"), "Expected a reference to a date of 2000-10-09, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:0"), "Expected a reference to Time 0, but was: " + Usage);
+                            break;
+
+                        case 6:             // 0.5225
+                            Assert.IsTrue(Usage.ToLower().Contains(
+                                "status:unposted"), "Expected an unposted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:22"), "Expected a reference to Batch 22, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:0"), "Expected a reference to Journal 0, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5225"), "Expected a reference to a rate of 0.5225, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-10-05"), "Expected a reference to a date of 2000-10-05, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:0"), "Expected a reference to Time 0, but was: " + Usage);
+                            break;
+
+                        case 7:             // 0.5155
+                            Assert.IsTrue(Usage.ToLower().Contains(
+                                "status:unposted"), "Expected an unposted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:21"), "Expected a reference to Batch 22, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5155"), "Expected a reference to a rate of 0.5155, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:0"), "Expected a reference to Journal 0, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-10-01"), "Expected a reference to a date of 2000-10-01, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:0"), "Expected a reference to Time 0, but was: " + Usage);
+                            break;
+
+                        case 8:             // 0.5155
+                            Assert.IsTrue(Usage.ToLower().Contains(
+                                "status:unposted"), "Expected an unposted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:103"), "Expected a reference to Batch 103, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:1"), "Expected a reference to Journal 1, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5155"), "Expected a reference to a rate of 0.5155, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-08-28"), "Expected a reference to a date of 2000-08-28, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:60"), "Expected a reference to Time 60, but was: " + Usage);
+                            break;
+
+                        case 9:             // 0.5155
+                            Assert.IsTrue(Usage.ToLower().Contains(
+                                "status:unposted"), "Expected an unposted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:17"), "Expected a reference to Batch 17, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:0"), "Expected a reference to Journal 0, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5155"), "Expected a reference to a rate of 0.5155, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-08-28"), "Expected a reference to a date of 2000-08-28, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:0"), "Expected a reference to Time 0, but was: " + Usage);
+                            break;
+
+                        case 10:             // 0.5155
+                            Assert.IsTrue(Usage.ToLower().Contains(
+                                "status:unposted"), "Expected an unposted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:102"), "Expected a reference to Batch 102, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:1"), "Expected a reference to Journal 1, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5155"), "Expected a reference to a rate of 0.5155, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-08-08"), "Expected a reference to a date of 2000-08-08, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:60"), "Expected a reference to Time 60, but was: " + Usage);
+                            break;
+
+                        case 11:             // 0.5155
+                            Assert.IsTrue(Usage.ToLower().Contains("status:posted"), "Expected a posted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:16"), "Expected a reference to Batch 16, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:0"), "Expected a reference to Journal 0, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5155"), "Expected a reference to a rate of 0.5155, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-08-08"), "Expected a reference to a date of 2000-08-08, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:0"), "Expected a reference to Time 0, but was: " + Usage);
+                            break;
+
+                        case 12:             // 0.5155
+                            Assert.IsTrue(Usage.ToLower().Contains(
+                                "status:unposted"), "Expected an unposted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:101"), "Expected a reference to Batch 101, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:1"), "Expected a reference to Journal 1, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5155"), "Expected a reference to a rate of 0.5155, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-08-08"), "Expected a reference to a date of 2000-08-08, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:60"), "Expected a reference to Time 60, but was: " + Usage);
+                            break;
+
+                        case 13:             // 0.5155
+                            Assert.IsTrue(Usage.ToLower().Contains("status:posted"), "Expected a posted row in Gift Batch table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch:15"), "Expected a reference to Batch 15, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal:0"), "Expected a reference to Journal 0, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Rate:0.5155"), "Expected a reference to a rate of 0.5155, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Date:2000-08-01"), "Expected a reference to a date of 2000-08-01, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Time:0"), "Expected a reference to Time 0, but was: " + Usage);
                             break;
 
                         default:
-                            Assert.AreEqual(String.Empty, Usage);
                             break;
                     }
                 }
-
-                btnCloseTester.Click();
-            }
-            catch (Exception ex)
-            {
-                HandleModalException(ex);
-                btnCancelTester.Properties.DialogResult = DialogResult.Abort;
-                btnCancelTester.Click();
-            }
-        }
-
-        #endregion
-
-        #region GiftBatch and Journal rate usage test #3
-
-        /// <summary>
-        /// Test for usage of a specific rate in Journal and Gift Batch
-        /// </summary>
-        [Test]
-        public void ExchangeRateUsage3()
-        {
-            FMainDS.LoadAll();
-            FMainDS.DeleteAllRows();
-            FMainDS.InsertStandardModalRows();
-            FMainDS.SaveChanges();
-            FLedgerDS.CreateTestLedger();
-
-            FGiftAndJournal.InitialiseData("load-data.sql");
-
-            decimal selectedRate;
-            DateTime selectedDate;
-            int selectedTime;
-
-            // Open the screen modally on our test ledger and a from currency of GBP
-            TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-
-            DialogBoxHandler = delegate(string name, IntPtr hWnd)
-            {
-                ExchangeRateUsage3Handler();
-            };
-
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
-                FStandardEffectiveDate,
-                "GBP",
-                1.0m,
-                out selectedRate,
-                out selectedDate,
-                out selectedTime);
-
-            if (dlgResult == DialogResult.Abort)
-            {
-                Assert.Fail(FModalAssertResult);
-            }
-
-            Assert.AreEqual(DialogResult.OK, dlgResult);
-        }
-
-        /// <summary>
-        /// Handler for the ExchangeRateUsage3 test
-        /// </summary>
-        public void ExchangeRateUsage3Handler()
-        {
-            FormTester formTester = new FormTester(FModalFormName);
-
-            // Controls
-            ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
-            ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
-            ButtonTester btnCancelTester = new ButtonTester("btnCancel", FModalFormName);
-            ButtonTester btnEnableEditTester = new ButtonTester("btnEnableEdit", FModalFormName);
-
-            Button btnEnableEdit = btnEnableEditTester.Properties;
-            Label lblEditDelete = (new LabelTester("lblEnableEditDelete", FModalFormName)).Properties;
-            TtxtPetraDate dtpDateEffective = (new TTxtPetraDateTester("dtpDetailDateEffectiveFrom", FModalFormName)).Properties;
-            TTxtNumericTextBox txtRateOfExchange = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", FModalFormName)).Properties;
-
-            try
-            {
-                // Create a new rate of GBP->BEF of 0.5155 on 28 Aug 2000
-                // This should catch 1 posted gift/journal rows (28/8) + 1 unposted gift (1/10) + no unposted journals
-                btnNewTester.Click();
-                dtpDateEffective.Date = new DateTime(2000, 8, 28);
-                txtRateOfExchange.NumberValueDecimal = 0.5155m;
-
-                // Create a rate of 0.5225 on 30 Oct 2000
-                // This should catch 1 unposted journals (30/10)
-                btnNewTester.Click();
-                dtpDateEffective.Date = new DateTime(2000, 10, 30);
-                txtRateOfExchange.NumberValueDecimal = 0.5225m;
-
-                (new ToolStripButtonTester("tbbSave", FModalFormName)).Click();
-
-                btnEnableEditTester.Click();
-                Assert.IsFalse(btnEnableEdit.Visible);
-                Assert.IsTrue(lblEditDelete.Visible);
-
-                for (int i = 4; i > 0; i--)
-                {
-                    SelectRowInGrid(i);
-                    string Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
-                    Console.WriteLine("Grid row {0}: rate: {1}: {2}", i, txtRateOfExchange.NumberValueDecimal.Value.ToString(), Usage);
-
-                    switch (i)
-                    {
-                        case 1:             // 0.5225
-                            Assert.IsTrue(Usage.Contains("1 unposted"), "Expected 1 unposted rows in Journal table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
-                            Assert.IsFalse(Usage.Contains("Batch table"), "Expected no references to the Gift Batch table, but was: " + Usage);
-                            Assert.IsFalse(Usage.Contains(" posted"), "Expected no posted references, but was: " + Usage);
-                            break;
-
-                        case 2:             // 0.5155
-                            Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 rows in Gift Table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("1 posted"), "Expected 1 posted rows in Journal table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
-                            Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references, but was: " + Usage);
-                            break;
-
-                        default:
-                            Assert.AreEqual(String.Empty, Usage);
-                            break;
-                    }
-                }
-
-                btnCloseTester.Click();
-            }
-            catch (Exception ex)
-            {
-                HandleModalException(ex);
-                btnCancelTester.Properties.DialogResult = DialogResult.Abort;
-                btnCancelTester.Click();
-            }
-        }
-
-        #endregion
-
-        #region GiftBatch and Journal rate usage test #4
-
-        /// <summary>
-        /// Test for usage of a specific rate in Journal and Gift Batch
-        /// </summary>
-        [Test]
-        public void ExchangeRateUsage4()
-        {
-            FMainDS.LoadAll();
-            FMainDS.DeleteAllRows();
-            FMainDS.InsertStandardModalRows();
-            FMainDS.SaveChanges();
-            FLedgerDS.CreateTestLedger();
-
-            FGiftAndJournal.InitialiseData("load-data.sql");
-
-            decimal selectedRate;
-            DateTime selectedDate;
-            int selectedTime;
-
-            // Open the screen modally on our test ledger and a from currency of GBP
-            TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-
-            DialogBoxHandler = delegate(string name, IntPtr hWnd)
-            {
-                ExchangeRateUsage4Handler();
-            };
-
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
-                FStandardEffectiveDate,
-                "GBP",
-                1.0m,
-                out selectedRate,
-                out selectedDate,
-                out selectedTime);
-
-            if (dlgResult == DialogResult.Abort)
-            {
-                Assert.Fail(FModalAssertResult);
-            }
-
-            Assert.AreEqual(DialogResult.OK, dlgResult);
-        }
-
-        /// <summary>
-        /// Handler for the ExchangeRateUsage4 test
-        /// </summary>
-        public void ExchangeRateUsage4Handler()
-        {
-            FormTester formTester = new FormTester(FModalFormName);
-
-            // Controls
-            ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
-            ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
-            ButtonTester btnCancelTester = new ButtonTester("btnCancel", FModalFormName);
-            ButtonTester btnEnableEditTester = new ButtonTester("btnEnableEdit", FModalFormName);
-
-            Button btnEnableEdit = btnEnableEditTester.Properties;
-            Label lblEditDelete = (new LabelTester("lblEnableEditDelete", FModalFormName)).Properties;
-            TtxtPetraDate dtpDateEffective = (new TTxtPetraDateTester("dtpDetailDateEffectiveFrom", FModalFormName)).Properties;
-            TTxtNumericTextBox txtRateOfExchange = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", FModalFormName)).Properties;
-
-            try
-            {
-                // Create a new rate of GBP->BEF of 0.5155 on 31 Aug 2000
-                // This should catch 1 unposted gift (1/10) + no unposted journals
-                btnNewTester.Click();
-                dtpDateEffective.Date = new DateTime(2000, 8, 31);
-                txtRateOfExchange.NumberValueDecimal = 0.5155m;
-
-                // Create a rate of 0.5225 on 1 Nov 2000
-                // This should catch nothing
-                btnNewTester.Click();
-                dtpDateEffective.Date = new DateTime(2000, 11, 1);
-                txtRateOfExchange.NumberValueDecimal = 0.5225m;
-
-                (new ToolStripButtonTester("tbbSave", FModalFormName)).Click();
-
-                btnEnableEditTester.Click();
-                Assert.IsFalse(btnEnableEdit.Visible);
-                Assert.IsTrue(lblEditDelete.Visible);
-
-                for (int i = 4; i > 0; i--)
-                {
-                    SelectRowInGrid(i);
-                    string Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
-                    Console.WriteLine("Grid row {0}: rate: {1}: {2}", i, txtRateOfExchange.NumberValueDecimal.Value.ToString(), Usage);
-
-                    switch (i)
-                    {
-                        case 2:             // 0.5155
-                            Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 posted rows in Journal table, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
-                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
-                            Assert.IsFalse(Usage.Contains("Journal table"), "Expected no references to the Journal table, but was: " + Usage);
-                            Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references, but was: " + Usage);
-                            Assert.IsFalse(Usage.Contains(" posted"), "Expected no posted references, but was: " + Usage);
-                            break;
-
-                        default:
-                            Assert.AreEqual(String.Empty, Usage);
-                            break;
-                    }
-                }
-
-                btnCloseTester.Click();
-            }
-            catch (Exception ex)
-            {
-                HandleModalException(ex);
-                btnCancelTester.Properties.DialogResult = DialogResult.Abort;
-                btnCancelTester.Click();
-            }
-        }
-
-        #endregion
-
-        #region GiftBatch and Journal rate usage test #5
-
-        /// <summary>
-        /// Test for usage of a specific rate in Journal and Gift Batch
-        /// </summary>
-        [Test]
-        public void ExchangeRateUsage5()
-        {
-            FMainDS.LoadAll();
-            FMainDS.DeleteAllRows();
-            FMainDS.InsertStandardModalRows();
-            FMainDS.SaveChanges();
-            FLedgerDS.CreateTestLedger();
-
-            FGiftAndJournal.InitialiseData("load-data.sql");
-
-            decimal selectedRate;
-            DateTime selectedDate;
-            int selectedTime;
-
-            // Open the screen modally on our test ledger and a from currency of GBP
-            TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-
-            DialogBoxHandler = delegate(string name, IntPtr hWnd)
-            {
-                ExchangeRateUsage5Handler();
-            };
-
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
-                FStandardEffectiveDate,
-                "GBP",
-                1.0m,
-                out selectedRate,
-                out selectedDate,
-                out selectedTime);
-
-            if (dlgResult == DialogResult.Abort)
-            {
-                Assert.Fail(FModalAssertResult);
-            }
-
-            Assert.AreEqual(DialogResult.OK, dlgResult);
-        }
-
-        /// <summary>
-        /// Handler for the ExchangeRateUsage5 test
-        /// </summary>
-        public void ExchangeRateUsage5Handler()
-        {
-            FormTester formTester = new FormTester(FModalFormName);
-
-            // Controls
-            ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
-            ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
-            ButtonTester btnCancelTester = new ButtonTester("btnCancel", FModalFormName);
-            ButtonTester btnEnableEditTester = new ButtonTester("btnEnableEdit", FModalFormName);
-
-            Button btnEnableEdit = btnEnableEditTester.Properties;
-            Label lblEditDelete = (new LabelTester("lblEnableEditDelete", FModalFormName)).Properties;
-            TtxtPetraDate dtpDateEffective = (new TTxtPetraDateTester("dtpDetailDateEffectiveFrom", FModalFormName)).Properties;
-            TTxtNumericTextBox txtRateOfExchange = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", FModalFormName)).Properties;
-
-            try
-            {
-                // Create a new rate of GBP->BEF of 0.5155 on 2 Oct 2000
-                // This should catch nothing
-                btnNewTester.Click();
-                dtpDateEffective.Date = new DateTime(2000, 10, 2);
-                txtRateOfExchange.NumberValueDecimal = 0.5155m;
-
-                // Create a rate of 0.5225 on 1 Nov 2000
-                // This should catch nothing
-                btnNewTester.Click();
-                dtpDateEffective.Date = new DateTime(2000, 11, 1);
-                txtRateOfExchange.NumberValueDecimal = 0.5225m;
-
-                (new ToolStripButtonTester("tbbSave", FModalFormName)).Click();
-
-                btnEnableEditTester.Click();
-                Assert.IsFalse(btnEnableEdit.Visible);
-                Assert.IsTrue(lblEditDelete.Visible);
-
-                for (int i = 4; i > 0; i--)
-                {
-                    SelectRowInGrid(i);
-                    string Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
-                    Console.WriteLine("Grid row {0}: rate: {1}: {2}", i, txtRateOfExchange.NumberValueDecimal.Value.ToString(), Usage);
-                    Assert.AreEqual(String.Empty, Usage, "There should be no usage of this rate at this time");
-                }
-
-                btnCloseTester.Click();
-            }
-            catch (Exception ex)
-            {
-                HandleModalException(ex);
-                btnCancelTester.Properties.DialogResult = DialogResult.Abort;
-                btnCancelTester.Click();
-            }
-        }
-
-        #endregion
-
-        #region Edit a rate that has been used
-
-        /// <summary>
-        /// Test editing a rate that has been used in several places
-        /// </summary>
-        [Test]
-        public void EditUsedRate()
-        {
-            FMainDS.LoadAll();
-            FMainDS.DeleteAllRows();
-            FMainDS.InsertStandardModalRows();
-            FMainDS.SaveChanges();
-            FLedgerDS.CreateTestLedger();
-
-            FGiftAndJournal.InitialiseData("load-data.sql");
-
-            decimal selectedRate;
-            DateTime selectedDate;
-            int selectedTime;
-
-            // Open the screen modally on our test ledger and a from currency of GBP
-            TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-
-            DialogBoxHandler = delegate(string name, IntPtr hWnd)
-            {
-                EditUsedRateHandler();
-            };
-
-
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
-                FStandardEffectiveDate,
-                "GBP",
-                1.0m,
-                out selectedRate,
-                out selectedDate,
-                out selectedTime);
-
-            if (dlgResult == DialogResult.Abort)
-            {
-                Assert.Fail(FModalAssertResult);
-            }
-
-            Assert.AreEqual(DialogResult.OK, dlgResult);
-            Assert.AreEqual(0.5444m, selectedRate, "Expected the selected rate from the dialog to be 0.5444");
-            Assert.AreEqual(7200, selectedTime, "Expected the selected time from the dialog to be 7200");
-            Assert.AreEqual(FStandardEffectiveDate,
-                selectedDate,
-                "Expected the selected date from the dialog to be " + FStandardEffectiveDate.ToShortDateString());
-
-            // So did we actually save things all the way??
-            // Since May 2013 the modal dialog does not make a change to the Journal/Gift tables - it is up to theses screens to save the returned values
-        }
-
-        /// <summary>
-        /// Handler for the EditUsedRate test
-        /// </summary>
-        public void EditUsedRateHandler()
-        {
-            FormTester formTester = new FormTester(FModalFormName);
-
-            // Controls
-            ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
-            ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
-            ButtonTester btnCancelTester = new ButtonTester("btnCancel", FModalFormName);
-            ButtonTester btnEnableEditTester = new ButtonTester("btnEnableEdit", FModalFormName);
-            ToolStripButtonTester tbbSaveTester = new ToolStripButtonTester("tbbSave", FModalFormName);
-
-            Button btnEnableEdit = btnEnableEditTester.Properties;
-            Label lblEditDelete = (new LabelTester("lblEnableEditDelete", FModalFormName)).Properties;
-            Button btnDelete = (new ButtonTester("btnDelete", FModalFormName)).Properties;
-            TtxtPetraDate dtpDateEffective = (new TTxtPetraDateTester("dtpDetailDateEffectiveFrom", FModalFormName)).Properties;
-            TTxtNumericTextBox txtRateOfExchange = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", FModalFormName)).Properties;
-
-            try
-            {
-                // Create a new rate of GBP->BEF of 0.5155 on 08 Aug 2000
-                // This should catch 2 posted gift/journal rows (8/8-28/8) + 1 unposted gift (1/10) + no unposted journals
-                btnNewTester.Click();
-                dtpDateEffective.Date = new DateTime(2000, 8, 8);
-                txtRateOfExchange.NumberValueDecimal = 0.5155m;
-
-                // Create a rate of 0.5225 on 09 Oct 2000
-                // This should catch 2 unposted gift rows (9/10-15/10) + 3 unposted journals (22/10-30/10)
-                btnNewTester.Click();
-                dtpDateEffective.Date = new DateTime(2000, 10, 9);
-                txtRateOfExchange.NumberValueDecimal = 0.5225m;
-
-                Assert.IsFalse(btnEnableEdit.Enabled, "The enable edit button should be disabled while a new row is being edited.");
-                tbbSaveTester.Click();
-                Assert.IsTrue(btnEnableEdit.Enabled, "The enable edit button should be enabled when the row has been saved.");
-
-                btnEnableEditTester.Click();
-                Assert.IsTrue(lblEditDelete.Visible);
-
-                // Check usage on row 1
-                string Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
-                Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
-                Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
-                Assert.AreEqual(0.5225m, txtRateOfExchange.NumberValueDecimal);
-
-                // This row should be editable but not deleteable
-                Assert.IsFalse(btnDelete.Enabled, "This row has been used and cannot be deleted");
-                Assert.IsTrue(txtRateOfExchange.Enabled, "This row can be edited because the rate has not been posted");
-
-                // change the rate to a different value
-                txtRateOfExchange.NumberValueDecimal = 0.5335m;
-                Assert.IsTrue(tbbSaveTester.Properties.Enabled);
-                tbbSaveTester.Click();
-                Assert.IsFalse(tbbSaveTester.Properties.Enabled);
-
-                // We should still have the same usage
-                Assert.AreEqual(0.5335m, txtRateOfExchange.NumberValueDecimal);
-                Assert.IsTrue(Usage.Contains("2 row(s)"), "Expected 2 rows in Gift Table, but was: " + Usage);
-                Assert.IsTrue(Usage.Contains("3 unposted"), "Expected 3 unposted rows in Journal table, but was: " + Usage);
-                Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
-                Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
-                Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
-
-                // Do the same on row 2
-                SelectRowInGrid(2);
-                Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
-                Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
-                Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
-                Assert.AreEqual(0.5155m, txtRateOfExchange.NumberValueDecimal);
-
-                // This row has been posted so should not be editable or deleteable
-                Assert.IsFalse(btnDelete.Enabled, "This row has been used and cannot be deleted");
-                Assert.IsFalse(txtRateOfExchange.Enabled, "This row cannot be edited because the rate has been posted");
-
-                // Create a new rate for the latest date possible
-                btnNewTester.Click();
-                txtRateOfExchange.NumberValueDecimal = 0.5444m;
-                Assert.IsTrue(tbbSaveTester.Properties.Enabled);
-                tbbSaveTester.Click();
-                Assert.IsFalse(tbbSaveTester.Properties.Enabled);
-                Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
-
-                // Until we save this row it should be editable and deleteable
-                Assert.IsTrue(btnDelete.Enabled, "This row has not been used so we should be able to delete it");
-                Assert.IsTrue(txtRateOfExchange.Enabled, "This row has not been used so we should be able to delete it");
-                Assert.IsTrue(Usage == String.Empty);
 
                 btnCloseTester.Click();
             }

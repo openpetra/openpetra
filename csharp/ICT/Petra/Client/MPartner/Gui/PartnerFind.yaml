@@ -41,7 +41,7 @@ RootNode:
         actEditCopyEmailAddress: {ActionClick=MniEdit_Click, Image=CopyToClipboard_EmailAddress.ico}
         
         actMaintainAddresses: {Label=&Addresses..., ActionClick=MniMaintain_Click, Image, Image: Address.ico}
-        actMaintainContactDetails: {Label=C&ontact Details, ActionClick=MniMaintain_Click, Image: ContactDetails.ico}
+        actMaintainContactDetails: {Label=C&ontact Details..., ActionClick=MniMaintain_Click, Image: ContactDetails.ico}
         actMaintainPartnerDetails: {Label=&Partner Details..., ActionClick=MniMaintain_Click, Image: Details.ico}
         actMaintainFoundationDetails: {Label=Foundation Details..., ActionClick=MniMaintain_Click, Image: Foundations.ico}
         actMaintainSubscriptions: {Label=&Subscriptions..., ActionClick=MniMaintain_Click, Image: Subscriptions.ico}

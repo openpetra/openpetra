@@ -4,8 +4,9 @@
 // @Authors:
 //       timop
 //       Tim Ingham
+//       ChristianK
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,6 +37,7 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MCommon.Data;
@@ -60,159 +62,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
     /// </summary>
     public class TImportExportWebConnector
     {
-        static Int64 NewPartnerKey = -1;
+        private static readonly string StrPrimaryContactDetailChangedToImported =
+            Catalog.GetString("'{0}' changed to the one contained in the import file: '{1}'");
 
-        private static void ParsePartners(ref PartnerImportExportTDS AMainDS, XmlNode ACurNode)
-        {
-            XmlNode LocalNode = ACurNode;
-
-            while (LocalNode != null)
-            {
-                if (LocalNode.Name.StartsWith("PartnerGroup"))
-                {
-                    ParsePartners(ref AMainDS, LocalNode.FirstChild);
-                }
-                else if (LocalNode.Name.StartsWith("Partner"))
-                {
-                    PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
-
-                    if (!TYml2Xml.HasAttributeRecursive(LocalNode, "SiteKey"))
-                    {
-                        throw new Exception(Catalog.GetString("Missing SiteKey Attribute"));
-                    }
-
-                    if (!TYml2Xml.HasAttributeRecursive(LocalNode, "status"))
-                    {
-                        throw new Exception(Catalog.GetString("Missing status Attribute"));
-                    }
-
-                    // get a new partner key
-                    newPartner.PartnerKey = TImportExportWebConnector.NewPartnerKey;
-                    TImportExportWebConnector.NewPartnerKey--;
-
-                    if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_FAMILY)
-                    {
-                        PFamilyRow newFamily = AMainDS.PFamily.NewRowTyped();
-                        newFamily.PartnerKey = newPartner.PartnerKey;
-                        newFamily.FamilyName = TYml2Xml.GetAttributeRecursive(LocalNode, "LastName");
-                        newFamily.FirstName = TYml2Xml.GetAttribute(LocalNode, "FirstName");
-                        newFamily.Title = TYml2Xml.GetAttribute(LocalNode, "Title");
-
-                        if (TYml2Xml.HasAttribute(LocalNode, "CreatedAt"))
-                        {
-                            newFamily.DateCreated = Convert.ToDateTime(TYml2Xml.GetAttribute(LocalNode, "CreatedAt"));
-                        }
-
-                        AMainDS.PFamily.Rows.Add(newFamily);
-
-                        newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
-                        newPartner.AddresseeTypeCode = MPartnerConstants.PARTNERCLASS_FAMILY;
-
-                        newPartner.PartnerShortName =
-                            Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
-                    }
-
-                    if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_PERSON)
-                    {
-                        if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "true", false).ToLower() != "true")
-                        {
-                            throw new Exception(
-                                "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family. "
-                                +
-                                "Please add configuration parameter AllowCreationPersonRecords with value true if you want to use PERSON records");
-                        }
-
-                        // TODO
-                    }
-                    else if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_ORGANISATION)
-                    {
-                        // TODO
-                    }
-                    else
-                    {
-                        // TODO AVerificationResult add failing problem: unknown partner class
-                    }
-
-                    newPartner.StatusCode = TYml2Xml.GetAttributeRecursive(LocalNode, "status");
-                    AMainDS.PPartner.Rows.Add(newPartner);
-
-                    // import special types
-                    StringCollection SpecialTypes = StringHelper.StrSplit(TYml2Xml.GetAttributeRecursive(LocalNode, "SpecialTypes"), ",");
-
-                    foreach (string SpecialType in SpecialTypes)
-                    {
-                        PPartnerTypeRow partnertype = AMainDS.PPartnerType.NewRowTyped();
-                        partnertype.PartnerKey = newPartner.PartnerKey;
-                        partnertype.TypeCode = SpecialType.Trim();
-                        AMainDS.PPartnerType.Rows.Add(partnertype);
-
-                        // TODO: check if special type does not exist yet, and create it
-                    }
-
-                    // import subscriptions
-                    StringCollection Subscriptions = StringHelper.StrSplit(TYml2Xml.GetAttributeRecursive(LocalNode, "Subscriptions"), ",");
-
-                    foreach (string publicationCode in Subscriptions)
-                    {
-                        PSubscriptionRow subscription = AMainDS.PSubscription.NewRowTyped();
-                        subscription.PartnerKey = newPartner.PartnerKey;
-                        subscription.PublicationCode = publicationCode.Trim();
-                        subscription.ReasonSubsGivenCode = "FREE";
-                        AMainDS.PSubscription.Rows.Add(subscription);
-                    }
-
-                    // import address
-                    XmlNode addressNode = TYml2Xml.GetChild(LocalNode, "Address");
-
-                    if ((addressNode == null) || (TYml2Xml.GetAttributeRecursive(addressNode, "Street").Length == 0))
-                    {
-                        // add the empty location
-                        PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
-                        partnerlocation.SiteKey = 0;
-                        partnerlocation.PartnerKey = newPartner.PartnerKey;
-                        partnerlocation.DateEffective = DateTime.Now;
-                        partnerlocation.LocationType = "HOME";
-                        partnerlocation.SendMail = false;
-                        partnerlocation.EmailAddress = TYml2Xml.GetAttributeRecursive(addressNode, "Email");
-                        partnerlocation.TelephoneNumber = TYml2Xml.GetAttributeRecursive(addressNode, "Phone");
-                        partnerlocation.MobileNumber = TYml2Xml.GetAttributeRecursive(addressNode, "MobilePhone");
-                        AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
-                    }
-                    else
-                    {
-                        // TODO: avoid duplicate addresses, reuse existing locations
-                        PLocationRow location = AMainDS.PLocation.NewRowTyped(true);
-                        location.LocationKey = (AMainDS.PLocation.Rows.Count + 1) * -1;
-                        location.SiteKey = 0;
-
-                        if (!TYml2Xml.HasAttributeRecursive(LocalNode, "Country"))
-                        {
-                            throw new Exception(Catalog.GetString("Missing Country Attribute"));
-                        }
-
-                        location.CountryCode = TYml2Xml.GetAttributeRecursive(addressNode, "Country");
-                        location.StreetName = TYml2Xml.GetAttributeRecursive(addressNode, "Street");
-                        location.City = TYml2Xml.GetAttributeRecursive(addressNode, "City");
-                        location.PostalCode = TYml2Xml.GetAttributeRecursive(addressNode, "PostCode");
-                        AMainDS.PLocation.Rows.Add(location);
-
-                        PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
-                        partnerlocation.SiteKey = 0;
-                        partnerlocation.LocationKey = location.LocationKey;
-                        partnerlocation.PartnerKey = newPartner.PartnerKey;
-                        partnerlocation.SendMail = true;
-                        partnerlocation.DateEffective = DateTime.Now;
-                        partnerlocation.LocationType = "HOME";
-                        partnerlocation.EmailAddress = TYml2Xml.GetAttributeRecursive(addressNode, "Email");
-                        partnerlocation.TelephoneNumber = TYml2Xml.GetAttributeRecursive(addressNode, "Phone");
-                        partnerlocation.MobileNumber = TYml2Xml.GetAttributeRecursive(addressNode, "MobilePhone");
-                        AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
-                    }
-                }
-
-                LocalNode = LocalNode.NextSibling;
-            }
-        }
+        private static readonly string StrPrimaryContactDetailAttrTypeChanged =
+            Catalog.GetString("Prior to the importing of this Partner, the '{0}' record " +
+                "of this Partner had the same {1}, but it was recorded with a different " +
+                "Contact Type, '{2}'. That existing record was not removed; please maintain the Contact Details " +
+                "of this Partner as required!");
 
         /// <summary>
         /// imports partner data from file
@@ -703,6 +560,227 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     Row.TypeCode = rv.TypeCode;
                     Row.TypeDescription = FNewRowDescription;
                     MainDS.PType.Rows.Add(Row);
+                }
+            }
+        }
+
+        private static void CheckPartnerAttribute(PartnerImportExportTDS MainDS, Int64 APartnerKey,
+            ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        {
+            PPartnerAttributeTable PartnersPartnerAttributesInDBDT;
+            PPartnerAttributeTable PartnersPartnerAttributesInDBNeedingUpdatingDT;
+            PPartnerAttributeRow FoundPartnerAttribDR;
+            PPartnerAttributeRow ExistingEmailPartnerAttribDR;
+            string ImportedPrimaryPhoneNumber;
+            string ImportedPrimaryEmailAddress;
+            DataView ExistingEmailAddressDV;
+            bool ExistingPrimaryRecordHasAnEmailAttributeType;
+            bool SameValueButAttributeTypeMismatch;
+
+            Calculations.DeterminePartnerContactDetailAttributes(MainDS.PPartnerAttribute);
+
+            // Prevent duplicate 'Primary' E-Mail and/or Phone in case the imported Partner Attributes contain at least one
+            // 'Primary' Contact Detail and this/they is/are set on (a) different Contact Detail(s) than in the DB!
+            if (Calculations.GetPrimaryEmailAndPrimaryPhone(MainDS.PPartnerAttribute, out ImportedPrimaryPhoneNumber,
+                    out ImportedPrimaryEmailAddress))
+            {
+                // Load all Partner Attributes of this Partner that exist in the DB
+                PartnersPartnerAttributesInDBDT = PPartnerAttributeAccess.LoadViaPPartner(APartnerKey, Transaction);
+                Calculations.DeterminePartnerContactDetailAttributes(PartnersPartnerAttributesInDBDT);
+                PartnersPartnerAttributesInDBDT.AcceptChanges();
+                ExistingEmailAddressDV = Calculations.DeterminePartnerEmailAddresses(PartnersPartnerAttributesInDBDT, false);
+
+                foreach (PPartnerAttributeRow ExistingPartnerAttribDV in PartnersPartnerAttributesInDBDT.Rows)
+                {
+                    SameValueButAttributeTypeMismatch = false;
+
+                    // Check each Partner Contact Detail...
+                    if ((ExistingPartnerAttribDV[Ict.Petra.Shared.MPartner.Calculations.PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN]
+                         != System.DBNull.Value)
+                        && ((bool)ExistingPartnerAttribDV[Ict.Petra.Shared.MPartner.Calculations.PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN] ==
+                            true))
+                    {
+                        // ... that is 'Primary' in the DB ...
+                        if (ExistingPartnerAttribDV.Primary)
+                        {
+                            // ... whether it has the same Value than a to-be-imported 'Primary' Partner Contact Attribute
+                            if ((ExistingPartnerAttribDV.Value == ImportedPrimaryPhoneNumber)
+                                || (ExistingPartnerAttribDV.Value == ImportedPrimaryEmailAddress))
+                            {
+                                // ... and whether it is of the same AttributeType than a to-be-imported 'Primary' Partner Contact Attribute
+                                foreach (PPartnerAttributeRow ImportedPartnerAttribDV in MainDS.PPartnerAttribute.Rows)
+                                {
+                                    if (ExistingPartnerAttribDV.Value == ImportedPartnerAttribDV.Value)
+                                    {
+                                        if (ExistingPartnerAttribDV.AttributeType == ImportedPartnerAttribDV.AttributeType)
+                                        {
+                                            // Yes: No duplicate 'Primary' record could potentially get created as it IS the same record
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            SameValueButAttributeTypeMismatch = true;
+                                        }
+                                    }
+                                }
+                            }
+
+                            // No: A duplicate 'Primary' record could potentially get created -> peform further checks:
+
+                            // Determine if the existing 'Primary' record has got an Attribute Type that designates an E-Mail
+                            // Address
+
+                            if (ExistingEmailAddressDV.Count == 0)
+                            {
+                                if (ImportedPrimaryPhoneNumber != null)
+                                {
+                                    // Primary Contact Attribute in the DB must be for the 'Primary Phone Number' as there are no
+                                    // existing 'Primary' records that have got an Attribute Type that designates an E-Mail Address
+
+                                    if (ExistingPartnerAttribDV.Value != ImportedPrimaryPhoneNumber)
+                                    {
+                                        // Make the DataRow in the DB no longer 'Primary' as this would become another 'Primary'
+                                        // Phone Number --- in addition to the to-be-imported 'Primary' Phone Number!
+                                        ExistingPartnerAttribDV.Primary = false;
+
+                                        AddVerificationResult(ref ReferenceResults,
+                                            String.Format(StrPrimaryContactDetailChangedToImported,
+                                                Catalog.GetString("Primary Phone"), ImportedPrimaryPhoneNumber),
+                                            TResultSeverity.Resv_Status);
+
+                                        if (SameValueButAttributeTypeMismatch)
+                                        {
+                                            AddVerificationResult(ref ReferenceResults,
+                                                String.Format(StrPrimaryContactDetailAttrTypeChanged,
+                                                    Catalog.GetString("Primary Phone"), Catalog.GetString("Phone Number"),
+                                                    ExistingPartnerAttribDV.AttributeType),
+                                                TResultSeverity.Resv_Status);
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                ExistingPrimaryRecordHasAnEmailAttributeType = false;
+
+                                // Check all existing 'Primary' records that have got an Attribute Type that designates an E-Mail Address
+                                foreach (DataRowView DataViewElement in ExistingEmailAddressDV)
+                                {
+                                    ExistingEmailPartnerAttribDR = (PPartnerAttributeRow)DataViewElement.Row;
+
+                                    if (ExistingPartnerAttribDV.AttributeType == ExistingEmailPartnerAttribDR.AttributeType)
+                                    {
+                                        ExistingPrimaryRecordHasAnEmailAttributeType = true;
+
+                                        if (ImportedPrimaryEmailAddress != null)
+                                        {
+                                            // Primary Contact Attribute in the DB is for the 'Primary E-Mail Address'
+                                            if (ExistingPartnerAttribDV.Value != ImportedPrimaryEmailAddress)
+                                            {
+                                                // Make the DataRow in the DB no longer 'Primary' as this would become another 'Primary'
+                                                // E-Mail Address --- in addition to the to-be-imported 'Primary' E-Mail Address!
+                                                ExistingPartnerAttribDV.Primary = false;
+
+                                                AddVerificationResult(ref ReferenceResults,
+                                                    String.Format(StrPrimaryContactDetailChangedToImported,
+                                                        Catalog.GetString("Primary E-Mail"), ImportedPrimaryEmailAddress),
+                                                    TResultSeverity.Resv_Status);
+
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                if (SameValueButAttributeTypeMismatch)
+                                                {
+                                                    // Make the DataRow in the DB no longer 'Primary' as this would become another 'Primary'
+                                                    // E-Mail Address --- in addition to the to-be-imported 'Primary' E-Mail Address!
+                                                    ExistingPartnerAttribDV.Primary = false;
+
+                                                    AddVerificationResult(ref ReferenceResults,
+                                                        String.Format(StrPrimaryContactDetailChangedToImported,
+                                                            Catalog.GetString("Primary E-Mail"), ImportedPrimaryEmailAddress),
+                                                        TResultSeverity.Resv_Status);
+                                                    AddVerificationResult(ref ReferenceResults,
+                                                        String.Format(StrPrimaryContactDetailAttrTypeChanged,
+                                                            Catalog.GetString("Primary E-Mail"), Catalog.GetString("E-Mail Address"),
+                                                            ExistingPartnerAttribDV.AttributeType),
+                                                        TResultSeverity.Resv_Status);
+
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (!ExistingPrimaryRecordHasAnEmailAttributeType)
+                                {
+                                    if (ImportedPrimaryPhoneNumber != null)
+                                    {
+                                        // Primary Contact Attribute in the DB must be for the 'Primary Phone Number'
+                                        if (ExistingPartnerAttribDV.Value != ImportedPrimaryPhoneNumber)
+                                        {
+                                            // Make the DataRow in the DB no longer 'Primary' as this would become another 'Primary'
+                                            // Phone Number --- in addition to the to-be-imported 'Primary' Phone Number!
+                                            ExistingPartnerAttribDV.Primary = false;
+
+                                            AddVerificationResult(ref ReferenceResults,
+                                                String.Format(StrPrimaryContactDetailChangedToImported,
+                                                    Catalog.GetString("Primary Phone"), ImportedPrimaryPhoneNumber),
+                                                TResultSeverity.Resv_Status);
+                                        }
+                                        else
+                                        {
+                                            if (SameValueButAttributeTypeMismatch)
+                                            {
+                                                // Make the DataRow in the DB no longer 'Primary' as this would become another 'Primary'
+                                                // Phone Number --- in addition to the to-be-imported 'Primary' Phone Number!
+                                                ExistingPartnerAttribDV.Primary = false;
+
+                                                AddVerificationResult(ref ReferenceResults,
+                                                    String.Format(StrPrimaryContactDetailChangedToImported,
+                                                        Catalog.GetString("Primary Phone"), ImportedPrimaryPhoneNumber),
+                                                    TResultSeverity.Resv_Status);
+                                                AddVerificationResult(ref ReferenceResults,
+                                                    String.Format(StrPrimaryContactDetailAttrTypeChanged,
+                                                        Catalog.GetString("Primary Phone"), Catalog.GetString("Phone Number"),
+                                                        ExistingPartnerAttribDV.AttributeType),
+                                                    TResultSeverity.Resv_Status);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                PartnersPartnerAttributesInDBNeedingUpdatingDT = PartnersPartnerAttributesInDBDT.GetChangesTyped();
+
+                if (PartnersPartnerAttributesInDBNeedingUpdatingDT != null)
+                {
+                    // Save any modified existing 'Primary' Contact Detail DataRows to prevent duplicate 'Primary' E-Mail and/or Phone
+                    PPartnerAttributeAccess.SubmitChanges(PartnersPartnerAttributesInDBNeedingUpdatingDT, Transaction);
+                }
+            }
+
+            TPartnerContactDetails_LocationConversionHelper.PartnerAttributeLoadUsingTemplate =
+                PPartnerAttributeAccess.LoadUsingTemplate;
+
+            for (int Counter = 0; Counter < MainDS.PPartnerAttribute.Rows.Count; Counter++)
+            {
+                // Check the to-be-imported p_partner_attribute records whether matching p_partner_attribute records exists
+                // in the DB. This is to prevent duplication of p_partner_attribute records in the DB as a result
+                // of the Import operation!
+                if (TPartnerContactDetails_LocationConversionHelper.ExistingPartnerAttributes(
+                        MainDS.PPartnerAttribute[Counter], out FoundPartnerAttribDR, Transaction))
+                {
+                    TPartnerContactDetails_LocationConversionHelper.TakeExistingPartnerAttributeRecordAndModifyIt(
+                        MainDS.PPartnerAttribute[Counter], FoundPartnerAttribDR);
                 }
             }
         }
@@ -1477,6 +1555,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             CheckAbilityArea(MainDS, ref ReferenceResults, Transaction);
             CheckPartnerInterest(MainDS, ref ReferenceResults, Transaction);
             CheckPartnerType(MainDS, ref ReferenceResults, Transaction);
+            CheckPartnerAttribute(MainDS, PartnerRow.PartnerKey, ref ReferenceResults, Transaction);
             CheckChurchDenomination(MainDS, ref ReferenceResults, Transaction);
             CheckContactRefs(MainDS, ref ReferenceResults, Transaction);
             CheckApplication(MainDS, ref ReferenceResults, Transaction);

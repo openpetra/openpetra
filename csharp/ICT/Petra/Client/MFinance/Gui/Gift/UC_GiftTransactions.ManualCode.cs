@@ -180,6 +180,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 SetupTaxDeductibilityControls();
             }
 
+            // set tooltip
+            grdDetails.SetHeaderTooltip(4, Catalog.GetString("Confidential"));
+
             chkDetailChargeFlag.Enabled = UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE3);
         }
 
@@ -380,9 +383,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.DataSource = null;
 
             // if this form is readonly, then we need all codes, because old codes might have been used
-            if (firstLoad || (FActiveOnly != this.Enabled))
+            if (firstLoad || (FActiveOnly == (ViewMode || !FBatchUnposted)))
             {
-                FActiveOnly = this.Enabled;
+                FActiveOnly = !(ViewMode || !FBatchUnposted);
 
                 TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, FActiveOnly);
                 TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, FActiveOnly);
@@ -1051,13 +1054,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactionsForBatch(FLedgerNumber, ABatchNumber));
 
+                FMainDS.AcceptChanges();
+
                 RetVal = true;
             }
             catch (Exception ex)
             {
                 FMainDS.Merge(BackupDS);
 
-                string errMsg = Catalog.GetString("Error trying to clear current Batch data: /n/r/n/r" + ex.Message);
+                string errMsg = Catalog.GetString("Error trying to clear current batch data: /n/r/n/r" + ex.Message);
                 MessageBox.Show(errMsg, "Data Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
@@ -1456,7 +1461,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Update all transactions
             foreach (AGiftRow giftRow in FMainDS.AGift.Rows)
             {
-                if (giftRow.BatchNumber.Equals(BatchNumber) && giftRow.LedgerNumber.Equals(LedgerNumber)
+                if ((giftRow.RowState != DataRowState.Deleted)
+                    && giftRow.BatchNumber.Equals(BatchNumber) && giftRow.LedgerNumber.Equals(LedgerNumber)
                     && (giftRow.MethodOfPaymentCode != FBatchMethodOfPayment))
                 {
                     giftRow.MethodOfPaymentCode = FBatchMethodOfPayment;
@@ -1516,7 +1522,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enabled = pnlDetailsEnabledState;
 
             btnDelete.Enabled = pnlDetailsEnabledState;
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
+            btnDeleteAll.Enabled = btnDelete.Enabled;
             btnNewDetail.Enabled = !PnlDetailsProtected;
             btnNewGift.Enabled = !PnlDetailsProtected;
         }
@@ -1637,7 +1643,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateDataDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            if ((ARow == null) || (GetCurrentBatchRow() == null) || (GetCurrentBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            if ((ARow == null) || (ARow.RowState == DataRowState.Deleted) || (GetCurrentBatchRow() == null)
+                || (GetCurrentBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
                 || (GetCurrentBatchRow().BatchNumber != ARow.BatchNumber))
             {
                 return;
@@ -1646,7 +1653,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict, null, null, null, FPreviouslySelectedDetailRow.RecipientField);
+                FValidationControlsDict, txtDetailRecipientKey.CurrentPartnerClass, null, null, null, FPreviouslySelectedDetailRow.RecipientField);
 
             //It is necessary to validate the unbound control for date entered. This requires us to pass the control.
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
@@ -1751,7 +1758,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.AutoResizeGrid();
             }
 
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
+            btnDeleteAll.Enabled = btnDelete.Enabled;
         }
 
         private void ReverseGift(System.Object sender, System.EventArgs e)

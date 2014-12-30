@@ -30,8 +30,8 @@ RootNode:
         txtGender: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.Gender}
         txtNationalities: {Width=427, Label=Nationalities, ReadOnly=true, BorderStyle=None, DataField=SummaryData.Nationalities}
         txtMaritalStatus: {Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.MaritalStatus}
-        txtPhone: {Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.TelephoneNumber}
-        txtEmail: {Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.EmailAddress}
+        txtPhone: {Label=Primary Phone, Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.PrimaryPhoneNumber}
+        txtEmail: {Label=Primary E-Mail, Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.PrimaryEmailAddress}
 
         grpJobCommitment:
             Label: Job(s)/Commitment(s)
@@ -67,7 +67,7 @@ RootNode:
             
         txtChurchName: {Width=427, Label=Name, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchName}
         txtChurchAddress: {Width=427, Label=Church Address, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchAddress}
-        txtChurchPhone: {Width=427, Label=Church Phone, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchPhone}
+        txtChurchPhone: {Width=427, Label=Church's Primary Phone, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchPrimaryPhoneNumber}
         txtPastor: {Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchPastor}
-        txtPastorPhone: {Width=427, Label=Pastor's Phone, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchPastorsPhone}
+        txtPastorPhone: {Width=427, Label=Pastor's Primary Phone, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchPastorsPrimaryPhoneNumber}
         lblMultipleRecordsInfo: {Text=, Visible=false}

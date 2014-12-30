@@ -136,7 +136,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                     }
 
-                    btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
+                    btnDeleteAll.Enabled = btnDelete.Enabled;
                     UpdateRecordNumberDisplay();
                     FLastDonor = -1;
 

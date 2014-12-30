@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -112,7 +113,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             TFinanceControls.InitialiseCostCentreList(
                 ref clbCostCentres,
                 FLedgerNumber,
-                true,  // postingonly
+                true,   // postingonly
                 false,  // excludeposting
                 chkExcludeInactiveCostCentres.Checked,
                 rbtFields.Checked,
@@ -130,18 +131,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
         }
 
-        //
-        // New methods using the Fast-reports DLL:
-
-        private Boolean LoadReportData(TRptCalculator ACalc)
+        /// <summary>
+        /// Data loader for HOSA data,
+        /// Made static so it can be called from Stewardship Reports
+        /// </summary>
+        public static Boolean LoadReportDataStaticInner(Form ParentForm,
+            TFrmPetraReportingUtils UtilsObject,
+            FastReportsWrapper ReportingEngine,
+            TRptCalculator ACalc)
         {
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
-
-            pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
-
-            // 0 = Full Report. Currently the only option for this report.
-            pm.Add("param_run_number", 0);
-
             String Csv = "";
 
             //
@@ -158,16 +157,28 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 return false;
             }
 
-            CostCentreCodes = CostCentreCodes.Replace('"', '\'');
-            ACalc.AddStringParameter("param_cost_centre_codes", CostCentreCodes);
+            String CostCentreFilter = "";
+
+            if (CostCentreCodes == "ALL")
+            {
+                CostCentreFilter = " AND a_cost_centre.a_cost_centre_type_c='Foreign' ";
+            }
+            else
+            {
+                CostCentreCodes = CostCentreCodes.Replace('"', '\'');
+                ACalc.AddStringParameter("param_cost_centre_codes", CostCentreCodes);
+                CostCentreFilter = " AND a_cost_centre.a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
+            }
 
             if (pm.Get("param_period").ToBool() == true)
             {
+                Int32 LedgerNumber = pm.Get("param_ledger_number_i").ToInt32();
                 DataTable AccountingPeriodTbl =
                     (AAccountingPeriodTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
-                        pm.Get("param_ledger_number_i").ToInt32());
+                        LedgerNumber);
                 Int32 PeriodStart = pm.Get("param_start_period_i").ToInt32();
                 Int32 PeriodEnd = pm.Get("param_end_period_i").ToInt32();
+
                 AccountingPeriodTbl.DefaultView.RowFilter = LedgerFilter + " AND a_accounting_period_number_i=" + PeriodStart;
                 DateTime DateStart = Convert.ToDateTime(AccountingPeriodTbl.DefaultView[0].Row["a_period_start_date_d"]);
                 pm.Add("param_start_date", DateStart);
@@ -198,19 +209,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             TranctDateFilter = "a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") +
                                "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
-            String TranctCostCentreFilter = " AND a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
 
             Csv = StringHelper.AddCSV(Csv,
                 "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + " AND a_posting_status_l=true AND a_account_active_flag_l=true");
             Csv = StringHelper.AddCSV(Csv,
-                "ACostCentre/SELECT * FROM a_cost_centre WHERE " + LedgerFilter + " AND a_cost_centre_code_c IN (" + CostCentreCodes +
-                ")  AND a_posting_cost_centre_flag_l=true AND a_cost_centre_active_flag_l=true");
+                "ACostCentre/SELECT * FROM a_cost_centre WHERE " + LedgerFilter + CostCentreFilter +
+                " AND a_posting_cost_centre_flag_l=true AND a_cost_centre_active_flag_l=true");
             Csv = StringHelper.AddCSV(
                 Csv,
-                "ATransaction/SELECT * FROM a_transaction WHERE " + LedgerFilter +
-                TranctCostCentreFilter + " AND " + TranctDateFilter +
+                "ATransaction/SELECT a_transaction.* FROM a_transaction, a_cost_centre WHERE a_transaction." + LedgerFilter +
+                " AND " + TranctDateFilter +
                 " AND NOT (a_system_generated_l = true AND (a_narrative_c LIKE 'Gifts received - Gift Batch%' OR a_narrative_c LIKE 'GB - Gift Batch%' OR a_narrative_c LIKE 'Year end re-allocation%'))"
                 +
+                " AND a_transaction.a_ledger_number_i = a_cost_centre.a_ledger_number_i " +
+                " AND a_transaction.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c " +
+                CostCentreFilter +
                 " ORDER BY a_account_code_c, a_transaction_date_d");
 
             GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
@@ -225,30 +238,41 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("HOSA", paramsDictionary);
+            DataTable GiftsTable = TRemote.MReporting.WebConnectors.GetReportDataTable("HOSA", paramsDictionary);
+            DataTable KeyMinGiftsTable = TRemote.MReporting.WebConnectors.GetReportDataTable("FieldGifts", paramsDictionary);
 
-            if (this.IsDisposed)
-            {
-                return false;
-            }
-
-            if (ReportTable == null)
-            {
-                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
-                return false;
-            }
-
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "Gifts");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
             //
-            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
-            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
-            ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+            // I'm going to get rid of any Cost Centres that saw no activity in the requested period:
+            for (Int32 Idx = ReportDs.ACostCentre.Rows.Count - 1; Idx >= 0; Idx--)
+            {
+                ACostCentreRow Row = ReportDs.ACostCentre[Idx];
+                ReportDs.ATransaction.DefaultView.RowFilter = String.Format("a_cost_centre_code_c='{0}'", Row.CostCentreCode);
+                GiftsTable.DefaultView.RowFilter = String.Format("CostCentre='{0}'", Row.CostCentreCode);
 
-            Boolean HasData = (ReportDs.ATransaction.Rows.Count > 0) || (ReportTable.Rows.Count > 0);
+                if ((ReportDs.ATransaction.DefaultView.Count == 0) && (GiftsTable.DefaultView.Count == 0))
+                {
+                    ReportDs.ACostCentre.Rows.Remove(Row);
+                }
+            }
+
+            if (ParentForm.IsDisposed)
+            {
+                return false;
+            }
+
+            if (GiftsTable == null)
+            {
+                UtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            ReportingEngine.RegisterData(GiftsTable, "Gifts");
+            ReportingEngine.RegisterData(KeyMinGiftsTable, "FieldGifts");
+            ReportingEngine.RegisterData(ReportDs.AAccount, "a_account");
+            ReportingEngine.RegisterData(ReportDs.ACostCentre, "a_costCentre");
+            ReportingEngine.RegisterData(ReportDs.ATransaction, "a_transaction");
+
+            Boolean HasData = (ReportDs.ATransaction.Rows.Count > 0) || (GiftsTable.Rows.Count > 0);
 
             if (!HasData)
             {
@@ -256,6 +280,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             return HasData;
+        }
+
+        //
+        // New methods using the Fast-reports DLL:
+
+        private Boolean LoadReportData(TRptCalculator ACalc)
+        {
+            Shared.MReporting.TParameterList pm = ACalc.GetParameters();
+
+            pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
+            //
+            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+
+            // 0 = Full Report. Currently the only option for this report.
+            pm.Add("param_run_number", 0);
+            return LoadReportDataStaticInner(this, FPetraUtilsObject, FPetraUtilsObject.FFastReportsPlugin, ACalc);
         }
     }
 }

@@ -227,8 +227,8 @@
 				<value text="NO-SQL"/>
 				<value function="GetPartnerBestAddress({EmergencyContactKey})"/>
 				<value function="assign(Fax, )" condition="lt({FaxNumber}, 1)"/>
-				<value function="assign(Fax, concatenate({FaxNumber}, {FaxExtension}))" condition="gt({FaxNumber}, 0)"/>
-				<value function="assign(Telephone, concatenate({TelephoneNumber}, {Extension}))"/>
+				<value function="assign(Fax, {FaxNumber})" condition="gt({FaxNumber}, 0)"/>
+				<value function="assign(Telephone, {TelephoneNumber})"/>
 			</queryDetail>
 			
 		</query>
@@ -345,8 +345,8 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="E-Mail" returns="text" returnsFormat="text">
-		<caption><value text="E-Mail"></value></caption>
+	<calculation align="left" id="Primary E-Mail" returns="text" returnsFormat="text">
+		<caption><value text="Primary E-Mail"></value></caption>
 		<query>
 			<queryDetail>
 				<value variable="EmailAddress"></value>
@@ -390,27 +390,11 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Extension" returns="text" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value variable="Extension"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
 	<calculation align="left" id="Fax" returns="text" returnsFormat="text">
 		<caption><value text="Fax"></value></caption>
 		<query>
 			<queryDetail>
 				<value variable="Fax"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Fax Extension" returns="text" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value variable="FaxExtension"></value>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -518,8 +502,8 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Telephone" returns="text" returnsFormat="text">
-		<caption><value text="Telephone"></value></caption>
+	<calculation align="left" id="Primary Phone" returns="text" returnsFormat="text">
+		<caption><value text="Primary Phone"></value></caption>
 		<query>
 			<queryDetail>
 				<value variable="Telephone"></value>

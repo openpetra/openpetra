@@ -58,37 +58,54 @@ namespace Ict.Common.IO
         /// </summary>
         public List <TsmtpFailedRecipient>FailedRecipients;
 
-        private void Initialise(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
+        /// <summary>Caller should check this after initialisation</summary>
+        public Boolean FInitOk;
+
+        /// <summary>If the Sender doesn't initialise, or mail doesn't send, this status string may give a clue why?</summary>
+        public String FErrorStatus;
+
+
+        private Boolean Initialise(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
         {
-            FSmtpClient = new SmtpClient();
-
-            if (AOutputEMLToDirectory.Length > 0)
+            try
             {
-                FSmtpClient.PickupDirectoryLocation = AOutputEMLToDirectory;
-                FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
-            }
-            else
-            {
-                FSmtpClient.Host = ASMTPHost;
-                FSmtpClient.Port = ASMTPPort;
-                FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-                FSmtpClient.UseDefaultCredentials = false;
-                FSmtpClient.Credentials = new NetworkCredential(AUsername, APassword);
-                FSmtpClient.EnableSsl = AEnableSsl;
+                FSmtpClient = new SmtpClient();
 
-                if (TAppSettingsManager.GetValue("IgnoreServerCertificateValidation", "false", false) == "true")
+                if (AOutputEMLToDirectory.Length > 0)
                 {
-                    // when checking the validity of a SSL certificate, always pass
-                    // this is needed for smtp.outlook365.com, since I cannot find a place to get the public key for the ssl certificate
-                    ServicePointManager.ServerCertificateValidationCallback =
-                        new RemoteCertificateValidationCallback(
-                            delegate
-                            { return true; }
-                            );
+                    FSmtpClient.PickupDirectoryLocation = AOutputEMLToDirectory;
+                    FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
                 }
-            }
+                else
+                {
+                    FSmtpClient.Host = ASMTPHost;
+                    FSmtpClient.Port = ASMTPPort;
+                    FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    FSmtpClient.UseDefaultCredentials = false;
+                    FSmtpClient.Credentials = new NetworkCredential(AUsername, APassword);
+                    FSmtpClient.EnableSsl = AEnableSsl;
 
-            FailedRecipients = new List <TsmtpFailedRecipient>();
+                    if (TAppSettingsManager.GetValue("IgnoreServerCertificateValidation", "false", false) == "true")
+                    {
+                        // when checking the validity of a SSL certificate, always pass
+                        // this is needed for smtp.outlook365.com, since I cannot find a place to get the public key for the ssl certificate
+                        ServicePointManager.ServerCertificateValidationCallback =
+                            new RemoteCertificateValidationCallback(
+                                delegate
+                                { return true; }
+                                );
+                    }
+                }
+
+                FailedRecipients = new List <TsmtpFailedRecipient>();
+                FInitOk = true;
+            } // try
+            catch (Exception e)
+            {
+                FErrorStatus = e.Message;
+                FInitOk = false;
+            }
+            return FInitOk;
         }
 
         /// <summary>
@@ -96,6 +113,7 @@ namespace Ict.Common.IO
         /// </summary>
         public TSmtpSender(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
         {
+            FErrorStatus = "";
             //Set up SMTP client
             Initialise(ASMTPHost, ASMTPPort, AEnableSsl, AUsername, APassword, AOutputEMLToDirectory);
         }
@@ -107,6 +125,8 @@ namespace Ict.Common.IO
         {
             //Set up SMTP client
             String EmailDirectory = "";
+
+            FErrorStatus = "";
 
             if (TAppSettingsManager.HasValue("OutputEMLToDirectory"))
             {
@@ -215,8 +235,9 @@ namespace Ict.Common.IO
                             }
                             else
                             {
+                                FErrorStatus = "File to attach '" + attachfile + "' does not exist!";
                                 TLogging.Log("Could not send email");
-                                TLogging.Log("File to attach '" + attachfile + "' does not exist!");
+                                TLogging.Log(FErrorStatus);
                                 return false;
                             }
                         }
@@ -236,6 +257,7 @@ namespace Ict.Common.IO
             }
             catch (Exception ex)
             {
+                FErrorStatus = ex.Message;
                 TLogging.Log("Could not send email");
                 TLogging.Log(ex.Message);
                 return false;

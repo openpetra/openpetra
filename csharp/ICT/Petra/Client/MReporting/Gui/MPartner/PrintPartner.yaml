@@ -36,9 +36,10 @@ RootNode:
                 Row0: [chkPartnerClassData, chkFinanceDetails]
                 Row1: [chkSubscriptions, chkInterests]
                 Row2: [chkRelationships, chkContacts]
-                Row3: [chkLocations, chkReminders]
-                Row4: [btnSelectAll, btnDeselectAll]
-                Row5: [chkHideEmpty]
+                Row3: [chkLocations, chkContactDetails]
+                Row4: [chkReminders]
+                Row5: [btnSelectAll, btnDeselectAll]
+                Row6: [chkHideEmpty]
             
         chkPartnerClassData:
             Label: Partner Class Data
@@ -51,6 +52,9 @@ RootNode:
             CheckBoxAttachedLabel: right
         chkLocations:
             Label: Locations
+            CheckBoxAttachedLabel: right
+        chkContactDetails:
+            Label: Contact Details
             CheckBoxAttachedLabel: right
         chkFinanceDetails:
             Label: Finance Details

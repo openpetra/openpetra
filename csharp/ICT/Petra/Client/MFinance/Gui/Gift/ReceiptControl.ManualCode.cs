@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.IO;
 using System.Windows.Forms;
 using DevAge.ComponentModel;
 
@@ -150,11 +151,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            OpenFileDialog DialogOpen = new OpenFileDialog();
+
+            if (Directory.Exists(TAppSettingsManager.GetValue("Formletters.Path")))
+            {
+                DialogOpen.InitialDirectory = TAppSettingsManager.GetValue("Formletters.Path");
+            }
+
+            DialogOpen.Filter = Catalog.GetString("HTML file (*.html)|*.html;*.htm");
+            DialogOpen.RestoreDirectory = true;
+            DialogOpen.Title = Catalog.GetString("Select the template for the gift receipt");
+
+            if (DialogOpen.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            string HTMLTemplateFilename = DialogOpen.FileName;
+
             this.Cursor = Cursors.WaitCursor;
 
             //
             // The HTML string returned here may be several complete HTML documents, with <body>...</body> for each page.
-            string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintReceipts(FLedgerNumber, SelectedRecords);
+            string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintReceipts(FLedgerNumber, SelectedRecords, HTMLTemplateFilename);
 
             if (HtmlDoc == "")
             {

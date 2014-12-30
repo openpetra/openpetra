@@ -76,8 +76,7 @@
 	  
 		<calculation id="Select Partners All Addresses" returns="PartnerKey, ShortName, PartnerClass,
 		LocationKey, SiteKey, StreetName, Locality, City, PostalCode, CountryCode, County,
-		DateEffective, DateGoodUntil, Address3, FaxPre, FaxExtension, TelephonePre, TelephoneExtension,
-		EMailAddress, Url, MobileNumber, AlternateTelephone, LocationType" returnsFormat="row">
+		DateEffective, DateGoodUntil, Address3, LocationType" returnsFormat="row">
 			<query>
 				<queryDetail><value>
 					SELECT DISTINCT 
@@ -96,15 +95,9 @@
 							PartnerLocation.p_site_key_n AS SiteKey,
 							PartnerLocation.p_date_effective_d AS DateEffective,
 							PartnerLocation.p_date_good_until_d AS DateGoodUntil,
-							PartnerLocation.p_fax_number_c AS FaxPre,
-							PartnerLocation.p_fax_extension_i AS FaxExtension,
-							PartnerLocation.p_telephone_number_c AS TelephonePre,
-							PartnerLocation.p_extension_i AS TelephoneExtension,
-							PartnerLocation.p_email_address_c AS EMailAddress,
-							PartnerLocation.p_mobile_number_c AS MobileNumber,
-							PartnerLocation.p_alternate_telephone_c AS AlternateTelephone,
-							PartnerLocation.p_location_type_c AS LocationType,
-							PartnerLocation.p_url_c AS Url
+<!--                            (SELECT p_value_c from p_partner_attribute a where a.p_primary_l=true and a.p_attribute_type_c='E-Mail' and PUB_p_partner.p_partner_key_n=a.p_partner_key_n) as EMailAddress, --> <!-- Email currently retrieved through function call: GetPartnerContactDetails -->
+<!--                            (SELECT p_value_c from p_partner_attribute b where b.p_primary_l=true and b.p_attribute_type_c='Phone' and PUB_p_partner.p_partner_key_n=b.p_partner_key_n) as TelephonePre, --> <!-- Phone currently retrieved through function call: GetPartnerContactDetails -->
+							PartnerLocation.p_location_type_c AS LocationType
 					FROM 
 							PUB_p_partner_location AS PartnerLocation,
 							PUB_p_location AS Location,
@@ -154,29 +147,16 @@
 					<value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
 					<value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
 				</queryDetail>
-                <queryDetail condition="ne({Extension},0)">
-                    <value function="assign(TelephoneNumber, concatenate({TelephoneNumber},{Extension}))"/>
-                </queryDetail>
-                <queryDetail condition="ne({FaxExtension},0)">
-                    <value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
-                </queryDetail>
 			</query>
 		</calculation>
 	
-		<calculation id="CleanUp" returns="PartnerClassShort, TelephoneNumber, FaxNumber, Field" returnsFormat="text">
+		<calculation id="CleanUp" returns="PartnerClassShort, Field" returnsFormat="text">
 			<query>
                 <queryDetail>
                     <value text="NO-SQL"/>
+					<value function="GetPartnerContactDetails({PartnerKey})"/>
                     <value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
                     <value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
-                    <value function="assign(TelephoneNumber, {TelephonePre})"/>
-                    <value function="assign(FaxNumber, {FaxPre})"/>
-                </queryDetail>
-                <queryDetail condition="ne({TelephoneExtension},0)">
-                    <value function="assign(TelephoneNumber, concatenate({TelephoneNumber}, {TelephoneExtension}))"/>
-                </queryDetail>
-                <queryDetail condition="ne({FaxExtension},0)">
-                    <value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
                 </queryDetail>
 			</query>
 		</calculation>
@@ -208,8 +188,8 @@
 			</query>
 		</calculation>
 		  
-		<calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
-			<caption><value text="E-Mail Address"></value></caption>
+		<calculation align="left" id="Primary E-Mail" returns="text" returnsFormat="text">
+			<caption><value text="Primary E-Mail"></value></caption>
 			<query>
 				<queryDetail>
 					<value variable="EMailAddress"></value>
@@ -307,8 +287,8 @@
 			</query>
 		</calculation>
 		
-		<calculation align="left" id="Telephone" returns="text" returnsFormat="text">
-			<caption><value text="Telephone"></value></caption>
+		<calculation align="left" id="Primary Phone" returns="text" returnsFormat="text">
+			<caption><value text="Primary Phone"></value></caption>
 			<query>
 				<queryDetail>
 					<value variable="TelephoneNumber"></value>
@@ -324,15 +304,6 @@
 			</query>
 		</calculation>
 		
-		<calculation align="left" id="TelephoneExtension" returns="text" returnsFormat="text">
-			<caption><value text=""></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="TelephoneExtension"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-
 		<calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
 			<caption><value text="Alternate Telephone"></value></caption>
 			<query>
@@ -359,15 +330,6 @@
 			</query>
 		</calculation>
 		
-		<calculation align="left" id="FaxExtension" returns="text" returnsFormat="text">
-			<caption><value text=""></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="FaxExtension"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-
 		<calculation align="left" id="Field" returns="text" returnsFormat="text">
 			<caption><value text="Field"></value></caption>
 			<query>

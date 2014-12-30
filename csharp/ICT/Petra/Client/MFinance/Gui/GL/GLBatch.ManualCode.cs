@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
@@ -64,6 +65,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private bool FLoadForImport = false;
         private bool FWarnAboutMissingIntlExchangeRate = true;
 
+        // Variables that are used to select a specific batch on startup
+        private Int32 FInitialBatchYear = -1;
+        private Int32 FInitialBatchNumber = -1;
+        private Int32 FInitialJournalNumber = -1;
+        private Boolean FInitialBatchFound = false;
+
+        private Boolean FLatestSaveIncludedForex = false;
+
         /// <summary>
         /// specify to load and import batches
         /// </summary>
@@ -78,6 +87,55 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return FLoadForImport;
             }
         }
+
+        /// <summary>
+        /// Set this property if you want to load the screen with an initial Year/Batch/Journal
+        /// </summary>
+        public Int32 InitialBatchYear
+        {
+            set
+            {
+                FInitialBatchYear = value;
+            }
+            get
+            {
+                return FInitialBatchYear;
+            }
+        }
+
+        /// <summary>
+        /// Set this property if you want to load the screen with an initial Year/Batch/Journal
+        /// </summary>
+        public Int32 InitialBatchNumber
+        {
+            set
+            {
+                FInitialBatchNumber = value;
+            }
+            get
+            {
+                return FInitialBatchNumber;
+            }
+        }
+
+        /// <summary>
+        /// Set this property if you want to load the screen with an initial Year/Batch/Journal
+        /// </summary>
+        public Int32 InitialJournalNumber
+        {
+            set
+            {
+                FInitialJournalNumber = value;
+            }
+            get
+            {
+                return FInitialJournalNumber;
+            }
+        }
+
+        /* Be sure to leave the LedgerNumber property in this position in the code
+         * AFTER the ones above.   Otherwise the code will not work that opens this
+         * screen at a pre-defined batch/journal.*/
 
         /// <summary>
         /// use this ledger
@@ -98,6 +156,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        /// <summary>
+        /// Flag that is relevant when the screen is loaded with an initial Batch/Journal specified.
+        /// </summary>
+        public Boolean InitialBatchFound
+        {
+            set
+            {
+                FInitialBatchFound = value;
+            }
+            get
+            {
+                return FInitialBatchFound;
+            }
+        }
+
         private void TFrmGLBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
@@ -115,6 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void InitializeManualCode()
         {
             tabGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+            FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
             this.tpgJournals.Enabled = false;
             this.tpgTransactions.Enabled = false;
         }
@@ -297,9 +371,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             ucoJournals.GetSelectedDetailRow().BatchNumber,
                             ucoJournals.GetSelectedDetailRow().JournalNumber,
                             ucoJournals.GetSelectedDetailRow().TransactionCurrency,
+                            fromBatchTab,
                             ucoBatches.GetSelectedDetailRow().BatchStatus,
-                            ucoJournals.GetSelectedDetailRow().JournalStatus,
-                            fromBatchTab);
+                            ucoJournals.GetSelectedDetailRow().JournalStatus);
 
                         FPreviouslySelectedTab = eGLTabs.Transactions;
                     }
@@ -551,6 +625,35 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return allChangesCount;
+        }
+
+        // This manual method lets us peek at the data that is about to be saved...
+        // The data has already been collected from the contols and validated and there is definitely something to save...
+        private TSubmitChangesResult StoreManualCode(ref GLBatchTDS SubmitDS, out TVerificationResultCollection VerificationResult)
+        {
+            FLatestSaveIncludedForex = false;
+
+            if (SubmitDS.AJournal != null)
+            {
+                // Check whether we are saving any rows that are in foreign currency
+                DataView dv = new DataView(SubmitDS.AJournal,
+                    String.Format("{0}<>{1}", AJournalTable.GetTransactionCurrencyDBName(), AJournalTable.GetBaseCurrencyDBName()),
+                    String.Empty, DataViewRowState.CurrentRows);
+                FLatestSaveIncludedForex = (dv.Count > 0);
+            }
+
+            // Now do the standard call to save the changes
+            return TRemote.MFinance.GL.WebConnectors.SaveGLBatchTDS(ref SubmitDS, out VerificationResult);
+        }
+
+        private void FPetraUtilsObject_DataSaved(object sender, TDataSavedEventArgs e)
+        {
+            if (e.Success && FLatestSaveIncludedForex)
+            {
+                // Notify the exchange rate screen, if it is there
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
+            }
         }
 
         #region Menu and command key handlers for our user controls

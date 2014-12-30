@@ -359,11 +359,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// Revert or Adjust a Gift, revert a Gift Detail , revert a gift batch
         /// </summary>
-        /// <param name="requestParams">Hashtable containing the given params </param>
+        /// <param name="requestParams">Hashtable containing the given params</param>
+        /// <param name="AAdjustmentBatchNumber">Batch that adjustment transactions have been added to</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool GiftRevertAdjust(Hashtable requestParams, out TVerificationResultCollection AMessages)
+        public static bool GiftRevertAdjust(Hashtable requestParams, out int AAdjustmentBatchNumber, out TVerificationResultCollection AMessages)
         {
             AMessages = new TVerificationResultCollection();
 
@@ -442,6 +443,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     batchGiftTotal = giftBatch.BatchTotal;
                 }
 
+                AAdjustmentBatchNumber = giftBatch.BatchNumber;
+
                 if (Function.Equals("ReverseGiftBatch"))
                 {
                     AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
@@ -478,6 +481,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     AGiftDetailTable.GetGiftTransactionNumberDBName(),
                     AGiftDetailTable.GetDetailNumberDBName());
 
+                // first cycle creates gift reversal; second cycle creates new adjusted gift (if needed)
                 do
                 {
                     foreach (DataRowView giftRow in MainDS.AGift.DefaultView)
@@ -528,10 +532,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     giftDetail.LedgerNumber = gift.LedgerNumber;
                                     giftDetail.BatchNumber = giftBatch.BatchNumber;
                                     giftDetail.GiftTransactionNumber = gift.GiftTransactionNumber;
-                                    //Identify the reversal source
-                                    giftDetail.ModifiedDetailKey = "|" + oldGiftDetail.BatchNumber.ToString() + "|" +
-                                                                   oldGiftDetail.GiftTransactionNumber.ToString() + "|" +
-                                                                   oldGiftDetail.DetailNumber.ToString();
 
                                     decimal signum = (cycle == 0) ? -1 : 1;
                                     giftDetail.GiftTransactionAmount = signum * oldGiftDetail.GiftTransactionAmount;
@@ -556,11 +556,25 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     giftDetail.CommentTwoType = (String)requestParams["ReversalCommentTwoType"];
                                     giftDetail.CommentThreeType = (String)requestParams["ReversalCommentThreeType"];
 
-                                    // This is used to mark both as a Reverted giftDetails, except the adjusted (new) gift
+                                    // Mark the first new gift as a reversal
+                                    if (cycle == 0)
+                                    {
+                                        giftDetail.ModifiedDetail = true;
 
-                                    giftDetail.ModifiedDetail = (cycle == 0);
-                                    oldGiftDetail.ModifiedDetail = (cycle == 0);
+                                        //Identify the reversal source
+                                        giftDetail.ModifiedDetailKey = "|" + oldGiftDetail.BatchNumber.ToString() + "|" +
+                                                                       oldGiftDetail.GiftTransactionNumber.ToString() + "|" +
+                                                                       oldGiftDetail.DetailNumber.ToString();
+                                    }
+                                    else
+                                    {
+                                        giftDetail.ModifiedDetail = false;
+                                    }
+
                                     MainDS.AGiftDetail.Rows.Add(giftDetail);
+
+                                    // original gift also gets marked as a reversal
+                                    oldGiftDetail.ModifiedDetail = true;
                                 }
                             }
                         }

@@ -1,0 +1,24 @@
+﻿<PetraDataSets>
+  <ImportUnit name="Ict.Petra.Shared.MFinance.Gift.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+
+  <DataSet name="ExchangeRateTDS">
+    <Table sqltable="a_corporate_exchange_rate"/>
+    <Table sqltable="a_daily_exchange_rate">
+      <CustomField name="JournalUsage" type="Int64" initial="0" comment="The number of times this data is used in the Journal table."/>
+      <CustomField name="GiftBatchUsage" type="Int64" initial="0" comment="The number of times this data is used in the Gift Batch table."/>
+      <CustomField name="TableSource" type="String" comment="The data table that contributed this row.  One of 'GB', 'J' or 'DEX'."/>
+      <PrimaryKey thisFields="FromCurrencyCode,ToCurrencyCode,DateEffectiveFrom,TimeEffectiveFrom"/>
+    </Table>
+    <Table sqltable="a_daily_exchange_rate" name="ADailyExchangeRateUsage">
+      <CustomField name="LedgerNumber" type="Int32" comment="The Ledger number that references this rate."/>
+      <CustomField name="BatchNumber" type="Int32" comment="The Batch number that references this rate."/>
+      <CustomField name="JournalNumber" type="Int32" initial="0" comment="The Journal number that references this rate. Value is 0 for Gift Batch."/>
+      <CustomField name="BatchStatus" type="String" comment="The Batch status of the batch that references this rate."/>
+      <CustomField name="TableSource" type="String" comment="The data table that contributed this row.  One of 'GB', 'J' or 'DEX'."/>
+      <CustomField name="BatchYear" type="Int32" comment="The Batch Year in which this row occurs."/>
+      <CustomField name="BatchPeriod" type="Int32" comment="The Batch Period of the Batch Year in which this row occurs."/>
+      <PrimaryKey thisFields="FromCurrencyCode,ToCurrencyCode,DateEffectiveFrom,TimeEffectiveFrom,LedgerNumber,BatchNumber,JournalNumber"/>
+    </Table>
+  </DataSet>
+</PetraDataSets>

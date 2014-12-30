@@ -55,6 +55,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // changed gift records
         GiftBatchTDSAGiftDetailTable FGiftDetailTable = null;
 
+        // Variables that are used to select a specific batch on startup
+        private Int32 FInitialBatchNumber = -1;
+        private Int32 FInitialBatchYear = -1;
+
+        private Boolean FLatestSaveIncludedForex = false;
+
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
             get
@@ -79,6 +85,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FViewModeTDS = value;
             }
         }
+
+        /// <summary>
+        /// Set this property if you want to load the screen with an initial Year/Batch/Journal
+        /// </summary>
+        public Int32 InitialBatchYear
+        {
+            set
+            {
+                FInitialBatchYear = value;
+            }
+            get
+            {
+                return FInitialBatchYear;
+            }
+        }
+
+        /// <summary>
+        /// Set this property if you want to load the screen with an initial Year/Batch/Journal
+        /// </summary>
+        public Int32 InitialBatchNumber
+        {
+            set
+            {
+                FInitialBatchNumber = value;
+            }
+            get
+            {
+                return FInitialBatchNumber;
+            }
+        }
+
+        /* Be sure to leave the LedgerNumber property in this position in the code
+         * AFTER the ones above.   Otherwise the code will not work that opens this
+         * screen at a pre-defined batch or in ViewMode.*/
 
         /// <summary>
         /// use this ledger
@@ -192,11 +232,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        // This manual method lets us peek at the data that is about to be saved...
+        // The data has already been collected from the contols and validated and there is definitely something to save...
+        private TSubmitChangesResult StoreManualCode(ref GiftBatchTDS SubmitDS, out TVerificationResultCollection VerificationResult)
+        {
+            FLatestSaveIncludedForex = false;
+
+            if (SubmitDS.AGiftBatch != null)
+            {
+                // Check whether we are saving any rows that are in foreign currency
+                DataView dv = new DataView(SubmitDS.AGiftBatch,
+                    String.Format("{0}<>'{1}'", AGiftBatchTable.GetCurrencyCodeDBName(), FMainDS.ALedger[0].BaseCurrency),
+                    String.Empty, DataViewRowState.CurrentRows);
+                FLatestSaveIncludedForex = (dv.Count > 0);
+            }
+
+            // Now do the standard call to save the changes
+            return TRemote.MFinance.Gift.WebConnectors.SaveGiftBatchTDS(ref SubmitDS, out VerificationResult);
+        }
+
         private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
         {
             if (FNewDonorWarning)
             {
                 FPetraUtilsObject_DataSaved_NewDonorWarning(Sender, e);
+            }
+
+            if (e.Success && FLatestSaveIncludedForex)
+            {
+                // Notify the exchange rate screen, if it is there
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
             }
         }
 
@@ -225,8 +291,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                         "{0} ({1}) is a new Donor.{2}Do you want to add subscriptions for them?{2}" +
                                         "(Note: this message can be disabled in the 'File' menu by unselecting the 'New Donor Warning' item.)"),
                                     Row.DonorName, Row.DonorKey, "\n\n"),
-                                Catalog.GetString("New Donor"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-                                MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                                Catalog.GetString("New Donor"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                         {
                             // Open the donor's Edit screen so subscriptions can be added
                             TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());

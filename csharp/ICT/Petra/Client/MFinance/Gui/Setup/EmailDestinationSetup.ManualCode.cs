@@ -134,36 +134,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             String APartnerShortName,
             bool AValidSelection)
         {
-            string newAddresses = String.Empty;
-            PartnerInfoTDS partnerInfo;
+            string NewEmailAddresses = String.Empty;
+            string EmailAddress;
+            PartnerInfoTDS PartnerInfoDS;
 
-            if (TServerLookup.TMPartner.PartnerInfo(APartnerKey, TPartnerInfoScopeEnum.pisFull, out partnerInfo))
+            if (TServerLookup.TMPartner.PartnerInfo(APartnerKey, TPartnerInfoScopeEnum.pisPartnerAttributesOnly,
+                    out PartnerInfoDS))
             {
-                // This will return either 0 or 1 rows.  If 1, then the email information needs to be displayed
-                // Otherwise the email information will be cleared
-                if (partnerInfo.PPartnerLocation.Rows.Count > 0)
+                if (PartnerInfoDS.PPartnerAttribute.Rows.Count > 0)
                 {
-                    string addressData = ((PPartnerLocationRow)partnerInfo.PPartnerLocation.Rows[0]).EmailAddress;
+                    Calculations.DeterminePartnerContactDetailAttributes(PartnerInfoDS.PPartnerAttribute);
 
-                    if (addressData != String.Empty)
+                    // This will return either true or false. If it returns true then the email information needs to be displayed;
+                    // Otherwise the email information will be cleared.
+                    if (Calculations.GetPrimaryEmailAddress(PartnerInfoDS.PPartnerAttribute, out EmailAddress))
                     {
                         // There can be multiple addresses, separated by comma or semicolon
-                        string[] addresses = StringHelper.SplitEmailAddresses(addressData);
+                        string[] addresses = StringHelper.SplitEmailAddresses(EmailAddress);
 
                         for (int i = 0; i < addresses.Length; i++)
                         {
-                            if (newAddresses.Length > 0)
+                            if (NewEmailAddresses.Length > 0)
                             {
-                                newAddresses += Environment.NewLine;
+                                NewEmailAddresses += Environment.NewLine;
                             }
 
-                            newAddresses += addresses[i].Trim();
+                            NewEmailAddresses += addresses[i].Trim();
                         }
                     }
                 }
             }
 
-            txtDetailEmailAddress.Text = newAddresses;
+            txtDetailEmailAddress.Text = NewEmailAddresses;
         }
 
         private bool PreDeleteManual(AEmailDestinationRow ARowToDelete, ref string ADeletionQuestion)

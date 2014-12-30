@@ -146,25 +146,19 @@
             Name: Country
             Parameter: 1.5
         Para16:
-            Name: Telephone Number
+            Name: Primary Phone
             Parameter: 3.0
-        Para17:
-            Name: Telephone Extension
-            Parameter: 1.0
         Para18:
             Name: Alternate Phone
             Parameter: 3.0
         Para19:
             Name: Fax Number
             Parameter: 3.0
-        Para20:
-            Name: Fax Extension
-            Parameter: 1.0
         Para21:
             Name: Mobile Number
             Parameter: 3.0
         Para22:
-            Name: E-Mail
+            Name: Primary E-Mail
             Parameter: 3.0
         Para23:
             Name: Receipt

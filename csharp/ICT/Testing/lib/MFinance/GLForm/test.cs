@@ -115,7 +115,7 @@ namespace Tests.MFinance.GLBatches
             ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
             {
                 MessageBoxTester tester = new MessageBoxTester(hWnd);
-                Assert.AreEqual("Confirm Cancel", tester.Title);
+                Assert.AreEqual("Form Contains Invalid Data", tester.Title);
 
                 // there is a second message box after confirming the cancellation, telling the user the cancellation was successful.
                 // because the ModalFormHandler is reset after handling the first message box, we need to set up a new handler.

@@ -100,9 +100,9 @@ public partial class RTBwithHyperlinksUCTest : Form
         UpdateTextBoxHeight(Convert.ToInt32(txtNumberOfLines.Text));
     }
 
-    void RtbHyperlinksTestLinkClicked(string ALinkText, string ALinkType)
+    void RtbHyperlinksTestLinkClicked(string ALinkText, string ALinkType, int ALinkEnd)
     {
-        lblClickedLinkInfo.Text = ALinkText + "  [LinkType: " + ALinkType + "]";
+        lblClickedLinkInfo.Text = ALinkText + "  [LinkType: " + ALinkType + "; LinkEnd: " + ALinkEnd.ToString() + "]";
 
         Application.DoEvents();
         System.Threading.Thread.Sleep(2000);

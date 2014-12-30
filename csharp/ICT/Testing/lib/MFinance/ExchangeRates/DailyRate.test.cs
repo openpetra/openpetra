@@ -125,6 +125,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
+            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
@@ -165,6 +166,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
+            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
@@ -272,6 +274,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
+            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
@@ -351,6 +354,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
+            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
@@ -370,11 +374,11 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Select the bottom row - when we get a new row it should be based on StandardData[1]
             SelectRowInGrid(FAllRowCount, 1);
 
-            // Check that the controls are disabled
+            // Check that the controls are disabled.  But the exchange rate itself can be edited because the rows are unused.
             Assert.IsFalse(cmbFromCurrency.Enabled);
             Assert.IsFalse(cmbToCurrency.Enabled);
             Assert.IsFalse(dtpEffectiveDate.Enabled);
-            Assert.IsFalse(txtExchangeRate.Enabled);
+            Assert.IsTrue(txtExchangeRate.Enabled);
             Assert.IsFalse(btnSave.Enabled, "The Save button should be disabled when the screen is loaded");
 
             // Click the 'New' button
@@ -459,6 +463,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
+            mainScreen.ShowUnusedRates();
 
             // Controls
             ButtonTester btnNew = new ButtonTester("btnNew", mainScreen);
@@ -502,6 +507,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
+            mainScreen.ShowUnusedRates();
 
             // Controls
             ButtonTester btnNew = new ButtonTester("btnNew", mainScreen);
@@ -509,6 +515,8 @@ namespace Tests.MFinance.Client.ExchangeRates
             TCmbAutoPopulated cmbToCurrency = (new TCmbAutoPopulatedTester("cmbDetailToCurrencyCode", mainScreen)).Properties;
             TtxtPetraDate dtpEffectiveDate = (new TTxtPetraDateTester("dtpDetailDateEffectiveFrom", mainScreen)).Properties;
             TTxtNumericTextBox txtExchangeRate = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", mainScreen)).Properties;
+
+            mainScreen.ShowUnusedRates();
 
             // Create a new row based on the last row
             SelectRowInGrid(8);
@@ -546,6 +554,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
+            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
@@ -667,12 +676,13 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
+            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButtonTester btnSaveTester = new ToolStripButtonTester("tbbSave", mainScreen);
             ButtonWithFocusTester btnNewTester = new ButtonWithFocusTester("btnNew", mainScreen);
             ButtonWithFocusTester btnDeleteTester = new ButtonWithFocusTester("btnDelete", mainScreen);
-            ButtonWithFocusTester btnEnableEdit = new ButtonWithFocusTester("btnEnableEdit", mainScreen);
+            //ButtonWithFocusTester btnEnableEdit = new ButtonWithFocusTester("btnEnableEdit", mainScreen);
             TSgrdDataGridPagedTester grdTester = new TSgrdDataGridPagedTester("grdDetails", mainScreen);
             TSgrdDataGrid grdDetails = (TSgrdDataGrid)grdTester.Properties;
             TTxtNumericTextBox txtExchangeRate = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", mainScreen)).Properties;
@@ -680,9 +690,9 @@ namespace Tests.MFinance.Client.ExchangeRates
             TCmbAutoPopulated cmbFromCurrency = (new TCmbAutoPopulatedTester("cmbDetailFromCurrencyCode", mainScreen)).Properties;
             TCmbAutoPopulated cmbToCurrency = (new TCmbAutoPopulatedTester("cmbDetailToCurrencyCode", mainScreen)).Properties;
 
-            // All rows in grid should be non-deletable because they are saved
+            // All rows in grid should be deletable because they are unused
             Assert.AreEqual(9, grdDetails.Rows.Count);
-            Assert.IsFalse(btnDeleteTester.Properties.Enabled);
+            Assert.IsTrue(btnDeleteTester.Properties.Enabled);
             Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
 
             // Create 3 new rows
@@ -723,13 +733,13 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
 
-            // Now we should be back to not being able to delete a saved row
-            Assert.IsFalse(btnDeleteTester.Properties.Enabled);
+            // Now we should be back to being able to delete a unused row
+            Assert.IsTrue(btnDeleteTester.Properties.Enabled);
             Assert.AreEqual(9, grdDetails.Rows.Count);
             Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
 
             // Activate deletion of saved rows
-            btnEnableEdit.Click();
+            //btnEnableEdit.Click();
             Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
 
             // Now we should be able to delete the row we could not delete before
@@ -806,6 +816,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
+            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
@@ -825,8 +836,8 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Select the first row in the grid.  New rows should be based on data row 5
             SelectRowInGrid(1, 5);
 
-            // Check that Invert is disabled, then add one new row and check it is now enabled
-            Assert.IsFalse(btnInvert.Properties.Enabled);
+            // Check that Invert is enabled, then add one new row and check it is also enabled
+            Assert.IsTrue(btnInvert.Properties.Enabled);
             btnNew.Click();
             Assert.IsTrue(btnInvert.Properties.Enabled);
             txtExchangeRate.NumberValueDecimal = 2.0m;
@@ -855,6 +866,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
+            mainScreen.ShowUnusedRates();
 
             // Save and New buttons
             ToolStripButtonTester btnSave = new ToolStripButtonTester("tbbSave", mainScreen);
@@ -1011,6 +1023,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
+            mainScreen.ShowUnusedRates();
 
             ButtonTester btnNew = new ButtonTester("btnNew", mainScreen);
             TCmbAutoPopulated cmbFromCurrency = (new TCmbAutoPopulatedTester("cmbDetailFromCurrencyCode", mainScreen)).Properties;

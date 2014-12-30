@@ -152,15 +152,29 @@ namespace Ict.Common.Controls
             {
                 FControlTexts.Remove(control);
 
-                control.Enter -= new EventHandler(OnControlEnter);
-                control.Leave -= new EventHandler(OnControlLeave);
+                if (control.Name.StartsWith("spt"))
+                {
+                    control.GotFocus -= new EventHandler(OnControlEnter);
+                }
+                else
+                {
+                    control.Enter -= new EventHandler(OnControlEnter);
+                    control.Leave -= new EventHandler(OnControlLeave);
+                }
             }
             else
             {
                 FControlTexts[control] = value;
 
-                control.Enter += new EventHandler(OnControlEnter);
-                control.Leave += new EventHandler(OnControlLeave);
+                if (control.Name.StartsWith("spt"))
+                {
+                    control.GotFocus += new EventHandler(OnControlEnter);
+                }
+                else
+                {
+                    control.Enter += new EventHandler(OnControlEnter);
+                    control.Leave += new EventHandler(OnControlLeave);
+                }
             }
 
             if (control == FActiveControl)

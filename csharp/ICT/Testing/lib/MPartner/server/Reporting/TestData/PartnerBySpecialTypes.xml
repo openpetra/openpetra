@@ -49,7 +49,7 @@
   <Parameter id="param_calculation" column="6" value="eString:Country" />
   <Parameter id="ColumnWidth" column="6" value="eDecimal:4609434218613702656" />
   <Parameter id="param_ytd" column="6" value="eBoolean:false" />
-  <Parameter id="param_calculation" column="7" value="eString:Telephone" />
+  <Parameter id="param_calculation" column="7" value="eString:Primary Phone" />
   <Parameter id="ColumnWidth" column="7" value="eDecimal:4614613358185178726" />
   <Parameter id="param_ytd" column="7" value="eBoolean:false" />
   <Parameter id="param_calculation" column="8" value="eString:Field" />

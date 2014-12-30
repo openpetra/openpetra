@@ -179,22 +179,6 @@
       <!-- used for displaying Partner Short Name in Grid -->
       <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
       <!-- used for displaying Partner Class in Grid -->
-      <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>
-      <!-- used for displaying Telephone Number in Grid -->
-      <Field sqltable="p_partner_location" sqlfield="p_extension_i"/>
-      <!-- used for displaying Telephone Extension in Grid -->
-      <Field sqltable="p_partner_location" sqlfield="p_fax_number_c"/>
-      <!-- used for displaying Fax Number in Grid -->
-      <Field sqltable="p_partner_location" sqlfield="p_fax_extension_i"/>
-      <!-- used for displaying Fax Extension in Grid -->
-      <Field sqltable="p_partner_location" sqlfield="p_alternate_telephone_c"/>
-      <!-- used for displaying Alternate Telephone Number in Grid -->
-      <Field sqltable="p_partner_location" sqlfield="p_mobile_number_c"/>
-      <!-- used for displaying Mobile Number in Grid -->
-      <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
-      <!-- used for displaying e-mail Address in Grid -->
-      <Field sqltable="p_partner_location" sqlfield="p_url_c"/>
-      <!-- used for displaying Internet URL in Grid -->
       <Field sqltable="p_partner_location" sqlfield="p_send_mail_l"/>
       <!-- used for displaying Mailing Address in Grid -->
       <Field sqltable="p_partner_location" sqlfield="p_date_effective_d"/>
@@ -219,8 +203,6 @@
       <!-- DB table key field -->
       <CustomField name="LocationChange" type="bool"/>
       <!-- determines for which screen the data is: Location Change -->
-      <CustomField name="PartnerLocationChange" type="bool"/>
-      <!-- determines for which screen the data is: Partner Location Change -->
       <CustomField name="LocationAdded" type="bool"/>
       <!-- determines for which screen the data is: Location Added -->
       <CustomField name="ChangedFields" type="string"/>
@@ -295,7 +277,11 @@
     <Table sqltable="p_partner_location"/>
     <Table sqltable="p_partner_type"/>
     <Table sqltable="p_subscription"/>
-
+    <Table sqltable="p_partner_attribute_category"/>  <!-- Only populated client-side from a Cacheable DataTable! -->
+    <Table sqltable="p_partner_attribute_type"/>      <!-- Only populated client-side from a Cacheable DataTable! -->  
+    <Table sqltable="p_partner_attribute">
+        <CustomField name="PartnerContactDetail" type="Boolean"/>
+    </Table>    
     <CustomTable name="FamilyMembers">
       <!-- Table is used for displaying Family Members of a Partner's Family (on 'Person / Family' Tab) -->
 
@@ -304,6 +290,14 @@
       <Field sqltable="p_person" sqlfield="p_family_id_i"/>
       <PrimaryKey thisFields="PartnerKey"/>
     </CustomTable>
+    <CustomRelation name="ContactDetails1"
+        parentTable="PPartnerAttributeCategory" parentFields="CategoryCode"
+        childTable="PPartnerAttributeType" childFields="CategoryCode"
+        createConstraints="false"/>        
+    <CustomRelation name="ContactDetails2"
+        parentTable="PPartnerAttributeType" parentFields="AttributeType"
+        childTable="PPartnerAttribute" childFields="AttributeType"
+        createConstraints="false"/>                    
   </DataSet>
 
   <DataSet name="PartnerFindTDS">
@@ -363,9 +357,7 @@
       <Field sqltable="p_person" sqlfield="p_first_name_c"/>
       <Field sqltable="p_person" sqlfield="p_family_name_c"/>
       <Field sqltable="p_person" sqlfield="p_family_key_n"/>
-      <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>
       <Field sqltable="p_partner_location" sqlfield="p_location_type_c"/>
-      <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
       <Field sqltable="p_partner_location" sqlfield="p_site_key_n"/>
       <Field sqltable="p_location" sqlfield="p_city_c"/>
       <Field sqltable="p_location" sqlfield="p_postal_code_c"/>
@@ -383,16 +375,6 @@
       <Field sqltable="p_bank" sqlfield="p_branch_code_c"/>
       <Field sqltable="p_bank" sqlfield="p_bic_c"/>
     </CustomTable>
-  </DataSet>
-
-  <DataSet name="BestAddressTDS">
-    <Table sqltable="p_location" name="Location">
-      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-      <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
-      <CustomField name="ValidAddress" type="Boolean"/>
-      <CustomField name="CountryName" type="string"/>
-      <PrimaryKey thisFields="p_partner_key_n"/>
-    </Table>
   </DataSet>
 
   <DataSet name="PartnerSetupTDS">
@@ -433,9 +415,11 @@
 
     <Table sqltable="p_partner"/>
     <Table sqltable="p_location_type"/>
+    <Table sqltable="p_partner_attribute"/>
+      
     <Table sqltable="p_location"/>
     <Table sqltable="p_partner_location"/>
-
+   
     <Table sqltable="u_unit_type"/>
     <Table sqltable="p_unit"/>
     <Table sqltable="pt_marital_status"/>

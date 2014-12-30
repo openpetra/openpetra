@@ -51,6 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private bool FInitialFocusActionComplete = false;
         private bool FActiveOnly = false;
+        private bool FBankAccountOnly = true;
         private string FSelectedBatchMethodOfPayment = String.Empty;
 
         private ACostCentreTable FCostCentreTable = null;
@@ -272,6 +273,49 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
                     cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gift Type radiobutton selection changed
+        /// </summary>
+        private void GiftTypeChanged(Object sender, EventArgs e)
+        {
+            bool BankAccountOnly = true;
+
+            // show all accounts for 'Gift In Kind' and 'Other'
+            if (rbtGiftInKind.Checked || rbtOther.Checked)
+            {
+                BankAccountOnly = false;
+            }
+
+            if (BankAccountOnly != FBankAccountOnly)
+            {
+                cmbDetailBankAccountCode.Clear();
+                TFinanceControls.InitialiseAccountList(ref cmbDetailBankAccountCode,
+                    FLedgerNumber,
+                    true,
+                    false,
+                    FActiveOnly,
+                    BankAccountOnly,
+                    true,
+                    FAccountTable);
+
+                if (BankAccountOnly)
+                {
+                    lblDetailBankAccountCode.Text = Catalog.GetString("Bank Account:");
+                }
+                else
+                {
+                    lblDetailBankAccountCode.Text = Catalog.GetString("Account Code:");
+                }
+
+                FBankAccountOnly = BankAccountOnly;
+
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    cmbDetailBankAccountCode.SetSelectedString(FPreviouslySelectedDetailRow.BankAccountCode, -1);
                 }
             }
         }
@@ -559,21 +603,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!newBatch)
                 {
                     //Load tables afresh
-                    FMainDS.ARecurringGiftDetail.Clear();
-                    FMainDS.ARecurringGift.Clear();
                     FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(FLedgerNumber, batchNumber));
+                    FMainDS.AcceptChanges();
                 }
 
-                //Delete transactions
-                for (int i = FMainDS.ARecurringGiftDetail.Count - 1; i >= 0; i--)
-                {
-                    FMainDS.ARecurringGiftDetail[i].Delete();
-                }
-
-                for (int i = FMainDS.ARecurringGift.Count - 1; i >= 0; i--)
-                {
-                    FMainDS.ARecurringGift[i].Delete();
-                }
+                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().DeleteCurrentRecurringBatchGiftData(batchNumber);
 
                 // Delete the recurring batch row.
                 ARowToDelete.Delete();
@@ -615,7 +649,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //causes saving issues
                 //UpdateLedgerTableSettings();
 
-                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
+                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual())
                 {
                     MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
                 }
@@ -642,6 +676,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void MethodOfPaymentChanged(object sender, EventArgs e)
         {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
             FSelectedBatchMethodOfPayment = cmbDetailMethodOfPaymentCode.GetSelectedString();
 
             if ((FSelectedBatchMethodOfPayment != null) && (FSelectedBatchMethodOfPayment.Length > 0))
@@ -925,7 +964,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (MessageBox.Show(String.Format(Catalog.GetString(
                                     "The recurring gift batch {0} has no active gifts. Do you still want to submit?"),
                                 FPreviouslySelectedDetailRow.BatchNumber),
-                            Catalog.GetString("Submit Empty Batch"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                            Catalog.GetString("Submit Empty Batch"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+                            MessageBoxDefaultButton.Button2) == DialogResult.No)
                     {
                         return RetVal;
                     }
@@ -949,7 +989,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                 "Recurring batch no. {0} contains an inactive bank account or cost centre code. Do you want to continue submitting?"),
                             FPreviouslySelectedDetailRow.BatchNumber),
                         Catalog.GetString("Inactive Bank Account/Cost Centre Code"), MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning) == DialogResult.No)
+                        MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     return false;
                 }

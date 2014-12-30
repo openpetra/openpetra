@@ -605,10 +605,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// order to have current data on which decisions on whether to refresh certain
         /// parts of the 'Overview' need to be updated.
         /// </summary>
-        /// <param name="AAddressesOrRelationsChanged">Set to true by the SaveChanges Method
-        /// of the Partner Edit screen if Addresses or Relationships have changed.</param>
-        /// <returns>void</returns>
-        public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
+        /// <param name="APartnerAttributesOrRelationsChanged">Set to true by the SaveChanges Method
+        /// of the Partner Edit screen if PartnerAttributes or Relationships have changed.</param>
+        public void RefreshPersonnelDataAfterMerge(bool APartnerAttributesOrRelationsChanged)
         {
             bool JobAndStaffDataGridNeedsRefresh = false;
 
@@ -617,14 +616,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
 
             // ...but first empty relevant DataTables to ensure that DataRows that got deleted in FPartnerEditTDS are reflected in FMainDS (just performing a Merge wouldn't remove them!)
-            if (FMainDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+            if (FMainDS.Tables.Contains(PPartnerAttributeTable.GetTableName()))
             {
-                FMainDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Clear();
-            }
-
-            if (FMainDS.Tables.Contains(PLocationTable.GetTableName()))
-            {
-                FMainDS.Tables[PLocationTable.GetTableName()].Rows.Clear();
+                FMainDS.Tables[PPartnerAttributeTable.GetTableName()].Rows.Clear();
             }
 
             if (FMainDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
@@ -645,7 +639,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.AcceptChanges();
 
             // Let the 'Overview' UserControl determine whether it needs to refresh the data it displays.
-            if (AAddressesOrRelationsChanged || JobAndStaffDataGridNeedsRefresh)
+            if (APartnerAttributesOrRelationsChanged || JobAndStaffDataGridNeedsRefresh)
             {
                 ucoSummaryData.CheckForRefreshOfDisplayedData(JobAndStaffDataGridNeedsRefresh);
             }

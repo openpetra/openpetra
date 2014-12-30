@@ -202,19 +202,11 @@
 					</queryDetail>                                          
 				</query>
 			</calculation>
-			<calculation id="Telephone Number" 
+			<calculation id="Primary Phone" 
 					returnsFormat="text" returns="text">
-				<caption><value text="TelephoneNumber"/></caption>
+				<caption><value text="Primary Phone"/></caption>
 				<query>
 					<queryDetail><value variable="TelephoneNumber"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="Telephone Extension" 
-					returnsFormat="text" returns="text">
-				<caption><value text="TelephoneExtension"/></caption>
-				<query>
-					<queryDetail><value variable="TelephoneExtension"/>
 					</queryDetail>                                          
 				</query>
 			</calculation>
@@ -234,14 +226,6 @@
 					</queryDetail>                                          
 				</query>
 			</calculation>
-			<calculation id="Fax Extension" 
-					returnsFormat="text" returns="text">
-				<caption><value text="FaxExtension"/></caption>
-				<query>
-					<queryDetail><value variable="FaxExtension"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
 			<calculation id="Mobile Number" 
 					returnsFormat="text" returns="text">
 				<caption><value text="MobileNumber"/></caption>
@@ -250,9 +234,9 @@
 					</queryDetail>                                          
 				</query>
 			</calculation>
-			<calculation id="E-Mail" 
+			<calculation id="Primary E-Mail" 
 					returnsFormat="text" returns="text">
-				<caption><value text="EmailAddress"/></caption>
+				<caption><value text="Primary E-Mail"/></caption>
 				<query>
 					<queryDetail><value variable="EmailAddress"/>
 					</queryDetail>                                          

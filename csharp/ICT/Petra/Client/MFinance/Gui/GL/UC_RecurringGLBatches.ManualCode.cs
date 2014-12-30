@@ -242,14 +242,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if ((txtDetailBatchControlTotal.NumberValueDecimal == null) || !txtDetailBatchControlTotal.NumberValueDecimal.HasValue)
             {
-                correctHashValue = 0m;
+                bool prev = FPetraUtilsObject.SuppressChangeDetection;
+                FPetraUtilsObject.SuppressChangeDetection = true;
+                txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
+                FPetraUtilsObject.SuppressChangeDetection = prev;
             }
             else
             {
                 correctHashValue = txtDetailBatchControlTotal.NumberValueDecimal.Value;
             }
 
-            txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
             ARow.BatchControlTotal = correctHashValue;
         }
 
@@ -701,7 +703,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     if (MessageBox.Show(String.Format(Catalog.GetString("The recurring gl batch {0} is empty. Do you still want to submit?"),
                                 FPreviouslySelectedDetailRow.BatchNumber),
-                            Catalog.GetString("Submit Empty Batch"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                            Catalog.GetString("Submit Empty Batch"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+                            MessageBoxDefaultButton.Button2) == DialogResult.No)
                     {
                         return RetVal;
                     }
@@ -711,7 +714,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     if (MessageBox.Show(String.Format(Catalog.GetString(
                                     "The recurring gl batch {0} contains empty journals. Do you still want to submit?"),
                                 FPreviouslySelectedDetailRow.BatchNumber),
-                            Catalog.GetString("Submit Empty Journals"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                            Catalog.GetString("Submit Empty Journals"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+                            MessageBoxDefaultButton.Button2) == DialogResult.No)
                     {
                         return RetVal;
                     }
@@ -764,7 +768,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     transRow.JournalNumber,
                                     transRow.TransactionNumber),
                                 Catalog.GetString("Inactive Account/Cost Centre Code"), MessageBoxButtons.YesNo,
-                                MessageBoxIcon.Warning) == DialogResult.No)
+                                MessageBoxIcon.Warning,
+                                MessageBoxDefaultButton.Button2) == DialogResult.No)
                         {
                             return RetVal;
                         }
@@ -789,7 +794,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     analAttribRow.JournalNumber,
                                     analAttribRow.TransactionNumber),
                                 Catalog.GetString("Inactive Analysis Attribute Code/Value"), MessageBoxButtons.YesNo,
-                                MessageBoxIcon.Warning) == DialogResult.No)
+                                MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.No)
                         {
                             return RetVal;
                         }

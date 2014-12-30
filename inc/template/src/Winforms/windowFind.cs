@@ -51,9 +51,6 @@ namespace {#NAMESPACE}
     private Control FPrimaryKeyControl = null;
     private string FDefaultDuplicateRecordHint = String.Empty;
 {#ENDIF MASTERTABLE OR DETAILTABLE}
-{#IFDEF FILTERANDFIND}
-    {#FILTERANDFINDDECLARATIONS}
-{#ENDIF FILTERANDFIND}
 
 {#IFDEF UICONNECTORTYPE}
 

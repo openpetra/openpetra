@@ -77,10 +77,10 @@ RootNode:
             Name: Partner Address
             Parameter: 10.0
         Para8:
-            Name: E-Mail Address
+            Name: Primary E-Mail
             Parameter: 3.0
         Para9:
-            Name: Telephone
+            Name: Primary Phone
             Parameter: 2.0
         Para10:
             Name: Mobile

@@ -204,16 +204,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
+        public void RefreshPersonnelDataAfterMerge(bool APartnerAttributesOrRelationsChanged)
         {
             if (FUcoIndividualData != null)
             {
-                FUcoIndividualData.RefreshPersonnelDataAfterMerge(AAddressesOrRelationsChanged);
+                FUcoIndividualData.RefreshPersonnelDataAfterMerge(APartnerAttributesOrRelationsChanged);
             }
 
             if (FUcoApplications != null)
             {
-                FUcoApplications.RefreshPersonnelDataAfterMerge(AAddressesOrRelationsChanged);
+                FUcoApplications.RefreshPersonnelDataAfterMerge(APartnerAttributesOrRelationsChanged);
             }
         }
 

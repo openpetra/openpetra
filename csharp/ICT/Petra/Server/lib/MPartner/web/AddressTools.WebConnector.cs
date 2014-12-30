@@ -46,9 +46,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool GetBestAddress(Int64 APartnerKey,
             out PLocationTable AAddress,
-            out PPartnerLocationTable APartnerLocation,
-            out string ACountryNameLocal,
-            out string AEmailAddress)
+            out string ACountryNameLocal)
         {
             bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -60,9 +58,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
             {
                 ResultValue = TAddressTools.GetBestAddress(APartnerKey,
                     out AAddress,
-                    out APartnerLocation,
                     out ACountryNameLocal,
-                    out AEmailAddress,
                     Transaction);
             }
             catch (Exception)

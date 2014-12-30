@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 
+using Ict.Common;
 using Ict.Common.Data;
 
 using Ict.Petra.Client.CommonControls;
@@ -165,7 +166,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Call this to initialse the 'Lists' (tables) for the ComboBoxes
+        /// Call this to initialise the 'Lists' (tables) for the ComboBoxes
         /// </summary>
         /// <param name="ALoadAndFilterLogicObject">Supply a reference to the Filter Logic object because it needs a reference to the same Lists</param>
         public void RefreshBankAccountAndCostCentreData(TUC_GiftBatches_LoadAndFilter ALoadAndFilterLogicObject)
@@ -210,6 +211,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (ARow != null)
             {
                 FCmbCostCentreCode.SetSelectedString(ARow.BankCostCentre, -1);
+                FCmbBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+            }
+        }
+
+        /// <summary>
+        /// Call this to change the accounts being shown in the accounts combobox (used when changing the gift type)
+        /// </summary>
+        /// <param name="AActiveOnly"></param>
+        /// <param name="ABankAccountOnly"></param>
+        /// <param name="ALblBankAccoountCode"></param>
+        /// <param name="ARow"></param>
+        public void SetupAccountCombo(bool AActiveOnly,
+            bool ABankAccountOnly,
+            ref System.Windows.Forms.Label ALblBankAccoountCode,
+            AGiftBatchRow ARow)
+        {
+            FCmbBankAccountCode.Clear();
+            TFinanceControls.InitialiseAccountList(ref FCmbBankAccountCode,
+                FLedgerNumber,
+                true,
+                false,
+                AActiveOnly,
+                ABankAccountOnly,
+                true,
+                FAccountTable);
+
+            if (ABankAccountOnly)
+            {
+                ALblBankAccoountCode.Text = Catalog.GetString("Bank Account:");
+            }
+            else
+            {
+                ALblBankAccoountCode.Text = Catalog.GetString("Account Code:");
+            }
+
+            if (ARow != null)
+            {
                 FCmbBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
             }
         }

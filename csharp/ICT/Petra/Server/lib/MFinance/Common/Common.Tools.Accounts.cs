@@ -62,22 +62,16 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             FledgerInfo = ALedgerInfo;
 
-            bool NewTransaction = false;
+            TDBTransaction Transaction = null;
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            try
-            {
-                FAccountTable = AAccountHierarchyDetailAccess.LoadViaALedger(
-                    FledgerInfo.LedgerNumber, transaction);
-            }
-            finally
-            {
-                if (NewTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+                    FAccountTable = AAccountHierarchyDetailAccess.LoadViaALedger(
+                        FledgerInfo.LedgerNumber, Transaction);
+                });
         }
 
         /// <summary>

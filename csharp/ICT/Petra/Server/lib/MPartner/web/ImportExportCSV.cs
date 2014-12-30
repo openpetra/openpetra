@@ -4,8 +4,9 @@
 // @Authors:
 //       timop
 //       Tim Ingham
+//       ChristianK
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,10 +24,12 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Xml;
-using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner;
@@ -37,7 +40,6 @@ using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Common.Verification;
 using Ict.Common.DB;
-using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.App.Core;
 
@@ -79,43 +81,47 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             TPartnerImportCSV.FLocationKey = -1;
             ResultsCol = AReferenceResults;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            TDBTransaction ReadTransaction = null;
 
-            while (ANode != null)
-            {
-                ResultsContext = "CSV Import";
-                String PartnerClass = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PARTNERCLASS).ToUpper();
-                Int64 PartnerKey = 0;
-                int LocationKey = 0;
-
-                if (PartnerClass.Length == 0)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.Serializable, ref ReadTransaction,
+                delegate
                 {
-                    PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
-                }
+                    while (ANode != null)
+                    {
+                        ResultsContext = "CSV Import";
+                        String PartnerClass = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PARTNERCLASS).ToUpper();
+                        Int64 PartnerKey = 0;
+                        int LocationKey = 0;
 
-                if ((PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY) || (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
-                {
-                    ResultsContext = "CSV Import Family";
-                    PartnerKey = CreateNewFamily(ANode, out LocationKey, ref ResultDS);
-                    CreateSpecialTypes(ANode, PartnerKey, "SpecialTypeFamily_", ref ResultDS);
-                }
+                        if (PartnerClass.Length == 0)
+                        {
+                            PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
+                        }
 
-                if (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
-                {
-                    ResultsContext = "CSV Import person";
-                    Int64 PersonKey = CreateNewPerson(PartnerKey, LocationKey, ANode, ref ResultDS);
-                    CreateShortTermApplication(ANode, PersonKey, ref ResultDS, Transaction);
-                    CreateSpecialTypes(ANode, PersonKey, ref ResultDS);
-                    CreateSubscriptions(ANode, PersonKey, ref ResultDS);
-                    CreateContacts(ANode, PersonKey, ref ResultDS, "_1");
-                    CreateContacts(ANode, PersonKey, ref ResultDS, "_2");
-                    CreatePassport(ANode, PersonKey, ref ResultDS);
-                }
+                        if ((PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY) || (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
+                        {
+                            ResultsContext = "CSV Import Family";
+                            PartnerKey = CreateNewFamily(ANode, out LocationKey, ref ResultDS, ReadTransaction);
+                            CreateSpecialTypes(ANode, PartnerKey, "SpecialTypeFamily_", ref ResultDS);
+                        }
 
-                ANode = ANode.NextSibling;
-            }
+                        if (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                        {
+                            ResultsContext = "CSV Import person";
+                            Int64 PersonKey = CreateNewPerson(PartnerKey, LocationKey, ANode, ref ResultDS, ReadTransaction);
+                            CreateShortTermApplication(ANode, PersonKey, ref ResultDS, ReadTransaction);
+                            CreateSpecialTypes(ANode, PersonKey, ref ResultDS);
+                            CreateSubscriptions(ANode, PersonKey, ref ResultDS);
+                            CreateContacts(ANode, PersonKey, ref ResultDS, "_1");
+                            CreateContacts(ANode, PersonKey, ref ResultDS, "_2");
+                            CreatePassport(ANode, PersonKey, ref ResultDS);
+                        }
 
-            DBAccess.GDBAccessObj.CommitTransaction();
+                        ANode = ANode.NextSibling;
+                    }
+
+                    CreatePartnerAttributes(ref ResultDS, ReadTransaction);
+                });
 
             return ResultDS;
         }
@@ -123,7 +129,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <summary>
         /// Create new partner, family, location and PartnerLocation records in MainDS
         /// </summary>
-        private static Int64 CreateNewFamily(XmlNode ANode, out int ALocationKey, ref PartnerImportExportTDS AMainDS)
+        private static Int64 CreateNewFamily(XmlNode ANode, out int ALocationKey, ref PartnerImportExportTDS AMainDS,
+            TDBTransaction ATransaction)
         {
             PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
 
@@ -194,19 +201,27 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newLocation.CountryCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
 
             PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
+            TPartnerContactDetails_LocationConversionHelper.AddOldDBTableColumnsToPartnerLocation(AMainDS.PPartnerLocation);
+
             partnerlocation.LocationKey = TPartnerImportCSV.FLocationKey;
             partnerlocation.SiteKey = 0;
             partnerlocation.PartnerKey = newPartner.PartnerKey;
-            partnerlocation.DateEffective = DateTime.Now;
+            partnerlocation.DateEffective = DateTime.Now.Date;
             partnerlocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
             partnerlocation.SendMail = true;
-            partnerlocation.EmailAddress = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);
-            partnerlocation.TelephoneNumber = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);
-            partnerlocation.MobileNumber = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
+
+            partnerlocation["p_email_address_c"] =
+                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);        // Important: Do not use 'partnerlocation.EmailAddress' as this Column will get removed once Contact Details conversion is finished!
+            partnerlocation["p_telephone_number_c"] =
+                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);        // Important: Do not use 'partnerlocation.TelephoneNumber' as this Column will get removed once Contact Details conversion is finished!
+            partnerlocation["p_mobile_number_c"] =
+                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);  // Important: Do not use 'partnerlocation.MobileNumber' as this Column will get removed once Contact Details conversion is finished!
+
             AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
 
             ALocationKey = TPartnerImportCSV.FLocationKey;
             TPartnerImportCSV.FLocationKey--;
+
             return newPartner.PartnerKey;
         }
 
@@ -217,7 +232,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <param name="ALocationKey"></param>
         /// <param name="ANode"></param>
         /// <param name="AMainDS"></param>
-        private static Int64 CreateNewPerson(Int64 AFamilyKey, int ALocationKey, XmlNode ANode, ref PartnerImportExportTDS AMainDS)
+        /// <param name="ATransaction"></param>
+        private static Int64 CreateNewPerson(Int64 AFamilyKey, int ALocationKey, XmlNode ANode,
+            ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
         {
             AMainDS.PFamily.DefaultView.RowFilter = String.Format("{0}={1}", PFamilyTable.GetPartnerKeyDBName(), AFamilyKey);
             PFamilyRow FamilyRow = (PFamilyRow)AMainDS.PFamily.DefaultView[0].Row;
@@ -255,14 +272,31 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPartnerLocation.LocationKey = ALocationKey; // This person lives at the same address as the family.
             newPartnerLocation.SiteKey = 0;
             newPartnerLocation.PartnerKey = newPartner.PartnerKey;
-            newPartnerLocation.DateEffective = DateTime.Now;
+            newPartnerLocation.DateEffective = DateTime.Now.Date;
             newPartnerLocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
             newPartnerLocation.SendMail = true;
-            newPartnerLocation.EmailAddress = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);
-            newPartnerLocation.TelephoneNumber = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);
-            newPartnerLocation.MobileNumber = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
+
+            newPartnerLocation["p_email_address_c"] =
+                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);        // Important: Do not use 'newPartnerLocation.EmailAddress' as this Column will get removed once Contact Details conversion is finished!
+            newPartnerLocation["p_telephone_number_c"] =
+                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);        // Important: Do not use 'newPartnerLocation.TelephoneNumber' as this Column will get removed once Contact Details conversion is finished!
+            newPartnerLocation["p_mobile_number_c"] =
+                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);  // Important: Do not use 'newPartnerLocation.MobileNumber' as this Column will get removed once Contact Details conversion is finished!
+
             AddVerificationResult("Person Record Created.", TResultSeverity.Resv_Status);
+
             return newPerson.PartnerKey;
+        }
+
+        private static void CreatePartnerAttributes(ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
+        {
+            TPartnerContactDetails_LocationConversionHelper.PartnerAttributeLoadUsingTemplate =
+                PPartnerAttributeAccess.LoadUsingTemplate;
+            TPartnerContactDetails_LocationConversionHelper.SequenceGetter =
+                MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence;
+
+            TPartnerContactDetails_LocationConversionHelper.ParsePartnerLocationsForContactDetails(AMainDS,
+                ATransaction);
         }
 
         private static void CreateSpecialTypes(XmlNode ANode, Int64 APartnerKey, String ACSVKey, ref PartnerImportExportTDS AMainDS)

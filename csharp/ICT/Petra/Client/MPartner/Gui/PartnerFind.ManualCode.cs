@@ -234,7 +234,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 for (Counter = 0; Counter <= mniFile.DropDownItems.Count - 1; Counter += 1)
                 {
-                    mniFile.DropDownItems[Counter].Enabled = true;
+                    if (FCurrentlySelectedTab == ucoFindByBankDetails)
+                    {
+                        // For now, disable sending of Email to Partner as this depends on the availability of the
+                        // Partner Info Panel and this is not available with 'Find By Bank Details'...
+                        if (mniFile.DropDownItems[Counter] != mniFileSendEmail)
+                        {
+                            mniFile.DropDownItems[Counter].Enabled = true;
+                        }
+                        else
+                        {
+                            mniFile.DropDownItems[Counter].Enabled = false;
+                        }
+                    }
+                    else
+                    {
+                        mniFile.DropDownItems[Counter].Enabled = true;
+                    }
                 }
             }
 

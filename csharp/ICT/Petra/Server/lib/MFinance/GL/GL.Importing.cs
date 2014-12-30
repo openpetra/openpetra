@@ -265,6 +265,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
                             }
 
+                            ImportMessage = Catalog.GetString("Starting new batch");
                             NewBatch = MainDS.ABatch.NewRowTyped(true);
                             NewBatch.LedgerNumber = LedgerNumber;
                             LedgerTable[0].LastBatchNumber++;
@@ -484,6 +485,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                     if (UpdateDailyExchangeRateTable(DailyExchangeFromTable, LedgerBaseCurrency, NewJournal.TransactionCurrency,
                                             inverseRate, NewJournal.DateEffective))
                                     {
+                                        ImportMessage = Catalog.GetString("Saving an updated daily exchange rate");
                                         ADailyExchangeRateAccess.SubmitChanges(DailyExchangeFromTable, Transaction);
                                     }
                                 }
@@ -579,25 +581,31 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 // Everything is ok, so we can do our finish actions
 
-                ImportMessage = Catalog.GetString("Saving counter fields:");
 
                 //Finally save all pending changes (last xxx number is updated)
+                ImportMessage = Catalog.GetString("Saving remaining daily exchange rate data");
                 ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToTable, Transaction);
                 DailyExchangeToTable.AcceptChanges();
 
+                ImportMessage = Catalog.GetString("Saving changes to Ledger table");
                 ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
                 LedgerTable.AcceptChanges();
 
                 // Update totals of final batch
+                ImportMessage = Catalog.GetString("Saving changes to batch totals");
+
                 if (NewBatch != null)
                 {
                     GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
                 }
 
+                ImportMessage = Catalog.GetString("Saving changes to batch");
                 ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
                 MainDS.ABatch.AcceptChanges();
+                ImportMessage = Catalog.GetString("Saving changes to journal");
                 AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
                 MainDS.AJournal.AcceptChanges();
+                ImportMessage = Catalog.GetString("Saving changes to transactions");
                 ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction);
                 MainDS.ATransaction.AcceptChanges();
 
@@ -626,8 +634,17 @@ namespace Ict.Petra.Server.MFinance.GL
                         msg += FNewLine + friendlyExceptionText;
                     }
 
-                    AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                            msg, TResultSeverity.Resv_Critical));
+                    if (ImportMessage.StartsWith(Catalog.GetString("Saving ")))
+                    {
+                        // Do not display any specific line number because these errors occur outside the parsing loop
+                        AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileSavingBatch, NewBatch.BatchDescription),
+                                msg, TResultSeverity.Resv_Critical));
+                    }
+                    else
+                    {
+                        AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                                msg, TResultSeverity.Resv_Critical));
+                    }
                 }
                 else
                 {
@@ -895,7 +912,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 MainDS.ATransAnalAttrib.AcceptChanges();
 
                 // update the totals of the batch that has just been imported
-                ImportMessage = Catalog.GetString("Updating batch totals");
+                ImportMessage = Catalog.GetString("Saving changes to totals");
                 GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatchRow);
 
                 ImportMessage = Catalog.GetString("Saving journal totals");
@@ -931,8 +948,17 @@ namespace Ict.Petra.Server.MFinance.GL
                         msg += FNewLine + friendlyExceptionText;
                     }
 
-                    AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                            msg, TResultSeverity.Resv_Critical));
+                    if (ImportMessage.StartsWith(Catalog.GetString("Saving ")))
+                    {
+                        // Do not display any specific line number because these errors occur outside the parsing loop
+                        AMessages.Add(new TVerificationResult(MCommonConstants.StrExceptionWhileSavingTransactions,
+                                msg, TResultSeverity.Resv_Critical));
+                    }
+                    else
+                    {
+                        AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                                msg, TResultSeverity.Resv_Critical));
+                    }
                 }
                 else
                 {
@@ -1022,10 +1048,10 @@ namespace Ict.Petra.Server.MFinance.GL
             AMainDS.ATransaction.Rows.Add(NewTransaction);
 
             NewTransaction.CostCentreCode = ImportString(Catalog.GetString("Cost centre"),
-                AMainDS.ATransaction.ColumnCostCentreCode, AValidationControlsDictTransaction);
+                AMainDS.ATransaction.ColumnCostCentreCode, AValidationControlsDictTransaction).ToUpper();
 
             NewTransaction.AccountCode = ImportString(Catalog.GetString("Account code"),
-                AMainDS.ATransaction.ColumnAccountCode, AValidationControlsDictTransaction);
+                AMainDS.ATransaction.ColumnAccountCode, AValidationControlsDictTransaction).ToUpper();
 
             NewTransaction.Narrative = ImportString(Catalog.GetString("Narrative"),
                 AMainDS.ATransaction.ColumnNarrative, AValidationControlsDictTransaction);

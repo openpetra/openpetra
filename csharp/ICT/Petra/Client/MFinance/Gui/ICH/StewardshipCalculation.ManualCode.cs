@@ -52,7 +52,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
     /// manual methods for the generated window
     public partial class TFrmStewardshipCalculation : System.Windows.Forms.Form
     {
-        ICHModeEnum FReportingPeriodSelectionMode = ICHModeEnum.StewardshipCalc;
         Int32 FLedgerNumber = 0;
 
         /// <summary>
@@ -103,30 +102,19 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
             try
             {
-                switch (FReportingPeriodSelectionMode)
-                {
-                    case ICHModeEnum.StewardshipCalc:
+                Cursor = Cursors.WaitCursor;
 
-                        Cursor = Cursors.WaitCursor;
+                Boolean retVal = TRemote.MFinance.ICH.WebConnectors.PerformStewardshipCalculation(
+                    FLedgerNumber,
+                    cmbReportPeriod.GetSelectedInt32(),
+                    out VerificationResult);
 
-                        Boolean retVal = TRemote.MFinance.ICH.WebConnectors.PerformStewardshipCalculation(
-                        FLedgerNumber,
-                        cmbReportPeriod.GetSelectedInt32(),
-                        out VerificationResult);
+                Cursor = Cursors.Default;
+                String ResultMsg =
+                    (retVal ? Catalog.GetString("Stewardship Calculation Completed Successfully")
+                     : Catalog.GetString("UNSUCCESSFUL Stewardship Calculation!"));
 
-                        Cursor = Cursors.Default;
-                        String ResultMsg =
-                            (retVal ? Catalog.GetString("Stewardship Calculation Completed Successfully")
-                             : Catalog.GetString("UNSUCCESSFUL Stewardship Calculation!"));
-
-                        MessageBox.Show(Messages.BuildMessageFromVerificationResult(ResultMsg, VerificationResult));
-
-                        break;
-
-                    case ICHModeEnum.Statement:
-
-                        throw new NotImplementedException(Catalog.GetString("ICH Statement functionality is not yet implemented!"));
-                }
+                MessageBox.Show(Messages.BuildMessageFromVerificationResult(ResultMsg, VerificationResult));
 
                 btnCancel.Text = "Close";
             }
@@ -138,22 +126,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-        }
-
-        /// <summary>
-        /// Gets or sets the ICH reporting period selection mode
-        /// </summary>
-        public ICHModeEnum ReportingPeriodSelectionMode
-        {
-            get
-            {
-                return FReportingPeriodSelectionMode;
-            }
-
-            set
-            {
-                FReportingPeriodSelectionMode = value;
-            }
         }
     }
 }

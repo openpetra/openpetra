@@ -119,10 +119,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             bool ReplaceAddressYesToAll = false;
             bool ReplaceAddressNoToAll = false;
             string CountryName;
-            string EmailAddress;
             PLocationTable LocationTable;
             PLocationRow LocationRow;
-            PPartnerLocationTable PartnerLocationTable;
             TFrmExtendedMessageBox MsgBox = new TFrmExtendedMessageBox(AForm);
 
             TFrmExtendedMessageBox.TResult MsgBoxResult;
@@ -223,7 +221,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     if (ReplaceAddress)
                     {
                         if (!TRemote.MPartner.Mailing.WebConnectors.GetBestAddress(Row.PartnerKey,
-                                out LocationTable, out PartnerLocationTable, out CountryName, out EmailAddress))
+                                out LocationTable, out CountryName))
                         {
                             // in this case there is no address at all for this partner (should not really happen)
                             if (!DontShowPartnerRemoveNoAddress)

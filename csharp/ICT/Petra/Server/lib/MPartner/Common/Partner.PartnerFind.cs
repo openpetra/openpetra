@@ -106,12 +106,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             // short
             sb.AppendFormat("{0},{1}", "PUB.p_partner.p_partner_short_name_c", Environment.NewLine);
 
-            // short
-            if (ADetailedResults == true)
-            {
-                sb.AppendFormat("{0},{1}", "PUB.p_partner_location.p_telephone_number_c", Environment.NewLine);
-            }
-
             sb.AppendFormat("{0},{1}", "PUB.p_location.p_city_c", Environment.NewLine);
 
             // short
@@ -158,8 +152,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             {
                 sb.AppendFormat("{0},{1}", "PUB.p_partner.p_previous_name_c", Environment.NewLine);
             }
-
-            sb.AppendFormat("{0},{1}", "PUB.p_partner_location.p_email_address_c", Environment.NewLine);
 
             sb.AppendFormat("{0},{1}", "PUB.p_partner.p_status_code_c", Environment.NewLine);
 
@@ -490,14 +482,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     ref CustomWhereCriteria, ref InternalParameters);
             }
 
-            if (CriteriaRow["Email"].ToString().Length > 0)
-            {
-                // Searched DB Field: 'p_email_address_c'
-                new TDynamicSearchHelper(PPartnerLocationTable.TableId,
-                    PPartnerLocationTable.ColumnEmailAddressId, CriteriaRow, "Email", "EmailMatch",
-                    ref CustomWhereCriteria, ref InternalParameters);
-            }
-
             if (CriteriaRow["PartnerClass"].ToString() != "*")
             {
                 // Split String into String Array is Restricted Partner Classes are being used
@@ -600,31 +584,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 new TDynamicSearchHelper(PBankingDetailsTable.TableId,
                     PBankingDetailsTable.ColumnAccountNameId, CriteriaRow, "AccountName", "AccountNameMatch",
                     ref CustomWhereCriteria, ref InternalParameters);
-            }
-
-            // Searched DB Fields: 'p_telephone_number_c' and 'p_alternate_telephone_c': done manually
-            if (CriteriaRow["PhoneNumber"].ToString().Length > 0)
-            {
-                // these two need to be grouped as they are an OR
-                CustomWhereCriteria = CustomWhereCriteria + " AND ( ";
-                new TDynamicSearchHelper(PPartnerLocationTable.TableId,
-                    PPartnerLocationTable.ColumnTelephoneNumberId, CriteriaRow, "PhoneNumber",
-                    "PhoneNumberMatch",
-                    ref CustomWhereCriteria, ref InternalParameters, " ");
-
-                // prevent an AND
-                new TDynamicSearchHelper(PPartnerLocationTable.TableId,
-                    PPartnerLocationTable.ColumnAlternateTelephoneId, CriteriaRow, "PhoneNumber",
-                    "PhoneNumberMatch", ref CustomWhereCriteria, ref InternalParameters, "OR");
-
-                // prepend with OR
-                CustomWhereCriteria = CustomWhereCriteria + " ) ";
-
-                // Prevent 'empty' Criteria from creating an invalid CustomWhereCriteria...
-                if (CustomWhereCriteria.EndsWith(" AND (  ) "))
-                {
-                    CustomWhereCriteria = CustomWhereCriteria.Substring(0, CustomWhereCriteria.Length - " AND (  ) ".Length);
-                }
             }
 
             if ((Boolean)(CriteriaRow["MailingAddressOnly"]) == true)

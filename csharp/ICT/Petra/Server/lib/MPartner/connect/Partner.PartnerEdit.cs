@@ -2617,10 +2617,22 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 TempDS.Merge(AInspectDS);
                 TSubmitChangesResult IndividualDataResult;
 
-                // can remove tables PPerson, PDataLabelValuePartner and PDataLabelValueApplication here
-                // as this is part of both PartnerEditTDS and IndividualDataTDS and
-                // so the relevant data was already saved when PartnerEditTDS was saved
+                // can remove tables PPerson, PPartnerAttributeTable. PDataLabelValuePartner and PDataLabelValueApplication
+                // here as these are part of both PartnerEditTDS and IndividualDataTDS and so the relevant data was already
+                // saved when PartnerEditTDS was saved
                 TempDS.RemoveTable(PPersonTable.GetTableName());
+
+                if (TempDS.Relations.Contains("ContactDetails1"))
+                {
+                    TempDS.Relations.Remove("ContactDetails1");  // need to remove this Relation in order to be able to remove PPartnerAttributeTable
+                }
+
+                if (TempDS.Relations.Contains("ContactDetails2"))
+                {
+                    TempDS.Relations.Remove("ContactDetails2");  // need to remove this Relation in order to be able to remove PPartnerAttributeTable
+                }
+
+                TempDS.RemoveTable(PPartnerAttributeTable.GetTableName());
                 TempDS.RemoveTable(PDataLabelValuePartnerTable.GetTableName());
                 TempDS.RemoveTable(PDataLabelValueApplicationTable.GetTableName());
                 TempDS.InitVars();
@@ -2937,13 +2949,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         private void GetPartnerContactDetailsInternal(out Int32 ACount)
         {
-            TPartnerCacheable PartnerCacheable = new TPartnerCacheable();
             TDBTransaction ReadTransaction = null;
-            PPartnerAttributeTypeTable AttributeTypeDT;
-            int NonPartnerContactAttributesCount = 0;
-
-            // Get the Partner Attribute Types that represent Partner Contact Types.
-            AttributeTypeDT = Calculations.DeterminePartnerContactTypes(@PartnerCacheable.GetCacheableTable);
+            int NonPartnerContactAttributesCount;
 
             // Partner Contact Details are kept in PPartnerAttribute, among other attributes (!), so we need to ensure that
             // PPartnerAttribute data for this Partner is loaded already (this will be the case when called from LoadData).
@@ -2956,26 +2963,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         TLogging.LogAtLevel(7,
                             "TPartnerEditUIConnector.GetPartnerContactDetailsInternal: loading Partner Contact Details for Partner " +
                             FPartnerKey.ToString() + "...");
+
                         FPartnerEditScreenDS.Merge(PPartnerAttributeAccess.LoadViaPPartner(FPartnerKey, ReadTransaction));
                     });
             }
 
-            // Find out which Partner Attributes *are* and which *aren't* Partner Contact Attributes:
-            // Partner Attributes whose AttributeType is not a PartnerAttributeType whose PartnerAttributeCategory is a Partner Contact one
-            // (their PPartnerAttributeCategory.PartnerContactCategory Column holds 'false') aren't!
-            for (int Counter = 0; Counter < FPartnerEditScreenDS.PPartnerAttribute.Rows.Count; Counter++)
-            {
-                if (AttributeTypeDT.Select(PPartnerAttributeTypeTable.GetAttributeTypeDBName() + " = '" +
-                        FPartnerEditScreenDS.PPartnerAttribute[Counter].AttributeType + "'").Length == 0)
-                {
-                    NonPartnerContactAttributesCount++;
-                }
-                else
-                {
-                    // Mark every Partner Attribute that *is* a Partner Contact Attribute
-                    FPartnerEditScreenDS.PPartnerAttribute[Counter].PartnerContactDetail = true;
-                }
-            }
+            NonPartnerContactAttributesCount = Calculations.DeterminePartnerContactDetailAttributes(
+                FPartnerEditScreenDS.PPartnerAttribute);
 
             ACount = FPartnerEditScreenDS.PPartnerAttribute.Rows.Count - NonPartnerContactAttributesCount;
         }

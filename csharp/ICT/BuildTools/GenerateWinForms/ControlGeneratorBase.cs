@@ -905,6 +905,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
                     ", Catalog.GetString(\"Click to delete the highlighted record(s)\"));" + Environment.NewLine);
             }
+            else if (ctrl.controlName.StartsWith("spt"))
+            {
+                writer.Template.AddToCodelet(
+                    "INITUSERCONTROLS",
+                    "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
+                    ", Catalog.GetString(\"Use the arrow keys to change the Splitter position and change the relative proportions of the panels\"));"
+                    +
+                    Environment.NewLine);
+            }
 
             //TODO: CT
 //            if (ctrl.HasAttribute("DefaultValue"))

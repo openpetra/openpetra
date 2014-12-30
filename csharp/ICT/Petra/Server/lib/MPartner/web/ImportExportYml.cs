@@ -2,9 +2,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, thomass
+//       timop
+//       thomass
+//       ChristianK
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +28,7 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
+using System.Globalization;
 using System.Xml;
 using System.IO;
 using GNU.Gettext;
@@ -48,6 +51,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
     /// </summary>
     public class TImportExportYml
     {
+        /// <summary>
+        /// Date Format string that is used in the YAML Import/Export format.
+        /// </summary>
+        /// <remarks>Writing and parsing of dates in the YAML Import/Export format must always done with this Format String
+        /// and <see cref="CultureInfo.InvariantCulture" />! This ensures that dates within a file that gets exported
+        /// 'somewhere in the world' can be parsed correctly 'somewhere else in the world'.</remarks>
+        public const string IMPORTEXPORT_YAML_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
+
         static Int64 NewPartnerKey = -1;
 
         private static void ParsePartners(ref PartnerImportExportTDS AMainDS,
@@ -59,6 +70,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             while (LocalNode != null)
             {
+                var LocalNodeChildren = TYml2Xml.GetChildren(LocalNode, false);
+
                 if (LocalNode.Name.StartsWith("PartnerGroup"))
                 {
                     ParsePartners(ref AMainDS, LocalNode.FirstChild, ATransaction, ref AVerificationResult);
@@ -146,7 +159,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                         if (TYml2Xml.HasAttribute(LocalNode, "CreatedAt"))
                         {
-                            FamilyRow.DateCreated = Convert.ToDateTime(TYml2Xml.GetAttribute(LocalNode, "CreatedAt"));
+                            FamilyRow.DateCreated = System.DateTime.ParseExact(
+                                TYml2Xml.GetAttribute(LocalNode, "CreatedAt"),
+                                IMPORTEXPORT_YAML_DATEFORMAT, CultureInfo.InvariantCulture);
                         }
 
                         PartnerRow.AddresseeTypeCode = MPartnerConstants.PARTNERCLASS_FAMILY;
@@ -181,7 +196,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                         if (TYml2Xml.HasAttribute(LocalNode, "CreatedAt"))
                         {
-                            PersonRow.DateCreated = Convert.ToDateTime(TYml2Xml.GetAttribute(LocalNode, "CreatedAt"));
+                            PersonRow.DateCreated = System.DateTime.ParseExact(
+                                TYml2Xml.GetAttribute(LocalNode, "CreatedAt"),
+                                IMPORTEXPORT_YAML_DATEFORMAT, CultureInfo.InvariantCulture);
                         }
 
                         // PersonRow.Sp
@@ -317,7 +334,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                         if (TYml2Xml.HasAttribute(LocalNode, "CreatedAt"))
                         {
-                            BankRow.DateCreated = Convert.ToDateTime(TYml2Xml.GetAttribute(LocalNode, "CreatedAt"));
+                            BankRow.DateCreated = System.DateTime.ParseExact(
+                                TYml2Xml.GetAttribute(LocalNode, "CreatedAt"),
+                                IMPORTEXPORT_YAML_DATEFORMAT, CultureInfo.InvariantCulture);
                         }
                     }
                     else
@@ -405,9 +424,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             partnerlocation.DateEffective = DateTime.Now;
                             partnerlocation.LocationType = "HOME";
                             partnerlocation.SendMail = false;
-                            partnerlocation.EmailAddress = TYml2Xml.GetAttributeRecursive(addressNode, "Email");
-                            partnerlocation.TelephoneNumber = TYml2Xml.GetAttributeRecursive(addressNode, "Phone");
-                            partnerlocation.MobileNumber = TYml2Xml.GetAttributeRecursive(addressNode, "MobilePhone");
                             AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
                         }
                     }
@@ -435,9 +451,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         partnerlocation.SendMail = true;
                         partnerlocation.DateEffective = DateTime.Now;
                         partnerlocation.LocationType = "HOME";
-                        partnerlocation.EmailAddress = TYml2Xml.GetAttributeRecursive(addressNode, "Email");
-                        partnerlocation.TelephoneNumber = TYml2Xml.GetAttributeRecursive(addressNode, "Phone");
-                        partnerlocation.MobileNumber = TYml2Xml.GetAttributeRecursive(addressNode, "MobilePhone");
                         AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
                     }
 
@@ -445,10 +458,21 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     XmlNode financialDetailsNode = TYml2Xml.GetChild(LocalNode, "FinancialDetails");
 
                     ParseFinancialDetails(AMainDS, financialDetailsNode, PartnerRow.PartnerKey, ATransaction);
+
+                    foreach (var LocalNodeChildNode in LocalNodeChildren)
+                    {
+                        // import Partner Attributes (Partner Contact Details, etc)
+                        if (LocalNodeChildNode.Name.StartsWith("PartnerAttribute"))
+                        {
+                            ParsePartnerAttributes(AMainDS, LocalNodeChildNode, PartnerRow.PartnerKey, ATransaction);
+                        }
+                    }
                 }
 
                 LocalNode = LocalNode.NextSibling;
             }
+
+            Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerContactDetailAttributes(AMainDS.PPartnerAttribute);
         }
 
         private static void ParseFinancialDetails(PartnerImportExportTDS AMainDS,
@@ -518,6 +542,83 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
+        private static void ParsePartnerAttributes(PartnerImportExportTDS AMainDS,
+            XmlNode APartnerAttributeNode,
+            Int64 APartnerKey,
+            TDBTransaction ATransaction)
+        {
+            PPartnerAttributeRow NewAttributeDR;
+
+            if (APartnerAttributeNode != null)
+            {
+                if (!TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "AttributeType"))
+                {
+                    throw new Exception(Catalog.GetString("PartnerAttribute Node: Missing 'AttributeType' Attribute"));
+                }
+
+                if (!TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "Index"))
+                {
+                    throw new Exception(Catalog.GetString("PartnerAttribute Node: Missing 'Index' Attribute"));
+                }
+
+                if (!TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "Value"))
+                {
+                    throw new Exception(Catalog.GetString("PartnerAttribute Node: Missing 'Value' Attribute"));
+                }
+
+                if (!TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "Primary"))
+                {
+                    throw new Exception(Catalog.GetString("PartnerAttribute Node: Missing 'Primary' Attribute"));
+                }
+
+                if (!TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "WithinOrgansiation"))
+                {
+                    throw new Exception(Catalog.GetString("PartnerAttribute Node: Missing 'WithinOrgansiation' Attribute"));
+                }
+
+                if (!TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "Specialised"))
+                {
+                    throw new Exception(Catalog.GetString("PartnerAttribute Node: Missing 'Specialised' Attribute"));
+                }
+
+                if (!TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "Confidential"))
+                {
+                    throw new Exception(Catalog.GetString("PartnerAttribute Node: Missing 'Confidential' Attribute"));
+                }
+
+                if (!TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "Current"))
+                {
+                    throw new Exception(Catalog.GetString("PartnerAttribute Node: Missing 'Current' Attribute"));
+                }
+
+                NewAttributeDR = AMainDS.PPartnerAttribute.NewRowTyped(true);
+
+                NewAttributeDR.PartnerKey = APartnerKey;
+                NewAttributeDR.AttributeType = TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "AttributeType");
+                NewAttributeDR.Index = Convert.ToInt32(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Index"));
+                NewAttributeDR.Value = TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Value");
+                NewAttributeDR.Primary = Convert.ToBoolean(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Primary"));
+                NewAttributeDR.WithinOrgansiation = Convert.ToBoolean(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "WithinOrgansiation"));
+                NewAttributeDR.Specialised = Convert.ToBoolean(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Specialised"));
+                NewAttributeDR.Confidential = Convert.ToBoolean(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Confidential"));
+                NewAttributeDR.Current = Convert.ToBoolean(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Current"));
+
+                if (TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "NoLongerCurrentFrom"))
+                {
+                    NewAttributeDR.NoLongerCurrentFrom = System.DateTime.ParseExact(
+                        TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "NoLongerCurrentFrom"),
+                        IMPORTEXPORT_YAML_DATEFORMAT, CultureInfo.InvariantCulture);
+                }
+
+                if (TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "Comment"))
+                {
+                    NewAttributeDR.Comment = TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Comment");
+                }
+
+                AMainDS.PPartnerAttribute.Rows.Add(NewAttributeDR);
+            }
+        }
+
         /// <summary>
         /// imports partner data from file
         /// </summary>
@@ -580,6 +681,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     long partnerKey = partnerRow.PartnerKey;
                     PLocationAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
                     PPartnerLocationAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
+                    PPartnerAttributeAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
                     PPartnerTypeAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
                     PPersonAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
                     PFamilyAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
@@ -595,6 +697,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     SortedList <string, int>sortedtables = new SortedList <string, int>();
                     sortedtables.Add("PLocation", MainDS.PLocation.Count);
                     sortedtables.Add("PPartnerLocation", MainDS.PPartnerLocation.Count);
+                    sortedtables.Add("PPartnerAttribute", MainDS.PPartnerAttribute.Count);
                     sortedtables.Add("PPartnerType", MainDS.PPartnerType.Count);
                     sortedtables.Add("PPerson", MainDS.PPerson.Count);
                     sortedtables.Add("PFamily", MainDS.PFamily.Count);
@@ -862,7 +965,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             partnerNode.SetAttribute("EpFormatFile", BankRow.EpFormatFile);
                         }
 
-                        partnerNode.SetAttribute("CreatedAt", partnerRow.DateCreated.Value.ToString("yyyy-MM-dd HH:mm:ss"));
+                        partnerNode.SetAttribute("CreatedAt", partnerRow.DateCreated.Value.ToString(
+                                IMPORTEXPORT_YAML_DATEFORMAT, CultureInfo.InvariantCulture));
 
                         // special types
                         string specialTypes = "";
@@ -911,13 +1015,48 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                                 addressNode.SetAttribute("City", locationRow.City);
                                 addressNode.SetAttribute("PostCode", locationRow.PostalCode);
                             }
-
-                            addressNode.SetAttribute("Email", partnerLocationRow.EmailAddress);
-                            addressNode.SetAttribute("Phone", partnerLocationRow.TelephoneNumber);
-                            addressNode.SetAttribute("MobilePhone", partnerLocationRow.MobileNumber);
                         }
 
                         // TODO: notes
+                        // TODO: financial details
+
+                        // Partner Attributes (Partner Contact Details, etc)
+                        DataView partnerattributeView = MainDS.PPartnerAttribute.DefaultView;
+                        partnerattributeView.RowFilter =
+                            PPartnerAttributeTable.GetPartnerKeyDBName() + " = " + partnerRow.PartnerKey.ToString();
+                        Int32 partnerAttributeCounter = 0;
+
+                        foreach (DataRowView rv in partnerattributeView)
+                        {
+                            XmlElement partnerAttributeNode =
+                                PartnerData.CreateElement("PartnerAttribute" + (partnerAttributeCounter > 0 ? partnerAttributeCounter.ToString() : ""));
+                            partnerAttributeCounter++;
+                            partnerNode.AppendChild(partnerAttributeNode);
+
+                            PPartnerAttributeRow partnerAttributeRow = (PPartnerAttributeRow)rv.Row;
+
+                            partnerAttributeNode.SetAttribute("AttributeType", partnerAttributeRow.AttributeType);
+                            partnerAttributeNode.SetAttribute("Index", partnerAttributeRow.Index.ToString());
+                            partnerAttributeNode.SetAttribute("Value", partnerAttributeRow.Value);
+                            partnerAttributeNode.SetAttribute("Primary", partnerAttributeRow.Primary.ToString());
+                            partnerAttributeNode.SetAttribute("WithinOrgansiation", partnerAttributeRow.WithinOrgansiation.ToString());
+                            partnerAttributeNode.SetAttribute("Specialised", partnerAttributeRow.Specialised.ToString());
+                            partnerAttributeNode.SetAttribute("Confidential", partnerAttributeRow.Confidential.ToString());
+                            partnerAttributeNode.SetAttribute("Current", partnerAttributeRow.Current.ToString());
+
+                            if (!partnerAttributeRow.IsNoLongerCurrentFromNull())
+                            {
+                                partnerAttributeNode.SetAttribute("NoLongerCurrentFrom",
+                                    partnerAttributeRow.NoLongerCurrentFrom.Value.ToString(IMPORTEXPORT_YAML_DATEFORMAT,
+                                        CultureInfo.InvariantCulture));
+                            }
+
+                            if (!partnerAttributeRow.IsCommentNull())
+                            {
+                                partnerAttributeNode.SetAttribute("Comment", partnerAttributeRow.Comment);
+                            }
+                        }
+
                         // TODO: This doesn't export as much data as it should?
                     }
                 }

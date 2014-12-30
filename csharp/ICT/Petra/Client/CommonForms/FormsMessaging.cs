@@ -163,7 +163,10 @@ namespace Ict.Petra.Client.CommonForms
         mcUnitHierarchyChanged,
 
         /// <summary>A new extract has been created.</summary>
-        mcExtractCreated
+        mcExtractCreated,
+
+        /// <summary>The GL Batch or Gift Batch screen has successfully saved data.</summary>
+        mcGLOrGiftBatchSaved
     }
 
     /// <summary>

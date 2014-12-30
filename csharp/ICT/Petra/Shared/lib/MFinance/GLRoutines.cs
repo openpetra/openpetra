@@ -223,21 +223,10 @@ namespace Ict.Petra.Shared.MFinance
                 return;
             }
 
-            /* // Since I'm not using ExchangeRateToBase, I don't need to check that it's valid:
-             *
-             * if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
-             *  && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
-             * {
-             *  throw new Exception(String.Format("Recurring Batch {0} Journal {1} has invalid exchange rate to base",
-             *          ACurrentJournal.BatchNumber,
-             *          ACurrentJournal.JournalNumber));
-             * }
-             */
-
-            ACurrentJournal.JournalDebitTotal = 0.0M;
-            ACurrentJournal.JournalDebitTotalBase = 0.0M;
-            ACurrentJournal.JournalCreditTotal = 0.0M;
-            ACurrentJournal.JournalCreditTotalBase = 0.0M;
+            decimal JournalDebitTotal = 0.0M;
+            decimal JournalDebitTotalBase = 0.0M;
+            decimal JournalCreditTotal = 0.0M;
+            decimal JournalCreditTotalBase = 0.0M;
 
             DataView trnsDataView = new DataView(AMainDS.ARecurringTransaction);
 
@@ -254,14 +243,96 @@ namespace Ict.Petra.Shared.MFinance
 
                 if (r.DebitCreditIndicator)
                 {
-                    ACurrentJournal.JournalDebitTotal += r.TransactionAmount;
-                    ACurrentJournal.JournalDebitTotalBase += r.AmountInBaseCurrency;
+                    JournalDebitTotal += r.TransactionAmount;
+                    JournalDebitTotalBase += r.AmountInBaseCurrency;
                 }
                 else
                 {
-                    ACurrentJournal.JournalCreditTotal += r.TransactionAmount;
-                    ACurrentJournal.JournalCreditTotalBase += r.AmountInBaseCurrency;
+                    JournalCreditTotal += r.TransactionAmount;
+                    JournalCreditTotalBase += r.AmountInBaseCurrency;
                 }
+            }
+
+            if ((ACurrentJournal.JournalDebitTotal != JournalDebitTotal)
+                || (ACurrentJournal.JournalDebitTotalBase != JournalDebitTotalBase)
+                || (ACurrentJournal.JournalCreditTotal != JournalCreditTotal)
+                || (ACurrentJournal.JournalCreditTotalBase != JournalCreditTotalBase))
+            {
+                ACurrentJournal.JournalDebitTotal = JournalDebitTotal;
+                ACurrentJournal.JournalDebitTotalBase = JournalDebitTotalBase;
+                ACurrentJournal.JournalCreditTotal = JournalCreditTotal;
+                ACurrentJournal.JournalCreditTotalBase = JournalCreditTotalBase;
+            }
+        }
+
+        /// <summary>
+        /// Calculate the base amount for the transactions, and update the totals for the current journal
+        /// NOTE this no longer calculates AmountInBaseCurrency
+        /// ALSO - since the ExchangeRateToBase field is no longer used here, the code that asserts it to be valid is commented out.
+        /// </summary>
+        /// <param name="AMainDS">ATransactions are filtered on current journal</param>
+        /// <param name="ACurrentJournal"></param>
+        /// <param name="AJournalUpdated"></param>
+        public static void UpdateTotalsOfRecurringJournal(ref GLBatchTDS AMainDS,
+            ref GLBatchTDSARecurringJournalRow ACurrentJournal, out bool AJournalUpdated)
+        {
+            AJournalUpdated = false;
+
+            if (ACurrentJournal == null)
+            {
+                return;
+            }
+
+            decimal JournalDebitTotal = 0.0M;
+            decimal JournalDebitTotalBase = 0.0M;
+            decimal JournalCreditTotal = 0.0M;
+            decimal JournalCreditTotalBase = 0.0M;
+
+            if (DBNull.Value.Equals(ACurrentJournal[GLBatchTDSARecurringJournalTable.ColumnJournalDebitTotalBaseId]))
+            {
+                ACurrentJournal.JournalDebitTotalBase = 0;
+            }
+
+            if (DBNull.Value.Equals(ACurrentJournal[GLBatchTDSARecurringJournalTable.ColumnJournalCreditTotalBaseId]))
+            {
+                ACurrentJournal.JournalCreditTotalBase = 0;
+            }
+
+            DataView trnsDataView = new DataView(AMainDS.ARecurringTransaction);
+
+            trnsDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                ACurrentJournal.BatchNumber,
+                ARecurringTransactionTable.GetJournalNumberDBName(),
+                ACurrentJournal.JournalNumber);
+
+            // transactions are filtered for this journal; add up the total amounts
+            foreach (DataRowView v in trnsDataView)
+            {
+                ARecurringTransactionRow r = (ARecurringTransactionRow)v.Row;
+
+                if (r.DebitCreditIndicator)
+                {
+                    JournalDebitTotal += r.TransactionAmount;
+                    JournalDebitTotalBase += r.AmountInBaseCurrency;
+                }
+                else
+                {
+                    JournalCreditTotal += r.TransactionAmount;
+                    JournalCreditTotalBase += r.AmountInBaseCurrency;
+                }
+            }
+
+            if ((ACurrentJournal.JournalDebitTotal != JournalDebitTotal)
+                || (ACurrentJournal.JournalDebitTotalBase != JournalDebitTotalBase)
+                || (ACurrentJournal.JournalCreditTotal != JournalCreditTotal)
+                || (ACurrentJournal.JournalCreditTotalBase != JournalCreditTotalBase))
+            {
+                ACurrentJournal.JournalDebitTotal = JournalDebitTotal;
+                ACurrentJournal.JournalDebitTotalBase = JournalDebitTotalBase;
+                ACurrentJournal.JournalCreditTotal = JournalCreditTotal;
+                ACurrentJournal.JournalCreditTotalBase = JournalCreditTotalBase;
+                AJournalUpdated = true;
             }
         }
 
@@ -374,14 +445,50 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>
         /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
+        ///   Assumes that all transactions for the journal are already loaded.
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="ACurrentBatch"></param>
+        /// <param name="ACurrentJournal"></param>
+        public static bool UpdateTotalsOfRecurringBatchForJournal(ref GLBatchTDS AMainDS,
+            ARecurringBatchRow ACurrentBatch, GLBatchTDSARecurringJournalRow ACurrentJournal)
+        {
+            //Save current values
+            decimal JournalDebitTotal = ACurrentJournal.JournalDebitTotal;
+            decimal JournalCreditTotal = ACurrentJournal.JournalCreditTotal;
+
+            bool JournalUpdated;
+
+            UpdateTotalsOfRecurringJournal(ref AMainDS, ref ACurrentJournal, out JournalUpdated);
+
+            if (JournalUpdated)
+            {
+                //Subtract old amounts
+                ACurrentBatch.BatchDebitTotal -= JournalDebitTotal;
+                ACurrentBatch.BatchCreditTotal -= JournalCreditTotal;
+                //Add updated Journals amounts
+                ACurrentBatch.BatchDebitTotal += ACurrentJournal.JournalDebitTotal;
+                ACurrentBatch.BatchCreditTotal += ACurrentJournal.JournalCreditTotal;
+            }
+
+            return JournalUpdated;
+        }
+
+        /// <summary>
+        /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
         /// </summary>
         /// <param name="AMainDS"></param>
         /// <param name="ACurrentBatch"></param>
         public static void UpdateTotalsOfRecurringBatch(ref GLBatchTDS AMainDS,
             ARecurringBatchRow ACurrentBatch)
         {
-            ACurrentBatch.BatchDebitTotal = 0.0m;
-            ACurrentBatch.BatchCreditTotal = 0.0m;
+            if (ACurrentBatch == null)
+            {
+                return;
+            }
+
+            decimal BatchDebitTotal = 0.0m;
+            decimal BatchCreditTotal = 0.0m;
 
             DataView jnlDataView = new DataView(AMainDS.ARecurringJournal);
             jnlDataView.RowFilter = String.Format("{0}={1}",
@@ -394,8 +501,15 @@ namespace Ict.Petra.Shared.MFinance
 
                 UpdateTotalsOfRecurringJournal(ref AMainDS, ref journalRow);
 
-                ACurrentBatch.BatchDebitTotal += journalRow.JournalDebitTotal;
-                ACurrentBatch.BatchCreditTotal += journalRow.JournalCreditTotal;
+                BatchDebitTotal += journalRow.JournalDebitTotal;
+                BatchCreditTotal += journalRow.JournalCreditTotal;
+            }
+
+            if ((ACurrentBatch.BatchDebitTotal != BatchDebitTotal)
+                || (ACurrentBatch.BatchCreditTotal != BatchCreditTotal))
+            {
+                ACurrentBatch.BatchDebitTotal = BatchDebitTotal;
+                ACurrentBatch.BatchCreditTotal = BatchCreditTotal;
             }
         }
 

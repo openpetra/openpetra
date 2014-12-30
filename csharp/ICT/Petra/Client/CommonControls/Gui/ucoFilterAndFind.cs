@@ -734,6 +734,11 @@ namespace Ict.Petra.Client.CommonControls
         public event EventHandler FindTabDisplayed;
 
         /// <summary>
+        /// Raised when the Filter tab receives focus />.
+        /// </summary>
+        public event EventHandler FilterFindTabFocused;
+
+        /// <summary>
         /// Raised when the 'Apply Filter' Button has been clicked.
         /// </summary>
         public event EventHandler <TContextEventExtControlArgs>ApplyFilterClicked;
@@ -1617,6 +1622,9 @@ namespace Ict.Petra.Client.CommonControls
             FTabFilterAndFind.SelectedIndexChanged += delegate(object sender, EventArgs e) {
                 FTabFilterAndFind_SelectedIndexChanged(sender, e);
             };
+            FTabFilterAndFind.GotFocus += delegate(object sender, EventArgs e) {
+                OnFilterFindTabFocused();
+            };
 
             //
             // FTbpFilter
@@ -2268,6 +2276,17 @@ namespace Ict.Petra.Client.CommonControls
             if (FindTabDisplayed != null)
             {
                 FindTabDisplayed(this, null);
+            }
+        }
+
+        /// <summary>
+        /// Raises the 'FilterFindTabFocused' Event.
+        /// </summary>
+        private void OnFilterFindTabFocused()
+        {
+            if (FilterFindTabFocused != null)
+            {
+                FilterFindTabFocused(this, null);
             }
         }
 

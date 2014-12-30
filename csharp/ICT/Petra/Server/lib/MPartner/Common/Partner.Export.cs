@@ -51,6 +51,8 @@ namespace Ict.Petra.Server.MPartner.Import
             PUnitAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
             PVenueAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
 
+            PPartnerAttributeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+
             PLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
             PPartnerLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
 

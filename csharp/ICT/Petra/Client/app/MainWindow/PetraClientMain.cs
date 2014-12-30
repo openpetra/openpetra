@@ -677,6 +677,14 @@ namespace Ict.Petra.Client.App.PetraClient
             TSharedDataCache.TMPartner.GetCacheablePartnerTableDelegate = @TDataCache.TMPartner.GetCacheablePartnerTable;
             TSharedDataCache.TMPartner.GetCacheableMailingTableDelegate = @TDataCache.TMPartner.GetCacheableMailingTable;
             TSharedDataCache.TMPartner.GetCacheableSubscriptionsTableDelegate = @TDataCache.TMPartner.GetCacheableSubscriptionsTable;
+            TSharedDataCache.TMPartner.GetPartnerCalculationsSystemCategoryAttributeTypesDelegate =
+                @Ict.Petra.Shared.MPartner.Calculations.DetermineSystemCategoryAttributeTypes;
+            TSharedDataCache.TMPartner.GetPartnerCalculationsPartnerContactDetailAttributeTypesDelegate =
+                @Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerContactDetailAttributeTypes;
+            TSharedDataCache.TMPartner.GetPartnerCalculationsEmailPartnerAttributeTypesDelegate =
+                @Ict.Petra.Shared.MPartner.Calculations.DetermineEmailPartnerAttributeTypes;
+            TSharedDataCache.TMPartner.GetPartnerCalculationsPhonePartnerAttributeTypesDelegate =
+                @Ict.Petra.Shared.MPartner.Calculations.DeterminePhonePartnerAttributeTypes;
 
             TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate = @TDataCache.TMPersonnel.GetCacheablePersonnelTable;
             TSharedDataCache.TMPersonnel.GetCacheableUnitsTableDelegate = @TDataCache.TMPersonnel.GetCacheableUnitsTable;

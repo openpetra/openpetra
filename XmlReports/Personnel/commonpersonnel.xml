@@ -226,9 +226,7 @@
           <queryDetail>
             <value text="NO-SQL"/>
             <value function="GetPartnerBestAddress({{pm_contact_partner_key_n}})"/>
-            <value function="assign(TelephoneNumber, concatenate({TelephoneNumber}, {Extension}))"/>
             <value function="assign(TelephoneNumber, not known)" condition="lt(length({TelephoneNumber}), 1)"/>
-            <value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
             <value function="assign(FaxNumber, not known)" condition="lt(length({FaxNumber}), 2)"/>
             <value function="assign(AlternateTelephone, not known)" condition="lt(length({AlternateTelephone}), 1)"/>
             <value function="assign(EmailAddress, not known)" condition="lt({EmailAddress}, 1)"/>

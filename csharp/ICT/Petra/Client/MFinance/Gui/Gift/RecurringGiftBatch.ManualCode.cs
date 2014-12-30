@@ -39,6 +39,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private int standardTabIndex = 0;
+        private bool FNewDonorWarning = true;
 
         /// <summary>
         /// use this ledger
@@ -56,6 +57,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //Enable below if want code to run before standard Save() is executed
                 FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+            }
+        }
+
+        /// <summary>
+        /// Show the user a message when a gift is entered for a new donor
+        /// </summary>
+        public bool NewDonorWarning
+        {
+            // We need a get, otherwise we get a Jenkins warning that FNewDonorWarning is not used
+            private get
+            {
+                return FNewDonorWarning;
+            }
+            set
+            {
+                FNewDonorWarning = value;
             }
         }
 

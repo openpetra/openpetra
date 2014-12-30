@@ -118,10 +118,10 @@
             Name: Partner 1 Address State / County / Province
             Parameter: 2.0
         Para16:
-            Name: Partner 1 Address E-Mail
+            Name: Partner 1 Primary E-Mail
             Parameter: 4.0
         Para17:
-            Name: Partner 1 Address Telephone
+            Name: Partner 1 Primary Phone
             Parameter: 3.0
         Para18:
             Name: Partner 1 Address Mobile
@@ -186,10 +186,10 @@
             Name: Partner 2 Address State / County / Province
             Parameter: 2.0
         Para38:
-            Name: Partner 2 Address E-Mail
+            Name: Partner 2 Primary E-Mail
             Parameter: 4.0
         Para39:
-            Name: Partner 2 Address Telephone
+            Name: Partner 2 Primary Phone
             Parameter: 3.0
         Para40:
             Name: Partner 2 Address Mobile

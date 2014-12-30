@@ -24,10 +24,10 @@ RootNode:
         actFileNewPartnerWithShepherdUnit: {Label=Add &Unit with Shepherd..., FileActionClick=NewPartnerWithShepherdUnit}        
         actFileDeactivatePartner: {Label=Deacti&vate Partner..., ActionClick=FileDeactivatePartner, Image: DeactivatePartner.ico}
         actFileDeletePartner: {Label=&Delete THIS Partner..., ActionClick=FileDeletePartner, Image: DeletePartner.ico}
-        actFileSendEmail: {Label=Send E&mail to Partner, ActionClick=FileSendEmail, Image: Email.ico}
+        actFileSendEmail: {Label=Send E&mail to Partner..., ActionClick=FileSendEmail, Image: Email.ico}
         actFilePrint: {Label=&Print Partner..., ActionClick=FilePrintPartner, Image: Print.ico}
         actFilePrintSection: {Label=P&rint Section..., ActionClick=FileDeletePartner, Image: PrintSection.ico}
-        actFileExportPartner: {Label=E&xport Partner, ActionClick=FileExportPartner, Image: ExportPetra.ico}
+        actFileExportPartner: {Label=E&xport Partner..., ActionClick=FileExportPartner, Image: ExportPetra.ico}
         
         actEditFind: {Label=&Find Partner..., ActionClick=EditFindPartner}
         
@@ -89,7 +89,7 @@ RootNode:
                 mniFileNewPartnerWithShepherdChurch:
                 mniFileNewPartnerWithShepherdOrganisation:
                 mniFileNewPartnerWithShepherdUnit:
-            mniDeactivatePartner:
+            mniFileDeactivatePartner:
             mniFileDeletePartner:
             mniSeparator:
             mniFileSendEmail:

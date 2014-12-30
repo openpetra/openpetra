@@ -56,17 +56,4 @@
         <Table sqltable="p_partner_type" name="LedgerPartnerTypes"/>
         <Table sqltable="p_partner_tax_deductible_pct"/>
     </DataSet>
-
-    <DataSet name="NewDonorTDS">
-        <Table sqltable="a_gift">
-            <CustomField name="DonorShortName" type="string"/>
-            <CustomField name="RecipientDescription" type="string"/>
-            <CustomField name="DateOfSubscriptionStart" type="DateTime"/>
-            <CustomField name="DateOfFirstGift" type="DateTime"/>
-            <CustomField name="MotivationGroupCode" type="string"/>
-            <CustomField name="MotivationDetailCode" type="string"/>
-        </Table>
-        <Table customtable="BestAddressTDSLocation" name="BestAddress"/>
-    </DataSet>
-
 </PetraDataSets>

@@ -1059,6 +1059,20 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                                 transaction.TransactionNumber),
                                             TResultSeverity.Resv_Critical));
                                 }
+
+                                // AmountInBaseCurrency must be greater than 0.
+                                // Transaction amount can be 0 if ForexGain.
+                                if (transaction.AmountInBaseCurrency <= 0)
+                                {
+                                    VerificationResult.Add(new TVerificationResult(
+                                            Catalog.GetString("Cannot save transaction"),
+                                            String.Format(Catalog.GetString("Invalid amount in batch {0}, journal {1}, transaction {2}. " +
+                                                    "Either the debit amount or the credit amount needs to be greater than 0."),
+                                                transaction.BatchNumber,
+                                                transaction.JournalNumber,
+                                                transaction.TransactionNumber),
+                                            TResultSeverity.Resv_Critical));
+                                }
                             }
                             catch (Exception)
                             {

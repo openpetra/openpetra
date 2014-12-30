@@ -106,10 +106,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             myDataView.Sort = PmJobAssignmentTable.GetFromDateDBName() + " DESC";
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-            // Record current 'Best Address' and it's Phone Number and Email Address of the PERSON
-            if (FMainDS.Tables[PartnerEditTDSPPartnerLocationTable.GetTableName()] != null)
+            // Determine the 'Primary Phone Number' and the 'Primary E-mail Address' of the PERSON
+            if (FMainDS.Tables[PPartnerAttributeTable.GetTableName()] != null)
             {
-                DetermineAddressComponents(out FPhoneOfPerson, out FEmailOfPerson);
+                DeterminePrimaryEmailAndPrimaryPhone(out FPhoneOfPerson, out FEmailOfPerson);
             }
 
             // Record current relationship(s) that are supporting Church(es) of the PERSON
@@ -156,18 +156,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 Int64[] SupportingChurchesPartnerKeys = new long[0];
 
-                if (FMainDS.Tables[PartnerEditTDSPPartnerLocationTable.GetTableName()] != null)
+                if (FMainDS.Tables[PPartnerAttributeTable.GetTableName()] != null)
                 {
-                    // Check for change of 'Best Address' and it's Phone Number and Email Address
-                    DetermineAddressComponents(out PhoneOfPerson, out EmailOfPerson);
+                    // Check for change of the 'Primary Phone Number' and the 'Primary E-mail Address' of the PERSON
+                    DeterminePrimaryEmailAndPrimaryPhone(out PhoneOfPerson, out EmailOfPerson);
 
-                    if (PhoneOfPerson != null)
+                    if ((PhoneOfPerson != FPhoneOfPerson)
+                        || (EmailOfPerson != FEmailOfPerson))
                     {
-                        if ((PhoneOfPerson != FPhoneOfPerson)
-                            || (EmailOfPerson != FEmailOfPerson))
-                        {
-                            RefreshNecessary = true;
-                        }
+                        RefreshNecessary = true;
                     }
                 }
 
@@ -336,81 +333,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Determines the 'Best Address' of the PERSON and its Phone Number and Email Address.
+        /// Determines the 'Primary Phone Number' and the 'Primary E-mail Address' of the PERSON.
         /// </summary>
-        /// <param name="APhoneNumberOfPerson">Phone Number of the PERSON in international format.</param>
-        /// <param name="AEmailAddressOfPerson">Email Address of the PERSON.</param>
-        /// <returns><see cref="Ict.Petra.Shared.MPartner.TLocationPK" /> pointing to the 'Best Address' of the PERSON.</returns>
-        private TLocationPK DetermineAddressComponents(out string APhoneNumberOfPerson, out string AEmailAddressOfPerson)
+        /// <param name="APrimaryPhoneNumberOfPerson">'Primary Phone Number' of the PERSON.</param>
+        /// <param name="APrimaryEmailAddressOfPerson">'Primary E-mail Address'.</param>
+        private void DeterminePrimaryEmailAndPrimaryPhone(out string APrimaryPhoneNumberOfPerson,
+            out string APrimaryEmailAddressOfPerson)
         {
-            TLocationPK ReturnValue = Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(
-                FMainDS.Tables[PartnerEditTDSPPartnerLocationTable.GetTableName()]);
-            DataRow BestPartnerLocationDR;
-            DataRow BestLocationDR;
-            string TelephoneNumber;
-            string Extension;
-            string CountryCode;
-
-            // Initialise out Arguments
-            APhoneNumberOfPerson = null;
-            AEmailAddressOfPerson = null;
-
-            BestPartnerLocationDR = FMainDS.Tables[PartnerEditTDSPPartnerLocationTable.GetTableName()].Rows.Find(new object[]
-                { FMainDS.PPerson[0].PartnerKey, ReturnValue.SiteKey, ReturnValue.LocationKey });
-
-            if (BestPartnerLocationDR != null)
-            {
-                BestLocationDR = FMainDS.Tables[PLocationTable.GetTableName()].Rows.Find(new object[]
-                    { ReturnValue.SiteKey, ReturnValue.LocationKey });
-
-                if (!BestPartnerLocationDR.IsNull(PPartnerLocationTable.GetTelephoneNumberDBName()))
-                {
-                    TelephoneNumber = (string)BestPartnerLocationDR[PPartnerLocationTable.GetTelephoneNumberDBName()];
-                }
-                else
-                {
-                    TelephoneNumber = String.Empty;
-                }
-
-                if (!BestPartnerLocationDR.IsNull(PPartnerLocationTable.GetExtensionDBName()))
-                {
-                    Extension = ((int)BestPartnerLocationDR[PPartnerLocationTable.GetExtensionDBName()]).ToString();
-                }
-                else
-                {
-                    Extension = String.Empty;
-                }
-
-                if (!BestLocationDR.IsNull(PLocationTable.GetCountryCodeDBName()))
-                {
-                    CountryCode = (string)BestLocationDR[PLocationTable.GetCountryCodeDBName()];
-                }
-                else
-                {
-                    CountryCode = String.Empty;
-                }
-
-                APhoneNumberOfPerson = Ict.Petra.Shared.MPartner.Calculations.FormatIntlPhoneNumber(
-                    TelephoneNumber,
-                    Extension,
-                    CountryCode,
-                    @TDataCache.GetCacheableDataTableFromCache);
-
-                if (!BestPartnerLocationDR.IsNull(PPartnerLocationTable.GetEmailAddressDBName()))
-                {
-                    AEmailAddressOfPerson = (string)BestPartnerLocationDR[PPartnerLocationTable.GetEmailAddressDBName()];
-                }
-                else
-                {
-                    AEmailAddressOfPerson = String.Empty;
-                }
-            }
-            else
-            {
-                MessageBox.Show("Unexpected condition: 'Best Address of PERSON is null'", DEV_FIX);
-            }
-
-            return ReturnValue;
+            Ict.Petra.Shared.MPartner.Calculations.GetPrimaryEmailAndPrimaryPhone(
+                (PPartnerAttributeTable)FMainDS.Tables[PPartnerAttributeTable.GetTableName()],
+                out APrimaryPhoneNumberOfPerson, out APrimaryEmailAddressOfPerson);
         }
 
         /// <summary>

@@ -152,9 +152,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (dtpEffectiveDate.Enabled && (dtpEffectiveDate.Text.Trim().Length == 0))
+            if (!dtpEffectiveDate.ValidDate())
             {
-                MessageBox.Show(Catalog.GetString("Please enter a valid batch date."));
                 dtpEffectiveDate.Focus();
                 return;
             }
@@ -225,10 +224,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AddParam("ReversalCommentTwoType", cmbReversalCommentTwoType.Text);
             AddParam("ReversalCommentThreeType", cmbReversalCommentThreeType.Text);
 
+            int AdjustmentBatchNumber;
+
             try
             {
                 this.Cursor = Cursors.WaitCursor;
-                ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AMessages);
+                ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AdjustmentBatchNumber, out AMessages);
             }
             finally
             {
@@ -242,22 +243,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 switch (function)
                 {
                     case "ReverseGiftBatch":
-                        MessageBox.Show(Catalog.GetString("Your batch has been successfully reversed"),
+                        MessageBox.Show(Catalog.GetString("Reversed gift batch has been successfully created with Batch Number " +
+                            AdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift Batch"));
                         break;
 
                     case "ReverseGiftDetail":
-                        MessageBox.Show(Catalog.GetString("Your gift detail has been successfully reversed"),
+                        MessageBox.Show(Catalog.GetString("Reversed gift detail has been successfully added to Batch " + AdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift Detail"));
                         break;
 
                     case "ReverseGift":
-                        MessageBox.Show(Catalog.GetString("Your gift has been successfully reversed"),
+                        MessageBox.Show(Catalog.GetString("Reversed gift has been successfully added to Batch " + AdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift"));
                         break;
 
                     case "AdjustGift":
-                        MessageBox.Show(Catalog.GetString("Your gift has been successfully adjusted"),
+                        MessageBox.Show(Catalog.GetString("Adjustment transactions have been successfully added to Batch " + AdjustmentBatchNumber +
+                            "."),
                         Catalog.GetString("Adjust Gift"));
                         break;
                 }
@@ -291,6 +294,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //add the focused event temporarily to allow execution of more manual code right at the
             //  end of the initialisation process.
             this.btnHelp.Enter += new System.EventHandler(this.HelpFocussed);
+
+            // validation is not done automatically on this form
+            dtpEffectiveDate.ShowWarningOnLostFocus = true;
         }
 
         private void HelpFocussed(System.Object sender, EventArgs e)
@@ -371,19 +377,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (ErrorMessages.Length > 0)
             {
                 System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        private void CheckBatchEffectiveDate(object sender, EventArgs e)
-        {
-            DateTime dateValue;
-            string aDate = dtpEffectiveDate.Text.Trim();
-
-            if ((aDate.Length > 0) && !DateTime.TryParse(aDate, out dateValue))
-            {
-                MessageBox.Show(Catalog.GetString("Invalid date entered!"));
-                dtpEffectiveDate.Focus();
-                dtpEffectiveDate.SelectAll();
             }
         }
     }

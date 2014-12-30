@@ -107,9 +107,7 @@
             <queryDetail>
                 <value text="NO-SQL"/>
                 <value function="GetPartnerBestAddress({EmergencyContactKey})"/>
-                <value function="assign(TelephoneNumber, concatenate({TelephoneNumber}, {Extension}))"/>
                 <value function="assign(TelephoneNumber, not known)" condition="lt(length({TelephoneNumber}), 1)"/>
-                <value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
                 <value function="assign(FaxNumber, not known)" condition="lt(length({FaxNumber}), 2)"/>
                 <value function="assign(AlternateTelephone, not known)" condition="lt(length({AlternateTelephone}), 1)"/>
                 <value function="assign(EmailAddress, not known)" condition="lt({EmailAddress}, 1)"/>
@@ -444,7 +442,7 @@
     <level name="Personal Documents Contact Level2" identification="pm_contact_partner_key_n">
         <detail>
             <field whichfield="column 0" pos="1cm">
-                <value text="     Phone: "/>
+                <value text="     Primary Phone: "/>
                 <value variable="TelephoneNumber"/>
                 <value text="   Alt.Phone: "/>
                 <value variable="AlternateTelephone"/>
@@ -464,7 +462,7 @@
     <level name="Personal Documents Contact Level4" identification="pm_contact_partner_key_n">
         <detail>
             <field whichfield="column 0" pos="1cm">
-                <value text="     Email: "/>
+                <value text="     Primary Email: "/>
                 <value variable="EmailAddress"/>
             </field>
         </detail>
@@ -714,7 +712,7 @@
     <level name="Emergency Contact Lowest Level4" identification="StaffPartnerKey">
         <detail>
             <field whichfield="column 0" pos="1cm">
-                <value text="     Phone: "/>
+                <value text="     Primary Phone: "/>
                 <value variable="TelephoneNumber"/>
                 <value text="   Alt.Phone: "/>
                 <value variable="AlternateTelephone"/>
@@ -734,7 +732,7 @@
     <level name="Emergency Contact Lowest Level6" identification="StaffPartnerKey">
         <detail>
             <field whichfield="column 0" pos="1cm">
-                <value text="     Email: "/>
+                <value text="     Primary Email: "/>
                 <value variable="EmailAddress"/>
             </field>
         </detail>

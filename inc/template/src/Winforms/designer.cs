@@ -7,6 +7,7 @@ using System;
 using System.Windows.Forms;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonForms;
 using Owf.Controls;
 
 namespace {#NAMESPACE}
@@ -17,6 +18,9 @@ namespace {#NAMESPACE}
         /// Designer variable used to keep track of non-visual components.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+{#IFDEF FILTERANDFIND}
+        {#FILTERANDFINDDECLARATIONS}
+{#ENDIF FILTERANDFIND}
 
         /// <summary>
         /// Disposes resources used by the form.

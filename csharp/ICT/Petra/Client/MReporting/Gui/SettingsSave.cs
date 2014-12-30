@@ -80,13 +80,19 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private void LB_ExistingSettings_DoubleClick(System.Object sender, System.EventArgs e)
         {
-            this.TBx_NewName.Text = LB_ExistingSettings.SelectedItem.ToString();
-            Btn_SaveFile_Click(sender, e);
+            if (LB_ExistingSettings.SelectedItem != null)
+            {
+                this.TBx_NewName.Text = LB_ExistingSettings.SelectedItem.ToString();
+                Btn_SaveFile_Click(sender, e);
+            }
         }
 
         private void LB_ExistingSettings_SelectedIndexChanged(System.Object sender, System.EventArgs e)
         {
-            this.TBx_NewName.Text = LB_ExistingSettings.SelectedItem.ToString();
+            if (LB_ExistingSettings.SelectedItem != null)
+            {
+                this.TBx_NewName.Text = LB_ExistingSettings.SelectedItem.ToString();
+            }
         }
 
         private void Btn_Cancel_Click(System.Object sender, System.EventArgs e)

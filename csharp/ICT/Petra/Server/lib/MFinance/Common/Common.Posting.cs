@@ -1246,6 +1246,18 @@ namespace Ict.Petra.Server.MFinance.Common
                             }
                         }
                     }
+                    else
+                    {
+                        SubmissionOK = false;
+
+                        Verifications.Add(
+                            new TVerificationResult(
+                                ErrorContext,
+                                String.Format("Unable to Load GLBatchData ({0}, {1})",
+                                    ALedgerNumber,
+                                    ABatchNumberToReverse),
+                                TResultSeverity.Resv_Critical));
+                    }
                 });
 
             AVerifications = Verifications;

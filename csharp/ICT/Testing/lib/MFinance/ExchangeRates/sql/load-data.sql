@@ -24,12 +24,12 @@ INSERT INTO a_batch (a_ledger_number_i, a_batch_number_i)
 INSERT INTO a_batch (a_ledger_number_i, a_batch_number_i)
    VALUES (9997, 103);
    
-INSERT INTO a_journal (a_ledger_number_i, a_batch_number_i, a_journal_number_i, a_journal_description_c, a_sub_system_code_c, a_transaction_currency_c, a_date_effective_d, a_exchange_rate_to_base_n, a_journal_status_c)
-   VALUES (9997, 101, 1, 'Gift Batch 1', 'GR', 'GBP', '2000-08-01', 0.5155000000, 'Posted');
-INSERT INTO a_journal (a_ledger_number_i, a_batch_number_i, a_journal_number_i, a_journal_description_c, a_sub_system_code_c, a_transaction_currency_c, a_date_effective_d, a_exchange_rate_to_base_n, a_journal_status_c)
-   VALUES (9997, 102, 1, 'Gift Batch 2', 'GR', 'GBP', '2000-08-08', 0.5155000000, 'Posted');
-INSERT INTO a_journal (a_ledger_number_i, a_batch_number_i, a_journal_number_i, a_journal_description_c, a_sub_system_code_c, a_transaction_currency_c, a_date_effective_d, a_exchange_rate_to_base_n, a_journal_status_c)
-   VALUES (9997, 103, 1, 'Gift Batch 3', 'GR', 'GBP', '2000-08-28', 0.5155000000, 'Posted');
+INSERT INTO a_journal (a_ledger_number_i, a_batch_number_i, a_journal_number_i, a_journal_description_c, a_sub_system_code_c, a_transaction_currency_c, a_base_currency_c, a_date_effective_d, a_exchange_rate_to_base_n, a_journal_status_c)
+   VALUES (9997, 101, 1, 'Gift Batch 1', 'GR', 'GBP', 'BEF', '2000-08-01', 0.5155000000, 'Posted');
+INSERT INTO a_journal (a_ledger_number_i, a_batch_number_i, a_journal_number_i, a_journal_description_c, a_sub_system_code_c, a_transaction_currency_c, a_base_currency_c, a_date_effective_d, a_exchange_rate_to_base_n, a_journal_status_c)
+   VALUES (9997, 102, 1, 'Gift Batch 2', 'GR', 'GBP', 'BEF', '2000-08-08', 0.5155000000, 'Posted');
+INSERT INTO a_journal (a_ledger_number_i, a_batch_number_i, a_journal_number_i, a_journal_description_c, a_sub_system_code_c, a_transaction_currency_c, a_base_currency_c, a_date_effective_d, a_exchange_rate_to_base_n, a_journal_status_c)
+   VALUES (9997, 103, 1, 'Gift Batch 3', 'GR', 'GBP', 'BEF', '2000-08-28', 0.5155000000, 'Posted');
 
    -- Insert unposted Journal entries
 INSERT INTO a_batch (a_ledger_number_i, a_batch_number_i)
@@ -39,9 +39,9 @@ INSERT INTO a_batch (a_ledger_number_i, a_batch_number_i)
 INSERT INTO a_batch (a_ledger_number_i, a_batch_number_i)
    VALUES (9997, 113);
    
-INSERT INTO a_journal (a_ledger_number_i, a_batch_number_i, a_journal_number_i, a_journal_description_c, a_sub_system_code_c, a_transaction_currency_c, a_date_effective_d, a_exchange_rate_to_base_n, a_journal_status_c)
-   VALUES (9997, 111, 1, 'NUnit Journal 1', 'GL', 'GBP', '2000-10-22', 0.5225000000, 'Unposted');
-INSERT INTO a_journal (a_ledger_number_i, a_batch_number_i, a_journal_number_i, a_journal_description_c, a_sub_system_code_c, a_transaction_currency_c, a_date_effective_d, a_exchange_rate_to_base_n, a_journal_status_c)
-   VALUES (9997, 112, 1, 'NUnit Journal 2', 'GL', 'GBP', '2000-10-26', 0.5225000000, 'Unposted');
-INSERT INTO a_journal (a_ledger_number_i, a_batch_number_i, a_journal_number_i, a_journal_description_c, a_sub_system_code_c, a_transaction_currency_c, a_date_effective_d, a_exchange_rate_to_base_n, a_journal_status_c)
-   VALUES (9997, 113, 1, 'NUnit Journal 3', 'GL', 'GBP', '2000-10-30', 0.5225000000, 'Unposted');
+INSERT INTO a_journal (a_ledger_number_i, a_batch_number_i, a_journal_number_i, a_journal_description_c, a_sub_system_code_c, a_transaction_currency_c, a_base_currency_c, a_date_effective_d, a_exchange_rate_to_base_n, a_journal_status_c)
+   VALUES (9997, 111, 1, 'NUnit Journal 1', 'GL', 'GBP', 'BEF', '2000-10-22', 0.5225000000, 'Unposted');
+INSERT INTO a_journal (a_ledger_number_i, a_batch_number_i, a_journal_number_i, a_journal_description_c, a_sub_system_code_c, a_transaction_currency_c, a_base_currency_c, a_date_effective_d, a_exchange_rate_to_base_n, a_journal_status_c)
+   VALUES (9997, 112, 1, 'NUnit Journal 2', 'GL', 'GBP', 'BEF', '2000-10-26', 0.5225000000, 'Unposted');
+INSERT INTO a_journal (a_ledger_number_i, a_batch_number_i, a_journal_number_i, a_journal_description_c, a_sub_system_code_c, a_transaction_currency_c, a_base_currency_c, a_date_effective_d, a_exchange_rate_to_base_n, a_journal_status_c)
+   VALUES (9997, 113, 1, 'NUnit Journal 3', 'GL', 'GBP', 'BEF', '2000-10-30', 0.5225000000, 'Unposted');

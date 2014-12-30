@@ -136,6 +136,9 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Location, Partner Location and rest of the data only, excluding 'head' data</summary>
         pisLocationPartnerLocationAndRestOnly,
 
+        /// <summary>Partner Contact Details only, excluding rest of the data and 'head' data</summary>
+        pisPartnerAttributesOnly,
+
         /// <summary>All PartnerInfo data</summary>
         pisFull
     }

@@ -12,8 +12,8 @@ RootNode:
         actCancel: {Label=&Cancel Batch, ActionClick=CancelRecord, Image=Delete_Record.ico}
         actPostBatch: {Label=P&ost Batch, ActionClick=PostBatch}
         actExportBatches: {Label=E&xport Batches, ActionClick=ExportBatches}
-        actImportBatches: {Label=&Import From File, ActionClick=ImportBatches}
-        actImportFromClipboard: {Label=I&mport From Clipboard, ActionClick=ImportFromClipboard}
+        actImportBatches: {Label=&Import Batches From File, ActionClick=ImportBatches}
+        actImportFromClipboard: {Label=I&mport Batches From Clipboard, ActionClick=ImportFromClipboard}
         actReverseGiftBatch: {Label=Re&verse Gift Batch, ActionClick=ReverseGiftBatch}
         actSetExchangeRate:{Label=Get/Set Exchange Rate, ActionClick=SetExchangeRateValue}
     Controls:
@@ -95,6 +95,7 @@ RootNode:
             OptionalValues: [=Gift,Gift In Kind,Other]
             OptionalValuesConstants: [MFinanceConstants.GIFT_TYPE_GIFT,MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND,MFinanceConstants.GIFT_TYPE_OTHER]
             ControlsOrientation: Horizontal
+            OnChange: GiftTypeChanged
         tbrTabPage:
         mnuTabPage:
     Menu:
@@ -103,8 +104,8 @@ RootNode:
             mniPost: {Action=actPostBatch}
             mniReverseGiftBatch: {Action=actReverseGiftBatch}
             mniSeparator: {Label=-}
-            mniImportTransactions: {Label=&Import From File, Action: actImportBatches}
-            mniImportFromClipboard: {Label=I&mport From Clipboard, Action: actImportFromClipboard}
+            mniImportTransactions: {Label=&Import Batches From File, Action: actImportBatches}
+            mniImportFromClipboard: {Label=I&mport Batches From Clipboard, Action: actImportFromClipboard}
     Toolbar:
         tbbPostBatch: {Action=actPostBatch}
         tbbImportBatches: {Action=actImportBatches}

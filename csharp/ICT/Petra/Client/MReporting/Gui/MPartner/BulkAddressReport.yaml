@@ -52,7 +52,7 @@ RootNode:
             Name: Partner Name
             Parameter: 4.0
         Para6:
-            Name: E-Mail Address
+            Name: Primary E-Mail
             Parameter: 3.0
         Para7:
             Name: Street Name
@@ -76,7 +76,7 @@ RootNode:
             Name: Post Code
             Parameter: 2.0
         Para14:
-            Name: Telephone
+            Name: Primary Phone
             Parameter: 3.0
         Para15:
             Name: Alternate Telephone

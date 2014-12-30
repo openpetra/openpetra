@@ -771,26 +771,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 ToRow.DateGoodUntil = FromRow.DateGoodUntil;
                             }
 
-                            if (ToRow.EmailAddress == "")
-                            {
-                                ToRow.EmailAddress = FromRow.EmailAddress;
-                            }
-
-                            if (ToRow.Extension == 0)
-                            {
-                                ToRow.Extension = FromRow.Extension;
-                            }
-
-                            if (ToRow.FaxExtension == 0)
-                            {
-                                ToRow.FaxExtension = FromRow.FaxExtension;
-                            }
-
-                            if (ToRow.FaxNumber == "")
-                            {
-                                ToRow.FaxNumber = FromRow.FaxNumber;
-                            }
-
                             if (ToRow.LocationDetailComment == "")
                             {
                                 ToRow.LocationDetailComment = FromRow.LocationDetailComment;
@@ -804,11 +784,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             if (ToRow.SendMail == false)
                             {
                                 ToRow.SendMail = FromRow.SendMail;
-                            }
-
-                            if (ToRow.TelephoneNumber == "")
-                            {
-                                ToRow.TelephoneNumber = FromRow.TelephoneNumber;
                             }
 
                             if (ToRow.Telex == 0)
@@ -834,21 +809,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             if (ToRow.ModifiedBy == "")
                             {
                                 ToRow.ModifiedBy = FromRow.ModifiedBy;
-                            }
-
-                            if (ToRow.AlternateTelephone == "")
-                            {
-                                ToRow.AlternateTelephone = FromRow.AlternateTelephone;
-                            }
-
-                            if (ToRow.MobileNumber == "")
-                            {
-                                ToRow.MobileNumber = FromRow.MobileNumber;
-                            }
-
-                            if (ToRow.Url == "")
-                            {
-                                ToRow.Url = FromRow.Url;
                             }
 
                             Row.Delete();

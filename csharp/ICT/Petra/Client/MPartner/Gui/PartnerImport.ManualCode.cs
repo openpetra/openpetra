@@ -4,8 +4,9 @@
 // @Authors:
 //       timop
 //       Tim Ingham
+//       ChristianK
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -81,6 +82,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         int UserSelLocationKey = -1;
         PartnerFindTDSSearchResultRow UserSelectedRow;
         List <Int64>FImportedUnits = new List <Int64>();
+        Calculations.TOverallContactSettings FPartnersOverallContactSettings;
 
         private void AddStatus(String ANewStuff)
         {
@@ -155,7 +157,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (Path.GetExtension(DialogOpen.FileName) == ".yml")
                 {
                     TYml2Xml yml = new TYml2Xml(DialogOpen.FileName);
-                    AddStatus(Catalog.GetString("Parsing file. Please wait..\r\n"));
+                    AddStatus(Catalog.GetString("Parsing file. Please wait...\r\n"));
                     FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportPartnersFromYml(TXMLParser.XmlToString(
                             yml.ParseYML2XML()), out VerificationResult);
                 }
@@ -180,6 +182,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                         XmlDocument doc = TCsv2Xml.ParseCSV2Xml(DialogOpen.FileName, dlgSeparator.SelectedSeparator);
                         FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportFromCSVFile(TXMLParser.XmlToString(doc), out VerificationResult);
                     }
+                    else
+                    {
+                        AddStatus(String.Format("\r\nImport of file {0} cancelled!\r\n", Path.GetFileName(DialogOpen.FileName)));
+
+                        return;
+                    }
                 }
                 else if (Path.GetExtension(DialogOpen.FileName) == ".ext")
                 {
@@ -187,7 +195,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     string[] FileContent = sr.ReadToEnd().Replace("\r", "").Split(new char[] { '\n' });
                     sr.Close();
                     AddStatus(String.Format("{0} lines.\r\n", FileContent.Length));
-                    AddStatus(Catalog.GetString("Parsing file. Please wait..\r\n"));
+                    AddStatus(Catalog.GetString("Parsing file. Please wait...\r\n"));
                     FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportFromPartnerExtract(FileContent, out VerificationResult);
                 }
 
@@ -210,6 +218,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     return;
                 }
+
+                // Determine the 'Primary E-Mail Address' of all Partners that are contained in the import file
+                FPartnersOverallContactSettings = Calculations.DeterminePrimaryOrWithinOrgSettings(FMainDS.PPartnerAttribute,
+                    Calculations.TOverallContSettingKind.ocskPrimaryEmailAddress);
 
                 AddStatus(String.Format(Catalog.GetString("File read OK ({0} partners) - press Start to import.\r\n"), FMainDS.PPartner.Rows.Count));
             }
@@ -380,13 +392,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            pnlActions.Enabled = false;
+            foreach (Control ActionControl in pnlActions.Controls)
+            {
+                if (ActionControl.Name != "chkSemiAutomatic")
+                {
+                    ActionControl.Enabled = false;
+                }
+            }
+
             this.FPetraUtilsObject.EnableAction("actStartImport", true);
             this.FPetraUtilsObject.EnableAction("actCancelImport", false);
         }
 
         private void DisplayCurrentRecord()
         {
+            string PrimaryEmailAddress;
+
             if ((FMainDS == null) || (FCurrentNumberOfRecord < 1))
             {
                 return;
@@ -455,10 +476,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     PartnerInfo += Calculations.DetermineLocationString(LocationRow, Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
                     PartnerInfo += Environment.NewLine;
 
-                    if (PartnerLocationRow.EmailAddress != "")
-                    {
-                        PartnerInfo += PartnerLocationRow.EmailAddress + Environment.NewLine;
-                    }
 
                     PartnerInfo += Environment.NewLine;
                 }
@@ -478,6 +495,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FMainDS.PLocation.DefaultView.Count > 0)
             {
                 BestLocation = (PLocationRow)FMainDS.PLocation.DefaultView[0].Row;
+            }
+
+            // Display 'Primary E-Mail Address' when available
+            if (FPartnersOverallContactSettings != null)
+            {
+                PrimaryEmailAddress = FPartnersOverallContactSettings.GetPartnersPrimaryEmailAddress(FCurrentPartner.PartnerKey);
+
+                if (PrimaryEmailAddress != null)
+                {
+                    PartnerInfo += PrimaryEmailAddress + Environment.NewLine;
+                }
             }
 
             AddStatus(PartnerInfo);
@@ -863,6 +891,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PPartnerTypeTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
+        private void AddPartnerAttribute(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(ANewPartnerDS.PPartnerAttribute, FMainDS.PPartnerAttribute,
+                PPartnerAttributeTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
+        }
+
         private void AddInterest(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
             ImportRecordsByPartnerKey(ANewPartnerDS.PPartnerInterest, FMainDS.PPartnerInterest,
@@ -1178,6 +1212,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PartnerTypeRow.PartnerKey = NewPartnerKey;
             }
 
+            AddPartnerAttribute(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddInterest(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
 //          AddVision(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddGiftDestination(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);

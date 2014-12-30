@@ -231,12 +231,23 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                     else
                     {
-                        // display delete error to user
-                        MessageBox.Show(Messages.BuildMessageFromVerificationResult("Deletion of Partner failed!" +
-                                Environment.NewLine + "Reasons:", VerificationResult),
-                            Catalog.GetString("Delete Partner"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
+                        if (VerificationResult != null)
+                        {
+                            // display delete error to user
+                            MessageBox.Show(Messages.BuildMessageFromVerificationResult("Deletion of Partner failed!" +
+                                    Environment.NewLine + "Reasons:", VerificationResult),
+                                Catalog.GetString("Delete Partner"),
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+                            MessageBox.Show(Catalog.GetString(
+                                    "Unfortunately the deletion of the Partner failed for unknown reasons.\r\n\r\nPlease contact your Support Team!"),
+                                Catalog.GetString("Delete Partner"),
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        }
                     }
                 }
             }

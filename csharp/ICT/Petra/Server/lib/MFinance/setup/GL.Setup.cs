@@ -61,6 +61,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Cascading;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.MPartner.DataAggregates;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -1002,7 +1003,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         //}
 
         /// <summary>
-        ///
+        /// Get Partners linked to Cost Centres so that I can email reports to them.
+        /// Extended Dec 2014 to alternatively return a list of email addresses for HOSAs
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ACostCentreFilter"></param>
@@ -1010,46 +1012,64 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static DataTable GetLinkedPartners(Int32 ALedgerNumber, String ACostCentreFilter)
         {
-            DataTable PartnerCostCentreTbl = null;
-            PLocationTable tbl;
-            PPartnerLocationTable PartnerLocation;
-            String CountryNameLocal;
-            String EmailAddress;
+            if (ACostCentreFilter == "Foreign")
+            {
+                TDBTransaction Transaction = null;
+                DataTable EmailTbl = null;
 
-            String SqlQuery = "SELECT p_partner.p_partner_key_n as PartnerKey, " +
-                              " a_cost_centre_code_c as CostCentreCode, " +
-                              " '' AS EmailAddress," +
-                              " p_partner_short_name_c As PartnerShortName" +
-                              " FROM a_valid_ledger_number, p_partner" +
-                              " WHERE a_ledger_number_i=" + ALedgerNumber +
-                              ACostCentreFilter +
-                              " AND p_partner.p_partner_key_n = a_valid_ledger_number.p_partner_key_n" +
-                              " ORDER BY a_cost_centre_code_c";
-
-            TDBTransaction Transaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
-
-                    foreach (DataRow Row in PartnerCostCentreTbl.Rows)
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
                     {
-                        TAddressTools.GetBestAddress(
-                            Convert.ToInt64(Row["PartnerKey"]),
-                            out tbl,
-                            out PartnerLocation,
-                            out CountryNameLocal,
-                            out EmailAddress,
-                            Transaction
-                            );
-                        Row["EmailAddress"] = EmailAddress;
-                    }
-                });
+                        EmailTbl = DBAccess.GDBAccessObj.SelectDT(
+                            "SELECT a_conditional_value_c||'00' AS CostCentreCode, p_email_address_c AS EmailAddress, p_email_address_c AS PartnerShortName"
+                            +
+                            " FROM a_email_destination WHERE a_file_code_c='HOSA';",
+                            "HosaAddresses", Transaction);
+                    });
+                return EmailTbl;
+            }
+            else
+            {
+                DataTable PartnerCostCentreTbl = null;
+                string EmailAddress;
 
-            return PartnerCostCentreTbl;
+                String SqlQuery = "SELECT p_partner.p_partner_key_n as PartnerKey, " +
+                                  " a_cost_centre_code_c as CostCentreCode, " +
+                                  " '' AS EmailAddress," +
+                                  " p_partner_short_name_c As PartnerShortName" +
+                                  " FROM a_valid_ledger_number, p_partner" +
+                                  " WHERE a_ledger_number_i=" + ALedgerNumber +
+                                  ACostCentreFilter +
+                                  " AND p_partner.p_partner_key_n = a_valid_ledger_number.p_partner_key_n" +
+                                  " ORDER BY a_cost_centre_code_c";
+
+                TDBTransaction Transaction = null;
+
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
+
+                        foreach (DataRow Row in PartnerCostCentreTbl.Rows)
+                        {
+                            if (TContactDetailsAggregate.GetPrimaryEmailAddress((Int64)Row["PartnerKey"], out EmailAddress))
+                            {
+                                // 'Primary Email Address' of Partner (String.Empty is supplied if the Partner hasn't got one)
+                                Row["EmailAddress"] = EmailAddress;
+                            }
+                            else
+                            {
+                                Row["EmailAddress"] = String.Empty;
+                            }
+                        }
+                    });
+
+                return PartnerCostCentreTbl;
+            }
         }
 
         /// <summary>

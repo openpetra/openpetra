@@ -73,11 +73,10 @@ namespace Ict.Petra.Client.MCommon.Gui
             string ShortNameColumn = PPartnerTable.GetPartnerShortNameDBName();
             string PartnerKeyColumn = PPartnerLocationTable.GetPartnerKeyDBName();
             string PartnerClassColumn = PPartnerTable.GetPartnerClassDBName();
-            string TelephoneColumn = PPartnerLocationTable.GetTelephoneNumberDBName();
             string LocationTypeColumn = PPartnerLocationTable.GetLocationTypeDBName();
 
             DataTable NewTable = FPartnerSharingLocationDV.ToTable(true,
-                new string[] { ShortNameColumn, PartnerKeyColumn, PartnerClassColumn, TelephoneColumn, LocationTypeColumn });
+                new string[] { ShortNameColumn, PartnerKeyColumn, PartnerClassColumn, LocationTypeColumn });
             NewTable.Columns.Add(new DataColumn(CheckedColumn, typeof(bool)));
 
             clbAddress.Columns.Clear();
@@ -85,7 +84,6 @@ namespace Ict.Petra.Client.MCommon.Gui
             clbAddress.AddTextColumn(Catalog.GetString("Name"), NewTable.Columns[ShortNameColumn], 240);
             clbAddress.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), NewTable.Columns[PartnerKeyColumn], 90);
             clbAddress.AddTextColumn(Catalog.GetString("Partner Class"), NewTable.Columns[PartnerClassColumn], 90);
-            clbAddress.AddTextColumn(Catalog.GetString("Telephone"), NewTable.Columns[TelephoneColumn], 130);
             clbAddress.AddTextColumn(Catalog.GetString("Location Type"), NewTable.Columns[LocationTypeColumn], 90);
 
             clbAddress.DataBindGrid(NewTable, ShortNameColumn, CheckedColumn, PartnerKeyColumn, false, true, false);

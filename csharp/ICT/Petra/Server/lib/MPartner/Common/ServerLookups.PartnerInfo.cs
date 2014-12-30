@@ -110,6 +110,17 @@ namespace Ict.Petra.Server.MPartner.Common
         }
 
         /// <summary>
+        /// Retrieves PartnerAttributes information only.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of Partner to find the PartnerInfo data for</param>
+        /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
+        /// <returns>True if Partner exists, otherwise false.</returns>
+        public static bool PartnerAttributesOnly(Int64 APartnerKey, ref PartnerInfoTDS APartnerInfoDS)
+        {
+            return PartnerAttributesInternal(APartnerKey, ref APartnerInfoDS, false);
+        }
+
+        /// <summary>
         /// Retrieves all of the PartnerInfo data.
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of Partner to find the PartnerInfo data for</param>
@@ -391,7 +402,77 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly: committed own transaction.");
+                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.PartnerLocationInternal: committed own transaction.");
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Retrieves PartnerAttribute information and the rest of the PartnerInfo data, but not the
+        /// 'Head' data.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
+        /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
+        /// <param name="AIncludeRest">Include 'Rest' data as well</param>
+        private static bool PartnerAttributesInternal(Int64 APartnerKey, ref PartnerInfoTDS APartnerInfoDS,
+            bool AIncludeRest)
+        {
+            bool ReturnValue = false;
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            PPartnerRow PartnerDR;
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                /*
+                 * Check for existance of Partner
+                 */
+                PartnerDR = MCommonMain.CheckPartnerExists2(APartnerKey, true);
+
+                if (PartnerDR != null)
+                {
+                    /*
+                     * Perform security checks; these throw ESecurityPartnerAccessDeniedException
+                     * in case access isn't granted.
+                     */
+                    TSecurity.CanAccessPartnerExc(PartnerDR);
+
+                    /*
+                     * Partner exists --> we can go ahead with data gathering
+                     */
+                    PartnerAttributesInternal(APartnerKey, ReadTransaction, ref APartnerInfoDS);
+
+                    if (AIncludeRest)
+                    {
+                        RestInternal(PartnerDR, ReadTransaction, ref APartnerInfoDS);
+                    }
+
+                    ReturnValue = true;
+                }
+            }
+            catch (ESecurityPartnerAccessDeniedException)
+            {
+                // don't log this exception - this is thrown on purpose here and the Client needs to deal with it.
+                throw;
+            }
+            catch (Exception Exp)
+            {
+                TLogging.Log("TServerLookups_PartnerInfo.PartnerAttributesInternal exception: " + Exp.ToString(), TLoggingType.ToLogfile);
+                TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
+                throw;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.PartnerAttributesInternal: committed own transaction.");
                 }
             }
 
@@ -416,6 +497,22 @@ namespace Ict.Petra.Server.MPartner.Common
              */
             APartnerInfoDS.Merge(TPPartnerAddressAggregate.LoadByPrimaryKey(
                     APartnerKey, ALocationKey.SiteKey, ALocationKey.LocationKey, AReadTransaction));
+        }
+
+        /// <summary>
+        /// Retrieves PartnerAttribute information.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
+        /// <param name="AReadTransaction">Open Database Transaction.</param>
+        /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
+        private static void PartnerAttributesInternal(Int64 APartnerKey, TDBTransaction AReadTransaction,
+            ref PartnerInfoTDS APartnerInfoDS)
+        {
+            /*
+             * Load PartnerAttribute Information; this gets merged into the already retrieved
+             * information in APartnerInfoDS (eg. 'Head' data)
+             */
+            APartnerInfoDS.Merge(PPartnerAttributeAccess.LoadViaPPartner(APartnerKey, AReadTransaction));
         }
 
         /// <summary>
@@ -538,6 +635,10 @@ namespace Ict.Petra.Server.MPartner.Common
 
                     break;
             }
+
+            // Get Partners' PartnerAttributes
+            PartnerAttributesInternal(PartnerKey, ref APartnerInfoDS, false);
+            // TODO: Apply Contact Details Security
 
             if (APartnerInfoDS.PartnerAdditionalInfo.Rows.Count == 0)
             {

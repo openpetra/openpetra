@@ -15,6 +15,9 @@
 
     <DataSet name="IndividualDataTDS">
         <Table sqltable="p_person"/>                      <!-- Personal Data -->
+        <Table sqltable="p_partner_attribute">            <!-- Partner Attributes (needed for Summary) -->
+            <CustomField name="PartnerContactDetail" type="Boolean"/>
+        </Table>            
         <Table sqltable="pm_general_application">         <!-- General Application Data -->
           <Field name="EventOrFieldName" sqltable="p_unit" sqlfield="p_unit_name_c"/>
           <CustomField name="ApplicationForEventOrField" type="string"/>
@@ -46,13 +49,13 @@
             <Field sqltable="p_person" sqlfield="p_gender_c"/>
             <Field sqltable="p_person" sqlfield="p_marital_status_c"/>
             <Field name="Nationalities" sqltable="p_country" sqlfield="p_country_name_c" comment="Nationality/Nationalities of the PERSON (taken from his-her Passports)"/>
-            <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
-            <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>       
+            <CustomField name="PrimaryPhoneNumber" type="string" comment="Primary Phone Number of the PERSON"/>/>
+            <CustomField name="PrimaryEmailAddress" type="string" comment="Primary E-mail Address of the PERSON"/>/>       
             <CustomField name="ChurchName" type="string" comment="Name of *a* supporting church of the PERSON"/>
             <CustomField name="ChurchAddress" type="string" comment="Address of *this* supporting church of the PERSON"/>
-            <CustomField name="ChurchPhone" type="string" comment="Phone of *this* supporting church of the PERSON"/>
+            <CustomField name="ChurchPrimaryPhoneNumber" type="string" comment="Primary Phone of *this* supporting church of the PERSON"/>
             <CustomField name="ChurchPastor" type="string" comment="Pastor of *this* supporting church of the PERSON"/>
-            <CustomField name="ChurchPastorsPhone" type="string" comment="Phone of *this* pastor of *this* supporting church of the PERSON"/>
+            <CustomField name="ChurchPastorsPrimaryPhoneNumber" type="string" comment="Primary Phone of *this* pastor of *this* supporting church of the PERSON"/>
             <CustomField name="NumberOfShownSupportingChurchPastors" type="Int32" comment="Number of pastors at *this* supporting church of the PERSON"/>
             <CustomField name="NumberOfShownSupportingChurches" type="Int32" comment="Number of supporting churches of the PERSON"/>
             

@@ -154,7 +154,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                                        "' AND a_cost_centre_code_c >='" + pm.Get("param_cost_centre_code_end").ToString() + "'";
                 }
 
-                FPetraUtilsObject.FFastReportsPlugin.AutoEmailReports(ACalc, FLedgerNumber, CostCentreFilter);
+                String Status = FastReportsWrapper.AutoEmailReports(FPetraUtilsObject,
+                    FPetraUtilsObject.FFastReportsPlugin,
+                    ACalc,
+                    FLedgerNumber,
+                    CostCentreFilter);
+                MessageBox.Show(Status, Catalog.GetString("Income Expense Report"));
                 return false;
             }
 

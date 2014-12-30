@@ -327,8 +327,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
                     || (ColumnValue == "eString:Address City")
                     || (ColumnValue == "eString:Address State / County / Province")
                     || (ColumnValue == "eString:Address Country")
-                    || (ColumnValue == "eString:Address Email")
-                    || (ColumnValue == "eString:Address Telephone")
+                    || (ColumnValue == "eString:Primary Email")
+                    || (ColumnValue == "eString:Primary Phone")
                     || (ColumnValue == "eString:Address Line 1")
                     || (ColumnValue == "eString:Address Line 3"))
                 {
@@ -388,8 +388,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
             {
                 String ColumnValue = Row[4].ToString();
 
-                if ((ColumnValue.Contains("eString:Church Address"))
-                    || (ColumnValue == "eString:Church Name"))
+                if (ColumnValue.StartsWith("eString:Church"))
                 {
                     HasAddressDetail = true;
                     break;

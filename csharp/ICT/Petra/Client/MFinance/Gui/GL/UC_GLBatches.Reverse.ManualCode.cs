@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 if (MessageBox.Show(Msg, Catalog.GetString("GL Batch Reversal"),
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
                 {
                     TFrmBatchDateDialog Form = new TFrmBatchDateDialog(FMyForm);
                     Form.SetParameters(AStartDateCurrentPeriod, AEndDateLastForwardingPeriod, SelectedBatchNumber);

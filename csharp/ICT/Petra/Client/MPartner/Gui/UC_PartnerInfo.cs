@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
@@ -29,6 +30,8 @@ using System.Threading;
 using GNU.Gettext;
 
 using Ict.Common;
+using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
@@ -123,6 +126,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private string FServerCallError = "";
 
+        private PPartnerAttributeCategoryTable FPartnerAttributeCategoryDT;
+
+        private PPartnerAttributeTypeTable FPartnerAttributeTypeDT;
+
+        private Dictionary <string, Tuple <TPartnerAttributeTypeValueKind, string>>HyperlinkWithValueArguments;
 
         /// <summary>Scope of data that is already available client-side.</summary>
         public enum TPartnerInfoAvailDataEnum
@@ -344,16 +352,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblAcquisitionCode.Text = Catalog.GetString("Acquired") + ":";
             this.lblStatusCode.Text = Catalog.GetString("Status") + ":";
             this.lblPartnerName.Text = Catalog.GetString("Name") + ":";
-            this.tbpAddress.Text = Catalog.GetString("Address");
-            this.tbpAddress.ToolTipText = Catalog.GetString("Details of the selected Address");
-            this.lblFax.Text = Catalog.GetString("Fax") + ":";
-            this.lblTelephone.Text = Catalog.GetString("Telephone") + ":";
-            this.lblAlternate.Text = Catalog.GetString("Alternate") + ":";
-            this.lblMobile.Text = Catalog.GetString("Mobile") + ":";
-            this.lblEmail.Text = Catalog.GetString("Email") + ":";
+            this.tbpAddress.Text = Catalog.GetString("Address && Contact Details");
+            this.tbpAddress.ToolTipText = Catalog.GetString("Details of the selected Address and Contact Details of the Partner");
             this.lblLocationType.Text = Catalog.GetString("Location Type") + ":";
             this.lblMailingAddress.Text = Catalog.GetString("Mailing Addr.") + ":";
-            this.lblUrl.Text = Catalog.GetString("URL") + ":";
             this.lblValidFrom.Text = Catalog.GetString("Valid From") + ":";
             this.lblValidTo.Text = Catalog.GetString("Valid To") + ":";
             this.tbpTypesSubscr.Text = Catalog.GetString("Types && Subscriptions");
@@ -456,6 +458,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void InitUserControl()
         {
+            rtbContactDetails.BuildLinkWithValue = BuildLinkWithValue;
+
+            FPartnerAttributeCategoryDT = (PPartnerAttributeCategoryTable)TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.
+                ContactCategoryList, PPartnerAttributeCategoryTable.GetTableName());
+            FPartnerAttributeTypeDT = (PPartnerAttributeTypeTable)TDataCache.TMPartner.GetCacheablePartnerTable2(
+                TCacheablePartnerTablesEnum.ContactTypeList,
+                PPartnerAttributeTypeTable.GetTableName());
         }
 
         /// <summary>
@@ -529,6 +538,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             //            UpdateControls(APartnerKey, APartnerDR, TDataBindingScopeEnum.dbsFull);
         }
 
+        /// <summary>
+        /// Gets the Partners' PartnerAttribute DataTable.
+        /// </summary>
+        /// <remarks>Data must have already been retrieved from the server for this to work!</remarks>
+        /// <returns>The Partners' PartnerAttribute DataTable.</returns>
+        public PPartnerAttributeTable GetPartnerAttributeData()
+        {
+            if (FPartnerInfoDS != null)
+            {
+                return FPartnerInfoDS.PPartnerAttribute;
+            }
+            else
+            {
+                throw new EOPAppException("GetPartnerAttributeData Method must only be called once data has been retrieved");
+            }
+        }
+
         private void OnDataLoaded()
         {
             if (DataLoaded != null)
@@ -587,6 +613,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FServerCallError = String.Empty;
                 FCurrentServerCallParams.ServerCallOK = false;
 
+                // Reset Dictionary
+                HyperlinkWithValueArguments =
+                    new Dictionary <string, Tuple <TPartnerAttributeTypeValueKind, string>>(1);
+
                 try
                 {
                     /*
@@ -599,12 +629,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                             FCurrentServerCallParams.LocationKey,
                             FCurrentServerCallParams.PartnerInfoScope,
                             out FPartnerInfoDS);
+
+                        FPartnerInfoDS.Merge(FPartnerAttributeCategoryDT);
+                        FPartnerInfoDS.Merge(FPartnerAttributeTypeDT);
                     }
                     else if (FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisFull)
                     {
                         FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
                             FCurrentServerCallParams.PartnerInfoScope,
                             out FPartnerInfoDS);
+
+                        FPartnerInfoDS.Merge(FPartnerAttributeCategoryDT);
+                        FPartnerInfoDS.Merge(FPartnerAttributeTypeDT);
 
                         FPartnerClass = SharedTypes.PartnerClassStringToEnum(FPartnerInfoDS.PartnerHeadInfo[0].PartnerClass);
                         FPartnerShortName = FPartnerInfoDS.PartnerHeadInfo[0].PartnerShortName;
@@ -643,6 +679,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                             FPartnerInfoDS.PLocation.Rows.Clear();
                             FPartnerInfoDS.PPartnerLocation.Rows.Clear();
                             FPartnerInfoDS.Merge(PartlyPopulatedPartnerInfoDS);
+
+                            FPartnerInfoDS.Merge(FPartnerAttributeCategoryDT);
+                            FPartnerInfoDS.Merge(FPartnerAttributeTypeDT);
                         }
 
                         /*
@@ -1055,14 +1094,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 txtAddress1.Text = "";
 
-                txtAlternate.Text = "";
                 txtLocationType.Text = "";
                 txtMailingAddress.Text = "";
-                txtMobile.Text = "";
-                txtEmail.Text = "";
-                txtFax.Text = "";
-                txtTelephone.Text = "";
-                txtUrl.Text = "";
                 txtValidFrom.Text = "";
                 txtValidTo.Text = "";
             }
@@ -1087,6 +1120,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 txtDateOfBirth.Text = "";
                 txtFamilyMembers.Text = "";
+
+                rtbContactDetails.Text = "";
             }
         }
 
@@ -1111,8 +1146,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowHideLoadingInfo(bool AShow, bool AIncludeLocationLoadingInfo, bool AIncludeRestLoadingInfo)
         {
-            lblLoadingPartnerLocation.Visible = AShow;
-
             if (AIncludeLocationLoadingInfo)
             {
                 lblLoadingAddress.Visible = AShow;
@@ -1123,6 +1156,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 lblLoadingTypesSubscr.Visible = AShow;
                 lblLoadingOther.Visible = AShow;
                 lblLoadingPersonFamily.Visible = AShow;
+                lblLoadingPartnerLocation.Visible = AShow;
             }
 
             // Those Labels are at the back of all Controls -
@@ -1139,6 +1173,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
+                lblLoadingTypesSubscr.Visible = AShow;
+                lblLoadingOther.Visible = AShow;
+                lblLoadingPersonFamily.Visible = AShow;
+                lblLoadingPartnerLocation.Visible = AShow;
+
                 this.Cursor = Cursors.Default;
             }
         }
@@ -1226,6 +1265,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 LocationDR[PLocationTable.GetCountyDBName()].ToString(),
                 LocationDR[PLocationTable.GetPostalCodeDBName()].ToString(),
                 CountryName);
+
+            UpdateTxtAddress1Height();
         }
 
         /// <summary>
@@ -1235,192 +1276,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             string FieldValue = "";
             int ControlsVisible = 0;
-
-            // Telephone
-            if (!FPartnerInfoDS.PPartnerLocation[0].IsTelephoneNumberNull())
-            {
-                FieldValue = FPartnerInfoDS.PPartnerLocation[0].TelephoneNumber;
-
-                if (FieldValue != "")
-                {
-                    txtTelephone.Text = FPartnerInfoDS.PPartnerLocation[0].TelephoneNumber;
-
-                    if (!FPartnerInfoDS.PPartnerLocation[0].IsExtensionNull())
-                    {
-                        if (FPartnerInfoDS.PPartnerLocation[0].Extension != 0)
-                        {
-                            txtTelephone.Text = txtTelephone.Text + " Ext. " + FPartnerInfoDS.PPartnerLocation[0].Extension;
-                        }
-                    }
-
-                    txtTelephone.Visible = true;
-                    lblTelephone.Visible = true;
-                    tlpPartnerLocation.RowStyles[0].SizeType = SizeType.Absolute;
-
-                    ControlsVisible++;
-                }
-                else
-                {
-                    txtTelephone.Visible = false;
-                    lblTelephone.Visible = false;
-                    tlpPartnerLocation.RowStyles[0].SizeType = SizeType.AutoSize;
-                }
-            }
-            else
-            {
-                txtTelephone.Visible = false;
-                lblTelephone.Visible = false;
-                tlpPartnerLocation.RowStyles[0].SizeType = SizeType.AutoSize;
-            }
-
-            // Alternate Telephone
-            if (!FPartnerInfoDS.PPartnerLocation[0].IsAlternateTelephoneNull())
-            {
-                FieldValue = FPartnerInfoDS.PPartnerLocation[0].AlternateTelephone;
-
-                if (FieldValue != "")
-                {
-                    txtAlternate.Text = FPartnerInfoDS.PPartnerLocation[0].AlternateTelephone;
-                    txtAlternate.Visible = true;
-                    lblAlternate.Visible = true;
-                    tlpPartnerLocation.RowStyles[1].SizeType = SizeType.Absolute;
-
-                    ControlsVisible++;
-                }
-                else
-                {
-                    txtAlternate.Visible = false;
-                    lblAlternate.Visible = false;
-                    tlpPartnerLocation.RowStyles[1].SizeType = SizeType.AutoSize;
-                }
-            }
-            else
-            {
-                txtAlternate.Visible = false;
-                lblAlternate.Visible = false;
-                tlpPartnerLocation.RowStyles[1].SizeType = SizeType.AutoSize;
-            }
-
-            // Fax Number
-            if (!FPartnerInfoDS.PPartnerLocation[0].IsFaxNumberNull())
-            {
-                FieldValue = FPartnerInfoDS.PPartnerLocation[0].FaxNumber;
-
-                if (FieldValue != "")
-                {
-                    txtFax.Text = FPartnerInfoDS.PPartnerLocation[0].FaxNumber;
-
-                    if (!FPartnerInfoDS.PPartnerLocation[0].IsFaxExtensionNull())
-                    {
-                        if (FPartnerInfoDS.PPartnerLocation[0].FaxExtension != 0)
-                        {
-                            txtFax.Text = txtFax.Text + " Ext. " + FPartnerInfoDS.PPartnerLocation[0].FaxExtension;
-                        }
-                    }
-
-                    txtFax.Visible = true;
-                    lblFax.Visible = true;
-                    tlpPartnerLocation.RowStyles[4].SizeType = SizeType.Absolute;
-
-                    ControlsVisible++;
-                }
-                else
-                {
-                    txtFax.Visible = false;
-                    lblFax.Visible = false;
-                    tlpPartnerLocation.RowStyles[4].SizeType = SizeType.AutoSize;
-                }
-            }
-            else
-            {
-                txtFax.Visible = false;
-                lblFax.Visible = false;
-                tlpPartnerLocation.RowStyles[4].SizeType = SizeType.AutoSize;
-            }
-
-            // Mobile Number
-            if (!FPartnerInfoDS.PPartnerLocation[0].IsMobileNumberNull())
-            {
-                FieldValue = FPartnerInfoDS.PPartnerLocation[0].MobileNumber;
-
-                if (FieldValue != "")
-                {
-                    txtMobile.Text = FieldValue;
-                    txtMobile.Visible = true;
-                    lblMobile.Visible = true;
-                    tlpPartnerLocation.RowStyles[2].SizeType = SizeType.Absolute;
-
-                    ControlsVisible++;
-                }
-                else
-                {
-                    txtMobile.Visible = false;
-                    lblMobile.Visible = false;
-                    tlpPartnerLocation.RowStyles[2].SizeType = SizeType.AutoSize;
-                }
-            }
-            else
-            {
-                txtMobile.Visible = false;
-                lblMobile.Visible = false;
-                tlpPartnerLocation.RowStyles[2].SizeType = SizeType.AutoSize;
-            }
-
-            // Email Address
-            if (!FPartnerInfoDS.PPartnerLocation[0].IsEmailAddressNull())
-            {
-                FieldValue = FPartnerInfoDS.PPartnerLocation[0].EmailAddress;
-
-                if (FieldValue != "")
-                {
-                    txtEmail.Text = FieldValue;
-                    txtEmail.Visible = true;
-                    lblEmail.Visible = true;
-                    tlpPartnerLocation.RowStyles[3].SizeType = SizeType.Absolute;
-
-                    ControlsVisible++;
-                }
-                else
-                {
-                    txtEmail.Visible = false;
-                    lblEmail.Visible = false;
-                    tlpPartnerLocation.RowStyles[3].SizeType = SizeType.AutoSize;
-                }
-            }
-            else
-            {
-                txtEmail.Visible = false;
-                lblEmail.Visible = false;
-                tlpPartnerLocation.RowStyles[3].SizeType = SizeType.AutoSize;
-            }
-
-            // URL
-            if (!FPartnerInfoDS.PPartnerLocation[0].IsUrlNull())
-            {
-                FieldValue = FPartnerInfoDS.PPartnerLocation[0].Url;
-
-                if (FieldValue != "")
-                {
-                    txtUrl.Text = FieldValue;
-                    txtUrl.Visible = true;
-                    lblUrl.Visible = true;
-                    tlpPartnerLocation.RowStyles[7].SizeType = SizeType.Absolute;
-
-                    ControlsVisible++;
-                }
-                else
-                {
-                    txtUrl.Visible = false;
-                    lblUrl.Visible = false;
-                    tlpPartnerLocation.RowStyles[7].SizeType = SizeType.AutoSize;
-                }
-            }
-            else
-            {
-                txtUrl.Visible = false;
-                lblUrl.Visible = false;
-                tlpPartnerLocation.RowStyles[7].SizeType = SizeType.AutoSize;
-            }
 
             // Location Type
             if (!FPartnerInfoDS.PPartnerLocation[0].IsLocationTypeNull())
@@ -1432,7 +1287,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtLocationType.Text = FieldValue;
                     txtLocationType.Visible = true;
                     lblLocationType.Visible = true;
-                    tlpPartnerLocation.RowStyles[5].SizeType = SizeType.Absolute;
 
                     ControlsVisible++;
                 }
@@ -1440,14 +1294,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     txtLocationType.Visible = false;
                     lblLocationType.Visible = false;
-                    tlpPartnerLocation.RowStyles[5].SizeType = SizeType.AutoSize;
                 }
             }
             else
             {
                 txtLocationType.Visible = false;
                 lblLocationType.Visible = false;
-                tlpPartnerLocation.RowStyles[5].SizeType = SizeType.AutoSize;
             }
 
             // Valid From
@@ -1460,7 +1312,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtValidFrom.Text = FieldValue;
                     txtValidFrom.Visible = true;
                     lblValidFrom.Visible = true;
-                    tlpPartnerLocation.RowStyles[8].SizeType = SizeType.Absolute;
 
                     ControlsVisible++;
                 }
@@ -1468,14 +1319,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     txtValidFrom.Visible = false;
                     lblValidFrom.Visible = false;
-                    tlpPartnerLocation.RowStyles[8].SizeType = SizeType.AutoSize;
                 }
             }
             else
             {
                 txtValidFrom.Visible = false;
                 lblValidFrom.Visible = false;
-                tlpPartnerLocation.RowStyles[8].SizeType = SizeType.AutoSize;
             }
 
             // Valid To
@@ -1488,7 +1337,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtValidTo.Text = StringHelper.DateToLocalizedString(FPartnerInfoDS.PPartnerLocation[0].DateGoodUntil);
                     txtValidTo.Visible = true;
                     lblValidTo.Visible = true;
-                    tlpPartnerLocation.RowStyles[9].SizeType = SizeType.Absolute;
 
                     ControlsVisible++;
                 }
@@ -1496,14 +1344,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     txtValidTo.Visible = false;
                     lblValidTo.Visible = false;
-                    tlpPartnerLocation.RowStyles[9].SizeType = SizeType.AutoSize;
                 }
             }
             else
             {
                 txtValidTo.Visible = false;
                 lblValidTo.Visible = false;
-                tlpPartnerLocation.RowStyles[9].SizeType = SizeType.AutoSize;
             }
 
             // Mailing Address
@@ -1778,9 +1624,142 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             UpdateControlsPartnerLocationData();
 
+            UpdateControlsContactDetailsData();
+
             UpdateControlsSpecialTypesSubscriptionsData();
 
             UpdateControlsOtherData();
+        }
+
+        /// <summary>
+        /// Update Contact Details Hyperlink-RichTextBox
+        /// </summary>
+        private void UpdateControlsContactDetailsData()
+        {
+            const string LABEL_VALUE_SEPARATOR = ": ";
+            string PrimarySuffix = Catalog.GetString("  (Primary)");
+            var DisplayHelper = new TRtbHyperlinks.DisplayHelper(rtbContactDetails);
+            PartnerInfoTDSPPartnerAttributeRow AttributeDR;
+            PPartnerAttributeTypeRow ContactTypeDR;
+            DataView ContactDetailsDV;
+            TPartnerAttributeTypeValueKind ValueKind;
+            int LinkEnd;
+            string Filter = String.Format(
+                "{0}='{1}' AND {2}='{3}'",
+                PartnerEditTDSPPartnerAttributeTable.GetPartnerContactDetailDBName(), true,
+                PPartnerAttributeTable.GetCurrentDBName(), true);
+            string Sort = "Parent_Parent_CategoryIndex ASC, Parent_AttributeIndex ASC, " +
+                          PPartnerAttributeTable.GetIndexDBName() + " ASC";
+
+            rtbContactDetails.Text = String.Empty;
+
+            Calculations.DeterminePartnerContactDetailAttributes(FPartnerInfoDS.PPartnerAttribute);
+
+            Calculations.CreateCustomDataColumnsForAttributeTable(FPartnerInfoDS.PPartnerAttribute,
+                FPartnerInfoDS.PPartnerAttributeType);
+
+            ContactDetailsDV = new DataView(FPartnerInfoDS.PPartnerAttribute,
+                Filter, Sort, DataViewRowState.CurrentRows);
+
+            for (int Counter = 0; Counter < ContactDetailsDV.Count; Counter++)
+            {
+                AttributeDR = (PartnerInfoTDSPPartnerAttributeRow)ContactDetailsDV[Counter].Row;
+
+                ContactTypeDR = (PPartnerAttributeTypeRow)FPartnerInfoDS.PPartnerAttributeType.Rows.Find(
+                    AttributeDR.AttributeType);
+
+                if (!Enum.TryParse <TPartnerAttributeTypeValueKind>(ContactTypeDR.AttributeTypeValueKind, out ValueKind))
+                {
+                    // Fallback!
+                    ValueKind = TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL;
+                }
+
+                switch (ValueKind)
+                {
+                    case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:
+                        DisplayHelper.DisplayPlainText(AttributeDR[Calculations.CALCCOLUMNNAME_CONTACTTYPE] + LABEL_VALUE_SEPARATOR, true, false);
+                        DisplayHelper.DisplayPlainText(AttributeDR.Value + (AttributeDR.Primary ? PrimarySuffix : String.Empty), true);
+                        break;
+
+                    case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:
+                        DisplayHelper.DisplayPlainText(AttributeDR[Calculations.CALCCOLUMNNAME_CONTACTTYPE] + LABEL_VALUE_SEPARATOR, true, false);
+                        DisplayHelper.DisplayURL(AttributeDR.Value, false, true);
+                        break;
+
+                    case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE:
+                        DisplayHelper.DisplayPlainText(AttributeDR[Calculations.CALCCOLUMNNAME_CONTACTTYPE] + LABEL_VALUE_SEPARATOR, true, false);
+                        LinkEnd = DisplayHelper.DisplayURL(AttributeDR.Value, true, true);
+
+//                        MessageBox.Show(String.Format("Contact Type: {0}; AttributeDR.Value: {1}; LinkEnd: {2}",
+//                            AttributeDR[Calculations.CALCCOLUMNNAME_CONTACTTYPE],AttributeDR.Value, LinkEnd));
+                        HyperlinkWithValueArguments.Add(AttributeDR.Value + "[[" + LinkEnd + "]]",
+                        new Tuple <TPartnerAttributeTypeValueKind, string>(ValueKind, ContactTypeDR.HyperlinkFormat));
+                        break;
+
+                    case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
+                        DisplayHelper.DisplayPlainText(AttributeDR[Calculations.CALCCOLUMNNAME_CONTACTTYPE] + LABEL_VALUE_SEPARATOR, true, false);
+                        DisplayHelper.DisplayEmailAddress(AttributeDR.Value, true);
+
+                        if (AttributeDR.Primary)
+                        {
+                            DisplayHelper.DisplayPlainText(PrimarySuffix, true);
+                        }
+
+                        break;
+
+                    case TPartnerAttributeTypeValueKind.CONTACTDETAIL_SKYPEID:
+                        DisplayHelper.DisplayPlainText(AttributeDR[Calculations.CALCCOLUMNNAME_CONTACTTYPE] + LABEL_VALUE_SEPARATOR, true, false);
+                        DisplayHelper.DisplaySkypeID(AttributeDR.Value, true);
+                        break;
+
+                    default:
+                        throw new Exception("Invalid value for TPartnerAttributeTypeValueKind");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Constructs a valid URL string from a Value that is of a Contact Type that has got a Hyperlink Format set up.
+        /// </summary>
+        /// <param name="AValue">Value that should replace THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER in the Hyperlink Format strin</param>
+        /// <param name="ALinkEnd">Character position of the end of the Link. Used for distinguishing different Links with the
+        /// same Link in case of <see cref="Ict.Common.THyperLinkHandling.THyperLinkType.Http_With_Value_Replacement"/>.</param>
+        /// <returns>URL with the Value replacing THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER.</returns>
+        private string BuildLinkWithValue(string AValue, int ALinkEnd)
+        {
+            Tuple <TPartnerAttributeTypeValueKind, string>Parameters;
+
+//            MessageBox.Show(String.Format("AValue: {0}; ALinkEnd: {1}", AValue, ALinkEnd));
+
+            if (HyperlinkWithValueArguments.TryGetValue(AValue + "[[" + ALinkEnd + "]]", out Parameters))
+            {
+                return Calculations.BuildLinkWithValue(AValue, Parameters.Item1,
+                    Parameters.Item2);
+            }
+            else
+            {
+                throw new EOPAppException("Cannot launch hyperlink with value due to a parsing error.  Debug information: " +
+                    String.Format("AValue: {0}; ALinkEnd: {1}", AValue, ALinkEnd));
+            }
+        }
+
+        /// <summary>
+        /// Stand-in for the missing 'AutoSize' Property of the TextBox: calculate necessary Height of the TextBox
+        /// based on its content.
+        /// </summary>
+        private void UpdateTxtAddress1Height()
+        {
+            txtAddress1.Height = ((txtAddress1.Text.Split('\n').Length) * txtAddress1.Font.Height) + 2;
+            txtAddress1.Width = pnlAddress1.Width;
+
+            pnlAddress1.Height = txtAddress1.Height + 4;
+        }
+
+        private void rtbContactDetails_LinkClicked(string ALinkText, string ALinkType, int ALinkEnd)
+        {
+            var DisplayHelper = new TRtbHyperlinks.DisplayHelper(rtbContactDetails);
+
+            DisplayHelper.LaunchHyperLink(ALinkText, ALinkType, ALinkEnd);
         }
     }
 

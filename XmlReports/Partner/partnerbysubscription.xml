@@ -48,7 +48,7 @@
                     SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
                     PUB_p_partner.p_partner_short_name_c AS ShortName,
                     PUB_p_partner.p_partner_class_c AS PartnerClass
-                    FROM   PUB_p_partner, pub_p_partner_location, pub_p_location, PUB_p_subscription as psub, PUB_p_postcode_region_range, PUB_p_postcode_range
+                    FROM   PUB_p_partner, pub_p_partner_location, pub_p_location, PUB_p_subscription as psub
                     WHERE psub.p_partner_key_n = PUB_p_partner.p_partner_key_n
                       AND NOT PUB_p_partner.p_partner_key_n = 0
                       AND psub.p_start_date_d &lt;= {#param_date_effective#}
@@ -86,8 +86,6 @@
                     <value text="NO-SQL"/>
                     <value function="GetPartnerBestAddress({PartnerKey})"/>
                     <value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
-                    <value function="assign(TelephoneNumber, concatenate({TelephoneNumber},{Extension}))"/>
-                    <value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
                     <value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
 					<value function="ConditionRow(1)"/>
                 </queryDetail>
@@ -99,8 +97,6 @@
                 <!--<queryDetail>
                     <value text="NO-SQL"/>
                     <value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
-                    <value function="assign(TelephoneNumber, concatenate({TelephonePre},{TelephoneExtension}))"/>
-                    <value function="assign(FaxNumber, concatenate({FaxPre}, {FaxExtension}))"/>
                     <value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
                 </queryDetail>-->
 				<queryDetail>
@@ -141,8 +137,8 @@
             </query>
         </calculation>
           
-        <calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
-            <caption><value text="E-Mail Address"></value></caption>
+        <calculation align="left" id="Primary E-Mail" returns="text" returnsFormat="text">
+            <caption><value text="Primary E-Mail"></value></caption>
             <query>
                 <queryDetail>
                     <value variable="EMailAddress"></value>
@@ -240,8 +236,8 @@
             </query>
         </calculation>
         
-        <calculation align="left" id="Telephone" returns="text" returnsFormat="text">
-            <caption><value text="Telephone"></value></caption>
+        <calculation align="left" id="Primary Phone" returns="text" returnsFormat="text">
+            <caption><value text="Primary Phone"></value></caption>
             <query>
                 <queryDetail>
                     <value variable="TelephoneNumber"></value>
@@ -257,15 +253,6 @@
             </query>
         </calculation>
         
-        <calculation align="left" id="TelephoneExtension" returns="text" returnsFormat="text">
-            <caption><value text=""></value></caption>
-            <query>
-                <queryDetail>
-                    <value variable="TelephoneExtension"></value>
-                </queryDetail>
-            </query>
-        </calculation>
-
         <calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
             <caption><value text="Alternate Telephone"></value></caption>
             <query>
@@ -292,15 +279,6 @@
             </query>
         </calculation>
         
-        <calculation align="left" id="FaxExtension" returns="text" returnsFormat="text">
-            <caption><value text=""></value></caption>
-            <query>
-                <queryDetail>
-                    <value variable="FaxExtension"></value>
-                </queryDetail>
-            </query>
-        </calculation>
-
         <calculation align="left" id="Field" returns="text" returnsFormat="text">
             <caption><value text="Field"></value></caption>
             <query>

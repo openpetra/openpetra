@@ -13,8 +13,8 @@ RootNode:
         actPostBatch: {Label=P&ost Batch, ActionClick=PostBatch}
         actTestPostBatch: {Label=&Test Batch, ActionClick=TestPostBatch}
         actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
-        actImportBatches: {Label=&Import Batches, ActionClick=ImportBatchesFromFile}
-        actImportFromClipboard: {Label=I&mport from Clipboard, ActionClick=ImportBatchesFromClipboard}
+        actImportBatches: {Label=&Import Batches From File, ActionClick=ImportBatchesFromFile}
+        actImportFromClipboard: {Label=I&mport Batches from Clipboard, ActionClick=ImportBatchesFromClipboard}
         actExportBatches: {Label=E&xport Batches, ActionClick=ExportBatches}
         actReverseBatch: {Label=Re&verse Batch, ActionClick=ReverseBatch}
     Controls:
@@ -99,12 +99,12 @@ RootNode:
             mniTestPostBatch: {Label=&Test Post Batch}
             mniReverseBatch: {Label=Re&verse Batch}
             mniSeparator: {Label=-}
-            mniImportBatches: {Label=&Import From File}
-            mniImportFromClipboard: {Label=I&mport From Clipboard}
+            mniImportBatches: {Label=&Import Batches From File}
+            mniImportFromClipboard: {Label=I&mport Batches From Clipboard}
             mniExportBatches: {Label=E&xport Batches}
     Toolbar:
         tbbPostBatch:
         tbbReverseBatch:
-        tbbImportBatches: {Label=&Import From File}
-        tbbImportFromClipboard: {Label=I&mport From Clipboard}
+        tbbImportBatches: {Label=&Import Batches From File}
+        tbbImportFromClipboard: {Label=I&mport Batches From Clipboard}
         tbbExportBatches:

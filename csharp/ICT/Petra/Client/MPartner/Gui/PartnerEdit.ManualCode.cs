@@ -884,7 +884,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             int NumRows;
             Int32 MaxColumn;
             Boolean SavedPartnerIsNewParter = false;
-            bool AddressesOrRelationsChanged = false;
+            bool PartnerAttributesOrRelationsChanged = false;
             System.Int32 ChangedColumns;
 #if SHOWCHANGES
             String DebugMessage;
@@ -1059,11 +1059,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                         return true;
                     }
 
-                    if ((SubmitDS.Tables.Contains(PLocationTable.GetTableName()))
-                        || (SubmitDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                    if ((SubmitDS.Tables.Contains(PPartnerAttributeTable.GetTableName()))
                         || (SubmitDS.Tables.Contains(PPartnerRelationshipTable.GetTableName())))
                     {
-                        AddressesOrRelationsChanged = true;
+                        PartnerAttributesOrRelationsChanged = true;
                     }
 
 #if DATASETDEBUGGING
@@ -1301,7 +1300,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             ucoUpperPart.UpdateStatusUpdatedDate();  // this is to refresh 'Status Updated' if it has been changed in the ComboBox and then saved...
 
                             ucoLowerPart.RefreshRecordsAfterMerge();
-                            ucoLowerPart.RefreshPersonnelDataAfterMerge(AddressesOrRelationsChanged);
+                            ucoLowerPart.RefreshPersonnelDataAfterMerge(PartnerAttributesOrRelationsChanged);
 
                             // Call AcceptChanges so that we don't have any changed data anymore!
                             AInspectDS.AcceptChanges();
@@ -1943,7 +1942,21 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileSendEmail(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            string PrimaryEmailAddress;
+
+            if (Calculations.GetPrimaryEmailAddress(
+                    FMainDS.PPartnerAttribute, out PrimaryEmailAddress))
+            {
+                TRtbHyperlinks.DisplayHelper Launcher = new TRtbHyperlinks.DisplayHelper(new TRtbHyperlinks());
+
+                Launcher.LaunchHyperLink(PrimaryEmailAddress, THyperLinkHandling.HYPERLINK_PREFIX_EMAILLINK);
+            }
+            else
+            {
+                MessageBox.Show(MPartnerResourcestrings.StrNoPrimaryEmailAvailableToSendEmailTo,
+                    MPartnerResourcestrings.StrNoPrimaryEmailAvailableToSendEmailToTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private void FilePrintPartner(System.Object sender, System.EventArgs e)

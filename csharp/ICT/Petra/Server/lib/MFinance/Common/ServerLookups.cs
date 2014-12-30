@@ -57,25 +57,30 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             out DateTime AStartDateCurrentPeriod,
             out DateTime AEndDateLastForwardingPeriod)
         {
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            DateTime StartDateCurrentPeriod = new DateTime();
+            DateTime EndDateLastForwardingPeriod = new DateTime();
+            TDBTransaction Transaction = null;
 
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                LedgerTable[0].CurrentPeriod,
-                Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                    AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                        LedgerTable[0].CurrentPeriod,
+                        Transaction);
 
-            AStartDateCurrentPeriod = AccountingPeriodTable[0].PeriodStartDate;
+                    StartDateCurrentPeriod = AccountingPeriodTable[0].PeriodStartDate;
 
-            AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods,
-                Transaction);
-            AEndDateLastForwardingPeriod = AccountingPeriodTable[0].PeriodEndDate;
+                    AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                        LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods,
+                        Transaction);
+                    EndDateLastForwardingPeriod = AccountingPeriodTable[0].PeriodEndDate;
+                });
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+            AStartDateCurrentPeriod = StartDateCurrentPeriod;
+            AEndDateLastForwardingPeriod = EndDateLastForwardingPeriod;
 
             return true;
         }

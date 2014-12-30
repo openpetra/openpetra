@@ -54,8 +54,6 @@
 					<value text="NO-SQL"/>
 					<value function="GetPartnerBestAddress({PartnerKey})"/>
 					<value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
-					<value function="assign(TelephoneNumber, concatenate({TelephoneNumber},{Extension}))"/>
-					<value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
 					<value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
 				</queryDetail>
 			</query>

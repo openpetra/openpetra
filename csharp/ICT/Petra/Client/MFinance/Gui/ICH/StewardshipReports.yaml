@@ -21,7 +21,15 @@ RootNode:
         tpgGeneralSettings:
             Label: General Settings
             Controls: [pnlContentTop, pnlContentMiddle]
-                
+
+        tpgFeesSettings:
+            Label: Fees
+            Controls: [uco_SelectedFees]
+        uco_SelectedFees:
+            Type: Ict.Petra.Client.MFinance.Gui.ICH.TFrmUC_SelectedFees
+            Dock: Fill
+
+
         pnlContentTop:
             Dock: Fill
             Controls:
@@ -42,31 +50,32 @@ RootNode:
             Controls:
                 Row0: [chkHOSA, rgrHosa]
                 Row1: [chkStewardship, rgrStewardship]
-                Row2: [chkFees, rgrFees]
-                Row3: [chkRecipient, rgrRecipient]
+#               Row2: [chkFees, rgrFees]
+                Row2: [chkFees]
+#               Row3: [chkRecipient, rgrRecipient]
 
         chkHOSA:{Label=All HOSAs, CheckBoxAttachedLabel=right}
         chkStewardship:{Label=Stewardship Report, CheckBoxAttachedLabel=right}
         chkFees:{Label=Admin Fees, CheckBoxAttachedLabel=right}
-        chkRecipient:{Label=All Recipient Statements, CheckBoxAttachedLabel=right}
+#       chkRecipient:{Label=All Recipient Statements, CheckBoxAttachedLabel=right}
 
         rgrHosa: {Label=HOSA options, ControlsOrientation=horizontal, BorderVisible=false}
             Controls:[rbtEmailHosa, rbtReprintHosa]
         rgrStewardship: {Label=Stewardship options, ControlsOrientation=horizontal, BorderVisible=false}
             Controls:[rbtEmailStewardship, rbtReprintStewardship]
-        rgrFees: {Label=Fees options, ControlsOrientation=horizontal, BorderVisible=false}
-            Controls:[rbtEmailFees, rbtReprintFees]
-        rgrRecipient: {Label=Recipient Statement options, ControlsOrientation=horizontal, BorderVisible=false}
-            Controls:[rbtEmailRecipient, rbtReprintRecipient]
+#        rgrFees: {Label=Fees options, ControlsOrientation=horizontal, BorderVisible=false}
+#            Controls:[rbtEmailFees, rbtReprintFees]
+#       rgrRecipient: {Label=Recipient Statement options, ControlsOrientation=horizontal, BorderVisible=false}
+#           Controls:[rbtEmailRecipient, rbtReprintRecipient]
 
         rbtEmailHosa:{Label=Send emails, ParameterValue=Email}
         rbtReprintHosa:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
-        rbtEmailStewardship:{Label=Email to ICT, ParameterValue=Email}
+        rbtEmailStewardship:{Label=Email to ICH, ParameterValue=Email}
         rbtReprintStewardship:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
-        rbtEmailFees:{Label=Email to ICT, ParameterValue=Email}
-        rbtReprintFees:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
-        rbtEmailRecipient:{Label=Send emails, ParameterValue=Email}
-        rbtReprintRecipient:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
+#        rbtEmailFees:{Label=Email to ICH, ParameterValue=Email}
+#        rbtReprintFees:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
+#       rbtEmailRecipient:{Label=Send emails, ParameterValue=Email}
+#       rbtReprintRecipient:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
 
         cmbYearEnding: {Label=Year End, List=UserDefinedList, OnChange=RefreshReportPeriodList, Width=250}
         cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList, Width=250}

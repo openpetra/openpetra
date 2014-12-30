@@ -41,11 +41,21 @@ RootNode:
         pnlDetails:
             Dock: Fill
             BackColor: System.Drawing.SystemColors.Control
-            Controls:
-                Row0: [grpAddress]
-                Row1: [grpContact]
+            ControlsOrientation: horizontal
+            Controls: [pnlAddress, pnlPartnerAddress]
 
-        grpAddress: {Label=Address, Width=770, Stretch=horizontally}
+        pnlAddress:
+            Dock: Fill
+            Controls: [grpAddress]
+            Padding: [5,5,0,5]
+            
+        pnlPartnerAddress:
+            Dock: Right
+            Controls: [grpPartnerAddress]
+            Padding: [0,5,5,5]
+
+        grpAddress: {Label=Address}
+            Stretch: horizontally
             Controls:
                 Row0: [txtLocationLocality]
                 Row1: [txtLocationStreetName]
@@ -54,23 +64,7 @@ RootNode:
                 Row4: [txtLocationPostalCode]
                 Row5: [cmbLocationCountryCode]
 
-        grpContact: {Label=Contact, Width=770, Stretch=horizontally}
-            Controls:
-                Row0: [pnlContactLeft, pnlContactMiddle, pnlContactRight]
-
-        pnlContactLeft:
-            Controls:
-                Row0: [txtPPartnerLocationTelephoneNumber]
-                Row1: [txtPPartnerLocationFaxNumber]
-                Row2: [txtPPartnerLocationMobileNumber]
-                Row3: [txtPPartnerLocationAlternateTelephone]
-
-        pnlContactMiddle:
-            Controls:
-                Row0: [txtPPartnerLocationEmailAddress]
-                Row1: [txtPPartnerLocationUrl]
-
-        pnlContactRight:
+        grpPartnerAddress: {Label=Contact}
             Controls:
                 Row0: [cmbPPartnerLocationLocationType]
                 Row1: [chkPPartnerLocationSendMail]
@@ -80,17 +74,10 @@ RootNode:
         txtLocationLocality: {Label=Addr1, ColSpan=2, Stretch=horizontally}
         txtLocationStreetName: {Label=Street-2, ColSpan=2, Stretch=horizontally}
         txtLocationAddress3: {Label=Addr3, ColSpan=2, Stretch=horizontally}
-        txtLocationCity: {Label=City, Width=250}
+        txtLocationCity: {Label=City, Width=180}
         txtLocationCounty: {Label=County/State, Stretch=horizontally}
         txtLocationPostalCode: {Label=Post Code, Width=100}
-        cmbLocationCountryCode: {Label=Country, List=CountryList, OnChange=CountryCodeChanged, AllowDbNull=true}
-
-        txtPPartnerLocationTelephoneNumber: {Label=Phone, Width=130, Enabled=false}
-        txtPPartnerLocationFaxNumber: {Label=Fax, Width=130, Enabled=false}
-        txtPPartnerLocationMobileNumber: {Label=Mobile, Width=130, Enabled=false}
-        txtPPartnerLocationAlternateTelephone: {Label=Alternate, Width=130, Enabled=false}
-        txtPPartnerLocationEmailAddress: {Label=Email, Width=180, Enabled=false}
-        txtPPartnerLocationUrl: {Label=URL, Width=180, Enabled=false}
+        cmbLocationCountryCode: {Label=Country, List=CountryList, OnChange=CountryCodeChanged, AllowDbNull=true, Width=300, ColSpan=2}
 
         cmbPPartnerLocationLocationType: {Label=Location Type, List=LocationTypeList,Width=150}
         chkPPartnerLocationSendMail: {Label=Mailing Address}
