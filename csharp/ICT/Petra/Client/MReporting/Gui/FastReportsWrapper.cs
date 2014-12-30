@@ -57,7 +57,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TDataGetter FDataGetter;
         private Assembly FastReportsDll;
         private object FfastReportInstance;
-        private String FReportName;
+        /// <summary>Given with constructor, this can be accessed afterwards.</summary>
+        public String FReportName;
 
         Type FFastReportType;
         /// <summary>
@@ -518,20 +519,20 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// The report will be sent to a list of email addresses derived from the Cost Centres in the supplied CostCentreFilter.
         /// </summary>
-        /// <param name="ACalc"></param>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ACostCentreFilter"></param>
-        public void AutoEmailReports(TRptCalculator ACalc, Int32 ALedgerNumber, String ACostCentreFilter)
+        /// <returns>Status string that should be shown to the user</returns>
+        public static String AutoEmailReports(TFrmPetraReportingUtils FormUtils, FastReportsWrapper ReportEngine,
+            TRptCalculator ACalc, Int32 ALedgerNumber, String ACostCentreFilter)
         {
             Int32 SuccessfulCount = 0;
             String NoEmailAddr = "";
             String FailedAddresses = "";
+            String SendReport = "";
 
             //
             // I need to find the email addresses for the linked partners I'm sending to.
+            DataTable LinkedPartners = null;
 
-            DataTable LinkedPartners = TRemote.MFinance.Setup.WebConnectors.GetLinkedPartners(ALedgerNumber, ACostCentreFilter);
-
+            LinkedPartners = TRemote.MFinance.Setup.WebConnectors.GetLinkedPartners(ALedgerNumber, ACostCentreFilter);
             LinkedPartners.DefaultView.Sort = "CostCentreCode";
 
             foreach (DataRowView rv in LinkedPartners.DefaultView)
@@ -541,30 +542,33 @@ namespace Ict.Petra.Client.MReporting.Gui
                 if (LinkedPartner["EmailAddress"].ToString() != "")
                 {
                     ACalc.AddStringParameter("param_linked_partner_cc", LinkedPartner["CostCentreCode"].ToString());
-                    FPetraUtilsObject.WriteToStatusBar("Generate " + FReportName + " Report for " + LinkedPartner["PartnerShortName"]);
-                    MemoryStream ReportStream = FPetraUtilsObject.FFastReportsPlugin.ExportToStream(ACalc, FastReportsWrapper.ReportExportType.Html);
+                    FormUtils.WriteToStatusBar("Generate " + ReportEngine.FReportName + " Report for " + LinkedPartner["PartnerShortName"]);
+                    MemoryStream ReportStream = ReportEngine.ExportToStream(ACalc, FastReportsWrapper.ReportExportType.Html);
+
+                    if (ReportStream.Position < 1000)
+                    {
+                        continue; // Don't send an empty report
+                    }
+
                     ReportStream.Position = 0;
 
                     TUC_EmailPreferences.LoadEmailDefaults();
-                    TSmtpSender EmailSender;
-                    try
+                    TSmtpSender EmailSender = new TSmtpSender(
+                        TUserDefaults.GetStringDefault("SmtpHost"),
+                        TUserDefaults.GetInt16Default("SmtpPort"),
+                        TUserDefaults.GetBooleanDefault("SmtpUseSsl"),
+                        TUserDefaults.GetStringDefault("SmtpUser"),
+                        TUserDefaults.GetStringDefault("SmtpPassword"),
+                        "");
+                    EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
+                    EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
+
+                    if (!EmailSender.FInitOk)
                     {
-                        EmailSender = new TSmtpSender(
-                            TUserDefaults.GetStringDefault("SmtpHost"),
-                            TUserDefaults.GetInt16Default("SmtpPort"),
-                            TUserDefaults.GetBooleanDefault("SmtpUseSsl"),
-                            TUserDefaults.GetStringDefault("SmtpUser"),
-                            TUserDefaults.GetStringDefault("SmtpPassword"),
-                            "");
-                        EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
-                        EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
-                    }
-                    catch (Exception)
-                    {
-                        MessageBox.Show(Catalog.GetString(
-                                "Failed to set up the email server.\nPlease check the settings in Preferences / Email."),
-                            Catalog.GetString("Auto-email to linked partners"));
-                        return;
+                        return String.Format(
+                            Catalog.GetString(
+                                "Failed to set up the email server.\n    Please check the settings in Preferences / Email.\n    Message returned : \"{0}\""),
+                            EmailSender.FErrorStatus);
                     }
 
                     String EmailBody = "";
@@ -572,7 +576,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     if (TUserDefaults.GetBooleanDefault("SmtpSendAsAttachment"))
                     {
                         EmailBody = TUserDefaults.GetStringDefault("SmtpEmailBody");
-                        EmailSender.AttachFromStream(ReportStream, FReportName + ".html");
+                        EmailSender.AttachFromStream(ReportStream, ReportEngine.FReportName + ".html");
                     }
                     else
                     {
@@ -584,7 +588,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                         TUserDefaults.GetStringDefault("SmtpFromAccount"),
                         TUserDefaults.GetStringDefault("SmtpDisplayName"),
                         "tim.ingham@om.org", //LinkedPartner["EmailAddress"]
-                        FReportName + " Report for " + LinkedPartner["PartnerShortName"] + ", Address=" + LinkedPartner["EmailAddress"],
+                        ReportEngine.FReportName + " Report for " + LinkedPartner["PartnerShortName"] + ", Address=" + LinkedPartner["EmailAddress"],
                         EmailBody);
 
                     if (SentOk)
@@ -593,25 +597,30 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                     else // Email didn't send for some reason
                     {
-                        FailedAddresses += ("\r\n" + LinkedPartner["EmailAddress"]);
+                        SendReport += String.Format(
+                            Catalog.GetString("\r\nFailed to send to {0}. Message returned: \"{1}\"."),
+                            LinkedPartner["EmailAddress"],
+                            EmailSender.FErrorStatus
+                            );
+
+                        FailedAddresses += ("\r\n    " + LinkedPartner["EmailAddress"]);
                     }
                 }
                 else // No Email Address for this Partner
                 {
-                    NoEmailAddr += ("\r\n" + LinkedPartner["PartnerKey"] + " " + LinkedPartner["PartnerShortName"]);
+                    NoEmailAddr += ("\r\n    " + LinkedPartner["PartnerKey"] + " " + LinkedPartner["PartnerShortName"]);
                 }
             }
 
-            String SendReport = "";
-
             if (SuccessfulCount > 0)
             {
-                SendReport += String.Format(Catalog.GetString("Reports emailed to {0} addresses."), SuccessfulCount) + "\r\n\r\n";
+                SendReport +=
+                    String.Format(Catalog.GetString("\r\n{0} emailed to {1} addresses."), ReportEngine.FReportName, SuccessfulCount) + "\r\n\r\n";
             }
 
             if (NoEmailAddr != "")
             {
-                SendReport += (Catalog.GetString("These Partners have no email addresses:") + NoEmailAddr + "\r\n\r\n");
+                SendReport += (Catalog.GetString("\r\nThese Partners have no email addresses:") + NoEmailAddr + "\r\n");
             }
 
             if (FailedAddresses != "")
@@ -619,8 +628,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 SendReport += (Catalog.GetString("Failed to send email to these addresses:") + FailedAddresses + "\r\n\r\n");
             }
 
-            MessageBox.Show(SendReport, Catalog.GetString("Auto-email to linked partners"));
-            FPetraUtilsObject.WriteToStatusBar("");
+            FormUtils.WriteToStatusBar("");
+            return SendReport;
         } // AutoEmailReports
 
         /// <summary>

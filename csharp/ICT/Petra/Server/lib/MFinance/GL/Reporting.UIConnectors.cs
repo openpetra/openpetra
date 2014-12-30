@@ -1675,6 +1675,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 Boolean PersonalHosa = (AParameters["param_filter_cost_centres"].ToString() == "PersonalCostcentres");
                 Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
                 String CostCentreCodes = AParameters["param_cost_centre_codes"].ToString();
+
+                String LinkedCC_CCFilter = "";
+                String GiftDetail_CCfilter = "";
+
+                if (CostCentreCodes != "ALL")
+                {
+                    LinkedCC_CCFilter = " AND LinkedCostCentre.a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
+                    GiftDetail_CCfilter = " AND GiftDetail.a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
+                }
+
                 Int32 IchNumber = AParameters["param_ich_number"].ToInt32();
 
                 String DateFilter = "";
@@ -1716,12 +1726,17 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 }
 
                 Query +=
-                    "MotivationDetail.a_account_code_c AS AccountCode, SUM(GiftDetail.a_gift_amount_n) AS GiftBaseAmount, SUM(GiftDetail.a_gift_amount_intl_n) AS GiftIntlAmount, SUM(a_gift_transaction_amount_n) AS GiftTransactionAmount, "
-                    +
-                    "GiftDetail.p_recipient_key_n AS RecipientKey, Partner.p_partner_short_name_c AS RecipientShortname, " +
+                    "MotivationDetail.a_account_code_c AS AccountCode, " +
+                    "SUM(GiftDetail.a_gift_amount_n) AS GiftBaseAmount, " +
+                    "SUM(GiftDetail.a_gift_amount_intl_n) AS GiftIntlAmount, " +
+                    "SUM(a_gift_transaction_amount_n) AS GiftTransactionAmount, " +
+                    "GiftDetail.p_recipient_key_n AS RecipientKey, " +
+                    "Partner.p_partner_short_name_c AS RecipientShortname, " +
                     "Partner.p_partner_short_name_c AS Narrative " +
+
                     "FROM a_gift_detail AS GiftDetail, a_gift_batch AS GiftBatch, " +
-                    "a_motivation_detail AS MotivationDetail, a_gift AS Gift, p_partner AS Partner";
+                    "a_motivation_detail AS MotivationDetail, " +
+                    "p_partner AS Partner";
 
                 if (PersonalHosa)
                 {
@@ -1733,9 +1748,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                          "AND GiftDetail.a_ledger_number_i = MotivationDetail.a_ledger_number_i " +
                          "AND GiftDetail.a_motivation_group_code_c = MotivationDetail.a_motivation_group_code_c " +
                          "AND GiftDetail.a_motivation_detail_code_c = MotivationDetail.a_motivation_detail_code_c " +
-                         "AND GiftDetail.a_ledger_number_i = Gift.a_ledger_number_i " +
-                         "AND GiftDetail.a_batch_number_i = Gift.a_batch_number_i " +
-                         "AND GiftDetail.a_gift_transaction_number_i = Gift.a_gift_transaction_number_i " +
                          "AND Partner.p_partner_key_n = GiftDetail.p_recipient_key_n " +
                          "AND GiftDetail.a_ledger_number_i = " + LedgerNumber + " " +
                          "AND GiftBatch.a_batch_status_c = '" + MFinanceConstants.BATCH_POSTED + "' " +
@@ -1744,12 +1756,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 if (PersonalHosa)
                 {
                     Query += "AND LinkedCostCentre.a_ledger_number_i = GiftDetail.a_ledger_number_i " +
-                             "AND LinkedCostCentre.a_cost_centre_code_c IN (" + CostCentreCodes + ") " +
+                             LinkedCC_CCFilter +
                              "AND GiftDetail.p_recipient_key_n = LinkedCostCentre.p_partner_key_n ";
                 }
                 else
                 {
-                    Query += "AND GiftDetail.a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
+                    Query += GiftDetail_CCfilter;
                 }
 
                 if (IchNumber != 0)
@@ -1758,7 +1770,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 }
 
                 Query += "GROUP BY CostCentre, AccountCode, GiftDetail.p_recipient_key_n, Partner.p_partner_short_name_c " +
-                         "ORDER BY Partner.p_partner_short_name_c ASC";
+                         "ORDER BY CostCentre, AccountCode, Partner.p_partner_short_name_c ASC";
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
                 TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
@@ -1794,6 +1806,120 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
+        public static DataTable KeyMinGiftsTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            try
+            {
+                Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+                String CostCentreCodes = AParameters["param_cost_centre_codes"].ToString();
+
+                String CCfilter = "";
+
+                if (CostCentreCodes == "ALL")
+                {
+                    CCfilter = "AND CostCentre.a_cost_centre_code_c=GiftDetail.a_cost_centre_code_c " +
+                               "AND CostCentre.a_cost_centre_type_c='" + MFinanceConstants.FOREIGN_CC_TYPE + "' " +
+                               "AND CostCentre.a_ledger_number_i=" + LedgerNumber + " ";
+                }
+                else
+                {
+                    CCfilter = " AND GiftDetail.a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
+                }
+
+                Int32 IchNumber = AParameters["param_ich_number"].ToInt32();
+
+                String DateFilter = "";
+
+                if (AParameters["param_period"].ToBool() == true)
+                {
+                    Int32 periodYear = AParameters["param_year_i"].ToInt32();
+                    Int32 periodStart = AParameters["param_start_period_i"].ToInt32();
+                    Int32 periodEnd = AParameters["param_end_period_i"].ToInt32();
+                    DateFilter = "AND GiftBatch.a_batch_year_i = " + periodYear;
+
+                    if (periodStart == periodEnd)
+                    {
+                        DateFilter += (" AND GiftBatch.a_batch_period_i = " + periodStart + " ");
+                    }
+                    else
+                    {
+                        DateFilter += (" AND GiftBatch.a_batch_period_i >= " + periodStart +
+                                       " AND GiftBatch.a_batch_period_i <= " + periodEnd + " ");
+                    }
+                }
+                else
+                {
+                    DateTime dateStart = AParameters["param_start_date"].ToDate();
+                    DateTime dateEnd = AParameters["param_end_date"].ToDate();
+                    DateFilter = "AND GiftBatch.a_gl_effective_date_d >= '" + dateStart.ToString("yyyy-MM-dd") + "'" +
+                                 " AND GiftBatch.a_gl_effective_date_d <= '" + dateEnd.ToString("yyyy-MM-dd") + "' ";
+                }
+
+                String Query = "SELECT " +
+                               "GiftBatch.a_gl_effective_date_d AS date, " +
+                               "GiftDetail.a_cost_centre_code_c AS CostCentreCode, " +
+                               "GiftDetail.a_gift_amount_n AS GiftBaseAmount, " +
+                               "GiftDetail.a_gift_amount_intl_n AS GiftIntlAmount, " +
+                               "CASE WHEN GiftDetail.a_recipient_ledger_number_n=GiftDetail.p_recipient_key_n THEN 'FIELD' ELSE 'KEYMIN' END AS RecipientType, "
+                               +
+                               "GiftDetail.p_recipient_key_n AS RecipientKey, " +
+                               "Recipient.p_partner_short_name_c AS RecipientShortname, " +
+                               "Donor.p_partner_key_n AS DonorKey, " +
+                               "Donor.p_partner_short_name_c AS DonorShortname " +
+
+                               "FROM a_gift_detail AS GiftDetail, a_gift AS Gift, a_gift_batch AS GiftBatch, ";
+
+                if (CostCentreCodes == "ALL")
+                {
+                    Query += "a_cost_centre AS CostCentre, ";
+                }
+
+                Query += "p_partner AS Donor, p_partner AS Recipient " +
+
+                         "WHERE GiftBatch.a_ledger_number_i = " + LedgerNumber + " " +
+                         "AND GiftDetail.a_batch_number_i = GiftBatch.a_batch_number_i " +
+                         "AND (GiftDetail.a_recipient_ledger_number_n = GiftDetail.p_recipient_key_n " + // Field Gifts
+                         "OR (SELECT COUNT(p_partner_key_n) FROM p_unit WHERE p_unit.p_partner_key_n=GiftDetail.p_recipient_key_n AND p_unit.u_unit_type_code_c='KEY-MIN') > 0) "
+                         +
+                         "AND Gift.a_ledger_number_i = " + LedgerNumber + " " +
+                         "AND Gift.a_batch_number_i = GiftDetail.a_batch_number_i " +
+                         "AND Gift.a_gift_transaction_number_i = GiftDetail.a_gift_transaction_number_i " +
+                         CCfilter +
+                         "AND Donor.p_partner_key_n = Gift.p_donor_key_n " +
+                         "AND Recipient.p_partner_key_n = GiftDetail.p_recipient_key_n " +
+                         "AND GiftDetail.a_ledger_number_i = " + LedgerNumber + " " +
+                         "AND GiftBatch.a_batch_status_c = '" + MFinanceConstants.BATCH_POSTED + "' " +
+                         DateFilter;
+
+                if (IchNumber != 0)
+                {
+                    Query += "AND GiftDetail.a_ich_number_i = " + IchNumber + " ";
+                }
+
+                Query += "ORDER BY CostCentreCode, RecipientType Desc, RecipientKey, DonorKey";
+
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                DataTable resultTable = DbAdapter.RunQuery(Query, "Recipient", Transaction);
+                TLogging.Log("", TLoggingType.ToStatusBar);
+                return resultTable;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem getting gift rows for KeyMinGifts report: " + e.ToString());
+                return null;
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+        }
+
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
         public static DataTable StewardshipTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             try
@@ -1803,22 +1929,32 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 Int32 IchNumber = AParameters["param_cmbICHNumber"].ToInt32();
                 Int32 period = AParameters["param_cmbReportPeriod"].ToInt32();
 
-                String StewardshipFilter = "PUB_a_ich_stewardship.a_ledger_number_i = " + LedgerNumber;
+                String StewardshipFilter = "a_ich_stewardship.a_ledger_number_i = " + LedgerNumber;
 
                 if (IchNumber == 0)
                 {
-                    StewardshipFilter += " AND PUB_a_ich_stewardship.a_period_number_i = " + period;
+                    StewardshipFilter += " AND a_ich_stewardship.a_period_number_i = " + period;
                 }
                 else
                 {
-                    StewardshipFilter += " AND PUB_a_ich_stewardship.a_ich_number_i = " + IchNumber;
+                    StewardshipFilter += " AND a_ich_stewardship.a_ich_number_i = " + IchNumber;
                 }
 
-                String Query = "SELECT PUB_a_ich_stewardship.*, PUB_a_cost_centre.a_cost_centre_name_c" +
-                               " FROM PUB_a_ich_stewardship, PUB_a_cost_centre WHERE " +
+                String Query = "SELECT" +
+                               " a_ich_stewardship.a_cost_centre_code_c AS CostCentreCode, " +
+                               " a_cost_centre.a_cost_centre_name_c AS CostCentreName, " +
+                               " sum(a_ich_stewardship.a_income_amount_n) AS Income, " +
+                               " sum(a_ich_stewardship.a_expense_amount_n) AS Expense, " +
+                               " sum(a_ich_stewardship.a_direct_xfer_amount_n) AS Xfer," +
+                               " sum(a_ich_stewardship.a_income_amount_intl_n) AS IncomeIntl, " +
+                               " sum(a_ich_stewardship.a_expense_amount_intl_n) AS ExpenseIntl, " +
+                               " sum(a_ich_stewardship.a_direct_xfer_amount_intl_n) AS XferIntl " +
+                               " FROM a_ich_stewardship, a_cost_centre WHERE " +
                                StewardshipFilter +
-                               " AND PUB_a_cost_centre.a_ledger_number_i = PUB_a_ich_stewardship.a_ledger_number_i" +
-                               " AND PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_ich_stewardship.a_cost_centre_code_c ";
+                               " AND a_cost_centre.a_ledger_number_i = a_ich_stewardship.a_ledger_number_i" +
+                               " AND a_cost_centre.a_cost_centre_code_c = a_ich_stewardship.a_cost_centre_code_c " +
+                               " GROUP BY CostCentreCode, CostCentreName " +
+                               " ORDER BY CostCentreCode";
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
                 TLogging.Log(Catalog.GetString(""), TLoggingType.ToStatusBar);
                 return DbAdapter.RunQuery(Query, "Stewardship", Transaction);
@@ -1828,6 +1964,74 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
         } // StewardshipTable
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable FeesTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            try
+            {
+                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+                Int32 period = AParameters["param_cmbReportPeriod"].ToInt32();
+                Int32 YearNumber = AParameters["param_cmbYearEnding"].ToInt32();
+                String[] SelectedFees = AParameters["param_fee_codes"].ToString().Split(',');
+                Int32 FeeCols = SelectedFees.Length;
+
+                //
+                // This constant is copied from the client - it represents a reasonable maximum
+                // number of columns in the report, and hopefully it is as many as any field needs.
+                Int32 MAX_FEE_COUNT = 11;
+
+                String Query =
+                    "Select feestbl.*, giftstbl.* FROM " +
+                    "(SELECT a_processed_fee.a_cost_centre_code_c AS CostCentreCode, " +
+                    "a_cost_centre.a_cost_centre_name_c AS CostCentreName";
+
+                for (Int32 Idx = 0; Idx < MAX_FEE_COUNT; Idx++)
+                {
+                    if (Idx < FeeCols)
+                    {
+                        Query += ", SUM( case when (a_fee_code_c  = '" + SelectedFees[Idx] + "') then a_periodic_amount_n else 0 end )as F" + Idx;
+                    }
+                    else  // I'm always providing {MAX_FEE_COUNT} columns - some may be blank at RHS.
+                    {
+                        Query += ", 0 as F" + Idx;
+                    }
+                }
+
+                Query += " FROM a_processed_fee, a_cost_centre " +
+                         "WHERE a_processed_fee.a_ledger_number_i=" + LedgerNumber + " AND a_period_number_i=" + period + " " +
+                         "AND a_cost_centre.a_ledger_number_i = a_processed_fee.a_ledger_number_i " +
+                         "AND a_cost_centre.a_cost_centre_type_c='Foreign' " +
+                         "AND a_cost_centre.a_cost_centre_code_c = a_processed_fee.a_cost_centre_code_c " +
+                         "GROUP BY a_processed_fee.a_cost_centre_code_c, a_cost_centre.a_cost_centre_name_c" +
+                         ") feestbl, " +
+
+                         "(SELECT a_gift_detail.a_cost_centre_code_c AS CostCentreCode, SUM(a_gift_detail.a_gift_amount_n) AS Gifts " +
+                         "FROM a_gift_batch, a_gift_detail " +
+                         "WHERE " +
+                         "a_gift_batch.a_ledger_number_i = " + LedgerNumber + " " +
+                         "AND a_gift_batch.a_batch_year_i = " + YearNumber + " AND a_gift_batch.a_batch_period_i = " + period + " " +
+                         "AND a_gift_detail.a_ledger_number_i = " + LedgerNumber + " " +
+                         "AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i " +
+                         "GROUP BY a_gift_detail.a_cost_centre_code_c" +
+                         ") giftstbl " +
+
+                         "WHERE feestbl.CostCentreCode = giftstbl.CostCentreCode " +
+                         "ORDER BY giftstbl.CostCentreCode ";
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                TLogging.Log(Catalog.GetString(""), TLoggingType.ToStatusBar);
+                return DbAdapter.RunQuery(Query, "Fees", Transaction);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+        }
 
         /// <summary>
         /// Returns a DataTable to the client for use in client-side reporting

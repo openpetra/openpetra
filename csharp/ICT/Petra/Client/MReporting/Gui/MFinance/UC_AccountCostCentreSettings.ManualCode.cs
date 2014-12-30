@@ -347,6 +347,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void UnselectAllCostCentres(System.Object sender, System.EventArgs e)
         {
             clbCostCentres.ClearSelected();
+            cmbSummaryCostCentres.SetSelectedString("");
         }
 
         private void UnselectAllAccountCodes(System.Object sender, System.EventArgs e)

@@ -97,6 +97,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             String LedgerFilter = "a_ledger_number_i=" + parameters.Get("param_ledger_number_i").ToInt32();
 
             String AccountCodeFilter = ""; // Account Filter, as range or list:
+            String TransAccountCodeFilter = "";
             String GlmAccountCodeFilter = "";
             DataTable Balances = new DataTable();
 
@@ -107,6 +108,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 String Filter = "'" + parameters.Get("param_account_codes") + "'";
                 Filter = Filter.Replace(",", "','");
                 AccountCodeFilter = "AND a_account_code_c in (" + Filter + ")";
+                TransAccountCodeFilter = "AND a_transaction.a_account_code_c in (" + Filter + ")";
                 GlmAccountCodeFilter = " AND glm.a_account_code_c in (" + Filter + ")";
             }
 
@@ -114,11 +116,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 AccountCodeFilter = "AND a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" +
                                     parameters.Get("param_account_code_end") + "'";
+                TransAccountCodeFilter = "AND a_transaction.a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" +
+                                         parameters.Get("param_account_code_end") + "'";
                 GlmAccountCodeFilter = " AND glm.a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" +
                                        parameters.Get("param_account_code_end") + "'";
             }
 
             String CostCentreFilter = ""; // Cost Centre Filter, as range or list:
+            String TransCostCentreFilter = "";
             String GlmCostCentreFilter = "";
 
             if (parameters.Get("param_rgrCostCentres").ToString() == "CostCentreList")
@@ -126,6 +131,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 String Filter = "'" + parameters.Get("param_cost_centre_codes") + "'";
                 Filter = Filter.Replace(",", "','");
                 CostCentreFilter = " AND a_cost_centre_code_c in (" + Filter + ")";
+                TransCostCentreFilter = " AND a_transaction.a_cost_centre_code_c in (" + Filter + ")";
                 GlmCostCentreFilter = " AND glm.a_cost_centre_code_c in (" + Filter + ")";
             }
 
@@ -133,6 +139,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 CostCentreFilter = " AND a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
                                    "' AND  '" + parameters.Get("param_cost_centre_code_end") + "'";
+                TransCostCentreFilter = " AND a_transaction.a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
+                                        "' AND  '" + parameters.Get("param_cost_centre_code_end") + "'";
                 GlmCostCentreFilter = " AND glm.a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
                                       "' AND '" + parameters.Get("param_cost_centre_code_end") + "'";
             }
@@ -141,18 +149,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                                       "' AND '" + parameters.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
 
             String ReferenceFilter = "";
-            String AnalysisTypeFilter = "";
-            String GroupField = "a_account_code_c, a_cost_centre_code_c";
+            String AnalysisTypeFilter = " ";
+            String GroupField = "a_account_code_c, a_cost_centre_code_c, TransactionDate";
             String Sortby = parameters.Get("param_sortby").ToString();
 
             if (Sortby == "Cost Centre")
             {
-                GroupField = "a_cost_centre_code_c, a_account_code_c";
+                GroupField = "a_cost_centre_code_c, a_account_code_c, TransactionDate";
             }
 
             if (Sortby == "Reference")
             {
-                GroupField = "a_reference_c";
+                GroupField = "a_reference_c, TransactionDate";
                 String FilterItem = parameters.Get("param_reference_start").ToString();
 
                 if (FilterItem != "")
@@ -170,19 +178,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (Sortby == "Analysis Type")
             {
-                GroupField = "a_analysis_type_code_c";
+                GroupField = "AnalysisTypeCode, AnalysisValue, TransactionDate";
                 String FilterItem = parameters.Get("param_analyis_type_start").ToString();
 
                 if (FilterItem != "")
                 {
-                    AnalysisTypeFilter = " AND a_analysis_type_code_c >='" + FilterItem + "'";
+                    AnalysisTypeFilter = " AND a_analysis_type.a_analysis_type_code_c >='" + FilterItem + "' ";
                 }
 
                 FilterItem = parameters.Get("param_analyis_type_end").ToString();
 
                 if (FilterItem != "")
                 {
-                    AnalysisTypeFilter += " AND a_analysis_type_code_c <='" + FilterItem + "'";
+                    AnalysisTypeFilter += " AND a_analysis_type.a_analysis_type_code_c <='" + FilterItem + "' ";
                 }
             }
 
@@ -211,21 +219,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     "a_transaction.a_cost_centre_code_c AS CostCentreCode," +
                     "a_transaction.a_transaction_date_d AS TransactionDate," +
                     "a_transaction." + AmountField + " AS Amount," +
+                    "a_journal.a_transaction_currency_c AS Currency," +
                     "a_transaction.a_debit_credit_indicator_l AS Debit," +
                     "a_transaction.a_narrative_c AS Narrative," +
                     "a_transaction.a_reference_c AS Reference," +
                     "a_trans_anal_attrib.a_analysis_type_code_c AS AnalysisTypeCode," +
                     "a_analysis_type.a_analysis_type_description_c AS AnalysisTypeDescr," +
                     "a_trans_anal_attrib.a_analysis_attribute_value_c AS AnalysisValue" +
-                    " FROM a_transaction, a_trans_anal_attrib, a_analysis_type" +
+                    " FROM a_transaction, a_journal, a_trans_anal_attrib, a_analysis_type" +
                     " WHERE a_transaction." + LedgerFilter +
+                    " AND a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i " +
+                    " AND a_transaction.a_batch_number_i = a_journal.a_batch_number_i " +
+                    " AND a_transaction.a_journal_number_i = a_journal.a_journal_number_i " +
                     " AND a_trans_anal_attrib.a_ledger_number_i = a_transaction.a_ledger_number_i " +
                     " AND a_trans_anal_attrib.a_batch_number_i = a_transaction.a_batch_number_i" +
                     " AND a_trans_anal_attrib.a_journal_number_i = a_transaction.a_journal_number_i" +
                     " AND a_trans_anal_attrib.a_transaction_number_i = a_transaction.a_transaction_number_i" +
-                    " AND a_trans_anal_attrib.a_analysis_type_code_c = a_analysis_type.a_analysis_type_code_c" +
+                    " AND a_trans_anal_attrib.a_analysis_type_code_c = a_analysis_type.a_analysis_type_code_c " +
                     AnalysisTypeFilter +
-                    AccountCodeFilter + CostCentreFilter + " AND " + TranctDateFilter +
+                    TransAccountCodeFilter + TransCostCentreFilter + " AND " + TranctDateFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
                     " ORDER BY " + GroupField + ", a_transaction_date_d");
             }
@@ -248,8 +260,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     " AND a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i " +
                     " AND a_transaction.a_batch_number_i = a_journal.a_batch_number_i " +
                     " AND a_transaction.a_journal_number_i = a_journal.a_journal_number_i " +
-                    AccountCodeFilter +
-                    CostCentreFilter + " AND " +
+                    TransAccountCodeFilter +
+                    TransCostCentreFilter + " AND " +
                     TranctDateFilter + ReferenceFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
                     " ORDER BY " + GroupField + ", a_transaction_date_d");
@@ -340,7 +352,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 && !parameters.Get("param_design_template").ToBool()
                 )
             {
-                FPetraUtilsObject.FFastReportsPlugin.AutoEmailReports(ACalc, FLedgerNumber, CostCentreFilter);
+                String Status = FastReportsWrapper.AutoEmailReports(FPetraUtilsObject,
+                    FPetraUtilsObject.FFastReportsPlugin,
+                    ACalc,
+                    FLedgerNumber,
+                    CostCentreFilter);
+                MessageBox.Show(Status, Catalog.GetString("Account Detail Report"));
                 return false;
             }
 

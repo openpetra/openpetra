@@ -276,7 +276,10 @@ namespace Ict.Petra.Client.MFinance.Logic
             string DisplayMember = ACostCentreTable.GetCostCentreNameDBName();
             string ValueMember = ACostCentreTable.GetCostCentreCodeDBName();
 
-            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
+            //ACostCentreTable CostCentreTable = (ACostCentreTable)
+            ACostCentreTable CostCentreTable = (ACostCentreTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                TCacheableFinanceTablesEnum.CostCentreList,
+                ALedgerNumber);
 
             Type TableType;
             DataTable LinkedCostCentres = TDataCache.TMFinance.GetBasedOnLedger(
@@ -287,53 +290,52 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             LinkedCostCentres.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
 
-            foreach (DataRow r in Table.Rows)
+            foreach (ACostCentreRow CostCentreRow in CostCentreTable.Rows)
             {
                 // there can be several partners linked to a cost centre
-                DataRowView[] LinkedCCs = LinkedCostCentres.DefaultView.FindRows(r[ACostCentreTable.GetCostCentreCodeDBName()].ToString());
+                DataRowView[] LinkedCCs = LinkedCostCentres.DefaultView.FindRows(CostCentreRow[ACostCentreTable.GetCostCentreCodeDBName()].ToString());
 
                 bool DoNotShow = true;
 
-                foreach (DataRowView rv in LinkedCCs)
+                if (AFieldOnly)
                 {
-                    DataRow LinkedCC = rv.Row;
+                    DoNotShow = CostCentreRow.CostCentreType != "Foreign";
+                }
+                else
+                {
+                    foreach (DataRowView rv in LinkedCCs)
+                    {
+                        DataRow LinkedCC = rv.Row;
 
-                    if (APersonalOnly)
-                    {
-                        // personal costcentres are linked to a partner of type FAMILY
-                        if ((LinkedCC != null)
-                            && (LinkedCC[PPartnerTable.GetPartnerClassDBName()].ToString() == MPartnerConstants.PARTNERCLASS_FAMILY))
+                        if (APersonalOnly)
                         {
-                            DoNotShow = false;
+                            // personal costcentres are linked to a partner of type FAMILY
+                            if ((LinkedCC != null)
+                                && (LinkedCC[PPartnerTable.GetPartnerClassDBName()].ToString() == MPartnerConstants.PARTNERCLASS_FAMILY))
+                            {
+                                DoNotShow = false;
+                            }
                         }
-                    }
-                    else if (ADepartmentOnly)
-                    {
-                        // department costcentres are a local costcentre, linked to no partner, or are not a unit, or UnitType != F
-                        if ((LinkedCC == null)
-                            || ((LinkedCC[PUnitTable.GetUnitTypeCodeDBName()].ToString() != MPartnerConstants.UNIT_TYPE_FIELD)
-                                && (LinkedCC[PPartnerTable.GetPartnerClassDBName()].ToString() != MPartnerConstants.PARTNERCLASS_FAMILY)))
+                        else if (ADepartmentOnly)
                         {
-                            DoNotShow = false;
-                        }
-                    }
-                    else if (AFieldOnly)
-                    {
-                        // field costcentres are linked to a partner, UnitType is F
-                        if ((LinkedCC != null) && (LinkedCC[PUnitTable.GetUnitTypeCodeDBName()].ToString() == MPartnerConstants.UNIT_TYPE_FIELD))
-                        {
-                            DoNotShow = false;
+                            // department costcentres are a local costcentre, linked to no partner, or are not a unit, or UnitType != F
+                            if ((LinkedCC == null)
+                                || ((LinkedCC[PUnitTable.GetUnitTypeCodeDBName()].ToString() != MPartnerConstants.UNIT_TYPE_FIELD)
+                                    && (LinkedCC[PPartnerTable.GetPartnerClassDBName()].ToString() != MPartnerConstants.PARTNERCLASS_FAMILY)))
+                            {
+                                DoNotShow = false;
+                            }
                         }
                     }
                 }
 
                 if (DoNotShow)
                 {
-                    r[ACostCentreTable.GetCostCentreNameDBName()] = "DONOTSHOW";
+                    CostCentreRow.CostCentreName = "DONOTSHOW";
                 }
             }
 
-            DataView view = new DataView(Table);
+            DataView view = new DataView(CostCentreTable);
 
             view.RowFilter = "(" + PrepareCostCentreFilter(APostingOnly, AExcludePosting, AActiveOnly, ADepartmentOnly) +
                              ") AND NOT " + ACostCentreTable.GetCostCentreNameDBName() + "='DONOTSHOW'";
@@ -1080,9 +1082,10 @@ namespace Ict.Petra.Client.MFinance.Logic
             System.Int32 ALedgerNr,
             System.Int32 AYear,
             System.Int32 AInitialSelectedIndex,
-            Boolean AShowCurrentAndForwarding)
+            Boolean AShowCurrentAndForwarding,
+            Boolean AShowZero = true)
         {
-            DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear, AShowCurrentAndForwarding);
+            DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear, AShowCurrentAndForwarding, AShowZero);
 
             AControl.InitialiseUserControl(periods, "value", "display", "descr", null, null);
 
@@ -1104,10 +1107,11 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <summary>
         /// This function fills a DataTable with the available financial periods of a given ledger and financial year
         /// </summary>
-        private static DataTable InitialiseAvailableFinancialPeriodsList(
+        public static DataTable InitialiseAvailableFinancialPeriodsList(
             System.Int32 ALedgerNr,
             System.Int32 AYear,
-            Boolean AShowCurrentAndForwarding)
+            Boolean AShowCurrentAndForwarding,
+            Boolean AShowZero = true)
         {
             DataTable AccountingPeriods = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, ALedgerNr);
 
@@ -1126,11 +1130,14 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             DataRow period;
 
-            period = periods.NewRow();
-            period[ValueMember] = 0;
-            period[DisplayMember] = "All";
-            period[DescrMember] = Catalog.GetString("(All periods)");
-            periods.Rows.Add(period);
+            if (AShowZero)
+            {
+                period = periods.NewRow();
+                period[ValueMember] = 0;
+                period[DisplayMember] = "All";
+                period[DescrMember] = Catalog.GetString("(All periods)");
+                periods.Rows.Add(period);
+            }
 
             if (Ledger.CurrentFinancialYear == AYear)
             {
@@ -1293,6 +1300,19 @@ namespace Ict.Petra.Client.MFinance.Logic
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
 
             return row.CurrentFinancialYear;
+        }
+
+        /// <summary>
+        /// return the ledger's number of periods
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        public static Int32 GetLedgerNumPeriods(Int32 ALedgerNumber)
+        {
+            ALedgerRow row =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+
+            return row.NumberOfAccountingPeriods;
         }
 
         /// <summary>

@@ -97,12 +97,20 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.BalanceSheetTable(AParameters, FDbAdapter);
                     break;
 
+                case "FieldGifts":
+                    ResultTbl = TFinanceReportingWebConnector.KeyMinGiftsTable(AParameters, FDbAdapter);
+                    break;
+
                 case "HOSA":
                     ResultTbl = TFinanceReportingWebConnector.HosaGiftsTable(AParameters, FDbAdapter);
                     break;
 
                 case "Stewardship":
                     ResultTbl = TFinanceReportingWebConnector.StewardshipTable(AParameters, FDbAdapter);
+                    break;
+
+                case "Fees":
+                    ResultTbl = TFinanceReportingWebConnector.FeesTable(AParameters, FDbAdapter);
                     break;
 
                 case "IncomeExpense":
@@ -146,25 +154,38 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         [RequireModulePermission("none")]
         public static GLReportingTDS GetReportingDataSet(String ADataSetFilterCsv)
         {
+            TDBTransaction Transaction = null;
             GLReportingTDS MainDs = new GLReportingTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
-            FDbAdapter = new TReportingDbAdapter();
-
-            while (!FDbAdapter.IsCancelled && ADataSetFilterCsv != "")
+            try
             {
-                String Tbl = StringHelper.GetNextCSV(ref ADataSetFilterCsv, ",", "");
-                String[] part = Tbl.Split('/');
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
-//              MainDs.Tables[part[0]].Merge(FDbAdapter.RunQuery(part[1], part[0], Transaction));
-                MainDs.Merge(FDbAdapter.RunQuery(part[1], part[0], Transaction));
+                FDbAdapter = new TReportingDbAdapter();
+
+                while (!FDbAdapter.IsCancelled && ADataSetFilterCsv != "")
+                {
+                    String Tbl = StringHelper.GetNextCSV(ref ADataSetFilterCsv, ",", "");
+                    String[] part = Tbl.Split('/');
+                    DataTable NewTbl = FDbAdapter.RunQuery(part[1], part[0], Transaction);
+                    //              MainDs.Tables[part[0]].Merge(FDbAdapter.RunQuery(part[1], part[0], Transaction));
+
+                    MainDs.Merge(NewTbl);
+                }
+
+                if (FDbAdapter.IsCancelled)
+                {
+                    return null;
+                }
             }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
-            if (FDbAdapter.IsCancelled)
+            catch (Exception)
             {
-                return null;
+                MainDs = null;
+                throw;
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
             return MainDs;

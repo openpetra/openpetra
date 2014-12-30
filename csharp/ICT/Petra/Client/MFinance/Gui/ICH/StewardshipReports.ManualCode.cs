@@ -50,61 +50,24 @@ using Ict.Petra.Client.MReporting.Logic;
 using System.Collections;
 using System.Collections.Generic;
 using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
+using Ict.Petra.Shared.MReporting;
+
+using Ict.Petra.Client.MSysMan.Gui;
+using Ict.Common.IO;
+using System.Text;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.ICH
 {
-    /// <summary>
-    /// Enums holding the possible reporting period selection modes
-    /// </summary>
-    public enum ICHModeEnum
-    {
-        /// <summary>
-        /// ICH Statement reporting period selection mode
-        /// </summary>
-        Statement,
-        /// <summary>
-        /// ICH Stewardship Calculation reporting period selection mode
-        /// </summary>
-        StewardshipCalc
-    }
-
-
     /// manual methods for the generated window
     public partial class TFrmStewardshipReports : System.Windows.Forms.Form
     {
         Int32 FLedgerNumber = 0;
         ALedgerRow FLedgerRow = null;
         FastReportsWrapper MyFastReportsPlugin;
+        String FStatusMsg;
 
-/*
- *      ICHModeEnum FReportingPeriodSelectionMode = ICHModeEnum.StewardshipCalc;
- *
- *      /// <summary>
- *      /// Gets or sets the ICH reporting period selection mode
- *      /// </summary>
- *      public ICHModeEnum ReportingPeriodSelectionMode
- *      {
- *          get
- *          {
- *              return FReportingPeriodSelectionMode;
- *          }
- *
- *          set
- *          {
- *              FReportingPeriodSelectionMode = value;
- *
- *              if (FReportingPeriodSelectionMode == ICHModeEnum.Statement)
- *              {
- *                  chkEmailHOSAReport.Enabled = true;
- *              }
- *              else
- *              {
- *                  chkEmailHOSAReport.Enabled = false;
- *              }
- *          }
- *      }
- */
         /// <summary>
         /// Write-only Ledger number property
         /// </summary>
@@ -121,18 +84,17 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                     ref cmbYearEnding,
                     FLedgerNumber);
 
-                /*
-                 * //Resize and move label
-                 * cmbYearEnding.ComboBoxWidth += 18;
-                 * cmbYearEnding.AttachedLabel.Left += 18;
-                 */
                 chkHOSA.CheckedChanged += RefreshReportingOptions;
                 chkStewardship.CheckedChanged += RefreshReportingOptions;
                 chkFees.CheckedChanged += RefreshReportingOptions;
-                chkRecipient.CheckedChanged += RefreshReportingOptions;
+                //              chkRecipient.CheckedChanged += RefreshReportingOptions;
+                cmbReportPeriod.SelectedValueChanged += RefreshReportingOptions;
                 RefreshReportingOptions(null, null);
                 FPetraUtilsObject.DelegateGenerateReportOverride = GenerateAllSelectedReports;
                 FPetraUtilsObject.DelegateViewReportOverride = ViewReportTemplate;
+                uco_SelectedFees.LedgerNumber = FLedgerNumber;
+
+                FPetraUtilsObject.LoadDefaultSettings();
             }
         }
 
@@ -147,6 +109,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                     FLedgerNumber,
                     cmbYearEnding.GetSelectedInt32(),
                     FLedgerRow.CurrentPeriod,
+                    false,
                     false);
             }
         }
@@ -180,206 +143,52 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
         }
 
+        /// <summary>Called from generated code</summary>
+        public void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+        }
+
         //
         // Called on any report checkbox changed
         private void RefreshReportingOptions(Object Sender, EventArgs e)
         {
-            rbtEmailHosa.Enabled = chkHOSA.Checked;
-            rbtReprintHosa.Enabled = chkHOSA.Checked;
+            chkStewardship.Enabled = (cmbReportPeriod.SelectedIndex != 0);
+
+            rbtEmailHosa.Enabled =
+                rbtReprintHosa.Enabled = chkHOSA.Enabled && chkHOSA.Checked;
 
             rbtEmailStewardship.Enabled =
-                rbtReprintStewardship.Enabled = chkStewardship.Checked;
+                rbtReprintStewardship.Enabled = chkStewardship.Enabled && chkStewardship.Checked;
 
-            rbtEmailFees.Enabled = chkFees.Checked;
-            rbtReprintFees.Enabled = chkFees.Checked;
-
-            rbtEmailRecipient.Enabled = chkRecipient.Checked;
-            rbtReprintRecipient.Enabled = chkRecipient.Checked;
+            /*
+             *          rbtEmailFees.Enabled =
+             *              rbtReprintFees.Enabled = chkFees.Enabled && chkFees.Checked;
+             *          rbtEmailRecipient.Enabled =
+             *              rbtReprintRecipient.Enabled = chkRecipient.Enabled && chkRecipient.Checked;
+             */
         }
 
-/*
- *      private void GenerateReports(Object Sender, EventArgs e)
- *      {
- *          String CurrencySelect = (this.rbtBase.Checked ? MFinanceConstants.CURRENCY_BASE : MFinanceConstants.CURRENCY_INTERNATIONAL);
- *          bool DoGenerateHOSAReports = chkHOSAReport.Checked;
- *          bool DoEmailHOSAReports = chkEmailHOSAReport.Checked;
- *          bool DoGenerateHOSAFiles = chkHOSAFile.Checked;
- *          bool DoEmailHOSAFiles = chkEmailHOSAFile.Checked;
- *
- *          TVerificationResultCollection VerificationResults;
- *
- *          string msg = string.Empty;
- *          string SuccessfullCostCentres = string.Empty;
- *          string FailedCostCentres = string.Empty;
- *
- *          int SelectedReportPeriod = cmbReportPeriod.GetSelectedInt32();
- *          int SelectedICHNumber = cmbICHNumber.GetSelectedInt32();
- *
- *          if (!ValidReportPeriod())
- *          {
- *              return;
- *          }
- *
- *          String HOSAFilePrefix = txtHOSAPrefix.Text;
- *
- *          if (HOSAFilePrefix.Length == 0)
- *          {
- *              HOSAFilePrefix = Catalog.GetString("HOSAFilesExportFor");
- *          }
- *          else
- *          {
- *              Int32 IndexOfInvalidFilenameCharacter = HOSAFilePrefix.IndexOfAny(Path.GetInvalidFileNameChars());
- *
- *              if (IndexOfInvalidFilenameCharacter >= 0)
- *              {
- *                  msg = String.Format("The HOSA File Prefix: '{0}', contains characters not valid in a filename: {1}{2}{2}Please remove and retry.",
- *                      HOSAFilePrefix,
- *                      String.Join(", ", Path.GetInvalidFileNameChars()),
- *                      Environment.NewLine);
- *
- *                  MessageBox.Show(msg, "Generate HOSA Reports and Files", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
- *
- *                  txtHOSAPrefix.Focus();
- *                  txtHOSAPrefix.Select(IndexOfInvalidFilenameCharacter, 1);
- *                  return;
- *              }
- *          }
- *
- *          try
- *          {
- *              Cursor = Cursors.WaitCursor;
- *
- *              DataTable ICHNumbers = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.ICHStewardshipList, FLedgerNumber);
- *
- *              //Filter for current period
- *              if (SelectedICHNumber != 0)
- *              {
- *                  ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1} And {2}={3}",
- *                      AIchStewardshipTable.GetPeriodNumberDBName(),
- *                      SelectedReportPeriod,
- *                      AIchStewardshipTable.GetIchNumberDBName(),
- *                      SelectedICHNumber);
- *              }
- *              else
- *              {
- *                  ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1}",
- *                      AIchStewardshipTable.GetPeriodNumberDBName(),
- *                      SelectedReportPeriod);
- *              }
- *
- *              ICHNumbers.DefaultView.Sort = AIchStewardshipTable.GetCostCentreCodeDBName();
- *
- *              foreach (DataRowView tmpRow in ICHNumbers.DefaultView)
- *              {
- *                  AIchStewardshipRow ichRow = (AIchStewardshipRow)tmpRow.Row;
- *                  bool HOSASuccess = false;
- *
- *                  String CostCentreCode = ichRow.CostCentreCode;
- *
- *                  if (DoGenerateHOSAReports)
- *                  {
- *                      //TODO code to generate the HOSA reports
- *                      TRemote.MFinance.ICH.WebConnectors.GenerateHOSAReports(FLedgerNumber,
- *                          cmbReportPeriod.GetSelectedInt32(),
- *                          cmbICHNumber.GetSelectedInt32(),
- *                          CurrencySelect,
- *                          out VerificationResults);
- *                      HOSASuccess = !VerificationResults.HasCriticalErrors;
- *                  }
- *                  else if (DoGenerateHOSAFiles)
- *                  {
- *                      String FileName = TClientSettings.PathTemp + Path.DirectorySeparatorChar + HOSAFilePrefix + CostCentreCode + ".csv";
- *                      HOSASuccess = TRemote.MFinance.ICH.WebConnectors.GenerateHOSAFiles(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
- *                          cmbICHNumber.GetSelectedInt32(), CostCentreCode, CurrencySelect, FileName, out VerificationResults);
- *                  }
- *
- *                  if (HOSASuccess)
- *                  {
- *                      if (SuccessfullCostCentres.Length == 0)
- *                      {
- *                          SuccessfullCostCentres = CostCentreCode;
- *                      }
- *                      else
- *                      {
- *                          SuccessfullCostCentres += ", " + CostCentreCode;
- *                      }
- *                  }
- *                  else
- *                  {
- *                      if (FailedCostCentres.Length == 0)
- *                      {
- *                          FailedCostCentres = CostCentreCode;
- *                      }
- *                      else
- *                      {
- *                          FailedCostCentres += ", " + CostCentreCode;
- *                      }
- *                  }
- *              }
- *
- *              Cursor = Cursors.Default;
- *
- *              if (SuccessfullCostCentres.Length > 0)
- *              {
- *                  msg = String.Format(Catalog.GetString("HOSA file generated successfully for Cost Centre(s):{0}{0}{1}{0}{0}"),
- *                      Environment.NewLine,
- *                      SuccessfullCostCentres);
- *              }
- *
- *              if (FailedCostCentres.Length > 0)
- *              {
- *                  msg += String.Format(Catalog.GetString("HOSA generation FAILED for Cost Centre(s):{0}{0}{1}"),
- *                      Environment.NewLine,
- *                      FailedCostCentres);
- *              }
- *
- *              if (msg.Length == 0)
- *              {
- *                  msg = Catalog.GetString("Stewardship Calculations haven't been run or no transactions to process.");
- *              }
- *
- *              MessageBox.Show(msg, Catalog.GetString("Generate Reports"));
- *          }
- *          finally
- *          {
- *              Cursor = Cursors.Default;
- *          }
- *      }
- *      private bool ValidReportPeriod()
- *      {
- *          if (cmbReportPeriod.SelectedIndex > -1)
- *          {
- *              return true;
- *          }
- *          else if (cmbReportPeriod.Count > 0)
- *          {
- *              MessageBox.Show(Catalog.GetString("Please select a valid reporting period first."));
- *              cmbReportPeriod.Focus();
- *          }
- *
- *          return false;
- *      }
- */
         private void ViewReportTemplate(TRptCalculator ACalc)
         {
             String ReportName = "";
 
-            if (chkRecipient.Checked)
-            {
-                ReportName = "Recipient Gift Statement";
-            }
-
-            if (chkFees.Checked)
+            /*
+             *          if (chkRecipient.Enabled && chkRecipient.Checked)
+             *          {
+             *              ReportName = "Recipient Gift Statement";
+             *          }
+             */
+            if (chkFees.Enabled && chkFees.Checked)
             {
                 ReportName = "Fees";
             }
 
-            if (chkStewardship.Checked)
+            if (chkStewardship.Enabled && chkStewardship.Checked)
             {
                 ReportName = "Stewardship";
             }
 
-            if (chkHOSA.Checked)
+            if (chkHOSA.Enabled && chkHOSA.Checked)
             {
                 ReportName = "HOSA";
             }
@@ -390,6 +199,28 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
 
             MyFastReportsPlugin = new FastReportsWrapper(ReportName);
+
+            /*
+             *          if (chkRecipient.Enabled && chkRecipient.Checked)
+             *          {
+             *              MyFastReportsPlugin.SetDataGetter(LoadRecipientReportData);
+             *          }
+             */
+            if (chkFees.Enabled && chkFees.Checked)
+            {
+                MyFastReportsPlugin.SetDataGetter(LoadFeesReportData);
+            }
+
+            if (chkStewardship.Enabled && chkStewardship.Checked)
+            {
+                MyFastReportsPlugin.SetDataGetter(LoadStewardshipReportData);
+            }
+
+            if (chkHOSA.Enabled && chkHOSA.Checked)
+            {
+                MyFastReportsPlugin.SetDataGetter(LoadHosaReportData);
+            }
+
             MyFastReportsPlugin.DesignReport(ACalc);
         }
 
@@ -401,18 +232,88 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
         private void GenerateAllSelectedReports(TRptCalculator ACalc)
         {
-            // "Stewardship";
-            MyFastReportsPlugin = new FastReportsWrapper("Stewardship");
-            MyFastReportsPlugin.SetDataGetter(LoadStewardshipReportData);
-            MyFastReportsPlugin.GenerateReport(ACalc);
+            FStatusMsg = "";
+
+            if (chkHOSA.Enabled && chkHOSA.Checked)
+            {
+                FStatusMsg += Catalog.GetString("\r\nAll HOSAs:");
+                MyFastReportsPlugin = new FastReportsWrapper("HOSA");
+                MyFastReportsPlugin.SetDataGetter(LoadHosaReportData);
+                MyFastReportsPlugin.GenerateReport(ACalc);
+            }
+
+            if (chkStewardship.Enabled && chkStewardship.Checked)
+            {
+                FStatusMsg += Catalog.GetString("\r\nStewardship Report:");
+                MyFastReportsPlugin = new FastReportsWrapper("Stewardship");
+                MyFastReportsPlugin.SetDataGetter(LoadStewardshipReportData);
+                MyFastReportsPlugin.GenerateReport(ACalc);
+            }
+
+            if (chkFees.Enabled && chkFees.Checked)
+            {
+                FStatusMsg += Catalog.GetString("\r\nFees Report:");
+                MyFastReportsPlugin = new FastReportsWrapper("Fees");
+                MyFastReportsPlugin.SetDataGetter(LoadFeesReportData);
+                MyFastReportsPlugin.GenerateReport(ACalc);
+            }
+
+            /*
+             *          if (chkRecipient.Enabled && chkRecipient.Checked)
+             *          {
+             *              MyFastReportsPlugin = new FastReportsWrapper("Recipient Gift Statement");
+             *              MyFastReportsPlugin.SetDataGetter(LoadRecientReportData);
+             *              MyFastReportsPlugin.GenerateReport(ACalc);
+             *          }
+             */
+            FStatusMsg += Catalog.GetString("\r\n\r\nReport generation complete.");
+            this.Invoke(new CrossThreadUpdate(ShowReportStatus));
         }
 
-        private Boolean LoadStewardshipReportData(TRptCalculator ACalc)
+        delegate void CrossThreadUpdate();
+
+        /// <summary>Stupidly complex way of stepping around the Windows non-thread-safe controls problem!</summary>
+        private void ShowReportStatus()
+        {
+            MessageBox.Show(FStatusMsg, Catalog.GetString("Stewardship Reports"));
+        }
+
+        private Dictionary <String, TVariant>InitialiseDictionary(TRptCalculator ACalc)
         {
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
             pm.Add("param_ledger_number_i", FLedgerNumber);
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            String CurrencyName = (rbtBase.Checked) ? FLedgerRow.BaseCurrency : FLedgerRow.IntlCurrency;
+            ACalc.AddParameter("param_currency_name", CurrencyName);
 
+            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+            ACalc.AddParameter("param_ich_number", pm.Get("param_cmbICHNumber").ToInt32());
+            ACalc.AddParameter("param_period", true);
+
+            Int32 period = pm.Get("param_cmbReportPeriod").ToInt32();
+            Int32 PeriodStart = Math.Max(1, period);
+            Int32 PeriodEnd = period;
+
+            if (PeriodEnd == 0)
+            {
+                PeriodEnd = TFinanceControls.GetLedgerNumPeriods(FLedgerNumber);
+            }
+
+            Int32 Year = pm.Get("param_cmbYearEnding").ToInt32();
+
+            ACalc.AddParameter("param_start_period_i", PeriodStart);
+            ACalc.AddParameter("param_end_period_i", PeriodEnd);
+            DateTime StartDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, 0, PeriodStart);
+            DateTime EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, 0, PeriodEnd);
+            ACalc.AddParameter("param_real_year", StartDate.Year);
+            ACalc.AddParameter("param_start_date", StartDate);
+            ACalc.AddParameter("param_end_date", EndDate);
+            Boolean IsClosed = (Year < FLedgerRow.CurrentFinancialYear) || (PeriodEnd < FLedgerRow.CurrentPeriod);
+            ACalc.AddParameter("param_period_closed", IsClosed);
+            ACalc.AddParameter("param_year_i", Year);
             ArrayList reportParam = pm.Elems;
+
             Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
 
             foreach (Shared.MReporting.TParameter p in reportParam)
@@ -423,8 +324,31 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 }
             }
 
-//          pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
+            return paramsDictionary;
+        }
 
+        private Boolean LoadHosaReportData(TRptCalculator ACalc)
+        {
+            Dictionary <String, TVariant>paramsDictionary = InitialiseDictionary(ACalc);
+            ACalc.AddStringParameter("param_cost_centre_codes", "ALL");
+            ACalc.AddStringParameter("param_filter_cost_centres", "");
+            ACalc.AddStringParameter("param_linked_partner_cc", ""); // Used for auto-emailing HOSAs, this is usually blank.
+            Boolean DataOk = TFrmHOSA.LoadReportDataStaticInner(this, FPetraUtilsObject, MyFastReportsPlugin, ACalc);
+
+            if ((!ACalc.GetParameters().Get("param_design_template").ToBool())
+                && (rbtEmailHosa.Checked))
+            {
+                ACalc.AddStringParameter("param_currency", "Base"); // Always email HOSAs in Base Currency
+                FStatusMsg += FastReportsWrapper.AutoEmailReports(FPetraUtilsObject, MyFastReportsPlugin, ACalc, FLedgerNumber, "Foreign");
+                return false;
+            }
+
+            return DataOk;
+        }
+
+        private Boolean LoadStewardshipReportData(TRptCalculator ACalc)
+        {
+            Dictionary <String, TVariant>paramsDictionary = InitialiseDictionary(ACalc);
             DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("Stewardship", paramsDictionary);
 
             if (this.IsDisposed)
@@ -439,20 +363,133 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
 
             MyFastReportsPlugin.RegisterData(ReportTable, "Stewardship");
-            //
-            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
-            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
-            ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
 
             Boolean HasData = (ReportTable.Rows.Count > 0);
 
             if (!HasData)
             {
-                MessageBox.Show(Catalog.GetString("No Stewardship entries found for selected Run Number."), "Stewardship");
+                FStatusMsg += Catalog.GetString("No Stewardship entries found for selected Run Number.");
+            }
+
+            TParameterList Params = ACalc.GetParameters();
+
+            if ((!Params.Get("param_design_template").ToBool())
+                && (rbtEmailStewardship.Checked))
+            {
+                TUC_EmailPreferences.LoadEmailDefaults();
+                TSmtpSender EmailSender = new TSmtpSender(
+                    TUserDefaults.GetStringDefault("SmtpHost"),
+                    TUserDefaults.GetInt16Default("SmtpPort"),
+                    TUserDefaults.GetBooleanDefault("SmtpUseSsl"),
+                    TUserDefaults.GetStringDefault("SmtpUser"),
+                    TUserDefaults.GetStringDefault("SmtpPassword"),
+                    "");
+                EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
+                EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
+
+                if (!EmailSender.FInitOk)
+                {
+                    FStatusMsg += String.Format(
+                        Catalog.GetString(
+                            "\r\nFailed to set up the email server.\n    Please check the settings in Preferences / Email.\n    Message returned: \"{0}\""),
+                        EmailSender.FErrorStatus
+                        );
+                    return false;
+                }
+
+                String MyCostCentreCode = String.Format("{0:##00}00", FLedgerNumber);
+                String PeriodEnd = Params.Get("param_end_date").ToDate().ToString("dd/MM/yyyy");
+                Int32 RunNumber = Params.Get("param_cmbICHNumber").ToInt32();
+                String CsvAttachment = String.Format("\"{0}\",{1},\"{2}\",{3},\"{4}\",{5}\n", // "OP:1",30/11/2014,\"0200\",09/12/2014,\"USD\",0"
+
+                    "OP:1",                                     // software originator and version ID
+                    PeriodEnd,
+                    MyCostCentreCode,                           // Field Cost Centre Code
+                    DateTime.Now.ToString("dd/MM/yyyy"),
+                    FLedgerRow.BaseCurrency,                    // Stewardship Report CSV always in Base Currency
+                    RunNumber                                   // Run number
+                    );
+
+                foreach (DataRow Row in ReportTable.Rows)
+                {
+                    CsvAttachment += String.Format("\"{0}\",{1},{2},{3}\n",
+                        Row["CostCentreCode"].ToString(),
+                        Convert.ToDecimal(Row["Income"]).ToString("0.00", CultureInfo.InvariantCulture),  // Stewardship Report CSV always in Base Currency
+                        Convert.ToDecimal(Row["Expense"]).ToString("0.00", CultureInfo.InvariantCulture),
+                        Convert.ToDecimal(Row["Xfer"]).ToString("0.00", CultureInfo.InvariantCulture)
+                        );
+                }
+
+                String EmailBody = TUserDefaults.GetStringDefault("SmtpEmailBody");
+                EmailSender.AttachFromStream(new MemoryStream(Encoding.ASCII.GetBytes(CsvAttachment)), "Stewardship_" + MyCostCentreCode + ".csv");
+                Boolean SentOk = EmailSender.SendEmail(
+                    TUserDefaults.GetStringDefault("SmtpFromAccount"),
+                    TUserDefaults.GetStringDefault("SmtpDisplayName"),
+                    "tim.ingham@om.org", //ich@om.org
+                    "Stewardship Report [" + MyCostCentreCode + "] Period end: " + PeriodEnd + " Run#: " + RunNumber,
+                    EmailBody);
+
+                if (SentOk)
+                {
+                    FStatusMsg += Catalog.GetString("\r\nStewardship report emailed to ICH.");
+                }
+                else
+                {
+                    FStatusMsg += Catalog.GetString("\r\nFailed to send Stewardship email to ICH.");
+                }
+
+                return false;
             }
 
             return HasData;
         }
+
+        private Boolean LoadFeesReportData(TRptCalculator ACalc)
+        {
+            Dictionary <String, TVariant>paramsDictionary = InitialiseDictionary(ACalc);
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("Fees", paramsDictionary);
+
+            if (this.IsDisposed)
+            {
+                return false;
+            }
+
+            if (ReportTable == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            String[] SelectedFees = paramsDictionary["param_fee_codes"].ToString().Split(',');
+            Int32 FeeCols = SelectedFees.Length;
+            paramsDictionary.Add("param_fee_columns", new TVariant(FeeCols));
+
+            DataTable FeeNames = new DataTable();
+
+            for (Int32 Idx = 0; Idx < uco_SelectedFees.MAX_FEE_COUNT; Idx++)
+            {
+                FeeNames.Columns.Add();
+            }
+
+            DataRow Row = FeeNames.NewRow();
+            FeeNames.Rows.Add(Row);
+
+            for (Int32 Idx = 0; Idx < FeeCols; Idx++)
+            {
+                Row[Idx] = SelectedFees[Idx];
+            }
+
+            MyFastReportsPlugin.RegisterData(FeeNames, "FeeNames");
+            MyFastReportsPlugin.RegisterData(ReportTable, "Fees");
+            return true;
+        }
+
+        /*
+         *      private Boolean LoadRecipientReportData(TRptCalculator ACalc)
+         *      {
+         *          Dictionary<String, TVariant> paramsDictionary = InitialiseDictionary(ACalc);
+         *          return false;
+         *      }
+         */
     }
 }

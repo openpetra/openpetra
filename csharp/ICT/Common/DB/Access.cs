@@ -896,6 +896,21 @@ namespace Ict.Common.DB
             }
             catch (Exception exp)
             {
+                if (AFillDataSet.Tables[ADataTableName] != null)
+                {
+                    DataRow[] BadRows = AFillDataSet.Tables[ADataTableName].GetErrors();
+
+                    if (BadRows.Length > 0)
+                    {
+                        TLogging.Log("Errors reported in " + ADataTableName + " rows:");
+
+                        foreach (DataRow BadRow in BadRows)
+                        {
+                            TLogging.Log(BadRow.RowError);
+                        }
+                    }
+                }
+
                 LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
             }
 

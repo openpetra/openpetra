@@ -165,7 +165,7 @@ OpenPetra:
                         #PostBatch:
                         #FindTransaction:
                     ICHProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.ICH}
-                        StewardshipCalculation: {ActionOpenScreen=TFrmStewardshipCalculation, ReportingPeriodSelectionMode=StewardshipCalc}
+                        StewardshipCalculation: {ActionOpenScreen=TFrmStewardshipCalculation}
                         StewardshipReports: {ActionOpenScreen=TFrmStewardshipReports}
                     PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
                         MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonth}

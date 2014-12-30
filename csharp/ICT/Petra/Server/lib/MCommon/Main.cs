@@ -1115,7 +1115,10 @@ namespace Ict.Petra.Server.MCommon
                 }
                 catch (Exception ex)
                 {
-                    TLogging.Log("ReportingQueryWithCancelOption: Query Raised exception:" + ex.Message);
+                    TLogging.Log("ReportingQueryWithCancelOption: Query Raised exception:" + ex.Message +
+                        "\nQuery: " + Query
+                        );
+
 
                     /*
                      *     WE MUST 'SWALLOW' ANY EXCEPTION HERE, OTHERWISE THE WHOLE

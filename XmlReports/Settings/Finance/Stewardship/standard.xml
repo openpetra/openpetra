@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<Parameters>
+    <Parameter id="systemsettings" value="eBoolean:true" />
+    <Parameter id="currentReport" value="eString:Stewardship" />
+    <Parameter id="param_cmbYearEnding" value="eInteger:12" />
+    <Parameter id="param_cmbReportPeriod" value="eInteger:12" />
+    <Parameter id="param_cmbICHNumber" value="eInteger:0" />
+    <Parameter id="param_currency" value="eString:Base" />
+    <Parameter id="param_chkHOSA" value="eBoolean:true" />
+    <Parameter id="param_rgrHosa" value="eString:Email" />
+    <Parameter id="param_chkStewardship" value="eBoolean:true" />
+    <Parameter id="param_rgrStewardship" value="eString:Email" />
+    <Parameter id="param_chkFees" value="eBoolean:true" />
+    <Parameter id="param_rgrFees" value="eString:Email" />
+    <Parameter id="param_fee_codes" value="eString:10 ADM,4% ADMIN,5 ADM,7.5 ADM,AFRICA,GIF,H/O ADM,H/O ALLO,ICT" />
+    <Parameter id="param_year_i" value="eInteger:0" />
+</Parameters>
