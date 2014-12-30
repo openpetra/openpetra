@@ -559,21 +559,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!newBatch)
                 {
                     //Load tables afresh
-                    FMainDS.ARecurringGiftDetail.Clear();
-                    FMainDS.ARecurringGift.Clear();
                     FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(FLedgerNumber, batchNumber));
+                    FMainDS.AcceptChanges();
                 }
 
-                //Delete transactions
-                for (int i = FMainDS.ARecurringGiftDetail.Count - 1; i >= 0; i--)
-                {
-                    FMainDS.ARecurringGiftDetail[i].Delete();
-                }
+                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().DeleteCurrentRecurringBatchGiftData(batchNumber);
 
-                for (int i = FMainDS.ARecurringGift.Count - 1; i >= 0; i--)
-                {
-                    FMainDS.ARecurringGift[i].Delete();
-                }
+                //Affect a change in the batch row, required by deletion process.
+                ARowToDelete.DateModified = DateTime.Now;
 
                 // Delete the recurring batch row.
                 ARowToDelete.Delete();
@@ -615,7 +608,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //causes saving issues
                 //UpdateLedgerTableSettings();
 
-                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
+                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual())
                 {
                     MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
                 }
@@ -642,6 +635,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void MethodOfPaymentChanged(object sender, EventArgs e)
         {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
             FSelectedBatchMethodOfPayment = cmbDetailMethodOfPaymentCode.GetSelectedString();
 
             if ((FSelectedBatchMethodOfPayment != null) && (FSelectedBatchMethodOfPayment.Length > 0))

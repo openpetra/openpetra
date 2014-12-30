@@ -1051,13 +1051,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactionsForBatch(FLedgerNumber, ABatchNumber));
 
+                FMainDS.AcceptChanges();
+
                 RetVal = true;
             }
             catch (Exception ex)
             {
                 FMainDS.Merge(BackupDS);
 
-                string errMsg = Catalog.GetString("Error trying to clear current Batch data: /n/r/n/r" + ex.Message);
+                string errMsg = Catalog.GetString("Error trying to clear current batch data: /n/r/n/r" + ex.Message);
                 MessageBox.Show(errMsg, "Data Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
@@ -1516,7 +1518,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enabled = pnlDetailsEnabledState;
 
             btnDelete.Enabled = pnlDetailsEnabledState;
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
+            btnDeleteAll.Enabled = btnDelete.Enabled;
             btnNewDetail.Enabled = !PnlDetailsProtected;
             btnNewGift.Enabled = !PnlDetailsProtected;
         }
@@ -1751,7 +1753,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.AutoResizeGrid();
             }
 
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
+            btnDeleteAll.Enabled = btnDelete.Enabled;
         }
 
         private void ReverseGift(System.Object sender, System.EventArgs e)

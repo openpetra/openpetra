@@ -118,6 +118,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             GiftBatchTDS FTempDS = (GiftBatchTDS)FMainDS.Copy();
             FTempDS.Merge(FMainDS);
 
+            if (ARowToDelete.RowState != DataRowState.Added)
+            {
+                FMainDS.AcceptChanges();
+            }
+
             int selectedDetailNumber = ARowToDelete.DetailNumber;
             int giftToDeleteTransNo = 0;
             string filterAllGiftsOfBatch = String.Empty;
@@ -237,6 +242,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FBatchRow.LastGiftNumber--;
                 }
 
+                //Force a change in the batch row to make sure it exists in the dataset to save
+                FBatchRow.DateModified = DateTime.Now;
+
                 //Check if deleting a reversed gift detail
                 if (originatingDetailRef.StartsWith("|"))
                 {
@@ -343,21 +351,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return;
             }
+            else if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
+            {
+                MessageBox.Show(Catalog.GetString("Please remove the filter before attempting to delete all gifts in this batch."),
+                    Catalog.GetString("Delete All Gifts"));
 
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                ||
-                (MessageBox.Show(String.Format(Catalog.GetString(
-                             "You have chosen to delete all gifts from batch ({0}).{1}{1}Are you sure you want to delete all?"),
-                         BatchNumberToClear,
-                         Environment.NewLine),
-                     Catalog.GetString("Confirm Delete All"),
-                     MessageBoxButtons.YesNo,
-                     MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
+                return;
+            }
+
+            if (MessageBox.Show(String.Format(Catalog.GetString(
+                            "You have chosen to delete all gifts from batch ({0}).{1}{1}Are you sure you want to delete all?"),
+                        BatchNumberToClear,
+                        Environment.NewLine),
+                    Catalog.GetString("Confirm Delete All"),
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
             {
                 try
                 {
                     //Normally need to set the message parameters before the delete is performed if requiring any of the row values
-                    completionMessage = String.Format(Catalog.GetString("All gifts and details cancelled successfully."),
+                    completionMessage = String.Format(Catalog.GetString("All gifts and details deleted successfully."),
                         FPreviouslySelectedDetailRow.BatchNumber);
 
                     //clear any transactions currently being editied in the Transaction Tab
@@ -375,7 +388,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     // Be sure to set the last gift number in the parent table before saving all the changes
                     SetBatchLastGiftNumber();
 
-                    FPetraUtilsObject.HasChanges = true;
+                    FPetraUtilsObject.SetChangedFlag();
 
                     // save first, then post
                     if (!((TFrmGiftBatch)ParentForm).SaveChangesManual())

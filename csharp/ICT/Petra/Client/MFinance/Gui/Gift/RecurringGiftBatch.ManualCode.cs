@@ -39,6 +39,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private int standardTabIndex = 0;
+        private bool FNewDonorWarning = true;
 
         /// <summary>
         /// use this ledger
@@ -56,6 +57,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //Enable below if want code to run before standard Save() is executed
                 FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+            }
+        }
+
+        /// <summary>
+        /// Show the user a message when a gift is entered for a new donor
+        /// </summary>
+        public bool NewDonorWarning
+        {
+            set
+            {
+                FNewDonorWarning = value;
             }
         }
 
