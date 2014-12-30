@@ -337,17 +337,6 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 personLocationRow.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
                 personLocationRow.SendMail = true;
                 AMainDS.PPartnerLocation.Rows.Add(personLocationRow);
-
-                string prefix = "Male";
-
-                if (countPerson == 1)
-                {
-                    prefix = "Female";
-                }
-                else if (countPerson > 1)
-                {
-                    prefix = "Child" + (countPerson - 1).ToString();
-                }
             }
         }
 
