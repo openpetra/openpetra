@@ -439,7 +439,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPSAttributesRow = null;
 
             if ((FPreviouslySelectedDetailRow == null)
-                || !pnlTransAnalysisAttributes.Enabled
+                || (!pnlTransAnalysisAttributes.Enabled && FIsUnposted)
                 || !TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString(),
                     FActiveOnly))
             {
