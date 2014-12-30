@@ -27,6 +27,7 @@ using System.Windows.Forms;
 
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
@@ -66,12 +67,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ValidationControlsDict.Add(ASubmitTable.Columns[AGiftDetailTable.ColumnGiftCommentOneId],
                 new TValidationControlsData(null, AGiftDetailTable.GetGiftCommentOneDBName()));
 
+            TPartnerClass RecipientPartnerClass;
+            string RecipientDescription;
+
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedFinanceValidation_Gift.ValidateGiftDetailManual("TTransactionWebConnector" +
-                    " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    (GiftBatchTDSAGiftDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);
+                if (ASubmitTable.Rows[Counter].RowState != DataRowState.Deleted)
+                {
+                    TPartnerServerLookups.GetPartnerShortName(((GiftBatchTDSAGiftDetailRow)ASubmitTable.Rows[Counter]).RecipientKey,
+                        out RecipientDescription,
+                        out RecipientPartnerClass);
+
+                    TSharedFinanceValidation_Gift.ValidateGiftDetailManual("TTransactionWebConnector" +
+                        " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
+                        (GiftBatchTDSAGiftDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
+                        ValidationControlsDict, RecipientPartnerClass);
+                }
             }
         }
 

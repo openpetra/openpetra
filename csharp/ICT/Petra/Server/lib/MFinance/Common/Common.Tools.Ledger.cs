@@ -32,6 +32,8 @@ using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core;
@@ -356,36 +358,67 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (BankAccountCode.Length == 0)
             {
-                bool NewTransaction;
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TDBTransaction Transaction = null;
+
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
+                    ref Transaction,
+                    delegate
+                    {
+                        // use the first bank account
+                        AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                        accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" +
+                                                                  MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " +
+                                                                  AAccountPropertyTable.GetPropertyValueDBName() + " = 'true'";
 
-                try
-                {
-                    // use the first bank account
-                    AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, Transaction);
-                    accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" +
-                                                              MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " +
-                                                              AAccountPropertyTable.GetPropertyValueDBName() + " = 'true'";
+                        if (accountProperties.DefaultView.Count > 0)
+                        {
+                            BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
+                        }
+                        else
+                        {
+                            string SQLQuery = "SELECT a_gift_batch.a_bank_account_code_c " +
+                                              "FROM a_gift_batch " +
+                                              "WHERE a_gift_batch.a_ledger_number_i = " + ALedgerNumber +
+                                              " AND a_gift_batch.a_batch_number_i = (" +
+                                              "SELECT max(a_gift_batch.a_batch_number_i) " +
+                                              "FROM a_gift_batch " +
+                                              "WHERE a_gift_batch.a_ledger_number_i = " + ALedgerNumber +
+                                              " AND a_gift_batch.a_gift_type_c = '" + MFinanceConstants.GIFT_TYPE_GIFT + "')";
 
-                    if (accountProperties.DefaultView.Count > 0)
-                    {
-                        BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
-                    }
-                    else
-                    {
-                        // needed for old Petra 2.x database
-                        BankAccountCode = "6000";
-                    }
-                }
-                finally
-                {
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-                }
+                            DataTable LatestAccountCode = DBAccess.GDBAccessObj.SelectDT(SQLQuery, "LatestAccountCode", Transaction);
+
+                            // use the Bank Account of the previous Gift Batch
+                            if ((LatestAccountCode != null) && (LatestAccountCode.Rows.Count > 0))
+                            {
+                                BankAccountCode = LatestAccountCode.Rows[0]["a_bank_account_code_c"].ToString();
+                            }
+                            // if this is the first ever gift batch (this should happen only once!) then use the first appropriate Account Code in the database
+                            else
+                            {
+                                AAccountTable AccountTable = AAccountAccess.LoadViaALedger(ALedgerNumber, Transaction);
+
+                                DataView dv = AccountTable.DefaultView;
+                                dv.Sort = "a_account_code_c asc";
+                                dv.RowFilter = "a_account_active_flag_l = true AND a_posting_status_l = true";
+                                DataTable sortedDT = dv.ToTable();
+
+                                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
+                                TGetAccountHierarchyDetailInfo accountHierarchyTools = new TGetAccountHierarchyDetailInfo(ledgerInfo);
+                                List <string>children = accountHierarchyTools.GetChildren(MFinanceConstants.CASH_ACCT);
+
+                                foreach (DataRow account in sortedDT.Rows)
+                                {
+                                    // check if this account reports to the CASH account
+                                    if (children.Contains(account["a_account_code_c"].ToString()))
+                                    {
+                                        BankAccountCode = account["a_account_code_c"].ToString();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    });
             }
 
             return BankAccountCode;

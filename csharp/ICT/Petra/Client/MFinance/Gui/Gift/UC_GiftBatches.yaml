@@ -95,6 +95,7 @@ RootNode:
             OptionalValues: [=Gift,Gift In Kind,Other]
             OptionalValuesConstants: [MFinanceConstants.GIFT_TYPE_GIFT,MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND,MFinanceConstants.GIFT_TYPE_OTHER]
             ControlsOrientation: Horizontal
+            OnChange: GiftTypeChanged
         tbrTabPage:
         mnuTabPage:
     Menu:

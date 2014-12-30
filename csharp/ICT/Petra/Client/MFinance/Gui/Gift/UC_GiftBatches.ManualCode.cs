@@ -82,6 +82,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private TUC_GiftBatches_AccountAndCostCentre FAccountAndCostCentreLogicObject = null;
 
         private bool FActiveOnly = false;
+        private bool FBankAccountOnly = true;
         private string FSelectedBatchMethodOfPayment = String.Empty;
 
         private ACostCentreTable FCostCentreTable = null;
@@ -410,6 +411,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FActiveOnly = AActiveOnly;
 
                 FAccountAndCostCentreLogicObject.SetupAccountAndCostCentreCombos(AActiveOnly, ARow);
+            }
+        }
+
+        /// <summary>
+        /// Gift Type radiobutton selection changed
+        /// </summary>
+        private void GiftTypeChanged(Object sender, EventArgs e)
+        {
+            bool BankAccountOnly = true;
+
+            // show all accounts for 'Gift In Kind' and 'Other'
+            if (rbtGiftInKind.Checked || rbtOther.Checked)
+            {
+                BankAccountOnly = false;
+            }
+
+            if (BankAccountOnly != FBankAccountOnly)
+            {
+                FAccountAndCostCentreLogicObject.SetupAccountCombo(FActiveOnly,
+                    BankAccountOnly,
+                    ref lblDetailBankAccountCode,
+                    FPreviouslySelectedDetailRow);
+                FBankAccountOnly = BankAccountOnly;
             }
         }
 

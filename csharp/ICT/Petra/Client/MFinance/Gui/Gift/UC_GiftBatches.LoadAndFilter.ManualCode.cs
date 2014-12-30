@@ -392,9 +392,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (FrbtPosting.Checked)
             {
-                StringHelper.JoinAndAppend(ref workingFilter, String.Format("({0} = '{1}') AND ({2} <> 0) AND (({3} = 0) OR ({3} = {2}))",
+                // note: batches
+                StringHelper.JoinAndAppend(ref workingFilter, String.Format("({0} = '{1}') AND ({2} > 0) AND (({4} = 0) OR ({4} = {3}))",
                         AGiftBatchTable.GetBatchStatusDBName(),
                         MFinanceConstants.BATCH_UNPOSTED,
+                        AGiftBatchTable.GetLastGiftNumberDBName(),
                         AGiftBatchTable.GetBatchTotalDBName(),
                         AGiftBatchTable.GetHashTotalDBName()),
                     CommonJoinString.JOIN_STRING_SQL_AND);

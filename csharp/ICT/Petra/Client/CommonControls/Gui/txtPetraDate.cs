@@ -238,6 +238,19 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
+
+        /// <summary>
+        /// Sets a value indicating whether to show warning for invalid text on lost focus.
+        /// (Default: false - handled by the validation framework instead)
+        /// </summary>
+        public Boolean ShowWarningOnLostFocus
+        {
+            set
+            {
+                FShowWarningOnLostFocus = value;
+            }
+        }
+
         /// <summary>
         /// This property determines whether verification of date is allowed. (Default: true)
         /// </summary>

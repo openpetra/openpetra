@@ -51,6 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private bool FInitialFocusActionComplete = false;
         private bool FActiveOnly = false;
+        private bool FBankAccountOnly = true;
         private string FSelectedBatchMethodOfPayment = String.Empty;
 
         private ACostCentreTable FCostCentreTable = null;
@@ -272,6 +273,49 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
                     cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gift Type radiobutton selection changed
+        /// </summary>
+        private void GiftTypeChanged(Object sender, EventArgs e)
+        {
+            bool BankAccountOnly = true;
+
+            // show all accounts for 'Gift In Kind' and 'Other'
+            if (rbtGiftInKind.Checked || rbtOther.Checked)
+            {
+                BankAccountOnly = false;
+            }
+
+            if (BankAccountOnly != FBankAccountOnly)
+            {
+                cmbDetailBankAccountCode.Clear();
+                TFinanceControls.InitialiseAccountList(ref cmbDetailBankAccountCode,
+                    FLedgerNumber,
+                    true,
+                    false,
+                    FActiveOnly,
+                    BankAccountOnly,
+                    true,
+                    FAccountTable);
+
+                if (BankAccountOnly)
+                {
+                    lblDetailBankAccountCode.Text = Catalog.GetString("Bank Account:");
+                }
+                else
+                {
+                    lblDetailBankAccountCode.Text = Catalog.GetString("Account Code:");
+                }
+
+                FBankAccountOnly = BankAccountOnly;
+
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    cmbDetailBankAccountCode.SetSelectedString(FPreviouslySelectedDetailRow.BankAccountCode, -1);
                 }
             }
         }

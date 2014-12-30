@@ -296,24 +296,29 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 return false;
             }
 
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            DateTime StartDatePeriod = new DateTime();
+            DateTime EndDatePeriod = new DateTime();
+            TDBTransaction Transaction = null;
 
-            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, Transaction);
 
-            // TODO: ADiffPeriod for support of different financial years
+                    // TODO: ADiffPeriod for support of different financial years
 
-            AStartDatePeriod = AccountingPeriodTable[0].PeriodStartDate;
-            AEndDatePeriod = AccountingPeriodTable[0].PeriodEndDate;
+                    StartDatePeriod = AccountingPeriodTable[0].PeriodStartDate;
+                    EndDatePeriod = AccountingPeriodTable[0].PeriodEndDate;
 
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            AStartDatePeriod = AStartDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
-            AEndDatePeriod = AEndDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
+                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                    StartDatePeriod = StartDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
+                    EndDatePeriod = EndDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
+                });
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            AStartDatePeriod = StartDatePeriod;
+            AEndDatePeriod = EndDatePeriod;
 
             return true;
         }

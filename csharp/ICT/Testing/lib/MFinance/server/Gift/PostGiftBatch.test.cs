@@ -41,6 +41,7 @@ using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Testing.NUnitPetraServer;
 using Ict.Testing.NUnitTools;
@@ -336,6 +337,10 @@ namespace Tests.MFinance.Server.Gift
                     AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, NegativeGiftDetailRow, Transaction);
                 });
 
+            DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, RealRecipientLedgerNumber);
+            PartnerCostCentreTbl.Rows[0]["IsLinked"] = '0';
+            TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
+
             TPartnerWebConnector.DeletePartner(RecipientKey, out VerificationResult);
             TPartnerWebConnector.DeletePartner(RealRecipientLedgerNumber, out VerificationResult);
             TPartnerWebConnector.DeletePartner(FalseRecipientLedgerNumber, out VerificationResult);
@@ -415,6 +420,10 @@ namespace Tests.MFinance.Server.Gift
                     AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, NegativeGiftDetailRow, Transaction);
                 });
 
+            DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, RealRecipientLedgerNumber);
+            PartnerCostCentreTbl.Rows[0]["IsLinked"] = '0';
+            TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
+
             TPartnerWebConnector.DeletePartner(RecipientKey, out VerificationResult);
             TPartnerWebConnector.DeletePartner(RealRecipientLedgerNumber, out VerificationResult);
             TPartnerWebConnector.DeletePartner(FalseRecipientLedgerNumber, out VerificationResult);
@@ -443,7 +452,6 @@ namespace Tests.MFinance.Server.Gift
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
             PartnerEditTDS PartnerEditDS = new PartnerEditTDS();
-            //GLSetupTDS GLSetupDS = new GLSetupTDS();
 
             // this is a family partner in the test database
             const Int64 DONORKEY = 43005001;
@@ -457,6 +465,11 @@ namespace Tests.MFinance.Server.Gift
             TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
             AFalseRecipientLedgerNumber = PartnerEditDS.PPartner[0].PartnerKey;
             ARealRecipientLedgerNumber = PartnerEditDS.PPartner[1].PartnerKey;
+
+            PPartnerTypeRow PartnerTypeRow = PartnerEditDS.PPartnerType.NewRowTyped();
+            PartnerTypeRow.PartnerKey = ARealRecipientLedgerNumber;
+            PartnerTypeRow.TypeCode = MPartnerConstants.PARTNERTYPE_COSTCENTRE;
+            PartnerEditDS.PPartnerType.Rows.Add(PartnerTypeRow);
 
             // create a Gift Destination for family
             PPartnerGiftDestinationRow GiftDestination = PartnerEditDS.PPartnerGiftDestination.NewRowTyped(true);
@@ -504,6 +517,8 @@ namespace Tests.MFinance.Server.Gift
 
             MainDS.AGift.Rows.Add(GiftRow);
 
+            MainDS.AGiftBatch[0].LastGiftNumber++;
+
             GiftRow = MainDS.AGift.NewRowTyped(true);
 
             GiftRow.LedgerNumber = FLedgerNumber;
@@ -513,6 +528,8 @@ namespace Tests.MFinance.Server.Gift
             GiftRow.LastDetailNumber = 1;
 
             MainDS.AGift.Rows.Add(GiftRow);
+
+            MainDS.AGiftBatch[0].LastGiftNumber++;
 
             // create a new GiftDetail with a positive amount
             AGiftDetailRow GiftDetail = MainDS.AGiftDetail.NewRowTyped(true);
@@ -634,6 +651,10 @@ namespace Tests.MFinance.Server.Gift
                     ARecurringGiftDetailAccess.DeleteRow(ARecurringGiftDetailTable.TableId, RecurringGiftDetailRow, Transaction);
                 });
 
+            DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, RealRecipientLedgerNumber);
+            PartnerCostCentreTbl.Rows[0]["IsLinked"] = '0';
+            TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
+
             TPartnerWebConnector.DeletePartner(RecipientKey, out VerificationResult);
             TPartnerWebConnector.DeletePartner(RealRecipientLedgerNumber, out VerificationResult);
             TPartnerWebConnector.DeletePartner(FalseRecipientLedgerNumber, out VerificationResult);
@@ -703,6 +724,10 @@ namespace Tests.MFinance.Server.Gift
                     ARecurringGiftDetailAccess.DeleteRow(ARecurringGiftDetailTable.TableId, RecurringGiftDetailRow, Transaction);
                 });
 
+            DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, RealRecipientLedgerNumber);
+            PartnerCostCentreTbl.Rows[0]["IsLinked"] = '0';
+            TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
+
             TPartnerWebConnector.DeletePartner(RecipientKey, out VerificationResult);
             TPartnerWebConnector.DeletePartner(RealRecipientLedgerNumber, out VerificationResult);
             TPartnerWebConnector.DeletePartner(FalseRecipientLedgerNumber, out VerificationResult);
@@ -741,6 +766,11 @@ namespace Tests.MFinance.Server.Gift
             TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
             AFalseRecipientLedgerNumber = PartnerEditDS.PPartner[0].PartnerKey;
             ARealRecipientLedgerNumber = PartnerEditDS.PPartner[1].PartnerKey;
+
+            PPartnerTypeRow PartnerTypeRow = PartnerEditDS.PPartnerType.NewRowTyped();
+            PartnerTypeRow.PartnerKey = ARealRecipientLedgerNumber;
+            PartnerTypeRow.TypeCode = MPartnerConstants.PARTNERTYPE_COSTCENTRE;
+            PartnerEditDS.PPartnerType.Rows.Add(PartnerTypeRow);
 
             // create a Gift Destination for family
             PPartnerGiftDestinationRow GiftDestination = PartnerEditDS.PPartnerGiftDestination.NewRowTyped(true);

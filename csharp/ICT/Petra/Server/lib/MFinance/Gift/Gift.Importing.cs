@@ -1325,13 +1325,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                 AGiftDetails.MotivationGroupCode = MFinanceConstants.MOTIVATION_GROUP_GIFT;
             }
 
+            TPartnerClass RecipientClass;
+            string RecipientDescription;
+            TPartnerServerLookups.GetPartnerShortName(AGiftDetails.RecipientKey, out RecipientDescription, out RecipientClass);
+
             // If the gift has a Family recipient with no Gift Destination then the import will fail. Gift is added to a table and returned to client.
             if ((AGiftDetails.RecipientLedgerNumber == 0) && (AGiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT))
             {
-                TPartnerClass RecipientClass;
-                string RecipientDescription;
-                TPartnerServerLookups.GetPartnerShortName(AGiftDetails.RecipientKey, out RecipientDescription, out RecipientClass);
-
                 if (RecipientClass == TPartnerClass.FAMILY)
                 {
                     ((GiftBatchTDSAGiftDetailRow)AGiftDetails).RecipientDescription = RecipientDescription;
@@ -1352,7 +1352,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             AGiftDetailValidation.Validate(this, AGiftDetails, ref AMessages, AValidationControlsDictGiftDetail);
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, (GiftBatchTDSAGiftDetailRow)AGiftDetails,
-                ref AMessages, AValidationControlsDictGiftDetail, AValidationCostCentreTable, AValidationMotivationGroupTable,
+                ref AMessages, AValidationControlsDictGiftDetail, RecipientClass, AValidationCostCentreTable, AValidationMotivationGroupTable,
                 AValidationMotivationDetailTable, AGiftDetails.RecipientKey);
 
             for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)

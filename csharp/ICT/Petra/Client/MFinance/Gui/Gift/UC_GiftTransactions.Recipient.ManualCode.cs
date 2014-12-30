@@ -1016,7 +1016,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             string AutoPopComment;
 
-            ResetMotivationDetailCodeFilter(ACmbMotivationDetailCode, ref AMotivationDetail, AActiveOnly);
             TFinanceControls.ChangeFilterMotivationDetailList(ref ACmbMotivationDetailCode, AMotivationGroup);
             AMotivationDetail = motivationDetail;
 

@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return false;
             }
 
-            CancelMessage = String.Format(Catalog.GetString("Are you sure you want to cancel gift batch no.: {0}?"),
+            CancelMessage = String.Format(Catalog.GetString("Are you sure you want to cancel gift batch number: {0}?"),
                 ACurrentBatchRow.BatchNumber);
 
             if ((MessageBox.Show(CancelMessage,

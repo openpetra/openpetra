@@ -482,6 +482,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AGiftCurrency"></param>
         /// <param name="ALocalCountryCode">If the addressee's country is the same as this, it won't be printed on the address label.</param>
         /// <param name="AGiftsThisDonor"></param>
+        /// <param name="AHTMLTemplateFilename"></param>
         /// <param name="ATransaction">This can be read-only - nothing is written to the DB.</param>
         /// <returns>Complete (simple) HTML file</returns>
         [NoRemoting]
@@ -492,6 +493,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             String AGiftCurrency,
             string ALocalCountryCode,
             AGiftTable AGiftsThisDonor,
+            string AHTMLTemplateFilename,
             TDBTransaction ATransaction)
         {
             SortedList <string, List <string>>FormValues = new SortedList <string, List <string>>();
@@ -669,9 +671,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             FormValues["TxdTotal"].Add(StringHelper.FormatUsingCurrencyCode(TxdTotal, AGiftCurrency));
             FormValues["NonTxdTotal"].Add(StringHelper.FormatUsingCurrencyCode(NonTxdTotal, AGiftCurrency));
 
-            string PageHtml = TFormLettersTools.PrintSimpleHTMLLetter(
-                TAppSettingsManager.GetValue("Formletters.Path") + "\\GiftReceipt.html", FormValues);
-            return PageHtml;
+            return TFormLettersTools.PrintSimpleHTMLLetter(AHTMLTemplateFilename, FormValues);
         }
 
         /// <param name="AGiftCurrency"></param>
@@ -679,6 +679,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ADonorKey"></param>
         /// <param name="ADonorClass"></param>
         /// <param name="GiftsThisDonor"></param>
+        /// <param name="AHTMLTemplateFilename"></param>
         /// <summary></summary>
         /// <returns>A Receipt formatted with HTML</returns>
         [RequireModulePermission("FINANCE-1")]
@@ -687,7 +688,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             String ADonorShortName,
             Int64 ADonorKey,
             TPartnerClass ADonorClass,
-            AGiftTable GiftsThisDonor
+            AGiftTable GiftsThisDonor,
+            string AHTMLTemplateFilename
             )
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -703,6 +705,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     AGiftCurrency,
                     LocalCountryCode,
                     GiftsThisDonor,
+                    AHTMLTemplateFilename,
                     Transaction);
             }
             finally
@@ -724,9 +727,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AGiftTbl">Custom table from GetUnreceiptedGifts, above</param>
+        /// <param name="AHTMLTemplateFilename"></param>
         /// <returns>One or more HTML documents in a single string</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static string PrintReceipts(int ALedgerNumber, DataTable AGiftTbl)
+        public static string PrintReceipts(int ALedgerNumber, DataTable AGiftTbl, string AHTMLTemplateFilename)
         {
             string HtmlDoc = "";
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -792,6 +796,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         DonorRow.GiftCurrency,
                         LocalCountryCode,
                         GiftsPerDonor[DonorKey],
+                        AHTMLTemplateFilename,
                         Transaction);
 
                     TFormLettersTools.AttachNextPage(ref HtmlDoc, PageHtml);
