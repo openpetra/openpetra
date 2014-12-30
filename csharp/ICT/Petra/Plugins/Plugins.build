@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="Plugins-Build">
 
-<include buildfile="../../../../inc/nant/OpenPetra.tobe.migrated.xml"/> 
+<include buildfile="../../../../inc/nant/OpenPetra.tobe.migrated.xml"/>
 
 <target name="custdepend">
   <!-- Generate winforms --> 

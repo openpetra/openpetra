@@ -550,7 +550,7 @@ useful parameters
     <call target="initConfigFiles"/>
     <call target="startServerBackground"/>
     <sleep seconds="3"/>
-    <ExecDotNet program="${dir.bin}/PetraServerAdminConsole.exe" 
+    <ExecDotNet program="${dir.bin}/PetraServerAdminConsole.exe"
         commandline="-C:${dir.root}/etc/ServerAdmin.config -Command:LoadYmlGz -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
     <call target="stopPetraServer"/>
 
