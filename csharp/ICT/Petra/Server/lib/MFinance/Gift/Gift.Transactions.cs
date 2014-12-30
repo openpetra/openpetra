@@ -1207,7 +1207,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if (GiftDetailTableInDataSet)
             {
                 DataView AllBatchesToProcess = new DataView(AInspectDS.AGiftDetail);
-                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
+                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows | DataViewRowState.Added;
 
                 foreach (DataRowView drv in AllBatchesToProcess)
                 {
@@ -1223,7 +1223,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             else if (GiftTableInDataSet)
             {
                 DataView AllBatchesToProcess = new DataView(AInspectDS.AGift);
-                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
+                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows | DataViewRowState.Added;
 
                 foreach (DataRowView drv in AllBatchesToProcess)
                 {
@@ -1239,7 +1239,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             else if (GiftBatchTableInDataSet)
             {
                 DataView AllBatchesToProcess = new DataView(AInspectDS.AGiftBatch);
-                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
+                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows | DataViewRowState.Added;
 
                 foreach (DataRowView drv in AllBatchesToProcess)
                 {
@@ -1521,7 +1521,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if (RecurringGiftDetailTableInDataSet)
             {
                 DataView AllBatchesToProcess = new DataView(AInspectDS.ARecurringGiftDetail);
-                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
+                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows | DataViewRowState.Added;
 
                 foreach (DataRowView drv in AllBatchesToProcess)
                 {
@@ -1537,7 +1537,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             else if (RecurringGiftTableInDataSet)
             {
                 DataView AllBatchesToProcess = new DataView(AInspectDS.ARecurringGift);
-                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
+                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows | DataViewRowState.Added;
 
                 foreach (DataRowView drv in AllBatchesToProcess)
                 {
@@ -1553,7 +1553,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             else if (RecurringGiftBatchTableInDataSet)
             {
                 DataView AllBatchesToProcess = new DataView(AInspectDS.ARecurringGiftBatch);
-                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows;
+                AllBatchesToProcess.RowStateFilter = DataViewRowState.OriginalRows | DataViewRowState.Added;
 
                 foreach (DataRowView drv in AllBatchesToProcess)
                 {
