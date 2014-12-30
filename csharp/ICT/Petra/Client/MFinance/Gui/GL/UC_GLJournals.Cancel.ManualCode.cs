@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                              "You have chosen to cancel this journal ({0}).\n\nDo you really want to cancel it?"),
                          CurrentJournalNumber),
                      Catalog.GetString("Confirm Cancel"),
-                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+                     MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
             {
                 try
                 {

@@ -1262,7 +1262,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetailCount = AInspectDS.AGiftDetail.Count;
                 }
 
-                if ((giftCount > 0) && (giftDetailCount > 1))
+                if ((giftBatchCount > 0) && (giftCount > 0) && (giftDetailCount > 1))
                 {
                     //The Gift Detail table must be in ascending order
                     AGiftDetailTable cloneDetail = (AGiftDetailTable)AInspectDS.AGiftDetail.Clone();

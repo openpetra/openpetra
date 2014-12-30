@@ -1346,6 +1346,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+                //Speeds up deletion of larger gift sets
+                FMainDS.EnforceConstraints = false;
+
                 //Delete current detail row
                 ARowToDelete.Delete();
 
@@ -1482,6 +1485,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             finally
             {
+                FMainDS.EnforceConstraints = true;
                 SetGiftDetailDefaultView();
                 FFilterAndFindObject.ApplyFilter();
             }
@@ -1556,10 +1560,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 return;
             }
-            else if (!((TFrmRecurringGiftBatch)ParentForm).SaveChangesManual())
-            {
-                return;
-            }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
                             "You have chosen to delete all gifts from recurring batch ({0}).{1}{1}Are you sure you want to delete all?"),
@@ -1567,8 +1567,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         Environment.NewLine),
                     Catalog.GetString("Confirm Delete All"),
                     MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                    MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
             {
+                //Backup the Dataset for reversion purposes
+                GiftBatchTDS FTempDS = (GiftBatchTDS)FMainDS.Copy();
+                FTempDS.Merge(FMainDS);
+
                 try
                 {
                     //Normally need to set the message parameters before the delete is performed if requiring any of the row values
@@ -1593,19 +1598,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPetraUtilsObject.SetChangedFlag();
 
                     // save
-                    if (!((TFrmRecurringGiftBatch)ParentForm).SaveChangesManual())
-                    {
-                        SelectRowInGrid(1);
-
-                        // saving failed, therefore do not try to cancel
-                        MessageBox.Show(Catalog.GetString("The emptied recurring batch failed to save!"));
-                    }
-                    else
+                    if (((TFrmRecurringGiftBatch)ParentForm).SaveChangesManual())
                     {
                         MessageBox.Show(completionMessage,
                             "All Gifts Deleted.",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        SelectRowInGrid(1);
+
+                        // saving failed, therefore do not try to cancel
+                        MessageBox.Show(Catalog.GetString("The emptied recurring batch failed to save!"));
                     }
                 }
                 catch (Exception ex)
@@ -1617,7 +1622,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         MessageBoxIcon.Error);
 
                     //Return FMainDS to original state
-                    FMainDS.RejectChanges();
+                    FMainDS.Merge(FTempDS);
                 }
             }
 
@@ -1642,6 +1647,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TempDS.Merge(FMainDS);
 
+            //Backup the current dataset
             GiftBatchTDS BackupDS = (GiftBatchTDS)FMainDS.Copy();
             BackupDS.Merge(FMainDS);
 
@@ -1692,18 +1698,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.ARecurringGiftDetail.Merge(TempDS.ARecurringGiftDetail);
                 }
 
+                //Reload batch contents from server
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(FLedgerNumber, ABatchNumber));
-
                 FMainDS.AcceptChanges();
 
                 RetVal = true;
             }
             catch (Exception ex)
             {
-                FMainDS = BackupDS;
-
                 string errMsg = Catalog.GetString("Error trying to clear current recurring batch data: /n/r/n/r" + ex.Message);
                 MessageBox.Show(errMsg, "Data Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                //Undo changes
+                FMainDS.Merge(BackupDS);
             }
             finally
             {

@@ -108,7 +108,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post batch {0}?"),
                         CurrentBatchNumber),
                     Catalog.GetString("Question"),
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
             {
                 try
                 {

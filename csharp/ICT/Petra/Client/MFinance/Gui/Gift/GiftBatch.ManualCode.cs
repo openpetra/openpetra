@@ -291,8 +291,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                         "{0} ({1}) is a new Donor.{2}Do you want to add subscriptions for them?{2}" +
                                         "(Note: this message can be disabled in the 'File' menu by unselecting the 'New Donor Warning' item.)"),
                                     Row.DonorName, Row.DonorKey, "\n\n"),
-                                Catalog.GetString("New Donor"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-                                MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                                Catalog.GetString("New Donor"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                         {
                             // Open the donor's Edit screen so subscriptions can be added
                             TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());

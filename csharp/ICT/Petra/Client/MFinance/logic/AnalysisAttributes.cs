@@ -97,6 +97,23 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
+        /// Return selected row
+        /// </summary>
+        /// <param name="AGrid"></param>
+        /// <returns></returns>
+        public static ARecurringTransAnalAttribRow GetSelectedRecurringAttributeRow(TSgrdDataGridPaged AGrid)
+        {
+            DataRowView[] SelectedGridRow = AGrid.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
+            {
+                return (ARecurringTransAnalAttribRow)SelectedGridRow[0].Row;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="AGLBatchDS"></param>
@@ -147,6 +164,59 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AGLBatchDS.ATransAnalAttrib.DefaultView.Sort = String.Format("{0} ASC, {1} ASC",
                     ATransAnalAttribTable.GetTransactionNumberDBName(),
                     ATransAnalAttribTable.GetAnalysisTypeCodeDBName()
+                    );
+            }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AGLBatchDS"></param>
+        /// <param name="ATransactionNumber"></param>
+        /// <param name="AAnalysisCodeFilterValues"></param>
+        public void SetRecurringTransAnalAttributeDefaultView(GLBatchTDS AGLBatchDS,
+            Int32 ATransactionNumber = 0,
+            String AAnalysisCodeFilterValues = "")
+        {
+            if (FBatchNumber != -1)
+            {
+                if (ATransactionNumber > 0)
+                {
+                    if (AAnalysisCodeFilterValues.Length > 0)
+                    {
+                        AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6} IN ({7})",
+                            ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                            FBatchNumber,
+                            ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                            FJournalNumber,
+                            ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                            ATransactionNumber,
+                            ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName(),
+                            AAnalysisCodeFilterValues);
+                    }
+                    else
+                    {
+                        AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+                            ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                            FBatchNumber,
+                            ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                            FJournalNumber,
+                            ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                            ATransactionNumber);
+                    }
+                }
+                else
+                {
+                    AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                        ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                        FBatchNumber,
+                        ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                        FJournalNumber);
+                }
+
+                AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.Sort = String.Format("{0} ASC, {1} ASC",
+                    ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                    ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName()
                     );
             }
         }
@@ -227,7 +297,9 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AGLBatchDS"></param>
         /// <param name="AAccountCode"></param>
         /// <param name="ATransactionNumber"></param>
-        public void ReconcileTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS, string AAccountCode, int ATransactionNumber)
+        public void ReconcileTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS,
+            string AAccountCode,
+            int ATransactionNumber)
         {
             if (string.IsNullOrEmpty(AAccountCode))
             {
@@ -284,6 +356,72 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
+        /// Need to ensure that the Analysis Attributes grid has all the entries
+        /// that are required for the selected account.
+        /// There may or may not already be attribute assignments for this transaction.
+        /// </summary>
+        /// <param name="AGLBatchDS"></param>
+        /// <param name="AAccountCode"></param>
+        /// <param name="ATransactionNumber"></param>
+        public void ReconcileRecurringTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS,
+            string AAccountCode,
+            int ATransactionNumber)
+        {
+            if (string.IsNullOrEmpty(AAccountCode))
+            {
+                return;
+            }
+
+            StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+                AAccountCode, false);
+
+            SetRecurringTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber,
+                TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'"));
+
+            // If the AnalysisType list I'm currently using is the same as the list of required types, I can keep it (with any existing values).
+            bool existingListIsOk = (RequiredAnalAttrCodes.Count == AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.Count);
+
+            if (existingListIsOk)
+            {
+                foreach (DataRowView rv in AGLBatchDS.ARecurringTransAnalAttrib.DefaultView)
+                {
+                    ARecurringTransAnalAttribRow row = (ARecurringTransAnalAttribRow)rv.Row;
+
+                    if (!RequiredAnalAttrCodes.Contains(row.AnalysisTypeCode))
+                    {
+                        existingListIsOk = false;
+                        break;
+                    }
+                }
+            }
+
+            if (existingListIsOk)
+            {
+                return;
+            }
+
+            // Delete any existing Analysis Type records and re-create the list (Removing any prior selections by the user).
+            foreach (DataRowView rv in AGLBatchDS.ARecurringTransAnalAttrib.DefaultView)
+            {
+                ARecurringTransAnalAttribRow attrRowCurrent = (ARecurringTransAnalAttribRow)rv.Row;
+                attrRowCurrent.Delete();
+            }
+
+            foreach (String analysisTypeCode in RequiredAnalAttrCodes)
+            {
+                ARecurringTransAnalAttribRow newRow = AGLBatchDS.ARecurringTransAnalAttrib.NewRowTyped(true);
+                newRow.LedgerNumber = FLedgerNumber;
+                newRow.BatchNumber = FBatchNumber;
+                newRow.JournalNumber = FJournalNumber;
+                newRow.TransactionNumber = ATransactionNumber;
+                newRow.AnalysisTypeCode = analysisTypeCode;
+                newRow.AccountCode = AAccountCode;
+
+                AGLBatchDS.ARecurringTransAnalAttrib.Rows.Add(newRow);
+            }
+        }
+
+        /// <summary>
         /// Used for the validation of Analysis Attributes
         /// </summary>
         /// <param name="ATransactionNumber"></param>
@@ -335,11 +473,58 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ATransactionNumber"></param>
         /// <param name="AAccountCode"></param>
         /// <param name="AGLBatchDS"></param>
+        /// <returns></returns>
+        public bool AccountRecurringAnalysisAttributeCountIsCorrect(int ATransactionNumber,
+            string AAccountCode,
+            GLBatchTDS AGLBatchDS)
+        {
+            bool RetVal = true;
+
+            if (string.IsNullOrEmpty(AAccountCode))
+            {
+                return RetVal;
+            }
+
+            int NumberOfAttributes = 0;
+
+            TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, AAccountCode, out NumberOfAttributes, false);
+
+            if (NumberOfAttributes == 0)
+            {
+                return RetVal;
+            }
+
+            DataView analAttrib = new DataView(AGLBatchDS.ARecurringTransAnalAttrib);
+
+            analAttrib.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                FBatchNumber,
+                ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                FJournalNumber,
+                ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                ATransactionNumber,
+                ARecurringTransAnalAttribTable.GetAccountCodeDBName(),
+                AAccountCode);
+
+            RetVal = (analAttrib.Count == NumberOfAttributes);
+
+            return RetVal;
+        }
+
+        /// <summary>
+        /// Used for the validation of Analysis Attributes
+        /// </summary>
+        /// <param name="ATransactionNumber"></param>
+        /// <param name="AAccountCode"></param>
+        /// <param name="AGLBatchDS"></param>
         /// <param name="ValueRequiredForType"></param>
         /// <param name="AIsUnposted"></param>
         /// <returns></returns>
-        public bool AccountAnalysisAttributesValuesExist(int ATransactionNumber, string AAccountCode, GLBatchTDS AGLBatchDS,
-            out String ValueRequiredForType, bool AIsUnposted = true)
+        public bool AccountAnalysisAttributesValuesExist(int ATransactionNumber,
+            string AAccountCode,
+            GLBatchTDS AGLBatchDS,
+            out String ValueRequiredForType,
+            bool AIsUnposted = true)
         {
             ValueRequiredForType = "";
 
@@ -376,6 +561,62 @@ namespace Ict.Petra.Client.MFinance.Logic
                     if (rw.IsAnalysisAttributeValueNull() || (rw.AnalysisAttributeValue == string.Empty))
                     {
                         ValueRequiredForType = rw.AnalysisTypeCode;
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Used for the validation of Analysis Attributes
+        /// </summary>
+        /// <param name="ATransactionNumber"></param>
+        /// <param name="AAccountCode"></param>
+        /// <param name="AGLBatchDS"></param>
+        /// <param name="AValueRequiredForType"></param>
+        /// <returns></returns>
+        public bool AccountRecurringAnalysisAttributesValuesExist(int ATransactionNumber,
+            string AAccountCode,
+            GLBatchTDS AGLBatchDS,
+            out String AValueRequiredForType)
+        {
+            AValueRequiredForType = string.Empty;
+
+            if (string.IsNullOrEmpty(AAccountCode) || (AGLBatchDS.ATransAnalAttrib.DefaultView.Count == 0))
+            {
+                return true;
+            }
+
+            StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+                AAccountCode, false);
+
+            string AnalysisCodeFilterValues = TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'");
+
+            DataView analAttrib = new DataView(AGLBatchDS.ARecurringTransAnalAttrib);
+
+            analAttrib.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6} IN ({7})",
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                FBatchNumber,
+                ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                FJournalNumber,
+                ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                ATransactionNumber,
+                ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName(),
+                AnalysisCodeFilterValues);
+
+            foreach (DataRowView drv in analAttrib)
+            {
+                ARecurringTransAnalAttribRow rw = (ARecurringTransAnalAttribRow)drv.Row;
+
+                string analysisCode = rw.AnalysisTypeCode;
+
+                if (TRemote.MFinance.Setup.WebConnectors.AccountAnalysisAttributeRequiresValues(FLedgerNumber, analysisCode, false))
+                {
+                    if (rw.IsAnalysisAttributeValueNull() || (rw.AnalysisAttributeValue == string.Empty))
+                    {
+                        AValueRequiredForType = rw.AnalysisTypeCode;
                         return false;
                     }
                 }

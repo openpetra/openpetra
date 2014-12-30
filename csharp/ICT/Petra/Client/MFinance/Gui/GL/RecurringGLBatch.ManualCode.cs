@@ -206,7 +206,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 ucoRecurringBatches.GetSelectedDetailRow().BatchNumber);
                         }
 
-                        this.ucoRecurringTransactions.LoadTransactions(
+                        this.ucoRecurringTransactions.LoadRecurringTransactions(
                             FLedgerNumber,
                             ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
                             ucoRecurringJournals.GetSelectedDetailRow().JournalNumber,

@@ -553,7 +553,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                              "You have chosen to delete all Reallocations.\n\nDo you really want to continue?")),
                      Catalog.GetString("Confirm Deletion"),
                      MessageBoxButtons.YesNo,
-                     MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
+                     MessageBoxIcon.Question,
+                     MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
             {
                 DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
                 DataView TransAttribDV = new DataView(FMainDS.ATransAnalAttrib);
@@ -871,7 +872,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FMainDS.HasChanges()
                 && (this.DialogResult != DialogResult.OK)
                 && (MessageBox.Show(Catalog.GetString("Are you sure you want to cancel this Reallocation?"),
-                        Catalog.GetString("Reallocation Journal"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                        Catalog.GetString("Reallocation Journal"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)
                     == DialogResult.No))
             {
                 return false;

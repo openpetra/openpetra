@@ -967,7 +967,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (MessageBox.Show(String.Format(Catalog.GetString(
                                     "The recurring gift batch {0} has no active gifts. Do you still want to submit?"),
                                 FPreviouslySelectedDetailRow.BatchNumber),
-                            Catalog.GetString("Submit Empty Batch"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                            Catalog.GetString("Submit Empty Batch"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+                            MessageBoxDefaultButton.Button2) == DialogResult.No)
                     {
                         return RetVal;
                     }
@@ -991,7 +992,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                 "Recurring batch no. {0} contains an inactive bank account or cost centre code. Do you want to continue submitting?"),
                             FPreviouslySelectedDetailRow.BatchNumber),
                         Catalog.GetString("Inactive Bank Account/Cost Centre Code"), MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning) == DialogResult.No)
+                        MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     return false;
                 }

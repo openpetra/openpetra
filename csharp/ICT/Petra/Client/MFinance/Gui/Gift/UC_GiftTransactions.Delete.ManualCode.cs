@@ -120,6 +120,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ARowToDelete.RowState != DataRowState.Added)
             {
+                //Required to deal with concurrency errors
                 FMainDS.AcceptChanges();
             }
 
@@ -132,6 +133,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+                //Speeds up deletion of larger gift sets
+                FMainDS.EnforceConstraints = false;
+
                 if (ARowToDelete.ModifiedDetailKey != null)
                 {
                     originatingDetailRef = ARowToDelete.ModifiedDetailKey;
@@ -284,6 +288,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             finally
             {
+                FMainDS.EnforceConstraints = true;
                 SetGiftDetailDefaultView();
                 FFilterAndFindObject.ApplyFilter();
             }
@@ -360,7 +365,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         Environment.NewLine),
                     Catalog.GetString("Confirm Delete All"),
                     MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                    MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
             {
                 try
                 {

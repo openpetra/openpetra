@@ -51,6 +51,70 @@ namespace Ict.Petra.Client.MFinance.Logic
     public class TFinanceControls
     {
         /// <summary>
+        /// Check if a given account is active
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAccountCode"></param>
+        /// <param name="AAccountList"></param>
+        /// <param name="AAccountExists"></param>
+        /// <returns></returns>
+        public static bool AccountIsActive(Int32 ALedgerNumber,
+            string AAccountCode,
+            AAccountTable AAccountList,
+            out bool AAccountExists)
+        {
+            AAccountExists = false;
+            bool RetVal = false;
+
+            AAccountRow CurrentAccountRow = null;
+
+            if (AAccountList != null)
+            {
+                CurrentAccountRow = (AAccountRow)AAccountList.Rows.Find(new object[] { ALedgerNumber, AAccountCode });
+
+                if (CurrentAccountRow != null)
+                {
+                    AAccountExists = true;
+                    RetVal = CurrentAccountRow.AccountActiveFlag;
+                }
+            }
+
+            return RetVal;
+        }
+
+        /// <summary>
+        /// Check if a given cost centre is active
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACostCentreCode"></param>
+        /// <param name="ACostCentreList"></param>
+        /// <param name="ACostCentreExists"></param>
+        /// <returns></returns>
+        public static bool CostCentreIsActive(Int32 ALedgerNumber,
+            string ACostCentreCode,
+            ACostCentreTable ACostCentreList,
+            out bool ACostCentreExists)
+        {
+            ACostCentreExists = false;
+            bool RetVal = false;
+
+            ACostCentreRow CurrentCostCentreRow = null;
+
+            if (ACostCentreList != null)
+            {
+                CurrentCostCentreRow = (ACostCentreRow)ACostCentreList.Rows.Find(new object[] { ALedgerNumber, ACostCentreCode });
+
+                if (CurrentCostCentreRow != null)
+                {
+                    ACostCentreExists = true;
+                    RetVal = CurrentCostCentreRow.CostCentreActiveFlag;
+                }
+            }
+
+            return RetVal;
+        }
+
+        /// <summary>
         /// returns a filter for cost centre cached table
         /// </summary>
         /// <param name="APostingOnly"></param>

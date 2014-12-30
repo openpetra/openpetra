@@ -276,7 +276,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         // if the user has clicked yes to assigning Gift Destinations then offer to restart the import
                         if (OfferToRunImportAgain
                             && (MessageBox.Show(Catalog.GetString("Would you like to import this Gift Batch again?"),
-                                    Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                                    Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                                    MessageBoxDefaultButton.Button2)
                                 == DialogResult.Yes))
                         {
                             Repeat = true;
@@ -477,7 +478,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         // if the user has clicked yes to assigning Gift Destinations then offer to restart the import
                         if (OfferToRunImportAgain
                             && (MessageBox.Show(Catalog.GetString("Would you like to import these Gift Transactions again?"),
-                                    Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                                    Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                                    MessageBoxDefaultButton.Button1)
                                 == DialogResult.Yes))
                         {
                             Repeat = true;
