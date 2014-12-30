@@ -242,14 +242,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if ((txtDetailBatchControlTotal.NumberValueDecimal == null) || !txtDetailBatchControlTotal.NumberValueDecimal.HasValue)
             {
-                correctHashValue = 0m;
+                bool prev = FPetraUtilsObject.SuppressChangeDetection;
+                FPetraUtilsObject.SuppressChangeDetection = true;
+                txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
+                FPetraUtilsObject.SuppressChangeDetection = prev;
             }
             else
             {
                 correctHashValue = txtDetailBatchControlTotal.NumberValueDecimal.Value;
             }
 
-            txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
             ARow.BatchControlTotal = correctHashValue;
         }
 

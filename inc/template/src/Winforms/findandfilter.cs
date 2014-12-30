@@ -1,9 +1,10 @@
 {##FILTERANDFINDDECLARATIONS}
-#region Filter and Find
 
+/// <summary>
+/// Declaration of our Filter and Find Panel Object, which contains the user control that will need to be disposed
+/// </summary>
 TFilterAndFindPanel FFilterAndFindObject = null;
 
-#endregion
 
 {##FILTERANDFINDMETHODS}
 /// Handler for the menu items Edit/Filter and Edit/Find

@@ -544,6 +544,7 @@ namespace Ict.Petra.Client.CommonForms
                     FucoFilterAndFind.FindNextClicked += new EventHandler <TUcoFilterAndFind.TContextEventExtSearchDirectionArgs>(
                         FucoFilterAndFind_FindNextClicked);
                     FucoFilterAndFind.TabSwitched += FucoFilterAndFind_TabSwitched;
+                    FucoFilterAndFind.FilterFindTabFocused += new EventHandler(FilterFindTabGotFocus);
 
                     SetStatusBarText();
                 }
@@ -728,6 +729,14 @@ namespace Ict.Petra.Client.CommonForms
         private void FucoFilterAndFind_TabSwitched(object sender, TUcoFilterAndFind.TContextEventArgs e)
         {
             FPnlFilterFind_Resize(sender, null);
+        }
+
+        /// <summary>
+        /// Notification that the tab control has got the focus
+        /// </summary>
+        private void FilterFindTabGotFocus(object sender, EventArgs e)
+        {
+            FPetraUtilsObject.WriteToStatusBar("Use the left or right arrow keys to switch between Filter and Find.");
         }
 
         /// <summary>

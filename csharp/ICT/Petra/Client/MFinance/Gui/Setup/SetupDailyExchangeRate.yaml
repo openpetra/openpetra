@@ -2,12 +2,13 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Maintain Daily Exchange Rates
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DatasetType: Ict.Petra.Shared.MFinance.CrossLedger.Data.ExchangeRateTDS
     DetailTable: ADailyExchangeRate
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation,Ict.Petra.Shared.MFinance.CrossLedger.Data]
     FormType: edit
     Template: windowMaintainTable
-    WindowWidth: 710
-    WindowHeight: 700
+    WindowWidth: 780
+    WindowHeight: 690
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actImport: {ActionClick=Import}
@@ -15,7 +16,22 @@ RootNode:
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
+            Dock: Fill
+            Controls: [sptContent]
+        sptContent:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 475
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlTop
+            Panel2: pnlBottom
+        pnlTop:
+            Controls: [pnlFilterAndFind, pnlGridModalAndDetails]
+            BackColor: System.Drawing.SystemColors.Control
+            Dock: Fill
+        pnlGridModalAndDetails:
             Controls: [pnlGridAndModal, pnlDetails]
+            BackColor: System.Drawing.SystemColors.Control
             Dock: Fill
         pnlGridAndModal:
             Controls: [pnlGrid, pnlModalButtons]
@@ -23,11 +39,25 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+            Controls: [pnlButtons, grdDetails]
         pnlFilterAndFind:
+            Dock: Left
             ExpandedWidth: 175
-            FilterControls: [cmbDetailFromCurrencyCode, cmbDetailToCurrencyCode]
+            InitiallyExpanded: true     
+            ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
+            FilterControls: [pnlDisplayOptions]
+            ExtraFilterControls: [cmbDetailFromCurrencyCode, cmbDetailToCurrencyCode]
             FindControls: [cmbDetailFromCurrencyCode, cmbDetailToCurrencyCode]
+            Panels:
+                pnlDisplayOptions:
+                    Controls: [rgrShowRates]
+                    rgrShowRates: 
+                        Label: Show
+                        ClearButton: false
+                        OptionalValues: [=All, UsedRates, UnusedRates]
+                    rbtUsedRates:
+                    rbtUnusedRates:
+                    rbtAll:
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -50,33 +80,55 @@ RootNode:
             Stretch: horizontally
         grdDetails:
             Dock: Fill
-            Columns: [DetailFromCurrencyCode, DetailToCurrencyCode, DetailDateEffectiveFrom, DetailTimeEffectiveFrom, DetailRateOfExchange]
+            Columns: [DetailFromCurrencyCode, DetailToCurrencyCode, DetailDateEffectiveFrom, DetailTimeEffectiveFrom, DetailRateOfExchange, DetailJournalUsage, DetailGiftBatchUsage]
             CustomColumns:
                 DetailRateOfExchange: {Label=Rate of Exchange, Type=Currency(10)}
                 DetailTimeEffectiveFrom: {Label=Time, Type=ShortTime}
+                DetailJournalUsage: {Label=Journals}
+                DetailGiftBatchUsage: {Label=Gift Batches}
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: CloseDialog
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [cmbDetailFromCurrencyCode, btnEnableEdit]
-                Row1: [cmbDetailToCurrencyCode, chkHideOthers]
-                Row2: [dtpDetailDateEffectiveFrom, txtDetailTimeEffectiveFrom, Empty]
-                Row3: [txtDetailRateOfExchange, btnInvertExchangeRate, lblEnableEditDelete]
-                Row4: [lblValueOneDirection]
-                Row5: [lblValueOtherDirection]
+                Row0: [cmbDetailFromCurrencyCode]
+                Row1: [cmbDetailToCurrencyCode]
+                Row2: [chkHideOthers]
+                Row3: [dtpDetailDateEffectiveFrom, txtDetailTimeEffectiveFrom]
+                Row4: [txtDetailRateOfExchange, btnInvertExchangeRate]
+                Row5: [lblValueOneDirection]
+                Row6: [lblValueOtherDirection]
+        pnlBottom:
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
+            Controls: [pnlRateUsageLabel, pnlRateUsage]
+        pnlRateUsageLabel:
+            Dock: Top
+            Controls: [lblRateUsage]
+        pnlRateUsage:
+            Dock: Fill
+            Controls: [pnlGridUsage, pnlButtonUsage]
+        pnlGridUsage:
+            Dock: Fill
+            Controls: [grdRateUsage]
+        pnlButtonUsage:
+            Dock: Right
+            Controls: [btnRateUsage]
+
+        Empty:
         cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList, ColSpan=2, OnChange=UpdateExchangeRateLabels}
         cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList, ColSpan=2, OnChange=UpdateExchangeRateLabels}
-        chkHideOthers: {OnlySetOnce=true, CheckBoxAttachedLabel=right, Label=&Hide other 'To' currencies}
+        chkHideOthers: {OnlySetOnce=true, CheckBoxAttachedLabel=right, Label=&Hide other 'To' currencies, Tooltip=Check to hide all 'To' currencies except the current one}
         dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate Effective, Validation=true}
         txtDetailTimeEffectiveFrom: {Label=Time Effective, Width=70, Type=ShortTime, Tooltip=The time the rate becomes effective on the specified date, Validation=true}
         txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100, Validation=true}
         btnInvertExchangeRate: {Label=&Invert value, Tooltip=Click to set the inverse of the displayed rate of exchange}
-        Empty:
         lblValueOneDirection: {ColSpan=2}
         lblValueOtherDirection: {ColSpan=2}
-        btnEnableEdit: {Label=Enable Edit/Delete, ActionClick=EnableEditDelete_Clicked, Tooltip=Click to activate editing or deletion of rates that have been used} 
-        lblEnableEditDelete: {Text=Edit/Delete is Enabled}
+
+        grdRateUsage: {Dock=Fill}
+        lblRateUsage: {Label=Used By}
+        btnRateUsage: {Label=View Details}
     Menu:
         mniExchangeRates:
             mniImport:

@@ -171,8 +171,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            int nRowToSelect = 1;
+
+            TFrmGLBatch myParentForm = (TFrmGLBatch)ParentForm;
+
+            if (myParentForm.InitialBatchFound)
+            {
+                string filter = String.Format("{0}={1}", AJournalTable.GetJournalNumberDBName(), myParentForm.InitialJournalNumber);
+                DataView dv = new DataView(FMainDS.AJournal, filter, "", DataViewRowState.CurrentRows);
+
+                if (dv.Count > 0)
+                {
+                    nRowToSelect = grdDetails.DataSourceRowToIndex2(dv[0].Row) + 1;
+                }
+            }
+            else
+            {
+                nRowToSelect = (BatchChanged || FirstRun) ? 1 : FPrevRowChangedRow;
+            }
+
             //This will also call UpdateChangeableStatus
-            SelectRowInGrid((BatchChanged || FirstRun) ? 1 : FPrevRowChangedRow);
+            SelectRowInGrid(nRowToSelect);
 
             UpdateRecordNumberDisplay();
             FFilterAndFindObject.SetRecordNumberDisplayProperties();

@@ -67,9 +67,6 @@ namespace {#NAMESPACE}
     private Label FPrimaryKeyLabel = null;
     private string FDefaultDuplicateRecordHint = String.Empty;
 {#ENDIF SHOWDETAILS}
-{#IFDEF FILTERANDFIND}
-    {#FILTERANDFINDDECLARATIONS}
-{#ENDIF FILTERANDFIND}
 #endregion
 
 #region Constructor and Initialisation
@@ -1177,7 +1174,7 @@ namespace {#NAMESPACE}
     }
 {#ENDIF MASTERTABLE}
 {#IFDEF DETAILTABLE}
-    private void ValidateDataDetails({#DETAILTABLE}Row ARow)
+    private void ValidateDataDetails({#DETAILTABLETYPE}Row ARow)
     {
         TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 

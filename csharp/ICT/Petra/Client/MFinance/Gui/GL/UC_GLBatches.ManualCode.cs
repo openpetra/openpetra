@@ -139,16 +139,41 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FBatchesLoaded = false;
 
-            // Set up for current year with current and forwarding periods (on initial load this will already be set so will not fire a change)
-            FLoadAndFilterLogicObject.YearIndex = 0;
-            FLoadAndFilterLogicObject.PeriodIndex = 0;
+            TFrmGLBatch myParentForm = (TFrmGLBatch) this.ParentForm;
+            myParentForm.InitialBatchFound = false;
+
+            bool performStandardLoad = true;
+
+            if (myParentForm.InitialBatchYear >= 0)
+            {
+                FLoadAndFilterLogicObject.StatusAll = true;
+
+                int yearIndex = FLoadAndFilterLogicObject.FindYearAsIndex(myParentForm.InitialBatchYear);
+
+                if (yearIndex >= 0)
+                {
+                    FLoadAndFilterLogicObject.YearIndex = yearIndex;
+                    FLoadAndFilterLogicObject.PeriodIndex = (myParentForm.InitialBatchYear == FCurrentLedgerYear) ? 1 : 0;
+                    performStandardLoad = false;
+                }
+
+                // Reset the start-up value
+                myParentForm.InitialBatchYear = -1;
+            }
+
+            if (performStandardLoad)
+            {
+                // Set up for current year with current and forwarding periods (on initial load this will already be set so will not fire a change)
+                FLoadAndFilterLogicObject.YearIndex = 0;
+                FLoadAndFilterLogicObject.PeriodIndex = 0;
+            }
 
             // This call will get the first year's data and update the display.
             // Note: If the first year data has already been loaded once there will be no trip to the server to get any updates.
             //        if you know updates are available, you need to merge them afterwards or clear the data table first
             UpdateDisplay();
 
-            if (((TFrmGLBatch) this.ParentForm).LoadForImport)
+            if (myParentForm.LoadForImport)
             {
                 // We have been launched from the Import Batches main menu screen as opposed to the regular GL Batches menu
                 // Call the logic object to import:  this will request a CSV file and merge the batches on the server.
@@ -156,7 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FImportLogicObject.ImportBatches(TUC_GLBatches_Import.TImportDataSourceEnum.FromFile);
 
                 // Reset the flag
-                ((TFrmGLBatch) this.ParentForm).LoadForImport = false;
+                myParentForm.LoadForImport = false;
             }
 
             FBatchesLoaded = true;
@@ -167,11 +192,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateDisplay()
         {
-            Cursor prevCursor = ParentForm.Cursor;
+            TFrmGLBatch myParentForm = (TFrmGLBatch)ParentForm;
+            Cursor prevCursor = myParentForm.Cursor;
 
             try
             {
-                ParentForm.Cursor = Cursors.WaitCursor;
+                myParentForm.Cursor = Cursors.WaitCursor;
 
                 // Remember our current row position
                 int nCurrentRowIndex = GetSelectedRowIndex();
@@ -179,13 +205,35 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // This single call will fire the event that loads data and populates the grid
                 FFilterAndFindObject.ApplyFilter();
 
+                // Did the start-up specify a batch to select?
+                if (myParentForm.InitialBatchNumber > 0)
+                {
+                    nCurrentRowIndex = 1;
+                    string filter = String.Format("{0}={1}", ABatchTable.GetBatchNumberDBName(), myParentForm.InitialBatchNumber);
+                    DataView dv = new DataView(FMainDS.ABatch, filter, "", DataViewRowState.CurrentRows);
+
+                    if (dv.Count > 0)
+                    {
+                        int rowToSelect = grdDetails.DataSourceRowToIndex2(dv[0].Row) + 1;
+
+                        if (rowToSelect > 0)
+                        {
+                            nCurrentRowIndex = rowToSelect;
+                            myParentForm.InitialBatchFound = true;
+                        }
+                    }
+
+                    // Reset the start-up value
+                    myParentForm.InitialBatchNumber = -1;
+                }
+
                 // Now we can select the row index we had before (if it exists)
                 SelectRowInGrid(nCurrentRowIndex);
                 UpdateRecordNumberDisplay();
             }
             finally
             {
-                ParentForm.Cursor = prevCursor;
+                myParentForm.Cursor = prevCursor;
             }
         }
 
@@ -709,6 +757,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
 
             SetInitialFocus();
+
+            // Select the Journal tab if the screen opener specified a Journal Number
+            TFrmGLBatch myParentForm = (TFrmGLBatch)ParentForm;
+
+            if (myParentForm.InitialBatchFound && (myParentForm.InitialJournalNumber != -1))
+            {
+                myParentForm.SelectTab(TFrmGLBatch.eGLTabs.Journals);
+            }
         }
 
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)

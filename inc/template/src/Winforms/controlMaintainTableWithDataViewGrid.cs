@@ -33,9 +33,6 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}
     private int FCurrentRow;
 {#ENDIF SHOWDETAILS}
-{#IFDEF FILTERANDFIND}
-    {#FILTERANDFINDDECLARATIONS}
-{#ENDIF FILTERANDFIND}
 
     /// constructor
     public {#CLASSNAME}() : base()

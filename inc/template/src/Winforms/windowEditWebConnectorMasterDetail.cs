@@ -62,9 +62,6 @@ namespace {#NAMESPACE}
     private Label FPrimaryKeyLabel = null;
     private string FDefaultDuplicateRecordHint = String.Empty;
 {#ENDIF SHOWDETAILS}
-{#IFDEF FILTERANDFIND}
-    {#FILTERANDFINDDECLARATIONS}
-{#ENDIF FILTERANDFIND}
 #endregion
 
 #region Constructor and Initialisation

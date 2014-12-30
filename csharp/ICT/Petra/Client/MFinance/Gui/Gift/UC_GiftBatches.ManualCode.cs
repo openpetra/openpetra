@@ -220,11 +220,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAllData()
         {
+            TFrmGiftBatch myParentForm = (TFrmGiftBatch)ParentForm;
+
             // Remember our current row position
             int nCurrentRowIndex = GetSelectedRowIndex();
             int nCurrentBatchNumber = -1;
 
-            if (FPreviouslySelectedDetailRow != null)
+            if (myParentForm.InitialBatchNumber > 0)
+            {
+                nCurrentBatchNumber = myParentForm.InitialBatchNumber;
+                myParentForm.InitialBatchNumber = -1;
+            }
+            else if (FPreviouslySelectedDetailRow != null)
             {
                 nCurrentBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             }
@@ -386,7 +393,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FDateEffective = FDefaultDate;
 
-            ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
+            TFrmGiftBatch myParentForm = (TFrmGiftBatch) this.ParentForm;
+            bool performStandardLoad = true;
+
+            if (myParentForm.InitialBatchYear >= 0)
+            {
+                FLoadAndFilterLogicObject.StatusAll = true;
+
+                int yearIndex = FLoadAndFilterLogicObject.FindYearAsIndex(myParentForm.InitialBatchYear);
+
+                if (yearIndex >= 0)
+                {
+                    FLoadAndFilterLogicObject.YearIndex = yearIndex;
+                    FLoadAndFilterLogicObject.PeriodIndex = (myParentForm.InitialBatchYear == FMainDS.ALedger[0].CurrentFinancialYear) ? 1 : 0;
+                    performStandardLoad = false;
+                }
+
+                // Reset the start-up value
+                myParentForm.InitialBatchYear = -1;
+            }
+
+            myParentForm.ClearCurrentSelections();
 
             if (ViewMode)
             {
@@ -394,9 +421,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FLoadAndFilterLogicObject.DisableYearAndPeriod(true);
             }
 
-            // Set up for current year with current and forwarding periods (on initial load this will already be set so will not fire a change)
-            FLoadAndFilterLogicObject.YearIndex = 0;
-            FLoadAndFilterLogicObject.PeriodIndex = 0;
+            if (performStandardLoad)
+            {
+                // Set up for current year with current and forwarding periods (on initial load this will already be set so will not fire a change)
+                FLoadAndFilterLogicObject.YearIndex = 0;
+                FLoadAndFilterLogicObject.PeriodIndex = 0;
+            }
 
             // Get the data, populate the grid and re-select the current row (or first row if none currently selected) ...
             RefreshAllData();
@@ -900,11 +930,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void ImportBatches(System.Object sender, System.EventArgs e)
         {
-            if (!FLoadAndFilterLogicObject.StatusEditing)
-            {
-                FLoadAndFilterLogicObject.StatusEditing = true;
-            }
-
             FImportLogicObject.ImportBatches(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromFile);
         }
 
@@ -914,11 +939,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void ImportFromClipboard(System.Object sender, System.EventArgs e)
         {
-            if (!FLoadAndFilterLogicObject.StatusEditing)
-            {
-                FLoadAndFilterLogicObject.StatusEditing = true;
-            }
-
             FImportLogicObject.ImportBatches(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromClipboard);
         }
 

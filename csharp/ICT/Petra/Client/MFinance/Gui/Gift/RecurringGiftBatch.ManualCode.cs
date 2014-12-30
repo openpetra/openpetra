@@ -65,6 +65,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public bool NewDonorWarning
         {
+            // We need a get, otherwise we get a Jenkins warning that FNewDonorWarning is not used
+            private get
+            {
+                return FNewDonorWarning;
+            }
             set
             {
                 FNewDonorWarning = value;

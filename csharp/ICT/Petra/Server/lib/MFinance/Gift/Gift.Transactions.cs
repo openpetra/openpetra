@@ -919,8 +919,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ATransaction);
             Int64 LedgerPartnerKey = LedgerTable[0].PartnerKey;
 
-            bool KeyMinIsActive = false;
-            bool KeyMinExists = KeyMinistryExists(ARecipientPartnerKey, out KeyMinIsActive);
+            //bool KeyMinIsActive = false;
+            //bool KeyMinExists = KeyMinistryExists(ARecipientPartnerKey, out KeyMinIsActive);
 
             if (ARecipientPartnerKey > 0)
             {
