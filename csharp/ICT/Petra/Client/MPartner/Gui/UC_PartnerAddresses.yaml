@@ -79,13 +79,6 @@ RootNode:
         txtLocationPostalCode: {Label=Post Code, Width=100}
         cmbLocationCountryCode: {Label=Country, List=CountryList, OnChange=CountryCodeChanged, AllowDbNull=true, Width=300, ColSpan=2}
 
-        txtPPartnerLocationTelephoneNumber: {Label=Phone, Width=130, Enabled=false}
-        txtPPartnerLocationFaxNumber: {Label=Fax, Width=130, Enabled=false}
-        txtPPartnerLocationMobileNumber: {Label=Mobile, Width=130, Enabled=false}
-        txtPPartnerLocationAlternateTelephone: {Label=Alternate, Width=130, Enabled=false}
-        txtPPartnerLocationEmailAddress: {Label=Email, Width=180, Enabled=false}
-        txtPPartnerLocationUrl: {Label=URL, Width=180, Enabled=false}
-
         cmbPPartnerLocationLocationType: {Label=Location Type, List=LocationTypeList,Width=150}
         chkPPartnerLocationSendMail: {Label=Mailing Address}
         dtpPPartnerLocationDateEffective: {Label=Valid from}
