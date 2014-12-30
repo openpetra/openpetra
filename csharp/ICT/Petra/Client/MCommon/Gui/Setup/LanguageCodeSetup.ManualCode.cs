@@ -30,7 +30,9 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 
@@ -38,6 +40,11 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
     public partial class TFrmLanguageCodeSetup
     {
+        private void InitializeManualCode()
+        {
+            FPetraUtilsObject.DataSaved += HandleDataSaved;
+        }
+
         private void RunOnceOnActivationManual()
         {
             chkDetailCongressLanguage.Enabled = false;
@@ -64,6 +71,14 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPLanguage();
+        }
+
+        void HandleDataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            if (e.Success)
+            {
+                TDataCache.TMCommon.RefreshCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
+            }
         }
     }
 }

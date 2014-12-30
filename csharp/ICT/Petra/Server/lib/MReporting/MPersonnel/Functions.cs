@@ -22,24 +22,28 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
+using System.Data.Odbc;
+
+using Ict.Common;
+using Ict.Common.Data;
+using Ict.Common.DB; // Implicit reference
 using Ict.Petra.Server.MCommon.Cacheable;
+using Ict.Petra.Server.MPartner.Partner.Cacheable;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MReporting;
+using Ict.Petra.Server.MReporting.MPartner;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-using Ict.Petra.Shared.MReporting;
-using Ict.Petra.Server.MReporting.MPartner;
-using Ict.Common;
-using Ict.Common.Data; // Implicit reference
-using Ict.Common.DB; // Implicit reference
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data.Odbc;
-using System.Data;
+using Ict.Petra.Shared.MReporting; // Implicit reference
+
 
 namespace Ict.Petra.Server.MReporting.MPersonnel
 {
@@ -835,6 +839,8 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         {
             PPartnerRelationshipTable RelationshipTable;
             PPartnerTable ChurchTable;
+            string PhoneNumber;
+            string EmailAddress;
 
             Dictionary <String, String>GatheredResults = new Dictionary <String, String>();
 
@@ -899,43 +905,24 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                     }
                 }
 
-                // also put the phone number and email etc into the parameters
-                String TelephoneNumber;
-                String FaxNumber;
-
-                if (PartnerLocationRow.Extension > 0)
-                {
-                    TelephoneNumber = PartnerLocationRow.TelephoneNumber + PartnerLocationRow.Extension.ToString();
-                }
-                else
-                {
-                    TelephoneNumber = PartnerLocationRow.TelephoneNumber;
-                }
-
-                if (PartnerLocationRow.FaxExtension > 0)
-                {
-                    FaxNumber = PartnerLocationRow.FaxNumber + PartnerLocationRow.FaxExtension.ToString();
-                }
-                else
-                {
-                    FaxNumber = PartnerLocationRow.FaxNumber;
-                }
-
                 if (IsFirstAddress)
                 {
-                    GatheredResults.Add("Church-Telephone", TelephoneNumber);
-                    GatheredResults.Add("Church-FaxNumber", FaxNumber);
-                    GatheredResults.Add("Church-EmailAddress", PartnerLocationRow.EmailAddress);
-                    GatheredResults.Add("Church-MobileNumber", PartnerLocationRow.MobileNumber);
-                    GatheredResults.Add("Church-AlternateTelephone", PartnerLocationRow.AlternateTelephone);
-                }
-                else
-                {
-                    GatheredResults["Church-Telephone"] += ", " + TelephoneNumber;
-                    GatheredResults["Church-FaxNumber"] += ", " + FaxNumber;
-                    GatheredResults["Church-EmailAddress"] += ", " + PartnerLocationRow.EmailAddress;
-                    GatheredResults["Church-MobileNumber"] += ", " + PartnerLocationRow.MobileNumber;
-                    GatheredResults["Church-AlternateTelephone"] += ", " + PartnerLocationRow.AlternateTelephone;
+                    // also put the phone number and email etc into the parameters
+                    TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhone(Row.PartnerKey,
+                        out PhoneNumber, out EmailAddress);
+
+                    // Add Calculation Parameter for 'Primary Email Address' (String.Empty is supplied if the Partner hasn't got one)
+                    situation.GetParameters().AddCalculationParameter("Church-EmailAddress",
+                        new TVariant(EmailAddress ?? String.Empty));
+
+                    // Add Calculation Parameter for 'Primary Phone Number' (String.Empty is supplied if the Partner hasn't got one)
+                    situation.GetParameters().AddCalculationParameter("Church-Telephone",
+                        new TVariant(PhoneNumber ?? String.Empty));
+
+                    // At present we no longer support the reporting of the following, so we set those Calculation Parameters to String.Empty
+                    GatheredResults.Add("Church-FaxNumber", String.Empty);
+                    GatheredResults.Add("Church-MobileNumber", String.Empty);
+                    GatheredResults.Add("Church-AlternateTelephone", String.Empty);
                 }
 
                 IsFirstAddress = false;

@@ -48,6 +48,7 @@ using Ict.Common.Remoting.Client;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Shared.MSysMan.Validation;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Client.App.Core.RemoteObjects;

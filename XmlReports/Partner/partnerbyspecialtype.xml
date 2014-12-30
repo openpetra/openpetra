@@ -2,51 +2,51 @@
 <!DOCTYPE reports SYSTEM "../reports.dtd" >
 <reports>
 
-	<report id="Partner By Special Type">
-		<description>
-			Report for the Partner Addresses for all partners with or without certain special types
-		</description>
-	<reportparameters>
-		<reportparameter name="param_explicit_specialtypes"/>
-		<reportparameter name="param_exclude_specialtypes"/>
-	</reportparameters>
+    <report id="Partner By Special Type">
+        <description>
+            Report for the Partner Addresses for all partners with or without certain special types
+        </description>
+    <reportparameters>
+        <reportparameter name="param_explicit_specialtypes"/>
+        <reportparameter name="param_exclude_specialtypes"/>
+    </reportparameters>
 
-	<reportheader></reportheader>
-	<pageheader>
-		<field whichfield="title1"><value text="Partner By Special Types"></value></field>
-		<field whichfield="title2"><value function="getSiteName()"></value></field>
-		<field whichfield="descr1">
-			<value text="Sorted by: "></value>
-			<value variable="param_sortby_readable"></value>
-		</field>
-		<field whichfield="period2">
-			<fielddetail>
+    <reportheader></reportheader>
+    <pageheader>
+        <field whichfield="title1"><value text="Partner By Special Types"></value></field>
+        <field whichfield="title2"><value function="getSiteName()"></value></field>
+        <field whichfield="descr1">
+            <value text="Sorted by: "></value>
+            <value variable="param_sortby_readable"></value>
+        </field>
+        <field whichfield="period2">
+            <fielddetail>
                 <value condition="gt(length({param_explicit_specialtypes}), 1)" text="Only special types: "/>
                 <value condition="gt(length({param_explicit_specialtypes}), 1)" variable="param_explicit_specialtypes"/>
                 <value condition="not(or(gt(length({param_explicit_specialtypes}), 1),gt(length({param_exclude_specialtypes}), 1)))" text="No filter"/>
-			</fielddetail>
-		</field>
-		<field whichfield="period3">
-			<fielddetail>
+            </fielddetail>
+        </field>
+        <field whichfield="period3">
+            <fielddetail>
                 <value condition="gt(length({param_exclude_specialtypes}), 1)" text="Without special types: "/>
                 <value condition="gt(length({param_exclude_specialtypes}), 1)" variable="param_exclude_specialtypes"/>
-			</fielddetail>
-		</field>
-	</pageheader>
+            </fielddetail>
+        </field>
+    </pageheader>
 
-	<calculations>
-		<calculation id="Select Partners" returns="PartnerKey, ShortName, PartnerClass" returnsFormat="row">
-			<query>
-				<queryDetail><value>
-					SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
-					PUB_p_partner.p_partner_short_name_c AS ShortName,
-					PUB_p_partner.p_partner_class_c AS PartnerClass
+    <calculations>
+        <calculation id="Select Partners" returns="PartnerKey, ShortName, PartnerClass" returnsFormat="row">
+            <query>
+                <queryDetail><value>
+                    SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
+                    PUB_p_partner.p_partner_short_name_c AS ShortName,
+                    PUB_p_partner.p_partner_class_c AS PartnerClass
                     FROM   PUB_p_partner, pub_p_partner_location, pub_p_location, PUB_p_partner_type as ptype
-					WHERE ptype.p_partner_key_n = PUB_p_partner.p_partner_key_n
+                    WHERE ptype.p_partner_key_n = PUB_p_partner.p_partner_key_n
                       AND NOT PUB_p_partner.p_partner_key_n = 0 
-					  AND pub_p_partner_location.p_partner_key_n = pub_p_partner.p_partner_key_n
-					  AND pub_p_partner_location.p_location_key_i = pub_p_location.p_location_key_i
-				</value></queryDetail>
+                      AND pub_p_partner_location.p_partner_key_n = pub_p_partner.p_partner_key_n
+                      AND pub_p_partner_location.p_location_key_i = pub_p_location.p_location_key_i
+                </value></queryDetail>
                 <queryDetail condition="gt(length({param_exclude_specialtypes}), 1)">
                     <value> AND NOT </value>
                     <value function="csv" text="ptype.p_type_code_c" variable="param_exclude_specialtypes"/>
@@ -65,9 +65,9 @@
                     <value> AND NOT PUB_p_partner.p_no_solicitations_l </value>
                 </queryDetail>
                 <queryDetail condition="eq({param_only_addresses_valid_on},true)"><value>
-						AND pub_p_partner_location.p_send_mail_l = true
-						AND {#param_today#} &gt;= pub_p_partner_location.p_date_effective_d 
-						AND ({#param_today#} &lt;= pub_p_partner_location.p_date_good_until_d OR pub_p_partner_location.p_date_good_until_d IS NULL)
+                        AND pub_p_partner_location.p_send_mail_l = true
+                        AND {#param_today#} &gt;= pub_p_partner_location.p_date_effective_d 
+                        AND ({#param_today#} &lt;= pub_p_partner_location.p_date_good_until_d OR pub_p_partner_location.p_date_good_until_d IS NULL)
                 </value></queryDetail>
                 <queryDetail condition="gt(length({param_city}), 1)">
                     <value> AND LOWER(pub_p_location.p_city_c) = LOWER({param_city})</value>
@@ -76,51 +76,47 @@
                     <value> AND </value>
                     <value function="csv" text="pub_p_location.p_country_code_c" variable="param_country"/>
                 </queryDetail>
-			</query>
-		</calculation> <!-- Select Partners -->
-	  
-		<calculation id="GetBestAddressDetails" returns="City" returnsFormat="internal">
-			<query>
-				<queryDetail>
-					<value text="NO-SQL"/>
-					<value function="GetPartnerBestAddress({PartnerKey})"/>
-					<value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
-					<value function="assign(TelephoneNumber, concatenate({TelephoneNumber},{Extension}))"/>
-					<value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
-					<value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
-					<value function="ConditionRow(1)"/>
-				</queryDetail>
-			</query>
-		</calculation>
-	
-		<calculation id="CleanUp" returns="PartnerClassShort, TelephoneNumber, FaxNumber, Field" returnsFormat="text">
-			<query>
-				<!--<queryDetail>
-					<value text="NO-SQL"/>
-					<value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
-					<value function="assign(TelephoneNumber, concatenate({TelephonePre},{TelephoneExtension}))"/>
-					<value function="assign(FaxNumber, concatenate({FaxPre}, {FaxExtension}))"/>
-					<value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
-				</queryDetail>-->
-				<queryDetail>
-					<value text="NO-SQL"/>
-					<value function="assign(PostcodeCheck, AddressMeetsPostCodeCriteriaOrEmpty(true,{param_region},{param_postcode_from},{param_postcode_to}))"/>
-				</queryDetail>
-				<queryDetail condition="eq({PostcodeCheck}, false)">
-					<value text="NO-SQL"/>
-					<value function="ConditionRow(0)"/>
-				</queryDetail>
-			</query>
-		</calculation>
+            </query>
+        </calculation> <!-- Select Partners -->
+      
+        <calculation id="GetBestAddressDetails" returns="City" returnsFormat="internal">
+            <query>
+                <queryDetail>
+                    <value text="NO-SQL"/>
+                    <value function="GetPartnerBestAddress({PartnerKey})"/>
+                    <value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
+                    <value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
+                    <value function="ConditionRow(1)"/>
+                </queryDetail>
+            </query>
+        </calculation>
+    
+        <calculation id="CleanUp" returns="PartnerClassShort, TelephoneNumber, FaxNumber, Field" returnsFormat="text">
+            <query>
+                <!--<queryDetail>
+                    <value text="NO-SQL"/>
+                    <value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
+                    <value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
+                </queryDetail>-->
+                <queryDetail>
+                    <value text="NO-SQL"/>
+                    <value function="assign(PostcodeCheck, AddressMeetsPostCodeCriteriaOrEmpty(true,{param_region},{param_postcode_from},{param_postcode_to}))"/>
+                </queryDetail>
+                <queryDetail condition="eq({PostcodeCheck}, false)">
+                    <value text="NO-SQL"/>
+                    <value function="ConditionRow(0)"/>
+                </queryDetail>
+            </query>
+        </calculation>
 
-		<calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
-			<caption><value text="Partner name"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="ShortName"></value>
-				</queryDetail>
-			</query>
-		</calculation>
+        <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+            <caption><value text="Partner name"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="ShortName"></value>
+                </queryDetail>
+            </query>
+        </calculation>
 
         <!-- <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
             <caption><value text="Partner Name"></value></caption>
@@ -131,275 +127,257 @@
             </query>
         </calculation> -->
 
-		<calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
-			<caption><value text="Partner Key"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="PartnerKey"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		  
-		<calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
-			<caption><value text="E-Mail Address"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="EMailAddress"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Street Name" returns="text" returnsFormat="text">
-			<caption><value text="Street Name"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="StreetName"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="First Address Line" returns="text" returnsFormat="text">
-			<caption><value text="First Address Line"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="Locality"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Third Address Line" returns="text" returnsFormat="text">
-			<caption><value text="Third Address Line"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="Address3"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Country" returns="text" returnsFormat="text">
-			<caption><value text="Country"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="CountryCode"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="County" returns="text" returnsFormat="text">
-			<caption><value text="County"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="County"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="City" returns="text" returnsFormat="text">
-			<caption><value text="City"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="City"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Post Code" returns="text" returnsFormat="text">
-			<caption><value text="Post Code"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="PostalCode"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="PartnerClass" returns="text" returnsFormat="text">
-			<query>
-				<queryDetail>
-					<value variable="PartnerClass"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation id="Class Short Name" returnsFormat="text" returns="text" align="left">
-			<query>
-				<queryDetail>
-					<value variable="PartnerClassShort"/>
-				</queryDetail>                                          
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Partner Class" returns="text" returnsFormat="text">
-			<caption>
-				<value text="Class"></value>
-			</caption>
-			<query>
-				<queryDetail>
-					<value variable="PartnerClassShort"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Telephone" returns="text" returnsFormat="text">
-			<caption><value text="Telephone"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="TelephoneNumber"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="TelephonePre" returns="text" returnsFormat="text">
-			<query>
-				<queryDetail>
-					<value variable="TelephonePre"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="TelephoneExtension" returns="text" returnsFormat="text">
-			<caption><value text=""></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="TelephoneExtension"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-
-		<calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
-			<caption><value text="Alternate Telephone"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="AlternateTelephone"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Fax" returns="text" returnsFormat="text">
-			<caption><value text="Fax"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="FaxNumber"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="FaxPre" returns="text" returnsFormat="text">
-			<query>
-				<queryDetail>
-					<value variable="FaxPre"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="FaxExtension" returns="text" returnsFormat="text">
-			<caption><value text=""></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="FaxExtension"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-
-		<calculation align="left" id="Field" returns="text" returnsFormat="text">
-			<caption><value text="Field"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="Field"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Mobile" returns="text" returnsFormat="text">
-			<caption><value text="Mobile"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="MobileNumber"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Url" returns="text" returnsFormat="text">
-			<caption><value text="Url"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="Url"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Address Type" returns="text" returnsFormat="text">
-			<caption><value text="Address Type"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="LocationType"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Send Mail" returns="text" returnsFormat="text">
-			<caption><value text="Send Mail"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="SendMail"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Address valid to" returns="text" returnsFormat="formatteddate">
-			<caption><value text="Valid to"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="DateGoodUntil"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="Address valid from" returns="text" returnsFormat="formatteddate">
-			<caption><value text="Valid from"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="DateEffective"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="LocationKey" returns="text" returnsFormat="text">
-			<caption><value text="Location Key"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="LocationKey"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="SiteKey" returns="text" returnsFormat="text">
-			<caption><value text="Site Key"></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="SiteKey"></value>
-				</queryDetail>
-			</query>
-		</calculation>
+        <calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
+            <caption><value text="Partner Key"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="PartnerKey"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+          
+        <calculation align="left" id="Primary E-Mail" returns="text" returnsFormat="text">
+            <caption><value text="Primary E-Mail"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="EMailAddress"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Street Name" returns="text" returnsFormat="text">
+            <caption><value text="Street Name"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="StreetName"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="First Address Line" returns="text" returnsFormat="text">
+            <caption><value text="First Address Line"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="Locality"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Third Address Line" returns="text" returnsFormat="text">
+            <caption><value text="Third Address Line"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="Address3"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Country" returns="text" returnsFormat="text">
+            <caption><value text="Country"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="CountryCode"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="County" returns="text" returnsFormat="text">
+            <caption><value text="County"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="County"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="City" returns="text" returnsFormat="text">
+            <caption><value text="City"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="City"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Post Code" returns="text" returnsFormat="text">
+            <caption><value text="Post Code"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="PostalCode"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="PartnerClass" returns="text" returnsFormat="text">
+            <query>
+                <queryDetail>
+                    <value variable="PartnerClass"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation id="Class Short Name" returnsFormat="text" returns="text" align="left">
+            <query>
+                <queryDetail>
+                    <value variable="PartnerClassShort"/>
+                </queryDetail>                                          
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Partner Class" returns="text" returnsFormat="text">
+            <caption>
+                <value text="Class"></value>
+            </caption>
+            <query>
+                <queryDetail>
+                    <value variable="PartnerClassShort"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Primary Phone" returns="text" returnsFormat="text">
+            <caption><value text="Primary Phone"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="TelephoneNumber"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="TelephonePre" returns="text" returnsFormat="text">
+            <query>
+                <queryDetail>
+                    <value variable="TelephonePre"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
+            <caption><value text="Alternate Telephone"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="AlternateTelephone"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Fax" returns="text" returnsFormat="text">
+            <caption><value text="Fax"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="FaxNumber"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="FaxPre" returns="text" returnsFormat="text">
+            <query>
+                <queryDetail>
+                    <value variable="FaxPre"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Field" returns="text" returnsFormat="text">
+            <caption><value text="Field"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="Field"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Mobile" returns="text" returnsFormat="text">
+            <caption><value text="Mobile"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="MobileNumber"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Url" returns="text" returnsFormat="text">
+            <caption><value text="Url"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="Url"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Address Type" returns="text" returnsFormat="text">
+            <caption><value text="Address Type"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="LocationType"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Send Mail" returns="text" returnsFormat="text">
+            <caption><value text="Send Mail"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="SendMail"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Address valid to" returns="text" returnsFormat="formatteddate">
+            <caption><value text="Valid to"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="DateGoodUntil"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="Address valid from" returns="text" returnsFormat="formatteddate">
+            <caption><value text="Valid from"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="DateEffective"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="LocationKey" returns="text" returnsFormat="text">
+            <caption><value text="Location Key"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="LocationKey"></value>
+                </queryDetail>
+            </query>
+        </calculation>
+        
+        <calculation align="left" id="SiteKey" returns="text" returnsFormat="text">
+            <caption><value text="Site Key"></value></caption>
+            <query>
+                <queryDetail>
+                    <value variable="SiteKey"></value>
+                </queryDetail>
+            </query>
+        </calculation>
       
-	</calculations>
+    </calculations>
     
-	<levels>    
-		<level name="main">
-			<detail>
+    <levels>    
+        <level name="main">
+            <detail>
                 <lowerLevelReport calculation="Select Partners" level="Partner Details"></lowerLevelReport>
-			</detail>
-		</level> <!-- main -->
+            </detail>
+        </level> <!-- main -->
 
-		  <!-- Partner Details -->
-		<level name="Partner Details" identification="PartnerKey">
-			<header>
-			</header>
-			<detail>
+          <!-- Partner Details -->
+        <level name="Partner Details" identification="PartnerKey">
+            <header>
+            </header>
+            <detail>
                 <field whichfield="Columns" calculation="GetBestAddressDetails"></field>
-				<field calculation="CleanUp"  whichfield="Columns"></field>
-			</detail>
-		</level><!-- Partner Details -->
-	</levels>
+                <field calculation="CleanUp"  whichfield="Columns"></field>
+            </detail>
+        </level><!-- Partner Details -->
+    </levels>
 
 </report><!-- Partner By Special Type -->
 </reports>

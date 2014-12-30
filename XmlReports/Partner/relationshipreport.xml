@@ -388,7 +388,7 @@
 				<value text="NO-SQL"/>
 				<value function="GetPartnerBestAddress({Rel1PartnerKey})"/>
 				<!-- move the values to the Partner 1 Addresses -->
-				<value function="assign(Rel1Telephone, concatenate({TelephoneNumber},{Extension}))"/>
+				<value function="assign(Rel1Telephone, {TelephoneNumber})"/>
 				<value function="assign(Rel1Locality, {Locality})"/>
 				<value function="assign(Rel1Address3, {Address3})"/>
 				<value function="assign(Rel1City, {City})"/>
@@ -403,7 +403,7 @@
 				
 				<!-- Get best address of partner 2 -->
 				<value function="GetPartnerBestAddress({Rel2PartnerKey})"/>
-				<value function="assign(Telephone, concatenate({TelephoneNumber},{Extension}))"/>
+				<value function="assign(Telephone, {TelephoneNumber})"/>
 				
 				<!-- Hide rows when "mailing address only" is checked and we don't have a mailing address -->
 				<value function ="ConditionRow(not(and(and(eq({param_mailing_addresses_only}, true), not({SendMail})), eq({param_use_reciprocal_relationship}, true))))"/>
@@ -569,8 +569,8 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Partner 1 Address E-Mail" returns="text" returnsFormat="text">
-		<caption><value text="P1 Email"></value></caption>
+	<calculation align="left" id="Partner 1 Primary E-Mail" returns="text" returnsFormat="text">
+		<caption><value text="P1 Primary Email"></value></caption>
 		<query>
 			<queryDetail>
 				<value variable="Rel1EmailAddress"></value>
@@ -596,8 +596,8 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Partner 1 Address Telephone" returns="text" returnsFormat="text">
-		<caption><value text="P1 Telephone"></value></caption>
+	<calculation align="left" id="Partner 1 Primary Phone" returns="text" returnsFormat="text">
+		<caption><value text="P1 Primary Phone"></value></caption>
 		<query>
 			<queryDetail>
 				<value variable="Rel1Telephone"></value>
@@ -662,8 +662,8 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Partner 2 Address E-Mail" returns="text" returnsFormat="text">
-		<caption><value text="P2 Email"></value></caption>
+	<calculation align="left" id="Partner 2 Primary E-Mail" returns="text" returnsFormat="text">
+		<caption><value text="P2 Primary Email"></value></caption>
 		<query>
 			<queryDetail>
 				<value variable="EmailAddress"></value>
@@ -689,8 +689,8 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Partner 2 Address Telephone" returns="text" returnsFormat="text">
-		<caption><value text="P2 Telephone"></value></caption>
+	<calculation align="left" id="Partner 2 Primary Phone" returns="text" returnsFormat="text">
+		<caption><value text="P2 Primary Phone"></value></caption>
 		<query>
 			<queryDetail>
 				<value variable="Telephone"></value>

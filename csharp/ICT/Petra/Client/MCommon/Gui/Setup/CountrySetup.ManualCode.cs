@@ -30,16 +30,23 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
     public partial class TFrmCountrySetup
     {
+        private void InitializeManualCode()
+        {
+            FPetraUtilsObject.DataSaved += HandleDataSaved;
+        }
+
         private void NewRowManual(ref PCountryRow ARow)
         {
             string newName = Catalog.GetString("NEWCODE");
@@ -85,6 +92,14 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
             TSharedValidation_CacheableDataTables.ValidateCountrySetupManual(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+        }
+
+        void HandleDataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            if (e.Success)
+            {
+                TDataCache.TMCommon.RefreshCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
+            }
         }
     }
 }

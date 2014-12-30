@@ -79,25 +79,19 @@
             Name: County
             Parameter: 3.0
         Para12:
-            Name: Telephone Number
-            Parameter: 2.0
-        Para13:
-            Name: Telephone Extension
-            Parameter: 1.0
+            Name: Primary Phone
+            Parameter: 3.0
         Para14:
             Name: Alternate Phone
             Parameter: 2.5
         Para15:
             Name: Fax Number
             Parameter: 2.0
-        Para16:
-            Name: Fax Extension
-            Parameter: 1.5
         Para17:
             Name: Mobile Number
             Parameter: 2.5
         Para18: 
-            Name: E-Mail
+            Name: Primary E-Mail
             Parameter: 3.0
         Para19:
             Name: Total Given

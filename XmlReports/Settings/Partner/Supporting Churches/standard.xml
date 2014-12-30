@@ -17,8 +17,8 @@
   <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
   <Parameter id="param_calculation" column="4" value="eString:Partner Address" />
   <Parameter id="ColumnWidth" column="4" value="eInteger:10" />
-  <Parameter id="param_calculation" column="5" value="eString:E-Mail Address" />
+  <Parameter id="param_calculation" column="5" value="eString:Primary E-Mail" />
   <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
-  <Parameter id="param_calculation" column="6" value="eString:Telephone" />
+  <Parameter id="param_calculation" column="6" value="eString:Primary Phone" />
   <Parameter id="ColumnWidth" column="6" value="eInteger:3" />
 </Parameters>

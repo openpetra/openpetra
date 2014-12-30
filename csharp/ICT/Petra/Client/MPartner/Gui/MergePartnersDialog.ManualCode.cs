@@ -83,6 +83,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// PartnerKey of the 'From' Partner (available once the 'OK' Button has been clicked).
+        /// </summary>
+        public long FromPartnerKey
+        {
+            get
+            {
+                return FFromPartnerKey;
+            }
+        }
+
+        /// <summary>
+        /// PartnerKey of the 'To' Partner (available once the 'OK' Button has been clicked).
+        /// </summary>
+        public long ToPartnerKey
+        {
+            get
+            {
+                return FToPartnerKey;
+            }
+        }
+
         private void InitializeManualCode()
         {
             txtMergeFrom.ShowLabel = true;
@@ -198,6 +220,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtMergeTo.Text = "";
             txtMergeFrom.PartnerClass = "";
             txtMergeTo.PartnerClass = "";
+            btnOK.Enabled = false;
         }
 
         // starts the merge process

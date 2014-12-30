@@ -224,9 +224,9 @@
         </query>
       </calculation>
 
-      <calculation id="E-Mail Address" returnsFormat="text" returns="text">
+      <calculation id="Primary E-Mail" returnsFormat="text" returns="text">
         <caption>
-          <value text="E-mail Address"/>
+          <value text="Primary E-mail"/>
         </caption>
         <query>
           <queryDetail>
@@ -235,14 +235,13 @@
         </query>
       </calculation>
 
-      <calculation align="left" id="Telephone" returns="text" returnsFormat="text">
+      <calculation align="left" id="Primary Phone" returns="text" returnsFormat="text">
         <caption>
-          <value text="Telephone"/>
+          <value text="Primary Phone"/>
         </caption>
         <query>
           <queryDetail>
             <value variable="TelephoneNumber"></value>
-            <value variable="Extension"></value>
           </queryDetail>
         </query>
       </calculation>
@@ -252,12 +251,8 @@
           <value text="Fax Number"/>
         </caption>
         <query>
-          <queryDetail condition="lt({FaxNumber}, 1)">
+          <queryDetail>
             <value variable="FaxNumber"></value>
-          </queryDetail>
-          <queryDetail condition="gt({FaxNumber}, 0)">
-            <value variable="FaxNumber"></value>
-            <value variable="FaxExtension"></value>
           </queryDetail>
         </query>
       </calculation>

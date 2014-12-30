@@ -120,7 +120,6 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             PartnerLocationRow.SiteKey = DomainManager.GSiteKey;
             PartnerLocationRow.PartnerKey = PartnerRow.PartnerKey;
             PartnerLocationRow.LocationKey = ALocationKey;
-            PartnerLocationRow.TelephoneNumber = PersonRow.PartnerKey.ToString();
             AMainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
 
             return PersonRow;
@@ -314,7 +313,6 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             PartnerLocationRow.SiteKey = LocationRow.SiteKey;
             PartnerLocationRow.PartnerKey = APartnerKey;
             PartnerLocationRow.LocationKey = LocationRow.LocationKey;
-            PartnerLocationRow.TelephoneNumber = APartnerKey.ToString();
             AMainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
         }
 

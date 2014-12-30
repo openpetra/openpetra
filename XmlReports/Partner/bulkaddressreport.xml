@@ -128,8 +128,6 @@
 				<value function="GetPartnerBestAddress({PartnerKey})"/>
 				<value function="assign(NumberOfAddresses, add({NumberOfAddresses}, 1))"/>
 				<value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
-				<value function="assign(TelephoneNumber, concatenate({TelephoneNumber},{Extension}))"/>
-				<value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
 				<value function="assign(AddressFlag, valid address)"/>
 			</queryDetail>
 		
@@ -248,8 +246,8 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
-			<caption><value text="E-Mail Address"></value></caption>
+	<calculation align="left" id="Primary E-Mail" returns="text" returnsFormat="text">
+			<caption><value text="Primary E-Mail"></value></caption>
 			<query>
 				<queryDetail>
 					<value variable="EMailAddress"></value>
@@ -257,8 +255,8 @@
 			</query>
 		</calculation>
 	
-	<calculation align="left" id="Telephone" returns="text" returnsFormat="text">
-			<caption><value text="Telephone"></value></caption>
+	<calculation align="left" id="Primary Phone" returns="text" returnsFormat="text">
+			<caption><value text="Primary Phone"></value></caption>
 			<query>
 				<queryDetail>
 					<value variable="TelephoneNumber"></value>
@@ -274,15 +272,6 @@
 			</query>
 		</calculation>
 		
-		<calculation align="left" id="TelephoneExtension" returns="text" returnsFormat="text">
-			<caption><value text=""></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="TelephoneExtension"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-
 		<calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
 			<caption><value text="Alternate Telephone"></value></caption>
 			<query>
@@ -305,15 +294,6 @@
 			<query>
 				<queryDetail>
 					<value variable="FaxPre"></value>
-				</queryDetail>
-			</query>
-		</calculation>
-		
-		<calculation align="left" id="FaxExtension" returns="text" returnsFormat="text">
-			<caption><value text=""></value></caption>
-			<query>
-				<queryDetail>
-					<value variable="FaxExtension"></value>
 				</queryDetail>
 			</query>
 		</calculation>

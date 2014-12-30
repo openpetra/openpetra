@@ -27,6 +27,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Data;
 using Ict.Common.IO;
+using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -76,8 +77,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             return Header;
         }
 
-        private void WriteLocation(PLocationRow ALocationRow, PPartnerLocationRow APartnerLocationRow)
+        private void WriteLocation(PLocationRow ALocationRow, PPartnerLocationRow APartnerLocationRow,
+            TLocationPK ABestAddressPK)
         {
+            string PhoneNumber;
+            string EmailAddress;
+            string FaxNumber;
+
             Write(ALocationRow.IsSiteKeyNull() ? 0 : ALocationRow.SiteKey);
             Write(ALocationRow.IsLocalityNull() ? "" : ALocationRow.Locality);
             Write(ALocationRow.IsStreetNameNull() ? "" : ALocationRow.StreetName);
@@ -93,11 +99,34 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             Write(APartnerLocationRow.IsDateGoodUntilNull() ? "?" : APartnerLocationRow.DateGoodUntil.Value.ToString(DATEFORMAT));
             Write(APartnerLocationRow.IsLocationTypeNull() ? "" : APartnerLocationRow.LocationType);
             Write(APartnerLocationRow.IsSendMailNull() ? false : APartnerLocationRow.SendMail);
-            Write(APartnerLocationRow.IsEmailAddressNull() ? "" : APartnerLocationRow.EmailAddress);
-            Write(APartnerLocationRow.IsTelephoneNumberNull() ? "" : APartnerLocationRow.TelephoneNumber);
-            Write(APartnerLocationRow.IsExtensionNull() ? 0 : APartnerLocationRow.Extension);
-            Write(APartnerLocationRow.IsFaxNumberNull() ? "" : APartnerLocationRow.FaxNumber);
-            Write(APartnerLocationRow.IsFaxExtensionNull() ? 0 : APartnerLocationRow.FaxExtension);
+
+            if ((APartnerLocationRow.LocationKey == ABestAddressPK.LocationKey)
+                && (APartnerLocationRow.SiteKey == ABestAddressPK.SiteKey))
+            {
+                // For the Location that is the 'Best Address' of the Partner we export 'Primary Phone Number',
+                // 'Primary E-mail Address' and the 'Fax Number'.
+                // They are exported for backwards compatibility as part of the 'Location' information as that is the only
+                // place where the data was/is stored (and was/is seen and was/is maintained by the user) in Petra 2.x!
+                TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax(APartnerLocationRow.PartnerKey,
+                    out PhoneNumber, out EmailAddress, out FaxNumber);
+
+                Write(EmailAddress ?? String.Empty);
+                Write(PhoneNumber ?? String.Empty);
+                Write(0);  // Phone Extensions are no longer kept in the Contact Details scheme so we can't export them...
+                Write(FaxNumber ?? String.Empty);
+                Write(0);  // Fax Extensions are no longer kept in the Contact Details scheme so we can't export them...
+            }
+            else
+            {
+                // For any Location that isn't the 'Best Address' of the Partner: Export empty data for EmailAddress,
+                // PhoneNumber, (Phone) Extension, Fax and Fax Extension.
+                Write(String.Empty);
+                Write(String.Empty);
+                Write(0);
+                Write(String.Empty);
+                Write(0);
+            }
+
             WriteLine();
         }
 
@@ -823,6 +852,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         public string ExportPartnerExt(PartnerImportExportTDS AMainDS, Int64 ASiteKey, Int32 ALocationKey, StringCollection ASpecificBuildingInfo)
         {
             PPartnerRow PartnerRow = AMainDS.PPartner[0];
+            TLocationPK BestAddressPK;
 
             StartWriting();
 
@@ -922,6 +952,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 WriteLine();
             }
 
+            BestAddressPK = Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(AMainDS);
+
             //
             // If I have not been given a locationKey, I can pull one out of the LocationTable now,
             // so that the code below works.
@@ -948,7 +980,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (AMainDS.PLocation.DefaultView.Count > 0)
             {
                 WriteLocation((PLocationRow)AMainDS.PLocation.DefaultView[0].Row,
-                    (PPartnerLocationRow)AMainDS.PPartnerLocation.DefaultView[0].Row);
+                    (PPartnerLocationRow)AMainDS.PPartnerLocation.DefaultView[0].Row, BestAddressPK);
                 FirstAddressWritten = true;
             }
 
@@ -973,7 +1005,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             PLocationTable.GetLocationKeyDBName(),
                             PartnerLocationRow.LocationKey);
 
-                    WriteLocation((PLocationRow)AMainDS.PLocation.DefaultView[0].Row, PartnerLocationRow);
+                    WriteLocation((PLocationRow)AMainDS.PLocation.DefaultView[0].Row, PartnerLocationRow, BestAddressPK);
                     FirstAddressWritten = true;
                 }
             }
@@ -1008,6 +1040,23 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(PartnerTypeRow.IsTypeCodeNull() ? "" : PartnerTypeRow.TypeCode);
                 Write(PartnerTypeRow.IsValidFromNull() ? "?" : PartnerTypeRow.ValidFrom.Value.ToString(DATEFORMAT));
                 Write(PartnerTypeRow.IsValidUntilNull() ? "?" : PartnerTypeRow.ValidUntil.Value.ToString(DATEFORMAT));
+                WriteLine();
+            }
+
+            foreach (PPartnerAttributeRow PartnerAttributeRow in AMainDS.PPartnerAttribute.Rows)
+            {
+                Write("PARTNERATTRIBUTE");
+                WriteLine();
+                Write(PartnerAttributeRow.IsAttributeTypeNull() ? "" : PartnerAttributeRow.AttributeType);
+                Write(PartnerAttributeRow.IsIndexNull() ? 0 : PartnerAttributeRow.Index);
+                Write(PartnerAttributeRow.IsValueNull() ? "" : PartnerAttributeRow.Value);
+                Write(PartnerAttributeRow.IsCommentNull() ? "" : PartnerAttributeRow.Comment);
+                Write(PartnerAttributeRow.IsPrimaryNull() ? false : PartnerAttributeRow.Primary);
+                Write(PartnerAttributeRow.IsWithinOrgansiationNull() ? false : PartnerAttributeRow.WithinOrgansiation);
+                Write(PartnerAttributeRow.IsSpecialisedNull() ? false : PartnerAttributeRow.Specialised);
+                Write(PartnerAttributeRow.IsConfidentialNull() ? false : PartnerAttributeRow.Confidential);
+                Write(PartnerAttributeRow.IsCurrentNull() ? false : PartnerAttributeRow.Current);
+                Write(PartnerAttributeRow.IsNoLongerCurrentFromNull() ? "?" : PartnerAttributeRow.NoLongerCurrentFrom.Value.ToString(DATEFORMAT));
                 WriteLine();
             }
 

@@ -128,7 +128,6 @@ namespace Tests.MPartner.Server.PartnerEdit
             PartnerLocationRow.SiteKey = DomainManager.GSiteKey;
             PartnerLocationRow.PartnerKey = PartnerRow.PartnerKey;
             PartnerLocationRow.LocationKey = 0;
-            PartnerLocationRow.TelephoneNumber = PartnerRow.PartnerKey.ToString();
             MainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
 
             DataSet ResponseDS = new PartnerEditTDS();
@@ -216,7 +215,6 @@ namespace Tests.MPartner.Server.PartnerEdit
             PartnerLocationRow.SiteKey = DomainManager.GSiteKey;
             PartnerLocationRow.PartnerKey = PartnerRow.PartnerKey;
             PartnerLocationRow.LocationKey = LocationKey;
-            PartnerLocationRow.TelephoneNumber = PartnerRow.PartnerKey.ToString();
             MainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
 
             ResponseDS = new PartnerEditTDS();

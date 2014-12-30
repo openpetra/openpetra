@@ -68,8 +68,7 @@
         <query>
           <queryDetail>
             <value function="GetPartnerBestAddress({p_partner_key_n})"/>
-            <value function="assign(Telephone, concatenate({TelephoneNumber},{Extension}))"/>
-            <value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
+            <value function="assign(Telephone, {TelephoneNumber})"/>
           </queryDetail>
         </query>
       </calculation>
@@ -94,6 +93,24 @@
             <value variable="FirstName"/>
           </queryDetail>
         </query>
+      </calculation>
+
+      <calculation align="left" id="Primary Phone" returns="text" returnsFormat="text">
+          <caption><value text="Primary Phone"></value></caption>
+          <query>
+              <queryDetail>
+                  <value variable="TelephoneNumber"></value>
+              </queryDetail>
+          </query>
+      </calculation>
+      
+      <calculation align="left" id="Primary E-Mail" returns="text" returnsFormat="text">
+          <caption><value text="Primary E-Mail"></value></caption>
+          <query>
+              <queryDetail>
+                  <value variable="EMailAddress"></value>
+              </queryDetail>
+          </query>
       </calculation>
 
       <calculation id="Start Date of Commitment" returnsFormat="date" returns="formatteddate">

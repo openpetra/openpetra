@@ -490,9 +490,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
+        public void RefreshPersonnelDataAfterMerge(bool APartnerAttributesOrRelationsChanged)
         {
-            ucoPersonnelTabSet.RefreshPersonnelDataAfterMerge(AAddressesOrRelationsChanged);
+            ucoPersonnelTabSet.RefreshPersonnelDataAfterMerge(APartnerAttributesOrRelationsChanged);
         }
 
         /// <summary>

@@ -61,34 +61,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerName = new System.Windows.Forms.Label();
             this.tabPartnerDetailInfo = new Ict.Common.Controls.TTabVersatile();
             this.tbpAddress = new System.Windows.Forms.TabPage();
-            this.pnlPartnerLocation = new System.Windows.Forms.Panel();
+            this.pnlContactDetails = new System.Windows.Forms.Panel();
+            this.pnlAddressDetails = new System.Windows.Forms.Panel();
             this.tlpPartnerLocation = new System.Windows.Forms.TableLayoutPanel();
-            this.lblFax = new System.Windows.Forms.Label();
-            this.txtFax = new System.Windows.Forms.TextBox();
-            this.lblTelephone = new System.Windows.Forms.Label();
-            this.lblAlternate = new System.Windows.Forms.Label();
-            this.lblMobile = new System.Windows.Forms.Label();
-            this.lblEmail = new System.Windows.Forms.Label();
-            this.txtAlternate = new System.Windows.Forms.TextBox();
-            this.txtEmail = new System.Windows.Forms.TextBox();
             this.lblLocationType = new System.Windows.Forms.Label();
             this.txtLocationType = new System.Windows.Forms.TextBox();
-            this.txtMobile = new System.Windows.Forms.TextBox();
             this.lblMailingAddress = new System.Windows.Forms.Label();
             this.txtMailingAddress = new System.Windows.Forms.TextBox();
-            this.lblUrl = new System.Windows.Forms.Label();
-            this.txtUrl = new System.Windows.Forms.TextBox();
             this.lblValidFrom = new System.Windows.Forms.Label();
             this.txtValidFrom = new System.Windows.Forms.TextBox();
             this.lblValidTo = new System.Windows.Forms.Label();
             this.txtValidTo = new System.Windows.Forms.TextBox();
-            this.txtTelephone = new System.Windows.Forms.TextBox();
             this.txtAddress1 = new System.Windows.Forms.TextBox();
             this.lblLoadingPartnerLocation = new System.Windows.Forms.Label();
             this.lblLoadingAddress = new System.Windows.Forms.Label();
             this.tbpTypesSubscr = new System.Windows.Forms.TabPage();
             this.tlpTypesSubscriptions = new System.Windows.Forms.TableLayoutPanel();
             this.pnlSpecialTypes = new System.Windows.Forms.Panel();
+            this.pnlAddress1 = new System.Windows.Forms.Panel();
             this.txtSpecialTypes = new System.Windows.Forms.TextBox();
             this.lblSpecialTypes = new System.Windows.Forms.Label();
             this.pnlSubscriptions = new System.Windows.Forms.Panel();
@@ -135,14 +125,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lneDivider = new DevAge.Windows.Forms.Line();
             this.pnlKeyInfo = new System.Windows.Forms.Panel();
             this.lblNoPartner = new System.Windows.Forms.Label();
+            this.rtbContactDetails = new Ict.Common.Controls.TRtbHyperlinks();
             this.tabPartnerDetailInfo.SuspendLayout();
             this.tbpAddress.SuspendLayout();
-            this.pnlPartnerLocation.SuspendLayout();
+            this.pnlContactDetails.SuspendLayout();
+            this.pnlAddressDetails.SuspendLayout();
             this.tlpPartnerLocation.SuspendLayout();
             this.tbpTypesSubscr.SuspendLayout();
             this.tlpTypesSubscriptions.SuspendLayout();
             this.pnlSpecialTypes.SuspendLayout();
             this.pnlSubscriptions.SuspendLayout();
+            this.pnlAddress1.SuspendLayout();
             this.tbpOther.SuspendLayout();
             this.pnlOtherRight.SuspendLayout();
             this.pnlPreviousName.SuspendLayout();
@@ -156,25 +149,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlFamilyMembers.SuspendLayout();
             this.pnlKeyInfo.SuspendLayout();
             this.SuspendLayout();
-
             //
             // lblPartnerKey
             //
-            this.lblPartnerKey.Location = new System.Drawing.Point(340, 2);
+            this.lblPartnerKey.Location = new System.Drawing.Point(350, 2);
             this.lblPartnerKey.Name = "lblPartnerKey";
             this.lblPartnerKey.Size = new System.Drawing.Size(80, 18);
             this.lblPartnerKey.TabIndex = 10;
             this.lblPartnerKey.Text = "Partner Key:";
-
             //
             // lblAcquisitionCode
             //
-            this.lblAcquisitionCode.Location = new System.Drawing.Point(340, 16);
+            this.lblAcquisitionCode.Location = new System.Drawing.Point(350, 16);
             this.lblAcquisitionCode.Name = "lblAcquisitionCode";
             this.lblAcquisitionCode.Size = new System.Drawing.Size(80, 18);
             this.lblAcquisitionCode.TabIndex = 11;
             this.lblAcquisitionCode.Text = "Acquired:";
-
             //
             // lblStatusCode
             //
@@ -183,7 +173,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblStatusCode.Size = new System.Drawing.Size(51, 18);
             this.lblStatusCode.TabIndex = 8;
             this.lblStatusCode.Text = "Status:";
-
             //
             // lblPartnerName
             //
@@ -192,7 +181,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerName.Size = new System.Drawing.Size(51, 16);
             this.lblPartnerName.TabIndex = 7;
             this.lblPartnerName.Text = "Name:";
-
             //
             // tabPartnerDetailInfo
             //
@@ -215,13 +203,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tabPartnerDetailInfo.ShowToolTips = true;
             this.tabPartnerDetailInfo.Size = new System.Drawing.Size(561, 182);
             this.tabPartnerDetailInfo.TabIndex = 12;
-
             //
             // tbpAddress
             //
             this.tbpAddress.BackColor = System.Drawing.SystemColors.Info;
-            this.tbpAddress.Controls.Add(this.pnlPartnerLocation);
-            this.tbpAddress.Controls.Add(this.txtAddress1);
+            this.tbpAddress.Controls.Add(this.pnlContactDetails);
+            this.tbpAddress.Controls.Add(this.pnlAddressDetails);
             this.tbpAddress.Controls.Add(this.lblLoadingPartnerLocation);
             this.tbpAddress.Controls.Add(this.lblLoadingAddress);
             this.tbpAddress.Font =
@@ -231,163 +218,55 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tbpAddress.Padding = new System.Windows.Forms.Padding(6, 3, 2, 3);
             this.tbpAddress.Size = new System.Drawing.Size(553, 157);
             this.tbpAddress.TabIndex = 0;
-            this.tbpAddress.Text = "Address";
-            this.tbpAddress.ToolTipText = "Details of the selected Address";
-
+            this.tbpAddress.Text = "Address && Contact Details";
+            this.tbpAddress.ToolTipText = "Details of the selected Address and Contact Details of the Partner";
             //
-            // panel1
+            // pnlContactDetails
             //
-            this.pnlPartnerLocation.AutoScroll = true;
-            this.pnlPartnerLocation.Controls.Add(this.tlpPartnerLocation);
-            this.pnlPartnerLocation.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlPartnerLocation.Location = new System.Drawing.Point(246, 3);
-            this.pnlPartnerLocation.Name = "panel1";
-            this.pnlPartnerLocation.Size = new System.Drawing.Size(305, 151);
-            this.pnlPartnerLocation.TabIndex = 8;
-
+            this.pnlContactDetails.AutoScroll = true;
+            this.pnlContactDetails.Controls.Add(this.rtbContactDetails);
+            this.pnlContactDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContactDetails.Location = new System.Drawing.Point(206, 3);
+            this.pnlContactDetails.Name = "pnlContactDetails";
+            this.pnlContactDetails.Size = new System.Drawing.Size(345, 151);
+            this.pnlContactDetails.TabIndex = 8;
+            //
+            // pnlAddressDetails
+            //
+            this.pnlAddressDetails.AutoScroll = true;
+            this.pnlAddressDetails.Controls.Add(this.tlpPartnerLocation);
+            this.pnlAddressDetails.Controls.Add(this.pnlAddress1);
+            this.pnlAddressDetails.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pnlAddressDetails.Location = new System.Drawing.Point(6, 3);
+            this.pnlAddressDetails.Name = "pnlAddressDetails";
+            this.pnlAddressDetails.Size = new System.Drawing.Size(340, 200);
+            this.pnlAddressDetails.TabIndex = 3;
             //
             // tlpPartnerLocation
             //
-            this.tlpPartnerLocation.AutoScroll = true;
-            this.tlpPartnerLocation.AutoSize = true;
-            this.tlpPartnerLocation.ColumnCount = 2;
-            this.tlpPartnerLocation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tlpPartnerLocation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 212F));
-            this.tlpPartnerLocation.Controls.Add(this.lblFax, 0, 4);
-            this.tlpPartnerLocation.Controls.Add(this.txtFax, 1, 4);
-            this.tlpPartnerLocation.Controls.Add(this.lblTelephone, 0, 0);
-            this.tlpPartnerLocation.Controls.Add(this.lblAlternate, 0, 1);
-            this.tlpPartnerLocation.Controls.Add(this.lblMobile, 0, 2);
-            this.tlpPartnerLocation.Controls.Add(this.lblEmail, 0, 3);
-            this.tlpPartnerLocation.Controls.Add(this.txtAlternate, 1, 1);
-            this.tlpPartnerLocation.Controls.Add(this.txtEmail, 1, 3);
-            this.tlpPartnerLocation.Controls.Add(this.lblLocationType, 0, 5);
-            this.tlpPartnerLocation.Controls.Add(this.txtLocationType, 1, 5);
-            this.tlpPartnerLocation.Controls.Add(this.txtMobile, 1, 2);
-            this.tlpPartnerLocation.Controls.Add(this.lblMailingAddress, 0, 6);
-            this.tlpPartnerLocation.Controls.Add(this.txtMailingAddress, 1, 6);
-            this.tlpPartnerLocation.Controls.Add(this.lblUrl, 0, 7);
-            this.tlpPartnerLocation.Controls.Add(this.txtUrl, 1, 7);
-            this.tlpPartnerLocation.Controls.Add(this.lblValidFrom, 0, 8);
-            this.tlpPartnerLocation.Controls.Add(this.txtValidFrom, 1, 8);
-            this.tlpPartnerLocation.Controls.Add(this.lblValidTo, 0, 9);
-            this.tlpPartnerLocation.Controls.Add(this.txtValidTo, 1, 9);
-            this.tlpPartnerLocation.Controls.Add(this.txtTelephone, 1, 0);
+            this.tlpPartnerLocation.ColumnCount = 4;
+            this.tlpPartnerLocation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 95));
+            this.tlpPartnerLocation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 78F));
+            this.tlpPartnerLocation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));
+            this.tlpPartnerLocation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 78F));
+            this.tlpPartnerLocation.Controls.Add(this.lblLocationType, 0, 0);
+            this.tlpPartnerLocation.Controls.Add(this.txtLocationType, 1, 0);
+            this.tlpPartnerLocation.Controls.Add(this.lblMailingAddress, 2, 0);
+            this.tlpPartnerLocation.Controls.Add(this.txtMailingAddress, 3, 0);
+            this.tlpPartnerLocation.Controls.Add(this.lblValidFrom, 0, 1);
+            this.tlpPartnerLocation.Controls.Add(this.txtValidFrom, 1, 1);
+            this.tlpPartnerLocation.Controls.Add(this.lblValidTo, 2, 1);
+            this.tlpPartnerLocation.Controls.Add(this.txtValidTo, 3, 1);
             this.tlpPartnerLocation.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpPartnerLocation.Font =
                 new System.Drawing.Font("Verdana", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tlpPartnerLocation.Location = new System.Drawing.Point(0, 0);
+            this.tlpPartnerLocation.Location = new System.Drawing.Point(0, 151);
             this.tlpPartnerLocation.Name = "tlpPartnerLocation";
-            this.tlpPartnerLocation.RowCount = 11;
+            this.tlpPartnerLocation.RowCount = 2;
             this.tlpPartnerLocation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
             this.tlpPartnerLocation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.tlpPartnerLocation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.tlpPartnerLocation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.tlpPartnerLocation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.tlpPartnerLocation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.tlpPartnerLocation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.tlpPartnerLocation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.tlpPartnerLocation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.tlpPartnerLocation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.tlpPartnerLocation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.tlpPartnerLocation.Size = new System.Drawing.Size(305, 151);
+            this.tlpPartnerLocation.Size = new System.Drawing.Size(200, 0);
             this.tlpPartnerLocation.TabIndex = 2;
-
-            //
-            // lblFax
-            //
-            this.lblFax.AutoSize = true;
-            this.lblFax.Location = new System.Drawing.Point(3, 56);
-            this.lblFax.Name = "lblFax";
-            this.lblFax.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblFax.Size = new System.Drawing.Size(30, 14);
-            this.lblFax.TabIndex = 0;
-            this.lblFax.Text = "Fax:";
-
-            //
-            // txtFax
-            //
-            this.txtFax.BackColor = System.Drawing.SystemColors.Info;
-            this.txtFax.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtFax.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtFax.Font = new System.Drawing.Font("Verdana", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtFax.Location = new System.Drawing.Point(96, 59);
-            this.txtFax.Name = "txtFax";
-            this.txtFax.ReadOnly = true;
-            this.txtFax.Size = new System.Drawing.Size(206, 12);
-            this.txtFax.TabIndex = 1;
-
-            //
-            // lblTelephone
-            //
-            this.lblTelephone.AutoSize = true;
-            this.lblTelephone.Location = new System.Drawing.Point(3, 0);
-            this.lblTelephone.Name = "lblTelephone";
-            this.lblTelephone.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblTelephone.Size = new System.Drawing.Size(69, 14);
-            this.lblTelephone.TabIndex = 0;
-            this.lblTelephone.Text = "Telephone:";
-
-            //
-            // lblAlternate
-            //
-            this.lblAlternate.AutoSize = true;
-            this.lblAlternate.Location = new System.Drawing.Point(3, 14);
-            this.lblAlternate.Name = "lblAlternate";
-            this.lblAlternate.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblAlternate.Size = new System.Drawing.Size(60, 14);
-            this.lblAlternate.TabIndex = 0;
-            this.lblAlternate.Text = "Alternate:";
-
-            //
-            // lblMobile
-            //
-            this.lblMobile.AutoSize = true;
-            this.lblMobile.Location = new System.Drawing.Point(3, 28);
-            this.lblMobile.Name = "lblMobile";
-            this.lblMobile.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblMobile.Size = new System.Drawing.Size(46, 14);
-            this.lblMobile.TabIndex = 0;
-            this.lblMobile.Text = "Mobile:";
-
-            //
-            // lblEmail
-            //
-            this.lblEmail.AutoSize = true;
-            this.lblEmail.Location = new System.Drawing.Point(3, 42);
-            this.lblEmail.Name = "lblEmail";
-            this.lblEmail.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblEmail.Size = new System.Drawing.Size(40, 14);
-            this.lblEmail.TabIndex = 0;
-            this.lblEmail.Text = "Email:";
-
-            //
-            // txtAlternate
-            //
-            this.txtAlternate.BackColor = System.Drawing.SystemColors.Info;
-            this.txtAlternate.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtAlternate.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtAlternate.Font =
-                new System.Drawing.Font("Verdana", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAlternate.Location = new System.Drawing.Point(96, 17);
-            this.txtAlternate.Name = "txtAlternate";
-            this.txtAlternate.ReadOnly = true;
-            this.txtAlternate.Size = new System.Drawing.Size(206, 12);
-            this.txtAlternate.TabIndex = 1;
-
-            //
-            // txtEmail
-            //
-            this.txtEmail.BackColor = System.Drawing.SystemColors.Info;
-            this.txtEmail.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtEmail.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtEmail.Font = new System.Drawing.Font("Verdana", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtEmail.Location = new System.Drawing.Point(96, 45);
-            this.txtEmail.Name = "txtEmail";
-            this.txtEmail.ReadOnly = true;
-            this.txtEmail.Size = new System.Drawing.Size(206, 12);
-            this.txtEmail.TabIndex = 1;
-
             //
             // lblLocationType
             //
@@ -398,7 +277,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLocationType.Size = new System.Drawing.Size(87, 14);
             this.lblLocationType.TabIndex = 2;
             this.lblLocationType.Text = "Location Type:";
-
             //
             // txtLocationType
             //
@@ -410,22 +288,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtLocationType.Location = new System.Drawing.Point(96, 73);
             this.txtLocationType.Name = "txtLocationType";
             this.txtLocationType.ReadOnly = true;
-            this.txtLocationType.Size = new System.Drawing.Size(206, 12);
             this.txtLocationType.TabIndex = 1;
-
-            //
-            // txtMobile
-            //
-            this.txtMobile.BackColor = System.Drawing.SystemColors.Info;
-            this.txtMobile.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtMobile.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtMobile.Font = new System.Drawing.Font("Verdana", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtMobile.Location = new System.Drawing.Point(96, 31);
-            this.txtMobile.Name = "txtMobile";
-            this.txtMobile.ReadOnly = true;
-            this.txtMobile.Size = new System.Drawing.Size(206, 12);
-            this.txtMobile.TabIndex = 1;
-
             //
             // lblMailingAddress
             //
@@ -436,7 +299,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblMailingAddress.Size = new System.Drawing.Size(82, 14);
             this.lblMailingAddress.TabIndex = 2;
             this.lblMailingAddress.Text = "Mailing Addr.:";
-
             //
             // txtMailingAddress
             //
@@ -448,33 +310,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtMailingAddress.Location = new System.Drawing.Point(96, 87);
             this.txtMailingAddress.Name = "txtMailingAddress";
             this.txtMailingAddress.ReadOnly = true;
-            this.txtMailingAddress.Size = new System.Drawing.Size(206, 12);
+            this.txtMailingAddress.Size = new System.Drawing.Size(30, 12);
             this.txtMailingAddress.TabIndex = 1;
-
-            //
-            // lblUrl
-            //
-            this.lblUrl.AutoSize = true;
-            this.lblUrl.Location = new System.Drawing.Point(3, 98);
-            this.lblUrl.Name = "lblUrl";
-            this.lblUrl.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblUrl.Size = new System.Drawing.Size(32, 14);
-            this.lblUrl.TabIndex = 0;
-            this.lblUrl.Text = "URL:";
-
-            //
-            // txtUrl
-            //
-            this.txtUrl.BackColor = System.Drawing.SystemColors.Info;
-            this.txtUrl.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtUrl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtUrl.Font = new System.Drawing.Font("Verdana", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtUrl.Location = new System.Drawing.Point(96, 101);
-            this.txtUrl.Name = "txtUrl";
-            this.txtUrl.ReadOnly = true;
-            this.txtUrl.Size = new System.Drawing.Size(206, 12);
-            this.txtUrl.TabIndex = 1;
-
             //
             // lblValidFrom
             //
@@ -485,7 +322,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblValidFrom.Size = new System.Drawing.Size(69, 14);
             this.lblValidFrom.TabIndex = 0;
             this.lblValidFrom.Text = "Valid From:";
-
             //
             // txtValidFrom
             //
@@ -497,9 +333,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtValidFrom.Location = new System.Drawing.Point(96, 115);
             this.txtValidFrom.Name = "txtValidFrom";
             this.txtValidFrom.ReadOnly = true;
-            this.txtValidFrom.Size = new System.Drawing.Size(206, 12);
+            this.txtValidFrom.Size = new System.Drawing.Size(70, 12);
             this.txtValidFrom.TabIndex = 1;
-
             //
             // lblValidTo
             //
@@ -507,10 +342,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblValidTo.Location = new System.Drawing.Point(3, 126);
             this.lblValidTo.Name = "lblValidTo";
             this.lblValidTo.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblValidTo.Size = new System.Drawing.Size(55, 14);
+            this.lblValidTo.Size = new System.Drawing.Size(20, 14);
             this.lblValidTo.TabIndex = 0;
             this.lblValidTo.Text = "Valid To:";
-
             //
             // txtValidTo
             //
@@ -521,37 +355,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtValidTo.Location = new System.Drawing.Point(96, 129);
             this.txtValidTo.Name = "txtValidTo";
             this.txtValidTo.ReadOnly = true;
-            this.txtValidTo.Size = new System.Drawing.Size(206, 12);
+            this.txtValidTo.Size = new System.Drawing.Size(100, 12);
             this.txtValidTo.TabIndex = 1;
-
-            //
-            // txtTelephone
-            //
-            this.txtTelephone.BackColor = System.Drawing.SystemColors.Info;
-            this.txtTelephone.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtTelephone.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtTelephone.Font =
-                new System.Drawing.Font("Verdana", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTelephone.Location = new System.Drawing.Point(96, 3);
-            this.txtTelephone.Name = "txtTelephone";
-            this.txtTelephone.ReadOnly = true;
-            this.txtTelephone.Size = new System.Drawing.Size(206, 12);
-            this.txtTelephone.TabIndex = 1;
-
             //
             // txtAddress1
             //
             this.txtAddress1.BackColor = System.Drawing.SystemColors.Info;
             this.txtAddress1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtAddress1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.txtAddress1.Location = new System.Drawing.Point(6, 3);
+            this.txtAddress1.Location = new System.Drawing.Point(3, 0);
             this.txtAddress1.Multiline = true;
             this.txtAddress1.Name = "txtAddress1";
             this.txtAddress1.ReadOnly = true;
-            this.txtAddress1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtAddress1.Size = new System.Drawing.Size(240, 151);
+            this.txtAddress1.Size = new System.Drawing.Size(200, 151);
             this.txtAddress1.TabIndex = 0;
-
+            //
+            // pnlAddress1
+            //
+            this.pnlAddress1.Controls.Add(this.txtAddress1);
+            this.pnlAddress1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlAddress1.Name = "pnlAddress1";
+            this.pnlAddress1.TabIndex = 0;
             //
             // lblLoadingPartnerLocation
             //
@@ -568,7 +391,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLoadingPartnerLocation.Text = "Loading...\r\nPlease wait.MANUALTRANSLATION";
             this.lblLoadingPartnerLocation.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblLoadingPartnerLocation.Visible = false;
-
             //
             // lblLoadingAddress
             //
@@ -588,7 +410,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLoadingAddress.Text = "Loading...\r\nPlease wait.MANUALTRANSLATION";
             this.lblLoadingAddress.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblLoadingAddress.Visible = false;
-
             //
             // tbpTypesSubscr
             //
@@ -603,7 +424,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tbpTypesSubscr.TabIndex = 1;
             this.tbpTypesSubscr.Text = "Types && Subscriptions";
             this.tbpTypesSubscr.ToolTipText = "Subscriptions and Special Types of the Partner";
-
             //
             // tlpTypesSubscriptions
             //
@@ -620,7 +440,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tlpTypesSubscriptions.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 157F));
             this.tlpTypesSubscriptions.Size = new System.Drawing.Size(553, 157);
             this.tlpTypesSubscriptions.TabIndex = 5;
-
             //
             // pnlSpecialTypes
             //
@@ -631,7 +450,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlSpecialTypes.Name = "pnlSpecialTypes";
             this.pnlSpecialTypes.Size = new System.Drawing.Size(270, 151);
             this.pnlSpecialTypes.TabIndex = 0;
-
             //
             // txtSpecialTypes
             //
@@ -647,7 +465,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtSpecialTypes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtSpecialTypes.Size = new System.Drawing.Size(270, 138);
             this.txtSpecialTypes.TabIndex = 1;
-
             //
             // lblSpecialTypes
             //
@@ -659,7 +476,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblSpecialTypes.Size = new System.Drawing.Size(270, 13);
             this.lblSpecialTypes.TabIndex = 2;
             this.lblSpecialTypes.Text = "Special Types:";
-
             //
             // pnlSubscriptions
             //
@@ -670,7 +486,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlSubscriptions.Name = "pnlSubscriptions";
             this.pnlSubscriptions.Size = new System.Drawing.Size(271, 151);
             this.pnlSubscriptions.TabIndex = 1;
-
             //
             // txtSubscriptions
             //
@@ -686,7 +501,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtSubscriptions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtSubscriptions.Size = new System.Drawing.Size(271, 138);
             this.txtSubscriptions.TabIndex = 3;
-
             //
             // lblSubscriptions
             //
@@ -698,7 +512,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblSubscriptions.Size = new System.Drawing.Size(271, 13);
             this.lblSubscriptions.TabIndex = 4;
             this.lblSubscriptions.Text = "Subscriptions:";
-
             //
             // lblLoadingTypesSubscr
             //
@@ -718,7 +531,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLoadingTypesSubscr.Text = "Loading...\r\nPlease wait.MANUALTRANSLATION";
             this.lblLoadingTypesSubscr.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblLoadingTypesSubscr.Visible = false;
-
             //
             // tbpOther
             //
@@ -737,7 +549,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tbpOther.TabIndex = 2;
             this.tbpOther.Text = "Other";
             this.tbpOther.ToolTipText = "Other details of the Partner";
-
             //
             // pnlOtherRight
             //
@@ -749,7 +560,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlOtherRight.Name = "pnlOtherRight";
             this.pnlOtherRight.Size = new System.Drawing.Size(297, 126);
             this.pnlOtherRight.TabIndex = 25;
-
             //
             // txtNotes
             //
@@ -757,25 +567,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtNotes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtNotes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtNotes.Font = new System.Drawing.Font("Verdana", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtNotes.Location = new System.Drawing.Point(0, 30);
+            this.txtNotes.Location = new System.Drawing.Point(0, 28);
             this.txtNotes.Multiline = true;
             this.txtNotes.Name = "txtNotes";
             this.txtNotes.ReadOnly = true;
             this.txtNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtNotes.Size = new System.Drawing.Size(297, 96);
+            this.txtNotes.Size = new System.Drawing.Size(297, 98);
             this.txtNotes.TabIndex = 2;
-
             //
             // pnlOtherInfo
             //
             this.pnlOtherInfo.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlOtherInfo.Location = new System.Drawing.Point(0, 12);
+            this.pnlOtherInfo.Location = new System.Drawing.Point(0, 14);
             this.pnlOtherInfo.Name = "pnlOtherInfo";
             this.pnlOtherInfo.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
             this.pnlOtherInfo.Size = new System.Drawing.Size(297, 14);
             this.pnlOtherInfo.TabIndex = 24;
             this.pnlOtherInfo.Text = "Other Information:";
-
             //
             // pnlPreviousName
             //
@@ -786,7 +594,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlPreviousName.Name = "pnlPreviousName";
             this.pnlPreviousName.Size = new System.Drawing.Size(297, 14);
             this.pnlPreviousName.TabIndex = 25;
-
             //
             // txtPreviousName
             //
@@ -802,7 +609,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPreviousName.ReadOnly = true;
             this.txtPreviousName.Size = new System.Drawing.Size(185, 12);
             this.txtPreviousName.TabIndex = 26;
-
             //
             // lblPreviousName
             //
@@ -811,7 +617,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPreviousName.Size = new System.Drawing.Size(94, 18);
             this.lblPreviousName.TabIndex = 25;
             this.lblPreviousName.Text = "Previous Name:";
-
             //
             // pnlOtherRightParentUnit
             //
@@ -822,7 +627,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlOtherRightParentUnit.Name = "pnlOtherRightParentUnit";
             this.pnlOtherRightParentUnit.Size = new System.Drawing.Size(297, 14);
             this.pnlOtherRightParentUnit.TabIndex = 24;
-
             //
             // txtParentUnit
             //
@@ -838,7 +642,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtParentUnit.ReadOnly = true;
             this.txtParentUnit.Size = new System.Drawing.Size(185, 12);
             this.txtParentUnit.TabIndex = 26;
-
             //
             // lblParentUnit
             //
@@ -847,7 +650,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblParentUnit.Size = new System.Drawing.Size(83, 18);
             this.lblParentUnit.TabIndex = 25;
             this.lblParentUnit.Text = "Parent Unit:";
-
             //
             // pnlOtherRightField
             //
@@ -858,7 +660,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlOtherRightField.Name = "pnlOtherRightField";
             this.pnlOtherRightField.Size = new System.Drawing.Size(297, 14);
             this.pnlOtherRightField.TabIndex = 26;
-
             //
             // txtField
             //
@@ -873,7 +674,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtField.ReadOnly = true;
             this.txtField.Size = new System.Drawing.Size(185, 12);
             this.txtField.TabIndex = 26;
-
             //
             // lblField
             //
@@ -882,7 +682,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblField.Size = new System.Drawing.Size(83, 18);
             this.lblField.TabIndex = 25;
             this.lblField.Text = "Field:";
-
             //
             // pnlOtherLeft
             //
@@ -897,7 +696,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlOtherLeft.Name = "pnlOtherLeft";
             this.pnlOtherLeft.Size = new System.Drawing.Size(253, 154);
             this.pnlOtherLeft.TabIndex = 23;
-
             //
             // txtPartnerUpdated
             //
@@ -910,7 +708,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerUpdated.ReadOnly = true;
             this.txtPartnerUpdated.Size = new System.Drawing.Size(74, 12);
             this.txtPartnerUpdated.TabIndex = 22;
-
             //
             // lblPartnerUpdated
             //
@@ -919,7 +716,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerUpdated.Size = new System.Drawing.Size(107, 19);
             this.lblPartnerUpdated.TabIndex = 21;
             this.lblPartnerUpdated.Text = "Partner Updated:";
-
             //
             // lblLanguages
             //
@@ -928,7 +724,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLanguages.Size = new System.Drawing.Size(83, 18);
             this.lblLanguages.TabIndex = 20;
             this.lblLanguages.Text = "Speaks (Languages):";
-
             //
             // lblLastContact
             //
@@ -937,7 +732,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLastContact.Size = new System.Drawing.Size(83, 18);
             this.lblLastContact.TabIndex = 17;
             this.lblLastContact.Text = "Last Contact:";
-
             //
             // txtLanguages
             //
@@ -952,7 +746,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtLanguages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtLanguages.Size = new System.Drawing.Size(167, 25);
             this.txtLanguages.TabIndex = 18;
-
             //
             // txtLastContact
             //
@@ -965,7 +758,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtLastContact.ReadOnly = true;
             this.txtLastContact.Size = new System.Drawing.Size(74, 12);
             this.txtLastContact.TabIndex = 19;
-
             //
             // lblLoadingOther
             //
@@ -985,7 +777,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLoadingOther.Text = "Loading...\r\nPlease wait.MANUALTRANSLATION";
             this.lblLoadingOther.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblLoadingOther.Visible = false;
-
             //
             // tbpPersonFamily
             //
@@ -999,7 +790,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tbpPersonFamily.Size = new System.Drawing.Size(553, 157);
             this.tbpPersonFamily.TabIndex = 3;
             this.tbpPersonFamily.Text = "Person / Family";
-
             //
             // pnlPersonFamilyRight
             //
@@ -1010,7 +800,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlPersonFamilyRight.Name = "pnlPersonFamilyRight";
             this.pnlPersonFamilyRight.Size = new System.Drawing.Size(277, 151);
             this.pnlPersonFamilyRight.TabIndex = 34;
-
             //
             // pnlFamily
             //
@@ -1021,7 +810,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlFamily.Name = "pnlFamily";
             this.pnlFamily.Size = new System.Drawing.Size(277, 15);
             this.pnlFamily.TabIndex = 33;
-
             //
             // txtFamily
             //
@@ -1036,7 +824,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtFamily.ReadOnly = true;
             this.txtFamily.Size = new System.Drawing.Size(189, 12);
             this.txtFamily.TabIndex = 30;
-
             //
             // lblFamily
             //
@@ -1045,7 +832,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblFamily.Size = new System.Drawing.Size(78, 12);
             this.lblFamily.TabIndex = 29;
             this.lblFamily.Text = "Family:";
-
             //
             // pnlDateOfBirth
             //
@@ -1056,7 +842,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlDateOfBirth.Name = "pnlDateOfBirth";
             this.pnlDateOfBirth.Size = new System.Drawing.Size(277, 15);
             this.pnlDateOfBirth.TabIndex = 32;
-
             //
             // txtDateOfBirth
             //
@@ -1069,7 +854,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtDateOfBirth.ReadOnly = true;
             this.txtDateOfBirth.Size = new System.Drawing.Size(73, 12);
             this.txtDateOfBirth.TabIndex = 30;
-
             //
             // lblDateOfBirth
             //
@@ -1078,7 +862,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblDateOfBirth.Size = new System.Drawing.Size(81, 12);
             this.lblDateOfBirth.TabIndex = 29;
             this.lblDateOfBirth.Text = "Date of Birth:";
-
             //
             // pnlFamilyMembers
             //
@@ -1089,7 +872,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlFamilyMembers.Name = "pnlFamilyMembers";
             this.pnlFamilyMembers.Size = new System.Drawing.Size(270, 151);
             this.pnlFamilyMembers.TabIndex = 33;
-
             //
             // txtFamilyMembers
             //
@@ -1108,17 +890,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtFamilyMembers.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtFamilyMembers.Size = new System.Drawing.Size(270, 138);
             this.txtFamilyMembers.TabIndex = 32;
-
             //
             // lblFamilyMembers
             //
-            this.lblFamilyMembers.Location = new System.Drawing.Point(-1, -2);
+            this.lblFamilyMembers.Location = new System.Drawing.Point(0, 0);
             this.lblFamilyMembers.Name = "lblFamilyMembers";
             this.lblFamilyMembers.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
             this.lblFamilyMembers.Size = new System.Drawing.Size(158, 15);
             this.lblFamilyMembers.TabIndex = 31;
             this.lblFamilyMembers.Text = "Family Members:";
-
             //
             // lblLoadingPersonFamily
             //
@@ -1138,7 +918,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLoadingPersonFamily.Text = "Loading...\r\nPlease wait.MANUALTRANSLATION";
             this.lblLoadingPersonFamily.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblLoadingPersonFamily.Visible = false;
-
             //
             // txtPartnerName
             //
@@ -1151,16 +930,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerName.ReadOnly = true;
             this.txtPartnerName.Size = new System.Drawing.Size(275, 14);
             this.txtPartnerName.TabIndex = 13;
-
             //
             // txtPartnerKey
             //
             this.txtPartnerKey.BackColor = System.Drawing.SystemColors.Info;
             this.txtPartnerKey.DelegateFallbackLabel = true;
             this.txtPartnerKey.Font = new System.Drawing.Font("Courier New", 9.25F, System.Drawing.FontStyle.Bold);
-            this.txtPartnerKey.Location = new System.Drawing.Point(417, -3);
+            this.txtPartnerKey.LabelText = "Markus\' World";
+            this.txtPartnerKey.Location = new System.Drawing.Point(427, 0);
             this.txtPartnerKey.MaxLength = 10;
             this.txtPartnerKey.Name = "txtPartnerKey";
+            this.txtPartnerKey.PartnerClass = null;
             this.txtPartnerKey.PartnerKey = ((long)(123456789));
             this.txtPartnerKey.ReadOnly = true;
             this.txtPartnerKey.ShowLabel = false;
@@ -1168,7 +948,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerKey.TabIndex = 14;
             this.txtPartnerKey.TextBoxReadOnly = true;
             this.txtPartnerKey.TextBoxWidth = 75;
-
             //
             // txtStatusCode
             //
@@ -1181,7 +960,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtStatusCode.ReadOnly = true;
             this.txtStatusCode.Size = new System.Drawing.Size(118, 12);
             this.txtStatusCode.TabIndex = 15;
-
             //
             // txtAcquisitionCode
             //
@@ -1189,27 +967,25 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtAcquisitionCode.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtAcquisitionCode.Font =
                 new System.Drawing.Font("Verdana", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAcquisitionCode.Location = new System.Drawing.Point(400, 16);
+            this.txtAcquisitionCode.Location = new System.Drawing.Point(410, 16);
             this.txtAcquisitionCode.Name = "txtAcquisitionCode";
             this.txtAcquisitionCode.ReadOnly = true;
             this.txtAcquisitionCode.Size = new System.Drawing.Size(87, 12);
             this.txtAcquisitionCode.TabIndex = 17;
             this.txtAcquisitionCode.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-
             //
             // lneDivider
             //
-            this.lneDivider.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.lneDivider.DashStyle = System.Drawing.Drawing2D.DashStyle.Solid;
+            this.lneDivider.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.lneDivider.FirstColor = System.Drawing.SystemColors.ControlDark;
             this.lneDivider.LineStyle = DevAge.Windows.Forms.LineStyle.Horizontal;
-            this.lneDivider.Location = new System.Drawing.Point(0, 33);
+            this.lneDivider.Location = new System.Drawing.Point(0, 32);
             this.lneDivider.Name = "lneDivider";
             this.lneDivider.SecondColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lneDivider.Size = new System.Drawing.Size(560, 2);
+            this.lneDivider.Size = new System.Drawing.Size(561, 2);
             this.lneDivider.TabIndex = 18;
             this.lneDivider.TabStop = false;
-
             //
             // pnlKeyInfo
             //
@@ -1228,7 +1004,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlKeyInfo.Name = "pnlKeyInfo";
             this.pnlKeyInfo.Size = new System.Drawing.Size(561, 34);
             this.pnlKeyInfo.TabIndex = 19;
-
             //
             // lblNoPartner
             //
@@ -1243,7 +1018,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblNoPartner.Text = "No Partner to display.";
             this.lblNoPartner.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblNoPartner.Visible = false;
-
+            //
+            // rtbContactDetails
+            //
+            this.rtbContactDetails.AutoSize = true;
+            this.rtbContactDetails.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.rtbContactDetails.BackColor = System.Drawing.SystemColors.Info;
+            this.rtbContactDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbContactDetails.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtbContactDetails.UseSmallTextFont = true;
+            this.rtbContactDetails.Location = new System.Drawing.Point(0, 0);
+            this.rtbContactDetails.Name = "rtbContactDetails";
+            this.rtbContactDetails.Size = new System.Drawing.Size(345, 151);
+            this.rtbContactDetails.TabIndex = 0;
+            this.rtbContactDetails.LinkClicked += rtbContactDetails_LinkClicked;
             //
             // TUC_PartnerInfo
             //
@@ -1257,19 +1045,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Size = new System.Drawing.Size(561, 216);
             this.tabPartnerDetailInfo.ResumeLayout(false);
             this.tbpAddress.ResumeLayout(false);
-            this.tbpAddress.PerformLayout();
-            this.pnlPartnerLocation.ResumeLayout(false);
-            this.pnlPartnerLocation.PerformLayout();
+            this.pnlContactDetails.ResumeLayout(false);
+            this.pnlContactDetails.PerformLayout();
+            this.pnlAddressDetails.ResumeLayout(false);
+            this.pnlAddressDetails.PerformLayout();
             this.tlpPartnerLocation.ResumeLayout(false);
             this.tlpPartnerLocation.PerformLayout();
             this.tbpTypesSubscr.ResumeLayout(false);
             this.tlpTypesSubscriptions.ResumeLayout(false);
             this.pnlSpecialTypes.ResumeLayout(false);
+            this.pnlAddress1.PerformLayout();
             this.pnlSpecialTypes.PerformLayout();
             this.pnlSubscriptions.ResumeLayout(false);
             this.pnlSubscriptions.PerformLayout();
             this.tbpOther.ResumeLayout(false);
-            this.tbpOther.PerformLayout();
             this.pnlOtherRight.ResumeLayout(false);
             this.pnlOtherRight.PerformLayout();
             this.pnlPreviousName.ResumeLayout(false);
@@ -1282,7 +1071,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlOtherLeft.PerformLayout();
             this.tbpPersonFamily.ResumeLayout(false);
             this.pnlPersonFamilyRight.ResumeLayout(false);
-            this.pnlPersonFamilyRight.PerformLayout();
+            this.pnlFamily.ResumeLayout(false);
+            this.pnlFamily.PerformLayout();
+            this.pnlDateOfBirth.ResumeLayout(false);
+            this.pnlDateOfBirth.PerformLayout();
+            this.pnlFamilyMembers.ResumeLayout(false);
+            this.pnlFamilyMembers.PerformLayout();
+            this.pnlKeyInfo.ResumeLayout(false);
+            this.pnlKeyInfo.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+            this.pnlOtherRightField.ResumeLayout(false);
+            this.pnlOtherRightField.PerformLayout();
+            this.pnlOtherLeft.ResumeLayout(false);
+            this.pnlOtherLeft.PerformLayout();
+            this.tbpPersonFamily.ResumeLayout(false);
+            this.pnlPersonFamilyRight.ResumeLayout(false);
             this.pnlFamily.ResumeLayout(false);
             this.pnlFamily.PerformLayout();
             this.pnlDateOfBirth.ResumeLayout(false);
@@ -1318,15 +1122,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Label lblParentUnit;
         private System.Windows.Forms.Label lblField;
         private System.Windows.Forms.Label lblLocationType;
-        private System.Windows.Forms.Label lblMobile;
         private System.Windows.Forms.Label lblMailingAddress;
-        private System.Windows.Forms.Label lblAlternate;
-        private System.Windows.Forms.Label lblUrl;
-        private System.Windows.Forms.Label lblEmail;
-        private System.Windows.Forms.Label lblFax;
         private System.Windows.Forms.Label lblValidFrom;
         private System.Windows.Forms.Label lblValidTo;
-        private System.Windows.Forms.Label lblTelephone;
         private System.Windows.Forms.Label lblFamilyMembers;
         private System.Windows.Forms.Label lblDateOfBirth;
         private System.Windows.Forms.TextBox txtStatusCode;
@@ -1340,9 +1138,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.TextBox txtLanguages;
         private System.Windows.Forms.TextBox txtNotes;
         private System.Windows.Forms.TextBox txtAcquisitionCode;
-        private System.Windows.Forms.TextBox txtMobile;
         private System.Windows.Forms.TextBox txtMailingAddress;
-        private System.Windows.Forms.Panel pnlPartnerLocation;
+        private System.Windows.Forms.Panel pnlContactDetails;
         private System.Windows.Forms.Label lblLoadingOther;
         private System.Windows.Forms.Label lblLoadingTypesSubscr;
         private System.Windows.Forms.Label lblLoadingPartnerLocation;
@@ -1354,16 +1151,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Label pnlOtherInfo;
         private System.Windows.Forms.Panel pnlSubscriptions;
         private System.Windows.Forms.Panel pnlSpecialTypes;
+        private System.Windows.Forms.Panel pnlAddress1;
         private System.Windows.Forms.TableLayoutPanel tlpTypesSubscriptions;
         private System.Windows.Forms.Panel pnlOtherLeft;
         private System.Windows.Forms.Panel pnlKeyInfo;
         private System.Windows.Forms.TextBox txtValidTo;
         private System.Windows.Forms.TextBox txtValidFrom;
-        private System.Windows.Forms.TextBox txtFax;
-        private System.Windows.Forms.TextBox txtEmail;
-        private System.Windows.Forms.TextBox txtUrl;
-        private System.Windows.Forms.TextBox txtAlternate;
-        private System.Windows.Forms.TextBox txtTelephone;
+        private Ict.Common.Controls.TRtbHyperlinks rtbContactDetails;
         private System.Windows.Forms.TextBox txtLocationType;
         private System.Windows.Forms.TableLayoutPanel tlpPartnerLocation;
         private DevAge.Windows.Forms.Line lneDivider;
@@ -1375,5 +1169,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.TabPage tbpTypesSubscr;
         private System.Windows.Forms.TabPage tbpAddress;
         private Ict.Common.Controls.TTabVersatile tabPartnerDetailInfo;
+        private System.Windows.Forms.Panel pnlAddressDetails;
     }
 }

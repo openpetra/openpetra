@@ -257,6 +257,15 @@ namespace Ict.Petra.Client.MPartner
         /// <summary>todoComment</summary>
         public static readonly string StrPersonnelUnitMenuItemText = Catalog.GetString("&Personnel/Unit Maintenance...");
 
+        /// <summary>todoComment</summary>
+        public static readonly string StrNoPrimaryEmailAvailableToSendEmailTo = Catalog.GetString(
+            "This Partner hasn't got a 'Primary E-Mail Address' set, hence no email can be sent to that Partner.\r\n\r\n" +
+            "Please check the availability of E-Mail Addresses for this Partner on the Partner Edit screens' Contact Details Tab!");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrNoPrimaryEmailAvailableToSendEmailToTitle = Catalog.GetString(
+            "Cannot Send E-Mail to This Partner");
+
         #endregion
     }
 }

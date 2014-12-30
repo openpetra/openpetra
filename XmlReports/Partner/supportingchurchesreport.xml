@@ -255,13 +255,12 @@
             </queryDetail>
             <queryDetail condition="not(eq(length({TelephoneNumber}), 0))">
                 <value text="NO-SQL"/>
-                <value function="assign(ChurchAddress, concatenateww({ChurchAddress}, Phone:, 3))"/>
+                <value function="assign(ChurchAddress, concatenateww({ChurchAddress}, Primary Phone:, 3))"/>
                 <value function="assign(ChurchAddress, concatenateww({ChurchAddress},{TelephoneNumber}, 1))"/>
-                <value function="assign(ChurchAddress, concatenateww({ChurchAddress},{Extension}, 1))"/>
             </queryDetail>
             <queryDetail condition="not(eq(length({EMailAddress}), 0))">
                 <value text="NO-SQL"/>
-                <value function="assign(ChurchAddress, concatenateww({ChurchAddress}, E-Mail:, 3))"/>
+                <value function="assign(ChurchAddress, concatenateww({ChurchAddress}, Primary E-Mail:, 3))"/>
                 <value function="assign(ChurchAddress, concatenateww({ChurchAddress},{EMailAddress}, 1))"/>
             </queryDetail>
         </query>
@@ -302,8 +301,7 @@
                 <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{County}))"/>
                 <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{CountryCode}))"/>
                 <value function="assign(NumberIndividuals, add({NumberIndividuals}, 1))"/>
-                <value function="assign(Telephone, concatenate({TelephoneNumber}, {Extension}))"/>
-                <value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))" condition="gt({FaxNumber}, 0)"/>
+                <value function="assign(Telephone, {TelephoneNumber})"/>
             </queryDetail>
         </query>
     </calculation>
@@ -470,8 +468,8 @@
         </query>
     </calculation>
     
-    <calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
-        <caption><value text="E-Mail Address"></value></caption>
+    <calculation align="left" id="Primary E-Mail" returns="text" returnsFormat="text">
+        <caption><value text="Primary E-Mail"></value></caption>
         <query>
             <queryDetail>
                 <value variable="EMailAddress"></value>
@@ -487,8 +485,8 @@
         </query>
     </calculation>
     
-    <calculation align="left" id="Telephone" returns="text" returnsFormat="text">
-        <caption><value text="Telephone"/></caption>
+    <calculation align="left" id="Primary Phone" returns="text" returnsFormat="text">
+        <caption><value text="Primary Phone"/></caption>
         <query>
             <queryDetail>
                 <value variable="Telephone"></value>
@@ -501,15 +499,6 @@
         <query>
             <queryDetail>
                 <value variable="FaxNumber"></value>
-            </queryDetail>
-        </query>
-    </calculation>
-    
-    <calculation align="left" id="Extension" returns="text" returnsFormat="text">
-        <caption><value text=""></value></caption>
-        <query>
-            <queryDetail>
-                <value variable="Extension"></value>
             </queryDetail>
         </query>
     </calculation>

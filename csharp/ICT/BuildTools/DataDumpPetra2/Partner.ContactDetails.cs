@@ -30,683 +30,93 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 
 using Ict.Common;
+using Ict.Petra.Shared.MPartner.Conversion;
 
 namespace Ict.Tools.DataDumpPetra2
 {
     /// <summary>
     /// This class generates Partner Contact Detail records (=p_partner_attribute table records)
-    /// out of Petra 2.x p_partner_location records
+    /// out of Petra 2.x p_partner_location records. It utilises the shared
+    /// 'Ict.Petra.Shared.MPartner.Conversion.TPartnerContactDetails' Class for most of its work.
     /// </summary>
-    public class TPartnerContactDetails : TFixData
+    public class TPartnerContactDetails_DataDump : TFixData
     {
-        #region Fields
+        private static StringCollection FColumnNames;
+        private static string[] FNewRow;
+        private static StreamWriter FWriter;
+        private static StreamWriter FWriterTest;
 
-        /// <summary>Copied from Ict.Petra.Shared.MPartner.Calculations!</summary>
-        private const String PARTNERLOCATION_BESTADDR_COLUMN = "BestAddress";
-
-        /// <summary>Copied from Ict.Petra.Shared.MPartner.Calculations!</summary>
-        private const String PARTNERLOCATION_ICON_COLUMN = "Icon";
-
-        /// <summary>Copied from Ict.Petra.Shared.SharedConstants!</summary>
-        private const String SECURITY_CAN_LOCATIONTYPE = "-CAN";
-
-        /// <summary>As specified in the 'Base Data'.</summary>
-        private const String ATTR_TYPE_PHONE = "Phone";
-
-        /// <summary>As specified in the 'Base Data'.</summary>
-        private const String ATTR_TYPE_FAX = "Fax";
-
-        /// <summary>As specified in the 'Base Data'.</summary>
-        private const String ATTR_TYPE_MOBILE_PHONE = "Mobile Phone";
-
-        /// <summary>As specified in the 'Base Data'.</summary>
-        private const String ATTR_TYPE_EMAIL = "E-Mail";
-
-        /// <summary>As specified in the 'Base Data'.</summary>
-        private const String ATTR_TYPE_WEBSITE = "Web Site";
-
-        /// <summary>
-        /// Holds the p_partner.p_partner_class_c information of each Partner.
-        /// </summary>
-        private static Dictionary <Int64, string>FPartnerClassInformation = new Dictionary <Int64, string>();
-
-        /// <summary>
-        /// Holds the p_partner_location records of each Partner.
-        /// </summary>
-        private static Dictionary <Int64, DataTable>FPartnerLocationRecords = new Dictionary <Int64, DataTable>();
-
-        /// <summary>
-        /// Number for the p_sequence_i Column. Gets increased with every p_partner_attribute record that gets produced!
-        /// </summary>
-        private static int FSequenceNo = 0;
-
-        /// <summary>
-        /// The order of the p_partner_location record (according to how they are sorted) that the p_partner_attribute
-        /// got genereated from.
-        /// </summary>
-        private static int FInsertionOrderPerPartner = 0;
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// Holds the p_partner.p_partner_class_c information of each Partner.
-        /// </summary>
-        public static Dictionary <Int64, string>PartnerClassInformation
+        static TPartnerContactDetails_DataDump()
         {
-            get
-            {
-                return FPartnerClassInformation;
-            }
+            TPartnerContactDetails.CreateContactDetailsRow = WriteOutContactDetails;
         }
 
         /// <summary>
-        /// Holds the p_partner_location records of each Partner.
+        /// Initialises the population of PPartnerAttributes.
         /// </summary>
-        public static Dictionary <Int64, DataTable>PartnerLocationRecords
-        {
-            get
-            {
-                return FPartnerLocationRecords;
-            }
-        }
-
-        #endregion
-
-        #region Inner Classes
-
-        /// <summary>
-        /// Helper Class for 'Best Address' handling.
-        /// </summary>
-        /// <remarks>Utilises .NET Reflection for the loading of an OpenPetra DLL that we can't make a
-        /// direct Reference to in the C# Project as the DLL gets build later!</remarks>
-        public static class BestAddressHelper
-        {
-            private static object FInstantiator = null;
-            private static Type FRemoteClass;
-
-            /// <summary>Static Constructor.</summary>
-            static BestAddressHelper()
-            {
-                const string AssemblyDLLName = "Ict.Petra.Shared.lib.MPartner";
-                const string RemoteType = "Ict.Petra.Shared.MPartner.Calculations";
-                Assembly LoadedAssembly = null;
-
-                LoadedAssembly = Assembly.Load(AssemblyDLLName);
-
-                FRemoteClass = LoadedAssembly.GetType(RemoteType);
-
-                if (FRemoteClass == null)
-                {
-                    const string msg = "cannot find type " + RemoteType + " in " + AssemblyDLLName;
-                    TLogging.Log(msg);
-                    throw new Exception(msg);
-                }
-
-                FInstantiator = Activator.CreateInstance(FRemoteClass,
-                    (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
-                    null,
-                    null,
-                    null);
-            }
-
-            /// <summary>
-            /// Creates an instance of a 'cut-down' PPartnerLocation Table that will be used for storing partial
-            /// to-be-imported p_partner_location record information. It will also be used for the 'Best Address'
-            /// determination, which is important for the Contact Details migration.
-            /// </summary>
-            /// <returns>Instance of a 'cut-down' PPartnerLocation Table that will be used for 'Best Address' determination.</returns>
-            public static DataTable GetNewPPartnerLocationTableInstance()
-            {
-                DataTable ReturnValue = new DataTable("Partners_PPartnerLocation");
-                DataColumn IconForSortingCol;
-
-                ReturnValue.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
-                ReturnValue.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
-                ReturnValue.Columns.Add(new System.Data.DataColumn("p_date_effective_d", typeof(System.DateTime)));
-                ReturnValue.Columns.Add(new System.Data.DataColumn("p_date_good_until_d", typeof(System.DateTime)));
-                ReturnValue.Columns.Add(new System.Data.DataColumn("p_location_type_c", typeof(string)));
-                ReturnValue.Columns.Add(new System.Data.DataColumn("p_send_mail_l", typeof(Boolean)));
-                ReturnValue.Columns.Add(new System.Data.DataColumn("p_telephone_number_c", typeof(string)));
-                ReturnValue.Columns.Add(new System.Data.DataColumn("p_fax_number_c", typeof(string)));
-                ReturnValue.Columns.Add(new System.Data.DataColumn("p_mobile_number_c", typeof(string)));
-                ReturnValue.Columns.Add(new System.Data.DataColumn("p_alternate_telephone_c", typeof(string)));
-                ReturnValue.Columns.Add(new System.Data.DataColumn("p_email_address_c", typeof(string)));
-                ReturnValue.Columns.Add(new System.Data.DataColumn("p_url_c", typeof(string)));
-
-                // Add special DataColumns that are needed for the 'Best Address' calculation
-                ReturnValue.Columns.Add(new System.Data.DataColumn(PARTNERLOCATION_ICON_COLUMN, typeof(Int32)));
-
-                // Add a 'Calculated Column' for sorting
-                IconForSortingCol = new DataColumn();
-                IconForSortingCol.DataType = System.Type.GetType("System.Int32");
-                IconForSortingCol.ColumnName = "Icon_For_Sorting";
-                IconForSortingCol.Expression = "IIF(Icon = 1, 2, IIF(Icon = 2, 1, 3))"; // exchanges instead of Icon=1 we get Icon=2
-                ReturnValue.Columns.Add(IconForSortingCol);
-
-                // Specify the Primary Key of the new DataTabe
-                ReturnValue.PrimaryKey = new DataColumn[] {
-                    ReturnValue.Columns["p_site_key_n"], ReturnValue.Columns["p_location_key_i"]
-                };
-
-                return ReturnValue;
-            }
-
-            /// <summary>
-            /// Determines which address is the 'Best Address' of a Partner, and marks it in the DataColumn 'BestAddress'.
-            /// </summary>
-            /// <remarks>This method calls into an OpenPetra .DLL via .NET Reflection!</remarks>
-            /// <param name="APartnerLocationsDT">DataTable containing all the addresses of a Partner.</param>
-            /// <param name="ASiteKey">Site Key of the 'Best Address'.</param>
-            /// <param name="ALocationKey">Location Key of the 'Best Address'.</param>
-            /// <returns>True if a 'Best Address' was found,
-            /// otherwise false. In the latter case ASiteKey and ALocationKey will be both -1, too.</returns>
-            public static bool DetermineBestAddress(DataTable APartnerLocationsDT, out Int64 ASiteKey, out int ALocationKey)
-            {
-                bool ReturnValue;
-
-                ASiteKey = -1;
-                ALocationKey = -1;
-
-                object[] MethodArguments = new object[] {
-                    APartnerLocationsDT, ASiteKey, ALocationKey
-                };
-
-                ReturnValue =
-                    Convert.ToBoolean(FRemoteClass.InvokeMember("DetermineBestAddress",
-                            (BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod),
-                            null, FInstantiator, MethodArguments, null));
-
-                // Assign the values of the 'out' Arguments to this Methods' out Arguments!
-                ASiteKey = (Int64)MethodArguments[1];
-                ALocationKey = (int)MethodArguments[2];
-
-                return ReturnValue;
-            }
-
-            /// <summary>
-            /// Determines whether a p_partner_location record is the one that constitutes the Partners' 'Best Address'.
-            /// </summary>
-            /// <param name="AParterLocationDR">p_partner_location DataRow.</param>
-            /// <returns>True if it is, false if it isn't the Partners' 'Best Address'.</returns>
-            public static bool IsBestAddressPartnerLocationRecord(DataRow AParterLocationDR)
-            {
-                return ((bool)AParterLocationDR[PARTNERLOCATION_BESTADDR_COLUMN]) == true;
-            }
-        }
-
-        /// <summary>
-        /// Holds data of a p_partner_attribute Record.
-        /// </summary>
-        /// <remarks>This can't be a struct because we need to be able to assign
-        /// values to the Index Property in an foreach loop.</remarks>
-        private class PPartnerAttributeRecord
-        {
-            public int InsertionOrderPerPartner
-            {
-                get; set;
-            }
-
-            public Int64 PartnerKey
-            {
-                get; set;
-            }
-
-            public string AttributeType
-            {
-                get; set;
-            }
-
-            public int Sequence
-            {
-                get; set;
-            }
-
-            public int Index
-            {
-                get; set;
-            }
-
-            public string Value
-            {
-                get; set;
-            }
-
-            public string Comment
-            {
-                get; set;
-            }
-
-            public bool Primary
-            {
-                get; set;
-            }
-
-            public bool WithinOrgansiation
-            {
-                get; set;
-            }
-
-            public bool Specialised
-            {
-                get; set;
-            }
-
-            public bool Confidential
-            {
-                get; set;
-            }
-
-            public bool Current
-            {
-                get; set;
-            }
-
-            public DateTime ? NoLongerCurrentFrom
-            {
-                get; set;
-            }
-        }
-
-        #endregion
-
-        #region Public Methods
-
-        /// <summary>
-        /// Populate the empty table p_partner_attribute using selected data from p_partner_location.
-        /// </summary>
-        public static int PopulatePPartnerAttribute(StringCollection AColumnNames,
+        /// <param name="AColumnNames"></param>
+        /// <param name="ANewRow"></param>
+        /// <param name="AWriter"></param>
+        /// <param name="AWriterTest"></param>
+        public static void PopulatePPartnerAttribute_Init(StringCollection AColumnNames,
             ref string[] ANewRow,
             StreamWriter AWriter,
             StreamWriter AWriterTest)
         {
-            int RowCounter = 0;
-            DataTable PPartnersLocationsDT;
-            Int64 PartnerKey;
-            Int64 BestPartnerLocSiteKey;
-            int BestPartnerLocLocationKey;
-
-            List <PPartnerAttributeRecord>PPARecords;
-            DataView SortedRecordsDV;
-
+            FColumnNames = AColumnNames;
+            FNewRow = ANewRow;
+            FWriter = AWriter;
+            FWriterTest = AWriterTest;
 
             // default for all new records
-            SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
-            SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
-            SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
-            SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
-            SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
-
-//            TLogging.Log(String.Format("PPartnerLocationRecords holds entries for {0} Partners.", FPartnerLocationRecords.Count));
-
-            // FPartnerLocationRecords got created when the p_partner_location table got processed; it holds selected Columns of all
-            // p_partner_location records of each Partner that gets loaded.
-
-            // Process each Partner and its p_partner_location records
-            foreach (var PPartnerLoctationRec in FPartnerLocationRecords)
-            {
-                FInsertionOrderPerPartner = -1;
-
-                // Get PartnerKey of Partner that we are working on at present from PPartnerLocationRecords
-                PartnerKey = PPartnerLoctationRec.Key;
-
-                // Get that Partner's p_partner_location records from PPartnerLocationRecords
-                PPartnersLocationsDT = PPartnerLoctationRec.Value;
-
-                // We hazard a guess that we will possibly create 2 times as many p_partner_attribute records as there are
-                // p_partner_location records - but in some cases there will be more (if we need to create many 'primary'
-                // p_partner_attribute records for Contact Details that come out of the 'Best Address' p_partner_location records,
-                // or less (if there are many p_partner_location records that don't have details that will become a Contact Detail).
-                // The guess is done so that PPARecords doesn't need to continually get expanded by .NET as we are adding to it.
-                // (The 2.0 factor got determined by checking the average number of records that got created by running this
-                // over actual data from the SA DB (1.3) and then rounding the number up, as often there will only be one
-                // p_partner_location record, and so we create at least 2 entries in that case.)
-                PPARecords = new List <PPartnerAttributeRecord>(PPartnersLocationsDT.Rows.Count * 2);
-
-                // Determine the p_partner_location record that constitutes the 'Best Address' of that Partner
-                if (!BestAddressHelper.DetermineBestAddress(PPartnersLocationsDT,
-                        out BestPartnerLocSiteKey, out BestPartnerLocLocationKey))
-                {
-                    throw new Exception(String.Format(
-                            "Problem determining the 'Best Address' for the p_parter_location records of Partner with PartnerKey {0}! Number of p_parter_location records: {1}",
-                            PartnerKey, PPartnersLocationsDT.Rows.Count));
-                }
-                else
-                {
-                    if (PPartnersLocationsDT.Rows.Count > 1)
-                    {
-//                        TLogging.Log(
-//                            String.Format(
-//                                "'Best Address' for the p_parter_location records of Partner with PartnerKey {0} which has {1} p_partner_locations:   p_parter_location SiteKey: {2}; p_parter_location LocationKey: {3}",
-//                                PartnerKey, PPartnersLocationsDT.Rows.Count, BestPartnerLocSiteKey, BestPartnerLocLocationKey));
-                    }
-
-                    //
-                    // Create p_partner_attribute records for each p_partner_location records'
-                    // columns that hold 'Contact Detail' data and have values, and are unique,
-                    //
-
-                    // We want to create the p_partner_attribute records in the same order that the user
-                    // would see the p_location records (that we lift them from) on the Address Tab.
-                    SortedRecordsDV = PPartnersLocationsDT.DefaultView;
-                    SortedRecordsDV.Sort = "Icon_For_Sorting ASC, p_date_effective_d DESC";
-
-                    for (int Counter = 0; Counter < SortedRecordsDV.Count; Counter++)
-                    {
-                        List <PPartnerAttributeRecord>PPARecordsSingleLocation =
-                            ConstructPPartnerAttributeRecords(PartnerKey, SortedRecordsDV[Counter].Row);
-
-                        for (int SingleLocCounter = 0; SingleLocCounter < PPARecordsSingleLocation.Count; SingleLocCounter++)
-                        {
-                            // LINQ Query for de-duplication: Check if there are already PPARecords of a Partner that have
-                            // the same Attribute Type and Value as a record from PPARecordsSingleLocation. If so, don't add
-                            // the record from PPARecordsSingleLocation to PPARecords as it would create a duplicate Contact Detail!
-                            // (it is often the case that several p_partner_location records of a Partner hold the same data!)
-                            var PPARecordsContainsQuery =
-                                from PPARecord in PPARecords
-                                where PPARecord.AttributeType == PPARecordsSingleLocation[SingleLocCounter].AttributeType
-                                && PPARecord.Value == PPARecordsSingleLocation[SingleLocCounter].Value
-                                select PPARecord;
-
-                            if (!PPARecordsContainsQuery.Any())
-                            {
-                                PPARecords.Add(PPARecordsSingleLocation[SingleLocCounter]);
-                            }
-                        }
-                    }
-
-                    // LINQ Query to establish Index values: Group all PPARecords of a Partner by
-                    // Attribute Type and have the Primary record come first in each Group, followed by
-                    // the other PPARecords in their insertion order.
-                    var PPARecordsGroupedQuery =
-                        from PPARecord in PPARecords
-                        orderby PPARecord.Primary descending, PPARecord.InsertionOrderPerPartner
-                    group PPARecord by PPARecord.AttributeType into grouping
-                    orderby grouping.Key
-                    select grouping;
-
-                    // Iterate over each Group and determine the Index values of their individual members.
-                    // The first member always starts with Index 0.
-                    // Reason for this: The Contact Details Tab displays Contact Details grouped by
-                    // Contact Category, and the ones of the same Contact Category are sorted by Index
-                    // within each Contact Category. With this approach, 'Primary' PPARecords will be
-                    // listed first, followed by other records in the order that a user would have seen
-                    // them on the 'Addresses' Tab in Petra 2.x!
-                    foreach (var PPARecordGroup in PPARecordsGroupedQuery)
-                    {
-                        int IndexInGroup = 0;
-
-                        foreach (var PPARecGroupMember in PPARecordGroup)
-                        {
-                            PPARecGroupMember.Index = IndexInGroup++;
-                        }
-                    }
-
-                    // Create new Rows and write them out
-                    foreach (var PPARec in PPARecords)
-                    {
-                        SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", PPARec.PartnerKey.ToString());
-                        SetValue(AColumnNames, ref ANewRow, "p_sequence_i", PPARec.Sequence.ToString());
-                        SetValue(AColumnNames, ref ANewRow, "p_attribute_type_c", PPARec.AttributeType);
-                        SetValue(AColumnNames, ref ANewRow, "p_index_i", PPARec.Index.ToString());
-                        SetValue(AColumnNames, ref ANewRow, "p_value_c", PPARec.Value.Replace(";", @"\;"));
-                        SetValue(AColumnNames, ref ANewRow, "p_comment_c", PPARec.Comment != String.Empty ? PPARec.Comment : "\\N");
-                        SetValue(AColumnNames, ref ANewRow, "p_primary_l", PPARec.Primary ? "1" : "0");
-                        SetValue(AColumnNames, ref ANewRow, "p_within_organsiation_l", PPARec.WithinOrgansiation ? "1" : "0");
-                        SetValue(AColumnNames, ref ANewRow, "p_specialised_l", PPARec.Specialised ? "1" : "0");
-                        SetValue(AColumnNames, ref ANewRow, "p_confidential_l", PPARec.Confidential ? "1" : "0");
-                        SetValue(AColumnNames, ref ANewRow, "p_current_l", PPARec.Current ? "1" : "0");
-                        SetValue(AColumnNames, ref ANewRow, "p_no_longer_current_from_d",
-                            PPARec.NoLongerCurrentFrom.HasValue ? PPARec.NoLongerCurrentFrom.Value.ToString("yyyy-dd-mm") : "\\N");
-
-                        AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-
-                        if (AWriterTest != null)
-                        {
-                            AWriterTest.WriteLine("BEGIN; " + "COPY p_partner_attribute FROM stdin;");
-                            AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                            AWriterTest.WriteLine("\\.");
-                            AWriterTest.WriteLine("ROLLBACK;");
-                        }
-                    }
-
-                    RowCounter += PPARecords.Count;
-                }
-            }
-
-            // Get rid of the Data Structure that we don't need anymore!
-            FPartnerLocationRecords = null;
-            // ... and kindly ask .NET's Garbage Collector to really get it out of memory, if it's convenient.
-            GC.Collect(0, GCCollectionMode.Optimized);
-
-            return RowCounter;
+            SetValue(AColumnNames, ref FNewRow, "s_date_created_d", "\\N");
+            SetValue(AColumnNames, ref FNewRow, "s_created_by_c", "\\N");
+            SetValue(AColumnNames, ref FNewRow, "s_date_modified_d", "\\N");
+            SetValue(AColumnNames, ref FNewRow, "s_modified_by_c", "\\N");
+            SetValue(AColumnNames, ref FNewRow, "s_modification_id_t", "\\N");
         }
 
-        #endregion
-
-        #region Private Methods
-
-        private static List <PPartnerAttributeRecord>ConstructPPartnerAttributeRecords(Int64 APartnerKey, DataRow APartnerLocationDR)
+        /// <summary>
+        /// Kicks off the population of PPartnerAttributes.
+        /// </summary>
+        /// /// <returns>Number of created PPartnerAttribute Rows.</returns>
+        public static int PopulatePPartnerAttribute()
         {
-            // Empty strings are not String.Empty, but have this string value:
-            const string EMPTY_STRING_INDICATOR = @"\N";
-
-            var ReturnValue = new List <TPartnerContactDetails.PPartnerAttributeRecord>();
-            var PPARecordList = new List <PPartnerAttributeRecord>();
-            PPartnerAttributeRecord PPARecord;
-            bool IsBestAddr = BestAddressHelper.IsBestAddressPartnerLocationRecord(APartnerLocationDR);
-            bool AnyTelephoneNumberSetAsPrimary = false;
-            // Variables that hold record information
-            string TelephoneNumber = (string)APartnerLocationDR["p_telephone_number_c"];
-            string FaxNumber = (string)APartnerLocationDR["p_fax_number_c"];
-            string MobileNumber = (string)APartnerLocationDR["p_mobile_number_c"];
-            string AlternatePhoneNumber = (string)APartnerLocationDR["p_alternate_telephone_c"];
-            string Url = (string)APartnerLocationDR["p_url_c"];
-            string EmailAddress = (string)APartnerLocationDR["p_email_address_c"];
-            string PartnerClass;
-
-            FInsertionOrderPerPartner++;
-
-            //
-            // Work on the various p_partner_location DataColumns that hold data and that will each be migrated to
-            // a Contact Detail record - if they hold data.
-            //
-
-            if ((TelephoneNumber != EMPTY_STRING_INDICATOR)
-                || (EmailAddress != EMPTY_STRING_INDICATOR))
-            {
-                // Set data parts that depend on certain conditions
-                if (TelephoneNumber != EMPTY_STRING_INDICATOR)
-                {
-                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-
-                    PPARecord.Value = TelephoneNumber;
-                    PPARecord.AttributeType = ATTR_TYPE_PHONE;
-
-                    if ((IsBestAddr)
-                        && (PPARecord.Current))
-                    {
-                        // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
-                        PPARecord.Primary = true;
-
-                        AnyTelephoneNumberSetAsPrimary = true;
-
-//                        TLogging.Log(String.Format(
-//                                "Made Telephone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
-//                                TelephoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
-                    }
-
-                    PPARecordList.Add(PPARecord);
-                }
-
-                if (EmailAddress != EMPTY_STRING_INDICATOR)
-                {
-                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-
-                    PPARecord.Value = EmailAddress;
-                    PPARecord.AttributeType = ATTR_TYPE_EMAIL;
-
-                    if ((IsBestAddr)
-                        && (PPARecord.Current))
-                    {
-                        // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
-                        PPARecord.Primary = true;
-
-                        // Mark this Contact Detail as being 'WithinOrgansiation' as it has an 'organisation-internal' e-mail-address!
-                        // - but only if the Partner is a PERSON!
-                        if (FPartnerClassInformation.TryGetValue(APartnerKey, out PartnerClass))
-                        {
-                            if (PartnerClass == "PERSON")
-                            {
-                                if (EmailAddress.EndsWith("@om.org", StringComparison.InvariantCulture))
-                                {
-                                    PPARecord.WithinOrgansiation = true;
-
-//                                    TLogging.Log(String.Format(
-//                                            "Made email address '{0}' a 'WithinOrganisation' e-mail address (PartnerKey: {1}, LocationKey: {2})",
-//                                            EmailAddress, APartnerKey, APartnerLocationDR["p_location_key_i"]));
-                                }
-                            }
-                        }
-                    }
-
-                    PPARecordList.Add(PPARecord);
-                }
-            }
-
-            if (FaxNumber != EMPTY_STRING_INDICATOR)
-            {
-                PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
-                PPARecord.Value = FaxNumber;
-                PPARecord.AttributeType = ATTR_TYPE_FAX;
-
-                PPARecordList.Add(PPARecord);
-            }
-
-            if (MobileNumber != EMPTY_STRING_INDICATOR)
-            {
-                PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
-                PPARecord.Value = MobileNumber;
-                PPARecord.AttributeType = ATTR_TYPE_MOBILE_PHONE;
-
-                if ((!AnyTelephoneNumberSetAsPrimary)
-                    && (IsBestAddr)
-                    && (PPARecord.Current))
-                {
-                    // Mark this Contact Detail as being 'Primary' - but only if no other telephone number has been set as primary already and
-                    // when the Contact Detail is current!
-                    PPARecord.Primary = true;
-
-                    AnyTelephoneNumberSetAsPrimary = true;
-
-//                    TLogging.Log(String.Format(
-//                            "Made MOBILE Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
-//                            MobileNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
-                }
-
-                PPARecordList.Add(PPARecord);
-            }
-
-            if (AlternatePhoneNumber != EMPTY_STRING_INDICATOR)
-            {
-                PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
-                PPARecord.Value = AlternatePhoneNumber;
-                PPARecord.AttributeType = ATTR_TYPE_PHONE;
-
-                if ((!AnyTelephoneNumberSetAsPrimary)
-                    && (IsBestAddr)
-                    && (PPARecord.Current))
-                {
-                    // Mark this Contact Detail as being 'Primary' - but only if no other telephone number has been set as primary already and
-                    // when the Contact Detail is current!
-                    PPARecord.Primary = true;
-
-                    AnyTelephoneNumberSetAsPrimary = true;
-
-//                    TLogging.Log(String.Format(
-//                            "Made ALTERNATE Phone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
-//                            AlternatePhoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
-                }
-
-                PPARecordList.Add(PPARecord);
-            }
-
-            if (Url != EMPTY_STRING_INDICATOR)
-            {
-                PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
-                PPARecord.Value = Url;
-                PPARecord.AttributeType = ATTR_TYPE_WEBSITE;
-
-                PPARecordList.Add(PPARecord);
-            }
-
-            // Now add all created records to the ReturnValue
-            foreach (var PPARec in PPARecordList)
-            {
-                ReturnValue.Add(PPARec);
-            }
-
-            return ReturnValue;
+            TPartnerContactDetails.EmptyStringIndicator = @"\N";
+            return TPartnerContactDetails.PopulatePPartnerAttribute();
         }
 
-        private static PPartnerAttributeRecord GetNewPPartnerAttributeRecord(Int64 APartnerKey, DataRow APartnerLocationDR)
+        /// <summary>
+        /// Writes out a PPartnerAttribute Record out of data that is held in a data structure that is a p_parnter_attribute
+        /// representation.
+        /// </summary>
+        /// <param name="APPARec">Data structure that is p_parnter_attribute representation.</param>
+        /// <param name="ANotUsed">IGNORED - Pass in null.</param>
+        public static void WriteOutContactDetails(TPartnerContactDetails.PPartnerAttributeRecord APPARec, DataSet ANotUsed)
         {
-            DateTime? EffectiveDate = null;
-            DateTime? GoodUntilDate = null;
-            DateTime? NoLongerCurrentFromDate = null;
-            int Icon = ((int)APartnerLocationDR[PARTNERLOCATION_ICON_COLUMN]);  // determined by 'Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerLocationsDateStatus'
-            bool CurrentFlag = Icon == 1;                                       // 1 = 'Current Address'
-            bool SpecialisedFlag = false;
-            string CommentStr = String.Empty;
+            SetValue(FColumnNames, ref FNewRow, "p_partner_key_n", APPARec.PartnerKey.ToString());
+            SetValue(FColumnNames, ref FNewRow, "p_sequence_i", APPARec.Sequence.ToString());
+            SetValue(FColumnNames, ref FNewRow, "p_attribute_type_c", APPARec.AttributeType);
+            SetValue(FColumnNames, ref FNewRow, "p_index_i", APPARec.Index.ToString());
+            SetValue(FColumnNames, ref FNewRow, "p_value_c", APPARec.Value.Replace(";", @"\;"));
+            SetValue(FColumnNames, ref FNewRow, "p_comment_c", APPARec.Comment != String.Empty ? APPARec.Comment : "\\N");
+            SetValue(FColumnNames, ref FNewRow, "p_primary_l", APPARec.Primary ? "1" : "0");
+            SetValue(FColumnNames, ref FNewRow, "p_within_organsiation_l", APPARec.WithinOrganisation ? "1" : "0");
+            SetValue(FColumnNames, ref FNewRow, "p_specialised_l", APPARec.Specialised ? "1" : "0");
+            SetValue(FColumnNames, ref FNewRow, "p_confidential_l", APPARec.Confidential ? "1" : "0");
+            SetValue(FColumnNames, ref FNewRow, "p_current_l", APPARec.Current ? "1" : "0");
+            SetValue(FColumnNames, ref FNewRow, "p_no_longer_current_from_d",
+                APPARec.NoLongerCurrentFrom.HasValue ? APPARec.NoLongerCurrentFrom.Value.ToString("yyyy-dd-mm") : "\\N");
 
-            if (!APartnerLocationDR.IsNull("p_date_effective_d"))
-            {
-                EffectiveDate = ((DateTime)APartnerLocationDR["p_date_effective_d"]);
-            }
+            FWriter.WriteLine(StringHelper.StrMerge(FNewRow, '\t').Replace("\\\\N", "\\N").ToString());
 
-            if (!APartnerLocationDR.IsNull("p_date_good_until_d"))
+            if (FWriterTest != null)
             {
-                GoodUntilDate = ((DateTime)APartnerLocationDR["p_date_good_until_d"]);
+                FWriterTest.WriteLine("BEGIN; " + "COPY p_partner_attribute FROM stdin;");
+                FWriterTest.WriteLine(StringHelper.StrMerge(FNewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                FWriterTest.WriteLine("\\.");
+                FWriterTest.WriteLine("ROLLBACK;");
             }
-
-            if ((Icon == 3)                                                     // 'Expired Address'
-                && (GoodUntilDate.HasValue))
-            {
-                NoLongerCurrentFromDate = GoodUntilDate.Value;
-            }
-            else if ((Icon == 2)                                               // 'Future Address'
-                     && (EffectiveDate.HasValue))
-            {
-                CommentStr = Catalog.GetString(
-                    String.Format("In Petra 2.x this Contact Detail was set to become effective on {0}. " +
-                        "Please set this Contact Detail record to 'Valid' on, or after, this date!",
-                        StringHelper.DateToLocalizedString(EffectiveDate)));
-            }
-
-            if (((string)APartnerLocationDR["p_location_type_c"] == "BUSINESS")
-                || ((string)APartnerLocationDR["p_location_type_c"] == "FIELD"))
-            {
-                SpecialisedFlag = true;
-            }
-
-            return new TPartnerContactDetails.PPartnerAttributeRecord() {
-                       InsertionOrderPerPartner = FInsertionOrderPerPartner,
-                       PartnerKey = APartnerKey,
-                       Sequence = FSequenceNo++,
-                       Comment = CommentStr,
-                       Specialised = SpecialisedFlag,
-                       Current = CurrentFlag,
-                       Confidential = ((string)APartnerLocationDR["p_location_type_c"]).EndsWith(SECURITY_CAN_LOCATIONTYPE,
-                           StringComparison.InvariantCulture),
-                       NoLongerCurrentFrom = NoLongerCurrentFromDate
-            };
         }
-
-        #endregion
     }
 }

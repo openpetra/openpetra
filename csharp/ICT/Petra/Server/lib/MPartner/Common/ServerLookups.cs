@@ -620,6 +620,20 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
                     break;
 
+                case TPartnerInfoScopeEnum.pisPartnerAttributesOnly:
+
+                    if (TServerLookups_PartnerInfo.PartnerAttributesOnly(APartnerKey,
+                            ref APartnerInfoDS))
+                    {
+                        ReturnValue = true;
+                    }
+                    else
+                    {
+                        ReturnValue = false;
+                    }
+
+                    break;
+
                 case TPartnerInfoScopeEnum.pisFull:
 
                     if (TServerLookups_PartnerInfo.AllPartnerInfoData(APartnerKey,

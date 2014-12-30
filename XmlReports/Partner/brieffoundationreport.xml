@@ -39,7 +39,7 @@
 
     <calculations>
 	<calculation id="Select Foundations" returns="PartnerKey, ShortName, PartnerClass, FoundationOwnerName1,
-		FoundationOwner2, Contact, EMailAddress, Phone, Review, Submit, Submission" returnsFormat="row">
+		FoundationOwner2, Contact, EMailAddr, Phone, Review, Submit, Submission" returnsFormat="row">
 		<query>
 			<queryDetail><value>
 				SELECT DISTINCT 
@@ -48,7 +48,7 @@
 					PUB_p_partner.p_partner_class_c AS PartnerClass,
 					PUB_p_foundation.p_owner_2_key_n AS FoundationOwner2,
 					PUB_p_foundation.p_key_contact_name_c AS Contact,
-					PUB_p_foundation.p_key_contact_email_c AS EMailAddress,
+					PUB_p_foundation.p_key_contact_email_c AS EMailAddr,
 					PUB_p_foundation.p_key_contact_phone_c AS Phone,
 					PUB_p_foundation.p_review_frequency_c AS Review,
 					PUB_p_foundation.p_submit_frequency_c AS Submit,
@@ -221,7 +221,7 @@
 		<caption><value text="E-Mail Address"></value></caption>
 		<query>
 			<queryDetail>
-				<value variable="EMailAddress"></value>
+				<value variable="EMailAddr"></value>
 			</queryDetail>
 		</query>
 	</calculation>

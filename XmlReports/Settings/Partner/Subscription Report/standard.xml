@@ -14,7 +14,7 @@
   <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
   <Parameter id="param_calculation" column="2" value="eString:City" />
   <Parameter id="ColumnWidth" column="2" value="eInteger:3" />
-  <Parameter id="param_calculation" column="3" value="eString:Telephone" />
+  <Parameter id="param_calculation" column="3" value="eString:Primary Phone" />
   <Parameter id="ColumnWidth" column="3" value="eDecimal:4614613358185178726" />
   <Parameter id="param_calculation" column="4" value="eString:Address Type" />
   <Parameter id="ColumnWidth" column="4" value="eDecimal:4612811918334230528" />

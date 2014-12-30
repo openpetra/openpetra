@@ -311,25 +311,32 @@ namespace Ict.Petra.Server.MPartner.Common
         }
 
         /// <summary>
-        /// get the best email address that is valid today
+        /// Gets the 'Primary Email Address'.
         /// </summary>
+        /// <returns>The 'Primary Email Address', or <see cref="String.Empty" /> in case the Partner hasn't got one.</returns>
         public static string GetBestEmailAddress(Int64 APartnerKey)
         {
-            PLocationTable Address;
-            string CountryNameLocal;
+            string EmailAddress = String.Empty;
 
-            return GetBestEmailAddressWithDetails(APartnerKey, out Address, out CountryNameLocal);
+            if (!TContactDetailsAggregate.GetPrimaryEmailAddress(APartnerKey, out EmailAddress))
+            {
+                EmailAddress = String.Empty;
+            }
+
+            return EmailAddress;
         }
 
         /// <summary>
-        /// get the best email address that is valid today, with some location details
+        /// Gets the 'Primary Email Address' and some location details of the 'Best Address'.
         /// </summary>
+        /// <returns>The 'Primary Email Address', or <see cref="String.Empty" /> in case the Partner hasn't got one.</returns>
         public static string GetBestEmailAddressWithDetails(Int64 APartnerKey, out PLocationTable AAddress, out string ACountryNameLocal)
         {
-            string EmailAddress = "";
+            string EmailAddress = String.Empty;
             PLocationTable Address = null;
             string CountryNameLocal = "";
             TDBTransaction Transaction = null;
+            bool FoundBestAddress = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
                 delegate
@@ -357,10 +364,7 @@ namespace Ict.Petra.Server.MPartner.Common
                         // find the row with BestAddress = 1
                         if (Convert.ToInt32(row["BestAddress"]) == 1)
                         {
-                            if (!row.IsEmailAddressNull())
-                            {
-                                EmailAddress = row.EmailAddress;
-                            }
+                            FoundBestAddress = true;
 
                             // we also want the post address, need to load the p_location table:
                             Address = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, Transaction);
@@ -371,6 +375,14 @@ namespace Ict.Petra.Server.MPartner.Common
                             }
 
                             CountryNameLocal = CountryTable[CountryTable.DefaultView.Find(Address[0].CountryCode)].CountryNameLocal;
+                        }
+                    }
+
+                    if (FoundBestAddress)
+                    {
+                        if (!TContactDetailsAggregate.GetPrimaryEmailAddress(APartnerKey, out EmailAddress))
+                        {
+                            EmailAddress = String.Empty;
                         }
                     }
                 });

@@ -56,10 +56,10 @@ RootNode:
             Name: Partner Class
             Parameter: 3.0
         Para8:
-            Name: E-Mail Address
+            Name: Primary E-Mail
             Parameter: 3.0
         Para9:
-            Name: Telephone
+            Name: Primary Phone
             Parameter: 3.0
         Para10:
             Name: FaxNumber

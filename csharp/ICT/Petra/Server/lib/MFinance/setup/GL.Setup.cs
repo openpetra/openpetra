@@ -61,6 +61,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Cascading;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.MPartner.DataAggregates;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -1011,10 +1012,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static DataTable GetLinkedPartners(Int32 ALedgerNumber, String ACostCentreFilter)
         {
             DataTable PartnerCostCentreTbl = null;
-            PLocationTable tbl;
-            PPartnerLocationTable PartnerLocation;
-            String CountryNameLocal;
-            String EmailAddress;
+            string EmailAddress;
 
             String SqlQuery = "SELECT p_partner.p_partner_key_n as PartnerKey, " +
                               " a_cost_centre_code_c as CostCentreCode, " +
@@ -1037,15 +1035,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     foreach (DataRow Row in PartnerCostCentreTbl.Rows)
                     {
-                        TAddressTools.GetBestAddress(
-                            Convert.ToInt64(Row["PartnerKey"]),
-                            out tbl,
-                            out PartnerLocation,
-                            out CountryNameLocal,
-                            out EmailAddress,
-                            Transaction
-                            );
-                        Row["EmailAddress"] = EmailAddress;
+                        if (TContactDetailsAggregate.GetPrimaryEmailAddress((Int64)Row["PartnerKey"], out EmailAddress))
+                        {
+                            // 'Primary Email Address' of Partner (String.Empty is supplied if the Partner hasn't got one)
+                            Row["EmailAddress"] = EmailAddress;
+                        }
+                        else
+                        {
+                            Row["EmailAddress"] = String.Empty;
+                        }
                     }
                 });
 

@@ -122,6 +122,7 @@ RootNode:
             Label: &Value
             Width: 256
             OnLeave: HandleValueLeave
+            OnChange: HandleValueChanged
 # TODO SHORTCUTS:             Type: Hyperlink
 
         btnLaunchHyperlinkFromValue: {NoLabel=true, Width=15, Height=27}

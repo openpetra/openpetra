@@ -173,10 +173,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// order to have current data on which decisions on whether to refresh certain
         /// parts of the 'Overview' need to be updated.
         /// </summary>
-        /// <param name="AAddressesOrRelationsChanged">Set to true by the SaveChanges Method
-        /// of the Partner Edit screen if Addresses or Relationships have changed.</param>
-        /// <returns>void</returns>
-        public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
+        /// <param name="APartnerAttributesOrRelationsChanged">NOT USED IN THIS CONTEXT!  (Set to true by the SaveChanges Method
+        /// of the Partner Edit screen if PartnerAttributes or Relationships have changed.)</param>
+        public void RefreshPersonnelDataAfterMerge(bool APartnerAttributesOrRelationsChanged)
         {
             //
             // Need to merge Tables from PartnerEditTDS into IndividualDataTDS so the updated s_modification_id_t of modififed Rows is held correctly in IndividualDataTDS, too!

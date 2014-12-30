@@ -107,7 +107,7 @@ RootNode:
             Name: County
             Parameter: 2.0
         Para8:
-            Name: E-Mail Address
+            Name: Primary E-Mail
             Parameter: 4.0
         Para9:
             Name: Fax
@@ -149,7 +149,7 @@ RootNode:
             Name: Street Name
             Parameter: 3.0
         Para21:
-            Name: Telephone
+            Name: Primary Phone
             Parameter: 3.3
         Para22:
             Name: Third Address Line

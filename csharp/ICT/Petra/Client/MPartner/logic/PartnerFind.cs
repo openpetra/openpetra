@@ -31,6 +31,7 @@ using Ict.Common.Controls;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MPartner;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -38,28 +39,33 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MPartner;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Client.MPartner.Gui
 {
-    #region TPartnerFindScreenLogic
+    #region TPartnerFindScreen_Logic
 
     /// <summary>
     /// todoComment
     /// </summary>
-    public class TPartnerFindScreenLogic : System.Object
+    public class TPartnerFindScreen_Logic
     {
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static TPartnerFindScreenLogic ULogic;
-
         /// <summary>Holds a reference to the Form that uses this Class.</summary>
         private IWin32Window FParentForm;
 
         /// <summary>Holds a reference to the DataGrid that is used to display the records</summary>
         private TSgrdDataGrid FDataGrid;
 
+        /// <summary>Holds a reference to the 'Partner Info' Collapsible Panel.</summary>
+        private TPnlCollapsible FPartnerInfoCollPanel;
+
         /// <summary>The PartnerKey of the currently selected Row in the DataGrid</summary>
         private Int64 FPartnerKey = -1;
+
+        /// <summary>Last PartnerKey for which the Partner Info Panel was opened.</summary>
+        private Int64 FLastPartnerKeyInfoPanelOpened = -1;
+
+        /// <summary>Last LocationKey for which the Partner Info Panel was opened.</summary>
+        private TLocationPK FLastLocationPKInfoPanelOpened = new TLocationPK();
+
 
         /// <summary>DataGrid that is used to display the records</summary>
         public TSgrdDataGrid DataGrid
@@ -128,12 +134,18 @@ namespace Ict.Petra.Client.MPartner
             }
         }
 
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TPartnerFindScreenLogic() : base()
+        /// <summary>Reference to the 'Partner Info' Collapsible Panel.</summary>
+        public TPnlCollapsible PartnerInfoCollPanel
         {
-            ULogic = this;
+            get
+            {
+                return FPartnerInfoCollPanel;
+            }
+
+            set
+            {
+                FPartnerInfoCollPanel = value;
+            }
         }
 
         /// <summary>
@@ -185,7 +197,7 @@ namespace Ict.Petra.Client.MPartner
             if (ADetailedResults)
             {
                 FDataGrid.AddTextColumn("Class", ASourceTable.Columns["p_partner_class_c"], PARTNERCLASS_COLUMNWIDTH);
-                FDataGrid.AddTextColumn("Partner Key", ASourceTable.Columns["p_partner_key_n"]);
+                FDataGrid.AddPartnerKeyColumn("Partner Key", ASourceTable.Columns["p_partner_key_n"]);
                 FDataGrid.AddTextColumn("Partner Name", ASourceTable.Columns["p_partner_short_name_c"]);
 
                 if (AVisibleFields.Contains("PreviousName"))
@@ -220,16 +232,6 @@ namespace Ict.Petra.Client.MPartner
                     FDataGrid.AddTextColumn("Family Key", ASourceTable.Columns["p_family_key_n"]);
                 }
 
-                if (AVisibleFields.Contains("PhoneNumber"))
-                {
-                    FDataGrid.AddTextColumn("Telephone", ASourceTable.Columns["p_telephone_number_c"]);
-                }
-
-                if (AVisibleFields.Contains("Email"))
-                {
-                    FDataGrid.AddTextColumn("Email", ASourceTable.Columns["p_email_address_c"]);
-                }
-
                 if (!ASearchForActivePartners)
                 {
                     FDataGrid.AddTextColumn("Partner Status", ASourceTable.Columns["p_status_code_c"]);
@@ -241,6 +243,7 @@ namespace Ict.Petra.Client.MPartner
             else
             {
                 FDataGrid.AddTextColumn("Class", ASourceTable.Columns["p_partner_class_c"], PARTNERCLASS_COLUMNWIDTH);
+                FDataGrid.AddPartnerKeyColumn("Partner Key", ASourceTable.Columns["p_partner_key_n"]);
                 FDataGrid.AddTextColumn("Partner Name", ASourceTable.Columns["p_partner_short_name_c"]);
 
                 if (ASearchForActivePartners)
@@ -250,7 +253,6 @@ namespace Ict.Petra.Client.MPartner
 
                 FDataGrid.AddTextColumn("City", ASourceTable.Columns["p_city_c"]);
                 FDataGrid.AddTextColumn("Addr2", ASourceTable.Columns["p_street_name_c"]);
-                FDataGrid.AddTextColumn("Partner Key", ASourceTable.Columns["p_partner_key_n"]);
 
                 if (!ASearchForActivePartners)
                 {
@@ -306,23 +308,56 @@ namespace Ict.Petra.Client.MPartner
         /// todoComment
         /// </summary>
         /// <returns></returns>
-        public String DetermineCurrentEmailAddress()
+        public void SendEmailToPartner()
         {
-            DataRow CurrentDR = this.CurrentDataRow;
-            String EmailAddress;
-
-            if (CurrentDR != null)
+            if (FPartnerInfoCollPanel.UserControlInstance == null)
             {
-                // get Email Address of current DataRow
-                EmailAddress = Convert.ToString(CurrentDR[PPartnerLocationTable.GetEmailAddressDBName()]);
+                FPartnerInfoCollPanel.RealiseUserControlNow();
+            }
+
+            var PartnerInfoUC = ((TUC_PartnerInfo)(FPartnerInfoCollPanel.UserControlInstance));
+            PartnerInfoUC.InitUserControl();
+
+            PartnerInfoUC.DataLoaded += PartnerInfoUC_DataLoaded;
+
+            // Ask the UserControl to load the data for the Partner; once it is finished
+            // the 'DataLoaded' Event will fire and the Email can get sent - if the Partner
+            // has indeed got a 'Primary E-Mail Address'
+            if (!UpdatePartnerInfoPanel(false, PartnerInfoUC))
+            {
+                PartnerInfoUC_DataLoaded(PartnerInfoUC, null);
+            }
+        }
+
+        /// <summary>
+        /// Data for the Partner got loaded and we can determine the Partners' 'Primary E-Mail Address'.
+        /// If the Partner has got one we will ask the the E-Mail program to open a new E-Mail with
+        /// the Partner's E-Mail address as the recipient of the E-Mail.
+        /// </summary>
+        /// <param name="Sender">Our instance of <see cref="TUC_PartnerInfo"/>.</param>
+        /// <param name="e">Ignored.</param>
+        private void PartnerInfoUC_DataLoaded(object Sender, Types.TPartnerKeyData e)
+        {
+            String PrimaryEmailAddress;
+
+            if (Calculations.GetPrimaryEmailAddress(
+                    ((TUC_PartnerInfo)Sender).GetPartnerAttributeData(), out PrimaryEmailAddress))
+            {
+//            MessageBox.Show(PrimaryEmailAddress.ToString());
+
+                TRtbHyperlinks.DisplayHelper Launcher = new TRtbHyperlinks.DisplayHelper(new TRtbHyperlinks());
+
+                Launcher.LaunchHyperLink(PrimaryEmailAddress, THyperLinkHandling.HYPERLINK_PREFIX_EMAILLINK);
             }
             else
             {
-                EmailAddress = "";
+                MessageBox.Show(MPartnerResourcestrings.StrNoPrimaryEmailAvailableToSendEmailTo,
+                    MPartnerResourcestrings.StrNoPrimaryEmailAvailableToSendEmailToTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
-            // MessageBox.Show(EmailAddress.ToString);
-            return EmailAddress;
+            // We don't want to get any further notifications (until the 'SendEmailToPartner' Method hooks myself up again!)
+            ((TUC_PartnerInfo)Sender).DataLoaded -= PartnerInfoUC_DataLoaded;
         }
 
         /// <summary>
@@ -372,6 +407,29 @@ namespace Ict.Petra.Client.MPartner
 
             // MessageBox.Show(PartnerClass);
             return PartnerClass;
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <returns></returns>
+        public String DetermineCurrentPartnerStatus()
+        {
+            DataRow CurrentDR = this.CurrentDataRow;
+            String PartnerStatus;
+
+            if (CurrentDR != null)
+            {
+                // get PartnerStatus of current DataRow
+                PartnerStatus = Convert.ToString(CurrentDR[PPartnerTable.GetStatusCodeDBName()]);
+            }
+            else
+            {
+                PartnerStatus = "";
+            }
+
+            // MessageBox.Show(PartnerStatus);
+            return PartnerStatus;
         }
 
         /// <summary>
@@ -449,7 +507,88 @@ namespace Ict.Petra.Client.MPartner
         }
 
         #endregion
+
+
+        /// <summary>
+        /// Causes the 'Partner Info' UserControl to update itself.
+        /// </summary>
+        /// <param name="ALocationDataAvailable">Set to true if Location data is available.</param>
+        /// <param name="APartnerInfoUC">Instance of the PartnerInfo UserControl</param>
+        /// <returns>True if an 'update' was done, false if the Partner Info Control already had current data and hence no
+        /// update was done.</returns>
+        public bool UpdatePartnerInfoPanel(bool ALocationDataAvailable, TUC_PartnerInfo APartnerInfoUC)
+        {
+            bool ReturnValue = false;
+            TLocationPK CurrentLocationPK;
+
+            CurrentLocationPK = DetermineCurrentLocationPK();
+
+            //                MessageBox.Show("Current PartnerKey: " + PartnerKey.ToString() + Environment.NewLine +
+            //                                "FLastPartnerKeyInfoPanelOpened: " + FLastPartnerKeyInfoPanelOpened.ToString() + Environment.NewLine +
+            //                                "CurrentLocationPK: " + CurrentLocationPK.SiteKey.ToString() + ", " + CurrentLocationPK.LocationKey.ToString() + Environment.NewLine +
+            //                                "FLastLocationPKInfoPanelOpened: " + FLastLocationPKInfoPanelOpened.SiteKey.ToString() + ", " + FLastLocationPKInfoPanelOpened.LocationKey.ToString());
+            if ((CurrentDataRow != null)
+                && (((FLastPartnerKeyInfoPanelOpened == PartnerKey)
+                     && ((FLastLocationPKInfoPanelOpened.SiteKey != CurrentLocationPK.SiteKey)
+                         || (FLastLocationPKInfoPanelOpened.LocationKey != CurrentLocationPK.LocationKey)))
+                    || (FLastPartnerKeyInfoPanelOpened != PartnerKey)))
+            {
+                FLastPartnerKeyInfoPanelOpened = PartnerKey;
+                FLastLocationPKInfoPanelOpened = CurrentLocationPK;
+
+                if (ALocationDataAvailable)
+                {
+                    // We have Location data available
+                    APartnerInfoUC.PassPartnerDataPartialWithLocation(PartnerKey, CurrentDataRow);
+                }
+                else
+                {
+                    // We don't have Location data available
+                    APartnerInfoUC.PassPartnerDataPartialWithoutLocation(PartnerKey, CurrentDataRow);
+                }
+
+                ReturnValue = true;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Resets the 'last partner' data that is held in the 'Partner Info' UserControl.
+        /// </summary>
+        public void ResetLastPartnerDataInfoPanel()
+        {
+            FLastPartnerKeyInfoPanelOpened = -1;
+            FLastLocationPKInfoPanelOpened = new TLocationPK(-1, -1);
+        }
+
+        /// <summary>
+        /// Deletes the currently selected Partner.
+        /// </summary>
+        public bool DeletePartner()
+        {
+            TFormsMessage BroadcastMessage;
+
+            if (TPartnerMain.DeletePartner(FPartnerKey, ((UserControl) this.ParentForm).ParentForm))
+            {
+                BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcPartnerDeleted,
+                    null);
+
+                BroadcastMessage.SetMessageDataPartner(
+                    FPartnerKey,
+                    SharedTypes.PartnerClassStringToEnum(DetermineCurrentPartnerClass()),
+                    "",
+                    DetermineCurrentPartnerStatus());
+
+                TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+
+                return true;
+            }
+
+            return false;
+        }
     }
+
     #endregion
 
     #region TMenuFunctions
@@ -459,147 +598,41 @@ namespace Ict.Petra.Client.MPartner
     /// </summary>
     public class TMenuFunctions
     {
+        readonly TPartnerFindScreen_Logic FLogic = null;
+
         /// <summary>
-        /// todoComment
+        /// Constructor.
         /// </summary>
-        public static void CopyPartnerKeyToClipboard()
+        /// <param name="ALogic">Instance of TPartnerFindScreen_Logic.</param>
+        public TMenuFunctions(TPartnerFindScreen_Logic ALogic)
         {
-            Clipboard.SetDataObject(TPartnerFindScreenLogic.ULogic.PartnerKey.ToString());
+            FLogic = ALogic;
         }
 
         /// <summary>
         /// todoComment
         /// </summary>
-        public static void DeletePartner()
+        public void CopyPartnerKeyToClipboard()
         {
-// TODO            Logic.UCmdMPartner.RunDeletePartner(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
+            Clipboard.SetDataObject(StringHelper.PartnerKeyToStr(FLogic.PartnerKey));
         }
 
         /// <summary>
         /// todoComment
         /// </summary>
-        public static void DuplicateAddressCheck()
+        public void DeletePartner()
         {
-// TODO            Logic.UCmdMPartner.RunDuplicateAddressCheck(Logic.ULogic.ParentForm);
+            FLogic.DeletePartner();
         }
 
         /// <summary>
         /// todoComment
         /// </summary>
-        public static void ExportPartner()
+        public void SendEmailToPartner()
         {
-// TODO ExportPartner
-#if TODO
-            TLocationPK LocationPK;
-
-            LocationPK = Logic.ULogic.DetermineCurrentLocationPK();
-            Logic.UCmdMPartner.RunExportPartner(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey,
-                LocationPK.SiteKey, LocationPK.LocationKey);
-#endif
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void ImportPartner()
-        {
-// TODO            Logic.UCmdMPartner.RunImportPartner(Logic.ULogic.ParentForm, "");
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void MergeAddresses()
-        {
-// TODO            Logic.UCmdMPartner.RunMergeAddresses(Logic.ULogic.ParentForm);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void MergePartners()
-        {
-// TODO            Logic.UCmdMPartner.RunPartnerMerge(Logic.ULogic.ParentForm);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void OpenExtracts()
-        {
-// TODO            Logic.UCmdMPartner.OpenExtractsMainScreen(Logic.ULogic.ParentForm);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void PrintPartner()
-        {
-// TODO           Logic.UCmdMPartner.RunPrintPartner(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void SendEmailToPartner()
-        {
-            String EmailAddress;
-            TVerificationResult VerificationResult;
-            Boolean EmailAddressValid;
-
-            EmailAddress = TPartnerFindScreenLogic.ULogic.DetermineCurrentEmailAddress();
-            VerificationResult = (TVerificationResult)TStringChecks.ValidateEmail(EmailAddress, true);
-
-            if (VerificationResult == null)
-            {
-                EmailAddressValid = true;
-            }
-            else
-            {
-                EmailAddressValid = false;
-            }
-
-            if (EmailAddress == "")
-            {
-                MessageBox.Show(Catalog.GetString("No e-mail address for this Partner in the selected address record."),
-                    Catalog.GetString("Cannot Send E-mail To Partner"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-            }
-            else if (!EmailAddressValid)
-            {
-                MessageBox.Show(
-                    Catalog.GetString("No valid e-mail address for this Partner in the selected address record.") +
-                    Environment.NewLine + Environment.NewLine +
-                    Catalog.GetString("Details: ") +
-                    Environment.NewLine +
-                    VerificationResult.ResultText,
-                    Catalog.GetString("Cannot Send E-mail To Partner"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-            }
-            else
-            {
-                throw new NotImplementedException();
-// TODO                Logic.UCmdMSysMan.SendEmail(EmailAddress);
-            }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void SubscriptionCancellation()
-        {
-// TODO            Logic.UCmdMPartner.RunSubscriptionCancellation(Logic.ULogic.ParentForm);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void SubscriptionExpiryNotices()
-        {
-// TODO            Logic.UCmdMPartner.RunSubscriptionExpiryNotices(Logic.ULogic.ParentForm);
+            FLogic.SendEmailToPartner();
         }
     }
+
     #endregion
 }

@@ -118,9 +118,7 @@
                     PartnerLocation.p_date_effective_d,
                     PartnerLocation.p_date_good_until_d,
                     PartnerLocation.p_fax_number_c AS FaxPre,
-                    PartnerLocation.p_fax_extension_i AS FaxExtension,
                     PartnerLocation.p_telephone_number_c AS TelephonePre,
-                    PartnerLocation.p_extension_i AS TelephoneExtension,
                     PartnerLocation.p_email_address_c,
                     PartnerLocation.p_mobile_number_c,
                     PartnerLocation.p_alternate_telephone_c,
@@ -231,8 +229,8 @@
             <queryDetail>
                 <value text="NO-SQL"/>
                 <value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
-                <value function="assign(TelephoneNumber, concatenate({TelephonePre},{TelephoneExtension}))"/>
-                <value function="assign(FaxNumber, concatenate({FaxPre}, {FaxExtension}))"/>
+                <value function="assign(TelephoneNumber, {TelephonePre})"/>
+                <value function="assign(FaxNumber, {FaxPre})"/>
                 <value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
                 <value function="assign(StreetName, {p_street_name_c})"/>
                 <value function="assign(Locality, {p_locality_c})"/>
@@ -258,6 +256,7 @@
                 <value function="assign(MotivationDetail, )"/>
                 <value function="assign(MotivationGroup, )"/>
                 <value function="assign(ReceivingField, )"/>
+                <value function="GetPartnerContactDetails({PartnerKey})"/>
             </queryDetail>
             <!-- if fax or telephone number is only 0 then show an empty string -->
             <queryDetail condition="eq({TelephoneNumber}, 0)">
@@ -400,8 +399,8 @@
         </query>
     </calculation>
       
-    <calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
-        <caption><value text="E-Mail Address"></value></caption>
+    <calculation align="left" id="Primary E-Mail" returns="text" returnsFormat="text">
+        <caption><value text="Primary E-Mail"></value></caption>
         <query>
             <queryDetail>
                 <value variable="EMailAddress"></value>
@@ -491,8 +490,8 @@
         </query>
     </calculation>
     
-    <calculation align="left" id="Telephone" returns="text" returnsFormat="text">
-        <caption><value text="Telephone"></value></caption>
+    <calculation align="left" id="Primary Phone" returns="text" returnsFormat="text">
+        <caption><value text="Primary Phone"></value></caption>
         <query>
             <queryDetail>
                 <value variable="TelephoneNumber"></value>
@@ -508,15 +507,6 @@
         </query>
     </calculation>
     
-    <calculation align="left" id="TelephoneExtension" returns="text" returnsFormat="text">
-        <caption><value text=""></value></caption>
-        <query>
-            <queryDetail>
-                <value variable="TelephoneExtension"></value>
-            </queryDetail>
-        </query>
-    </calculation>
-
     <calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
         <caption><value text="Alternate Telephone"></value></caption>
         <query>
@@ -543,15 +533,6 @@
         </query>
     </calculation>
     
-    <calculation align="left" id="FaxExtension" returns="text" returnsFormat="text">
-        <caption><value text=""></value></caption>
-        <query>
-            <queryDetail>
-                <value variable="FaxExtension"></value>
-            </queryDetail>
-        </query>
-    </calculation>
-
     <calculation align="left" id="Field" returns="text" returnsFormat="text">
         <caption><value text="Field"></value></caption>
         <query>

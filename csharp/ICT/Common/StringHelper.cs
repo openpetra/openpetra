@@ -1506,6 +1506,31 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// Returns a string if it isn't null or <see cref="String.Empty" />, otherwise returns null.
+        /// </summary>
+        /// <param name="s">String.</param>
+        /// <returns>Null if the string is null or is <see cref="String.Empty" />, otherwise the string.</returns>
+        public static string NullOrEmptyStringToNull(string s)
+        {
+            if (s == null)
+            {
+                return null;
+            }
+
+            return s == String.Empty ? null : s;
+        }
+
+        /// <summary>
+        /// Trims a string and returns null if the string is null or is all whitespace.
+        /// </summary>
+        /// <param name="s">String.</param>
+        /// <returns>Null if the string is null or is all whitespace, otherwise the trimmed string.</returns>
+        public static string TrimStringToNull(string s)
+        {
+            return string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+        }
+
+        /// <summary>
         /// This method formats a currency value, using an MS Access Style format string.
         /// examples: "(#,##0.00)" "#,##0.00 CR" etc.
         /// It returns a string with the written value according to the format.

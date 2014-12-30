@@ -54,14 +54,10 @@ namespace Ict.Petra.Server.MPartner.Common
         /// find the current best address for the partner
         public static bool GetBestAddress(Int64 APartnerKey,
             out PLocationTable AAddress,
-            out PPartnerLocationTable APartnerLocation,
             out string ACountryNameLocal,
-            out string AEmailAddress,
             TDBTransaction ATransaction)
         {
-            AEmailAddress = "";
             AAddress = null;
-            APartnerLocation = null;
             ACountryNameLocal = "";
 
             DataSet PartnerLocationsDS = new DataSet();
@@ -87,16 +83,8 @@ namespace Ict.Petra.Server.MPartner.Common
                 // find the row with BestAddress = 1
                 if (Convert.ToInt32(row["BestAddress"]) == 1)
                 {
-                    if (!row.IsEmailAddressNull())
-                    {
-                        AEmailAddress = row.EmailAddress;
-                    }
-
                     // we also want the post address, need to load the p_location table:
                     AAddress = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, ATransaction);
-
-                    APartnerLocation = new PPartnerLocationTable();
-                    APartnerLocation.ImportRow(row);
 
                     // watch out for empty country codes
                     if (AAddress[0].CountryCode.Trim().Length > 0)

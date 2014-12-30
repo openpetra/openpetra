@@ -230,11 +230,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // get details of the donor, and best address
 
             PLocationTable Location;
-            PPartnerLocationTable PartnerLocation;
             string CountryName;
-            string EmailAddress;
 
-            if (!TAddressTools.GetBestAddress(ADonorKey, out Location, out PartnerLocation, out CountryName, out EmailAddress, ATransaction))
+            if (!TAddressTools.GetBestAddress(ADonorKey, out Location, out CountryName, ATransaction))
             {
                 return "";
             }
@@ -561,11 +559,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             // Donor Adress:
             PLocationTable Location;
-            PPartnerLocationTable PartnerLocation;
             string CountryName;
-            string EmailAddress;
 
-            if (TAddressTools.GetBestAddress(ADonorKey, out Location, out PartnerLocation, out CountryName, out EmailAddress, ATransaction))
+            if (TAddressTools.GetBestAddress(ADonorKey, out Location, out CountryName, ATransaction))
             {
                 PLocationRow LocRow = Location[0];
                 FormValues["AdresseeStreetAddress"].Add(LocRow.StreetName);

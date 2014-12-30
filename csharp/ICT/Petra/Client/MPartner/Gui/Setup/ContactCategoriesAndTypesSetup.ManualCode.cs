@@ -30,6 +30,7 @@ using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
@@ -304,14 +305,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             TTypedDataTable ChildDTWhoseDataGotSaved;
 
             // Save the changes in the user control
-            if ((e.Success)
-                && (!FDataSavedInNoMasterDataToSaveEvent))
+            if (e.Success)
             {
-                FPetraUtilsObject.SetChangedFlag();
+                if (!FDataSavedInNoMasterDataToSaveEvent)
+                {
+                    FPetraUtilsObject.SetChangedFlag();
 
-                ucoValues.SaveChanges(out ChildDTWhoseDataGotSaved);
+                    ucoValues.SaveChanges(out ChildDTWhoseDataGotSaved);
 
-                FPetraUtilsObject.DisableSaveButton();
+                    FPetraUtilsObject.DisableSaveButton();
+                }
+
+                TSharedDataCache.TMPartner.MarkPhonePartnerAttributesConcatStrNeedsRefreshing();
+                TSharedDataCache.TMPartner.MarkEmailPartnerAttributesConcatStrNeedsRefreshing();
             }
 
             // Ensure Filter functionality is enabled (might have been disabled in Method 'Uco_NoMoreDetailRecords')

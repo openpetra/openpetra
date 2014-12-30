@@ -40,10 +40,15 @@ namespace Ict.Common.Controls
     /// </remarks>
     public partial class TRtbHyperlinks : UserControl
     {
+        private const string FFontAppearanceNormalRTFCode = @"\b\f0\fs17";
+        private const string FFontAppearanceSmallRTFCode = @"\f0\fs14";
+
         private List <string>SupportedLinkTypes = new List <string>();
         private SortedDictionary <int, string>FLinkPrefixes = new SortedDictionary <int, string>();
         private SortedDictionary <int, int>FLinkRanges = new SortedDictionary <int, int>();
         private DisplayHelper FDisplayHelper;
+
+        private bool FUseSmallTextFont = false;
 
         /// <summary>
         /// Constructor.
@@ -83,7 +88,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Delegate for building a Link where the Text of this Control is part of a hyperlink rather than it being the full hyperlink.
         /// </summary>
-        public Func <string, string>BuildLinkWithValue;
+        public Func <string, int, string>BuildLinkWithValue;
 
         #endregion
 
@@ -122,6 +127,57 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Set to true to display the text not in the standard OpenPetra Text size, but smaller.
+        /// </summary>
+        /// <remarks>Set to true eg. for the Partner Info Panel (part of the Partner Find screen).</remarks>
+        public bool UseSmallTextFont
+        {
+            get
+            {
+                return FUseSmallTextFont;
+            }
+
+            set
+            {
+                FUseSmallTextFont = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="BorderStyle"/> of this Control.
+        /// </summary>
+        public new BorderStyle BorderStyle
+        {
+            get
+            {
+                return rtbTextWithLinks.BorderStyle;
+            }
+
+            set
+            {
+                base.BorderStyle = value;
+                rtbTextWithLinks.BorderStyle = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="BackColor"/> of this Control.
+        /// </summary>
+        public new Color BackColor
+        {
+            get
+            {
+                return rtbTextWithLinks.BackColor;
+            }
+
+            set
+            {
+                base.BackColor = value;
+                rtbTextWithLinks.BackColor = value;
+            }
+        }
+
         #endregion
 
         #region Events
@@ -129,7 +185,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Contains data about a Link that got clicked by the user.
         /// </summary>
-        public delegate void THyperLinkClickedArgs(string ALinkText, string ALinkType);
+        public delegate void THyperLinkClickedArgs(string ALinkText, string ALinkType, int ALinkEnd);
 
         /// <summary>Fired when a Link got clicked.</summary>
         public event THyperLinkClickedArgs LinkClicked;
@@ -141,10 +197,13 @@ namespace Ict.Common.Controls
         private void PlainRTFFormatting(RichTextBox ARTFBox)
         {
             string text = ARTFBox.Text;
+            string RTFInitStr = @"{\rtf1\ansi\deff0{\fonttbl{\f0\fnil\fcharset0 Verdana;}}" +
+                                @"{\colortbl;\red0\green0\blue255;}" +
+                                @"\viewkind4\uc1\pard\lang1033" +
+                                (FUseSmallTextFont ? FFontAppearanceSmallRTFCode : FFontAppearanceNormalRTFCode) +
+                                @"\par}";
 
-            ARTFBox.Rtf = @"{\rtf1\ansi\deff0{\fonttbl{\f0\fnil\fcharset0 Verdana;}}" +
-                          @"{\colortbl;\red0\green0\blue255;}" +
-                          @"\viewkind4\uc1\pard\lang1033\b\f0\fs17\par}";
+            ARTFBox.Rtf = RTFInitStr;
 
 //MessageBox.Show("ARTFBox.Text: " + text);
             string[] TextLines = text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
@@ -158,8 +217,9 @@ namespace Ict.Common.Controls
 
         private void WriteLinkRTF(RichTextBox ARTFBox)
         {
-            const string RtfSelectionReplacementStart =
-                @"{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil\fcharset0 Verdana;}}{\colortbl ;\red0\green0\blue255;}\uc1\pard\lang1033\b\f0\fs17";
+            string RtfSelectionReplacementStart =
+                @"{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil\fcharset0 Verdana;}}{\colortbl ;\red0\green0\blue255;}\uc1\pard\lang1033" +
+                (FUseSmallTextFont ? FFontAppearanceSmallRTFCode : FFontAppearanceNormalRTFCode);
             const string RtfSelectionReplacementEnd = "}";
 
             int TextPos = 0;
@@ -248,11 +308,11 @@ namespace Ict.Common.Controls
             }
         }
 
-        private void OnLinkClicked(string ALinkText, string ALinkType)
+        private void OnLinkClicked(string ALinkText, string ALinkType, int ALinkEnd)
         {
             if (LinkClicked != null)
             {
-                LinkClicked(ALinkText, ALinkType);
+                LinkClicked(ALinkText, ALinkType, ALinkEnd);
             }
         }
 
@@ -360,7 +420,7 @@ namespace Ict.Common.Controls
 
                     rtbTextWithLinks.SelectionStart = SelectionStartAtBeginning;
 
-                    OnLinkClicked(LinkText, LinkType);
+                    OnLinkClicked(LinkText, LinkType, LinkEnd - 1);
                 }
             }
             else
@@ -437,13 +497,60 @@ namespace Ict.Common.Controls
             }
 
             /// <summary>
-            /// Displays email Address(es).
+            /// Displays ordinary text that isn't any form of a hyperlink/other 'clickable' text.
             /// </summary>
-            /// <param name="AEmailAddress">Email Address or Email Addresses.</param>
-            public void DisplayEmailAddress(string AEmailAddress)
+            /// <param name="APlainText">Ordinary text that isn't any form of a hyperlink/other 'clickable' text.</param>
+            /// <param name="AAddToExistingText">Set to true if Hyperlink (URL) should be added to
+            /// already existing text (starting in a new line). (Default=false.)</param>
+            /// <param name="AAddNoLineBreakBefore">Set to true to not add a line break before adding text.
+            /// (Default=true.)</param>
+            public void DisplayPlainText(string APlainText, bool AAddToExistingText = false,
+                bool AAddNoLineBreakBefore = true)
             {
+                if (!AAddToExistingText)
+                {
+                    FHyperLinksControl.Text = APlainText;
+                }
+                else
+                {
+                    FHyperLinksControl.Text +=
+                        (((FHyperLinksControl.Text.Length == 0) || AAddNoLineBreakBefore) ? String.Empty : Environment.NewLine) +
+                        APlainText;
+                }
+            }
+
+            /// <summary>
+            /// Displays E-mail Address(es).
+            /// </summary>
+            /// <param name="AEmailAddress">E-Mail Address or E-Mail Addresses.</param>
+            /// <param name="AAddToExistingText">Set to true if E-Mail Address should be added to
+            /// already existing text (starting in a new line). (Default=false.)</param>
+            /// <param name="AAddNoLineBreakBefore">Set to true to not add a line break before adding text.
+            /// (Default=true.)</param>
+            public void DisplayEmailAddress(string AEmailAddress, bool AAddToExistingText = false,
+                bool AAddNoLineBreakBefore = true)
+            {
+                if (!AAddToExistingText)
+                {
+                    FHyperLinksControl.Text = BuildEmailAddressString(AEmailAddress);
+                }
+                else
+                {
+                    FHyperLinksControl.Text +=
+                        (((FHyperLinksControl.Text.Length == 0) || AAddNoLineBreakBefore) ? String.Empty : Environment.NewLine) +
+                        BuildEmailAddressString(AEmailAddress);
+                }
+            }
+
+            /// <summary>
+            /// Builds a string for (an) E-mail Address(es).
+            /// </summary>
+            /// <param name="AEmailAddress">E-mail Address or E-mail Addresses.</param>
+            private string BuildEmailAddressString(string AEmailAddress)
+            {
+                string ReturnValue = String.Empty;
+
                 String[] EmailAddresses;
-                string DisplayedText = String.Empty;
 
                 if (AEmailAddress != String.Empty)
                 {
@@ -451,52 +558,107 @@ namespace Ict.Common.Controls
 
                     for (int Counter = 0; Counter <= EmailAddresses.Length - 1; Counter += 1)
                     {
-                        DisplayedText += THyperLinkHandling.HYPERLINK_PREFIX_EMAILLINK + EmailAddresses[Counter];
+                        ReturnValue += THyperLinkHandling.HYPERLINK_PREFIX_EMAILLINK + EmailAddresses[Counter];
 
                         if (Counter != EmailAddresses.Length - 1)
                         {
-                            DisplayedText += EMAILSEPARATOR + " ";
+                            ReturnValue += EMAILSEPARATOR + " ";
                         }
                     }
                 }
 
-                FHyperLinksControl.Text = DisplayedText;
+                return ReturnValue;
             }
 
             /// <summary>
-            /// Displays Internet hyperlinks (URLs).
+            /// Displays Internet Hyperlinks (URLs).
             /// </summary>
             /// <param name="AUrl">Hyperlink (URL).</param>
-            public void DisplayURL(string AUrl)
+            /// <param name="AWithValue">Set to true if the Hyperlink is a Hyperlink that contains a value.
+            /// (Default=false.)</param>
+            /// <param name="AAddToExistingText">Set to true if Hyperlink (URL) should be added to
+            /// already existing text (starting in a new line). (Default=false.)</param>
+            /// <param name="AAddNoLineBreakBefore">Set to true to not add a line break before adding text.
+            /// (Default=true.)</param>
+            public int DisplayURL(string AUrl, bool AWithValue = false, bool AAddToExistingText = false,
+                bool AAddNoLineBreakBefore = true)
             {
-                FHyperLinksControl.Text = THyperLinkHandling.HYPERLINK_PREFIX_URLLINK + AUrl;
+                if (!AAddToExistingText)
+                {
+                    FHyperLinksControl.Text = BuildURLString(AUrl, AWithValue);
+                }
+                else
+                {
+                    FHyperLinksControl.Text +=
+                        (((FHyperLinksControl.Text.Length == 0) || AAddNoLineBreakBefore) ? String.Empty : Environment.NewLine) +
+                        BuildURLString(AUrl, AWithValue);
+                }
+
+                // Return end of Link
+                return FHyperLinksControl.Text.Length;
             }
 
             /// <summary>
-            /// Displays Internet hyperlinks (URLs) with value replacements.
+            /// Builds a string for an Internet Hyperlink (URL).
             /// </summary>
             /// <param name="AUrl">Hyperlink (URL).</param>
-            public void DisplayURLWithValue(string AUrl)
+            /// <param name="AWithValue">Set to true if the Hyperlink is a Hyperlink that contains a value.</param>
+            private string BuildURLString(string AUrl, bool AWithValue = false)
             {
-                FHyperLinksControl.Text = THyperLinkHandling.HYPERLINK_PREFIX_URLWITHVALUELINK + AUrl;
+                if (AWithValue)
+                {
+                    return THyperLinkHandling.HYPERLINK_PREFIX_URLWITHVALUELINK + AUrl;
+                }
+                else
+                {
+                    return THyperLinkHandling.HYPERLINK_PREFIX_URLLINK + AUrl;
+                }
             }
 
             /// <summary>
             /// Displays Skype IDs.
             /// </summary>
             /// <param name="ASkypeID">SkypeID.</param>
-            public void DisplaySkypeID(string ASkypeID)
+            /// <param name="AAddToExistingText">Set to true if the SkypeID should be added to
+            /// already existing text (starting in a new line). (Default=false.)</param>
+            /// <param name="AAddNoLineBreakBefore">Set to true to not add a line break before adding text.
+            /// (Default=true.)</param>
+            public void DisplaySkypeID(string ASkypeID, bool AAddToExistingText = false,
+                bool AAddNoLineBreakBefore = true)
             {
-                FHyperLinksControl.Text = THyperLinkHandling.HYPERLINK_PREFIX_SKYPELINK + ASkypeID;
+                if (!AAddToExistingText)
+                {
+                    FHyperLinksControl.Text = BuildSkypeIDString(ASkypeID);
+                }
+                else
+                {
+                    FHyperLinksControl.Text +=
+                        (((FHyperLinksControl.Text.Length == 0) || AAddNoLineBreakBefore) ? String.Empty : Environment.NewLine) +
+                        BuildSkypeIDString(ASkypeID);
+                }
+            }
+
+            /// <summary>
+            /// Builds a string for a Skype ID.
+            /// </summary>
+            /// <param name="ASkypeID">SkypeID.</param>
+            private string BuildSkypeIDString(string ASkypeID)
+            {
+                return THyperLinkHandling.HYPERLINK_PREFIX_SKYPELINK + ASkypeID;
             }
 
             /// <summary>
             /// Try to "execute" supplied link.
             /// </summary>
-            public void LaunchHyperLink(string ALinkText, string ALinkType)
+            public void LaunchHyperLink(string ALinkText, string ALinkType, int ALinkEnd = 0)
             {
                 string TheLink;
                 string LinkType = String.Empty;
+
+                if (String.IsNullOrEmpty(ALinkText))
+                {
+                    throw new ArgumentNullException("ALinkText", "ALinkText must not be null or an empty string");
+                }
 
                 if (String.IsNullOrEmpty(ALinkType))
                 {
@@ -513,7 +675,8 @@ namespace Ict.Common.Controls
                         {
                             case THyperLinkHandling.THyperLinkType.Http:
 
-                                if ((ALinkText.ToLower().IndexOf(@"http://") < 0) && (ALinkText.ToLower().IndexOf(@"https://") < 0))
+                                if ((ALinkText.ToLower().IndexOf(@"http://", StringComparison.InvariantCulture) < 0)
+                                    && (ALinkText.ToLower().IndexOf(@"https://", StringComparison.InvariantCulture) < 0))
                                 {
                                     LinkType = @"http://";
                                 }
@@ -524,7 +687,7 @@ namespace Ict.Common.Controls
 
                                 if (FHyperLinksControl.BuildLinkWithValue != null)
                                 {
-                                    TheLink = FHyperLinksControl.BuildLinkWithValue(TheLink);
+                                    TheLink = FHyperLinksControl.BuildLinkWithValue(TheLink, ALinkEnd);
                                 }
                                 else
                                 {
@@ -538,7 +701,7 @@ namespace Ict.Common.Controls
 
                             case THyperLinkHandling.THyperLinkType.Ftp:
 
-                                if (ALinkText.ToLower().IndexOf(@"ftp://") < 0)
+                                if (ALinkText.ToLower().IndexOf(@"ftp://", StringComparison.InvariantCulture) < 0)
                                 {
                                     LinkType = @"ftp://";
                                 }
@@ -547,7 +710,7 @@ namespace Ict.Common.Controls
 
                             case THyperLinkHandling.THyperLinkType.Email:
 
-                                if (ALinkText.ToLower().IndexOf("mailto:") < 0)
+                                if (ALinkText.ToLower().IndexOf("mailto:", StringComparison.InvariantCulture) < 0)
                                 {
                                     LinkType = "mailto:";
                                 }
@@ -556,7 +719,7 @@ namespace Ict.Common.Controls
 
                             case THyperLinkHandling.THyperLinkType.Skype:
 
-                                if (ALinkText.ToLower().IndexOf("skype:") < 0)
+                                if (ALinkText.ToLower().IndexOf("skype:", StringComparison.InvariantCulture) < 0)
                                 {
                                     LinkType = "skype:";
                                 }

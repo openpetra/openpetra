@@ -49,6 +49,7 @@ using System.Data.Odbc;
 using System.Data;
 using System.Diagnostics;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
+using Ict.Petra.Server.MPartner.DataAggregates;
 
 namespace Ict.Petra.Server.MReporting.MPartner
 {
@@ -112,6 +113,18 @@ namespace Ict.Petra.Server.MReporting.MPartner
             if (StringHelper.IsSame(f, "GetPartnerBestAddress"))
             {
                 value = new TVariant(GetPartnerBestAddress(ops[1].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetPartnerContactDetails"))
+            {
+                value = new TVariant(GetPartnerContactDetails(ops[1].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetPartnerOverallContactSettings"))
+            {
+                value = new TVariant(GetPartnerOverallContactSettings(ops[1].ToInt64(), ops[2].ToString()));
                 return true;
             }
 
@@ -511,10 +524,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
             PartnerLocationTable.Columns.Add(new System.Data.DataColumn("BestAddress", typeof(Boolean)));
             PartnerLocationTable.Columns.Add(new System.Data.DataColumn("Icon", typeof(Int32)));
 
-            // find all locations of the partner, put it into a dataset
+            // find all locations of the Partner, put them into a dataset
             PPartnerLocationAccess.LoadViaPPartner(PartnerLocationsDS, APartnerKey, situation.GetDatabaseConnection().Transaction);
 
-            // uses Ict.Petra.Shared.MPartner.Calculations.pas, DetermineBestAddress
+            // uses Calculations.Addresses.cs, 'DetermineBestAddress' Method
             Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationsDS);
             Calculations.DetermineBestAddress(PartnerLocationsDS);
 
@@ -534,13 +547,6 @@ namespace Ict.Petra.Server.MReporting.MPartner
                         {
                             situation.GetParameters().AddCalculationParameter(StringHelper.UpperCamelCase(col.ColumnName, true,
                                     true), new TVariant(LocationTable.Rows[0][col.ColumnName]));
-                        }
-
-                        // also put the phone number and email etc into the parameters
-                        foreach (DataColumn col in PartnerLocationTable.Columns)
-                        {
-                            situation.GetParameters().AddCalculationParameter(StringHelper.UpperCamelCase(col.ColumnName, true,
-                                    true), new TVariant(row[col.ColumnName]));
                         }
 
                         // get the Partner Firstname and Surname as well; depends on the partner class
@@ -588,12 +594,144 @@ namespace Ict.Petra.Server.MReporting.MPartner
                             }
                         }
 
-                        ReturnValue = true;
+                        GetPartnerContactDetails(APartnerKey);
                     }
+
+                    ReturnValue = true;
                 }
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// this will find the contact details (p_partner_attribute) for this partner and export the values to parameters
+        /// </summary>
+        /// <returns>void</returns>
+        private bool GetPartnerContactDetails(Int64 APartnerKey)
+        {
+            string PhoneNumber;
+            string EmailAddress;
+            string FaxNumber;
+
+            // reset the variables
+            situation.GetParameters().RemoveVariable("EmailAddress");
+            situation.GetParameters().RemoveVariable("PrimaryEmail");
+            situation.GetParameters().RemoveVariable("TelephoneNumber");
+            situation.GetParameters().RemoveVariable("PrimaryPhone");
+            situation.GetParameters().RemoveVariable("FaxNumber");
+            situation.GetParameters().RemoveVariable("MobileNumber");
+            situation.GetParameters().RemoveVariable("AlternateTelephone");
+            situation.GetParameters().RemoveVariable("Url");
+            situation.GetParameters().RemoveVariable("Extension");
+            situation.GetParameters().RemoveVariable("FaxExtension");
+
+
+            // Also put the Primary Phone Number, 'Primary E-mail Address' and Fax Number into the parameters
+            TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax(APartnerKey,
+                out PhoneNumber, out EmailAddress, out FaxNumber);
+
+            // Add Calculation Parameter for 'Primary Email Address' (String.Empty is supplied if the Partner hasn't got one)
+            situation.GetParameters().AddCalculationParameter("EmailAddress",
+                new TVariant(EmailAddress ?? String.Empty));
+            situation.GetParameters().AddCalculationParameter("PrimaryEmail",
+                new TVariant(EmailAddress ?? String.Empty));
+
+            // Add Calculation Parameter for 'Primary Phone Number' (String.Empty is supplied if the Partner hasn't got one)
+            situation.GetParameters().AddCalculationParameter("TelephoneNumber",
+                new TVariant(PhoneNumber ?? String.Empty));
+            situation.GetParameters().AddCalculationParameter("PrimaryPhone",
+                new TVariant(PhoneNumber ?? String.Empty));
+
+            // Add Calculation Parameter for 'Fax Number' (String.Empty is supplied if the Partner hasn't got one)
+            situation.GetParameters().AddCalculationParameter("FaxNumber",
+                new TVariant(FaxNumber ?? String.Empty));
+
+            // At present we no longer support the reporting of the following, so we set those Calculation Parameters to String.Empty
+            situation.GetParameters().AddCalculationParameter("MobileNumber", new TVariant(String.Empty));
+            situation.GetParameters().AddCalculationParameter("AlternateTelephone", new TVariant(String.Empty));
+            situation.GetParameters().AddCalculationParameter("Url", new TVariant(String.Empty));
+            // Extension and FaxExtension no longer exist in the Contact Details scheme so we set those Calculation Parameters to String.Empty
+            situation.GetParameters().AddCalculationParameter("Extension", new TVariant(String.Empty));
+            situation.GetParameters().AddCalculationParameter("FaxExtension", new TVariant(String.Empty));
+
+            return true;
+        }
+
+        /// <summary>
+        /// This will find all 'Overall Contact Settings' for the Contact Details of a Partner and return them.
+        /// </summary>
+        /// <returns>String containing the 'Overall Contact Settings' for the Contact Details of a Partner.</returns>
+        private string GetPartnerOverallContactSettings(Int64 APartnerKey, string APartnerClass)
+        {
+            const string SEPARATOR = "; ";
+            string HeadingStr = Catalog.GetString("Overall Contact Settings:  ");
+            string AllContactDetailsStr = HeadingStr;
+
+            Calculations.TPartnersOverallContactSettings PartnersOvrlCS;
+            var PartnerClass = SharedTypes.PartnerClassStringToEnum(APartnerClass);
+
+            PartnersOvrlCS = TContactDetailsAggregate.GetPartnersOverallCS(APartnerKey,
+                Calculations.TOverallContSettingKind.ocskPrimaryContactMethod |
+                Calculations.TOverallContSettingKind.ocskPrimaryEmailAddress |
+                Calculations.TOverallContSettingKind.ocskPrimaryPhoneNumber |
+                Calculations.TOverallContSettingKind.ocskEmailAddressWithinOrg |
+                Calculations.TOverallContSettingKind.ocskPhoneNumberWithinOrg);
+
+            if (PartnersOvrlCS != null)
+            {
+                if (PartnersOvrlCS.PrimaryPhoneNumber != null)
+                {
+                    AllContactDetailsStr += Catalog.GetString("Primary Phone: ") +
+                                            PartnersOvrlCS.PrimaryPhoneNumber + SEPARATOR;
+                }
+
+                if (PartnersOvrlCS.PrimaryEmailAddress != null)
+                {
+                    AllContactDetailsStr += Catalog.GetString("Primary E-Mail: ") +
+                                            PartnersOvrlCS.PrimaryEmailAddress + SEPARATOR;
+                }
+
+                if (PartnerClass == TPartnerClass.PERSON)
+                {
+                    if (PartnersOvrlCS.PhoneNumberWithinOrg != null)
+                    {
+                        AllContactDetailsStr += Catalog.GetString("Office Phone: ") +
+                                                PartnersOvrlCS.PhoneNumberWithinOrg + SEPARATOR;
+                    }
+
+                    if (PartnersOvrlCS.EmailAddressWithinOrg != null)
+                    {
+                        AllContactDetailsStr += Catalog.GetString("Office E-Mail: ") +
+                                                PartnersOvrlCS.EmailAddressWithinOrg + SEPARATOR;
+                    }
+                }
+
+                AllContactDetailsStr += Catalog.GetString("Primary Contact Method: ");
+
+                if (PartnersOvrlCS.PrimaryContactMethod != null)
+                {
+                    AllContactDetailsStr += PartnersOvrlCS.PrimaryContactMethod + SEPARATOR;
+                }
+                else
+                {
+                    AllContactDetailsStr += "Not specified" + SEPARATOR;
+                }
+            }
+
+            if (AllContactDetailsStr != HeadingStr)
+            {
+                // Remove last SEPARATOR
+                AllContactDetailsStr = AllContactDetailsStr.Substring(0, AllContactDetailsStr.Length - SEPARATOR.Length);
+            }
+            else
+            {
+                AllContactDetailsStr += Catalog.GetString("None");
+            }
+
+            situation.GetParameters().AddCalculationParameter("Username", new TVariant(UserInfo.GUserInfo.UserID));
+
+            return AllContactDetailsStr;
         }
 
         /// <summary>

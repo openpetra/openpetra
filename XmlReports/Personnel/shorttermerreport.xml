@@ -137,12 +137,10 @@
             <queryDetail><value>
                     AND 
                     ( PUB_pt_arrival_point.pt_code_c = PUB_pm_short_term_application.pt_arrival_point_code_c
-                        OR((PUB_pm_short_term_application.pt_arrival_point_code_c IS NULL) AND
-                            PUB_pt_arrival_point.pt_code_c = ' ' ))
+                        OR(PUB_pm_short_term_application.pt_arrival_point_code_c IS NULL))
                     AND 
                     ( DEPARTUREPOINT.pt_code_c = PUB_pm_short_term_application.pt_departure_point_code_c 
-                        OR((PUB_pm_short_term_application.pt_departure_point_code_c IS NULL) AND
-                            DEPARTUREPOINT.pt_code_c = ' '))
+                        OR(PUB_pm_short_term_application.pt_departure_point_code_c IS NULL))
                     AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
                     AND PUB_pm_short_term_application.p_partner_key_n = PUB_p_partner.p_partner_key_n
                     AND NOT PUB_pm_short_term_application.pm_st_basic_delete_flag_l = 1
@@ -244,7 +242,7 @@
             </queryDetail>
             <queryDetail condition="eq({param_address_detail}, true)">
                 <value function="GetPartnerBestAddress({PartnerKey})"/>
-                <value function="assign(Telephone, concatenate({TelephoneNumber},{Extension}))"/>
+                <value function="assign(Telephone, {TelephoneNumber})"/>
             </queryDetail>
             
             <queryDetail condition="eq({ArrivalTransportNeeded}, true)">
@@ -500,8 +498,8 @@
         </query>
     </calculation>
     
-    <calculation align="left" id="Church Address Telephone" returns="text" returnsFormat="text">
-        <caption><value text="Church Telephone"></value></caption>
+    <calculation align="left" id="Church Primary Phone" returns="text" returnsFormat="text">
+        <caption><value text="Church Primary Phone"></value></caption>
         <query>
             <queryDetail>
                 <value variable="Church-Telephone"></value>
@@ -518,8 +516,8 @@
         </query>
     </calculation>
     
-    <calculation align="left" id="Church Address Email" returns="text" returnsFormat="text">
-        <caption><value text="Church Email"></value></caption>
+    <calculation align="left" id="Church Primary E-Mail" returns="text" returnsFormat="text">
+        <caption><value text="Church Primary E-Mail"></value></caption>
         <query>
             <queryDetail>
                 <value variable="Church-EmailAddress"></value>
@@ -653,8 +651,8 @@
         </query>
     </calculation>
     
-    <calculation align="left" id="Address Email" returns="text" returnsFormat="text">
-        <caption><value text="Email"></value></caption>
+    <calculation align="left" id="Primary E-Mail" returns="text" returnsFormat="text">
+        <caption><value text="Primary E-Mail"></value></caption>
         <query>
             <queryDetail>
                 <value variable="EmailAddress"></value>
@@ -958,8 +956,8 @@
         </query>
     </calculation>
     
-    <calculation align="left" id="Address Telephone" returns="text" returnsFormat="text">
-        <caption><value text="Telephone"></value></caption>
+    <calculation align="left" id="Primary Phone" returns="text" returnsFormat="text">
+        <caption><value text="Primary Phone"></value></caption>
         <query>
             <queryDetail>
                 <value variable="Telephone"></value>

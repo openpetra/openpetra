@@ -100,6 +100,48 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
         private static List <BatchKey>GiftBatches = new List <BatchKey>();
 
+        /// <summary>
+        /// Delegate for the determination of the 'Primary Phone Number' and the 'Primary E-mail Address' of a Partner.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of the Partner.</param>
+        /// <param name="APrimaryPhoneNumber">The 'Primary Phone Number' if the Partner has got one, otherwise null.</param>
+        /// <param name="APrimaryEmailAddress">The 'Primary E-mail Address' if the Partner has got one, otherwise null.</param>
+        /// <returns>True if the Partner has got at least one of the 'Primary E-mail Address' and the 'Primary Phone Number'
+        /// Contact Details, otherwise false.</returns>
+        [NoRemoting]
+        public delegate bool GetPrimaryEmailAndPrimaryPhone(Int64 APartnerKey,
+            out string APrimaryPhoneNumber, out string APrimaryEmailAddress);
+
+        /// <summary>
+        /// Delegate for the determination of the 'Within Organisation E-mail Address' of a Partner.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of the Partner.</param>
+        /// <param name="AWithinOrganisationEmailAddress">The 'Within Organisation Email Address' if the Partner has got one, otherwise null.</param>
+        /// <returns>True if the Partner has got a 'Within Organisation Email Address', otherwise false.</returns>
+        [NoRemoting]
+        public delegate bool GetWithinOrganisationEmail(Int64 APartnerKey,
+            out string AWithinOrganisationEmailAddress);
+
+        /// <summary>
+        ///
+        /// </summary>
+        [NoRemoting]
+        public static GetPrimaryEmailAndPrimaryPhone GetPrimaryEmailAndPrimaryPhoneDelegate
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        [NoRemoting]
+        public static GetWithinOrganisationEmail GetWithinOrganisationEmailDelegate
+        {
+            get;
+            set;
+        }
+
 /*
  *      // I need to call MPartner.ServerCalculations.DetermineBestAddress through a delegate,
  *      // since I can't refer to it directly from here. The delegate will have been set up
@@ -196,8 +238,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 if (LocationKey.LocationKey != -1)
                 {
-                    Ret.Email = PartnerLocationRow.EmailAddress;
-                    Ret.Telephone = PartnerLocationRow.TelephoneNumber;
                     PLocationTable LocationTbl = PLocationAccess.LoadByPrimaryKey(PartnerLocationRow.SiteKey,
                         PartnerLocationRow.LocationKey,
                         FTransaction);
@@ -208,6 +248,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         Ret.Address = Calculations.DetermineLocationString(LocationRow, Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
                     }
                 }
+
+                GetPrimaryEmailAndPrimaryPhoneDelegate(APartnerKey,
+                    out Ret.Telephone, out Ret.Email);
             }
 
             DonorList.Add(APartnerKey, Ret);
@@ -256,13 +299,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     }
                 }
 
-                PPartnerLocationRow LocationRow;
-                TLocationPK LocationKey = ServerCalculations.DetermineBestAddress(APartnerKey, out LocationRow);
+                GetWithinOrganisationEmailDelegate(APartnerKey, out Ret.Email);
 
-                if (LocationKey.LocationKey != -1)
-                {
-                    Ret.Email = LocationRow.EmailAddress;
-                }
+                // TODO Contact Details: Decide what to do if no 'Within Organisation Email Address' is set: nothing, or take the 'Primary E-Mail Address'?
             }
 
             RecipientList.Add(APartnerKey, Ret);

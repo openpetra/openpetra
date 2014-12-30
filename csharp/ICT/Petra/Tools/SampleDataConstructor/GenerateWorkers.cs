@@ -348,14 +348,6 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 {
                     prefix = "Child" + (countPerson - 1).ToString();
                 }
-
-                personLocationRow.EmailAddress = TXMLParser.GetAttribute(ACurrentNode, prefix + "Email");
-
-                // set email of first person for whole family
-                if (countPerson == 0)
-                {
-                    familyLocationRow.EmailAddress = personLocationRow.EmailAddress;
-                }
             }
         }
 

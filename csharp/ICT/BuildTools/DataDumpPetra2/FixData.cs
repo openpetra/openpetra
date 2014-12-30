@@ -29,6 +29,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using Ict.Common;
+using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Tools.DBXML;
 using ICSharpCode.SharpZipLib.GZip;
 
@@ -998,7 +999,8 @@ namespace Ict.Tools.DataDumpPetra2
 
             if (ATableName == "p_partner_attribute")
             {
-                RowCounter = TPartnerContactDetails.PopulatePPartnerAttribute(AColumnNames, ref ANewRow, AWriter, AWriterTest);
+                TPartnerContactDetails_DataDump.PopulatePPartnerAttribute_Init(AColumnNames, ref ANewRow, AWriter, AWriterTest);
+                RowCounter = TPartnerContactDetails_DataDump.PopulatePPartnerAttribute();
             }
 
             if (ATableName == "s_system_defaults")

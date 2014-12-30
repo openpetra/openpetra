@@ -273,8 +273,8 @@
 				</query>
 			</calculation>
 			
-			<calculation id="Address E-Mail" returnsFormat="text" returns="text">
-				<caption><value text="E-Mail"/></caption>
+			<calculation id="Primary E-Mail" returnsFormat="text" returns="text">
+				<caption><value text="Primary E-Mail"/></caption>
 				<query>
 					<queryDetail>
 						<value variable="EMailAddress"/>
@@ -282,12 +282,11 @@
 				</query>
 			</calculation>
 			
-			<calculation id="Address Telephone" returnsFormat="text" returns="text">
-				<caption><value text="Telephone"/></caption>
+			<calculation id="Primary Phone" returnsFormat="text" returns="text">
+				<caption><value text="Primary Phone"/></caption>
 				<query>
 					<queryDetail>
 						<value variable="TelephoneNumber"/>
-						<value variable="Extension"/>
 					</queryDetail>
 				</query>
 			</calculation>

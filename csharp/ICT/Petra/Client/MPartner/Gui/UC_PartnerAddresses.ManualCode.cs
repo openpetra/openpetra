@@ -931,15 +931,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             // initialize "valid from" date with today's date
             ARow.DateEffective = DateTime.Today;
 
-            // initialize country code, email address, URL and mobile number from last (currently) selected address
+            // initialize country code from last (currently) selected address
             if ((FPreviouslySelectedDetailRow != null)
                 && (FPreviouslySelectedDetailRow.RowState != DataRowState.Detached))
             {
                 ARow.LocationCountryCode = FPreviouslySelectedDetailRow.LocationCountryCode;
-
-                ARow.EmailAddress = FPreviouslySelectedDetailRow.EmailAddress;
-                ARow.Url = FPreviouslySelectedDetailRow.Url;
-                ARow.MobileNumber = FPreviouslySelectedDetailRow.MobileNumber;
             }
 
             // initialize location type with default value depending on partner class
@@ -1317,15 +1313,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedPromotionRow;
 
             string FilterCriteria;
-#if TODO
-            DataView PersonsLocationsDV;
-#endif
+
             DataView PartnerSharingLocationDV;
             TFrmPartnerAddressChangePropagationDialog AddressChangedDialog;
             string UserAnswer;
-#if TODO
-            TPartnerLocationChangePropagationSelectionWinForm LocationChangedDialog;
-#endif
 
             for (Counter = 0; Counter <= AAddedOrChangedPromotionDT.Rows.Count - 1; Counter += 1)
             {
@@ -1386,8 +1377,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                              AddressAddedOrChangedPromotionRow.LocationKey.ToString();
 
                             // MessageBox.Show('FilterCriteria: ' + FilterCriteria);
-#if TODO
-#endif
+
                             LocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(new Object[] { AddressAddedOrChangedPromotionRow.SiteKey,
                                                                                                    AddressAddedOrChangedPromotionRow.LocationKey });
 
@@ -1415,8 +1405,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                                     if (AddressChangedDialog.GetReturnedParameters(out UserAnswer))
                                     {
                                         AddressAddedOrChangedPromotionRow.UserAnswer = UserAnswer;
-#if TODO
-#endif
 
                                         if (AddressAddedOrChangedPromotionRow.UserAnswer.StartsWith("CHANGE"))
                                         {
@@ -1439,8 +1427,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                                     // get NewPartnerDialog out of memory
                                     AddressChangedDialog.Dispose();
-#if TODO
-#endif
                                 }
                             }
                             else
@@ -1455,90 +1441,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                         else
                         {
                             throw new System.ArgumentException("AParameterDT must not be nil when LocationChange = true");
-                        }
-                    }
-                    else if (AddressAddedOrChangedPromotionRow.PartnerLocationChange)
-                    {
-                        if (AParameterDT != null)
-                        {
-#if TODO
-                            FilterCriteria = PartnerAddressAggregateTDSChangePromotionParametersTable.GetSiteKeyOfEditedRecordDBName() + " = " +
-                                             AddressAddedOrChangedPromotionRow.SiteKey.ToString() + " AND " +
-                                             PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationKeyOfEditedRecordDBName() + " = " +
-                                             AddressAddedOrChangedPromotionRow.LocationKey.ToString();
-
-                            // MessageBox.Show('FilterCriteria: ' + FilterCriteria);
-#endif
-                            LocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(new Object[] { AddressAddedOrChangedPromotionRow.SiteKey,
-                                                                                                   AddressAddedOrChangedPromotionRow.LocationKey });
-
-                            if (LocationRow == null)
-                            {
-                                /*
-                                 * Location not found with PK -> check whether any Location has a PK
-                                 * with the Original PK values that we are looking for (this is needed
-                                 * just in the case the Address was Edited, a different Address was
-                                 * found by the user (therefore the PK changes) and a PartnerLocation
-                                 * field was changed).
-                                 */
-                                LocationRow =
-                                    FindLocationRowWithOriginalKey(new TLocationPK(AddressAddedOrChangedPromotionRow.SiteKey,
-                                            (Int32)AddressAddedOrChangedPromotionRow.LocationKey));
-                            }
-
-                            if (LocationRow != null)
-                            {
-#if TODO
-                                PersonsLocationsDV = new DataView(AParameterDT,
-                                    FilterCriteria,
-                                    PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyDBName() + " ASC",
-                                    DataViewRowState.CurrentRows);
-
-                                LocationChangedDialog = new TPartnerLocationChangePropagationSelectionWinForm();
-                                LocationChangedDialog.SetParameters(AddressAddedOrChangedPromotionRow, PersonsLocationsDV, LocationRow, "", "");
-
-                                if (LocationChangedDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
-                                {
-                                    AddressAddedOrChangedPromotionRow.UserAnswer = "CANCEL";
-
-                                    // get LocationChangedDialog out of memory
-                                    LocationChangedDialog.Dispose();
-
-                                    // MessageBox.Show('LocationChangedDialog: pressed Cancel.');
-                                }
-                                else
-                                {
-                                    if (LocationChangedDialog.GetReturnedParameters(out UserAnswer))
-                                    {
-                                        AddressAddedOrChangedPromotionRow.UserAnswer = UserAnswer;
-#endif
-                                AddressAddedOrChangedPromotionRow.UserAnswer = "NO";          // TODO Remove this assignment once the code lines immediately above are no longer in compiler directive '#if Todo'!
-#if TODO
-                            }
-                            else
-                            {
-                                throw new System.Exception(
-                                    "GetReturnedParameters called, but Form '" + LocationChangedDialog.Name +
-                                    "' is not finished yet with initialisation");
-                            }
-
-                            // get NewPartnerDialog out of memory
-                            LocationChangedDialog.Dispose();
-                        }
-#endif
-                            }
-                            else
-                            {
-                                MessageBox.Show(
-                                    "Error in " + this.GetType().FullName + ".AddressAddedOrChangedProcessing (PartnerLocationChange): " +
-                                    "Location with SiteKey " + AddressAddedOrChangedPromotionRow.SiteKey.ToString() + " and LocationKey " +
-                                    AddressAddedOrChangedPromotionRow.LocationKey.ToString() + " could not be found on the Client side!");
-                                AddressAddedOrChangedPromotionRow.UserAnswer = "CANCEL";
-                            }
-                        }
-                        else
-                        {
-                            throw new System.ArgumentException("AParameterDT must not be nil when PartnerLocationChange = true");
                         }
                     }
                 }
@@ -1711,14 +1613,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     btnDelete.Enabled = false;
                 }
             }
-        }
-
-        private void ValidateDataDetailsManual(PartnerEditTDSPPartnerLocationRow ARow)
-        {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-
-            TSharedPartnerValidation_Partner.ValidatePartnerAddressManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict);
         }
 
         #endregion

@@ -54,10 +54,10 @@ RootNode:
             Name: Address State / County / Province
             Parameter: 3.0
         Para9:
-            Name: Address Telephone
+            Name: Primary Phone
             Parameter: 3.0
         Para10:
-            Name: Address Email
+            Name: Primary E-Mail
             Parameter: 3.0
         Para11:
             Name: Application Comment
@@ -114,10 +114,10 @@ RootNode:
             Name: Church Address State / County / Province
             Parameter: 3.0
         Para31:
-            Name: Church Address Telephone
+            Name: Church Primary Phone
             Parameter: 3.0
         Para32:
-            Name: Church Address Email
+            Name: Church Primary E-Mail
             Parameter: 3.0
         Para33:
             Name: Church Address Fax

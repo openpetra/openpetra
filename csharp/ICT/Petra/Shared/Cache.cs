@@ -29,6 +29,7 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Shared
 {
@@ -215,70 +216,91 @@ namespace Ict.Petra.Shared
             public delegate DataTable TGetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum ACacheableTable);
 
             /// <summary>
-            /// Reference to the Delegate for retrieving data of a cacheable mailing table
+            /// Delegate for retrieving all p_partner_attribute_type records that are of a certain kind.
             /// </summary>
-            private static TGetCacheableMailingTable FDelegateGetCacheableMailingTable;
+            public delegate string TGetPartnerCalculationsCertainPartnerAttributeKinds(PPartnerAttributeTypeTable APPartnerAttributeTypeDT = null,
+                TGetCacheableDataTableFromCache ACacheRetriever = null);
 
-            /// <summary>
-            /// Reference to the Delegate for retrieving data of a cacheable partner table
-            /// </summary>
-            private static TGetCacheablePartnerTable FDelegateGetCacheablePartnerTable;
+            /// <summary>Used for the caching of a calculated result whose calculation depends on a Cacheable DataTable.</summary>
+            private static string FSystemCategorySettingsConcatStr = null;
 
-            /// <summary>
-            /// Reference to the Delegate for retrieving data of a cacheable subscriptions table
-            /// </summary>
-            private static TGetCacheableSubscriptionsTable FDelegateGetCacheableSubscriptionsTable;
+            /// <summary>Used for the caching of a calculated result whose calculation depends on a Cacheable DataTable.</summary>
+            private static string FPartnerContactDetailAttributeTypesConcatStr = null;
+
+            /// <summary>Used for the caching of a calculated result whose calculation depends on a Cacheable DataTable.</summary>
+            private static string FEmailPartnerAttributesConcatStr = null;
+
+            /// <summary>Used for the caching of a calculated result whose calculation depends on a Cacheable DataTable.</summary>
+            private static string FPhonePartnerAttributesConcatStr = null;
+
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable mailing table
             /// </summary>
             /// <description>The Delegate is set up at the start of the application.</description>
-            public static TGetCacheableMailingTable GetCacheableMailingTableDelegate
-            {
-                get
-                {
-                    return FDelegateGetCacheableMailingTable;
-                }
-
-                set
-                {
-                    FDelegateGetCacheableMailingTable = value;
-                }
+            public static TGetCacheableMailingTable GetCacheableMailingTableDelegate {
+                get;
+                set;
             }
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable partner table
             /// </summary>
             /// <description>The Delegate is set up at the start of the application.</description>
-            public static TGetCacheablePartnerTable GetCacheablePartnerTableDelegate
-            {
-                get
-                {
-                    return FDelegateGetCacheablePartnerTable;
-                }
-
-                set
-                {
-                    FDelegateGetCacheablePartnerTable = value;
-                }
+            public static TGetCacheablePartnerTable GetCacheablePartnerTableDelegate {
+                get;
+                set;
             }
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable Subscriptions table
             /// </summary>
             /// <description>The Delegate is set up at the start of the application.</description>
-            public static TGetCacheableSubscriptionsTable GetCacheableSubscriptionsTableDelegate
-            {
-                get
-                {
-                    return FDelegateGetCacheableSubscriptionsTable;
-                }
-
-                set
-                {
-                    FDelegateGetCacheableSubscriptionsTable = value;
-                }
+            public static TGetCacheableSubscriptionsTable GetCacheableSubscriptionsTableDelegate {
+                get;
+                set;
             }
+
+            /// <summary>
+            /// This property is used to provide a function which all p_partner_attribute records whose p_attribute_type
+            /// points to any p_partner_attribute_type record that is part of a System Category.
+            /// </summary>
+            /// <description>The Delegate is set up at the start of the application.</description>
+            public static TGetPartnerCalculationsCertainPartnerAttributeKinds GetPartnerCalculationsSystemCategoryAttributeTypesDelegate {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// This property is used to provide a function which determines all p_partner_attribute_type records that
+            /// which constitute Partner Contact Details and returns the result.
+            /// </summary>
+            /// <description>The Delegate is set up at the start of the application.</description>
+            public static TGetPartnerCalculationsCertainPartnerAttributeKinds GetPartnerCalculationsPartnerContactDetailAttributeTypesDelegate {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// This property is used to provide a function which determines all p_partner_attribute_type records that
+            /// are of p_attribute_type_value_kind_c 'CONTACTDETAIL_EMAILADDRESS' and returns the result.
+            /// </summary>
+            /// <description>The Delegate is set up at the start of the application.</description>
+            public static TGetPartnerCalculationsCertainPartnerAttributeKinds GetPartnerCalculationsEmailPartnerAttributeTypesDelegate {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// This property is used to provide a function which determines all p_partner_attribute_type records that
+            /// that have p_category_code_c 'Phone'.
+            /// </summary>
+            /// <description>The Delegate is set up at the start of the application.</description>
+            public static TGetPartnerCalculationsCertainPartnerAttributeKinds GetPartnerCalculationsPhonePartnerAttributeTypesDelegate {
+                get;
+                set;
+            }
+
 
             /// <summary>
             /// retrieve cacheable mailing table
@@ -287,9 +309,9 @@ namespace Ict.Petra.Shared
             /// <returns></returns>
             public static DataTable GetCacheableMailingTable(TCacheableMailingTablesEnum ACacheableTable)
             {
-                if (FDelegateGetCacheableMailingTable != null)
+                if (GetCacheableMailingTableDelegate != null)
                 {
-                    return FDelegateGetCacheableMailingTable(ACacheableTable);
+                    return GetCacheableMailingTableDelegate(ACacheableTable);
                 }
                 else
                 {
@@ -304,9 +326,9 @@ namespace Ict.Petra.Shared
             /// <returns></returns>
             public static DataTable GetCacheablePartnerTable(TCacheablePartnerTablesEnum ACacheableTable)
             {
-                if (FDelegateGetCacheablePartnerTable != null)
+                if (GetCacheablePartnerTableDelegate != null)
                 {
-                    return FDelegateGetCacheablePartnerTable(ACacheableTable);
+                    return GetCacheablePartnerTableDelegate(ACacheableTable);
                 }
                 else
                 {
@@ -321,16 +343,219 @@ namespace Ict.Petra.Shared
             /// <returns></returns>
             public static DataTable GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum ACacheableTable)
             {
-                if (FDelegateGetCacheableSubscriptionsTable != null)
+                if (GetCacheableSubscriptionsTableDelegate != null)
                 {
-                    return FDelegateGetCacheableSubscriptionsTable(ACacheableTable);
+                    return GetCacheableSubscriptionsTableDelegate(ACacheableTable);
                 }
                 else
                 {
                     throw new InvalidOperationException("Delegate 'TGetCacheableSubscriptionsTable' must be initialised before calling this Method");
                 }
             }
+
+            /// <summary>
+            /// Determines all p_partner_attribute_type records which constitute Partner Contact Details and returns the result.
+            /// </summary>
+            /// <returns>String that contains all p_partner_attribute_type records which constitute Partner Contact Details.
+            /// </returns>
+            public static string GetSystemCategorySettingsConcatStr()
+            {
+                // TODO Make this Method multi-threading safe (as it gets used server-side, too)! See implementations in Methods 'AddCachedTableInternal' and 'GetContentsEntry' of TCacheableTablesManager...
+
+                if (FSystemCategorySettingsConcatStr == null)
+                {
+                    PPartnerAttributeTypeTable PPartnerAttributeTypeDT = null;
+
+                    if (GetCacheablePartnerTableDelegate != null)
+                    {
+                        PPartnerAttributeTypeDT = (PPartnerAttributeTypeTable)GetCacheablePartnerTableDelegate(
+                            TCacheablePartnerTablesEnum.PartnerAttributeSystemCategoryTypeList);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Delegate 'TGetCacheablePartnerTable' must be initialised before calling this Method");
+                    }
+
+                    if (GetPartnerCalculationsSystemCategoryAttributeTypesDelegate != null)
+                    {
+                        FSystemCategorySettingsConcatStr = GetPartnerCalculationsSystemCategoryAttributeTypesDelegate(PPartnerAttributeTypeDT, null);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException(
+                            "Delegate 'TGetPartnerCalculationsCertainPartnerAttributeKinds' must be initialised before calling this Method");
+                    }
+                }
+
+                return FSystemCategorySettingsConcatStr;
+            }
+
+            /// <summary>
+            /// Determines all p_partner_attribute_type records which constitute Partner Contact Details and returns the result.
+            /// </summary>
+            /// <returns>String that contains all p_partner_attribute_type records which constitute Partner Contact Details.
+            /// </returns>
+            public static string GetPartnerContactDetailAttributeTypesConcatStr()
+            {
+                // TODO Make this Method multi-threading safe (as it gets used server-side, too)! See implementations in Methods 'AddCachedTableInternal' and 'GetContentsEntry' of TCacheableTablesManager...
+
+                if (FPartnerContactDetailAttributeTypesConcatStr == null)
+                {
+                    PPartnerAttributeTypeTable PPartnerAttributeTypeDT = null;
+
+                    if (GetCacheablePartnerTableDelegate != null)
+                    {
+                        PPartnerAttributeTypeDT = (PPartnerAttributeTypeTable)GetCacheablePartnerTableDelegate(
+                            TCacheablePartnerTablesEnum.ContactTypeList);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Delegate 'TGetCacheablePartnerTable' must be initialised before calling this Method");
+                    }
+
+                    if (GetPartnerCalculationsPartnerContactDetailAttributeTypesDelegate != null)
+                    {
+                        FPartnerContactDetailAttributeTypesConcatStr = GetPartnerCalculationsPartnerContactDetailAttributeTypesDelegate(
+                            PPartnerAttributeTypeDT,
+                            null);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException(
+                            "Delegate 'TGetPartnerCalculationsCertainPartnerAttributeKinds' must be initialised before calling this Method");
+                    }
+                }
+
+                return FPartnerContactDetailAttributeTypesConcatStr;
+            }
+
+            /// <summary>
+            /// Determines all p_partner_attribute_type records that are of p_attribute_type_value_kind_c
+            /// 'CONTACTDETAIL_EMAILADDRESS' and returns the result.
+            /// </summary>
+            /// <returns>String that contains all p_partner_attribute_type records are of p_attribute_type_value_kind_c
+            /// 'CONTACTDETAIL_EMAILADDRESS'.</returns>
+            public static string GetEmailPartnerAttributesConcatStr()
+            {
+                // TODO Make this Method multi-threading safe (as it gets used server-side, too)! See implementations in Methods 'AddCachedTableInternal' and 'GetContentsEntry' of TCacheableTablesManager...
+
+                if (FEmailPartnerAttributesConcatStr == null)
+                {
+                    PPartnerAttributeTypeTable PPartnerAttributeTypeDT = null;
+
+                    if (GetCacheablePartnerTableDelegate != null)
+                    {
+                        PPartnerAttributeTypeDT = (PPartnerAttributeTypeTable)GetCacheablePartnerTableDelegate(
+                            TCacheablePartnerTablesEnum.ContactTypeList);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Delegate 'TGetCacheablePartnerTable' must be initialised before calling this Method");
+                    }
+
+                    if (GetPartnerCalculationsEmailPartnerAttributeTypesDelegate != null)
+                    {
+                        FEmailPartnerAttributesConcatStr = GetPartnerCalculationsEmailPartnerAttributeTypesDelegate(PPartnerAttributeTypeDT, null);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException(
+                            "Delegate 'TGetPartnerCalculationsCertainPartnerAttributeKinds' must be initialised before calling this Method");
+                    }
+                }
+
+                return FEmailPartnerAttributesConcatStr;
+            }
+
+            /// <summary>
+            /// Determines all p_partner_attribute_type records that have p_category_code_c 'Phone'.
+            /// </summary>
+            /// <returns>String that contains all p_partner_attribute_type records that have p_category_code_c 'Phone'.</returns>
+            public static string GetPhonePartnerAttributesConcatStr()
+            {
+                // TODO Make this Method multi-threading safe (as it gets used server-side, too)! See implementations in Methods 'AddCachedTableInternal' and 'GetContentsEntry' of TCacheableTablesManager...
+
+                if (FPhonePartnerAttributesConcatStr == null)
+                {
+                    PPartnerAttributeTypeTable PPartnerAttributeTypeDT = null;
+
+                    if (GetCacheablePartnerTableDelegate != null)
+                    {
+                        PPartnerAttributeTypeDT = (PPartnerAttributeTypeTable)GetCacheablePartnerTableDelegate(
+                            TCacheablePartnerTablesEnum.ContactTypeList);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Delegate 'TGetCacheablePartnerTable' must be initialised before calling this Method");
+                    }
+
+                    if (GetPartnerCalculationsPhonePartnerAttributeTypesDelegate != null)
+                    {
+                        FPhonePartnerAttributesConcatStr = GetPartnerCalculationsPhonePartnerAttributeTypesDelegate(PPartnerAttributeTypeDT, null);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException(
+                            "Delegate 'TGetPartnerCalculationsCertainPartnerAttributeKinds' must be initialised before calling this Method");
+                    }
+                }
+
+                return FPhonePartnerAttributesConcatStr;
+            }
+
+            /// <summary>
+            /// Causes the internal cached data that the Method
+            /// <see cref="GetSystemCategorySettingsConcatStr"/> returns to be refreshed the next time it
+            /// gets called.
+            /// </summary>
+            /// <remarks>Needs to be called once the data in the underlying Cacheable DataTable changes!</remarks>
+            public static void MarkSystemCategorySettingsConcatStrNeedsRefreshing()
+            {
+                // TODO Make this Method multi-threading safe (as it gets used server-side, too)! See implementations in Method 'AddCachedTableInternal' of TCacheableTablesManager...
+
+                FSystemCategorySettingsConcatStr = null;
+            }
+
+            /// <summary>
+            /// Causes the internal cached data that the Method
+            /// <see cref="GetPartnerContactDetailAttributeTypesConcatStr"/> returns to be refreshed the next time it
+            /// gets called.
+            /// </summary>
+            /// <remarks>Needs to be called once the data in the underlying Cacheable DataTable changes!</remarks>
+            public static void MarkPartnerContactDetailAttributeTypesConcatStrNeedsRefreshing()
+            {
+                // TODO Make this Method multi-threading safe (as it gets used server-side, too)! See implementations in Method 'AddCachedTableInternal' of TCacheableTablesManager...
+
+                FPartnerContactDetailAttributeTypesConcatStr = null;
+            }
+
+            /// <summary>
+            /// Causes the internal cached data that the Method
+            /// <see cref="GetPhonePartnerAttributesConcatStr"/> returns to be refreshed the next time it
+            /// gets called.
+            /// </summary>
+            /// <remarks>Needs to be called once the data in the underlying Cacheable DataTable changes!</remarks>
+            public static void MarkPhonePartnerAttributesConcatStrNeedsRefreshing()
+            {
+                // TODO Make this Method multi-threading safe (as it gets used server-side, too)! See implementations in Method 'AddCachedTableInternal' of TCacheableTablesManager...
+
+                FPhonePartnerAttributesConcatStr = null;
+            }
+
+            /// <summary>
+            /// Causes the internal cached data that the Method
+            /// <see cref="GetEmailPartnerAttributesConcatStr"/> returns to be refreshed the next time it
+            /// gets called.
+            /// </summary>
+            /// <remarks>Needs to be called once the data in the underlying Cacheable DataTable changes!</remarks>
+            public static void MarkEmailPartnerAttributesConcatStrNeedsRefreshing()
+            {
+                // TODO Make this Method multi-threading safe (as it gets used server-side, too)! See implementations in Method 'AddCachedTableInternal' of TCacheableTablesManager...
+
+                FEmailPartnerAttributesConcatStr = null;
+            }
         }
+
         #endregion
 
         #region TDataCache.TMPersonnel

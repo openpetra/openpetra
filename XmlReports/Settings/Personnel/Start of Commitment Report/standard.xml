@@ -30,7 +30,7 @@
   <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
   <Parameter id="param_calculation" column="6" value="eString:Partner Address" />
   <Parameter id="ColumnWidth" column="6" value="eInteger:10" />
-  <Parameter id="param_calculation" column="7" value="eString:Telephone" />
+  <Parameter id="param_calculation" column="7" value="eString:Primary Phone" />
   <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
   <Parameter id="param_today" value="eDateTime:&quot;2010-06-22T00:00:00&quot;" />
 </Parameters>

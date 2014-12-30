@@ -69,12 +69,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// to keep track of things manually  :-(</remarks>
         private int FCurrentGridRow = -1;
 
-        /// <summary>Last PartnerKey for which the Partner Info Panel was opened.</summary>
-        private Int64 FLastPartnerKeyInfoPanelOpened = -1;
-
-        /// <summary>Last LocationKey for which the Partner Info Panel was opened.</summary>
-        private TLocationPK FLastLocationPKInfoPanelOpened = new TLocationPK();
-
         /// <summary>Tells the screen whether it should still wait for the Server's result</summary>
         private Boolean FKeepUpSearchFinishedCheck;
 
@@ -93,7 +87,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         // <summary>If the Form should set the Focus to the LocationKey field, set the LocationKey to this value</summary>
 // TODO        private Int32 FPassedLocationKey;
         /// <summary>Object that holds the logic for this screen</summary>
-        private TPartnerFindScreenLogic FLogic;
+        private TPartnerFindScreen_Logic FLogic;
+
+        private TMenuFunctions FMenuFunctions;
 
         /// <summary>The Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerFind FPartnerFindObject;
@@ -303,8 +299,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // Define the screen's Logic
-            FLogic = new TPartnerFindScreenLogic();
+            FLogic = new TPartnerFindScreen_Logic();
             FLogic.ParentForm = this;
+            FLogic.PartnerInfoCollPanel = ucoPartnerInfo;
+
+            FMenuFunctions = new TMenuFunctions(FLogic);
 
             lblSearchInfo.Text = "";
         }
@@ -636,10 +635,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniFileDeletePartner")
             {
-                if (TPartnerMain.DeletePartner(FLogic.PartnerKey, this.FindForm()))
-                {
-                    BtnSearch_Click(this, new EventArgs());
-                }
+                FLogic.DeletePartner();
             }
             else if (AToolStripItem.Name == "mniFileWorkWithLastPartner")
             {
@@ -647,7 +643,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniFileMergePartners")
             {
-                new Ict.Petra.Client.MPartner.Gui.TFrmMergePartnersDialog(FPetraUtilsObject.GetForm()).Show();
+                using (var MergePartnersDialog = new Ict.Petra.Client.MPartner.Gui.TFrmMergePartnersDialog(FPetraUtilsObject.GetForm()))
+                {
+                    DialogResult MergeDialRes = MergePartnersDialog.ShowDialog();
+                    bool RunSearchAgain = false;
+
+                    if ((MergeDialRes == DialogResult.OK)
+                        && (FPagedDataTable != null)
+                        && (FPagedDataTable.Rows.Count > 0))
+                    {
+                        RunSearchAgain = FPartnerFindObject.CheckIfResultsContainPartnerKey(MergePartnersDialog.FromPartnerKey);
+
+                        if (!RunSearchAgain)
+                        {
+                            RunSearchAgain = FPartnerFindObject.CheckIfResultsContainPartnerKey(MergePartnersDialog.ToPartnerKey);
+                        }
+
+                        if (RunSearchAgain)
+                        {
+                            BtnSearch_Click(this, new EventArgs());
+                        }
+                    }
+                }
             }
             else if (AToolStripItem.Name == "mniFilePrintPartner")
             {
@@ -664,7 +681,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniFileSendEmail")
             {
-                TMenuFunctions.SendEmailToPartner();
+                FMenuFunctions.SendEmailToPartner();
             }
             else
             {
@@ -680,7 +697,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniEditCopyPartnerKey")
             {
-                TMenuFunctions.CopyPartnerKeyToClipboard();
+                FMenuFunctions.CopyPartnerKeyToClipboard();
             }
             else if (AToolStripItem.Name == "mniEditCopyAddress")
             {
@@ -920,39 +937,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// combination has changed from the last time this Method was called.</remarks>
         void UpdatePartnerInfoPanel()
         {
-            TLocationPK CurrentLocationPK;
-
             if (!ucoPartnerInfo.IsCollapsed && !FBankDetailsTab)
             {
-                CurrentLocationPK = FLogic.DetermineCurrentLocationPK();
-
-                //                MessageBox.Show("Current PartnerKey: " + FLogic.PartnerKey.ToString() + Environment.NewLine +
-                //                                "FLastPartnerKeyInfoPanelOpened: " + FLastPartnerKeyInfoPanelOpened.ToString() + Environment.NewLine +
-                //                                "CurrentLocationPK: " + CurrentLocationPK.SiteKey.ToString() + ", " + CurrentLocationPK.LocationKey.ToString() + Environment.NewLine +
-                //                                "FLastLocationPKInfoPanelOpened: " + FLastLocationPKInfoPanelOpened.SiteKey.ToString() + ", " + FLastLocationPKInfoPanelOpened.LocationKey.ToString());
-
-                if ((FLogic.CurrentDataRow != null)
-                    && (((FLastPartnerKeyInfoPanelOpened == FLogic.PartnerKey)
-                         && ((FLastLocationPKInfoPanelOpened.SiteKey != CurrentLocationPK.SiteKey)
-                             || (FLastLocationPKInfoPanelOpened.LocationKey != CurrentLocationPK.LocationKey)))
-                        || (FLastPartnerKeyInfoPanelOpened != FLogic.PartnerKey)))
-                {
-                    FLastPartnerKeyInfoPanelOpened = FLogic.PartnerKey;
-                    FLastLocationPKInfoPanelOpened = CurrentLocationPK;
-
-                    if ((chkDetailedResults.Checked)
-                        || ((!chkDetailedResults.Checked)
-                            && FLastSearchWasDetailedSearch))
-                    {
-                        // We have Location data available
-                        FPartnerInfoUC.PassPartnerDataPartialWithLocation(FLogic.PartnerKey, FLogic.CurrentDataRow);
-                    }
-                    else
-                    {
-                        // We don't have Location data available
-                        FPartnerInfoUC.PassPartnerDataPartialWithoutLocation(FLogic.PartnerKey, FLogic.CurrentDataRow);
-                    }
-                }
+                FLogic.UpdatePartnerInfoPanel(
+                    (chkDetailedResults.Checked) || ((!chkDetailedResults.Checked) && FLastSearchWasDetailedSearch),
+                    FPartnerInfoUC);
             }
         }
 
@@ -993,6 +982,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FPartnerInfoUC == null)
             {
                 FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));
+                FPartnerInfoUC.InitUserControl();
             }
 
             UpdatePartnerInfoPanel();
@@ -1375,8 +1365,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 FCriteriaContentChanged = false;
-                FLastPartnerKeyInfoPanelOpened = -1;
-                FLastLocationPKInfoPanelOpened = new TLocationPK(-1, -1);
+                FLogic.ResetLastPartnerDataInfoPanel();
 
                 // Start asynchronous search operation
                 this.PerformSearch();

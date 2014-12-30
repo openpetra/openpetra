@@ -27,6 +27,8 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Server.MPartner.DataAggregates;
+using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MPartner;
@@ -86,6 +88,8 @@ namespace Ict.Petra.Server.App.Delegates
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookups.GetCurrentPostingRangeDates;
             TMonthEnd.StewardshipCalculationDelegate = @TStewardshipCalculationWebConnector.PerformStewardshipCalculation;
             TGLPosting.PrintReportOnClientDelegate = @TReportingWebConnector.GenerateReportOnClient;
+            TIntranetExportWebConnector.GetPrimaryEmailAndPrimaryPhoneDelegate = @TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhone;
+            TIntranetExportWebConnector.GetWithinOrganisationEmailDelegate = @TContactDetailsAggregate.GetWithinOrganisationEmailAddress;
 
             // Set up Delegates for retrieval of cacheable tables when called from Shared directories on server side
             CachePopulatorCommon = new Ict.Petra.Server.MCommon.Cacheable.TCacheable();
@@ -105,6 +109,14 @@ namespace Ict.Petra.Server.App.Delegates
             TSharedDataCache.TMPartner.GetCacheablePartnerTableDelegate = @CachePopulatorPartner.GetCacheableTable;
             TSharedDataCache.TMPartner.GetCacheableMailingTableDelegate = @CachePopulatorMailing.GetCacheableTable;
             TSharedDataCache.TMPartner.GetCacheableSubscriptionsTableDelegate = @CachePopulatorSubscriptions.GetCacheableTable;
+            TSharedDataCache.TMPartner.GetPartnerCalculationsSystemCategoryAttributeTypesDelegate =
+                @Ict.Petra.Shared.MPartner.Calculations.DetermineSystemCategoryAttributeTypes;
+            TSharedDataCache.TMPartner.GetPartnerCalculationsPartnerContactDetailAttributeTypesDelegate =
+                @Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerContactDetailAttributeTypes;
+            TSharedDataCache.TMPartner.GetPartnerCalculationsEmailPartnerAttributeTypesDelegate =
+                @Ict.Petra.Shared.MPartner.Calculations.DetermineEmailPartnerAttributeTypes;
+            TSharedDataCache.TMPartner.GetPartnerCalculationsPhonePartnerAttributeTypesDelegate =
+                @Ict.Petra.Shared.MPartner.Calculations.DeterminePhonePartnerAttributeTypes;
 
             TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate = @CachePopulatorPersonnel.GetCacheableTable;
             TSharedDataCache.TMPersonnel.GetCacheableUnitsTableDelegate = @CachePopulatorUnits.GetCacheableTable;

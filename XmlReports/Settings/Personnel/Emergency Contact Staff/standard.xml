@@ -21,12 +21,12 @@
   <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
   <Parameter id="param_calculation" column="6" value="eString:Country" />
   <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
-  <Parameter id="param_calculation" column="7" value="eString:Telephone" />
+  <Parameter id="param_calculation" column="7" value="eString:Primary Phone" />
   <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
   <Parameter id="param_calculation" column="8" value="eString:Alternate Telephone" />
   <Parameter id="ColumnWidth" column="8" value="eInteger:2" />
   <Parameter id="param_calculation" column="9" value="eString:Mobile" />
   <Parameter id="ColumnWidth" column="9" value="eInteger:2" />
-  <Parameter id="param_calculation" column="10" value="eString:E-Mail" />
+  <Parameter id="param_calculation" column="10" value="eString:Primary E-Mail" />
   <Parameter id="ColumnWidth" column="10" value="eInteger:3" />
 </Parameters>
