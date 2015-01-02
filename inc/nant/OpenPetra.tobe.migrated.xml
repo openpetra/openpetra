@@ -129,8 +129,6 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   <echo>Running on MS Windows</echo>
   <property name="PostgreSQL.Version" value="9.0" overwrite="false"/>
   <property name="MySQL.Version" value="5.1" overwrite="false"/>
-  <property name="Dia.exe" value="${OP::GetFileInProgramDirectory('\Dia\bin\dia.exe')}" overwrite="false"/> 
-  <property name="sql2dia" value="${dir.3rdParty}/sql2dia/sql2dia.exe" overwrite="false"/>
   <property name="PostgreSQL.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/' + PostgreSQL.Version + '/bin/psql.exe')}" overwrite="false" />
   <property name="pgdump.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/' + PostgreSQL.Version + '/bin/pg_dump.exe')}" overwrite="false"/>
   <property name="MySQL.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server ' + MySQL.Version + '/bin/mysql.exe')}" overwrite="false" />
@@ -152,8 +150,6 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
     <property name="MySQL.exe" value="mysql" overwrite="false"/>
     <property name="makensis.exe" value="makensis" overwrite="false"/>
     <property name="MonoBinPath" value="/opt/mono/bin" overwrite="false"/>
-    <property name="Dia.exe" value="doesnotexist/dia.exe" overwrite="false"/>
-    <property name="sql2dia" value="${dir.3rdParty}/sql2dia/sql2dia32" overwrite="false"/>
     <property name="git" value="git" overwrite="false"/>
 
     <property name="MonoExecutable.file" value="/opt/mono-openpetra/bin/mono" overwrite="false"/>
