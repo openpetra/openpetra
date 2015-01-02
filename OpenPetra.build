@@ -292,7 +292,7 @@ useful parameters
     NamespaceMap3rdParty="${namespaceFile3rdParty}"
     DependencyMapFilename="${projectDependenciesFile}"
     ShowWarnings="false"
-    LimitToNamespaces="Ict.Common,Ict.Common.IO,Ict.Common.DB,Ict.Petra.Shared.lib.data,Ict.Petra.Shared.lib.MPartner.conversion,Ict.Common.Session,Ict.Tools*"/>
+    LimitToNamespaces="Ict.Common,Ict.Common.IO,Ict.Common.DB,Ict.Common.Session,Ict.Tools*"/>
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ThirdParty/ThirdParty.build" />
   <call target="generateProjectFilesInternal"/>
