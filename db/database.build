@@ -156,7 +156,7 @@
                 </items>
             </in>
             <do>
-                <exec program="dia" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${path::get-file-name-without-extension(filename)}.png --filter=pixbuf-png &quot;${filename}&quot;"/>
+                <exec program="dia" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${path::get-file-name-without-extension(filename)}.png --filter=png-libart &quot;${filename}&quot;"/>
             </do>
         </foreach>
     </target>
