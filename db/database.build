@@ -134,17 +134,17 @@
         </copy>        
 
         <!-- create project files -->
-        <exec program="${sql2dia}" workingdir="${DBDoc.Output.dir}" 
+        <exec program="${external.sql2dia}" workingdir="${DBDoc.Output.dir}" 
             output="${OpenPetraRoot.dir}/db/doc/master_alltables.prj">
             <arg value="-d &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;"/>
         </exec>
-        <exec program="${sql2dia}" workingdir="${DBDoc.Output.dir}" 
+        <exec program="${external.sql2dia}" workingdir="${DBDoc.Output.dir}" 
             output="${OpenPetraRoot.dir}/db/doc/master_alltables_bygroup.prj">
             <arg value="-g -f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;"/>
         </exec>
     
         <!-- create or update diagrams -->
-        <exec program="${sql2dia}" workingdir="${DBDoc.Output.dir}">
+        <exec program="${external.sql2dia}" workingdir="${DBDoc.Output.dir}">
             <arg value="-f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot; -p &quot;${OpenPetraRoot.dir}/db/doc/themed.prj&quot; --diaoutputpath &quot;${OpenPetraRoot.dir}/db/doc&quot;"/>
         </exec>
 

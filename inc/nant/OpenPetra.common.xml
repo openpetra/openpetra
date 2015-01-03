@@ -389,6 +389,7 @@
     <property name="external.Poedit.gettext" value="/usr/bin/xgettext" overwrite="false"/>
     <property name="external.Poedit.msgfmt" value="/usr/bin/msgfmt" overwrite="false"/>
     <property name="external.Poedit.msgcat" value="/usr/bin/msgcat" overwrite="false"/>
+    <property name="external.sql2dia" value="/usr/bin/sql2dia" overwrite="false"/>
 
     <!-- this is the location of NUnit on mono-openpetra rpm -->
     <property name="search.NUnitConsole" value="/opt/mono-openpetra/lib/mono/4.5/nunit-console.exe"/>
