@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1052,7 +1052,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(PartnerAttributeRow.IsValueNull() ? "" : PartnerAttributeRow.Value);
                 Write(PartnerAttributeRow.IsCommentNull() ? "" : PartnerAttributeRow.Comment);
                 Write(PartnerAttributeRow.IsPrimaryNull() ? false : PartnerAttributeRow.Primary);
-                Write(PartnerAttributeRow.IsWithinOrgansiationNull() ? false : PartnerAttributeRow.WithinOrgansiation);
+                Write(PartnerAttributeRow.IsWithinOrganisationNull() ? false : PartnerAttributeRow.WithinOrganisation);
                 Write(PartnerAttributeRow.IsSpecialisedNull() ? false : PartnerAttributeRow.Specialised);
                 Write(PartnerAttributeRow.IsConfidentialNull() ? false : PartnerAttributeRow.Confidential);
                 Write(PartnerAttributeRow.IsCurrentNull() ? false : PartnerAttributeRow.Current);

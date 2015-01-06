@@ -129,8 +129,6 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   <echo>Running on MS Windows</echo>
   <property name="PostgreSQL.Version" value="9.0" overwrite="false"/>
   <property name="MySQL.Version" value="5.1" overwrite="false"/>
-  <property name="Dia.exe" value="${OP::GetFileInProgramDirectory('\Dia\bin\dia.exe')}" overwrite="false"/> 
-  <property name="sql2dia" value="${dir.3rdParty}/sql2dia/sql2dia.exe" overwrite="false"/>
   <property name="PostgreSQL.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/' + PostgreSQL.Version + '/bin/psql.exe')}" overwrite="false" />
   <property name="pgdump.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/' + PostgreSQL.Version + '/bin/pg_dump.exe')}" overwrite="false"/>
   <property name="MySQL.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server ' + MySQL.Version + '/bin/mysql.exe')}" overwrite="false" />
@@ -152,8 +150,6 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
     <property name="MySQL.exe" value="mysql" overwrite="false"/>
     <property name="makensis.exe" value="makensis" overwrite="false"/>
     <property name="MonoBinPath" value="/opt/mono/bin" overwrite="false"/>
-    <property name="Dia.exe" value="doesnotexist/dia.exe" overwrite="false"/>
-    <property name="sql2dia" value="${dir.3rdParty}/sql2dia/sql2dia32" overwrite="false"/>
     <property name="git" value="git" overwrite="false"/>
 
     <property name="MonoExecutable.file" value="/opt/mono-openpetra/bin/mono" overwrite="false"/>
@@ -170,8 +166,10 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <!-- Add the database as is add properties for compat, which will be removed -->
 <property name="OpenPetraRoot.dir" value="${dir.root}" overwrite="true" />
 <property name="PetraRelease" value="0300" overwrite="false" />
-<property name="SQLitedb.file" value="${dir.root}/setup/petra${PetraRelease}/petra.db" overwrite="false" />
-<property name="SQLitedbWork.file" value="${dir.root}/setup/petra${PetraRelease}/demo.db" overwrite="false" />
+<property name="dir.sqlite" value="${dir.root}/delivery/sqlite" overwrite="false" />
+<property name="SQLitedbEmpty.file" value="${dir.sqlite}/empty.db" overwrite="false" />
+<property name="SQLitedbBase.file" value="${dir.sqlite}/base.db" overwrite="false" />
+<property name="SQLitedbWork.file" value="${dir.sqlite}/work.db" overwrite="false" />
 <property name="BuildToolsExe.dir" value="${dir.bin}" overwrite="true" />
 <property name="DBDoc.Output.dir" value="${dir.delivery}/dbdoc" overwrite="false" />
 <property name="ThirdParty.dir" value="${dir.3rdParty}" overwrite="false" />

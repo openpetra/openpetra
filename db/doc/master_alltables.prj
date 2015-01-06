@@ -21,6 +21,7 @@
 		<tablename name="s_login"/>
 		<tablename name="s_logon_message"/>
 		<tablename name="s_patch_log"/>
+		<tablename name="s_report_template"/>
 		<tablename name="s_reports_to_archive"/>
 		<tablename name="s_system_status"/>
 		<tablename name="s_user_defaults"/>
@@ -87,6 +88,7 @@
 		<tablename name="p_merge_field"/>
 		<tablename name="p_postcode_range"/>
 		<tablename name="p_postcode_region"/>
+		<tablename name="p_postcode_region_range"/>
 		<tablename name="p_publication"/>
 		<tablename name="p_publication_cost"/>
 		<tablename name="p_reason_subscription_given"/>
@@ -95,6 +97,7 @@
 		<tablename name="p_contact_attribute"/>
 		<tablename name="p_contact_attribute_detail"/>
 		<tablename name="p_method_of_contact"/>
+		<tablename name="p_contact_log"/>
 		<tablename name="p_partner_contact"/>
 		<tablename name="p_partner_contact_attribute"/>
 		<tablename name="a_sub_system"/>
@@ -207,7 +210,6 @@
 		<tablename name="pt_skill_level"/>
 		<tablename name="pm_person_skill"/>
 		<tablename name="pm_formal_education"/>
-		<tablename name="pt_driver_status"/>
 		<tablename name="pm_personal_data"/>
 		<tablename name="p_data_label"/>
 		<tablename name="p_data_label_use"/>
@@ -227,7 +229,6 @@
 		<tablename name="um_job_language"/>
 		<tablename name="um_job_qualification"/>
 		<tablename name="pt_assignment_type"/>
-		<tablename name="pt_leaving_code"/>
 		<tablename name="pm_job_assignment"/>
 		<tablename name="um_unit_ability"/>
 		<tablename name="um_unit_language"/>
@@ -260,7 +261,7 @@
 		<tablename name="p_partner_merge"/>
 		<tablename name="p_reminder_category"/>
 		<tablename name="p_partner_reminder"/>
-		<tablename name="p_partner_field_of_service"/>
+		<tablename name="p_partner_gift_destination"/>
 		<tablename name="p_partner_short_code"/>
 		<tablename name="p_process"/>
 		<tablename name="p_state"/>

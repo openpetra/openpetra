@@ -4,7 +4,7 @@
 // @Authors:
 //       ChristianK
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -184,7 +184,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerAttributeDR.Value = APPARec.Value;
             PartnerAttributeDR.Comment = APPARec.Comment;
             PartnerAttributeDR.Primary = APPARec.Primary;
-            PartnerAttributeDR.WithinOrgansiation = APPARec.WithinOrganisation;
+            PartnerAttributeDR.WithinOrganisation = APPARec.WithinOrganisation;
             PartnerAttributeDR.Specialised = APPARec.Specialised;
             PartnerAttributeDR.Confidential = APPARec.Confidential;
             PartnerAttributeDR.Current = APPARec.Current;
@@ -286,7 +286,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             var ImportDRValue = AImportedPartnerAttributeDR.Value;  // only needed for Attribute Type 'PARTNERS_PRIMARY_CONTACT_METHOD'
             var ImportDRComment = AImportedPartnerAttributeDR.Comment;
             var ImportDRPrimary = AImportedPartnerAttributeDR.Primary;
-            var ImportDRWithinOrgansiation = AImportedPartnerAttributeDR.WithinOrgansiation;
+            var ImportDRWithinOrganisation = AImportedPartnerAttributeDR.WithinOrganisation;
             var ImportDRSpecialised = AImportedPartnerAttributeDR.Specialised;
             var ImportDRConfidential = AImportedPartnerAttributeDR.Confidential;
             var ImportDRCurrent = AImportedPartnerAttributeDR.Current;
@@ -308,7 +308,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             AImportedPartnerAttributeDR.Value = ImportDRValue;  // only needed for Attribute Type 'PARTNERS_PRIMARY_CONTACT_METHOD'
             AImportedPartnerAttributeDR.Comment = ImportDRComment;
             AImportedPartnerAttributeDR.Primary = ImportDRPrimary;
-            AImportedPartnerAttributeDR.WithinOrgansiation = ImportDRWithinOrgansiation;
+            AImportedPartnerAttributeDR.WithinOrganisation = ImportDRWithinOrganisation;
             AImportedPartnerAttributeDR.Specialised = ImportDRSpecialised;
             AImportedPartnerAttributeDR.Confidential = ImportDRConfidential;
             AImportedPartnerAttributeDR.Current = ImportDRCurrent;

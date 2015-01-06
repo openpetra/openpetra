@@ -56,7 +56,7 @@ Source: ..\..\..\demodata\formletters\*.png; DestDir: {app}/formletters30
 Source: PetraClient.config; DestDir: {app}; DestName: PetraClient-3.0.config
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 ; actual db will be copied to the user's userappdata directory
-Source: ..\petra.db; DestDir: {app}/db30; DestName: demo.db
+Source: ..\..\..\delivery\demo.db; DestDir: {app}/db30; DestName: demo.db
 Source: ..\..\..\db\patches\*.sql; DestDir: {app}/db30
 Source: ..\..\..\demodata\*.*; DestDir: {app}/demo30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}

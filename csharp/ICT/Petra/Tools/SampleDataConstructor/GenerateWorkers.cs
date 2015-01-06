@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -318,6 +318,35 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             familyLocationRow.SiteKey = locationRow.SiteKey;
             familyLocationRow.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
             familyLocationRow.SendMail = true;
+
+            string gender = TXMLParser.GetAttribute(ACurrentNode, "familySituation");
+            Random r = new Random();
+
+            string email = TXMLParser.GetAttribute(ACurrentNode, "FemaleEmail");
+
+            if ((gender == "singleMan") || ((gender == "family") && (r.Next(2) == 0)))
+            {
+                email = TXMLParser.GetAttribute(ACurrentNode, "MaleEmail");
+            }
+
+            if (email.Length > 0)
+            {
+                PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = AFamilyRow.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_EMAIL;
+                partnerAttributeRow.Index = 0;
+                partnerAttributeRow.Primary = true;
+                partnerAttributeRow.Value = email;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+
+                partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = AFamilyRow.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
+                partnerAttributeRow.Index = 9999;
+                partnerAttributeRow.Primary = false;
+                partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_EMAIL;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+            }
 
             AMainDS.PPartnerLocation.Rows.Add(familyLocationRow);
 

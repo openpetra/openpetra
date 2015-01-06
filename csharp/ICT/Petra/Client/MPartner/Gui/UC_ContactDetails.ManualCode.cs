@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1168,7 +1168,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ARow.Value = "NEWVALUE" + ARow.Sequence.ToString();
             ARow.Primary = false;
-            ARow.WithinOrgansiation = false;
+            ARow.WithinOrganisation = false;
             ARow.Specialised = false;
             ARow.Confidential = false;
             ARow.Current = true;
@@ -1444,7 +1444,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 //            if (FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
 //            {
 //
-//                grdDetails.AddCheckBoxColumn("Within Org.", FMainDS.PPartnerAttribute.ColumnWithinOrgansiation);
+//                grdDetails.AddCheckBoxColumn("Within Org.", FMainDS.PPartnerAttribute.ColumnWithinOrganisation);
 //            }
 
             // Modification TimeStamp (for testing purposes only...)

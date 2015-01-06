@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -109,8 +109,6 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 organisationLocationRow.SiteKey = locationRow.SiteKey;
                 organisationLocationRow.LocationType = MPartnerConstants.LOCATIONTYPE_BUSINESS;
                 organisationLocationRow.SendMail = true;
-
-                //organisationLocationRow.EmailAddress = TXMLParser.GetAttribute(RecordNode, "Email");
 
                 if (TXMLParser.GetAttribute(RecordNode, "IsSupplier") == "yes")
                 {

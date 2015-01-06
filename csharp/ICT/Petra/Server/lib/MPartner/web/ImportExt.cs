@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       ChristianK
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1594,7 +1594,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerAttributeRow.Value = ReadString();
             PartnerAttributeRow.Comment = ReadString();
             PartnerAttributeRow.Primary = ReadBoolean();
-            PartnerAttributeRow.WithinOrgansiation = ReadBoolean();
+            PartnerAttributeRow.WithinOrganisation = ReadBoolean();
             PartnerAttributeRow.Specialised = ReadBoolean();
             PartnerAttributeRow.Confidential = ReadBoolean();
             PartnerAttributeRow.Current = ReadBoolean();

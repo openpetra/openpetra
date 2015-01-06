@@ -6,7 +6,7 @@
 //       thomass
 //       ChristianK
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -571,9 +571,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     throw new Exception(Catalog.GetString("PartnerAttribute Node: Missing 'Primary' Attribute"));
                 }
 
-                if (!TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "WithinOrgansiation"))
+                if (!TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "WithinOrganisation"))
                 {
-                    throw new Exception(Catalog.GetString("PartnerAttribute Node: Missing 'WithinOrgansiation' Attribute"));
+                    throw new Exception(Catalog.GetString("PartnerAttribute Node: Missing 'WithinOrganisation' Attribute"));
                 }
 
                 if (!TYml2Xml.HasAttributeRecursive(APartnerAttributeNode, "Specialised"))
@@ -598,7 +598,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 NewAttributeDR.Index = Convert.ToInt32(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Index"));
                 NewAttributeDR.Value = TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Value");
                 NewAttributeDR.Primary = Convert.ToBoolean(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Primary"));
-                NewAttributeDR.WithinOrgansiation = Convert.ToBoolean(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "WithinOrgansiation"));
+                NewAttributeDR.WithinOrganisation = Convert.ToBoolean(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "WithinOrganisation"));
                 NewAttributeDR.Specialised = Convert.ToBoolean(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Specialised"));
                 NewAttributeDR.Confidential = Convert.ToBoolean(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Confidential"));
                 NewAttributeDR.Current = Convert.ToBoolean(TYml2Xml.GetAttributeRecursive(APartnerAttributeNode, "Current"));
@@ -1039,7 +1039,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             partnerAttributeNode.SetAttribute("Index", partnerAttributeRow.Index.ToString());
                             partnerAttributeNode.SetAttribute("Value", partnerAttributeRow.Value);
                             partnerAttributeNode.SetAttribute("Primary", partnerAttributeRow.Primary.ToString());
-                            partnerAttributeNode.SetAttribute("WithinOrgansiation", partnerAttributeRow.WithinOrgansiation.ToString());
+                            partnerAttributeNode.SetAttribute("WithinOrganisation", partnerAttributeRow.WithinOrganisation.ToString());
                             partnerAttributeNode.SetAttribute("Specialised", partnerAttributeRow.Specialised.ToString());
                             partnerAttributeNode.SetAttribute("Confidential", partnerAttributeRow.Confidential.ToString());
                             partnerAttributeNode.SetAttribute("Current", partnerAttributeRow.Current.ToString());
