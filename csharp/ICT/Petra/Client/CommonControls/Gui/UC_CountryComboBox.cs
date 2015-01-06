@@ -155,10 +155,17 @@ namespace Ict.Petra.Client.CommonControls
             this.FAddNotSetValue = true;
             this.FNotSetValue = NotSetValue;
             this.FNotSetDisplay = NotSetDisplay;
+            FDataCache_CountryListTable = TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
             PCountryRow Dr = (PCountryRow)FDataCache_CountryListTable.NewRow();
             Dr.CountryName = FNotSetDisplay;
             Dr.CountryCode = FNotSetValue;
             FDataCache_CountryListTable.Rows.InsertAt(Dr, 0);
+            FDataCache_CountryListTable.DefaultView.Sort = "p_country_code_c";
+            cmbCountry.cmbCombobox.BeginUpdate();
+            cmbCountry.cmbCombobox.DisplayMember = "p_country_code_c";
+            cmbCountry.cmbCombobox.ValueMember = "p_country_code_c";
+            cmbCountry.cmbCombobox.DataSource = FDataCache_CountryListTable.DefaultView;
+            cmbCountry.cmbCombobox.EndUpdate();
             cmbCountry.cmbCombobox.SelectedValue = FNotSetValue;
         }
 
