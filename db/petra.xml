@@ -2292,7 +2292,7 @@
     <!-- Explicit Indexes on table p_location_type  -->
   </table>
   <table name="p_partner_location"
-         descr="Links partners with locations (addresses) and has specific info about the link (e.g. phone number)"
+         descr="Links partners with locations (addresses) and has specific info about the link (e.g. date effective)"
          area=""
          label="Partner Location"
          dumpname="p_prtloc"
