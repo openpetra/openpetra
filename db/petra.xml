@@ -2639,7 +2639,7 @@
                 notnull="yes"/>
     <tablefield descr="Flag to indicate whether this Partner Attribute is for use within The Organisation."
                 format="Yes/No"
-                name="p_within_organsiation_l"
+                name="p_within_organisation_l"
                 type="bit"
                 label="Is Within The Organisation"
                 columnlabel="Within The Organisation?"
