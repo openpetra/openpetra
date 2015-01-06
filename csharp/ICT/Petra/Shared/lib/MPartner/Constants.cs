@@ -5,7 +5,7 @@
 //       christiank
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -222,6 +222,26 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>Location type</summary>
         public const String LOCATIONTYPE_BUSINESS = "BUSINESS";
+
+        /// <summary>partner attribute</summary>
+        public const String ATTR_TYPE_PHONE = "Phone";
+
+        /// <summary>partner attribute</summary>
+        public const String ATTR_TYPE_FAX = "Fax";
+
+        /// <summary>partner attribute</summary>
+        public const String ATTR_TYPE_MOBILE_PHONE = "Mobile Phone";
+
+        /// <summary>partner attribute</summary>
+        public const String ATTR_TYPE_EMAIL = "E-Mail";
+
+        /// <summary>partner attribute</summary>
+        public const String ATTR_TYPE_WEBSITE = "Web Site";
+
+        /// <summary>
+        /// Partner Attribute Type that denotes the 'Primary Contact Method'.
+        /// </summary>
+        public const string ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD = "PARTNERS_PRIMARY_CONTACT_METHOD";
 
         /// <summary>PartnerClass</summary>
         public const String PARTNERIMPORT_PARTNERCLASS = "PartnerClass";
