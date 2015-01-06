@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -636,9 +636,9 @@ namespace Ict.Petra.Shared.MPartner
                 if (AWithinOrgIsAskedFor)
                 {
                     // An 'Email Within Organisation' or a 'Phone Within Organsiation' is asked for
-                    if (!APPartnerAttributeDT[0].WithinOrgansiation)
+                    if (!APPartnerAttributeDT[0].WithinOrganisation)
                     {
-                        // If that one record it isn't WithinOrgansiation then it can't possibly be an 'Email Within
+                        // If that one record it isn't WithinOrganisation then it can't possibly be an 'Email Within
                         // Organisation' or a 'Phone Within Organsiation'!
                         AWithinOrgQuickExitConditionMet = true;
                     }
@@ -738,7 +738,7 @@ namespace Ict.Petra.Shared.MPartner
                 PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN + " = true AND " +
                 PPartnerAttributeTable.GetCurrentDBName() + " = true AND (" +
                 PPartnerAttributeTable.GetPrimaryDBName() + " = true OR " +
-                PPartnerAttributeTable.GetWithinOrgansiationDBName() + " = true) AND " +
+                PPartnerAttributeTable.GetWithinOrganisationDBName() + " = true) AND " +
                 String.Format(PPartnerAttributeTable.GetAttributeTypeDBName() + " IN ({0})",
                     PartnerAttributesConcatStr),
                 PPartnerAttributeTable.GetPartnerKeyDBName() + " ASC", DataViewRowState.CurrentRows);
@@ -825,7 +825,7 @@ namespace Ict.Petra.Shared.MPartner
             }
 
             if (AWithinOrgIsAskedFor
-                && APartnerAttributeDR.WithinOrgansiation)
+                && APartnerAttributeDR.WithinOrganisation)
             {
                 if (AAssignEmailAttributes)
                 {
@@ -1027,7 +1027,7 @@ namespace Ict.Petra.Shared.MPartner
                 }
 
                 if ((!APPartnerAttributeDT[0].Current)
-                    || (APPartnerAttributeDT[0].Primary) || (APPartnerAttributeDT[0].WithinOrgansiation))
+                    || (APPartnerAttributeDT[0].Primary) || (APPartnerAttributeDT[0].WithinOrganisation))
                 {
                     // If the one record isn't Current then it can't possibly hold a 'Fax Number',
                     // also not if if is 'Primary' (as there are no 'Primary' Fax Numbers)

@@ -4,7 +4,7 @@
 // @Authors:
 //       ChristianK
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -612,7 +612,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                         // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
                         PPARecord.Primary = true;
 
-                        // Mark this Contact Detail as being 'WithinOrgansiation' as it has an 'organisation-internal' e-mail-address!
+                        // Mark this Contact Detail as being 'WithinOrganisation' as it has an 'organisation-internal' e-mail-address!
                         // - but only if the Partner is a PERSON!
                         if (FPartnerClassInformation.TryGetValue(APartnerKey, out PartnerClass))
                         {
