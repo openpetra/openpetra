@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -469,6 +469,16 @@ CheckAllClientsDisconnected:
         {
             GC.Collect();
             return GC.GetTotalMemory(false);
+        }
+
+        /// <summary>
+        /// upgrade the database
+        /// </summary>
+        /// <returns>true if the database was upgraded</returns>
+        public virtual bool UpgradeDatabase()
+        {
+            // implemented in derived class
+            return false;
         }
 
         /// <summary>

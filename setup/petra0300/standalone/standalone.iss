@@ -9,7 +9,7 @@ LicenseFile=..\..\..\LICENSE
 VersionInfoVersion={#RELEASEID}
 VersionInfoCompany=OM International
 VersionInfoDescription=Administration Software for Charities
-VersionInfoCopyright=2011 OM International
+VersionInfoCopyright=2015 OM International
 OutputBaseFilename=OpenPetraSetup-{#RELEASEVERSION}
 OutputDir={#DELIVERY.DIR}
 PrivilegesRequired=admin
@@ -57,7 +57,6 @@ Source: PetraClient.config; DestDir: {app}; DestName: PetraClient-3.0.config
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 ; actual db will be copied to the user's userappdata directory
 Source: ..\..\..\delivery\demo.db; DestDir: {app}/db30; DestName: demo.db
-Source: ..\..\..\db\patches\*.sql; DestDir: {app}/db30
 Source: ..\..\..\demodata\*.*; DestDir: {app}/demo30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30

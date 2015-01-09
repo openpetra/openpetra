@@ -32,7 +32,7 @@
     [Function("GetReleaseIDFromVersionTxt")]
     public static string GetReleaseIDFromVersionTxt(string APath)
     {
-        StreamReader sr = new StreamReader(APath + Path.DirectorySeparatorChar + "db" + Path.DirectorySeparatorChar + "patches" + Path.DirectorySeparatorChar + "version.txt");
+        StreamReader sr = new StreamReader(APath + Path.DirectorySeparatorChar + "db" + Path.DirectorySeparatorChar + "version.txt");
         string version = sr.ReadLine().Replace("-", ".");
         sr.Close();
 
@@ -251,8 +251,6 @@
           
  <!-- db -->
 <property name="dir.db" value="${path::combine(dir.root, 'db')}"
-          overwrite="false" />
-<property name="dir.db.patches" value="${path::combine(dir.db, 'patches')}"
           overwrite="false" />
           
 <!-- logdir -->

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -212,6 +212,16 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         public static bool DisconnectClient(System.Int16 AClientID, out String ACantDisconnectReason)
         {
             return TServerManagerBase.TheServerManager.DisconnectClient(AClientID, out ACantDisconnectReason);
+        }
+
+        /// <summary>
+        /// upgrades the database
+        /// </summary>
+        /// <returns>true if there has been an update</returns>
+        [RequireModulePermission("SYSMAN")]
+        public static bool UpgradeDatabase()
+        {
+            return TServerManagerBase.TheServerManager.UpgradeDatabase();
         }
 
         /// <summary>

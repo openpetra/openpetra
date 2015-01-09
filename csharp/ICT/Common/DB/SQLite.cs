@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -435,94 +435,6 @@ namespace Ict.Common.DB
 
             return ASqlCommand.Substring(0, StartIndex) + "strftime('%j', " +
                    ASqlCommand.Substring(StartIndex + 10);
-        }
-
-        /// <summary>
-        /// For standalone installations, we update the SQLite database on the fly.
-        /// </summary>
-        public void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
-            string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword)
-        {
-            // we do not support updating standalone databases at the moment
-            if (AExeVersion.FileMajorPart == 0)
-            {
-                DBAccess.GDBAccessObj.CloseDBConnection();
-
-                throw new EDBUnsupportedDBUpgradeException(String.Format(Catalog.GetString(
-                            "Unsupported upgrade: Please rename the file {0} so that we can start with a fresh database!   " +
-                            "Please restart the OpenPetra Client after that."),
-                        AHostOrFile));
-            }
-
-            string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.SQLiteBaseFile"));
-
-            ADBVersion.FilePrivatePart = 0;
-            AExeVersion.FilePrivatePart = 0;
-
-            using (TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction())
-            {
-                try
-                {
-                    // run all available patches. for each release there could be a patch file
-                    string[] sqlFiles = Directory.GetFiles(dbpatchfilePath, "*.sql");
-
-                    bool foundUpdate = true;
-
-                    // run through all sql files until we have no matching update files anymore
-                    while (foundUpdate)
-                    {
-                        foundUpdate = false;
-
-                        foreach (string sqlFile in sqlFiles)
-                        {
-                            if (!sqlFile.EndsWith("pg.sql") && (new TPatchFileVersionInfo(ADBVersion)).PatchApplies(sqlFile, AExeVersion))
-                            {
-                                foundUpdate = true;
-                                StreamReader sr = new StreamReader(sqlFile);
-
-                                while (!sr.EndOfStream)
-                                {
-                                    string line = sr.ReadLine().Trim();
-
-                                    if (!line.StartsWith("--"))
-                                    {
-                                        DBAccess.GDBAccessObj.ExecuteNonQuery(line, transaction);
-                                    }
-                                }
-
-                                sr.Close();
-                                ADBVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(sqlFile);
-                            }
-                        }
-                    }
-
-                    if (ADBVersion.Compare(AExeVersion) == 0)
-                    {
-                        // if patches have been applied successfully, update the database version
-                        string newVersionSql =
-                            String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
-                                AExeVersion.ToStringDotsHyphen());
-
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction);
-
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-
-                        throw new Exception(String.Format(Catalog.GetString(
-                                    "Cannot connect to old database (version {0}), there are some missing sql patch files"),
-                                ADBVersion));
-                    }
-                }
-                catch (Exception)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-
-                    throw;
-                }
-            }
         }
     }
 }

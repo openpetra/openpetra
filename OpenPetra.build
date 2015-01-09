@@ -24,6 +24,7 @@ list of available commands:
   start: start both the local server and client
   startServer: run a local OpenPetra Server
   stopServer: stop the local OpenPetra Server
+  startAdmin: run the admin console
   startClient: run the OpenPetra Client
   startStandalone: run the OpenPetra standalone application, if generateSolution was run with -D:compileForStandalone=true
   deleteBakFiles: delete all backup files

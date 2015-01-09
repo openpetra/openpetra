@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -219,8 +219,6 @@ namespace Ict.Tools.PatchTool.Library
                 throw new Exception("TPatchTools.InstallPatches: need to call CheckForRecentPatch first!");
             }
 
-            // todo: RunDBPatch for patches that have not been applied to the database yet, although the binaries have been installed already?
-            // this is probably not necessary for network; it is done by innosetup for standalone; also see RunDBPatches
             foreach (String patch in FListOfNewPatches.GetValueList())
             {
                 // apply the patch
@@ -401,72 +399,6 @@ namespace Ict.Tools.PatchTool.Library
             DBAccess.GDBAccessObj.CommitTransaction();
 
             return true;
-        }
-
-        /// <summary>
-        /// runs all patches against the database;
-        /// can send an email when the last patch has been applied (see RunDBPatch)
-        /// </summary>
-        public Boolean RunDBPatches()
-        {
-            Boolean ReturnValue = false;
-            TFileVersionInfo dbVersion;
-            TFileVersionInfo appVersion;
-            TFileVersionInfo desiredVersion;
-            Boolean lastPatch;
-
-            DBAccess.GDBAccessObj = new TDataBase();
-            DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType")),
-                TAppSettingsManager.GetValue("Server.DBHostOrFile"),
-                TAppSettingsManager.GetValue("Server.DBPort"),
-                TAppSettingsManager.GetValue("Server.DBName"),
-                TAppSettingsManager.GetValue("Server.DBUserName"),
-                TAppSettingsManager.GetValue("Server.DBPassword"),
-                "");
-
-            dbVersion = GetDBPatchLevel();
-            dbVersion.FilePrivatePart = 0;
-            TLogging.Log("Current version of the database is " + dbVersion.ToString());
-
-            if (dbVersion != null)
-            {
-                ReturnValue = true;
-
-                StreamReader sr = new StreamReader(FPatchesPath + Path.DirectorySeparatorChar + "version.txt");
-                appVersion = new TFileVersionInfo(sr.ReadLine());
-                appVersion.FilePrivatePart = 0;
-                TLogging.Log("We want to update to version " + appVersion.ToString());
-                sr.Close();
-
-                if (dbVersion.Compare(appVersion) == 0)
-                {
-                    // rerun the last patch; perhaps the patch file itself was patched
-                    ReturnValue = RunDBPatch(dbVersion, true);
-                }
-
-                for (Int32 Counter = dbVersion.FileBuildPart + 1; Counter <= appVersion.FileBuildPart; Counter += 1)
-                {
-                    if (ReturnValue)
-                    {
-                        desiredVersion = new TFileVersionInfo(dbVersion);
-                        desiredVersion.FileBuildPart = (ushort)Counter;
-                        lastPatch = (Counter == appVersion.FileBuildPart);
-                        ReturnValue = RunDBPatch(desiredVersion, lastPatch);
-                    }
-                }
-            }
-
-            return ReturnValue;
-        }
-
-        private TFileVersionInfo GetDBPatchLevel()
-        {
-            // TODO: read current patch level from the database (table s_system_defaults, default code CurrentDatabaseVersion)
-            string currentVersion = (string)DBAccess.GDBAccessObj.ExecuteScalar(
-                "SELECT s_default_value_c FROM s_system_defaults where s_default_code_c='CurrentDatabaseVersion'",
-                IsolationLevel.ReadUncommitted);
-
-            return new TFileVersionInfo(currentVersion);
         }
 
         private void UndoPatchRecursively(String APatchRootDirectory, String APatchDirectory)

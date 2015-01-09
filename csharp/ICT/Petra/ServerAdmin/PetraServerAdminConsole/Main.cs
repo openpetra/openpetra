@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -206,6 +206,18 @@ public class TAdminConsole
         }
     }
 
+    private static void UpgradeDatabase()
+    {
+        if (TRemote.UpgradeDatabase())
+        {
+            Console.WriteLine("Database is now upgraded");
+        }
+        else
+        {
+            Console.WriteLine("There is no database upgrade available");
+        }
+    }
+
     private static void ExportDatabase()
     {
         Console.Write("     Please enter filename of yml.gz file: ");
@@ -351,6 +363,7 @@ public class TAdminConsole
 
                         Console.WriteLine("     e: export the database to yml.gz");
                         Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
+                        Console.WriteLine("     j: upgrade the database");
 
                         if (TLogging.DebugLevel > 0)
                         {
@@ -417,6 +430,13 @@ public class TAdminConsole
                         Console.Write(ServerAdminPrompt);
 
                         // queue a Client Task for a certain Client
+                        break;
+
+                    case 'j':
+                        Console.WriteLine(Environment.NewLine + "-> Upgrade the database ...");
+
+                        UpgradeDatabase();
+
                         break;
 
                     case 'r':
@@ -761,6 +781,10 @@ public class TAdminConsole
                 else if (TAppSettingsManager.GetValue("Command") == "LoadYmlGz")
                 {
                     RestoreDatabase(TAppSettingsManager.GetValue("YmlGzFile"));
+                }
+                else if (TAppSettingsManager.GetValue("Command") == "UpgradeDatabase")
+                {
+                    UpgradeDatabase();
                 }
                 else if (TAppSettingsManager.GetValue("Command") == "RefreshAllCachedTables")
                 {
