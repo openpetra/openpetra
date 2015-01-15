@@ -135,27 +135,27 @@ namespace Ict.Petra.Client.CommonControls
             /// <summary>
             /// Event happened on the 'Extra' Filter Panel.
             /// </summary>
-                ecExtraFilterPanel,
+            ecExtraFilterPanel,
 
             /// <summary>
             /// Event happened on the Find Panel.
             /// </summary>
-                ecFindPanel,
+            ecFindPanel,
 
             /// <summary>
             /// Event happened on the 'Extra' Filter Panel.
             /// </summary>
-                ecFilterTab,
+            ecFilterTab,
 
             /// <summary>
             /// Event happened on the Find Panel.
             /// </summary>
-                ecFindTab,
+            ecFindTab,
 
             /// <summary>
             /// Event happened on a Control that isn't known to the UserControl
             /// </summary>
-                ecUnknownControl
+            ecUnknownControl
         }
 
         /// <summary>

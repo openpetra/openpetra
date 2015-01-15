@@ -117,7 +117,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 foreach (TControlDef child in container.Children)
                 {
-                    if (IsMniFilterFindClickAndIgnore(writer, child, child.controlName == "mniEditFind"))
+                    if (IsMniFilterFindClickAndIgnore(writer, child, (child.controlName == "mniEditFind")))
                     {
                         continue;
                     }

@@ -604,8 +604,8 @@ namespace Ict.Petra.Client.App.PetraClient
 
             return true;
         }
-#endif
 
+#endif
 
 
         /// <summary>

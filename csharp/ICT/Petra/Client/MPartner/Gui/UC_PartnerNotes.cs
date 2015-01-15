@@ -301,7 +301,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 UBalloonTip = null;
             }
         }
-#endif
 
+#endif
     }
 }

@@ -1064,7 +1064,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                     this.Cursor = Cursors.Default;
                 } // if changed
-
             } // if not handling the same change as before (prevents this method running several times for a single change!)
 
             return changeAccepted;

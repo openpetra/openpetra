@@ -323,7 +323,9 @@ namespace Ict.Petra.Shared.MFinance
                 AResult = new TVerificationResult(
                     "CommonRoutines.CheckIBAN",
                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_IBAN_WRONGLENGTH, new string[4]
-                        { COUNTRY_DATA[Index, 1], COUNTRY_DATA[Index, 0], COUNTRY_DATA[Index, 2].ToString(), IbanLength.ToString() }));
+                        {
+                            COUNTRY_DATA[Index, 1], COUNTRY_DATA[Index, 0], COUNTRY_DATA[Index, 2].ToString(), IbanLength.ToString()
+                        }));
 
                 return false;
             }

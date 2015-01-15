@@ -750,7 +750,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                     this.UseWaitCursor = false;
                 } // if changed
-
             }
 
             return changeAccepted;

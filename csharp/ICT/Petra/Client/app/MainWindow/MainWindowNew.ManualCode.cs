@@ -1030,7 +1030,6 @@ namespace Ict.Petra.Client.App.PetraClient
 
                 EnableDisableChildOption(ATaskList, "SuspenseAccounts", ledger.SuspenseAccountFlag, ATaskListNode.ParentNode);
             } // if
-
         }
 
         private void UpdateSubsystemLinkStatus(int ALedgerNr, TPnlCollapsible APnlCollapsible)

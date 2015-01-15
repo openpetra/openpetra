@@ -66,10 +66,10 @@ namespace Ict.Common.Controls
         hckUserControl,
 
         /// <summary>TaskList Control (<see cref="TTaskList" /></summary>
-            hckTaskList,
+        hckTaskList,
 
         /// <summary>Collapsible Panel Hoster Control (<see cref="TPnlCollapsibleHoster" /></summary>
-            hckCollapsiblePanelHoster
+        hckCollapsiblePanelHoster
     }
 
     #endregion

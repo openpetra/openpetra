@@ -436,27 +436,27 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>
         /// ...
         /// </summary>
-            ALLOC,
+        ALLOC,
 
         /// <summary>
         /// ...
         /// </summary>
-            GR,
+        GR,
 
         /// <summary>
         /// ...
         /// </summary>
-            INV,
+        INV,
 
         /// <summary>
         /// Reallloc
         /// </summary>
-            REALLOC,
+        REALLOC,
 
         /// <summary>
         /// Used in a revaluation only ...
         /// </summary>
-            REVAL
+        REVAL
     }
 
     /// <summary>
@@ -472,67 +472,67 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>
         /// Currency = 2
         /// </summary>
-            liaCurrency,
+        liaCurrency,
 
         /// <summary>
         /// AcctPeriods = 3
         /// </summary>
-            liaAcctPeriods,
+        liaAcctPeriods,
 
         /// <summary>
         /// DataRetain = 4
         /// </summary>
-            liaDataRetain,
+        liaDataRetain,
 
         /// <summary>
         /// PL = 5
         /// </summary>
-            liaPL,
+        liaPL,
 
         /// <summary>
         /// ILT = 6
         /// </summary>
-            liaILT,
+        liaILT,
 
         /// <summary>
         /// Forex = 7
         /// </summary>
-            liaForex,
+        liaForex,
 
         /// <summary>
         /// SysInt = 8
         /// </summary>
-            liaSysInt,
+        liaSysInt,
 
         /// <summary>
         /// SuspAcct = 9
         /// </summary>
-            liaSuspAcct,
+        liaSuspAcct,
 
         /// <summary>
         /// Cal = 10
         /// </summary>
-            liaCal,
+        liaCal,
 
         /// <summary>
         /// Budget = 11
         /// </summary>
-            liaBudget,
+        liaBudget,
 
         /// <summary>
         /// FwdPosting = 12
         /// </summary>
-            liaFwdPosting,
+        liaFwdPosting,
 
         /// <summary>
         /// CurrentPeriod = 13
         /// </summary>
-            liaCurrentPeriod,
+        liaCurrentPeriod,
 
         /// <summary>
         /// RevaluationRun = 14
         /// </summary>
-            liaRevaluationRun
+        liaRevaluationRun
     }
 
 
@@ -549,21 +549,21 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>
         /// RecurringOnly = 2
         /// </summary>
-            moptRecurringOnly,
+        moptRecurringOnly,
 
         /// <summary>
         /// EntireBatchOnly = 3
         /// </summary>
-            moptEntireBatchOnly,
+        moptEntireBatchOnly,
 
         /// <summary>
         /// NeedBankingDetailKey = 4
         /// </summary>
-            moptNeedBankingDetailKey,
+        moptNeedBankingDetailKey,
 
         /// <summary>
         /// BankingTypesAllowed = 5
         /// </summary>
-            moptBankingTypesAllowed
+        moptBankingTypesAllowed
     }
 }

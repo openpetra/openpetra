@@ -581,8 +581,8 @@ namespace Ict.Petra.Client.MPartner
         {
             FDelegatePartnerTypePropagationSelection = ADelegate;
         }
-#endif
 
+#endif
 
 
         /// <summary>

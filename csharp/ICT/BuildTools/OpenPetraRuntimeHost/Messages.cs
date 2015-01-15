@@ -29,7 +29,7 @@ namespace Ict.Tools.OpenPetraRuntimeHost
             @"<html>
     <head>
         <title>{0}</title>
-"                                                              ;
+"                                                           ;
 
         public static string VersionString = typeof(Server).Assembly.GetName().Version.ToString();
 
@@ -46,7 +46,7 @@ namespace Ict.Tools.OpenPetraRuntimeHost
                 .error {margin-bottom: 10px;}
                 .expandable { text-decoration:underline; font-weight:bold; color:navy; cursor:hand; }
         </style>
-"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ;
+"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ;
 
         static string _httpErrorFormat2 =
             @"    </head>
@@ -66,13 +66,13 @@ namespace Ict.Tools.OpenPetraRuntimeHost
 
     </body>
 </html>
-"                                                                               ;
+"                                                                         ;
 
         const string _dirListingFormat1 =
             @"<html>
     <head>
     <title>Directory Listing -- {0}</title>
-"                                                                               ;
+"                                                                            ;
 
         const string _dirListingFormat2 =
             @"    </head>
@@ -83,33 +83,33 @@ namespace Ict.Tools.OpenPetraRuntimeHost
             <hr width=100% size=1 color=silver>
 
 <PRE>
-"                                                                                                                                                                              ;
+"                                                                                                                                                                      ;
 
         static string _dirListingTail =
             @"</PRE>
             <hr width=100% size=1 color=silver>
 
-            <b>Version Information:</b>&nbsp;Cassini Web Server "                                                                          +
+            <b>Version Information:</b>&nbsp;Cassini Web Server "                                                                       +
             VersionString + @"
 
             </font>
 
     </body>
 </html>
-"                                                                               ;
+"                                                                         ;
 
         const string _dirListingParentFormat =
             @"<A href=""{0}"">[To Parent Directory]</A>
 
-"                                                           ;
+"                                                         ;
 
         const string _dirListingFileFormat =
             @"{0,38:dddd, MMMM dd, yyyy hh:mm tt} {1,12:n0} <A href=""{2}"">{3}</A>
-"                                                                                     ;
+"                                                                                    ;
 
         const string _dirListingDirFormat =
             @"{0,38:dddd, MMMM dd, yyyy hh:mm tt}        &lt;dir&gt; <A href=""{1}/"">{2}</A>
-"                                                                                               ;
+"                                                                                              ;
 
 
         public static string FormatErrorMessageBody(int statusCode, string appName)

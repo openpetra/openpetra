@@ -711,9 +711,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             out BatchCancelResult);
                         AVerificationResult.AddCollection(BatchCancelResult);
                     } // else
-
                 } // else
-
             } // try
             catch (ArgumentException Exc)
             {

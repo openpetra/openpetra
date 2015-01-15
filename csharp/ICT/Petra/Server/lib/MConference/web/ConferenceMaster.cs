@@ -124,15 +124,17 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             bool RowsToAdd = false;
 
             string[, ] OptionTypes = new string[, ]
-            { {
-                  "ADD_ACCOMM_COST_FOR_TOTAL", "Add accommodation costs to get total costs"
-              },
-              {
-                  "COST_PER_DAY", "Calculate conference cost per day"
-              },
-              {
-                  "COST_PER_NIGHT", "Calculate conference cost per night"
-              } };
+            {
+                {
+                    "ADD_ACCOMM_COST_FOR_TOTAL", "Add accommodation costs to get total costs"
+                },
+                {
+                    "COST_PER_DAY", "Calculate conference cost per day"
+                },
+                {
+                    "COST_PER_NIGHT", "Calculate conference cost per night"
+                }
+            };
 
             try
             {

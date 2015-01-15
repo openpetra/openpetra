@@ -335,7 +335,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         }
                     }
                 } // foreach (document)
-
             } // if {there's actually a document}
 
             try
@@ -1362,7 +1361,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             }
                         }
                     } // foreach DocumentPayment
-
                 } // foreach Payment
 
                 journalRow.LastTransactionNumber = TransactionCounter - 1;
@@ -1617,9 +1615,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         DocumentPaymentRow.DocType = (apDocumentRow.CreditNoteFlag ? "CREDIT" : "INVOICE");
                         ADataset.AApDocumentPayment.Rows.Add(DocumentPaymentRow);
                     } // supplierRow != null
-
                 } // indexDocument != -1
-
             }  // foreach document
 
             ADataset.AApPayment.DefaultView.RowFilter = "";

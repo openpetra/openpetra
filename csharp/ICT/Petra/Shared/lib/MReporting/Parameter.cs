@@ -974,7 +974,6 @@ namespace Ict.Petra.Shared.MReporting
                         anyFit = element;
                     }
                 } // if
-
             } // foreach
 
             if (exact == eParameterFit.eExact)

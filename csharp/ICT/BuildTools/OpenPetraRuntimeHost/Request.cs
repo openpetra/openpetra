@@ -310,7 +310,6 @@ namespace Ict.Tools.OpenPetraRuntimeHost
                     break;
                 }
             } while (_endHeadersOffset < 0); // found \r\n\r\n
-
         }
 
         void ParseRequestLine()

@@ -924,7 +924,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         }
                     }
                 } // for
-
             }  // try
             catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
             {
