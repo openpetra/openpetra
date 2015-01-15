@@ -33,105 +33,105 @@ using Ict.Common.Controls;
 
 namespace ControlTestBench
 {
-/// <summary>
-/// Description of MainForm3.
-/// </summary>
-public partial class MainForm3 : Form
-{
     /// <summary>
-    /// Constructor.
+    /// Description of MainForm3.
     /// </summary>
-    public MainForm3()
+    public partial class MainForm3 : Form
     {
-        //
-        // The InitializeComponent() call is required for Windows Forms designer support.
-        //
-        InitializeComponent();
-
-        //
-        // TODO: Add constructor code after the InitializeComponent() call.
-        //
-
-        tabControlTypes.SelectedIndex = 2;
-    }
-
-    void TestShepherd(object sender, EventArgs e)
-    {
-        XmlDocument UINavigation = LoadYAMLTestFile();
-
-        new ControlTestBench.ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
-    }
-
-    XmlDocument LoadYAMLTestFile()
-    {
-        String yamlFile = txtYaml.Text.ToString();
-
-        new TAppSettingsManager("../../csharp/ICT/Testing/exe/Controls/ControlTestBench/ControlTestBench.exe.config");
-        TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("YAMLDemodataPath") + '/' + yamlFile);
-
-        XmlDocument UINavigation = parser.ParseYML2XML();
-
-        return UINavigation;
-    }
-
-    void BtnCollapsibleTestClick(object sender, EventArgs e)
-    {
-        XmlDocument UINavigation = LoadYAMLTestFile();
-
-        TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
-
-        new CollapsibleTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
-    }
-
-    void HandlerTaskListTest(object sender, EventArgs e)
-    {
-        XmlDocument UINavigation = LoadYAMLTestFile();
-
-        TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
-
-        new TaskListTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
-    }
-
-    void BtnTestAllClick(object sender, EventArgs e)
-    {
-        XmlDocument UINavigation = LoadYAMLTestFile();
-
-        new TestAll(UINavigation.FirstChild.NextSibling.FirstChild).Show();
-    }
-
-    void BtnCollapsibleHosterTestClick(object sender, EventArgs e)
-    {
-        XmlDocument UINavigation = LoadYAMLTestFile();
-
-        TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
-
-        new CollapsiblePanelHosterTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
-    }
-
-    void BtnOpenFilterFindUCTestFormClick(object sender, EventArgs e)
-    {
-        FilterFindTest FFTest = new FilterFindTest();
-
-        FFTest.Show();
-    }
-
-    void TabControlTypesSelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (tabControlTypes.SelectedIndex == 1)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public MainForm3()
         {
-            btnOpenFilterFindUCTestForm.Focus();
+            //
+            // The InitializeComponent() call is required for Windows Forms designer support.
+            //
+            InitializeComponent();
+
+            //
+            // TODO: Add constructor code after the InitializeComponent() call.
+            //
+
+            tabControlTypes.SelectedIndex = 2;
         }
-        else if (tabControlTypes.SelectedIndex == 2)
+
+        void TestShepherd(object sender, EventArgs e)
         {
-            btnOpenRTBHyperlinksUCTestForm.Focus();
+            XmlDocument UINavigation = LoadYAMLTestFile();
+
+            new ControlTestBench.ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
+        }
+
+        XmlDocument LoadYAMLTestFile()
+        {
+            String yamlFile = txtYaml.Text.ToString();
+
+            new TAppSettingsManager("../../csharp/ICT/Testing/exe/Controls/ControlTestBench/ControlTestBench.exe.config");
+            TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("YAMLDemodataPath") + '/' + yamlFile);
+
+            XmlDocument UINavigation = parser.ParseYML2XML();
+
+            return UINavigation;
+        }
+
+        void BtnCollapsibleTestClick(object sender, EventArgs e)
+        {
+            XmlDocument UINavigation = LoadYAMLTestFile();
+
+            TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
+
+            new CollapsibleTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
+        }
+
+        void HandlerTaskListTest(object sender, EventArgs e)
+        {
+            XmlDocument UINavigation = LoadYAMLTestFile();
+
+            TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
+
+            new TaskListTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
+        }
+
+        void BtnTestAllClick(object sender, EventArgs e)
+        {
+            XmlDocument UINavigation = LoadYAMLTestFile();
+
+            new TestAll(UINavigation.FirstChild.NextSibling.FirstChild).Show();
+        }
+
+        void BtnCollapsibleHosterTestClick(object sender, EventArgs e)
+        {
+            XmlDocument UINavigation = LoadYAMLTestFile();
+
+            TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
+
+            new CollapsiblePanelHosterTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
+        }
+
+        void BtnOpenFilterFindUCTestFormClick(object sender, EventArgs e)
+        {
+            FilterFindTest FFTest = new FilterFindTest();
+
+            FFTest.Show();
+        }
+
+        void TabControlTypesSelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControlTypes.SelectedIndex == 1)
+            {
+                btnOpenFilterFindUCTestForm.Focus();
+            }
+            else if (tabControlTypes.SelectedIndex == 2)
+            {
+                btnOpenRTBHyperlinksUCTestForm.Focus();
+            }
+        }
+
+        void BtnOpenRTBHyperlinksUCTestFormClick(object sender, System.EventArgs e)
+        {
+            RTBwithHyperlinksUCTest RtbHlTest = new RTBwithHyperlinksUCTest();
+
+            RtbHlTest.Show();
         }
     }
-
-    void BtnOpenRTBHyperlinksUCTestFormClick(object sender, System.EventArgs e)
-    {
-        RTBwithHyperlinksUCTest RtbHlTest = new RTBwithHyperlinksUCTest();
-
-        RtbHlTest.Show();
-    }
-}
 }

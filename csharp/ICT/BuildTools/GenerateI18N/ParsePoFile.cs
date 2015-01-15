@@ -31,112 +31,112 @@ using Ict.Common.IO;
 
 namespace GenerateI18N
 {
-/// <summary>
-/// parse a gettext po file
-/// </summary>
-public class TPoFileParser
-{
     /// <summary>
-    /// a line in a po translation file starts with either msgid or msgstr, and can cover several lines.
-    /// the text is in quotes.
+    /// parse a gettext po file
     /// </summary>
-    public static string ParsePoLine(StreamReader sr, ref string ALine, out StringCollection AOriginalLines)
+    public class TPoFileParser
     {
-        AOriginalLines = new StringCollection();
-        AOriginalLines.Add(ALine);
-
-        string messageId = String.Empty;
-        StringHelper.GetNextCSV(ref ALine, " ");
-        string quotedMessage = StringHelper.GetNextCSV(ref ALine, " ");
-
-        if (quotedMessage.StartsWith("\""))
+        /// <summary>
+        /// a line in a po translation file starts with either msgid or msgstr, and can cover several lines.
+        /// the text is in quotes.
+        /// </summary>
+        public static string ParsePoLine(StreamReader sr, ref string ALine, out StringCollection AOriginalLines)
         {
-            quotedMessage = quotedMessage.Substring(1, quotedMessage.Length - 2);
-        }
-
-        messageId += quotedMessage;
-
-        ALine = sr.ReadLine();
-
-        while (ALine.StartsWith("\""))
-        {
+            AOriginalLines = new StringCollection();
             AOriginalLines.Add(ALine);
-            messageId += ALine.Substring(1, ALine.Length - 2);
+
+            string messageId = String.Empty;
+            StringHelper.GetNextCSV(ref ALine, " ");
+            string quotedMessage = StringHelper.GetNextCSV(ref ALine, " ");
+
+            if (quotedMessage.StartsWith("\""))
+            {
+                quotedMessage = quotedMessage.Substring(1, quotedMessage.Length - 2);
+            }
+
+            messageId += quotedMessage;
+
             ALine = sr.ReadLine();
+
+            while (ALine.StartsWith("\""))
+            {
+                AOriginalLines.Add(ALine);
+                messageId += ALine.Substring(1, ALine.Length - 2);
+                ALine = sr.ReadLine();
+            }
+
+            return messageId;
         }
 
-        return messageId;
-    }
-
-    /// <summary>
-    /// add new translations to the po file
-    /// </summary>
-    public static void WriteUpdatedPoFile(string APoFilePath, SortedList <string, string>ANewTranslations)
-    {
-        List <string>pofile = new List <string>();
-
-        if (ANewTranslations.Keys.Count > 0)
+        /// <summary>
+        /// add new translations to the po file
+        /// </summary>
+        public static void WriteUpdatedPoFile(string APoFilePath, SortedList <string, string>ANewTranslations)
         {
-            TLogging.Log("updating " + APoFilePath);
+            List <string>pofile = new List <string>();
 
-            // parse the whole po file
-            StreamReader sr = new StreamReader(APoFilePath);
-            Encoding enc = new UTF8Encoding(false);
-            StreamWriter sw = new StreamWriter(APoFilePath + ".new", false, enc);
-
-            string line = sr.ReadLine();
-
-            while (line != null)
+            if (ANewTranslations.Keys.Count > 0)
             {
-                if (line.StartsWith("msgid \""))
+                TLogging.Log("updating " + APoFilePath);
+
+                // parse the whole po file
+                StreamReader sr = new StreamReader(APoFilePath);
+                Encoding enc = new UTF8Encoding(false);
+                StreamWriter sw = new StreamWriter(APoFilePath + ".new", false, enc);
+
+                string line = sr.ReadLine();
+
+                while (line != null)
                 {
-                    StringCollection OriginalLines;
-                    string messageId = TPoFileParser.ParsePoLine(sr, ref line, out OriginalLines);
-
-                    if (pofile.Contains(messageId))
+                    if (line.StartsWith("msgid \""))
                     {
-                        // ignore this instance
-                        TPoFileParser.ParsePoLine(sr, ref line, out OriginalLines);
+                        StringCollection OriginalLines;
+                        string messageId = TPoFileParser.ParsePoLine(sr, ref line, out OriginalLines);
 
-                        TLogging.Log("duplicate messageid: " + messageId);
+                        if (pofile.Contains(messageId))
+                        {
+                            // ignore this instance
+                            TPoFileParser.ParsePoLine(sr, ref line, out OriginalLines);
+
+                            TLogging.Log("duplicate messageid: " + messageId);
+                        }
+                        else
+                        {
+                            pofile.Add(messageId);
+                        }
+
+                        foreach (string s in OriginalLines)
+                        {
+                            sw.WriteLine(s);
+                        }
+
+                        if (ANewTranslations.ContainsKey(messageId))
+                        {
+                            // skip msgstr line
+                            TPoFileParser.ParsePoLine(sr, ref line, out OriginalLines);
+
+                            sw.WriteLine(String.Format("msgstr \"{0}\"", ANewTranslations[messageId]));
+
+                            ANewTranslations.Remove(messageId);
+                        }
                     }
                     else
                     {
-                        pofile.Add(messageId);
-                    }
-
-                    foreach (string s in OriginalLines)
-                    {
-                        sw.WriteLine(s);
-                    }
-
-                    if (ANewTranslations.ContainsKey(messageId))
-                    {
-                        // skip msgstr line
-                        TPoFileParser.ParsePoLine(sr, ref line, out OriginalLines);
-
-                        sw.WriteLine(String.Format("msgstr \"{0}\"", ANewTranslations[messageId]));
-
-                        ANewTranslations.Remove(messageId);
+                        sw.WriteLine(line);
+                        line = sr.ReadLine();
                     }
                 }
-                else
+
+                sr.Close();
+                sw.Close();
+
+                TTextFile.UpdateFile(APoFilePath);
+
+                foreach (string key in ANewTranslations.Keys)
                 {
-                    sw.WriteLine(line);
-                    line = sr.ReadLine();
+                    TLogging.Log("Warning: cannot find in po file: " + key);
                 }
-            }
-
-            sr.Close();
-            sw.Close();
-
-            TTextFile.UpdateFile(APoFilePath);
-
-            foreach (string key in ANewTranslations.Keys)
-            {
-                TLogging.Log("Warning: cannot find in po file: " + key);
             }
         }
     }
-}
 }

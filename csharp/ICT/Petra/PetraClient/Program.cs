@@ -29,30 +29,30 @@ using Ict.Petra.Client.App.PetraClient;
 
 namespace PetraClient
 {
-/// <summary>
-/// Class with program entry point.
-/// </summary>
-internal sealed class Program
-{
     /// <summary>
-    /// Program entry point.
+    /// Class with program entry point.
     /// </summary>
-    [STAThreadAttribute]
-    private static void Main(string[] args)
+    internal sealed class Program
     {
-        TUnhandledThreadExceptionHandler UnhandledThreadExceptionHandler;
+        /// <summary>
+        /// Program entry point.
+        /// </summary>
+        [STAThreadAttribute]
+        private static void Main(string[] args)
+        {
+            TUnhandledThreadExceptionHandler UnhandledThreadExceptionHandler;
 
-        // Set up Handlers for 'UnhandledException'
-        // Note: BOTH handlers are needed for a WinForms Application!!!
-        AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(ExceptionHandling.UnhandledExceptionHandler);
-        UnhandledThreadExceptionHandler = new TUnhandledThreadExceptionHandler();
+            // Set up Handlers for 'UnhandledException'
+            // Note: BOTH handlers are needed for a WinForms Application!!!
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(ExceptionHandling.UnhandledExceptionHandler);
+            UnhandledThreadExceptionHandler = new TUnhandledThreadExceptionHandler();
 
-        Application.ThreadException += new ThreadExceptionEventHandler(UnhandledThreadExceptionHandler.OnThreadException);
+            Application.ThreadException += new ThreadExceptionEventHandler(UnhandledThreadExceptionHandler.OnThreadException);
 
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
 
-        TPetraClientMain.StartUp();
+            TPetraClientMain.StartUp();
+        }
     }
-}
 }

@@ -15,25 +15,25 @@ using Ict.Common.Controls;
 
 namespace TestCollapsible
 {
-/// <summary>
-/// Description of MainForm.
-/// </summary>
-public partial class MainForm : Form
-{
     /// <summary>
-    /// constructor
+    /// Description of MainForm.
     /// </summary>
-    public MainForm()
+    public partial class MainForm : Form
     {
-        //
-        // The InitializeComponent() call is required for Windows Forms designer support.
-        //
-        InitializeComponent();
-    }
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public MainForm()
+        {
+            //
+            // The InitializeComponent() call is required for Windows Forms designer support.
+            //
+            InitializeComponent();
+        }
 
-    void Button1Click(object sender, EventArgs e)
-    {
-        // TODO tPnlCollapsible1.ToggleDirection();
+        void Button1Click(object sender, EventArgs e)
+        {
+            // TODO tPnlCollapsible1.ToggleDirection();
+        }
     }
-}
 }

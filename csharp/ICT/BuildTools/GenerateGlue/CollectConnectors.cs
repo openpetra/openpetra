@@ -36,202 +36,203 @@ using Ict.Tools.CodeGeneration;
 
 namespace GenerateSharedCode
 {
-/// <summary>
-/// parse the code and collect all connector classes that we want to have interfaces for
-/// </summary>
-public class TCollectConnectorInterfaces
-{
     /// <summary>
-    /// this will return a SortedList, the key is the interface name,
-    /// and the value is the type definition of the class that implements that interface;
-    /// connectors are identified namespace ending with Connectors
+    /// parse the code and collect all connector classes that we want to have interfaces for
     /// </summary>
-    private static SortedList <string, TypeDeclaration>GetConnectors(List <CSParser>ACSFiles)
+    public class TCollectConnectorInterfaces
     {
-        SortedList <string, TypeDeclaration>Result = new SortedList <string, TypeDeclaration>();
-
-        foreach (CSParser CSFile in ACSFiles)
+        /// <summary>
+        /// this will return a SortedList, the key is the interface name,
+        /// and the value is the type definition of the class that implements that interface;
+        /// connectors are identified namespace ending with Connectors
+        /// </summary>
+        private static SortedList <string, TypeDeclaration>GetConnectors(List <CSParser>ACSFiles)
         {
-            foreach (TypeDeclaration t in CSFile.GetClasses())
+            SortedList <string, TypeDeclaration>Result = new SortedList <string, TypeDeclaration>();
+
+            foreach (CSParser CSFile in ACSFiles)
             {
-                if (t.UserData.ToString().EndsWith("Connectors"))
+                foreach (TypeDeclaration t in CSFile.GetClasses())
                 {
-                    string Interface = CSParser.GetImplementedInterface(t);
-
-                    if (Interface.Length > 0)
+                    if (t.UserData.ToString().EndsWith("Connectors"))
                     {
-                        string ServerNamespace = t.UserData.ToString();
-                        string ServerNamespaceWithClassName = ServerNamespace + "." + t.Name;
-                        string key = ServerNamespaceWithClassName + ":" + Interface;
+                        string Interface = CSParser.GetImplementedInterface(t);
 
-                        if (Result.ContainsKey(ServerNamespaceWithClassName))
+                        if (Interface.Length > 0)
                         {
-                            // there is already the other part of the partial class
+                            string ServerNamespace = t.UserData.ToString();
+                            string ServerNamespaceWithClassName = ServerNamespace + "." + t.Name;
+                            string key = ServerNamespaceWithClassName + ":" + Interface;
 
-                            TypeDeclaration partialType = Result[ServerNamespaceWithClassName];
-
-                            Result.Remove(ServerNamespaceWithClassName);
-
-                            foreach (INode child in partialType.Children)
+                            if (Result.ContainsKey(ServerNamespaceWithClassName))
                             {
-                                t.AddChild(child);
-                            }
-                        }
+                                // there is already the other part of the partial class
 
-                        Result.Add(key, t);
+                                TypeDeclaration partialType = Result[ServerNamespaceWithClassName];
 
-                        if (TLogging.DebugLevel > 1)
-                        {
-                            // TLogging.Log("adding new Connector " + key);
-                        }
-                    }
-                    // either a webconnector, or a partial class
-                    else
-                    {
-                        // web connectors don't derive from an interface, because the methods are static
+                                Result.Remove(ServerNamespaceWithClassName);
 
-                        string ServerNamespace = t.UserData.ToString();
-                        string key = ServerNamespace + "." + t.Name;
-
-                        if (Result.ContainsKey(key))
-                        {
-                            // partial class
-                            foreach (INode child in t.Children)
-                            {
-                                Result[key].AddChild(child);
-                            }
-                        }
-                        else if (t.Name.EndsWith("UIConnector"))
-                        {
-                            // this could be the partial class of a UIConnector
-                            // try to find a key that starts with this type
-                            bool foundType = false;
-
-                            foreach (string k in Result.Keys)
-                            {
-                                if (k.StartsWith(key + ":"))
+                                foreach (INode child in partialType.Children)
                                 {
-                                    foundType = true;
-
-                                    foreach (INode child in t.Children)
-                                    {
-                                        Result[k].AddChild(child);
-                                    }
+                                    t.AddChild(child);
                                 }
                             }
 
-                            if (!foundType)
+                            Result.Add(key, t);
+
+                            if (TLogging.DebugLevel > 1)
+                            {
+                                // TLogging.Log("adding new Connector " + key);
+                            }
+                        }
+                        // either a webconnector, or a partial class
+                        else
+                        {
+                            // web connectors don't derive from an interface, because the methods are static
+
+                            string ServerNamespace = t.UserData.ToString();
+                            string key = ServerNamespace + "." + t.Name;
+
+                            if (Result.ContainsKey(key))
+                            {
+                                // partial class
+                                foreach (INode child in t.Children)
+                                {
+                                    Result[key].AddChild(child);
+                                }
+                            }
+                            else if (t.Name.EndsWith("UIConnector"))
+                            {
+                                // this could be the partial class of a UIConnector
+                                // try to find a key that starts with this type
+                                bool foundType = false;
+
+                                foreach (string k in Result.Keys)
+                                {
+                                    if (k.StartsWith(key + ":"))
+                                    {
+                                        foundType = true;
+
+                                        foreach (INode child in t.Children)
+                                        {
+                                            Result[k].AddChild(child);
+                                        }
+                                    }
+                                }
+
+                                if (!foundType)
+                                {
+                                    Result.Add(key, t);
+                                }
+                            }
+                            else
                             {
                                 Result.Add(key, t);
                             }
-                        }
-                        else
-                        {
-                            Result.Add(key, t);
-                        }
 
-                        if (TLogging.DebugLevel > 1)
-                        {
-                            // TLogging.Log("adding new Connector " + key);
+                            if (TLogging.DebugLevel > 1)
+                            {
+                                // TLogging.Log("adding new Connector " + key);
+                            }
                         }
                     }
                 }
             }
+
+            return Result;
         }
 
-        return Result;
-    }
+        /// <summary>
+        /// get all connectors that are using interfaces from a given namespace
+        /// </summary>
+        public static List <TypeDeclaration>FindTypesInNamespace(SortedList <string, TypeDeclaration>AConnectors, string ANamespace)
+        {
+            ANamespace = ANamespace.Replace("Ict.Petra.Shared.", "Ict.Petra.Server.");
 
-    /// <summary>
-    /// get all connectors that are using interfaces from a given namespace
-    /// </summary>
-    public static List <TypeDeclaration>FindTypesInNamespace(SortedList <string, TypeDeclaration>AConnectors, string ANamespace)
-    {
-        ANamespace = ANamespace.Replace("Ict.Petra.Shared.", "Ict.Petra.Server.");
-
-        List <TypeDeclaration>Result = new List <TypeDeclaration>();
+            List <TypeDeclaration>Result = new List <TypeDeclaration>();
 
 //        TLogging.Log("implementing " + ANamespace);
-        foreach (string key in AConnectors.Keys)
-        {
-            if (key.StartsWith(ANamespace) && (key.LastIndexOf(".") == ANamespace.Length))
+            foreach (string key in AConnectors.Keys)
             {
-//                TLogging.Log("   " + AConnectors[key]);
-                Result.Add(AConnectors[key]);
-            }
-        }
-
-        if (Result.Count == 0)
-        {
-//            TLogging.Log("not found for " + ANamespace);
-        }
-
-        return Result;
-    }
-
-    /// <summary>
-    /// do we want this method to be available to the client?
-    /// </summary>
-    public static bool IgnoreMethod(List <AttributeSection>AAttributes, Modifiers AModifier)
-    {
-        if ((AModifier & Modifiers.Public) == 0)
-        {
-            return true;
-        }
-
-        foreach (AttributeSection attrSection in AAttributes)
-        {
-            foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
-            {
-                if (attr.Name == "NoRemoting")
+                if (key.StartsWith(ANamespace) && (key.LastIndexOf(".") == ANamespace.Length))
                 {
-                    return true;
+//                TLogging.Log("   " + AConnectors[key]);
+                    Result.Add(AConnectors[key]);
                 }
             }
+
+            if (Result.Count == 0)
+            {
+//            TLogging.Log("not found for " + ANamespace);
+            }
+
+            return Result;
         }
 
-        return false;
-    }
-
-    private static SortedList <string,
-                               SortedList <string, TypeDeclaration>>ConnectorsByModule = new SortedList <string, SortedList <string, TypeDeclaration>>();
-
-    /// <summary>
-    /// main function to collect the connectors from the code.
-    /// </summary>
-    public static SortedList <string, TypeDeclaration>GetConnectors(string AOutputPath, string AModuleName)
-    {
-        if (!ConnectorsByModule.ContainsKey(AModuleName))
+        /// <summary>
+        /// do we want this method to be available to the client?
+        /// </summary>
+        public static bool IgnoreMethod(List <AttributeSection>AAttributes, Modifiers AModifier)
         {
-            // get all csharp files that might hold implementations of remotable classes
-            List <CSParser>CSFiles = null;
-
-            if (AOutputPath.Contains("ICT/Petra/Plugins"))
+            if ((AModifier & Modifiers.Public) == 0)
             {
-                // search for connectors in the directory of the plugin
-                CSFiles = CSParser.GetCSFilesForDirectory(Path.GetFullPath(AOutputPath + "/../Server"),
-                    SearchOption.AllDirectories);
-            }
-            else if (Directory.Exists(CSParser.ICTPath + "/Petra/Server/lib/M" + AModuleName))
-            {
-                // any class in the module can contain a connector
-                CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/lib/M" + AModuleName,
-                    SearchOption.AllDirectories);
-            }
-            else if (AModuleName == "ServerAdmin")
-            {
-                CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/app/Core",
-                    SearchOption.AllDirectories);
-            }
-            else
-            {
-                CSFiles = new List <CSParser>();
+                return true;
             }
 
-            ConnectorsByModule.Add(AModuleName, GetConnectors(CSFiles));
+            foreach (AttributeSection attrSection in AAttributes)
+            {
+                foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
+                {
+                    if (attr.Name == "NoRemoting")
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
-        return ConnectorsByModule[AModuleName];
+        private static SortedList <string,
+                                   SortedList <string,
+                                               TypeDeclaration>>ConnectorsByModule = new SortedList <string, SortedList <string, TypeDeclaration>>();
+
+        /// <summary>
+        /// main function to collect the connectors from the code.
+        /// </summary>
+        public static SortedList <string, TypeDeclaration>GetConnectors(string AOutputPath, string AModuleName)
+        {
+            if (!ConnectorsByModule.ContainsKey(AModuleName))
+            {
+                // get all csharp files that might hold implementations of remotable classes
+                List <CSParser>CSFiles = null;
+
+                if (AOutputPath.Contains("ICT/Petra/Plugins"))
+                {
+                    // search for connectors in the directory of the plugin
+                    CSFiles = CSParser.GetCSFilesForDirectory(Path.GetFullPath(AOutputPath + "/../Server"),
+                        SearchOption.AllDirectories);
+                }
+                else if (Directory.Exists(CSParser.ICTPath + "/Petra/Server/lib/M" + AModuleName))
+                {
+                    // any class in the module can contain a connector
+                    CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/lib/M" + AModuleName,
+                        SearchOption.AllDirectories);
+                }
+                else if (AModuleName == "ServerAdmin")
+                {
+                    CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/app/Core",
+                        SearchOption.AllDirectories);
+                }
+                else
+                {
+                    CSFiles = new List <CSParser>();
+                }
+
+                ConnectorsByModule.Add(AModuleName, GetConnectors(CSFiles));
+            }
+
+            return ConnectorsByModule[AModuleName];
+        }
     }
-}
 }

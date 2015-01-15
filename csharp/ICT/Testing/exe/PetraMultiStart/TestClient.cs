@@ -30,133 +30,133 @@ using Ict.Common.IO;
 
 namespace PetraMultiStart
 {
-/// <summary>
-/// Description of TestClient.
-/// </summary>
-public class TestClient
-{
-    private XmlNode curGroup;
-    private Int32 Id;
-    private bool SingleClient;
-
     /// <summary>
-    /// Constructor.
+    /// Description of TestClient.
     /// </summary>
-    /// <param name="ACurGroup"></param>
-    /// <param name="AId"></param>
-    /// <param name="ASingleClient"></param>
-    public TestClient(XmlNode ACurGroup, Int32 AId, bool ASingleClient)
+    public class TestClient
     {
-        curGroup = ACurGroup;
-        Id = AId;
-        SingleClient = ASingleClient;
-    }
+        private XmlNode curGroup;
+        private Int32 Id;
+        private bool SingleClient;
 
-    /// <summary>
-    /// Drives a Test Client.
-    /// </summary>
-    public void Run()
-    {
-        XmlNode curEvent;
-        XmlNode oldEvent;
-        String action;
-        Int64 breakTime;
-        Int32 NetClientPort;
-        Int32 APClientPort;
-        String parameters;
-
-        System.Diagnostics.Process UProgressProcess;
-        DateTime TimeFinished;
-
-        curEvent = curGroup.FirstChild;
-        breakTime = 0;
-
-        if ((curEvent != null) && (curEvent.Name.ToLower() == "event"))
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="ACurGroup"></param>
+        /// <param name="AId"></param>
+        /// <param name="ASingleClient"></param>
+        public TestClient(XmlNode ACurGroup, Int32 AId, bool ASingleClient)
         {
-            breakTime = main.RandomBreak(curEvent);
+            curGroup = ACurGroup;
+            Id = AId;
+            SingleClient = ASingleClient;
         }
 
-        while ((curEvent != null) && (curEvent.Name.ToLower() == "event") && main.ServerStillRunning())
+        /// <summary>
+        /// Drives a Test Client.
+        /// </summary>
+        public void Run()
         {
-            if (breakTime > 0)
-            {
-                System.Console.WriteLine("{0}: Client {1} is sleeping for about " + Convert.ToString(
-                        breakTime / 1000) + " seconds ...", DateTime.Now.ToLongTimeString(), Id);
-                Thread.Sleep((int)breakTime);
-            }
+            XmlNode curEvent;
+            XmlNode oldEvent;
+            String action;
+            Int64 breakTime;
+            Int32 NetClientPort;
+            Int32 APClientPort;
+            String parameters;
 
-            // System.Console.WriteLine('continue client ' + Id.Tostring() + ' at time ' + DateTime.Now.ToString());
-            // we need the breaktime already, to tell the client how long it should run
-            oldEvent = curEvent;
-            curEvent = curEvent.NextSibling;
+            System.Diagnostics.Process UProgressProcess;
+            DateTime TimeFinished;
 
-            if (curEvent == null)
-            {
-                // start again
-                curEvent = curGroup.FirstChild;
+            curEvent = curGroup.FirstChild;
+            breakTime = 0;
 
-                if (TXMLParser.GetBoolAttribute(curGroup, "loop", true) == false)
-                {
-                    curEvent = null;
-                }
-            }
-
-            if (curEvent != null)
+            if ((curEvent != null) && (curEvent.Name.ToLower() == "event"))
             {
                 breakTime = main.RandomBreak(curEvent);
             }
 
-            action = TXMLParser.GetAttribute(oldEvent, "action");
-
-            if (action == "connect")
+            while ((curEvent != null) && (curEvent.Name.ToLower() == "event") && main.ServerStillRunning())
             {
-                System.Console.WriteLine("{0}: connecting client {1}", DateTime.Now.ToLongTimeString(), Id);
-
-                NetClientPort = 2080 + Id * 2;
-                APClientPort = 2081 + Id * 2;
-
-                TimeFinished = DateTime.Now.AddMilliseconds(breakTime);
-
-                parameters = "-C:" + Global.Configfile + ' ' + "-NetClientPort:" + NetClientPort.ToString() + ' ' + "-APClientPort:" +
-                             APClientPort.ToString() + ' ' + "-AutoLogin:TESTUSER" + Id.ToString() + ' ' + "-AutoLoginPasswd:test" + ' ' +
-                             "-DisconnectTime:" + new TVariant(TimeFinished).EncodeToString() + ' ' + "-RunAutoTests:true" + ' ' +
-                             "-AutoTestConfigFile:" +
-                             TXMLParser.GetAttribute(oldEvent, "testing") + ' ' +
-                             "-AutoTestParameters:" +
-                             TXMLParser.GetAttribute(oldEvent, "params") + ' ' +
-                             "-SingleClient:" +
-                             SingleClient.ToString();
-
-                // add fixed disconnection datetime; or create a testing file?
-                // add testing file
-                try
+                if (breakTime > 0)
                 {
-                    System.Console.WriteLine("{0}:   starting {1}", DateTime.Now.ToLongTimeString(), parameters);
+                    System.Console.WriteLine("{0}: Client {1} is sleeping for about " + Convert.ToString(
+                            breakTime / 1000) + " seconds ...", DateTime.Now.ToLongTimeString(), Id);
+                    Thread.Sleep((int)breakTime);
+                }
 
-                    UProgressProcess = new System.Diagnostics.Process();
-                    UProgressProcess.EnableRaisingEvents = false;
-                    UProgressProcess.StartInfo.FileName = Global.Filename;
-                    UProgressProcess.StartInfo.Arguments = parameters;
-                    UProgressProcess.EnableRaisingEvents = true;
+                // System.Console.WriteLine('continue client ' + Id.Tostring() + ' at time ' + DateTime.Now.ToString());
+                // we need the breaktime already, to tell the client how long it should run
+                oldEvent = curEvent;
+                curEvent = curEvent.NextSibling;
 
-                    if ((!UProgressProcess.Start()))
+                if (curEvent == null)
+                {
+                    // start again
+                    curEvent = curGroup.FirstChild;
+
+                    if (TXMLParser.GetBoolAttribute(curGroup, "loop", true) == false)
                     {
+                        curEvent = null;
+                    }
+                }
+
+                if (curEvent != null)
+                {
+                    breakTime = main.RandomBreak(curEvent);
+                }
+
+                action = TXMLParser.GetAttribute(oldEvent, "action");
+
+                if (action == "connect")
+                {
+                    System.Console.WriteLine("{0}: connecting client {1}", DateTime.Now.ToLongTimeString(), Id);
+
+                    NetClientPort = 2080 + Id * 2;
+                    APClientPort = 2081 + Id * 2;
+
+                    TimeFinished = DateTime.Now.AddMilliseconds(breakTime);
+
+                    parameters = "-C:" + Global.Configfile + ' ' + "-NetClientPort:" + NetClientPort.ToString() + ' ' + "-APClientPort:" +
+                                 APClientPort.ToString() + ' ' + "-AutoLogin:TESTUSER" + Id.ToString() + ' ' + "-AutoLoginPasswd:test" + ' ' +
+                                 "-DisconnectTime:" + new TVariant(TimeFinished).EncodeToString() + ' ' + "-RunAutoTests:true" + ' ' +
+                                 "-AutoTestConfigFile:" +
+                                 TXMLParser.GetAttribute(oldEvent, "testing") + ' ' +
+                                 "-AutoTestParameters:" +
+                                 TXMLParser.GetAttribute(oldEvent, "params") + ' ' +
+                                 "-SingleClient:" +
+                                 SingleClient.ToString();
+
+                    // add fixed disconnection datetime; or create a testing file?
+                    // add testing file
+                    try
+                    {
+                        System.Console.WriteLine("{0}:   starting {1}", DateTime.Now.ToLongTimeString(), parameters);
+
+                        UProgressProcess = new System.Diagnostics.Process();
+                        UProgressProcess.EnableRaisingEvents = false;
+                        UProgressProcess.StartInfo.FileName = Global.Filename;
+                        UProgressProcess.StartInfo.Arguments = parameters;
+                        UProgressProcess.EnableRaisingEvents = true;
+
+                        if ((!UProgressProcess.Start()))
+                        {
+                            return;
+                        }
+                    }
+                    catch (Exception Exp)
+                    {
+                        System.Console.WriteLine("{0}: Trouble in TestClient.Run", DateTime.Now.ToLongTimeString());
+                        System.Console.WriteLine("{0}: {1}", DateTime.Now.ToLongTimeString(), Exp.Message);
+
                         return;
                     }
                 }
-                catch (Exception Exp)
+                else if (action == "disconnect")
                 {
-                    System.Console.WriteLine("{0}: Trouble in TestClient.Run", DateTime.Now.ToLongTimeString());
-                    System.Console.WriteLine("{0}: {1}", DateTime.Now.ToLongTimeString(), Exp.Message);
-
-                    return;
+                    System.Console.WriteLine("{0}: disconnecting client {1}", DateTime.Now.ToLongTimeString(), Id);
                 }
-            }
-            else if (action == "disconnect")
-            {
-                System.Console.WriteLine("{0}: disconnecting client {1}", DateTime.Now.ToLongTimeString(), Id);
             }
         }
     }
-}
 }

@@ -32,777 +32,780 @@ using Ict.Petra.ServerAdmin.App.Core.RemoteObjects;
 
 namespace PetraServerAdminConsole
 {
-/// <summary>
-///  Petra Server Admin Command Line Application
-/// </summary>
-public class TAdminConsole
-{
     /// <summary>
-    /// the command prompt
+    ///  Petra Server Admin Command Line Application
     /// </summary>
-    public const String ServerAdminPrompt = "SERVERADMIN> ";
-
-    private static TMServerAdminNamespace.TServerAdminWebConnectorsNamespace TRemote;
-
-    /// <summary>
-    /// todoComment
-    /// </summary>
-    /// <param name="remexp"></param>
-    public static void HandleConnectionError(Exception remexp)
+    public class TAdminConsole
     {
-        String ServerAdminCommand;
+        /// <summary>
+        /// the command prompt
+        /// </summary>
+        public const String ServerAdminPrompt = "SERVERADMIN> ";
 
-        TLogging.Log("PETRAServer is not running or cannot be reached!");
-        Console.WriteLine();
-        Console.WriteLine("Press ENTER to end PETRAServerADMIN, or 'D' for details...");
-        Console.Write(ServerAdminPrompt);
-        ServerAdminCommand = (Console.ReadLine().ToLower());
+        private static TMServerAdminNamespace.TServerAdminWebConnectorsNamespace TRemote;
 
-        if (ServerAdminCommand == "d")
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="remexp"></param>
+        public static void HandleConnectionError(Exception remexp)
         {
-            Console.WriteLine(remexp);
-        }
-    }
+            String ServerAdminCommand;
 
-    /// <summary>
-    /// shut down the server (gets all connected clients to disconnect)
-    /// </summary>
-    /// <param name="AWithUserInteraction"></param>
-    /// <returns>true if shutdown was completed</returns>
-    public static bool ShutDownControlled(bool AWithUserInteraction)
-    {
-        bool ack = false;
+            TLogging.Log("PETRAServer is not running or cannot be reached!");
+            Console.WriteLine();
+            Console.WriteLine("Press ENTER to end PETRAServerADMIN, or 'D' for details...");
+            Console.Write(ServerAdminPrompt);
+            ServerAdminCommand = (Console.ReadLine().ToLower());
 
-        if (AWithUserInteraction == true)
-        {
-            Console.WriteLine(Environment.NewLine + "-> CONTROLLED SHUTDOWN  (gets all connected clients to disconnect) <-");
-            Console.Write("     Enter YES to perform shutdown (anything else to leave command): ");
-
-            if (Console.ReadLine() == "YES")
+            if (ServerAdminCommand == "d")
             {
-                Console.WriteLine();
-                ack = true;
+                Console.WriteLine(remexp);
             }
         }
-        else
-        {
-            ack = true;
-        }
 
-        if (ack == true)
+        /// <summary>
+        /// shut down the server (gets all connected clients to disconnect)
+        /// </summary>
+        /// <param name="AWithUserInteraction"></param>
+        /// <returns>true if shutdown was completed</returns>
+        public static bool ShutDownControlled(bool AWithUserInteraction)
         {
-            TLogging.Log("CONTROLLED SHUTDOWN PROCEDURE INITIATED...");
+            bool ack = false;
 
-            if (!TRemote.StopServerControlled(true))
+            if (AWithUserInteraction == true)
+            {
+                Console.WriteLine(Environment.NewLine + "-> CONTROLLED SHUTDOWN  (gets all connected clients to disconnect) <-");
+                Console.Write("     Enter YES to perform shutdown (anything else to leave command): ");
+
+                if (Console.ReadLine() == "YES")
+                {
+                    Console.WriteLine();
+                    ack = true;
+                }
+            }
+            else
+            {
+                ack = true;
+            }
+
+            if (ack == true)
+            {
+                TLogging.Log("CONTROLLED SHUTDOWN PROCEDURE INITIATED...");
+
+                if (!TRemote.StopServerControlled(true))
+                {
+                    Console.WriteLine("     Shutdown cancelled!");
+                    Console.Write(ServerAdminPrompt);
+                    return false;
+                }
+
+                if (AWithUserInteraction == true)
+                {
+                    Console.WriteLine();
+                    TLogging.Log("SERVER STOPPED!");
+                    Console.WriteLine();
+                    Console.Write("Press ENTER to end PETRAServerADMIN...");
+                    Console.ReadLine();
+                    return true;
+                }
+            }
+            else
             {
                 Console.WriteLine("     Shutdown cancelled!");
                 Console.Write(ServerAdminPrompt);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// shut down the server
+        /// </summary>
+        /// <param name="AWithUserInteraction"></param>
+        /// <returns>true if shutdown was completed</returns>
+        public static bool ShutDown(bool AWithUserInteraction)
+        {
+            bool ReturnValue;
+            bool ack;
+
+            ack = false;
+
+            if (AWithUserInteraction == true)
+            {
+                Console.WriteLine(Environment.NewLine + "-> UNCONDITIONAL SHUTDOWN   (force disconnection of all Clients) <-");
+                Console.Write("     Enter YES to perform shutdown (anything else to leave command): ");
+
+                if (Console.ReadLine() == "YES")
+                {
+                    Console.WriteLine();
+                    ack = true;
+                }
+            }
+            else
+            {
+                ack = true;
+            }
+
+            if (ack == true)
+            {
+                TLogging.Log("SHUTDOWN PROCEDURE INITIATED...");
+                TRemote.StopServer();
+
+                if (AWithUserInteraction == true)
+                {
+                    Console.WriteLine();
+                    TLogging.Log("SERVER STOPPED!");
+                    Console.WriteLine();
+                    Console.Write("Press ENTER to end PETRAServerADMIN...");
+                    Console.ReadLine();
+                }
+
+                ReturnValue = true;
+            }
+            else
+            {
+                Console.WriteLine("     Shutdown cancelled!");
+                Console.Write(ServerAdminPrompt);
+                ReturnValue = false;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// disconnect a client
+        /// </summary>
+        /// <param name="ConsoleInput"></param>
+        public static void DisconnectClient(String ConsoleInput)
+        {
+            Int16 ClientID;
+            String CantDisconnectReason;
+
+            try
+            {
+                ClientID = System.Int16.Parse(ConsoleInput);
+
+                if (TRemote.DisconnectClient(ClientID, out CantDisconnectReason))
+                {
+                    TLogging.Log("Client #" + ClientID.ToString() + ": disconnection will take place shortly.");
+                }
+                else
+                {
+                    TLogging.Log("Client #" + ClientID.ToString() + " could not be disconnected on admin request.  Reason: " + CantDisconnectReason);
+                }
+            }
+            catch (System.FormatException)
+            {
+                Console.WriteLine("  Entered ClientID is not numeric!");
+            }
+            catch (Exception exp)
+            {
+                TLogging.Log(
+                    Environment.NewLine + "Exception occured while trying to disconnect a Client on admin request:" + Environment.NewLine +
+                    exp.ToString());
+            }
+        }
+
+        private static void ExportDatabase()
+        {
+            Console.Write("     Please enter filename of yml.gz file: ");
+            string backupFile = Path.GetFullPath(Console.ReadLine());
+
+            if (!backupFile.EndsWith(".yml.gz"))
+            {
+                Console.WriteLine("filename has to end with .yml.gz. Please try again");
+                return;
+            }
+
+            string YmlGZData = TRemote.BackupDatabaseToYmlGZ();
+
+            FileStream fs = new FileStream(backupFile, FileMode.Create);
+            byte[] buffer = Convert.FromBase64String(YmlGZData);
+            fs.Write(buffer, 0, buffer.Length);
+            fs.Close();
+            TLogging.Log("backup has been written to " + backupFile);
+        }
+
+        private static bool RestoreDatabase(string ARestoreFile)
+        {
+            string restoreFile = Path.GetFullPath(ARestoreFile);
+
+            if (!File.Exists(restoreFile) || !restoreFile.EndsWith(".yml.gz"))
+            {
+                Console.WriteLine("invalid filename, please try again");
                 return false;
             }
 
-            if (AWithUserInteraction == true)
+            string YmlGZData = string.Empty;
+
+            try
             {
-                Console.WriteLine();
-                TLogging.Log("SERVER STOPPED!");
-                Console.WriteLine();
-                Console.Write("Press ENTER to end PETRAServerADMIN...");
-                Console.ReadLine();
+                FileStream fs = new FileStream(restoreFile, FileMode.Open, FileAccess.Read);
+                byte[] buffer = new byte[fs.Length];
+                fs.Read(buffer, 0, buffer.Length);
+                fs.Close();
+                YmlGZData = Convert.ToBase64String(buffer);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("cannot open file " + restoreFile);
+                TLogging.Log(e.ToString());
+                return false;
+            }
+
+            if (TRemote.RestoreDatabaseFromYmlGZ(YmlGZData))
+            {
+                TLogging.Log("backup has been restored from " + restoreFile);
                 return true;
             }
+            else
+            {
+                TLogging.Log("there have been problems with the restore");
+                return false;
+            }
         }
-        else
+
+        private static void RestoreDatabase()
         {
-            Console.WriteLine("     Shutdown cancelled!");
-            Console.Write(ServerAdminPrompt);
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// shut down the server
-    /// </summary>
-    /// <param name="AWithUserInteraction"></param>
-    /// <returns>true if shutdown was completed</returns>
-    public static bool ShutDown(bool AWithUserInteraction)
-    {
-        bool ReturnValue;
-        bool ack;
-
-        ack = false;
-
-        if (AWithUserInteraction == true)
-        {
-            Console.WriteLine(Environment.NewLine + "-> UNCONDITIONAL SHUTDOWN   (force disconnection of all Clients) <-");
-            Console.Write("     Enter YES to perform shutdown (anything else to leave command): ");
+            Console.WriteLine(Environment.NewLine + "-> DELETING YOUR DATABASE <-");
+            Console.Write("     Enter YES to import the new database (anything else to leave command): ");
 
             if (Console.ReadLine() == "YES")
             {
-                Console.WriteLine();
-                ack = true;
+                Console.Write("     Please enter filename of yml.gz file: ");
+                string restoreFile = Console.ReadLine();
+
+                RestoreDatabase(restoreFile);
             }
-        }
-        else
-        {
-            ack = true;
-        }
-
-        if (ack == true)
-        {
-            TLogging.Log("SHUTDOWN PROCEDURE INITIATED...");
-            TRemote.StopServer();
-
-            if (AWithUserInteraction == true)
+            else
             {
-                Console.WriteLine();
-                TLogging.Log("SERVER STOPPED!");
-                Console.WriteLine();
-                Console.Write("Press ENTER to end PETRAServerADMIN...");
-                Console.ReadLine();
+                Console.WriteLine("     Reset of database cancelled!");
             }
-
-            ReturnValue = true;
         }
-        else
+
+        private static void RefreshAllCachedTables()
         {
-            Console.WriteLine("     Shutdown cancelled!");
+            TRemote.RefreshAllCachedTables();
+        }
+
+        private static void AddUser(string AUserId)
+        {
+            TRemote.AddUser(AUserId);
+        }
+
+        /// <summary>
+        /// shows the menu and processes the selections of the administrator
+        /// </summary>
+        public static void Menu()
+        {
+            bool ReadLineLoopEnd;
+            bool EntryParsedOK;
+            String ServerAdminCommand;
+            String ConsoleInput;
+            String ClientTaskCode;
+            String ClientTaskGroup;
+
+            System.Int16 ClientID = 0;                                      // assignment only to make code compile; has no functional implication
+            System.Int16 ClientTaskPriority = 1;                    // assignment only to make code compile; has no functional implication
+
+            // label
+            // ReadClientID,               used only for repeating invalid command line input
+            // ReadClientTaskPriority;     used only for repeating invalid command line input
+
+            DisplayPetraServerInformation();
+
+            //
+            // Startup done.
+            // From now on just listen on menu commands...
+            //
+            Console.WriteLine(Environment.NewLine + "-> Press \"m\" for menu.");
             Console.Write(ServerAdminPrompt);
-            ReturnValue = false;
-        }
 
-        return ReturnValue;
-    }
+            // ServerAdmin stops after leaving the following loop...!
+            ReadLineLoopEnd = false;
 
-    /// <summary>
-    /// disconnect a client
-    /// </summary>
-    /// <param name="ConsoleInput"></param>
-    public static void DisconnectClient(String ConsoleInput)
-    {
-        Int16 ClientID;
-        String CantDisconnectReason;
-
-        try
-        {
-            ClientID = System.Int16.Parse(ConsoleInput);
-
-            if (TRemote.DisconnectClient(ClientID, out CantDisconnectReason))
+            do
             {
-                TLogging.Log("Client #" + ClientID.ToString() + ": disconnection will take place shortly.");
-            }
-            else
-            {
-                TLogging.Log("Client #" + ClientID.ToString() + " could not be disconnected on admin request.  Reason: " + CantDisconnectReason);
-            }
-        }
-        catch (System.FormatException)
-        {
-            Console.WriteLine("  Entered ClientID is not numeric!");
-        }
-        catch (Exception exp)
-        {
-            TLogging.Log(
-                Environment.NewLine + "Exception occured while trying to disconnect a Client on admin request:" + Environment.NewLine + exp.ToString());
-        }
-    }
+                ServerAdminCommand = (Console.ReadLine());
 
-    private static void ExportDatabase()
-    {
-        Console.Write("     Please enter filename of yml.gz file: ");
-        string backupFile = Path.GetFullPath(Console.ReadLine());
-
-        if (!backupFile.EndsWith(".yml.gz"))
-        {
-            Console.WriteLine("filename has to end with .yml.gz. Please try again");
-            return;
-        }
-
-        string YmlGZData = TRemote.BackupDatabaseToYmlGZ();
-
-        FileStream fs = new FileStream(backupFile, FileMode.Create);
-        byte[] buffer = Convert.FromBase64String(YmlGZData);
-        fs.Write(buffer, 0, buffer.Length);
-        fs.Close();
-        TLogging.Log("backup has been written to " + backupFile);
-    }
-
-    private static bool RestoreDatabase(string ARestoreFile)
-    {
-        string restoreFile = Path.GetFullPath(ARestoreFile);
-
-        if (!File.Exists(restoreFile) || !restoreFile.EndsWith(".yml.gz"))
-        {
-            Console.WriteLine("invalid filename, please try again");
-            return false;
-        }
-
-        string YmlGZData = string.Empty;
-
-        try
-        {
-            FileStream fs = new FileStream(restoreFile, FileMode.Open, FileAccess.Read);
-            byte[] buffer = new byte[fs.Length];
-            fs.Read(buffer, 0, buffer.Length);
-            fs.Close();
-            YmlGZData = Convert.ToBase64String(buffer);
-        }
-        catch (Exception e)
-        {
-            TLogging.Log("cannot open file " + restoreFile);
-            TLogging.Log(e.ToString());
-            return false;
-        }
-
-        if (TRemote.RestoreDatabaseFromYmlGZ(YmlGZData))
-        {
-            TLogging.Log("backup has been restored from " + restoreFile);
-            return true;
-        }
-        else
-        {
-            TLogging.Log("there have been problems with the restore");
-            return false;
-        }
-    }
-
-    private static void RestoreDatabase()
-    {
-        Console.WriteLine(Environment.NewLine + "-> DELETING YOUR DATABASE <-");
-        Console.Write("     Enter YES to import the new database (anything else to leave command): ");
-
-        if (Console.ReadLine() == "YES")
-        {
-            Console.Write("     Please enter filename of yml.gz file: ");
-            string restoreFile = Console.ReadLine();
-
-            RestoreDatabase(restoreFile);
-        }
-        else
-        {
-            Console.WriteLine("     Reset of database cancelled!");
-        }
-    }
-
-    private static void RefreshAllCachedTables()
-    {
-        TRemote.RefreshAllCachedTables();
-    }
-
-    private static void AddUser(string AUserId)
-    {
-        TRemote.AddUser(AUserId);
-    }
-
-    /// <summary>
-    /// shows the menu and processes the selections of the administrator
-    /// </summary>
-    public static void Menu()
-    {
-        bool ReadLineLoopEnd;
-        bool EntryParsedOK;
-        String ServerAdminCommand;
-        String ConsoleInput;
-        String ClientTaskCode;
-        String ClientTaskGroup;
-
-        System.Int16 ClientID = 0;                                          // assignment only to make code compile; has no functional implication
-        System.Int16 ClientTaskPriority = 1;                        // assignment only to make code compile; has no functional implication
-
-        // label
-        // ReadClientID,               used only for repeating invalid command line input
-        // ReadClientTaskPriority;     used only for repeating invalid command line input
-
-        DisplayPetraServerInformation();
-
-        //
-        // Startup done.
-        // From now on just listen on menu commands...
-        //
-        Console.WriteLine(Environment.NewLine + "-> Press \"m\" for menu.");
-        Console.Write(ServerAdminPrompt);
-
-        // ServerAdmin stops after leaving the following loop...!
-        ReadLineLoopEnd = false;
-
-        do
-        {
-            ServerAdminCommand = (Console.ReadLine());
-
-            if (ServerAdminCommand.Length > 0)
-            {
-                ServerAdminCommand = ServerAdminCommand.Substring(0, 1);
-
-                switch (Convert.ToChar(ServerAdminCommand))
+                if (ServerAdminCommand.Length > 0)
                 {
-                    case 'm':
-                    case 'M':
-                        Console.WriteLine(Environment.NewLine + "-> Available commands <-");
-                        Console.WriteLine("     c: list connected Clients / C: list disconnected Clients");
-                        Console.WriteLine("     d: disconnect a certain Client");
-                        Console.WriteLine("     p: perform timed server processing manually now");
-                        Console.WriteLine("     q: queue a Client Task for a certain Client");
-                        Console.WriteLine("     s: Server Status");
+                    ServerAdminCommand = ServerAdminCommand.Substring(0, 1);
 
-                        if (TLogging.DebugLevel > 0)
-                        {
-                            Console.WriteLine("     y: show Server memory");
-                            Console.WriteLine("     g: perform Server garbage collection (for debugging purposes only!)");
-                        }
+                    switch (Convert.ToChar(ServerAdminCommand))
+                    {
+                        case 'm':
+                        case 'M':
+                            Console.WriteLine(Environment.NewLine + "-> Available commands <-");
+                            Console.WriteLine("     c: list connected Clients / C: list disconnected Clients");
+                            Console.WriteLine("     d: disconnect a certain Client");
+                            Console.WriteLine("     p: perform timed server processing manually now");
+                            Console.WriteLine("     q: queue a Client Task for a certain Client");
+                            Console.WriteLine("     s: Server Status");
 
-                        Console.WriteLine("     e: export the database to yml.gz");
-                        Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
+                            if (TLogging.DebugLevel > 0)
+                            {
+                                Console.WriteLine("     y: show Server memory");
+                                Console.WriteLine("     g: perform Server garbage collection (for debugging purposes only!)");
+                            }
 
-                        if (TLogging.DebugLevel > 0)
-                        {
-                            Console.WriteLine("     r: Mark all Cached Tables for Refreshing");
-                        }
+                            Console.WriteLine("     e: export the database to yml.gz");
+                            Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
 
-                        Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
-                        Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
+                            if (TLogging.DebugLevel > 0)
+                            {
+                                Console.WriteLine("     r: Mark all Cached Tables for Refreshing");
+                            }
 
-                        Console.WriteLine("     x: exit PETRAServerADMIN");
-                        Console.Write(ServerAdminPrompt);
-                        break;
+                            Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
+                            Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
 
-                    case 'c':
-                        Console.WriteLine(Environment.NewLine + "-> Connected Clients <-");
-                        Console.WriteLine(TRemote.FormatClientList(false));
-                        Console.Write(ServerAdminPrompt);
-                        break;
+                            Console.WriteLine("     x: exit PETRAServerADMIN");
+                            Console.Write(ServerAdminPrompt);
+                            break;
 
-                    case 'C':
-                        Console.WriteLine(Environment.NewLine + "-> Disconnected Clients <-");
-                        Console.WriteLine(TRemote.FormatClientList(true));
-                        Console.Write(ServerAdminPrompt);
-                        break;
-
-                    case 'd':
-                    case 'D':
-                        Console.WriteLine(Environment.NewLine + "-> Disconnect a certain Client <-");
-
-                        if (TRemote.GetClientList().Count > 0)
-                        {
+                        case 'c':
+                            Console.WriteLine(Environment.NewLine + "-> Connected Clients <-");
                             Console.WriteLine(TRemote.FormatClientList(false));
-                            Console.Write("     Enter ClientID: ");
-                            ConsoleInput = Console.ReadLine();
-                            DisconnectClient(ConsoleInput);
-                        }
-                        else
-                        {
-                            Console.WriteLine("  * no Clients connected *");
-                        }
+                            Console.Write(ServerAdminPrompt);
+                            break;
 
-                        Console.Write(ServerAdminPrompt);
+                        case 'C':
+                            Console.WriteLine(Environment.NewLine + "-> Disconnected Clients <-");
+                            Console.WriteLine(TRemote.FormatClientList(true));
+                            Console.Write(ServerAdminPrompt);
+                            break;
 
-                        // queue a Client Task for a certain Client
-                        break;
+                        case 'd':
+                        case 'D':
+                            Console.WriteLine(Environment.NewLine + "-> Disconnect a certain Client <-");
 
-                    case 'e':
-                    case 'E':
-                        Console.WriteLine(Environment.NewLine + "-> Export the database to yml.gz file <-");
+                            if (TRemote.GetClientList().Count > 0)
+                            {
+                                Console.WriteLine(TRemote.FormatClientList(false));
+                                Console.Write("     Enter ClientID: ");
+                                ConsoleInput = Console.ReadLine();
+                                DisconnectClient(ConsoleInput);
+                            }
+                            else
+                            {
+                                Console.WriteLine("  * no Clients connected *");
+                            }
 
-                        ExportDatabase();
+                            Console.Write(ServerAdminPrompt);
 
-                        Console.Write(ServerAdminPrompt);
+                            // queue a Client Task for a certain Client
+                            break;
 
-                        // queue a Client Task for a certain Client
-                        break;
+                        case 'e':
+                        case 'E':
+                            Console.WriteLine(Environment.NewLine + "-> Export the database to yml.gz file <-");
 
-                    case 'i':
-                    case 'I':
-                        Console.WriteLine(Environment.NewLine + "-> Restore the database from yml.gz file <-");
+                            ExportDatabase();
 
-                        RestoreDatabase();
+                            Console.Write(ServerAdminPrompt);
 
-                        Console.Write(ServerAdminPrompt);
+                            // queue a Client Task for a certain Client
+                            break;
 
-                        // queue a Client Task for a certain Client
-                        break;
+                        case 'i':
+                        case 'I':
+                            Console.WriteLine(Environment.NewLine + "-> Restore the database from yml.gz file <-");
 
-                    case 'r':
-                    case 'R':
-                        Console.WriteLine(Environment.NewLine + "-> Marking all Cached Tables for Refreshing... <-");
+                            RestoreDatabase();
 
-                        RefreshAllCachedTables();
+                            Console.Write(ServerAdminPrompt);
 
-                        Console.Write(ServerAdminPrompt);
+                            // queue a Client Task for a certain Client
+                            break;
 
-                        break;
+                        case 'r':
+                        case 'R':
+                            Console.WriteLine(Environment.NewLine + "-> Marking all Cached Tables for Refreshing... <-");
 
-                    case 'p':
-                    case 'P':
+                            RefreshAllCachedTables();
+
+                            Console.Write(ServerAdminPrompt);
+
+                            break;
+
+                        case 'p':
+                        case 'P':
 #if TODORemoting
-                        string resp = "";
+                            string resp = "";
 
-                        Console.WriteLine("  Server Timed Processing Status: " +
-                        "runs daily at " + TRemote.GetTimedProcessingDailyStartTime24Hrs + ".");
-                        Console.WriteLine("    Partner Reminders: " + (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders") ? "On" : "Off"));
-                        Console.WriteLine("    Automatic Intranet Export: " +
-                        (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
-                        Console.WriteLine("    Data Checks: " + (TRemote.TimedProcessingJobEnabled("TProcessDataChecks") ? "On" : "Off"));
+                            Console.WriteLine("  Server Timed Processing Status: " +
+                            "runs daily at " + TRemote.GetTimedProcessingDailyStartTime24Hrs + ".");
+                            Console.WriteLine("    Partner Reminders: " +
+                            (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders") ? "On" : "Off"));
+                            Console.WriteLine("    Automatic Intranet Export: " +
+                            (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
+                            Console.WriteLine("    Data Checks: " + (TRemote.TimedProcessingJobEnabled("TProcessDataChecks") ? "On" : "Off"));
 
-                        Console.WriteLine("  SMTP Server used for sending e-mails: " + TRemote.SMTPServer);
+                            Console.WriteLine("  SMTP Server used for sending e-mails: " + TRemote.SMTPServer);
 
-                        if (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders"))
-                        {
-                            Console.WriteLine("");
-                            Console.WriteLine("Do you want to run Reminder Processing now?");
-                            Console.Write("Type YES to continue, anything else to skip:");
-                            resp = Console.ReadLine();
-
-                            if (resp == "YES")
+                            if (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders"))
                             {
-                                TRemote.PerformTimedProcessingNow("TProcessPartnerReminders");
+                                Console.WriteLine("");
+                                Console.WriteLine("Do you want to run Reminder Processing now?");
+                                Console.Write("Type YES to continue, anything else to skip:");
+                                resp = Console.ReadLine();
+
+                                if (resp == "YES")
+                                {
+                                    TRemote.PerformTimedProcessingNow("TProcessPartnerReminders");
+                                }
                             }
-                        }
 
-                        if (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport"))
-                        {
-                            Console.WriteLine("");
-                            Console.WriteLine("Do you want to run Intranet Export Processing now?");
-                            Console.Write("Type YES to continue, anything else to skip:");
-                            resp = Console.ReadLine();
-
-                            if (resp == "YES")
+                            if (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport"))
                             {
-                                TRemote.PerformTimedProcessingNow("TProcessAutomatedIntranetExport");
+                                Console.WriteLine("");
+                                Console.WriteLine("Do you want to run Intranet Export Processing now?");
+                                Console.Write("Type YES to continue, anything else to skip:");
+                                resp = Console.ReadLine();
+
+                                if (resp == "YES")
+                                {
+                                    TRemote.PerformTimedProcessingNow("TProcessAutomatedIntranetExport");
+                                }
                             }
-                        }
 
-                        if (TRemote.TimedProcessingJobEnabled("TProcessDataChecks"))
-                        {
-                            Console.WriteLine("");
-                            Console.WriteLine("Do you want to run Data Checks Processing now?");
-                            Console.Write("Type YES to continue, anything else to skip:");
-                            resp = Console.ReadLine();
-
-                            if (resp == "YES")
+                            if (TRemote.TimedProcessingJobEnabled("TProcessDataChecks"))
                             {
-                                TRemote.PerformTimedProcessingNow("TProcessDataChecks");
+                                Console.WriteLine("");
+                                Console.WriteLine("Do you want to run Data Checks Processing now?");
+                                Console.Write("Type YES to continue, anything else to skip:");
+                                resp = Console.ReadLine();
+
+                                if (resp == "YES")
+                                {
+                                    TRemote.PerformTimedProcessingNow("TProcessDataChecks");
+                                }
                             }
-                        }
-                        Console.Write(ServerAdminPrompt);
+                            Console.Write(ServerAdminPrompt);
 #endif
-                        break;
+                            break;
 
-                    case 's':
-                    case 'S':
-                        Console.WriteLine(Environment.NewLine + "-> Server Status <-");
-                        Console.WriteLine();
+                        case 's':
+                        case 'S':
+                            Console.WriteLine(Environment.NewLine + "-> Server Status <-");
+                            Console.WriteLine();
 
-                        DisplayPetraServerInformation();
+                            DisplayPetraServerInformation();
 
-                        Console.Write(ServerAdminPrompt);
+                            Console.Write(ServerAdminPrompt);
 
-                        break;
+                            break;
 
-                    case 'q':
-                    case 'Q':
-                        Console.WriteLine(Environment.NewLine + "-> Queue a Client Task for a certain Client <-");
+                        case 'q':
+                        case 'Q':
+                            Console.WriteLine(Environment.NewLine + "-> Queue a Client Task for a certain Client <-");
 
-                        if (TRemote.GetClientList().Count > 0)
-                        {
-                            Console.WriteLine(TRemote.FormatClientList(false));
-
-                            // ReadClientID:
-                            Console.Write("     Enter ClientID: ");
-                            ConsoleInput = Console.ReadLine();
-                            EntryParsedOK = false;
-                            try
+                            if (TRemote.GetClientList().Count > 0)
                             {
-                                ClientID = System.Int16.Parse(ConsoleInput);
-                                EntryParsedOK = true;
-                            }
-                            catch (System.FormatException)
-                            {
-                                Console.WriteLine("  Entered ClientID is not numeric!");
-                            }
+                                Console.WriteLine(TRemote.FormatClientList(false));
 
-                            if (!EntryParsedOK)
-                            {
-                            }
-
-                            // goto ReadClientID;
-                            Console.Write("     Enter Client Task Group: ");
-                            ClientTaskGroup = Console.ReadLine();
-                            Console.Write("     Enter Client Task Code: ");
-                            ClientTaskCode = Console.ReadLine();
-
-                            // ReadClientTaskPriority:
-                            Console.Write("     Enter Client Task Priority: ");
-                            ConsoleInput = Console.ReadLine();
-                            ClientTaskPriority = -1;
-                            try
-                            {
-                                ClientTaskPriority = System.Int16.Parse(ConsoleInput);
-                                EntryParsedOK = true;
-                            }
-                            catch (System.FormatException)
-                            {
-                                Console.WriteLine("  Entered Client Task Priority is not numeric!");
+                                // ReadClientID:
+                                Console.Write("     Enter ClientID: ");
+                                ConsoleInput = Console.ReadLine();
                                 EntryParsedOK = false;
-                            }
-
-                            if (!EntryParsedOK)
-                            {
-                            }
-
-                            // goto ReadClientTaskPriority;
-                            try
-                            {
-                                if (TRemote.QueueClientTask(ClientID, ClientTaskGroup, ClientTaskCode, ClientTaskPriority))
+                                try
                                 {
-                                    TLogging.Log("Client Task queued for Client #" + ClientID.ToString() + " on admin request.");
+                                    ClientID = System.Int16.Parse(ConsoleInput);
+                                    EntryParsedOK = true;
                                 }
-                                else
+                                catch (System.FormatException)
                                 {
-                                    TLogging.Log("Client Task for Client #" + ClientID.ToString() + " could not be queued on admin request.");
+                                    Console.WriteLine("  Entered ClientID is not numeric!");
+                                }
+
+                                if (!EntryParsedOK)
+                                {
+                                }
+
+                                // goto ReadClientID;
+                                Console.Write("     Enter Client Task Group: ");
+                                ClientTaskGroup = Console.ReadLine();
+                                Console.Write("     Enter Client Task Code: ");
+                                ClientTaskCode = Console.ReadLine();
+
+                                // ReadClientTaskPriority:
+                                Console.Write("     Enter Client Task Priority: ");
+                                ConsoleInput = Console.ReadLine();
+                                ClientTaskPriority = -1;
+                                try
+                                {
+                                    ClientTaskPriority = System.Int16.Parse(ConsoleInput);
+                                    EntryParsedOK = true;
+                                }
+                                catch (System.FormatException)
+                                {
+                                    Console.WriteLine("  Entered Client Task Priority is not numeric!");
+                                    EntryParsedOK = false;
+                                }
+
+                                if (!EntryParsedOK)
+                                {
+                                }
+
+                                // goto ReadClientTaskPriority;
+                                try
+                                {
+                                    if (TRemote.QueueClientTask(ClientID, ClientTaskGroup, ClientTaskCode, ClientTaskPriority))
+                                    {
+                                        TLogging.Log("Client Task queued for Client #" + ClientID.ToString() + " on admin request.");
+                                    }
+                                    else
+                                    {
+                                        TLogging.Log("Client Task for Client #" + ClientID.ToString() + " could not be queued on admin request.");
+                                    }
+                                }
+                                catch (Exception exp)
+                                {
+                                    TLogging.Log(
+                                        Environment.NewLine + "Exception occured while queueing a Client Task on admin request:" +
+                                        Environment.NewLine +
+                                        exp.ToString());
                                 }
                             }
-                            catch (Exception exp)
+                            else
                             {
-                                TLogging.Log(
-                                    Environment.NewLine + "Exception occured while queueing a Client Task on admin request:" + Environment.NewLine +
-                                    exp.ToString());
+                                Console.WriteLine("  * no Clients connected *");
                             }
-                        }
-                        else
-                        {
-                            Console.WriteLine("  * no Clients connected *");
-                        }
 
-                        Console.Write(ServerAdminPrompt);
-                        break;
+                            Console.Write(ServerAdminPrompt);
+                            break;
 
-                    case 'y':
-                    case 'Y':
-                        Console.WriteLine("Server memory: " + TRemote.GetServerInfoMemory().ToString());
-                        Console.Write(ServerAdminPrompt);
-                        break;
+                        case 'y':
+                        case 'Y':
+                            Console.WriteLine("Server memory: " + TRemote.GetServerInfoMemory().ToString());
+                            Console.Write(ServerAdminPrompt);
+                            break;
 
-                    case 'g':
-                    case 'G':
-                        GC.Collect();
-                        Console.WriteLine("GarbageCollection performed. Server memory: " + TRemote.PerformGC().ToString());
-                        Console.Write(ServerAdminPrompt);
-                        break;
+                        case 'g':
+                        case 'G':
+                            GC.Collect();
+                            Console.WriteLine("GarbageCollection performed. Server memory: " + TRemote.PerformGC().ToString());
+                            Console.Write(ServerAdminPrompt);
+                            break;
 
-                    case 'o':
-                    case 'O':
-                        ReadLineLoopEnd = ShutDownControlled(true);
-                        break;
+                        case 'o':
+                        case 'O':
+                            ReadLineLoopEnd = ShutDownControlled(true);
+                            break;
 
-                    case 'u':
-                    case 'U':
-                        ReadLineLoopEnd = ShutDown(true);
-                        break;
+                        case 'u':
+                        case 'U':
+                            ReadLineLoopEnd = ShutDown(true);
+                            break;
 
-                    case 'x':
-                    case 'X':
+                        case 'x':
+                        case 'X':
 
-                        // exit loop, ServerAdmin stops then
-                        ReadLineLoopEnd = true;
-                        break;
+                            // exit loop, ServerAdmin stops then
+                            ReadLineLoopEnd = true;
+                            break;
 
-                    default:
-                        Console.WriteLine(Environment.NewLine + "-> Unrecognised command '" + ServerAdminCommand + "' <-   (Press 'm' for menu)");
-                        Console.Write(ServerAdminPrompt);
-                        break;
+                        default:
+                            Console.WriteLine(Environment.NewLine + "-> Unrecognised command '" + ServerAdminCommand + "' <-   (Press 'm' for menu)");
+                            Console.Write(ServerAdminPrompt);
+                            break;
+                    }
+
+                    // case Convert.ToChar( ServerAdminCommand )
                 }
+                // if ServerAdminCommand.Length > 0
+                else
+                {
+                    Console.Write(ServerAdminPrompt);
+                }
+            } while (!(ReadLineLoopEnd == true));
+        }
 
-                // case Convert.ToChar( ServerAdminCommand )
-            }
-            // if ServerAdminCommand.Length > 0
-            else
-            {
-                Console.Write(ServerAdminPrompt);
-            }
-        } while (!(ReadLineLoopEnd == true));
-    }
-
-    /// <summary>
-    /// Retrieve information about connected Clients of the Server we are
-    /// connected to.
-    /// </summary>
-    /// <param name="ATotalConnectedClients">Total number of Clients that
-    /// have been connected while the PetraServer has been running.</param>
-    /// <param name="ACurrentlyConnectedClients">Number of currently
-    /// connected Clients.</param>
-    static void RetrieveConnectedClients(out int ATotalConnectedClients, out int ACurrentlyConnectedClients)
-    {
-        ATotalConnectedClients = TRemote.GetClientsConnectedTotal();
-        ACurrentlyConnectedClients = TRemote.GetClientsConnected();
-    }
-
-    private static string SecurityToken = string.Empty;
-
-    /// we store a token on the file system, which is passed to the server as authorization token
-    private static string NewSecurityToken()
-    {
-        SecurityToken = Guid.NewGuid().ToString();
-        string TokenFilename = TAppSettingsManager.GetValue("Server.PathTemp") +
-                               Path.DirectorySeparatorChar + "ServerAdminToken" + SecurityToken + ".txt";
-
-        StreamWriter sw = new StreamWriter(TokenFilename);
-        sw.WriteLine(SecurityToken);
-        sw.Close();
-        return SecurityToken;
-    }
-
-    private static void ClearSecurityToken()
-    {
-        string TokenFilename = TAppSettingsManager.GetValue("Server.PathTemp") +
-                               Path.DirectorySeparatorChar + "ServerAdminToken" + SecurityToken + ".txt";
-
-        File.Delete(TokenFilename);
-    }
-
-    /// <summary>
-    /// Displays information about the Server we are connected to.
-    /// </summary>
-    static void DisplayPetraServerInformation()
-    {
-        int TotalConnectedClients;
-        int CurrentlyConnectedClients;
-
-        RetrieveConnectedClients(out TotalConnectedClients, out CurrentlyConnectedClients);
-
-        TLogging.Log(TRemote.GetServerInfoVersion());
-        TLogging.Log(Catalog.GetString("Configuration file: " + TAppSettingsManager.ConfigFileName));
-        TLogging.Log("  Clients connections since Server start: " + TotalConnectedClients.ToString());
-        TLogging.Log("  Clients currently connected: " + CurrentlyConnectedClients.ToString());
-
-        TLogging.Log(TRemote.GetServerInfoState());
-    }
-
-    /// <summary>
-    /// Connects to the PetraServer and provides a menu with a number of functions,
-    /// including stopping the PetraServer.
-    /// </summary>
-    /// <returns>void</returns>
-    public static void Start()
-    {
-        String ClientID;
-        bool ExitError = false;
-        Boolean SilentSysadm;
-
-        SilentSysadm = false;
-
-        try
+        /// <summary>
+        /// Retrieve information about connected Clients of the Server we are
+        /// connected to.
+        /// </summary>
+        /// <param name="ATotalConnectedClients">Total number of Clients that
+        /// have been connected while the PetraServer has been running.</param>
+        /// <param name="ACurrentlyConnectedClients">Number of currently
+        /// connected Clients.</param>
+        static void RetrieveConnectedClients(out int ATotalConnectedClients, out int ACurrentlyConnectedClients)
         {
-            new TLogging();
-            new TAppSettingsManager();
-            SilentSysadm = true;
+            ATotalConnectedClients = TRemote.GetClientsConnectedTotal();
+            ACurrentlyConnectedClients = TRemote.GetClientsConnected();
+        }
 
-            if (TAppSettingsManager.HasValue("DebugLevel"))
+        private static string SecurityToken = string.Empty;
+
+        /// we store a token on the file system, which is passed to the server as authorization token
+        private static string NewSecurityToken()
+        {
+            SecurityToken = Guid.NewGuid().ToString();
+            string TokenFilename = TAppSettingsManager.GetValue("Server.PathTemp") +
+                                   Path.DirectorySeparatorChar + "ServerAdminToken" + SecurityToken + ".txt";
+
+            StreamWriter sw = new StreamWriter(TokenFilename);
+            sw.WriteLine(SecurityToken);
+            sw.Close();
+            return SecurityToken;
+        }
+
+        private static void ClearSecurityToken()
+        {
+            string TokenFilename = TAppSettingsManager.GetValue("Server.PathTemp") +
+                                   Path.DirectorySeparatorChar + "ServerAdminToken" + SecurityToken + ".txt";
+
+            File.Delete(TokenFilename);
+        }
+
+        /// <summary>
+        /// Displays information about the Server we are connected to.
+        /// </summary>
+        static void DisplayPetraServerInformation()
+        {
+            int TotalConnectedClients;
+            int CurrentlyConnectedClients;
+
+            RetrieveConnectedClients(out TotalConnectedClients, out CurrentlyConnectedClients);
+
+            TLogging.Log(TRemote.GetServerInfoVersion());
+            TLogging.Log(Catalog.GetString("Configuration file: " + TAppSettingsManager.ConfigFileName));
+            TLogging.Log("  Clients connections since Server start: " + TotalConnectedClients.ToString());
+            TLogging.Log("  Clients currently connected: " + CurrentlyConnectedClients.ToString());
+
+            TLogging.Log(TRemote.GetServerInfoState());
+        }
+
+        /// <summary>
+        /// Connects to the PetraServer and provides a menu with a number of functions,
+        /// including stopping the PetraServer.
+        /// </summary>
+        /// <returns>void</returns>
+        public static void Start()
+        {
+            String ClientID;
+            bool ExitError = false;
+            Boolean SilentSysadm;
+
+            SilentSysadm = false;
+
+            try
             {
-                TLogging.DebugLevel = TAppSettingsManager.GetInt32("DebugLevel");
-            }
+                new TLogging();
+                new TAppSettingsManager();
+                SilentSysadm = true;
 
-            if ((!TAppSettingsManager.HasValue("Command") || (TAppSettingsManager.GetValue("Command") == "Stop")))
-            {
-                SilentSysadm = false;
-            }
+                if (TAppSettingsManager.HasValue("DebugLevel"))
+                {
+                    TLogging.DebugLevel = TAppSettingsManager.GetInt32("DebugLevel");
+                }
 
-            if (TAppSettingsManager.HasValue("ServerAdmin.LogFile"))
-            {
-                new TLogging(TAppSettingsManager.GetValue("ServerAdmin.LogFile"));
-            }
+                if ((!TAppSettingsManager.HasValue("Command") || (TAppSettingsManager.GetValue("Command") == "Stop")))
+                {
+                    SilentSysadm = false;
+                }
 
-            if ((!SilentSysadm))
-            {
-                Console.WriteLine();
-                TLogging.Log(
-                    "PETRAServerADMIN " + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString() + ' ' + "Build " +
-                    System.IO.File.GetLastWriteTime(
-                        Process.GetCurrentProcess().MainModule.FileName).ToString() + " (OS: " +
-                    CommonTypes.ExecutingOSEnumToString(Utilities.DetermineExecutingOS()) + ')');
+                if (TAppSettingsManager.HasValue("ServerAdmin.LogFile"))
+                {
+                    new TLogging(TAppSettingsManager.GetValue("ServerAdmin.LogFile"));
+                }
 
-                TLogging.Log(Catalog.GetString("Configuration file: " + TAppSettingsManager.ConfigFileName));
+                if ((!SilentSysadm))
+                {
+                    Console.WriteLine();
+                    TLogging.Log(
+                        "PETRAServerADMIN " + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString() + ' ' + "Build " +
+                        System.IO.File.GetLastWriteTime(
+                            Process.GetCurrentProcess().MainModule.FileName).ToString() + " (OS: " +
+                        CommonTypes.ExecutingOSEnumToString(Utilities.DetermineExecutingOS()) + ')');
 
-                // System.Reflection.Assembly.GetEntryAssembly.FullName does not return the file path
-                TLogging.Log("Connecting to PETRAServer...");
-                Console.WriteLine();
-            }
+                    TLogging.Log(Catalog.GetString("Configuration file: " + TAppSettingsManager.ConfigFileName));
 
-            // Instantiate a remote object, which provides access to the server
-            THttpConnector.ServerAdminSecurityToken = NewSecurityToken();
-            THttpConnector.InitConnection(TAppSettingsManager.GetValue("OpenPetra.HTTPServer"));
-            TRemote = new TMServerAdminNamespace().WebConnectors;
-            TRemote.LoginServerAdmin();
+                    // System.Reflection.Assembly.GetEntryAssembly.FullName does not return the file path
+                    TLogging.Log("Connecting to PETRAServer...");
+                    Console.WriteLine();
+                }
 
-            if (TAppSettingsManager.HasValue("Command"))
-            {
-                if (TAppSettingsManager.GetValue("Command") == "Stop")
+                // Instantiate a remote object, which provides access to the server
+                THttpConnector.ServerAdminSecurityToken = NewSecurityToken();
+                THttpConnector.InitConnection(TAppSettingsManager.GetValue("OpenPetra.HTTPServer"));
+                TRemote = new TMServerAdminNamespace().WebConnectors;
+                TRemote.LoginServerAdmin();
+
+                if (TAppSettingsManager.HasValue("Command"))
                 {
-                    ShutDown(false);
+                    if (TAppSettingsManager.GetValue("Command") == "Stop")
+                    {
+                        ShutDown(false);
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "StopAndCloseClients")
+                    {
+                        ShutDownControlled(false);
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "ConnectedClients")
+                    {
+                        System.Console.WriteLine(TRemote.FormatClientList(false));
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "ConnectedClientsSysadm")
+                    {
+                        System.Console.WriteLine(TRemote.FormatClientListSysadm(false));
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "DisconnectedClients")
+                    {
+                        System.Console.WriteLine(TRemote.FormatClientList(true));
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "DisconnectClient")
+                    {
+                        ClientID = TAppSettingsManager.GetValue("ClientID");
+                        DisconnectClient(ClientID);
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "LoadYmlGz")
+                    {
+                        RestoreDatabase(TAppSettingsManager.GetValue("YmlGzFile"));
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "RefreshAllCachedTables")
+                    {
+                        RefreshAllCachedTables();
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "AddUser")
+                    {
+                        AddUser(TAppSettingsManager.GetValue("UserId"));
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "Menu")
+                    {
+                        Menu();
+                    }
                 }
-                else if (TAppSettingsManager.GetValue("Command") == "StopAndCloseClients")
-                {
-                    ShutDownControlled(false);
-                }
-                else if (TAppSettingsManager.GetValue("Command") == "ConnectedClients")
-                {
-                    System.Console.WriteLine(TRemote.FormatClientList(false));
-                }
-                else if (TAppSettingsManager.GetValue("Command") == "ConnectedClientsSysadm")
-                {
-                    System.Console.WriteLine(TRemote.FormatClientListSysadm(false));
-                }
-                else if (TAppSettingsManager.GetValue("Command") == "DisconnectedClients")
-                {
-                    System.Console.WriteLine(TRemote.FormatClientList(true));
-                }
-                else if (TAppSettingsManager.GetValue("Command") == "DisconnectClient")
-                {
-                    ClientID = TAppSettingsManager.GetValue("ClientID");
-                    DisconnectClient(ClientID);
-                }
-                else if (TAppSettingsManager.GetValue("Command") == "LoadYmlGz")
-                {
-                    RestoreDatabase(TAppSettingsManager.GetValue("YmlGzFile"));
-                }
-                else if (TAppSettingsManager.GetValue("Command") == "RefreshAllCachedTables")
-                {
-                    RefreshAllCachedTables();
-                }
-                else if (TAppSettingsManager.GetValue("Command") == "AddUser")
-                {
-                    AddUser(TAppSettingsManager.GetValue("UserId"));
-                }
-                else if (TAppSettingsManager.GetValue("Command") == "Menu")
+                else
                 {
                     Menu();
                 }
+
+                // All exceptions that are raised are handled here
+                // Note: ServerAdmin stops after handling these exceptions!!!
             }
-            else
+            catch (Exception exp)
             {
-                Menu();
+                if ((!SilentSysadm))
+                {
+                    Console.WriteLine("Exception occured while connecting/communicating to PETRAServer: " + exp.ToString());
+                }
+
+                ExitError = true;
             }
 
-            // All exceptions that are raised are handled here
-            // Note: ServerAdmin stops after handling these exceptions!!!
-        }
-        catch (Exception exp)
-        {
-            if ((!SilentSysadm))
+            string CannotDisconnectMessage;
+            new THTTPClientManager().DisconnectClient(out CannotDisconnectMessage);
+            ClearSecurityToken();
+
+            if (ExitError)
             {
-                Console.WriteLine("Exception occured while connecting/communicating to PETRAServer: " + exp.ToString());
+                System.Environment.Exit(-1);
             }
 
-            ExitError = true;
+            // THE VERY END OF SERVERADMIN :(
         }
-
-        string CannotDisconnectMessage;
-        new THTTPClientManager().DisconnectClient(out CannotDisconnectMessage);
-        ClearSecurityToken();
-
-        if (ExitError)
-        {
-            System.Environment.Exit(-1);
-        }
-
-        // THE VERY END OF SERVERADMIN :(
     }
-}
 }

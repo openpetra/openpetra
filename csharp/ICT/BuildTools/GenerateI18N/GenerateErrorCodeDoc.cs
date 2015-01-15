@@ -35,180 +35,181 @@ using ICSharpCode.NRefactory;
 
 namespace GenerateI18N
 {
-/// <summary>
-/// Parse the code for Error Codes and store to HTML file
-/// </summary>
-public class TGenerateErrorCodeDoc
-{
     /// <summary>
-    /// Creates a HTML file that contains central documentation of the Error Codes that are used throughout OpenPetra code
+    /// Parse the code for Error Codes and store to HTML file
     /// </summary>
-    public static bool Execute(string ACSharpPath, string ATemplateFilePath, string AOutFilePath)
+    public class TGenerateErrorCodeDoc
     {
-        Dictionary <string, ErrCodeInfo>ErrorCodes = new Dictionary <string, ErrCodeInfo>();
-        CSParser parsedFile = new CSParser(ACSharpPath + "/ICT/Common/ErrorCodes.cs");
-        string ErrCodeCategoryNice = String.Empty;
-
-        TLogging.Log("Creating HTML documentation of OpenPetra Error Codes...");
-
-        ProcessFile(parsedFile, ref ErrorCodes);
-        parsedFile = new CSParser(ACSharpPath + "/ICT/Petra/Shared/ErrorCodes.cs");
-        ProcessFile(parsedFile, ref ErrorCodes);
-        parsedFile = new CSParser(ACSharpPath + "/ICT/Common/Verification/StringChecks.cs");
-        ProcessFile(parsedFile, ref ErrorCodes);
-
-        ProcessTemplate t = new ProcessTemplate(ATemplateFilePath);
-
-        Dictionary <string, ProcessTemplate>snippets = new Dictionary <string, ProcessTemplate>();
-
-        snippets.Add("GENC", t.GetSnippet("TABLE"));
-        snippets["GENC"].SetCodelet("TABLEDESCRIPTION", "GENERAL (<i>Ict.Common* Libraries only</i>)");
-        snippets.Add("GEN", t.GetSnippet("TABLE"));
-        snippets["GEN"].SetCodelet("TABLEDESCRIPTION", "GENERAL (across the OpenPetra application)");
-        snippets.Add("PARTN", t.GetSnippet("TABLE"));
-        snippets["PARTN"].SetCodelet("TABLEDESCRIPTION", "PARTNER Module");
-        snippets.Add("PERS", t.GetSnippet("TABLE"));
-        snippets["PERS"].SetCodelet("TABLEDESCRIPTION", "PERSONNEL Module");
-        snippets.Add("FIN", t.GetSnippet("TABLE"));
-        snippets["FIN"].SetCodelet("TABLEDESCRIPTION", "FINANCE Module");
-        snippets.Add("CONF", t.GetSnippet("TABLE"));
-        snippets["CONF"].SetCodelet("TABLEDESCRIPTION", "CONFERENCE Module");
-        snippets.Add("FINDEV", t.GetSnippet("TABLE"));
-        snippets["FINDEV"].SetCodelet("TABLEDESCRIPTION", "FINANCIAL DEVELOPMENT Module");
-        snippets.Add("SYSMAN", t.GetSnippet("TABLE"));
-        snippets["SYSMAN"].SetCodelet("TABLEDESCRIPTION", "SYSTEM MANAGER Module");
-
-        foreach (string snippetkey in snippets.Keys)
+        /// <summary>
+        /// Creates a HTML file that contains central documentation of the Error Codes that are used throughout OpenPetra code
+        /// </summary>
+        public static bool Execute(string ACSharpPath, string ATemplateFilePath, string AOutFilePath)
         {
-            snippets[snippetkey].SetCodelet("ABBREVIATION", snippetkey);
-            snippets[snippetkey].SetCodelet("ROWS", string.Empty);
-        }
+            Dictionary <string, ErrCodeInfo>ErrorCodes = new Dictionary <string, ErrCodeInfo>();
+            CSParser parsedFile = new CSParser(ACSharpPath + "/ICT/Common/ErrorCodes.cs");
+            string ErrCodeCategoryNice = String.Empty;
 
-        foreach (string code in ErrorCodes.Keys)
-        {
+            TLogging.Log("Creating HTML documentation of OpenPetra Error Codes...");
+
+            ProcessFile(parsedFile, ref ErrorCodes);
+            parsedFile = new CSParser(ACSharpPath + "/ICT/Petra/Shared/ErrorCodes.cs");
+            ProcessFile(parsedFile, ref ErrorCodes);
+            parsedFile = new CSParser(ACSharpPath + "/ICT/Common/Verification/StringChecks.cs");
+            ProcessFile(parsedFile, ref ErrorCodes);
+
+            ProcessTemplate t = new ProcessTemplate(ATemplateFilePath);
+
+            Dictionary <string, ProcessTemplate>snippets = new Dictionary <string, ProcessTemplate>();
+
+            snippets.Add("GENC", t.GetSnippet("TABLE"));
+            snippets["GENC"].SetCodelet("TABLEDESCRIPTION", "GENERAL (<i>Ict.Common* Libraries only</i>)");
+            snippets.Add("GEN", t.GetSnippet("TABLE"));
+            snippets["GEN"].SetCodelet("TABLEDESCRIPTION", "GENERAL (across the OpenPetra application)");
+            snippets.Add("PARTN", t.GetSnippet("TABLE"));
+            snippets["PARTN"].SetCodelet("TABLEDESCRIPTION", "PARTNER Module");
+            snippets.Add("PERS", t.GetSnippet("TABLE"));
+            snippets["PERS"].SetCodelet("TABLEDESCRIPTION", "PERSONNEL Module");
+            snippets.Add("FIN", t.GetSnippet("TABLE"));
+            snippets["FIN"].SetCodelet("TABLEDESCRIPTION", "FINANCE Module");
+            snippets.Add("CONF", t.GetSnippet("TABLE"));
+            snippets["CONF"].SetCodelet("TABLEDESCRIPTION", "CONFERENCE Module");
+            snippets.Add("FINDEV", t.GetSnippet("TABLE"));
+            snippets["FINDEV"].SetCodelet("TABLEDESCRIPTION", "FINANCIAL DEVELOPMENT Module");
+            snippets.Add("SYSMAN", t.GetSnippet("TABLE"));
+            snippets["SYSMAN"].SetCodelet("TABLEDESCRIPTION", "SYSTEM MANAGER Module");
+
             foreach (string snippetkey in snippets.Keys)
             {
-                if (code.StartsWith(snippetkey + "."))
+                snippets[snippetkey].SetCodelet("ABBREVIATION", snippetkey);
+                snippets[snippetkey].SetCodelet("ROWS", string.Empty);
+            }
+
+            foreach (string code in ErrorCodes.Keys)
+            {
+                foreach (string snippetkey in snippets.Keys)
                 {
-                    ProcessTemplate row = t.GetSnippet("ROW");
-                    row.SetCodelet("CODE", code);
-
-                    ErrCodeInfo ErrCode = ErrorCodes[code];
-
-                    switch (ErrCode.Category)
+                    if (code.StartsWith(snippetkey + "."))
                     {
-                        case ErrCodeCategory.NonCriticalError:
-                            ErrCodeCategoryNice = "Non-critical Error";
-                            break;
+                        ProcessTemplate row = t.GetSnippet("ROW");
+                        row.SetCodelet("CODE", code);
 
-                        default:
-                            ErrCodeCategoryNice = ErrCode.Category.ToString("G");
-                            break;
+                        ErrCodeInfo ErrCode = ErrorCodes[code];
+
+                        switch (ErrCode.Category)
+                        {
+                            case ErrCodeCategory.NonCriticalError:
+                                ErrCodeCategoryNice = "Non-critical Error";
+                                break;
+
+                            default:
+                                ErrCodeCategoryNice = ErrCode.Category.ToString("G");
+                                break;
+                        }
+
+                        row.AddToCodelet("SHORTDESCRIPTION", (ErrCode.ShortDescription));
+                        row.AddToCodelet("FULLDESCRIPTION", (ErrCode.FullDescription));
+                        row.AddToCodelet("ERRORCODECATEGORY", (ErrCodeCategoryNice));
+                        row.AddToCodelet("DECLARINGCLASS", (ErrCode.ErrorCodeConstantClass));
+
+                        snippets[snippetkey].InsertSnippet("ROWS", row);
                     }
-
-                    row.AddToCodelet("SHORTDESCRIPTION", (ErrCode.ShortDescription));
-                    row.AddToCodelet("FULLDESCRIPTION", (ErrCode.FullDescription));
-                    row.AddToCodelet("ERRORCODECATEGORY", (ErrCodeCategoryNice));
-                    row.AddToCodelet("DECLARINGCLASS", (ErrCode.ErrorCodeConstantClass));
-
-                    snippets[snippetkey].InsertSnippet("ROWS", row);
                 }
+            }
+
+            foreach (string snippetkey in snippets.Keys)
+            {
+                t.InsertSnippet("TABLES", snippets[snippetkey]);
+            }
+
+            return t.FinishWriting(AOutFilePath, ".html", true);
+        }
+
+        private static string ExpressionToString(Expression e)
+        {
+            if (e is BinaryOperatorExpression)
+            {
+                return ExpressionToString(((BinaryOperatorExpression)e).Left) + " " +
+                       ExpressionToString(((BinaryOperatorExpression)e).Right);
+            }
+            else
+            {
+                return ((PrimitiveExpression)e).Value.ToString();
             }
         }
 
-        foreach (string snippetkey in snippets.Keys)
+        private static void ProcessFile(CSParser AParsedFile, ref Dictionary <string, ErrCodeInfo>AErrorCodes)
         {
-            t.InsertSnippet("TABLES", snippets[snippetkey]);
-        }
+            ErrCodeInfo ErrCodeDetails = null;
+            string ErrCodeValue;
+            string ShortDescription = String.Empty;
+            string LongDescription = String.Empty;
+            ErrCodeCategory ErrCodeCat;
 
-        return t.FinishWriting(AOutFilePath, ".html", true);
-    }
-
-    private static string ExpressionToString(Expression e)
-    {
-        if (e is BinaryOperatorExpression)
-        {
-            return ExpressionToString(((BinaryOperatorExpression)e).Left) + " " +
-                   ExpressionToString(((BinaryOperatorExpression)e).Right);
-        }
-        else
-        {
-            return ((PrimitiveExpression)e).Value.ToString();
-        }
-    }
-
-    private static void ProcessFile(CSParser AParsedFile, ref Dictionary <string, ErrCodeInfo>AErrorCodes)
-    {
-        ErrCodeInfo ErrCodeDetails = null;
-        string ErrCodeValue;
-        string ShortDescription = String.Empty;
-        string LongDescription = String.Empty;
-        ErrCodeCategory ErrCodeCat;
-
-        foreach (TypeDeclaration t in AParsedFile.GetClasses())
-        {
-            foreach (object child in t.Children)
+            foreach (TypeDeclaration t in AParsedFile.GetClasses())
             {
-                if (child is INode)
+                foreach (object child in t.Children)
                 {
-                    INode node = (INode)child;
-                    Type type = node.GetType();
-
-                    if (type.Name == "FieldDeclaration")
+                    if (child is INode)
                     {
-                        FieldDeclaration fd = (FieldDeclaration)node;
+                        INode node = (INode)child;
+                        Type type = node.GetType();
 
-                        foreach (VariableDeclaration vd in fd.Fields)
+                        if (type.Name == "FieldDeclaration")
                         {
-                            foreach (AttributeSection attrSection in fd.Attributes)
+                            FieldDeclaration fd = (FieldDeclaration)node;
+
+                            foreach (VariableDeclaration vd in fd.Fields)
                             {
-                                foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
+                                foreach (AttributeSection attrSection in fd.Attributes)
                                 {
-                                    LongDescription = String.Empty;
-
-                                    if (attr.Name == "ErrCodeAttribute")
+                                    foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
                                     {
-                                        ErrCodeValue = ((PrimitiveExpression)vd.Initializer).Value.ToString();
+                                        LongDescription = String.Empty;
 
-                                        if (ErrCodeValue.EndsWith("V"))
+                                        if (attr.Name == "ErrCodeAttribute")
                                         {
-                                            ErrCodeCat = ErrCodeCategory.Validation;
-                                        }
-                                        else if (ErrCodeValue.EndsWith("N"))
-                                        {
-                                            ErrCodeCat = ErrCodeCategory.NonCriticalError;
-                                        }
-                                        else
-                                        {
-                                            ErrCodeCat = ErrCodeCategory.Error;
-                                        }
+                                            ErrCodeValue = ((PrimitiveExpression)vd.Initializer).Value.ToString();
+
+                                            if (ErrCodeValue.EndsWith("V"))
+                                            {
+                                                ErrCodeCat = ErrCodeCategory.Validation;
+                                            }
+                                            else if (ErrCodeValue.EndsWith("N"))
+                                            {
+                                                ErrCodeCat = ErrCodeCategory.NonCriticalError;
+                                            }
+                                            else
+                                            {
+                                                ErrCodeCat = ErrCodeCategory.Error;
+                                            }
 
 //                                        TLogging.Log("");
 //                                        TLogging.Log("");
 //                                        TLogging.Log("");
 //                                        TLogging.Log(vd.Name + " = " + ((PrimitiveExpression)vd.Initializer).Value.ToString());
 
-                                        foreach (Expression e in attr.PositionalArguments)
-                                        {
-//                                            TLogging.Log("ShortDescription: " + ShortDescription);
-                                            ShortDescription = ((PrimitiveExpression)e).Value.ToString();
-                                        }
-
-                                        foreach (Expression e in attr.NamedArguments)
-                                        {
-                                            if (((NamedArgumentExpression)e).Name == "FullDescription")
+                                            foreach (Expression e in attr.PositionalArguments)
                                             {
-                                                LongDescription = ExpressionToString(((NamedArgumentExpression)e).Expression);
+//                                            TLogging.Log("ShortDescription: " + ShortDescription);
+                                                ShortDescription = ((PrimitiveExpression)e).Value.ToString();
                                             }
 
+                                            foreach (Expression e in attr.NamedArguments)
+                                            {
+                                                if (((NamedArgumentExpression)e).Name == "FullDescription")
+                                                {
+                                                    LongDescription = ExpressionToString(((NamedArgumentExpression)e).Expression);
+                                                }
+
 //                                            TLogging.Log("NamedArgumentExpression Name: " + LongDescription);
+                                            }
+
+                                            ErrCodeDetails = new ErrCodeInfo(ErrCodeValue, t.Name, vd.Name,
+                                                ShortDescription, LongDescription,
+                                                String.Empty, String.Empty, ErrCodeCat, String.Empty, false);
+
+                                            AErrorCodes.Add(ErrCodeValue, ErrCodeDetails);
                                         }
-
-                                        ErrCodeDetails = new ErrCodeInfo(ErrCodeValue, t.Name, vd.Name,
-                                            ShortDescription, LongDescription,
-                                            String.Empty, String.Empty, ErrCodeCat, String.Empty, false);
-
-                                        AErrorCodes.Add(ErrCodeValue, ErrCodeDetails);
                                     }
                                 }
                             }
@@ -218,5 +219,4 @@ public class TGenerateErrorCodeDoc
             }
         }
     }
-}
 }
