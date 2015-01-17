@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, simonj
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -99,7 +99,7 @@ namespace Ict.Common
             {
                 LogfileName = Path.GetFullPath(LogfileName);
             }
-				
+
             ULogFileName = LogfileName;
 
             // Test whether I can write to this file.
@@ -109,10 +109,11 @@ namespace Ict.Common
                 FCanWriteLogFile = true;
                 FLogFileErrorMsg = "Log file is " + ULogFileName;
 
-				// Test wether there was an write access today, if not rotate filenames
-				if(NeedToRotateFiles(ULogFileName)){
-					RotateFiles(ULogFileName,LogfileName);
-				}
+                // Test whether there was a write access today, if not rotate filenames
+                if (NeedToRotateFiles(ULogFileName))
+                {
+                    RotateFiles(ULogFileName, LogfileName);
+                }
 
                 temp = new FileStream(ULogFileName, FileMode.OpenOrCreate, FileAccess.Write);
             }
@@ -130,66 +131,71 @@ namespace Ict.Common
             }
         }
 
-		/// <summary>
-		/// Rotates the logfiles names in the following way.
-		/// Example: the current log file for today is PetraClient.log, 
-		/// the logfile from yesterday PetraClient-01.log, 
-		/// the day before yesterday PetraClient-02.log, and files older than 6 days are deleted.
-		/// 
-		/// When it comes to rotate the logfiles, the number of each logfile is increased
-		/// </summary>
-		/// <param name="ULogFileName">Full Path including filename</param>
-		/// <param name="LogFileName"> The name of the Logfile</param> 
-		private void RotateFiles(string ULogFileName,string LogFileName){
+        /// <summary>
+        /// Rotates the logfiles names in the following way.
+        /// Example: the current log file for today is PetraClient.log,
+        /// the logfile from yesterday PetraClient-01.log,
+        /// the day before yesterday PetraClient-02.log, and files older than 6 days are deleted.
+        ///
+        /// When it comes to rotate the logfiles, the number of each logfile is increased
+        /// </summary>
+        /// <param name="ULogFileName">Full Path including filename</param>
+        /// <param name="LogFileName"> The name of the Logfile</param>
+        private void RotateFiles(string ULogFileName, string LogFileName)
+        {
+            string LogfilePath = Path.GetDirectoryName(ULogFileName);
+            string Extension = Path.GetExtension(LogFileName);
+            string LogFileNameWithoutExtension = Path.GetFileNameWithoutExtension(LogFileName);
 
-			string LogfilePath = Path.GetDirectoryName (ULogFileName);
-			string Extention = Path.GetExtension(LogFileName);
-			string LogFileNameWithoutExtention = Path.GetFileNameWithoutExtension (LogFileName);
+            for (int i = 6; i > 0; i--)
+            {
+                string NameToRotate = LogFileNameWithoutExtension + "-0" + i + Extension;
+                string UOldFile = Path.Combine(LogfilePath, NameToRotate);
 
-			for (int i = 6; i > 0; i--) {
-				string NameToRotate = LogFileNameWithoutExtention + "-0" + i + Extention;
-				string UOldFile = Path.Combine (LogfilePath, NameToRotate);
+                if (File.Exists(UOldFile))
+                {
+                    if (6 == i)
+                    {
+                        File.Delete(UOldFile);
+                    }
+                    else
+                    {
+                        string NewName = LogFileNameWithoutExtension + "-0" + (i + 1) + Extension;
+                        string UNewFile = Path.Combine(LogfilePath, NewName);
 
-				if(File.Exists (UOldFile)){
-					if (6 == i) {
-						File.Delete (UOldFile);
-					} 
+                        File.Move(UOldFile, UNewFile);
+                    }
+                }
+            }
 
-					else {
-						string NewName = LogFileNameWithoutExtention + "-0" + (i+1) + Extention;
-						string UNewFile = Path.Combine (LogfilePath, NewName);
+            ///<description>change the newest logfile to -01.log</description>
+            string Name = LogFileNameWithoutExtension + "-01" + Extension;
+            string NewFile = Path.Combine(LogfilePath, Name);
 
-						File.Move (UOldFile, UNewFile);
-					}
-				}
-			}
+            File.Move(ULogFileName, NewFile);
+        }
 
-			///<description>change the newest logfile to -01.log</description>
-			string Name = LogFileNameWithoutExtention + "-01" + Extention;
-			string NewFile = Path.Combine (LogfilePath, Name);
+        /// <summary>
+        /// Checks if there was a Write Access to the file today.
+        /// </summary>
+        /// <returns><c>true</c>, if rotation of the files was needed (no write access today), <c>false</c> otherwise.</returns>
+        /// <param name="ULogFileName">name of the log file</param>
+        private bool NeedToRotateFiles(string ULogFileName)
+        {
+            if (!File.Exists(ULogFileName))
+            {
+                return false;
+            }
 
-			File.Move (ULogFileName, NewFile);
-		}
+            FileInfo fileInfo = new FileInfo(ULogFileName);
+            DateTime LastWriteTime = fileInfo.LastWriteTime;
+            LastWriteTime = LastWriteTime.Date;
 
-		/// <summary>
-		/// Cheks if there was an Write Access to the file today.
-		/// </summary>
-		/// <returns><c>true</c>, if to rotate files was needed (no write access today), <c>false</c> otherwise.</returns>
-		/// <param name="ULogFileName">U log file name.</param>
-		private bool NeedToRotateFiles(string ULogFileName){
-			if (!File.Exists (ULogFileName)) {
-				return false;
-			}
+            DateTime NowDate = DateTime.Now;
+            NowDate = NowDate.Date;
 
-			FileInfo fileInfo = new FileInfo(ULogFileName);
-			DateTime LastWriteTime = fileInfo.LastWriteTime;
-			LastWriteTime = LastWriteTime.Date;
-
-			DateTime NowDate = DateTime.Now;
-			NowDate = NowDate.Date;
-
-			return !LastWriteTime.Equals (NowDate);
-		}
+            return !LastWriteTime.Equals(NowDate);
+        }
 
         /// <summary>
         /// the name of the current logfile
