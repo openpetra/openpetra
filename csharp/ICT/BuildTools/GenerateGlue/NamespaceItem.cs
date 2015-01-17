@@ -34,129 +34,129 @@ using ICSharpCode.NRefactory.Ast;
 
 namespace NamespaceHierarchy
 {
-/// <summary>
-/// to be parsed from the cs files
-/// </summary>
-public class TNamespace
-{
-    string name;
-
     /// <summary>
-    /// constructor
+    /// to be parsed from the cs files
     /// </summary>
-    public TNamespace()
+    public class TNamespace
     {
-    }
+        string name;
 
-    /// <summary>
-    /// constructor
-    /// </summary>
-    /// <param name="name"></param>
-    public TNamespace(string name)
-    {
-        this.name = name;
-    }
-
-    /// <summary>
-    /// name of the namespace
-    /// </summary>
-    public string Name
-    {
-        get
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TNamespace()
         {
-            return name;
         }
-    }
 
-    /// <summary>
-    /// the children of this namespace
-    /// </summary>
-    public SortedList <string, TNamespace>Children = new SortedList <string, TNamespace>();
-
-    private static TNamespace FindOrCreateNamespace(TNamespace ARootNamespace, string ANamespaceName)
-    {
-        if (ANamespaceName.Contains("."))
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="name"></param>
+        public TNamespace(string name)
         {
-            TNamespace parent = FindOrCreateNamespace(ARootNamespace, ANamespaceName.Substring(0, ANamespaceName.LastIndexOf(".")));
+            this.name = name;
+        }
 
-            string childName = ANamespaceName.Substring(ANamespaceName.LastIndexOf(".") + 1);
-
-            if (parent.Children.ContainsKey(childName))
+        /// <summary>
+        /// name of the namespace
+        /// </summary>
+        public string Name
+        {
+            get
             {
-                return parent.Children[childName];
+                return name;
+            }
+        }
+
+        /// <summary>
+        /// the children of this namespace
+        /// </summary>
+        public SortedList <string, TNamespace>Children = new SortedList <string, TNamespace>();
+
+        private static TNamespace FindOrCreateNamespace(TNamespace ARootNamespace, string ANamespaceName)
+        {
+            if (ANamespaceName.Contains("."))
+            {
+                TNamespace parent = FindOrCreateNamespace(ARootNamespace, ANamespaceName.Substring(0, ANamespaceName.LastIndexOf(".")));
+
+                string childName = ANamespaceName.Substring(ANamespaceName.LastIndexOf(".") + 1);
+
+                if (parent.Children.ContainsKey(childName))
+                {
+                    return parent.Children[childName];
+                }
+                else
+                {
+                    TNamespace Result = new TNamespace(childName);
+                    parent.Children.Add(childName, Result);
+                    return Result;
+                }
+            }
+            else if (!ARootNamespace.Children.ContainsKey(ANamespaceName))
+            {
+                TNamespace Result = new TNamespace(ANamespaceName);
+                ARootNamespace.Children.Add(ANamespaceName, Result);
+                return Result;
             }
             else
             {
-                TNamespace Result = new TNamespace(childName);
-                parent.Children.Add(childName, Result);
-                return Result;
+                return ARootNamespace.Children[ANamespaceName];
             }
         }
-        else if (!ARootNamespace.Children.ContainsKey(ANamespaceName))
-        {
-            TNamespace Result = new TNamespace(ANamespaceName);
-            ARootNamespace.Children.Add(ANamespaceName, Result);
-            return Result;
-        }
-        else
-        {
-            return ARootNamespace.Children[ANamespaceName];
-        }
-    }
 
-    /// <summary>
-    /// parse the namespaces from the source code directory
-    /// </summary>
-    public static TNamespace ParseFromDirectory(string AServerLibPath)
-    {
-        TNamespace NamespaceRoot = new TNamespace();
-
-        List <CSParser>CSFiles = CSParser.GetCSFilesForDirectory(AServerLibPath, SearchOption.AllDirectories);
-
-        foreach (CSParser file in CSFiles)
+        /// <summary>
+        /// parse the namespaces from the source code directory
+        /// </summary>
+        public static TNamespace ParseFromDirectory(string AServerLibPath)
         {
-            foreach (NamespaceDeclaration namespaceDecl in file.GetNamespaces())
+            TNamespace NamespaceRoot = new TNamespace();
+
+            List <CSParser>CSFiles = CSParser.GetCSFilesForDirectory(AServerLibPath, SearchOption.AllDirectories);
+
+            foreach (CSParser file in CSFiles)
             {
-                if (namespaceDecl.Name.EndsWith("Connectors"))
+                foreach (NamespaceDeclaration namespaceDecl in file.GetNamespaces())
                 {
-                    string name = namespaceDecl.Name.Substring("Ict.Petra.Server.".Length + 1);
-                    FindOrCreateNamespace(NamespaceRoot, name);
+                    if (namespaceDecl.Name.EndsWith("Connectors"))
+                    {
+                        string name = namespaceDecl.Name.Substring("Ict.Petra.Server.".Length + 1);
+                        FindOrCreateNamespace(NamespaceRoot, name);
+                    }
                 }
             }
+
+            return NamespaceRoot;
         }
 
-        return NamespaceRoot;
-    }
+        private static String FindModuleName = "";
 
-    private static String FindModuleName = "";
-
-    /// <summary>
-    /// find a module in the top namespace
-    /// </summary>
-    /// <param name="AList"></param>
-    /// <param name="AModule"></param>
-    /// <returns></returns>
-    public static Int32 FindModuleIndex(List <TNamespace>AList, String AModule)
-    {
-        FindModuleName = AModule;
-        return AList.FindIndex(TNamespace.FindModule);
-    }
-
-    /// <summary>
-    /// check if this is the current module
-    /// </summary>
-    /// <param name="AModule"></param>
-    /// <returns></returns>
-    public static bool FindModule(TNamespace AModule)
-    {
-        if (AModule.Name == FindModuleName)      //FindModuleName
+        /// <summary>
+        /// find a module in the top namespace
+        /// </summary>
+        /// <param name="AList"></param>
+        /// <param name="AModule"></param>
+        /// <returns></returns>
+        public static Int32 FindModuleIndex(List <TNamespace>AList, String AModule)
         {
-            return true;
+            FindModuleName = AModule;
+            return AList.FindIndex(TNamespace.FindModule);
         }
-        else
+
+        /// <summary>
+        /// check if this is the current module
+        /// </summary>
+        /// <param name="AModule"></param>
+        /// <returns></returns>
+        public static bool FindModule(TNamespace AModule)
         {
-            return false;
+            if (AModule.Name == FindModuleName)  //FindModuleName
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
-}
 }

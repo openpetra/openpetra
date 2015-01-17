@@ -33,94 +33,94 @@ using Ict.Tools.CodeGeneration;
 
 namespace GuidedTranslation
 {
-/// <summary>
-/// contains the item string with and without additional characters and all its derivates
-/// </summary>
-public class ItemWithDerivates
-{
     /// <summary>
-    /// item without Additional Characters
+    /// contains the item string with and without additional characters and all its derivates
     /// </summary>
-    public String StringWithoutAdditionalCharacters {
-        get; set;
-    }
-
-    List <OriginalItem>AllDerivates = new List <OriginalItem>();
-
-    /// <summary>
-    /// Adds a new Derivate to an already existing item
-    /// </summary>
-    public void AddNewDerivate(OriginalItem MyOriginalItem)
+    public class ItemWithDerivates
     {
-        String OriginalString = MyOriginalItem.OriginalString;
+        /// <summary>
+        /// item without Additional Characters
+        /// </summary>
+        public String StringWithoutAdditionalCharacters {
+            get; set;
+        }
 
-        // if(AllDerivates.Count != 0)
-        bool Found = false;
+        List <OriginalItem>AllDerivates = new List <OriginalItem>();
 
-        foreach (OriginalItem AllOriginalItems in AllDerivates)
+        /// <summary>
+        /// Adds a new Derivate to an already existing item
+        /// </summary>
+        public void AddNewDerivate(OriginalItem MyOriginalItem)
         {
-            if (AllOriginalItems.OriginalString.Equals(MyOriginalItem))
+            String OriginalString = MyOriginalItem.OriginalString;
+
+            // if(AllDerivates.Count != 0)
+            bool Found = false;
+
+            foreach (OriginalItem AllOriginalItems in AllDerivates)
             {
-                Found = true;
+                if (AllOriginalItems.OriginalString.Equals(MyOriginalItem))
+                {
+                    Found = true;
+                }
+            }
+
+            if (!Found)
+            {
+                AllDerivates.Add(MyOriginalItem);
             }
         }
 
-        if (!Found)
+        /// <summary>
+        /// Returns the whole item as a string
+        /// </summary>
+        public string ReturnAsString()
         {
-            AllDerivates.Add(MyOriginalItem);
-        }
-    }
+            //return item only if there is more than 1 derivate - as we want to find double items
+            string MyString = "";
 
-    /// <summary>
-    /// Returns the whole item as a string
-    /// </summary>
-    public string ReturnAsString()
-    {
-        //return item only if there is more than 1 derivate - as we want to find double items
-        string MyString = "";
-
-        if (AllDerivates.Count > 1)
-        {
-            MyString += "-----------------------\r\n" + StringWithoutAdditionalCharacters + "\r\n--> " + AllDerivates.Count + " derivates\r\n";
-
-            foreach (OriginalItem MyOriginalItem in AllDerivates)
+            if (AllDerivates.Count > 1)
             {
-                MyString += "\"" + MyOriginalItem.OriginalString + "\"\r\n" + MyOriginalItem.SourceLocation + "\r\n-----\r\n";
+                MyString += "-----------------------\r\n" + StringWithoutAdditionalCharacters + "\r\n--> " + AllDerivates.Count + " derivates\r\n";
+
+                foreach (OriginalItem MyOriginalItem in AllDerivates)
+                {
+                    MyString += "\"" + MyOriginalItem.OriginalString + "\"\r\n" + MyOriginalItem.SourceLocation + "\r\n-----\r\n";
+                }
             }
+            else
+            {
+                MyString += "-1";
+            }
+
+            return MyString;
         }
-        else
+
+        /// <summary>
+        /// returns the number of Derivates
+        /// </summary>
+        public int NumberOfDerivates()
         {
-            MyString += "-1";
+            return AllDerivates.Count;
         }
-
-        return MyString;
     }
-
-    /// <summary>
-    /// returns the number of Derivates
-    /// </summary>
-    public int NumberOfDerivates()
-    {
-        return AllDerivates.Count;
-    }
-}
 /// <summary>
 ///contains one original String, string without additional characters and its source location
 /// </summary>
-public class OriginalItem
-{
-    /// <summary>
-    /// the original item(derivate)
-    /// </summary>
-    public string OriginalString  {
-        get; set;
-    }
+    public class OriginalItem
+    {
+        /// <summary>
+        /// the original item(derivate)
+        /// </summary>
+        public string OriginalString  {
+            get; set;
+        }
 
-    /// <summary>
-    /// the location of the derivate
-    /// </summary>
-    public string SourceLocation {
-        get; set;
+        /// <summary>
+        /// the location of the derivate
+        /// </summary>
+        public string SourceLocation {
+            get; set;
+        }
     }
-}
 }

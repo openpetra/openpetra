@@ -659,7 +659,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     FormValues["DonorComment"].Add(DonorComment);
                 } // foreach GiftDetail
-
             } // foreach Gift
 
             FormValues["GiftTotalAmount"].Add(StringHelper.FormatUsingCurrencyCode(GiftTotal, AGiftCurrency));

@@ -29,47 +29,47 @@ using Ict.Common.IO;
 
 namespace PetraMultiStart
 {
-/// <summary>
-/// Description of TestGroup.
-/// </summary>
-public class TestGroup
-{
-    private XmlNode curGroup;
-
     /// <summary>
-    /// Constructor.
+    /// Description of TestGroup.
     /// </summary>
-    /// <param name="ACurGroup"></param>
-    public TestGroup(XmlNode ACurGroup)
+    public class TestGroup
     {
-        curGroup = ACurGroup;
-    }
+        private XmlNode curGroup;
 
-    /// <summary>
-    /// Drives a Test Group.
-    /// </summary>
-    public void Run()
-    {
-        Thread ClientThread;
-        TestClient MyClient;
-        int StartId;
-        int EndId;
-
-
-        Thread.Sleep((int)main.RandomBreak(curGroup));
-
-        Console.WriteLine("{0}: starting group {1}", DateTime.Now.ToLongTimeString(), TXMLParser.GetAttribute(curGroup, "name"));
-
-        StartId = TXMLParser.GetIntAttribute(curGroup, "startid");
-        EndId = TXMLParser.GetIntAttribute(curGroup, "endid");
-
-        for (int Counter = StartId; Counter <= EndId; Counter += 1)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="ACurGroup"></param>
+        public TestGroup(XmlNode ACurGroup)
         {
-            MyClient = new TestClient(curGroup, Counter + Global.StartClientID, StartId == EndId);
+            curGroup = ACurGroup;
+        }
 
-            ClientThread = new Thread(MyClient.Run);
-            ClientThread.Start();
+        /// <summary>
+        /// Drives a Test Group.
+        /// </summary>
+        public void Run()
+        {
+            Thread ClientThread;
+            TestClient MyClient;
+            int StartId;
+            int EndId;
+
+
+            Thread.Sleep((int)main.RandomBreak(curGroup));
+
+            Console.WriteLine("{0}: starting group {1}", DateTime.Now.ToLongTimeString(), TXMLParser.GetAttribute(curGroup, "name"));
+
+            StartId = TXMLParser.GetIntAttribute(curGroup, "startid");
+            EndId = TXMLParser.GetIntAttribute(curGroup, "endid");
+
+            for (int Counter = StartId; Counter <= EndId; Counter += 1)
+            {
+                MyClient = new TestClient(curGroup, Counter + Global.StartClientID, StartId == EndId);
+
+                ClientThread = new Thread(MyClient.Run);
+                ClientThread.Start();
+            }
         }
     }
-}
 }

@@ -37,220 +37,220 @@ using Ict.Tools.DBXML;
 
 namespace GenerateI18N
 {
-/// <summary>
-/// create a yaml file for localisation
-/// </summary>
-public class GenerateYamlFiles
-{
     /// <summary>
-    /// write yaml files for localisation
+    /// create a yaml file for localisation
     /// </summary>
-    /// <param name="ALanguageCode"></param>
-    /// <param name="AYamlFilePath"></param>
-    /// <param name="APoFilePath"></param>
-    public static void WriteYamlFiles(string ALanguageCode, string AYamlFilePath, string APoFilePath)
+    public class GenerateYamlFiles
     {
-        if (ALanguageCode == "en-EN")
+        /// <summary>
+        /// write yaml files for localisation
+        /// </summary>
+        /// <param name="ALanguageCode"></param>
+        /// <param name="AYamlFilePath"></param>
+        /// <param name="APoFilePath"></param>
+        public static void WriteYamlFiles(string ALanguageCode, string AYamlFilePath, string APoFilePath)
         {
-            return;
-        }
-
-        string[] yamlfiles = System.IO.Directory.GetFiles(AYamlFilePath, "*.yaml", SearchOption.AllDirectories);
-
-        // load (compiled) po file, and use for the labels
-        Catalog.SetLanguage(ALanguageCode);
-        Catalog.Init();
-
-        foreach (string yamlfile in yamlfiles)
-        {
-            // only look for main files, not language specific files (*.xy-XY.yaml or *.xy.yaml)
-            if (TProcessYAMLForms.IgnoreLanguageSpecificYamlFile(yamlfile))
+            if (ALanguageCode == "en-EN")
             {
-                continue;
+                return;
             }
 
-            CreateLocalisedYamlFile(ALanguageCode, yamlfile);
-        }
+            string[] yamlfiles = System.IO.Directory.GetFiles(AYamlFilePath, "*.yaml", SearchOption.AllDirectories);
 
-        TPoFileParser.WriteUpdatedPoFile(APoFilePath, NewTranslations);
-    }
+            // load (compiled) po file, and use for the labels
+            Catalog.SetLanguage(ALanguageCode);
+            Catalog.Init();
 
-    private static SortedList <string, string>NewTranslations = new SortedList <string, string>();
-
-    private static void ProcessRadioGroupLabels(XmlNode node)
-    {
-        StringCollection optionalValues =
-            TYml2Xml.GetElements(TXMLParser.GetChild(node, "OptionalValues"));
-
-        node.RemoveAll();
-        XmlNode OptionalValuesLabel = node.OwnerDocument.CreateElement("LabelsForOptionalValues");
-        node.AppendChild(OptionalValuesLabel);
-
-        foreach (string s in optionalValues)
-        {
-            string label = s;
-
-            if (label.StartsWith("="))
+            foreach (string yamlfile in yamlfiles)
             {
-                label = label.Substring(1).Trim();
-            }
-
-            XmlNode LabelNode = node.OwnerDocument.CreateElement(TYml2Xml.XMLLIST);
-            OptionalValuesLabel.AppendChild(LabelNode);
-            TXMLParser.SetAttribute(LabelNode, "name", Catalog.GetString(label));
-        }
-    }
-
-    private static void AdjustLabel(XmlNode node, TCodeStorage CodeStorage, XmlDocument AOrigLocalisedYaml)
-    {
-        XmlNode TranslatedNode = TXMLParser.FindNodeRecursive(AOrigLocalisedYaml, node.Name);
-        string TranslatedLabel = string.Empty;
-
-        if (TranslatedNode != null)
-        {
-            TranslatedLabel = TXMLParser.GetAttribute(TranslatedNode, "Label");
-        }
-
-        TControlDef ctrlDef = new TControlDef(node, CodeStorage);
-        string Label = ctrlDef.Label;
-
-        if ((ctrlDef.GetAttribute("NoLabel") == "true") || (ctrlDef.controlTypePrefix == "pnl")
-            || (TXMLParser.FindNodeRecursive(node.OwnerDocument, "act" + ctrlDef.controlName.Substring(ctrlDef.controlTypePrefix.Length)) != null)
-            || ctrlDef.GetAttribute("Action").StartsWith("act"))
-        {
-            Label = string.Empty;
-        }
-
-        if ((ctrlDef.controlTypePrefix == "rgr") && (TXMLParser.GetChild(node, "OptionalValues") != null))
-        {
-            ProcessRadioGroupLabels(node);
-        }
-        else if (ctrlDef.controlTypePrefix == "mni")
-        {
-            // drop all attributes
-            node.Attributes.RemoveAll();
-
-            foreach (XmlNode menu in node.ChildNodes)
-            {
-                if (menu.Name.Contains("Separator"))
+                // only look for main files, not language specific files (*.xy-XY.yaml or *.xy.yaml)
+                if (TProcessYAMLForms.IgnoreLanguageSpecificYamlFile(yamlfile))
                 {
                     continue;
                 }
 
-                AdjustLabel(menu, CodeStorage, AOrigLocalisedYaml);
+                CreateLocalisedYamlFile(ALanguageCode, yamlfile);
             }
-        }
-        else
-        {
-            // drop all attributes and children nodes
-            node.RemoveAll();
+
+            TPoFileParser.WriteUpdatedPoFile(APoFilePath, NewTranslations);
         }
 
-        if (Label.Length > 0)
+        private static SortedList <string, string>NewTranslations = new SortedList <string, string>();
+
+        private static void ProcessRadioGroupLabels(XmlNode node)
         {
-            if ((TranslatedLabel != Label) && (TranslatedLabel != Catalog.GetString(Label)) && (TranslatedLabel.Length > 0))
+            StringCollection optionalValues =
+                TYml2Xml.GetElements(TXMLParser.GetChild(node, "OptionalValues"));
+
+            node.RemoveAll();
+            XmlNode OptionalValuesLabel = node.OwnerDocument.CreateElement("LabelsForOptionalValues");
+            node.AppendChild(OptionalValuesLabel);
+
+            foreach (string s in optionalValues)
             {
-                // add to po file
-                if (!NewTranslations.ContainsKey(Label))
+                string label = s;
+
+                if (label.StartsWith("="))
                 {
-                    NewTranslations.Add(Label, TranslatedLabel);
+                    label = label.Substring(1).Trim();
                 }
 
-                TXMLParser.SetAttribute(node, "Label", TranslatedLabel);
+                XmlNode LabelNode = node.OwnerDocument.CreateElement(TYml2Xml.XMLLIST);
+                OptionalValuesLabel.AppendChild(LabelNode);
+                TXMLParser.SetAttribute(LabelNode, "name", Catalog.GetString(label));
+            }
+        }
+
+        private static void AdjustLabel(XmlNode node, TCodeStorage CodeStorage, XmlDocument AOrigLocalisedYaml)
+        {
+            XmlNode TranslatedNode = TXMLParser.FindNodeRecursive(AOrigLocalisedYaml, node.Name);
+            string TranslatedLabel = string.Empty;
+
+            if (TranslatedNode != null)
+            {
+                TranslatedLabel = TXMLParser.GetAttribute(TranslatedNode, "Label");
+            }
+
+            TControlDef ctrlDef = new TControlDef(node, CodeStorage);
+            string Label = ctrlDef.Label;
+
+            if ((ctrlDef.GetAttribute("NoLabel") == "true") || (ctrlDef.controlTypePrefix == "pnl")
+                || (TXMLParser.FindNodeRecursive(node.OwnerDocument, "act" + ctrlDef.controlName.Substring(ctrlDef.controlTypePrefix.Length)) != null)
+                || ctrlDef.GetAttribute("Action").StartsWith("act"))
+            {
+                Label = string.Empty;
+            }
+
+            if ((ctrlDef.controlTypePrefix == "rgr") && (TXMLParser.GetChild(node, "OptionalValues") != null))
+            {
+                ProcessRadioGroupLabels(node);
+            }
+            else if (ctrlDef.controlTypePrefix == "mni")
+            {
+                // drop all attributes
+                node.Attributes.RemoveAll();
+
+                foreach (XmlNode menu in node.ChildNodes)
+                {
+                    if (menu.Name.Contains("Separator"))
+                    {
+                        continue;
+                    }
+
+                    AdjustLabel(menu, CodeStorage, AOrigLocalisedYaml);
+                }
             }
             else
             {
-                TXMLParser.SetAttribute(node, "Label", Catalog.GetString(Label));
+                // drop all attributes and children nodes
+                node.RemoveAll();
             }
+
+            if (Label.Length > 0)
+            {
+                if ((TranslatedLabel != Label) && (TranslatedLabel != Catalog.GetString(Label)) && (TranslatedLabel.Length > 0))
+                {
+                    // add to po file
+                    if (!NewTranslations.ContainsKey(Label))
+                    {
+                        NewTranslations.Add(Label, TranslatedLabel);
+                    }
+
+                    TXMLParser.SetAttribute(node, "Label", TranslatedLabel);
+                }
+                else
+                {
+                    TXMLParser.SetAttribute(node, "Label", Catalog.GetString(Label));
+                }
+            }
+        }
+
+        private static void CreateLocalisedYamlFile(string ALanguageCode, string AYamlfile)
+        {
+            TLogging.Log(AYamlfile);
+
+            string localisedYamlFile = AYamlfile.Replace(".yaml", "." + ALanguageCode + ".yaml");
+
+            TYml2Xml parser;
+            XmlDocument localisedYamlFileDoc = new XmlDocument();
+
+            if (File.Exists(localisedYamlFile))
+            {
+                // TODO parse the localised yaml file and add translations to the po file
+                parser = new TYml2Xml(localisedYamlFile);
+                localisedYamlFileDoc = parser.ParseYML2XML();
+            }
+
+            // parse the yaml file
+            parser = new TYml2Xml(AYamlfile);
+            XmlDocument yamlFile = parser.ParseYML2XML();
+
+            SortedList xmlNodes = new SortedList();
+            TCodeStorage CodeStorage = new TCodeStorage(yamlFile, xmlNodes);
+
+            XmlNode RootNode = TXMLParser.FindNodeRecursive(yamlFile.DocumentElement, "RootNode");
+            RootNode.Attributes.RemoveAll();
+            TXMLParser.SetAttribute(RootNode, "BaseYaml", Path.GetFileName(AYamlfile));
+
+            // get controls node
+            XmlNode Controls = TXMLParser.FindNodeRecursive(yamlFile.DocumentElement, "Controls");
+
+            if (Controls != null)
+            {
+                foreach (XmlNode control in Controls)
+                {
+                    AdjustLabel(control, CodeStorage, localisedYamlFileDoc);
+                }
+            }
+
+            // get actions node
+            XmlNode Actions = TXMLParser.FindNodeRecursive(yamlFile.DocumentElement, "Actions");
+
+            if (Actions != null)
+            {
+                foreach (XmlNode action in Actions)
+                {
+                    AdjustLabel(action, CodeStorage, localisedYamlFileDoc);
+                }
+            }
+
+            // menu items
+            XmlNode menuitems = TXMLParser.FindNodeRecursive(yamlFile.DocumentElement, "Menu");
+
+            if (menuitems != null)
+            {
+                foreach (XmlNode menu in menuitems)
+                {
+                    if (menu.Name.Contains("Separator"))
+                    {
+                        continue;
+                    }
+
+                    AdjustLabel(menu, CodeStorage, localisedYamlFileDoc);
+                }
+            }
+
+            // toolbar buttons
+            XmlNode tbbuttons = TXMLParser.FindNodeRecursive(yamlFile.DocumentElement, "Toolbar");
+
+            if (tbbuttons != null)
+            {
+                foreach (XmlNode tbb in tbbuttons)
+                {
+                    if (tbb.Name.Contains("Separator"))
+                    {
+                        continue;
+                    }
+
+                    AdjustLabel(tbb, CodeStorage, localisedYamlFileDoc);
+                }
+            }
+
+            // TODO parse the cs file for string constants
+            // TODO warn about Catalog.GetString calls in manualcode file
+            // TODO add constants to localised yaml file
+
+            TYml2Xml.Xml2Yml(yamlFile, localisedYamlFile);
         }
     }
-
-    private static void CreateLocalisedYamlFile(string ALanguageCode, string AYamlfile)
-    {
-        TLogging.Log(AYamlfile);
-
-        string localisedYamlFile = AYamlfile.Replace(".yaml", "." + ALanguageCode + ".yaml");
-
-        TYml2Xml parser;
-        XmlDocument localisedYamlFileDoc = new XmlDocument();
-
-        if (File.Exists(localisedYamlFile))
-        {
-            // TODO parse the localised yaml file and add translations to the po file
-            parser = new TYml2Xml(localisedYamlFile);
-            localisedYamlFileDoc = parser.ParseYML2XML();
-        }
-
-        // parse the yaml file
-        parser = new TYml2Xml(AYamlfile);
-        XmlDocument yamlFile = parser.ParseYML2XML();
-
-        SortedList xmlNodes = new SortedList();
-        TCodeStorage CodeStorage = new TCodeStorage(yamlFile, xmlNodes);
-
-        XmlNode RootNode = TXMLParser.FindNodeRecursive(yamlFile.DocumentElement, "RootNode");
-        RootNode.Attributes.RemoveAll();
-        TXMLParser.SetAttribute(RootNode, "BaseYaml", Path.GetFileName(AYamlfile));
-
-        // get controls node
-        XmlNode Controls = TXMLParser.FindNodeRecursive(yamlFile.DocumentElement, "Controls");
-
-        if (Controls != null)
-        {
-            foreach (XmlNode control in Controls)
-            {
-                AdjustLabel(control, CodeStorage, localisedYamlFileDoc);
-            }
-        }
-
-        // get actions node
-        XmlNode Actions = TXMLParser.FindNodeRecursive(yamlFile.DocumentElement, "Actions");
-
-        if (Actions != null)
-        {
-            foreach (XmlNode action in Actions)
-            {
-                AdjustLabel(action, CodeStorage, localisedYamlFileDoc);
-            }
-        }
-
-        // menu items
-        XmlNode menuitems = TXMLParser.FindNodeRecursive(yamlFile.DocumentElement, "Menu");
-
-        if (menuitems != null)
-        {
-            foreach (XmlNode menu in menuitems)
-            {
-                if (menu.Name.Contains("Separator"))
-                {
-                    continue;
-                }
-
-                AdjustLabel(menu, CodeStorage, localisedYamlFileDoc);
-            }
-        }
-
-        // toolbar buttons
-        XmlNode tbbuttons = TXMLParser.FindNodeRecursive(yamlFile.DocumentElement, "Toolbar");
-
-        if (tbbuttons != null)
-        {
-            foreach (XmlNode tbb in tbbuttons)
-            {
-                if (tbb.Name.Contains("Separator"))
-                {
-                    continue;
-                }
-
-                AdjustLabel(tbb, CodeStorage, localisedYamlFileDoc);
-            }
-        }
-
-        // TODO parse the cs file for string constants
-        // TODO warn about Catalog.GetString calls in manualcode file
-        // TODO add constants to localised yaml file
-
-        TYml2Xml.Xml2Yml(yamlFile, localisedYamlFile);
-    }
-}
 }

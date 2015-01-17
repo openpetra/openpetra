@@ -1386,6 +1386,7 @@ namespace Ict.Petra.Client.CommonControls
 
                         /* end try */
                     }
+
                     /* end IS assigned */
                     else
                     {
@@ -1861,6 +1862,7 @@ namespace Ict.Petra.Client.CommonControls
                                     throw new EOPAppException("Exception occured while calling OpenExtractFind Delegate!", exp);
                                 }
                             }
+
                             /* end IS assigned */
                             else
                             {
@@ -1913,6 +1915,7 @@ namespace Ict.Petra.Client.CommonControls
                                     throw new EOPAppException("Exception occured while calling OpenConferenceFind Delegate!", exp);
                                 }
                             }
+
                             /* end IS assigned */
                             else
                             {
@@ -1965,6 +1968,7 @@ namespace Ict.Petra.Client.CommonControls
                                     throw new EOPAppException("Exception occured while calling OpenEventFind Delegate!", exp);
                                 }
                             }
+
                             /* end IS assigned */
                             else
                             {

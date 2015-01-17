@@ -557,18 +557,13 @@ namespace Ict.Petra.Server.MFinance.Common
                                                     transRow.JournalNumber, transRow.TransactionNumber, attributeRow.AnalysisTypeCode),
                                                 TResultSeverity.Resv_Critical));
                                     } // if
-
                                 } // else
-
                             } // else
-
                         } // else
 
                         i++;
                     } // while i
-
                 } // foreach transRowView
-
             } // foreach journal
 
             return TVerificationHelper.IsNullOrOnlyNonCritical(AVerifications);

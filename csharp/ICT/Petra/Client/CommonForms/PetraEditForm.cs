@@ -329,6 +329,7 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     ((Ict.Common.Controls.TTxtNumericTextBox)ctrl).TextChanged += new EventHandler(this.MultiEventHandler);
                 }
+
                 /*
                  * The remaining controls are listed in order to be able to
                  * warn the developer if a new control is added to a form

@@ -283,33 +283,33 @@ namespace Ict.Petra.Server.MFinance.Common
         /// If this value is non zero, there's a problem.
         /// Type: Critical.
         /// </summary>
-            PEEC_02,
+        PEEC_02,
 
         /// <summary>The user has required a month end but a year end should be done first.</summary>
-            PEEC_03,
+        PEEC_03,
 
         /// <summary>The user has required a year end but a month end should be done first.</summary>
-            PEEC_04,
+        PEEC_04,
 
         /// <summary>A revaluation should be done before the month end.</summary>
-            PEEC_05,
+        PEEC_05,
 
         /// <summary>Unposted batches prevent period close.</summary>
-            PEEC_06,
+        PEEC_06,
 
         /// <summary>Suspense accounts prevent period close.</summary>
-            PEEC_07,
+        PEEC_07,
 
         /// <summary>Unposted gift batches are found prevent period close.</summary>
-            PEEC_08,
+        PEEC_08,
 
         /// <summary>No income accounts have been found.</summary>
-            PEEC_09,
+        PEEC_09,
 
         /// <summary>No expense accounts have been found.</summary>
-            PEEC_10,
+        PEEC_10,
 
         /// <summary>No ICH_ACCT Account is defined.</summary>
-            PEEC_11,
+        PEEC_11,
     }
 }

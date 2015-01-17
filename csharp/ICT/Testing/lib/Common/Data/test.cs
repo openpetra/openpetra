@@ -228,7 +228,7 @@ namespace Ict.Common.Data.Testing
             MainDS.SubmitChanges(t);
             DBAccess.GDBAccessObj.CommitTransaction();
         }
-#endif
 
+#endif
     }
 }

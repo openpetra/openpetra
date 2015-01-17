@@ -279,9 +279,7 @@ namespace Ict.Common.Controls
                                 ReturnValue += (OptionalQuote + Row[KeyColumn].ToString() + OptionalQuote);
                                 // This was changed from AddCsv because
                             }                // I need it to consistently add quotes to all of the values in the list
-
                         }                    // (Or no quotes would also be fine, but not some with and some without!)
-
                     }                        // AddCsv Adds quotes if the string has leading zeroes,
 
                     // so for example it adds quotes to Cost Code "0300" but not 3000.

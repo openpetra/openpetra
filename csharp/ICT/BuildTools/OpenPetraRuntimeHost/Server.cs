@@ -283,7 +283,9 @@ namespace Ict.Tools.OpenPetraRuntimeHost
                 BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.NonPublic,
                 null,
                 buildManagerHost,
-                new object[2] { hostType.Assembly.FullName, hostType.Assembly.Location });
+                new object[2] {
+                    hostType.Assembly.FullName, hostType.Assembly.Location
+                });
 
             // create Host in the worker app domain
             IRegisteredObject ret = appManager.CreateObject(appId, hostType, virtualPath, physicalPath, false);

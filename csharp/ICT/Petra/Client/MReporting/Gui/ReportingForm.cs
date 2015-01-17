@@ -335,8 +335,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
             }
         }
-#endif
 
+#endif
 
 
         #region Screen Initialisation

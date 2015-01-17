@@ -343,6 +343,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             if (!MatchFound)
             {
 #if TODO
+
                 /* look in previous periods (need to compare date of transactions to the month of the stewardship
                  *             because there may be a batch present which was for last years stewardship - eg. Dec 2007
                  *             Stewardship for US may have been processed in Jan 2008) */
@@ -503,6 +504,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             }
 
 #if TODO
+
             /* now check previous periods if batch wasn't in current period */
             AThisYearOldBatchTable ThisYearOldBatchTable = AThisYearOldBatchAccess.LoadByPrimaryKey(AICHLedgerNumber, ABatchNumber, ADBTransaction);
             AThisYearOldBatchRow ThisYearOldBatchRow = (AThisYearOldBatchRow)ThisYearOldBatchTable.Rows[0];
@@ -1583,6 +1585,7 @@ PostGenerateBatch:
             }
 
 #if TODO
+
             /* if the batch wasn't in the current period try previous periods. In this case we can't assume
              * that the transaction reference will be in the "new style" (ie. LLLPPRRR). It might be in the
              * old style (ie. LLLPP). We are able to do more checks where it is in the new style as we can

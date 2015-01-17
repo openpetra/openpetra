@@ -1787,7 +1787,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                     LocationCounter--;
                                 }
                             } // if CheckHasPartnerLocationOtherPartnerReferences ... then
-
                         }
                     } // if CheckHasLocationChanged ... then
                     else

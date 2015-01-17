@@ -109,22 +109,22 @@ namespace Ict.Petra.Client.CommonForms
             embrYes,
 
             /// <summary>Button 'Yes To All' was pressed</summary>
-                embrYesToAll,
+            embrYesToAll,
 
             /// <summary>Button 'No' was pressed</summary>
-                embrNo,
+            embrNo,
 
             /// <summary>Button 'No To All' was pressed</summary>
-                embrNoToAll,
+            embrNoToAll,
 
             /// <summary>Button 'OK' was pressed</summary>
-                embrOK,
+            embrOK,
 
             /// <summary>Button 'Cancel' was pressed</summary>
-                embrCancel,
+            embrCancel,
 
             /// <summary>It is undefined which button was pressed</summary>
-                embrUndefined
+            embrUndefined
         }
 
         /// <summary>Result returned from message box in GetResult</summary>
@@ -134,16 +134,16 @@ namespace Ict.Petra.Client.CommonForms
             embiNone,
 
             /// <summary>display icon for question</summary>
-                embiQuestion,
+            embiQuestion,
 
             /// <summary>display icon for information</summary>
-                embiInformation,
+            embiInformation,
 
             /// <summary>display warning icon</summary>
-                embiWarning,
+            embiWarning,
 
             /// <summary>display error icon</summary>
-                embiError
+            embiError
         }
 
         /// <summary>

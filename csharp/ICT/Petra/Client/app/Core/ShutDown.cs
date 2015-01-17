@@ -30,125 +30,125 @@ using Ict.Petra.Client.App.Core;
 
 namespace PetraClientShutdown
 {
-/// <summary>
-/// Handles various aspects of the shutdown of the PetraClient.
-/// </summary>
-public static class Shutdown
-{
     /// <summary>
-    /// todoComment
+    /// Handles various aspects of the shutdown of the PetraClient.
     /// </summary>
-    public static void SaveUserDefaultsAndDisconnect()
+    public static class Shutdown
     {
-        String CantDisconnectReason;
-
-        try
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public static void SaveUserDefaultsAndDisconnect()
         {
-            TUserDefaults.SaveChangedUserDefaults();
+            String CantDisconnectReason;
 
-            if (!Ict.Petra.Client.App.Core.TConnectionManagement.GConnectionManagement.DisconnectFromServer(out CantDisconnectReason))
+            try
             {
+                TUserDefaults.SaveChangedUserDefaults();
+
+                if (!Ict.Petra.Client.App.Core.TConnectionManagement.GConnectionManagement.DisconnectFromServer(out CantDisconnectReason))
+                {
 #if TESTMODE
-                TLogging.Log("cannot disconnect: " + CantDisconnectReason);
+                    TLogging.Log("cannot disconnect: " + CantDisconnectReason);
 #endif
 #if  TESTMODE
 #else
+                    if (TLogging.DebugLevel > 0)
+                    {
+                        MessageBox.Show(CantDisconnectReason, "Error on Client Disconnection");
+                    }
+#endif
+                }
+            }
+            catch (Exception Exp)
+            {
                 if (TLogging.DebugLevel > 0)
                 {
-                    MessageBox.Show(CantDisconnectReason, "Error on Client Disconnection");
+                    MessageBox.Show("DEBUG Information: Unhandled exception while disconnecting from Servers: " + "\r\n" + Exp.ToString());
                 }
-#endif
             }
         }
-        catch (Exception Exp)
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public static void SaveUserDefaultsAndDisconnectAndStop()
         {
-            if (TLogging.DebugLevel > 0)
+            SaveUserDefaultsAndDisconnect();
+            StopPetraClient();
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public static void StopPetraClient()
+        {
+            if (TClientSettings.RunAsStandalone == true)
             {
-                MessageBox.Show("DEBUG Information: Unhandled exception while disconnecting from Servers: " + "\r\n" + Exp.ToString());
+                StopServers();
             }
+
+            // APPLICATION STOPS HERE !!!
+            Environment.Exit(0);
         }
-    }
 
-    /// <summary>
-    /// todoComment
-    /// </summary>
-    public static void SaveUserDefaultsAndDisconnectAndStop()
-    {
-        SaveUserDefaultsAndDisconnect();
-        StopPetraClient();
-    }
-
-    /// <summary>
-    /// todoComment
-    /// </summary>
-    public static void StopPetraClient()
-    {
-        if (TClientSettings.RunAsStandalone == true)
+        /// <summary>
+        /// Stops the Petra Server Console
+        /// </summary>
+        public static void StopServers()
         {
-            StopServers();
+            StopPostgreSqlServer();
         }
 
-        // APPLICATION STOPS HERE !!!
-        Environment.Exit(0);
-    }
-
-    /// <summary>
-    /// Stops the Petra Server Console
-    /// </summary>
-    public static void StopServers()
-    {
-        StopPostgreSqlServer();
-    }
-
-    private static void StopPostgreSqlServer()
-    {
+        private static void StopPostgreSqlServer()
+        {
 #if TODO
-        System.Diagnostics.Process PostgreSqlServerProcess;
+            System.Diagnostics.Process PostgreSqlServerProcess;
 
-        if (TClientSettings.RunAsStandalone)
-        {
-            // stop the PostgreSql server (e.g. c:\Program Files\Postgres\8.3\bin\pg_ctl.exe -D C:\petra2\db23_pg stop
-            try
+            if (TClientSettings.RunAsStandalone)
             {
-                PostgreSqlServerProcess = new System.Diagnostics.Process();
-                PostgreSqlServerProcess.StartInfo.FileName = "\"" + TClientSettings.PostgreSql_BaseDir + "\\bin\\pg_ctl.exe\"";
-                PostgreSqlServerProcess.StartInfo.Arguments = "-D " + TClientSettings.PostgreSql_DataDir + " stop";
-                PostgreSqlServerProcess.StartInfo.WorkingDirectory = TClientSettings.PostgreSql_DataDir;
-                PostgreSqlServerProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                PostgreSqlServerProcess.EnableRaisingEvents = false;
-                PostgreSqlServerProcess.StartInfo.UseShellExecute = false;
-
-                System.Security.SecureString MyPassword = new System.Security.SecureString();
-                String Pwd = "petra";
-
-                foreach (char c in Pwd)
+                // stop the PostgreSql server (e.g. c:\Program Files\Postgres\8.3\bin\pg_ctl.exe -D C:\petra2\db23_pg stop
+                try
                 {
-                    MyPassword.AppendChar(c);
+                    PostgreSqlServerProcess = new System.Diagnostics.Process();
+                    PostgreSqlServerProcess.StartInfo.FileName = "\"" + TClientSettings.PostgreSql_BaseDir + "\\bin\\pg_ctl.exe\"";
+                    PostgreSqlServerProcess.StartInfo.Arguments = "-D " + TClientSettings.PostgreSql_DataDir + " stop";
+                    PostgreSqlServerProcess.StartInfo.WorkingDirectory = TClientSettings.PostgreSql_DataDir;
+                    PostgreSqlServerProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    PostgreSqlServerProcess.EnableRaisingEvents = false;
+                    PostgreSqlServerProcess.StartInfo.UseShellExecute = false;
+
+                    System.Security.SecureString MyPassword = new System.Security.SecureString();
+                    String Pwd = "petra";
+
+                    foreach (char c in Pwd)
+                    {
+                        MyPassword.AppendChar(c);
+                    }
+
+                    PostgreSqlServerProcess.StartInfo.Password = MyPassword;
+                    PostgreSqlServerProcess.StartInfo.UserName = "petrapostgresqluser";
+
+                    if (!PostgreSqlServerProcess.Start())
+                    {
+#if TESTMODE
+                        TLogging.Log("failed to start " + PostgreSqlServerProcess.StartInfo.FileName);
+#endif
+                        return;
+                    }
                 }
-
-                PostgreSqlServerProcess.StartInfo.Password = MyPassword;
-                PostgreSqlServerProcess.StartInfo.UserName = "petrapostgresqluser";
-
-                if (!PostgreSqlServerProcess.Start())
+                catch (Exception exp)
                 {
 #if TESTMODE
-                    TLogging.Log("failed to start " + PostgreSqlServerProcess.StartInfo.FileName);
+                    TLogging.Log("Exception while shutting down PostgreSql server process: " + exp.ToString());
+#else
+                    MessageBox.Show("Exception while shutting down PostgreSql server process: " + exp.ToString());
 #endif
                     return;
                 }
+                PostgreSqlServerProcess.WaitForExit(20000);
             }
-            catch (Exception exp)
-            {
-#if TESTMODE
-                TLogging.Log("Exception while shutting down PostgreSql server process: " + exp.ToString());
-#else
-                MessageBox.Show("Exception while shutting down PostgreSql server process: " + exp.ToString());
 #endif
-                return;
-            }
-            PostgreSqlServerProcess.WaitForExit(20000);
         }
-#endif
     }
-}
 }

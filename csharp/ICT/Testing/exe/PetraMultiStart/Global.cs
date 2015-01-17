@@ -25,24 +25,24 @@ using System;
 
 namespace PetraMultiStart
 {
-/// <summary>
-/// Variables for sharing data between the different Classes of PetraMultiStart.
-/// </summary>
-public class Global
-{
     /// <summary>
-    /// File name of the Client Executable.
+    /// Variables for sharing data between the different Classes of PetraMultiStart.
     /// </summary>
-    public static String Filename;
+    public class Global
+    {
+        /// <summary>
+        /// File name of the Client Executable.
+        /// </summary>
+        public static String Filename;
 
-    /// <summary>
-    /// Client ID that the test should start with.
-    /// </summary>
-    public static Int32 StartClientID;
+        /// <summary>
+        /// Client ID that the test should start with.
+        /// </summary>
+        public static Int32 StartClientID;
 
-    /// <summary>
-    /// File name of the Config file for the Client Executable.
-    /// </summary>
-    public static String Configfile;
-}
+        /// <summary>
+        /// File name of the Config file for the Client Executable.
+        /// </summary>
+        public static String Configfile;
+    }
 }

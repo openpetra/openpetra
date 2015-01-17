@@ -42,18 +42,18 @@ using System.Runtime.InteropServices;
 
 namespace PetraServerAdminConsole
 {
-class PetraServerAdminConsole
-{
-    void run()
+    class PetraServerAdminConsole
     {
-        TAdminConsole.Start();
-    }
+        void run()
+        {
+            TAdminConsole.Start();
+        }
 
-    public static void Main(string[] args)
-    {
-        PetraServerAdminConsole myApp = new PetraServerAdminConsole();
+        public static void Main(string[] args)
+        {
+            PetraServerAdminConsole myApp = new PetraServerAdminConsole();
 
-        myApp.run();
+            myApp.run();
+        }
     }
-}
 }

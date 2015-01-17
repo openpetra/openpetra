@@ -421,6 +421,7 @@ namespace Ict.Petra.Server.App.WebService
         }
 
 #if TODORemoting
+
         /**
          * Calling DisconnectClient tears down the Client's AppDomain and therefore
          * kills all remoted objects for the Client that were not released before.

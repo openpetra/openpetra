@@ -28,20 +28,20 @@ using System.Xml;
 
 namespace ControlTestBench
 {
-/// <summary>
-/// Description of TaskListCheck.
-/// </summary>
-public partial class TaskListCheck : Form
-{
     /// <summary>
-    /// constructor
+    /// Description of TaskListCheck.
     /// </summary>
-    public TaskListCheck(XmlNode Node, Ict.Common.Controls.TVisualStylesEnum Style)
+    public partial class TaskListCheck : Form
     {
-        //
-        // The InitializeComponent() call is required for Windows Forms designer support.
-        //
-        InitializeComponent(Node, Style);
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TaskListCheck(XmlNode Node, Ict.Common.Controls.TVisualStylesEnum Style)
+        {
+            //
+            // The InitializeComponent() call is required for Windows Forms designer support.
+            //
+            InitializeComponent(Node, Style);
+        }
     }
-}
 }

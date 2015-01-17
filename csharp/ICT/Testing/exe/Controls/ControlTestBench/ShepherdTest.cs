@@ -31,62 +31,62 @@ using Ict.Common.Controls;
 
 namespace ControlTestBench
 {
-/// <summary>
-/// Description of ShepherdTest.
-/// </summary>
-public partial class ShepherdTest : Form
-{
-    XmlNode FTestYAMNode = null;
-
     /// <summary>
-    /// Constructor.
+    /// Description of ShepherdTest.
     /// </summary>
-    public ShepherdTest()
+    public partial class ShepherdTest : Form
     {
-        //
-        // The InitializeComponent() call is required for Windows Forms designer support.
-        //
-        InitializeComponent();
-    }
+        XmlNode FTestYAMNode = null;
 
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    /// <param name="AXmlNode"></param>
-    public ShepherdTest(XmlNode AXmlNode)
-    {
-        FTestYAMNode = AXmlNode;
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public ShepherdTest()
+        {
+            //
+            // The InitializeComponent() call is required for Windows Forms designer support.
+            //
+            InitializeComponent();
+        }
 
-        this.Controls.Clear();
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="AXmlNode"></param>
+        public ShepherdTest(XmlNode AXmlNode)
+        {
+            FTestYAMNode = AXmlNode;
 
-        this.tPnlCollapsible1 = new TPnlCollapsible(THostedControlKind.hckTaskList,
-            FTestYAMNode,
-            TCollapseDirection.cdHorizontal,
-            240,
-            false,
-            TVisualStylesEnum.vsShepherd);
-        this.tPnlCollapsible1.BorderStyle = BorderStyle.FixedSingle;
-        this.tPnlCollapsible1.Text = "My Shepherd Test";
-        tPnlCollapsible1.Dock = DockStyle.Left;
-        this.Controls.Add(this.tPnlCollapsible1);
+            this.Controls.Clear();
 
-        this.Size = new Size(750, 400);
+            this.tPnlCollapsible1 = new TPnlCollapsible(THostedControlKind.hckTaskList,
+                FTestYAMNode,
+                TCollapseDirection.cdHorizontal,
+                240,
+                false,
+                TVisualStylesEnum.vsShepherd);
+            this.tPnlCollapsible1.BorderStyle = BorderStyle.FixedSingle;
+            this.tPnlCollapsible1.Text = "My Shepherd Test";
+            tPnlCollapsible1.Dock = DockStyle.Left;
+            this.Controls.Add(this.tPnlCollapsible1);
 
-        HookupItemActivationEvent();
+            this.Size = new Size(750, 400);
+
+            HookupItemActivationEvent();
 //        tPnlCollapsible1.VisualStyleEnum = TVisualStylesEnum.vsShepherd;
 //        tPnlCollapsible1.TaskListNode = AXmlNode;
 //        tPnlCollapsible1.Collapse();
 //        tPnlCollapsible1.Expand();
-    }
+        }
 
-    private void HookupItemActivationEvent()
-    {
-        ((TPnlCollapsible) this.Controls[0]).ItemActivation += new TTaskList.TaskLinkClicked(CollPanel_ItemActivation);
-    }
+        private void HookupItemActivationEvent()
+        {
+            ((TPnlCollapsible) this.Controls[0]).ItemActivation += new TTaskList.TaskLinkClicked(CollPanel_ItemActivation);
+        }
 
-    void CollPanel_ItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
-    {
-        MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
+        void CollPanel_ItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
+        {
+            MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
+        }
     }
-}
 }

@@ -555,6 +555,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnEditFamilyID.Text = MCommonResourcestrings.StrBtnTextDone;
                 this.PrepareArrowButtons();
             }
+
             /* if the "DONE" button is pressed, enables screenparts, disables combobox */
             else
             {

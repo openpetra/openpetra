@@ -105,7 +105,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     DataUtilities.CopyAllColumnValues(GiftRow, NewRow);
                     GiftsPerDonor[GiftRow.DonorKey].Rows.Add(NewRow);
                 }  // if receipt required
-
             } // foreach gift
 
             String HtmlDoc = "";

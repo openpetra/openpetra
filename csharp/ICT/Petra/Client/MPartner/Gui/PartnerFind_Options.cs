@@ -899,8 +899,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
         }
-#endif
 
+#endif
     }
 #if TODO
     public class TFindCriteriaListItem : System.Object
