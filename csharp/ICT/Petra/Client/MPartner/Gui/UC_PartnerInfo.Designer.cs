@@ -870,7 +870,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlFamilyMembers.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlFamilyMembers.Location = new System.Drawing.Point(3, 3);
             this.pnlFamilyMembers.Name = "pnlFamilyMembers";
-            this.pnlFamilyMembers.Size = new System.Drawing.Size(270, 151);
+            this.pnlFamilyMembers.Size = new System.Drawing.Size(350, 151);
             this.pnlFamilyMembers.TabIndex = 33;
             //
             // txtFamilyMembers
@@ -888,7 +888,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtFamilyMembers.Name = "txtFamilyMembers";
             this.txtFamilyMembers.ReadOnly = true;
             this.txtFamilyMembers.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtFamilyMembers.Size = new System.Drawing.Size(270, 138);
+            this.txtFamilyMembers.Size = new System.Drawing.Size(350, 138);
             this.txtFamilyMembers.TabIndex = 32;
             //
             // lblFamilyMembers

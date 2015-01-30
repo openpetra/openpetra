@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Collections;
@@ -62,9 +63,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private static readonly string StrFamilyNeedsToBeSelectedTitle = Catalog.GetString("Family Needed!");
 
         private static readonly string StrCorrectFamilyKeyNeedsToBeEntered = Catalog.GetString(
-            "The correct key of an existing family needs to be entered when a new Partner of Partner Class 'PERSON' should be created!");
+            "You must choose a Partner of Partner Class 'FAMILY' as the Family of the new Person!");
 
-        private static readonly string StrCorrectFamilyKeyNeedsToBeEnteredTitle = Catalog.GetString("A correct family key needs to be entered!");
+        private static readonly string StrCorrectFamilyKeyNeedsToBeEnteredTitle = Catalog.GetString("A Family Needs to be Selected!");
 
         private static readonly string StrAPartnerKeyExists = Catalog.GetString(
             "A Partner with Partner Key {0} already exists.\r\nPlease choose a different Partner Key!");
@@ -180,7 +181,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtFamilyPartnerBox.ButtonText = Catalog.GetString("&Family...");
             this.btnOK.Text = Catalog.GetString("&OK");
             this.btnCancel.Text = Catalog.GetString("&Cancel");
-            this.btnHelp.Text = Catalog.GetString("&Help");
             this.Text = Catalog.GetString("New Partner");
             #endregion
 
@@ -237,12 +237,73 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         txtFamilyPartnerBox.Text = FFamilyPartnerKey.ToString();
                     }
+                    else
+                    {
+                        this.Cursor = Cursors.WaitCursor;
+
+                        try
+                        {
+                            FFamilyPartnerKey = GetLastUsedFamilyKey();
+
+                            if (FFamilyPartnerKey != 0)
+                            {
+                                TLocationPK FamilysBestAddress = TRemote.MPartner.Partner.WebConnectors.DetermineBestAddress(FFamilyPartnerKey);
+
+                                FFamilyLocationKey = FamilysBestAddress.LocationKey;
+                                FFamilySiteKey = FamilysBestAddress.SiteKey;
+
+                                txtFamilyPartnerBox.Text = FFamilyPartnerKey.ToString();
+                            }
+                            else
+                            {
+                                FFamilyPartnerKey = -1;
+                            }
+                        }
+                        finally
+                        {
+                            this.Cursor = Cursors.Default;
+                        }
+                    }
 
                     FFamilyPartnerSelectionSetup = true;
                 }
             }
 
             txtFamilyPartnerBox.Visible = AShow;
+        }
+
+        /// <summary>
+        /// Makes a server call to get the key of the last used family
+        /// <returns>FamilyKey of the last accessed family</returns>
+        /// </summary>
+        private System.Int64 GetLastUsedFamilyKey()
+        {
+            bool LastFamilyFound = false;
+            const int MaxPartnersCount = 7;
+
+            System.Int64 FamilyKey = 0000000000;
+            Dictionary <long, string>RecentlyUsedPartners;
+            ArrayList PartnerClasses = new ArrayList();
+
+            PartnerClasses.Add("*");
+
+            TServerLookup.TMPartner.GetRecentlyUsedPartners(MaxPartnersCount, PartnerClasses, out RecentlyUsedPartners);
+
+            foreach (KeyValuePair <long, string>CurrentEntry in RecentlyUsedPartners)
+            {
+                //search for the last FamilyKey
+                //assign it only to FamilyKey if there hasn't been yet found another Family
+
+                //fe. CurrentEntry.Key= 43005007 CurrentEntry.Value= Test, alex (type PERSON)
+                //TLogging.Log("CurrentEntry.Key= " + CurrentEntry.Key + " CurrentEntry.Value= " + CurrentEntry.Value);
+                if (CurrentEntry.Value.Contains("FAMILY") && !LastFamilyFound)
+                {
+                    FamilyKey = CurrentEntry.Key;
+                    LastFamilyFound = true;
+                }
+            }
+
+            return FamilyKey;
         }
 
         private void BtnHelp_Click(System.Object sender, System.EventArgs e)
@@ -590,6 +651,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Select Row that contains 'Best Site'
             grdInstalledSites.Selection.SelectRow(BestSiteRowNumber, true);
+            grdInstalledSites.ShowCell(BestSiteRowNumber);
         }
 
         #endregion

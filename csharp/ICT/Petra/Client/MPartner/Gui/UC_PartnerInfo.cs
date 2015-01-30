@@ -1607,7 +1607,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             for (int Counter = 0; Counter < FPartnerInfoDS.FamilyMembers.Rows.Count; Counter++)
             {
                 FamilyMembersDR = FPartnerInfoDS.FamilyMembers[Counter];
-                FamilyMembers = FamilyMembers + FamilyMembersDR.PartnerShortName + "   [" + FamilyMembersDR.PartnerKey + "]" +
+                FamilyMembers = FamilyMembers + FamilyMembersDR.PartnerShortName + "   [ " + String.Format("{0:0000000000}",
+                    FamilyMembersDR.PartnerKey) + " ]" +
                                 Environment.NewLine;
             }
 

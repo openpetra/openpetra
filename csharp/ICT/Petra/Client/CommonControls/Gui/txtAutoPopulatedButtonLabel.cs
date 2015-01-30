@@ -496,6 +496,22 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// Gets or sets whether the TextBox part of the Control is Enabled.
+        /// </summary>
+        public bool TextBoxPartEnabled
+        {
+            get
+            {
+                return this.txtAutoPopulated.TextBoxPartEnabled;
+            }
+
+            set
+            {
+                this.txtAutoPopulated.TextBoxPartEnabled = value;
+            }
+        }
+
+        /// <summary>
         /// This property gets and sets the Text of this control.
         /// </summary>
         public new string Text

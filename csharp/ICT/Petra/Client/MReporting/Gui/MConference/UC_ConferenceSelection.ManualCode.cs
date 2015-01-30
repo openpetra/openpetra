@@ -33,7 +33,9 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.CommonForms;
 
@@ -93,8 +95,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             {
                 txtConference.Text = SelectedConferenceKey.ToString();
             }
-
-            txtConference.ReadOnly = true;
         }
 
         /// <summary>
@@ -162,13 +162,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             }
 
             if ((AReportAction == TReportActionEnum.raGenerate)
-                && (rbtConference.Checked)
-                && (txtConference.Text == "0000000000"))
+                && (rbtConference.Checked))
             {
-                VerificationResult = new TVerificationResult(Catalog.GetString("Select a conference to run the report against to."),
-                    Catalog.GetString("No conference was selected!"),
-                    TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                if (txtConference.Text == "0000000000")
+                {
+                    VerificationResult = new TVerificationResult(Catalog.GetString("Select a conference to run the report against to."),
+                        Catalog.GetString("No conference was selected!"),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+                else
+                {
+                    if (!TRemote.MConference.Conference.WebConnectors.ConferenceExists(Convert.ToInt64(txtConference.Text)))
+                    {
+                        VerificationResult = new TVerificationResult(Catalog.GetString("Select a conference to run the report against to."),
+                            Catalog.GetString(
+                                "Partner Key in 'Conference' is not for a conference! Select a Conference using the 'Find' Button or enter a Partner Key of a Conference manually."),
+                            TResultSeverity.Resv_Critical);
+                        FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                    }
+                }
             }
 
             if (FShowSelectOutreachOptionsDialog

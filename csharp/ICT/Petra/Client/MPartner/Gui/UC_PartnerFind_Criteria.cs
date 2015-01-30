@@ -463,7 +463,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblAddress3.Text = Catalog.GetString("Address &3") + ":";
             this.lblAddress2.Text = Catalog.GetString("Address &2") + ":";
             this.lblEmail.Text = Catalog.GetString("&Email") + ":";
-            this.lblPartnerName.Text = Catalog.GetString("Partner &Name") + ":";
+            this.lblPartnerName.Text = Catalog.GetString("Pa&rtner Name") + ":";
             this.lblPersonalName.Text = Catalog.GetString("Personal &(First) Name") + ":";
             this.lblPreviousName.Text = Catalog.GetString("Previous Name") + ":";
             this.lblAddress1.Text = Catalog.GetString("Address &1") + ":";

@@ -1367,6 +1367,18 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                          * address of the new Person and gets deleted there as soon as copying is
                          * done)
                          */
+
+                        if (AFamilyLocationKey == -1)
+                        {
+                            // Backstop: If AFamilyLocationKey is -1, then we don't know an Address of the FAMILY. In that
+                            // case determine the 'Best Address' of the FAMILY; the Partner Edit screen will use this to
+                            // create the first address of the new PERSON.
+                            TLocationPK FamilysBestAddr =
+                                Calculations.DetermineBestAddress(PPartnerLocationAccess.LoadViaPPartner(AFamilyPartnerKey, null, ReadTransaction));
+                            AFamilyLocationKey = FamilysBestAddr.LocationKey;
+                            AFamilySiteKey = FamilysBestAddr.SiteKey;
+                        }
+
                         //                  TLogging.LogAtLevel(7, "Getting Family Address - AFamilyPartnerKey: " + AFamilyPartnerKey.ToString() + "; AFamilyLocationKey: " + AFamilyLocationKey.ToString());
                         TPPartnerAddressAggregate.LoadByPrimaryKey(FPartnerEditScreenDS,
                             AFamilyPartnerKey,
@@ -2215,6 +2227,18 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, true,
                                         TLastPartnerUse.lpuMailroomPartner);
                                     TLogging.LogAtLevel(6, "TPartnerEditUIConnector.SubmitChanges: Set Partner as Recent Partner.");
+
+                                    if (FPartnerClass == TPartnerClass.PERSON)
+                                    {
+                                        // Set FAMILY of new PERSON as recent Partner, too.
+                                        // This helps the user in the creation of multiple PERSONs, one after the other, as
+                                        // the 'New Partner' Dialog will pick up that FAMILY once the first new PERSON got
+                                        // saved (see Bug #974).
+                                        //TRecentPartnersHandling.AddRecentlyUsedPartner(InspectDS.PPerson[0].FamilyKey, TPartnerClass.FAMILY, false,
+                                        //    TLastPartnerUse.lpuMailroomPartner);
+                                        TLogging.LogAtLevel(6,
+                                            "TPartnerEditUIConnector.SubmitChanges: Set PERSON Partners' FAMILY as Recent Partner.");
+                                    }
                                 }
 
                                 if (TLogging.DebugLevel >= 4)
