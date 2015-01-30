@@ -612,7 +612,7 @@ namespace Ict.Common
             {
                 if (ADateObject is DateTime)
                 {
-                    ReturnValue = (DateTime) ADateObject;
+                    ReturnValue = (DateTime)ADateObject;
                 }
                 else if (!(ADateObject.ToString() == ""))
                 {
