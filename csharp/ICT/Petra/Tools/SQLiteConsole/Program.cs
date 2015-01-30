@@ -92,10 +92,22 @@ namespace Ict.Tools.SQLiteConsole
                     SQLCommand += " " + line.Trim();
                 }
 
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-                DataTable result = DBAccess.GDBAccessObj.SelectDT(SQLCommand, "temp", transaction);
-                TDataBase.LogTable(result);
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                TDBTransaction transaction = null;
+                DataTable result = null;
+                DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref transaction,
+                    delegate
+                    {
+                        result = DBAccess.GDBAccessObj.SelectDT(SQLCommand, "temp", transaction);
+                    });
+                
+                if (result == null)
+                {
+                    TLogging.Log("The query returned a NULL table of results!");
+                }
+                else
+                {
+                    TDataBase.LogTable(result);
+                }
             }
             catch (Exception e)
             {

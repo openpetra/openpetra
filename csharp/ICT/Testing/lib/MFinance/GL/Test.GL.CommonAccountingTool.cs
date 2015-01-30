@@ -126,13 +126,17 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         private void PrepareTestCaseData()
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            TDBTransaction Transaction = null;
+            bool AccountTestCasesAvailable = false;
+            bool CostCentreTestCasesAvailable = false;
 
-            // Check if some special test data are available - otherwise load ...
-            bool AccountTestCasesAvailable = AAccountAccess.Exists(LedgerNumber, "6001", Transaction);
-            bool CostCentreTestCasesAvailable = ACostCentreAccess.Exists(LedgerNumber, "4301", Transaction);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                    // Check if some special test data are available - otherwise load ...
+                    AccountTestCasesAvailable = AAccountAccess.Exists(LedgerNumber, "6001", Transaction);
+                    CostCentreTestCasesAvailable = ACostCentreAccess.Exists(LedgerNumber, "4301", Transaction);
+                });
 
             if (!AccountTestCasesAvailable)
             {

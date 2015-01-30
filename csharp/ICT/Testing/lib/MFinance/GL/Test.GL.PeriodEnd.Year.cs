@@ -477,12 +477,17 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         private void LoadTestTata_GetBatchInfo()
         {
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
             ABatchRow template = new ABatchTable().NewRowTyped(false);
 
             template.BatchDescription = strTestDataBatchDescription;
-            ABatchTable batches = ABatchAccess.LoadUsingTemplate(template, transaction);
-            DBAccess.GDBAccessObj.CommitTransaction();
+
+            TDBTransaction transaction = null;
+            ABatchTable batches = null;
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref transaction,
+                delegate
+                {
+                    batches = ABatchAccess.LoadUsingTemplate(template, transaction);
+                });
 
             if (batches.Rows.Count == 0)
             {
@@ -498,12 +503,16 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[0].Value = strTestDataBatchDescription;
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            string strSQL = "DELETE FROM PUB_" + ABatchTable.GetTableDBName() + " ";
-            strSQL += "WHERE " + ABatchTable.GetBatchDescriptionDBName() + " = ? ";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(
-                strSQL, transaction, ParametersArray);
-            DBAccess.GDBAccessObj.CommitTransaction();
+            TDBTransaction transaction = null;
+            bool SubmissionOK = true;
+            DBAccess.GDBAccessObj.BeginAutoTransaction(ref transaction, ref SubmissionOK,
+                delegate
+                {
+                    string strSQL = "DELETE FROM PUB_" + ABatchTable.GetTableDBName() + " ";
+                    strSQL += "WHERE " + ABatchTable.GetBatchDescriptionDBName() + " = ? ";
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(
+                        strSQL, transaction, ParametersArray);
+                });
         }
     }
 }

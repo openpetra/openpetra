@@ -161,23 +161,27 @@ namespace Tests.MFinance.Server.ICH
         /// </summary>
         private void ImportAdminFees()
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            AFeesPayableTable FeesPayableTable = null;
+            AFeesReceivableTable FeesReceivableTable = null;
 
-            AFeesPayableRow template = new AFeesPayableTable().NewRowTyped(false);
+            TDBTransaction Transaction = null;
 
-            template.LedgerNumber = FLedgerNumber;
-            template.FeeCode = MainFeesPayableCode;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    AFeesPayableRow template = new AFeesPayableTable().NewRowTyped(false);
+                    template.LedgerNumber = FLedgerNumber;
+                    template.FeeCode = MainFeesPayableCode;
 
-            AFeesPayableTable FeesPayableTable = AFeesPayableAccess.LoadUsingTemplate(template, Transaction);
+                    FeesPayableTable = AFeesPayableAccess.LoadUsingTemplate(template, Transaction);
 
-            AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);
+                    AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);
 
-            template.LedgerNumber = FLedgerNumber;
-            template.FeeCode = MainFeesReceivableCode;
+                    template1.LedgerNumber = FLedgerNumber;
+                    template1.FeeCode = MainFeesReceivableCode;
 
-            AFeesReceivableTable FeesReceivableTable = AFeesReceivableAccess.LoadUsingTemplate(template1, Transaction);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                    FeesReceivableTable = AFeesReceivableAccess.LoadUsingTemplate(template1, Transaction);
+                });
 
             if (FeesPayableTable.Count == 0)
             {
@@ -200,21 +204,17 @@ namespace Tests.MFinance.Server.ICH
         {
             ImportAdminFees();
 
-            bool NewTransaction = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            TVerificationResultCollection VerificationResults = null;
-
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            AFeesPayableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
-            AFeesReceivableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    AFeesPayableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
+                    AFeesReceivableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
+                });
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            TVerificationResultCollection VerificationResults = null;
 
             //TODO If this first one works, try different permatations for Assert.AreEqual
             // Test also for exception handling

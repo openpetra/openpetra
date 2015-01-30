@@ -468,10 +468,13 @@ namespace Tests.MFinance.Client.ExchangeRates
 
                 if (sql != String.Empty)
                 {
-                    Boolean IsNewTransaction;
-                    TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                        out IsNewTransaction);
-                    nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(sql, WriteTransaction, null, IsNewTransaction);
+                    Boolean SubmissionOK = true;
+                    TDBTransaction WriteTransaction = null;
+                    DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref WriteTransaction, ref SubmissionOK,
+                        delegate
+                        {
+                            nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(sql, WriteTransaction);
+                        });
                 }
 
                 // Did we do anything?

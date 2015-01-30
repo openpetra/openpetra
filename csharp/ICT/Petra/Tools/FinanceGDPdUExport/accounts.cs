@@ -135,10 +135,6 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             Console.WriteLine("Writing file: " + filename);
 
-            StringBuilder sb = new StringBuilder();
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
             // only export accounts that are actually used with these cost centres
             string sql =
                 String.Format("SELECT {0}, {1}, {2} from PUB_{3} WHERE {4} = {5} AND " +
@@ -151,17 +147,26 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     ALedgerNumber,
                     AAccountTable.GetPostingStatusDBName());
 
-            DataTable accounts = DBAccess.GDBAccessObj.SelectDT(sql, "accounts", Transaction);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
-            foreach (DataRow row in accounts.Rows)
-            {
-                if (AAccounts.Contains(row[0].ToString()))
+            TDBTransaction Transaction = null;
+            DataTable accounts = null;
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
                 {
-                    sb.Append(StringHelper.StrMerge(new string[] { row[0].ToString(), row[1].ToString(),
+                    accounts = DBAccess.GDBAccessObj.SelectDT(sql, "accounts", Transaction);
+                });
+
+            StringBuilder sb = new StringBuilder();
+
+            if (accounts != null)
+            {
+                foreach (DataRow row in accounts.Rows)
+                {
+                    if (AAccounts.Contains(row[0].ToString()))
+                    {
+                        sb.Append(StringHelper.StrMerge(new string[] { row[0].ToString(), row[1].ToString(),
                                                                    Convert.ToBoolean(row[2]) ? "Soll" : "Haben" }, ACSVSeparator));
-                    sb.Append(ANewLine);
+                        sb.Append(ANewLine);
+                    }
                 }
             }
 

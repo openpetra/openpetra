@@ -380,13 +380,18 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         private void LoadTestData_GetBatchInfo()
         {
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
             ABatchRow template = new ABatchTable().NewRowTyped(false);
 
             template.LedgerNumber = FLedgerNumber;
             template.BatchDescription = strTestDataBatchDescription;
-            ABatchTable batches = ABatchAccess.LoadUsingTemplate(template, transaction);
-            DBAccess.GDBAccessObj.CommitTransaction();
+
+            TDBTransaction transaction = null;
+            ABatchTable batches = null;
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref transaction,
+                delegate
+                {
+                    batches = ABatchAccess.LoadUsingTemplate(template, transaction);
+                });
 
             if (batches.Rows.Count == 0)
             {
@@ -404,13 +409,17 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[1].Value = strTestDataBatchDescription;
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            string strSQL = "DELETE FROM PUB_" + ABatchTable.GetTableDBName() + " ";
-            strSQL += "WHERE " + ABatchTable.GetLedgerNumberDBName() + " = ? " +
-                      "AND " + ABatchTable.GetBatchDescriptionDBName() + " = ? ";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(
-                strSQL, transaction, ParametersArray);
-            DBAccess.GDBAccessObj.CommitTransaction();
+            TDBTransaction transaction = null;
+            bool SubmissionOK = true;
+            DBAccess.GDBAccessObj.BeginAutoTransaction(ref transaction, ref SubmissionOK,
+                delegate
+                {
+                    string strSQL = "DELETE FROM PUB_" + ABatchTable.GetTableDBName() + " ";
+                    strSQL += "WHERE " + ABatchTable.GetLedgerNumberDBName() + " = ? " +
+                              "AND " + ABatchTable.GetBatchDescriptionDBName() + " = ? ";
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(
+                        strSQL, transaction, ParametersArray);
+                });
         }
     }
 
@@ -435,14 +444,18 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
                 ParametersArray[1].Value = strAcount;
 
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-                string strSQL = "INSERT INTO PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
-                strSQL += "(" + ASuspenseAccountTable.GetLedgerNumberDBName();
-                strSQL += "," + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + ") ";
-                strSQL += "VALUES ( ? , ? )";
+                TDBTransaction transaction = null;
+                bool SubmissionOK = true;
+                DBAccess.GDBAccessObj.BeginAutoTransaction(ref transaction, ref SubmissionOK,
+                    delegate
+                    {
+                        string strSQL = "INSERT INTO PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
+                        strSQL += "(" + ASuspenseAccountTable.GetLedgerNumberDBName();
+                        strSQL += "," + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + ") ";
+                        strSQL += "VALUES ( ? , ? )";
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
-                DBAccess.GDBAccessObj.CommitTransaction();
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
+                    });
             }
             catch (Exception)
             {
@@ -452,8 +465,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         public void Unsuspense()
         {
-//            try
-//            {
+            // The equivalent try/catch block that is used for Suspense() was removed 27 Jan 2015 in order to fix
+            //  the issue in Mantis #3730
             OdbcParameter[] ParametersArray;
             ParametersArray = new OdbcParameter[2];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
@@ -461,21 +474,17 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[1].Value = strAcount;
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            string strSQL = "DELETE FROM PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
-            strSQL += "WHERE " + ASuspenseAccountTable.GetLedgerNumberDBName() + " = ? ";
-            strSQL += "AND " + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + " = ? ";
+                TDBTransaction transaction = null;
+                bool SubmissionOK = true;
+                DBAccess.GDBAccessObj.BeginAutoTransaction(ref transaction, ref SubmissionOK,
+                    delegate
+                    {
+                        string strSQL = "DELETE FROM PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
+                        strSQL += "WHERE " + ASuspenseAccountTable.GetLedgerNumberDBName() + " = ? ";
+                        strSQL += "AND " + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + " = ? ";
 
-            DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
-            DBAccess.GDBAccessObj.CommitTransaction();
-
-/*
- *          }
- *          catch (Exception)
- *          {
- *              Assert.Fail("No database access to run the test");
- *          }
- */
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
+                    });
         }
     }
 }

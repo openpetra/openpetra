@@ -85,16 +85,25 @@ namespace Tests.MFinance.Server.ICH
         /// </summary>
         private void ImportAdminFees()
         {
-            bool NewTransaction = false;
+            AFeesPayableTable FeesPayableTable = null;
+            AFeesReceivableTable FeesReceivableTable = null;
+            TDBTransaction Transaction = null;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    AFeesPayableRow template = new AFeesPayableTable().NewRowTyped(false);
+                    template.LedgerNumber = FLedgerNumber;
+                    template.FeeCode = MainFeesPayableCode;
 
-            AFeesPayableRow template = new AFeesPayableTable().NewRowTyped(false);
+                    FeesPayableTable = AFeesPayableAccess.LoadUsingTemplate(template, Transaction);
 
-            template.LedgerNumber = FLedgerNumber;
-            template.FeeCode = MainFeesPayableCode;
+                    AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);
+                    template1.LedgerNumber = FLedgerNumber;
+                    template1.FeeCode = MainFeesReceivableCode;
 
-            AFeesPayableTable FeesPayableTable = AFeesPayableAccess.LoadUsingTemplate(template, Transaction);
+                    FeesReceivableTable = AFeesReceivableAccess.LoadUsingTemplate(template1, Transaction);
+                });
 
             if (FeesPayableTable.Count == 0)
             {
@@ -102,22 +111,10 @@ namespace Tests.MFinance.Server.ICH
                     "test-sql\\gl-test-feespayable-data.sql", FLedgerNumber);
             }
 
-            AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);
-
-            template.LedgerNumber = FLedgerNumber;
-            template.FeeCode = MainFeesReceivableCode;
-
-            AFeesReceivableTable FeesReceivableTable = AFeesReceivableAccess.LoadUsingTemplate(template1, Transaction);
-
             if (FeesReceivableTable.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-feesreceivable-data.sql");
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
             }
         }
 
@@ -167,8 +164,6 @@ namespace Tests.MFinance.Server.ICH
             // make sure there is a valid email destination
             if (TGenFilesReports.GetICHEmailAddress(null).Length == 0)
             {
-                TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
                 string sqlStatement =
                     String.Format("INSERT INTO PUB_{0}({1},{2},{3},{4}) VALUES (?,?,?,?)",
                         AEmailDestinationTable.GetTableDBName(),
@@ -193,8 +188,14 @@ namespace Tests.MFinance.Server.ICH
                 parameter.Value = TAppSettingsManager.GetValue("ClearingHouse.EmailAddress");
                 parameters.Add(parameter);
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sqlStatement, DBTransaction, parameters.ToArray());
-                DBAccess.GDBAccessObj.CommitTransaction();
+                bool SubmissionOK = true;
+                TDBTransaction DBTransaction = null;
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref DBTransaction, ref SubmissionOK,
+                    delegate
+                    {
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(sqlStatement, DBTransaction, parameters.ToArray());
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    });
             }
 
             TGenFilesReports.GenerateStewardshipFile(FLedgerNumber,

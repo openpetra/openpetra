@@ -95,29 +95,27 @@ namespace Ict.Common.DB.Testing
         /// </summary>
         private void EnforceForeignKeyConstraint()
         {
-            TDBTransaction t;
-            string sql;
+            TDBTransaction t = null;
+            bool SubmissionOK = true;
+            string sql = "INSERT INTO a_gift(a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i) " +
+                         "VALUES(43, 99999999, 1)";
 
-            try
-            {
-                t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                sql = "INSERT INTO a_gift(a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i) " +
-                      "VALUES(43, 99999999, 1)";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            catch
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw;
-            }
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+                delegate
+                {
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                });
 
             // UNDO the test
-            t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            t = null;
+            SubmissionOK = true;
             sql = "DELETE FROM a_gift" +
                   " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999 AND a_gift_transaction_number_i = 1";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
-            DBAccess.GDBAccessObj.CommitTransaction();
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+                delegate
+                {
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                });
         }
 
         /// test the order of statements in a transaction
@@ -136,38 +134,37 @@ namespace Ict.Common.DB.Testing
         /// </summary>
         private void WrongOrderSqlStatements()
         {
-            TDBTransaction t;
-            string sql;
+            TDBTransaction t = null;
+            bool SubmissionOK = true;
 
-            try
-            {
-                // setup test scenario: a gift batch, with 2 gifts, each with 2 gift details
-                t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                sql = "INSERT INTO a_gift(a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i) " +
-                      "VALUES(43, 99999999, 1)";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
-                sql =
-                    "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_batch_description_c, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c) "
-                    +
-                    "VALUES(43, 99999999, 'Test', '6000', 1, 'EUR', '4300')";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            catch
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw;
-            }
+            // setup test scenario: a gift batch, with 2 gifts, each with 2 gift details
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+                delegate
+                {
+                    string sql = "INSERT INTO a_gift(a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i) " +
+                                 "VALUES(43, 99999999, 1)";
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sql,
+                        t);
+                    sql =
+                        "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_batch_description_c, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c) "
+                        +
+                        "VALUES(43, 99999999, 'Test', '6000', 1, 'EUR', '4300')";
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                });
 
             // UNDO the test
-            t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            sql = "DELETE FROM a_gift" +
-                  " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999 AND a_gift_transaction_number_i = 1";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
-            sql = "DELETE FROM a_gift_batch" +
-                  " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
-            DBAccess.GDBAccessObj.CommitTransaction();
+            t = null;
+            SubmissionOK = true;
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+                delegate
+                {
+                    string sql = "DELETE FROM a_gift" +
+                                 " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999 AND a_gift_transaction_number_i = 1";
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                    sql = "DELETE FROM a_gift_batch" +
+                          " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999";
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                });
         }
 
         /// test the order of statements in a transaction
@@ -188,87 +185,95 @@ namespace Ict.Common.DB.Testing
         [Test]
         public void TestInsertMultipleRows()
         {
-            TDBTransaction t;
+            TDBTransaction t = null;
+            bool SubmissionOK = true;
             string sql;
 
-            try
-            {
-                t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                sql =
-                    "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_batch_description_c, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c) "
-                    +
-                    "VALUES (43, 990, 'TEST', '6000', 1, 'EUR', '4300'),(43, 991, 'TEST', '6000', 1, 'EUR', '4300')";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            catch
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw;
-            }
+            DBAccess.GDBAccessObj.BeginAutoTransaction(
+                IsolationLevel.Serializable,
+                ref t,
+                ref SubmissionOK,
+                delegate
+                {
+                    sql =
+                        "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_batch_description_c, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c) "
+                        +
+                        "VALUES (43, 990, 'TEST', '6000', 1, 'EUR', '4300'),(43, 991, 'TEST', '6000', 1, 'EUR', '4300')";
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                });
 
             // UNDO the test
-            t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            sql = "DELETE FROM a_gift_batch" +
-                  " WHERE a_ledger_number_i = 43 AND (a_batch_number_i = 990 or a_batch_number_i = 991)";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
-            DBAccess.GDBAccessObj.CommitTransaction();
+            t = null;
+            SubmissionOK = true;
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+                delegate
+                {
+                    sql = "DELETE FROM a_gift_batch" +
+                          " WHERE a_ledger_number_i = 43 AND (a_batch_number_i = 990 or a_batch_number_i = 991)";
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                });
         }
 
         /// test sequences
         [Test]
         public void TestSequence()
         {
-            TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            Int64 PreviousSequence = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
-            Int64 NextSequence = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
+            TDBTransaction t = null;
 
-            Assert.AreEqual(PreviousSequence + 1, NextSequence, "next sequence is one more than previous sequence");
-            Int64 CurrentSequence = DBAccess.GDBAccessObj.GetCurrentSequenceValue("seq_statement_number", t);
-            Assert.AreEqual(CurrentSequence, NextSequence, "current sequence value should be the last used sequence value");
-            DBAccess.GDBAccessObj.RestartSequence("seq_statement_number", t, CurrentSequence);
-            Int64 CurrentSequenceAfterReset = DBAccess.GDBAccessObj.GetCurrentSequenceValue("seq_statement_number", t);
-            Assert.AreEqual(CurrentSequence, CurrentSequenceAfterReset, "after reset we want the same current sequence");
-            Int64 NextSequenceAfterReset = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
-            Assert.AreEqual(CurrentSequence + 1, NextSequenceAfterReset, "after reset we don't want the previous last sequence number to be repeated");
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.Serializable, ref t,
+                delegate
+                {
+                    Int64 PreviousSequence = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
+                    Int64 NextSequence = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                    Assert.AreEqual(PreviousSequence + 1, NextSequence, "next sequence is one more than previous sequence");
+                    Int64 CurrentSequence = DBAccess.GDBAccessObj.GetCurrentSequenceValue("seq_statement_number", t);
+                    Assert.AreEqual(CurrentSequence, NextSequence, "current sequence value should be the last used sequence value");
+                    DBAccess.GDBAccessObj.RestartSequence("seq_statement_number", t, CurrentSequence);
+                    Int64 CurrentSequenceAfterReset = DBAccess.GDBAccessObj.GetCurrentSequenceValue("seq_statement_number", t);
+                    Assert.AreEqual(CurrentSequence, CurrentSequenceAfterReset, "after reset we want the same current sequence");
+                    Int64 NextSequenceAfterReset = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
+                    Assert.AreEqual(CurrentSequence + 1, NextSequenceAfterReset,
+                        "after reset we don't want the previous last sequence number to be repeated");
+                });
         }
 
         /// test timestamp
         [Test]
         public void TestTimeStamp()
         {
-            TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction t = null;
 
-            string countSql = "SELECT COUNT(*) FROM PUB_s_system_defaults";
-            int count = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(countSql, t));
-            string code = "test" + (count + 1).ToString();
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.Serializable, ref t,
+                delegate
+                {
+                    string countSql = "SELECT COUNT(*) FROM PUB_s_system_defaults";
+                    int count = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(countSql, t));
+                    string code = "test" + (count + 1).ToString();
 
-            string insertSql = String.Format(
-                "INSERT INTO PUB_s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c, s_modification_id_t) VALUES('{0}', '{1}','{2}',NOW())",
-                code,
-                "test",
-                "test");
+                    string insertSql = String.Format(
+                        "INSERT INTO PUB_s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c, s_modification_id_t) VALUES('{0}', '{1}','{2}',NOW())",
+                        code,
+                        "test",
+                        "test");
 
-            Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(insertSql, t));
+                    Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(insertSql, t));
 
-            string getTimeStampSql = String.Format(
-                "SELECT s_modification_id_t FROM PUB_s_system_defaults WHERE s_default_code_c = '{0}'",
-                code);
-            DateTime timestamp = Convert.ToDateTime(DBAccess.GDBAccessObj.ExecuteScalar(getTimeStampSql, t));
+                    string getTimeStampSql = String.Format(
+                        "SELECT s_modification_id_t FROM PUB_s_system_defaults WHERE s_default_code_c = '{0}'",
+                        code);
+                    DateTime timestamp = Convert.ToDateTime(DBAccess.GDBAccessObj.ExecuteScalar(getTimeStampSql, t));
 
-            string updateSql = String.Format(
-                "UPDATE PUB_s_system_defaults set s_modification_id_t = NOW(), s_default_description_c = '{0}' where s_default_code_c = '{1}' AND s_modification_id_t = ?",
-                "test2",
-                code);
+                    string updateSql = String.Format(
+                        "UPDATE PUB_s_system_defaults set s_modification_id_t = NOW(), s_default_description_c = '{0}' where s_default_code_c = '{1}' AND s_modification_id_t = ?",
+                        "test2",
+                        code);
 
-            OdbcParameter param = new OdbcParameter("timestamp", OdbcType.DateTime);
-            param.Value = timestamp;
+                    OdbcParameter param = new OdbcParameter("timestamp", OdbcType.DateTime);
+                    param.Value = timestamp;
 
-            Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(updateSql, t, new OdbcParameter[] { param }), "update by timestamp");
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                    Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(updateSql, t, new OdbcParameter[] { param }), "update by timestamp");
+                });
         }
 
         /// <summary>
@@ -282,7 +287,8 @@ namespace Ict.Common.DB.Testing
         [Test]
         public void TestDBAccess_working_after_ExecuteNonQuery_threw_DBLevel_Exception()
         {
-            TDBTransaction t;
+            TDBTransaction t = null;
+            bool SubmissionOK = true;
             string sql;
 
             try
@@ -296,19 +302,19 @@ namespace Ict.Common.DB.Testing
                     "INSERT INTO p_type(p_type_code_c, p_type_description_c) " +
                     "VALUES ('TEST_EXECUTENONQUERY', NULL)";
 
-                t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                t = null;
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+                    delegate
+                    {
+                        // Act #1
 
-                // Act #1
-
-                // We expect that ExecuteNonQuery will throw a not-null constraint exception - and this is *what we want*!
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
-
-                // Should not get here (as an Exception will be raised by ExecuteNonQuery!)
-                DBAccess.GDBAccessObj.CommitTransaction();
+                        // We expect that ExecuteNonQuery will throw a not-null constraint exception - and this is *what we want*!
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                    });
             }
             catch (EOPDBException)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                // That is the result we want so we can continue.  The transaction will have auto-rolled back
             }
             catch (Exception)
             {
@@ -324,19 +330,20 @@ namespace Ict.Common.DB.Testing
                     "INSERT INTO p_type(p_type_code_c, p_type_description_c) " +
                     "VALUES ('TEST_EXECUTENONQUERY', 'Test should be fine')";
 
-                t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                t = null;
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+                    delegate
+                    {
+                        // Act #2 AND Assert
 
-                // Act #2 AND Assert
-
-                // We expect that ExecuteNonQuery *will work* after the previous execution threw an Exception and the
-                // Transaction it was enlisted it was rolled back.
-                // Should it throw an Exception of Type 'System.InvalidOperationException' then the likely cause for
-                // that would be that the underlying IDbCommand Object that is used by ExecuteNonQuery was not correctly
-                // disposed of!
-                Assert.DoesNotThrow(delegate { DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t); },
-                    "No Exception should have been thrown by the call to the ExecuteNonQuery Method, but an Exception WAS thrown!");
-
-                DBAccess.GDBAccessObj.CommitTransaction();
+                        // We expect that ExecuteNonQuery *will work* after the previous execution threw an Exception and the
+                        // Transaction it was enlisted it was rolled back.
+                        // Should it throw an Exception of Type 'System.InvalidOperationException' then the likely cause for
+                        // that would be that the underlying IDbCommand Object that is used by ExecuteNonQuery was not correctly
+                        // disposed of!
+                        Assert.DoesNotThrow(delegate { DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t); },
+                            "No Exception should have been thrown by the call to the ExecuteNonQuery Method, but an Exception WAS thrown!");
+                    });
             }
             catch (Exception)
             {
@@ -344,15 +351,18 @@ namespace Ict.Common.DB.Testing
             }
 
             // UNDO the test
-            t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            sql = "DELETE FROM p_type" +
-                  " WHERE p_type_code_c = 'TEST_EXECUTENONQUERY' AND p_type_description_c = NULL";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
-            sql = "DELETE FROM p_type" +
-                  " WHERE p_type_code_c = 'TEST_EXECUTENONQUERY' AND p_type_description_c = 'Test should be fine'";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
-
-            DBAccess.GDBAccessObj.CommitTransaction();
+            t = null;
+            SubmissionOK = true;
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+                delegate
+                {
+                    sql = "DELETE FROM p_type" +
+                          " WHERE p_type_code_c = 'TEST_EXECUTENONQUERY' AND p_type_description_c = NULL";
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                    sql = "DELETE FROM p_type" +
+                          " WHERE p_type_code_c = 'TEST_EXECUTENONQUERY' AND p_type_description_c = 'Test should be fine'";
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                });
         }
     }
 }
