@@ -249,6 +249,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             UpdateRecordNumberDisplay();
             FFilterAndFindObject.SetRecordNumberDisplayProperties();
 
+            //Check for missing analysis attributes and their values
+            if (FIsUnposted && (grdDetails.Rows.Count > 1))
+            {
+                string updatedTransactions;
+
+                FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref FMainDS, out updatedTransactions);
+
+                if (updatedTransactions.Length > 0)
+                {
+                    //Remove trailing comma
+                    updatedTransactions = updatedTransactions.Remove(updatedTransactions.Length - 2);
+                    MessageBox.Show(String.Format(Catalog.GetString(
+                                "Analysis Attributes have been fixed in transaction(s): {0}.{1}{1}You will need to set their values before posting!"),
+                            updatedTransactions,
+                            Environment.NewLine),
+                        "Analysis Attributes",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    FPetraUtilsObject.SetChangedFlag();
+                }
+            }
+
+            RefreshAnalysisAttributesGrid();
+
             return DifferentBatchSelected;
         }
 

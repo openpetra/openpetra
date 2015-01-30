@@ -204,7 +204,7 @@ namespace Ict.Petra.Server.MFinance.Common
             catch (Exception ex)
             {
                 TLogging.Log("Error in LoadGLBatchData: " + ex.Message);
-                return null;
+                throw ex;
             }
 
             return GLBatchDS;

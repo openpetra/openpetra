@@ -277,7 +277,7 @@ namespace Ict.Petra.Client.CommonControls
         private string FNullValueDesciption = ApplWideResourcestrings.StrUndefined;
 
         #region Properties
-        
+
         /// <summary>
         /// Gets or sets the text associated with this Control (in this case: the text in the editable part of the ComboBox)
         /// </summary>
@@ -406,10 +406,10 @@ namespace Ict.Petra.Client.CommonControls
                 cmbCombobox.Tag = value;
             }
         }
-        
+
         #endregion
-        
-        #region Events        
+
+        #region Events
 
         /**
          * This Event is thrown when the internal ComboBox throws the SelectedValueChanged Event.
@@ -461,9 +461,9 @@ namespace Ict.Petra.Client.CommonControls
                 DropDownClosed(this, e);
             }
         }
-        
+
         #endregion
-        
+
         /// <summary>
         /// constructor
         /// </summary>
