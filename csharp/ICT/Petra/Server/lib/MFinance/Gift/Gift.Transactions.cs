@@ -644,7 +644,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 delegate
                 {
@@ -671,9 +671,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     // load gift details for the latest gift
                     AGiftDetailAccess.LoadViaAGift(MainDS, LatestGiftRow.LedgerNumber, LatestGiftRow.BatchNumber, LatestGiftRow.GiftTransactionNumber,
                         Transaction);
-                    LastGiftData.Merge(MainDS.AGiftDetail);
 
-                    if (LastGiftData.Rows.Count > 1)
+                    if (MainDS.AGiftDetail != null)
+                    {
+                        LastGiftData.Merge(MainDS.AGiftDetail);
+                    }
+
+                    if ((LastGiftData != null) && (LastGiftData.Rows.Count > 1))
                     {
                         // get the name of each recipient
                         foreach (GiftBatchTDSAGiftDetailRow Row in LastGiftData.Rows)
@@ -684,7 +688,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 });
 
-            if (DonorExists)
+            if (DonorExists && (LastGiftData != null))
             {
                 LastGiftData.AcceptChanges();
             }
