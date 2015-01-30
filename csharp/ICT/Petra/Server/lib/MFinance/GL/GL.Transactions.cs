@@ -316,13 +316,19 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadAJournalAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            ATransAnalAttribAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    ATransAnalAttribAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
+
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -335,33 +341,30 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadARecurringJournalAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            Boolean NewTransaction = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            ARecurringJournalAccess.LoadViaARecurringBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            TDBTransaction Transaction = null;
 
-            ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
-            ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
-            TemplateTransactionRow.LedgerNumber = ALedgerNumber;
-            TemplateTransactionRow.BatchNumber = ABatchNumber;
-            ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ARecurringJournalAccess.LoadViaARecurringBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 
-            ARecurringTransAnalAttribTable TransAnalAttribTable = new ARecurringTransAnalAttribTable();
-            ARecurringTransAnalAttribRow TemplateTransAnalAttribRow = TransAnalAttribTable.NewRowTyped(false);
-            TemplateTransAnalAttribRow.LedgerNumber = ALedgerNumber;
-            TemplateTransAnalAttribRow.BatchNumber = ABatchNumber;
-            ARecurringTransAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateTransAnalAttribRow, Transaction);
+                    ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
+                    ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
+                    TemplateTransactionRow.LedgerNumber = ALedgerNumber;
+                    TemplateTransactionRow.BatchNumber = ABatchNumber;
+                    ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    ARecurringTransAnalAttribTable TransAnalAttribTable = new ARecurringTransAnalAttribTable();
+                    ARecurringTransAnalAttribRow TemplateTransAnalAttribRow = TransAnalAttribTable.NewRowTyped(false);
+                    TemplateTransAnalAttribRow.LedgerNumber = ALedgerNumber;
+                    TemplateTransAnalAttribRow.BatchNumber = ABatchNumber;
+                    ARecurringTransAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateTransAnalAttribRow, Transaction);
+                });
 
+            MainDS.AcceptChanges();
             return MainDS;
         }
 

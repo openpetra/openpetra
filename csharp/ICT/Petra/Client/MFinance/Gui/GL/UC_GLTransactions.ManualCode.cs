@@ -1647,11 +1647,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ValidationContext.ToString(),
                     this, ValidationColumn, null);
                 VerificationResult.OverrideResultText(String.Format(
-                        "A value must be entered for 'Analysis Attributes' for Account Code {0} in Transaction {1}.{2}{2}" +
-                        "CLICK THE DOWN ARROW NEXT TO THE ACCOUNT CODE BOX TO OPEN THE LIST AND THEN RESELECT ACCOUNT CODE {0}",
+                        "A value must be entered for 'Analysis Attributes' for Account Code {0} in Transaction {1}.",
                         ARow.AccountCode,
-                        ARow.TransactionNumber,
-                        Environment.NewLine));
+                        ARow.TransactionNumber));
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);

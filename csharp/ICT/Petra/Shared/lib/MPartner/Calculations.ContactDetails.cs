@@ -440,9 +440,9 @@ namespace Ict.Petra.Shared.MPartner
             //
 
             // Check for Email Addresses
-            CheckFlags = TOverallContSettingKind.ocskPrimaryEmailAddress | 
+            CheckFlags = TOverallContSettingKind.ocskPrimaryEmailAddress |
                          TOverallContSettingKind.ocskEmailAddressWithinOrg;
-            
+
             if ((AOverallContSettingKind & CheckFlags) != 0)
             {
                 ParsePartnerOvrlCS(APPartnerAttributeDT[0].PartnerKey, APPartnerAttributeDT, ref MockOverallContactSettings,
@@ -450,9 +450,9 @@ namespace Ict.Petra.Shared.MPartner
             }
 
             // Check for Phone Numbers
-            CheckFlags = TOverallContSettingKind.ocskPrimaryPhoneNumber | 
+            CheckFlags = TOverallContSettingKind.ocskPrimaryPhoneNumber |
                          TOverallContSettingKind.ocskPhoneNumberWithinOrg;
-            
+
             if ((AOverallContSettingKind & CheckFlags) != 0)
             {
                 ParsePartnerOvrlCS(APPartnerAttributeDT[0].PartnerKey, APPartnerAttributeDT, ref MockOverallContactSettings,
@@ -503,7 +503,7 @@ namespace Ict.Petra.Shared.MPartner
             bool PrimaryQuickExitConditionMet;
             bool WithinOrgQuickExitConditionMet;
             TOverallContSettingKind CheckFlags;
-            
+
             //
             // Several 'quick checks' to save ourselves the creation of (a) DataView(s) it if isn't necessary!
             //
@@ -521,9 +521,9 @@ namespace Ict.Petra.Shared.MPartner
             //
 
             // Check for Email Addresses
-            CheckFlags = TOverallContSettingKind.ocskPrimaryEmailAddress | 
+            CheckFlags = TOverallContSettingKind.ocskPrimaryEmailAddress |
                          TOverallContSettingKind.ocskEmailAddressWithinOrg;
-            
+
             if ((AOverallContSettingKind & CheckFlags) != 0)
             {
                 ParsePartnerOvrlCS(APartnerKey, APPartnerAttributeDT, ref OverallContactSettings, ref MockPartnersOvrlCS,
@@ -531,9 +531,9 @@ namespace Ict.Petra.Shared.MPartner
             }
 
             // Check for Phone Numbers
-            CheckFlags = TOverallContSettingKind.ocskPrimaryPhoneNumber | 
+            CheckFlags = TOverallContSettingKind.ocskPrimaryPhoneNumber |
                          TOverallContSettingKind.ocskPhoneNumberWithinOrg;
-            
+
             if ((AOverallContSettingKind & CheckFlags) != 0)
             {
                 ParsePartnerOvrlCS(APartnerKey, APPartnerAttributeDT, ref OverallContactSettings, ref MockPartnersOvrlCS,
@@ -549,7 +549,7 @@ namespace Ict.Petra.Shared.MPartner
             out bool APrimaryQuickExitConditionMet, out bool AWithinOrgQuickExitConditionMet)
         {
             TOverallContSettingKind CheckFlags;
-                
+
             APrimaryIsAskedFor = false;
             AWithinOrgIsAskedFor = false;
             APrimaryQuickExitConditionMet = false;
@@ -570,11 +570,11 @@ namespace Ict.Petra.Shared.MPartner
                         "(which gets added by Method 'DeterminePartnerContactDetailAttributes')!", PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN));
             }
 
-            CheckFlags = TOverallContSettingKind.ocskPrimaryEmailAddress | 
-                                                    TOverallContSettingKind.ocskPrimaryPhoneNumber | 
-                                                    TOverallContSettingKind.ocskEmailAddressWithinOrg |
-                                                    TOverallContSettingKind.ocskPhoneNumberWithinOrg;
-            
+            CheckFlags = TOverallContSettingKind.ocskPrimaryEmailAddress |
+                         TOverallContSettingKind.ocskPrimaryPhoneNumber |
+                         TOverallContSettingKind.ocskEmailAddressWithinOrg |
+                         TOverallContSettingKind.ocskPhoneNumberWithinOrg;
+
             if ((AOverallContSettingKind & CheckFlags) == 0)
             {
                 throw new ArgumentException(String.Format("Passed AOverallContSettingKind {0} is incompatible with this Method!",
@@ -587,18 +587,18 @@ namespace Ict.Petra.Shared.MPartner
                 return false;
             }
 
-            CheckFlags = TOverallContSettingKind.ocskPrimaryEmailAddress | 
+            CheckFlags = TOverallContSettingKind.ocskPrimaryEmailAddress |
                          TOverallContSettingKind.ocskPrimaryPhoneNumber;
-            
+
             if ((AOverallContSettingKind & CheckFlags) != 0)
             {
                 // A 'Primary Email' Address or a 'Primary Phone' is asked for
                 APrimaryIsAskedFor = true;
             }
 
-            CheckFlags = TOverallContSettingKind.ocskEmailAddressWithinOrg | 
+            CheckFlags = TOverallContSettingKind.ocskEmailAddressWithinOrg |
                          TOverallContSettingKind.ocskPhoneNumberWithinOrg;
-            
+
             if ((AOverallContSettingKind & CheckFlags) != 0)
             {
                 // An 'Email Within Organisation' or a 'Phone Within Organsiation' is asked for
