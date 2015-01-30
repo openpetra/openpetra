@@ -271,7 +271,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.SetControlProperty(ctrl, "DrawMode", "System.Windows.Forms.TabDrawMode.OwnerDrawFixed");
 
-            if (ctrl.HasAttribute("DragTabPageEnabled") && (ctrl.GetAttribute("DragTabPageEnabled").ToLower() == "false"))
+            // by default the tab order cannot be changed
+            if (!ctrl.HasAttribute("DragTabPageEnabled") || (ctrl.GetAttribute("DragTabPageEnabled").ToLower() == "false"))
             {
                 writer.SetControlProperty(ctrl, "AllowDrop", "false");
             }

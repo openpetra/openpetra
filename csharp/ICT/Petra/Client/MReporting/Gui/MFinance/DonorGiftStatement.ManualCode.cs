@@ -45,8 +45,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 FLedgerNumber = value;
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
-                cmbCurrency.SelectedIndex = 0;
-                cmbReportType.SelectedIndex = 0;
             }
         }
 

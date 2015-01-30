@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       peters
 //
 // Copyright 2004-2010 by OM International
 //
@@ -93,8 +93,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FForeignCurrencyAccountsDT.Clear();
             FForeignCurrencyAccountsDT = FMainDS.AAccount.Clone();
             FForeignCurrencyAccountsDT.Merge(FMainDS.AAccount.DefaultView.ToTable());
-            FForeignCurrencyAccountsDT.Columns.Add(AGeneralLedgerMasterTable.GetYtdActualForeignDBName(), typeof(Decimal));
-            FForeignCurrencyAccountsDT.Columns.Add(AGeneralLedgerMasterTable.GetYtdActualBaseDBName(), typeof(Decimal));
 
             Int32 Year = (Int32)TDataCache.TMFinance.GetCacheableFinanceTable(
                 TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber).Rows[0][ALedgerTable.GetCurrentFinancialYearDBName()];
@@ -114,7 +112,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.Columns.Clear();
             grdDetails.AddTextColumn(Catalog.GetString("Currency Code"), FMainDS.AAccount.ColumnForeignCurrencyCode);
             grdDetails.AddTextColumn(Catalog.GetString("Account Code"), FMainDS.AAccount.ColumnAccountCode);
-            grdDetails.AddTextColumn(Catalog.GetString("Short"), FMainDS.AAccount.ColumnAccountCodeShortDesc);
+            grdDetails.AddTextColumn(Catalog.GetString("Description"), FMainDS.AAccount.ColumnAccountCodeShortDesc);
             grdDetails.AddCurrencyColumn(Catalog.GetString("YTD Total"),
                 FForeignCurrencyAccountsDT.Columns[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()]);
             grdDetails.AddCurrencyColumn(Catalog.GetString("YTD Total (BASE)"),

@@ -31,4 +31,5 @@
   <Parameter id="FirstColumn" column="3" value="eInteger:0" />
   <Parameter id="SecondColumn" column="3" value="eInteger:1" />
   <Parameter id="param_gift_amount_column" value="eInteger:4" />
+  <Parameter id="param_order_by_name" value="eString:RecipientKey" />
 </Parameters>

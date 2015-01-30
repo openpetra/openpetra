@@ -7,7 +7,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.GL.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: windowTDS
-    WindowWidth: 740
+    WindowWidth: 860
     WindowHeight: 680
     Actions:
         actAddNewAccount: {Label=&Add Account, ActionClick=AddNewAccount}
@@ -21,7 +21,7 @@ RootNode:
         sptAccountSplitter:
             Panel1: tabAccounts
             Panel2: pnlDetails
-            SplitterDistance: 71
+            SplitterDistance: 84
             SplitterOrientation: vertical
             Dock: Fill
         tabAccounts:

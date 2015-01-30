@@ -34,7 +34,6 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.App.Core.Security;
@@ -45,8 +44,6 @@ using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
-using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
-using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 
@@ -55,7 +52,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
     ///<summary>
     /// This WebConnector provides data for the finance reporting screens
     ///</summary>
-    public class TFinanceReportingWebConnector
+    public partial class TFinanceReportingWebConnector
     {
         /// <summary>
         /// get the details of the given ledger
@@ -2486,169 +2483,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             return Results;
         }
 
-        /// <summary>
-        /// Returns a DataTable to the client for use in client-side reporting
-        /// </summary>
-        [NoRemoting]
-        public static DataTable GiftBatchDetailTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
-        {
-            TDBTransaction Transaction = null;
-
-            int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
-            int BatchNumber = AParameters["param_batch_number_i"].ToInt32();
-
-            // create new datatable
-            DataTable Results = new DataTable();
-
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
-                ref Transaction,
-                delegate
-                {
-                    DateTime CurrentDate = DateTime.Today;
-
-                    string Query =
-                        "SELECT DISTINCT a_gift_batch.a_batch_description_c, a_gift_batch.a_batch_status_c, a_gift_batch.a_gift_type_c, a_gift_batch.a_gl_effective_date_d, "
-                        +
-                        "a_gift_batch.a_bank_cost_centre_c, a_gift_batch.a_bank_account_code_c, a_gift_batch.a_currency_code_c, a_gift_batch.a_hash_total_n, a_gift_batch.a_batch_total_n, "
-                        +
-
-                        "a_gift_detail.a_gift_transaction_number_i, a_gift_detail.a_detail_number_i, a_gift_detail.a_confidential_gift_flag_l, "
-                        +
-                        "a_gift_detail.p_recipient_key_n, a_gift_detail.a_gift_amount_n, a_gift_detail.a_gift_amount_intl_n, a_gift_detail.a_gift_transaction_amount_n, "
-                        +
-                        "a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, a_gift_detail.a_recipient_ledger_number_n, "
-                        +
-                        "a_gift_detail.a_gift_comment_one_c, a_gift_detail.a_gift_comment_two_c, a_gift_detail.a_gift_comment_three_c, a_gift_detail.a_tax_deductible_pct_n, "
-                        +
-
-                        "a_gift.p_donor_key_n, a_gift.a_reference_c, a_gift.a_method_of_giving_code_c, a_gift.a_method_of_payment_code_c, "
-                        +
-                        "a_gift.a_receipt_letter_code_c, a_gift.a_date_entered_d, a_gift.a_first_time_gift_l, a_gift.a_receipt_number_i, "
-                        +
-
-                        "Donor.p_partner_class_c, Donor.p_partner_short_name_c, Donor.p_receipt_letter_frequency_c, Donor.p_receipt_each_gift_l, "
-                        +
-                        "Recipient.p_partner_class_c, Recipient.p_partner_short_name_c, " +
-
-                        // true if donor has a valid Ex-Worker special type
-                        "CASE WHEN EXISTS (SELECT p_partner_type.* FROM p_partner_type WHERE " +
-                        "p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
-                        " AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
-                        " AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
-                        " AND p_partner_type.p_type_code_c LIKE '" +
-                        TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
-                        ") THEN True ELSE False END AS EXWORKER, " +
-
-                        // true if the gift is restricted for the user
-                        "CASE WHEN EXISTS (SELECT s_user_group.* FROM s_user_group " +
-                        "WHERE a_gift.a_restricted_l IS true" +
-                        " AND NOT EXISTS (SELECT s_group_gift.s_read_access_l FROM s_group_gift, s_user_group " +
-                        "WHERE s_group_gift.s_read_access_l" +
-                        " AND s_group_gift.a_ledger_number_i = " + LedgerNumber +
-                        " AND s_group_gift.a_batch_number_i = " + BatchNumber +
-                        " AND s_group_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
-                        " AND s_user_group.s_user_id_c = '" + UserInfo.GUserInfo.UserID + "'" +
-                        " AND s_user_group.s_group_id_c = s_group_gift.s_group_id_c" +
-                        " AND s_user_group.s_unit_key_n = s_group_gift.s_group_unit_key_n)" +
-                        ") THEN False ELSE True END AS ReadAccess " +
-
-                        "FROM a_gift_batch, a_gift_detail, a_gift, p_partner AS Donor, p_partner AS Recipient " +
-
-                        "WHERE a_gift_batch.a_ledger_number_i = " + LedgerNumber + " AND a_gift_batch.a_batch_number_i = " + BatchNumber +
-                        " AND a_gift.a_ledger_number_i = " + LedgerNumber + " AND a_gift.a_batch_number_i = " + BatchNumber +
-                        " AND a_gift_detail.a_ledger_number_i = " + LedgerNumber + " AND a_gift_detail.a_batch_number_i = " +
-                        BatchNumber +
-                        " AND a_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i " +
-                        " AND Donor.p_partner_key_n = a_gift.p_donor_key_n" +
-                        " AND Recipient.p_partner_key_n = a_gift_detail.p_recipient_key_n";
-
-                    Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
-                });
-
-            return Results;
-        }
-
-        /// <summary>
-        /// Returns a DataTable to the client for use in client-side reporting
-        /// </summary>
-        [NoRemoting]
-        public static DataTable RecipientTaxDeductPctTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
-        {
-            TDBTransaction Transaction = null;
-
-            // create new datatable
-            DataTable Results = new DataTable();
-
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
-                delegate
-                {
-                    DateTime CurrentDate = DateTime.Today;
-
-                    string RecipientSelection = AParameters["param_recipient_selection"].ToString();
-
-                    string Query =
-                        "SELECT DISTINCT p_partner_tax_deductible_pct.p_partner_key_n, p_partner_tax_deductible_pct.p_date_valid_from_d, " +
-                        "p_partner_tax_deductible_pct.p_percentage_tax_deductible_n, p_partner.p_partner_short_name_c, " +
-                        "p_partner_gift_destination.p_field_key_n, um_unit_structure.um_parent_unit_key_n " +
-
-                        "FROM p_partner_tax_deductible_pct " +
-
-                        "LEFT JOIN p_partner " +
-                        "ON p_partner.p_partner_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
-
-                        "LEFT JOIN p_partner_gift_destination " +
-                        "ON CASE WHEN p_partner.p_partner_class_c = 'FAMILY' " +
-                        "THEN p_partner.p_partner_key_n = p_partner_gift_destination.p_partner_key_n " +
-                        "AND p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate + "' " +
-                        "AND (p_partner_gift_destination.p_date_expires_d IS NULL " +
-                        "OR (p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate + "' " +
-                        "AND p_partner_gift_destination.p_date_effective_d <> p_partner_gift_destination.p_date_expires_d)) END " +
-
-                        "LEFT JOIN um_unit_structure " +
-                        "ON CASE WHEN p_partner.p_partner_class_c = 'UNIT' " +
-                        "THEN NOT EXISTS (SELECT * FROM p_partner_type " +
-                        "WHERE p_partner_type.p_partner_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
-                        "AND p_partner_type.p_type_code_c = 'LEDGER') " +
-                        "AND um_unit_structure.um_child_unit_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
-                        "AND um_unit_structure.um_child_unit_key_n <> um_unit_structure.um_parent_unit_key_n END";
-
-                    if (RecipientSelection == "one_partner")
-                    {
-                        Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = " + AParameters["param_recipient_key"].ToInt64();
-                    }
-                    else if (RecipientSelection == "Extract")
-                    {
-                        // recipient must be part of extract
-                        Query += " WHERE EXISTS(SELECT * FROM m_extract, m_extract_master";
-
-                        if (!AParameters["param_chkPrintAllExtract"].ToBool())
-                        {
-                            Query += ", a_gift_detail, a_gift_batch";
-                        }
-
-                        Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = m_extract.p_partner_key_n " +
-                                 "AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i " +
-                                 "AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"] + "'";
-
-                        if (!AParameters["param_chkPrintAllExtract"].ToBool())
-                        {
-                            // recipient must have a posted gift
-                            Query += " AND a_gift_detail.a_ledger_number_i = " + AParameters["param_ledger_number_i"] +
-                                     " AND a_gift_detail.p_recipient_key_n = m_extract.p_partner_key_n " +
-                                     "AND a_gift_batch.a_ledger_number_i = " + AParameters["param_ledger_number_i"] +
-                                     " AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i " +
-                                     "AND a_gift_batch.a_batch_status_c = 'Posted'";
-                        }
-
-                        Query += ")";
-                    }
-
-                    Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
-                });
-
-            return Results;
-        }
-
         // get Actuals for this month, YTD and Prior YTD and Budget YTD
         private static Decimal[] GetActualsAndBudget(
             ALedgerRow ALedger, string AAccountCode, string ACostCentreCode, int APeriodNumber, int AYear)
@@ -2730,47 +2564,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // Read different DB fields according to currency setting
             String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_actual_intl_n" : "a_actual_base_n";
 
-            String CostCentreFilter = "";
-            String CostCentreOptions = AParameters["param_rgrCostCentres"].ToString();
+            String CostCentreFilter;
+            String AccountCodeFilter;
 
-            if (CostCentreOptions == "CostCentreList")
-            {
-                String CostCentreList = AParameters["param_cost_centre_codes"].ToString();
-                CostCentreList = CostCentreList.Replace(",", "','");                             // SQL IN List items in single quotes
-                CostCentreFilter = " AND glm.a_cost_centre_code_c in ('" + CostCentreList + "')";
-            }
-
-            if (CostCentreOptions == "CostCentreRange")
-            {
-                CostCentreFilter = " AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_start"].ToString() +
-                                   "' AND glm.a_cost_centre_code_c <='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
-            }
-
-            if (CostCentreOptions == "AllActiveCostCentres") // THIS IS NOT SET AT ALL!
-            {
-                CostCentreFilter = " AND a_cost_centre.a_cost_centre_active_flag_l=true";
-            }
-
-            String AccountCodeFilter = "";
-            String AccountCodeOptions = AParameters["param_rgrAccounts"].ToString();
-
-            if (AccountCodeOptions == "AccountList")
-            {
-                String AccountCodeList = AParameters["param_account_codes"].ToString();
-                AccountCodeList = AccountCodeList.Replace(",", "','");                             // SQL IN List items in single quotes
-                AccountCodeFilter = " AND glm.a_account_code_c in ('" + AccountCodeList + "')";
-            }
-
-            if (AccountCodeOptions == "AccountRange")
-            {
-                AccountCodeFilter = " AND glm.a_account_code_c >='" + AParameters["param_account_code_start"].ToString() +
-                                    "' AND glm.a_account_code_c <='" + AParameters["param_account_code_end"].ToString() + "'";
-            }
-
-            if (AccountCodeOptions == "AllActiveAccounts") // THIS IS NOT SET AT ALL
-            {
-                AccountCodeFilter = " AND a_account.a_account_active_flag_l=true";
-            }
+            // create filters from parameters
+            AccountAndCostCentreFilters(AParameters, out CostCentreFilter, out AccountCodeFilter);
 
             TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             DataTable resultTable = null;
@@ -2844,6 +2642,140 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             return resultTable;
         } // TrialBalanceTable
+
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable SurplusDeficitTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
+            Int32 ReportPeriodEnd = AParameters["param_end_period_i"].ToInt32();
+
+            // Read different DB fields according to currency setting
+            //String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_actual_intl_n" : "a_actual_base_n";
+
+            String CostCentreFilter;
+            String AccountCodeFilter;
+
+            // create filters from parameters
+            AccountAndCostCentreFilters(AParameters, out CostCentreFilter, out AccountCodeFilter);
+
+            TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            DataTable resultTable = null;
+
+            TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
+
+            decimal ExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
+                LedgerNumber,
+                AccountingYear,
+                ReportPeriodEnd,
+                -1);
+
+            String OrderBy = " ORDER BY glm.a_cost_centre_code_c";
+
+            try
+            {
+                String Query = "SELECT " +
+                               " glm.a_year_i AS Year," +
+                               " glmp.a_period_number_i AS Period," +
+                               " glm.a_cost_centre_code_c AS CostCentreCode," +
+                               " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
+                               " a_cost_centre.a_cost_centre_type_c AS CostCentreType," +
+
+                               " SUM (CASE" +
+                               " WHEN (a_account.a_debit_credit_indicator_l = false AND glmp.a_actual_base_n > 0)" +
+                               " OR (a_account.a_debit_credit_indicator_l = true AND glmp.a_actual_base_n < 0)" +
+                               " THEN ABS(glmp.a_actual_base_n) * " + ExchangeRate +
+                               " ELSE 0 END) AS Credit," +
+                               " SUM (CASE" +
+                               " WHEN (a_account.a_debit_credit_indicator_l = true AND glmp.a_actual_base_n > 0)" +
+                               " OR (a_account.a_debit_credit_indicator_l = false AND glmp.a_actual_base_n < 0)" +
+                               " THEN ABS(glmp.a_actual_base_n) * " + ExchangeRate +
+                               " ELSE 0 END) AS Debit" +
+
+                               " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
+                               " WHERE glm.a_ledger_number_i=" + LedgerNumber +
+                               " AND glm.a_year_i=" + AccountingYear +
+                               " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
+                               " AND glmp.a_period_number_i=" + ReportPeriodEnd +
+                               " AND glmp.a_actual_base_n <> 0" +
+
+                               " AND a_account.a_account_code_c = glm.a_account_code_c" +
+                               " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
+                               " AND a_account.a_posting_status_l = true" +
+                               " AND a_cost_centre.a_ledger_number_i = glm.a_ledger_number_i" +
+                               " AND a_cost_centre.a_cost_centre_code_c = glm.a_cost_centre_code_c" +
+                               " AND a_cost_centre.a_posting_cost_centre_flag_l = true" +
+                               CostCentreFilter +
+                               AccountCodeFilter +
+                               " GROUP BY Year, Period, CostCentreCode, CostCentreName, CostCentreType " +
+                               OrderBy;
+
+                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                resultTable = DbAdapter.RunQuery(Query, "SurplusDeficitTable", ReadTrans);
+
+                TLogging.Log("", TLoggingType.ToStatusBar);
+            }
+            catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
+            {
+                TLogging.Log(ex.Message);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return resultTable;
+        } // SurplusDeficitTable
+
+        private static void AccountAndCostCentreFilters(Dictionary <String, TVariant>AParameters,
+            out string ACostCentreFilter,
+            out string AAccountCodeFilter)
+        {
+            ACostCentreFilter = "";
+            String CostCentreOptions = AParameters["param_rgrCostCentres"].ToString();
+
+            if (CostCentreOptions == "CostCentreList")
+            {
+                String CostCentreList = AParameters["param_cost_centre_codes"].ToString();
+                CostCentreList = CostCentreList.Replace(",", "','");                             // SQL IN List items in single quotes
+                ACostCentreFilter = " AND glm.a_cost_centre_code_c in ('" + CostCentreList + "')";
+            }
+
+            if (CostCentreOptions == "CostCentreRange")
+            {
+                ACostCentreFilter = " AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_start"].ToString() +
+                                    "' AND glm.a_cost_centre_code_c <='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
+            }
+
+            if (CostCentreOptions == "AllActiveCostCentres") // THIS IS NOT SET AT ALL!
+            {
+                ACostCentreFilter = " AND a_cost_centre.a_cost_centre_active_flag_l=true";
+            }
+
+            AAccountCodeFilter = "";
+            String AccountCodeOptions = AParameters["param_rgrAccounts"].ToString();
+
+            if (AccountCodeOptions == "AccountList")
+            {
+                String AccountCodeList = AParameters["param_account_codes"].ToString();
+                AccountCodeList = AccountCodeList.Replace(",", "','");                             // SQL IN List items in single quotes
+                AAccountCodeFilter = " AND glm.a_account_code_c in ('" + AccountCodeList + "')";
+            }
+
+            if (AccountCodeOptions == "AccountRange")
+            {
+                AAccountCodeFilter = " AND glm.a_account_code_c >='" + AParameters["param_account_code_start"].ToString() +
+                                     "' AND glm.a_account_code_c <='" + AParameters["param_account_code_end"].ToString() + "'";
+            }
+
+            if (AccountCodeOptions == "AllActiveAccounts") // THIS IS NOT SET AT ALL
+            {
+                AAccountCodeFilter = " AND a_account.a_account_active_flag_l=true";
+            }
+        }
 
         /// <summary>
         /// Returns the transaction currency for a Gift Batch

@@ -1852,9 +1852,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoCountryComboBox.AddNotSetRow("", "");
             ucoCountryComboBox.PerformDataBinding(FFindCriteriaDataTable, "Country");
 
-            txtBankKey.InitialiseUserControl();
-            txtBankKey.PerformDataBinding(FFindCriteriaDataTable.DefaultView, "BankKey");
-
             SetupPartnerClassComboBox();
 
             if (cmbPartnerClass.Items.Count > 0)
@@ -1876,6 +1873,33 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             lblCounty.Text = LocalisedCountyLabel;
+
+            /*
+             * Restore 'Mailing Addresses Only' and 'Partner Status' Criteria
+             * settings from UserDefaults
+             */
+            FindCriteriaUserDefaultRestore();
+
+            ShowOrHidePartnerKeyMatchInfoText();
+
+            // put focus on txtPartnerName on screen load
+            this.ActiveControl = txtPartnerName;
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void InitialiseBankCriteriaFields()
+        {
+            txtBankKey.InitialiseUserControl();
+            txtBankKey.PerformDataBinding(FFindCriteriaDataTable.DefaultView, "BankKey");
+
+            SetupPartnerClassComboBox();
+
+            if (cmbPartnerClass.Items.Count > 0)
+            {
+                cmbPartnerClass.SelectedIndex = 0;
+            }
 
             /*
              * Restore 'Mailing Addresses Only' and 'Partner Status' Criteria

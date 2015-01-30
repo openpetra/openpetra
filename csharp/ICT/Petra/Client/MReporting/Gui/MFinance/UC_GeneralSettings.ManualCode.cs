@@ -449,6 +449,39 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         /// <summary>
+        /// For BalanceSheet, quarters and periods are not appropriate -
+        /// I just want a single date.
+        /// </summary>
+        public void ShowOnlyEndPeriodAndQuarter()
+        {
+            lblStartPeriod.Visible = false;
+            txtStartPeriod.Visible = false;
+
+            rbtQuarter.Visible = true;
+            lblQuarter.Visible = true;
+            txtQuarter.Visible = true;
+            lblQuarterYear.Visible = true;
+            cmbQuarterYear.Visible = true;
+
+            rbtDate.Visible = false;
+            lblStartDate.Visible = false;
+            dtpStartDate.Visible = false;
+            lblEndDate.Visible = false;
+            dtpEndDate.Visible = false;
+
+            rbtPeriod.Visible = true;
+            rbtPeriod.Checked = true;
+            lblEndPeriod.Visible = true;
+            lblEndPeriod.Location = new System.Drawing.Point(50, 12);
+            lblEndPeriod.Size = new System.Drawing.Size(68, 17);
+            lblEndPeriod.Text = "At end of:";
+            txtEndPeriod.Visible = true;
+            cmbPeriodYear.Visible = true;
+
+            OnlyEndPeriodShown = true;
+        }
+
+        /// <summary>
         /// Show / Hide the account hierarchy combo box (e.g. we hide it in Financial development reports)
         /// </summary>
         /// <param name="AValue">false to hide the account hierarchy combo box</param>

@@ -22,9 +22,15 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+
+using Ict.Common;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -39,17 +45,57 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             set
             {
+                FLedgerNumber = value;
+
+                uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
                 uco_GeneralSettings.HideDateRange();
                 uco_GeneralSettings.CurrencyOptions(new object[] { "Base", "International" });
-
-                FLedgerNumber = value;
+                uco_GeneralSettings.ShowOnlyEndPeriodAndQuarter();
 
                 uco_AccountCostCentreSettings.InitialiseLedger(FLedgerNumber);
 
-                uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
-
                 FPetraUtilsObject.LoadDefaultSettings();
+                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
+        }
+
+        //
+        // This will be called if the Fast Reports Wrapper loaded OK.
+        // Returns True if the data apparently loaded OK and the report should be printed.
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            Shared.MReporting.TParameterList pm = ACalc.GetParameters();
+            pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
+
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+            String RootCostCentre = "[" + FLedgerNumber + "]";
+            paramsDictionary.Add("param_cost_centre_code", new TVariant(RootCostCentre));
+
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("SurplusDeficit", paramsDictionary);
+
+            if (ReportTable == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "SurplusDeficit");
+
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
+
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+
+            return true;
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

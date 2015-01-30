@@ -1256,7 +1256,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             ucoPartnerFindCriteria.DisplayCriteriaFieldControls();
-            ucoPartnerFindCriteria.InitialiseCriteriaFields();
+
+            if (!FBankDetailsTab)
+            {
+                ucoPartnerFindCriteria.InitialiseCriteriaFields();
+            }
+            else
+            {
+                ucoPartnerFindCriteria.InitialiseBankCriteriaFields();
+            }
 
             // Load match button settings
             ucoPartnerFindCriteria.LoadMatchButtonSettings();

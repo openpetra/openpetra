@@ -340,7 +340,7 @@ else
 {##COMBOBOXSETCONTROLS}
 if (AParameters.Exists("{#PARAMNAME}"))
 {
-    {#CONTROLNAME}.SelectedValue = AParameters.Get("{#PARAMNAME}").ToString();
+    {#CONTROLNAME}.SetSelectedString(AParameters.Get("{#PARAMNAME}").ToString());
 }
 
 {##TEXTBOXREADCONTROLS}

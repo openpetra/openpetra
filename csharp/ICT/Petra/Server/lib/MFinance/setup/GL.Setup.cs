@@ -27,18 +27,15 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
-using System.Globalization;
 using System.Xml;
 using System.IO;
 using System.Text;
-using GNU.Gettext;
 using Ict.Common;
-using Ict.Common.IO;
 using Ict.Common.DB;
-using Ict.Common.Verification;
-using Ict.Common.Data;
+using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -48,7 +45,6 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
-using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -59,8 +55,8 @@ using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
+using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MCommon.Data.Cascading;
-using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.DataAggregates;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
@@ -684,6 +680,23 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
+            // create template for AGeneralLedgerMaster
+            TCacheable CachePopulator = new TCacheable();
+
+            System.Type typeofTable = null;
+            ALedgerTable Ledger = (ALedgerTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
+                "",
+                false,
+                ALedgerNumber,
+                out typeofTable);
+            int Year = Ledger[0].CurrentFinancialYear;
+            string CostCentreCode = "[" + ALedgerNumber + "]";
+
+            AGeneralLedgerMasterRow Template = new AGeneralLedgerMasterTable().NewRowTyped(false);
+            Template.LedgerNumber = ALedgerNumber;
+            Template.Year = Year;
+            Template.CostCentreCode = CostCentreCode;
+
             TDBTransaction Transaction = null;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -699,6 +712,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     AAnalysisTypeAccess.LoadAll(MainDS, Transaction);
                     AAnalysisAttributeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                     AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AGeneralLedgerMasterAccess.LoadUsingTemplate(MainDS, Template, Transaction);
                 });
 
             // set Account BankAccountFlag if there exists a property
@@ -725,6 +739,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (Idx < 0)
                 {
                     TypeRow.Delete();
+                }
+            }
+
+            // add the YTD Actuals to each account
+            foreach (AGeneralLedgerMasterRow GeneralLedgerMasterRow in MainDS.AGeneralLedgerMaster.Rows)
+            {
+                GLSetupTDSAAccountRow AccountRow =
+                    (GLSetupTDSAAccountRow)MainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, GeneralLedgerMasterRow.AccountCode });
+                AccountRow.YtdActualBase = GeneralLedgerMasterRow.YtdActualBase;
+
+                if (AccountRow.ForeignCurrencyFlag)
+                {
+                    AccountRow.YtdActualForeign = GeneralLedgerMasterRow.YtdActualForeign;
                 }
             }
 

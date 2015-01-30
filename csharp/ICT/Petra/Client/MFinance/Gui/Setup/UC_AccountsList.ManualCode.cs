@@ -41,6 +41,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared;
 using GNU.Gettext;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -165,10 +166,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FDataView.Sort = "a_account_code_c";
             FDataView.AllowNew = false;
             grdAccounts.DataSource = new DevAge.ComponentModel.BoundDataView(FDataView);
+
             grdAccounts.Columns.Clear();
-            grdAccounts.AddTextColumn("Code", MainDS.AAccount.ColumnAccountCode);
-            grdAccounts.AddTextColumn("Descr", MainDS.AAccount.ColumnAccountCodeShortDesc);
-            grdAccounts.AutoResizeGrid();
+            grdAccounts.AddTextColumn(Catalog.GetString("Code"), MainDS.AAccount.ColumnAccountCode);
+            grdAccounts.AddTextColumn(Catalog.GetString("Descr"), MainDS.AAccount.ColumnAccountCodeShortDesc);
+            grdAccounts.AddCurrencyColumn(Catalog.GetString("YTD Actual"), MainDS.AAccount.ColumnYtdActualBase);
+            grdAccounts.AddCurrencyColumn(Catalog.GetString("Foreign"), MainDS.AAccount.ColumnYtdActualForeign);
         }
 
         /// <summary>
