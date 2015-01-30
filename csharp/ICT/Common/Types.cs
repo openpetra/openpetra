@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -588,10 +588,10 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// Converts a date value that is stored in a TObject to a DateTime value that is
+        /// Converts a date value that is stored in a object to a DateTime value that is
         /// guaranteed to be valid.
         ///
-        /// In case the date value in the TObject is empty, either the lowest or the
+        /// In case the date value in the object is empty, either the lowest or the
         /// highest possible date is returned.
         ///
         /// @comment Very useful for untyped data in DataSets that is known to be of
@@ -610,7 +610,11 @@ namespace Ict.Common
 
             if (ADateObject != null)
             {
-                if (!(ADateObject.ToString() == ""))
+                if (ADateObject is DateTime)
+                {
+                    ReturnValue = (DateTime)ADateObject;
+                }
+                else if (!(ADateObject.ToString() == ""))
                 {
                     ReturnValue = Convert.ToDateTime(ADateObject);
                 }

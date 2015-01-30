@@ -107,136 +107,138 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             Console.WriteLine("Writing file: " + filename);
 
-            StringBuilder sb = new StringBuilder();
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            string sql =
-                String.Format("SELECT T.*, B.{4} AS a_transaction_date_d " +
-                    "FROM PUB_{8} AS B, PUB_{7} AS T " +
-                    "WHERE B.{9} = {10} AND B.{15} = {16} AND B.{11}='{12}' " +
-                    "AND T.{9} = B.{9} AND T.{0} = B.{0} " +
-                    "AND T.{13} IN ({14}) " +
-                    "AND NOT T.{17} IN ({19}) " +
-                    "AND NOT T.{20} IN ({21}) " +
-                    "ORDER BY {0}, {1}, {2}",
-                    ATransactionTable.GetBatchNumberDBName(),
-                    ATransactionTable.GetJournalNumberDBName(),
-                    ATransactionTable.GetTransactionNumberDBName(),
-                    ATransactionTable.GetTransactionAmountDBName(),
-                    ABatchTable.GetDateEffectiveDBName(),
-                    ATransactionTable.GetNarrativeDBName(),
-                    ATransactionTable.GetReferenceDBName(),
-                    ATransactionTable.GetTableDBName(),
-                    ABatchTable.GetTableDBName(),
-                    ATransactionTable.GetLedgerNumberDBName(),
-                    ALedgerNumber,
-                    ABatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_POSTED,
-                    ATransactionTable.GetCostCentreCodeDBName(),
-                    "'" + ACostCentres.Replace(",", "','") + "'",
-                    ABatchTable.GetBatchYearDBName(),
-                    AFinancialYear,
-                    ATransactionTable.GetAccountCodeDBName(),
-                    ATransactionTable.GetDebitCreditIndicatorDBName(),
-                    "'" + AIgnoreAccounts.Replace(",", "','") + "'",
-                    ATransactionTable.GetReferenceDBName(),
-                    "'" + AIgnoreReferences.Replace(",", "','") + "'");
-
+            TDBTransaction Transaction = null;
             ATransactionTable transactions = new ATransactionTable();
-            transactions = (ATransactionTable)DBAccess.GDBAccessObj.SelectDT(transactions, sql, Transaction, null, 0, 0);
-
-            // get the analysis attributes
-            sql =
-                String.Format("SELECT A.* from PUB_{1} AS B, PUB_{13} AS T, PUB_{0} AS A " +
-                    "WHERE B.{2} = {3} AND B.{4} = {5} AND B.{6}='{7}' " +
-                    "AND T.{2} = B.{2} AND T.{8} = B.{8} " +
-                    "AND T.{9} IN ({10}) " +
-                    "AND A.{2} = T.{2} AND A.{8} = T.{8} AND A.{11} = T.{11} AND A.{12} = T.{12}",
-                    ATransAnalAttribTable.GetTableDBName(),
-                    ABatchTable.GetTableDBName(),
-                    ABatchTable.GetLedgerNumberDBName(),
-                    ALedgerNumber,
-                    ABatchTable.GetBatchYearDBName(),
-                    AFinancialYear,
-                    ABatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_POSTED,
-                    ATransactionTable.GetBatchNumberDBName(),
-                    ATransactionTable.GetCostCentreCodeDBName(),
-                    "'" + ACostCentres.Replace(",", "','") + "'",
-                    ATransactionTable.GetJournalNumberDBName(),
-                    ATransactionTable.GetTransactionNumberDBName(),
-                    ATransactionTable.GetTableDBName(),
-                    ABatchTable.GetBatchYearDBName());
-
             ATransAnalAttribTable TransAnalAttrib = new ATransAnalAttribTable();
-            DBAccess.GDBAccessObj.SelectDT(TransAnalAttrib, sql, Transaction, null, 0, 0);
-
-            TransAnalAttrib.DefaultView.Sort =
-                ATransAnalAttribTable.GetBatchNumberDBName() + "," +
-                ATransAnalAttribTable.GetJournalNumberDBName() + "," +
-                ATransAnalAttribTable.GetTransactionNumberDBName();
-
-            // get a list of all batches involved
-            List <Int64>batches = new List <Int64>();
-            StringBuilder batchnumbers = new StringBuilder();
-
-            foreach (ATransactionRow r in transactions.Rows)
-            {
-                if (!batches.Contains(r.BatchNumber))
-                {
-                    batches.Add(r.BatchNumber);
-                    batchnumbers.Append(r.BatchNumber.ToString() + ",");
-                }
-            }
-
-            // get the other transactions in the same journal for finding the opposite cc/acc involved
-            // for performance reasons, get all transactions of the whole batch
-            sql =
-                String.Format("SELECT DISTINCT TJ.* " +
-                    "FROM PUB_{0} AS TJ " +
-                    "WHERE TJ.{1} = {2} AND TJ.{3} IN ({4})",
-                    ATransactionTable.GetTableDBName(),
-                    ATransactionTable.GetLedgerNumberDBName(),
-                    ALedgerNumber,
-                    ATransactionTable.GetBatchNumberDBName(),
-                    batchnumbers.ToString() + "-1");
-
             ATransactionTable allTransactionsInJournal = new ATransactionTable();
-            allTransactionsInJournal = (ATransactionTable)DBAccess.GDBAccessObj.SelectDT(allTransactionsInJournal, sql, Transaction, null, 0, 0);
-
-            allTransactionsInJournal.DefaultView.Sort =
-                ATransactionTable.GetBatchNumberDBName() + "," +
-                ATransactionTable.GetJournalNumberDBName();
-
-            // get all names of gift batches
-            sql =
-                String.Format("SELECT * FROM PUB_{0} " +
-                    "WHERE {1} = {2} " +
-                    "AND {3} = {4}",
-                    AGiftBatchTable.GetTableDBName(),
-                    AGiftBatchTable.GetLedgerNumberDBName(),
-                    ALedgerNumber,
-                    AGiftBatchTable.GetBatchYearDBName(),
-                    AFinancialYear);
-
             AGiftBatchTable giftbatches = new AGiftBatchTable();
-            DBAccess.GDBAccessObj.SelectDT(giftbatches, sql, Transaction, null, 0, 0);
-            giftbatches.DefaultView.Sort = AGiftBatchTable.GetBatchNumberDBName();
-
-
-            sql =
-                String.Format("SELECT * FROM PUB_{0} " +
-                    "WHERE {1} = {2}",
-                    AAccountTable.GetTableDBName(),
-                    AAccountTable.GetLedgerNumberDBName(),
-                    ALedgerNumber);
-
             AAccountTable accounts = new AAccountTable();
-            DBAccess.GDBAccessObj.SelectDT(accounts, sql, Transaction, null, 0, 0);
-            accounts.DefaultView.Sort = AAccountTable.GetAccountCodeDBName();
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    string sql =
+                        String.Format("SELECT T.*, B.{4} AS a_transaction_date_d " +
+                            "FROM PUB_{8} AS B, PUB_{7} AS T " +
+                            "WHERE B.{9} = {10} AND B.{15} = {16} AND B.{11}='{12}' " +
+                            "AND T.{9} = B.{9} AND T.{0} = B.{0} " +
+                            "AND T.{13} IN ({14}) " +
+                            "AND NOT T.{17} IN ({19}) " +
+                            "AND NOT T.{20} IN ({21}) " +
+                            "ORDER BY {0}, {1}, {2}",
+                            ATransactionTable.GetBatchNumberDBName(),
+                            ATransactionTable.GetJournalNumberDBName(),
+                            ATransactionTable.GetTransactionNumberDBName(),
+                            ATransactionTable.GetTransactionAmountDBName(),
+                            ABatchTable.GetDateEffectiveDBName(),
+                            ATransactionTable.GetNarrativeDBName(),
+                            ATransactionTable.GetReferenceDBName(),
+                            ATransactionTable.GetTableDBName(),
+                            ABatchTable.GetTableDBName(),
+                            ATransactionTable.GetLedgerNumberDBName(),
+                            ALedgerNumber,
+                            ABatchTable.GetBatchStatusDBName(),
+                            MFinanceConstants.BATCH_POSTED,
+                            ATransactionTable.GetCostCentreCodeDBName(),
+                            "'" + ACostCentres.Replace(",", "','") + "'",
+                            ABatchTable.GetBatchYearDBName(),
+                            AFinancialYear,
+                            ATransactionTable.GetAccountCodeDBName(),
+                            ATransactionTable.GetDebitCreditIndicatorDBName(),
+                            "'" + AIgnoreAccounts.Replace(",", "','") + "'",
+                            ATransactionTable.GetReferenceDBName(),
+                            "'" + AIgnoreReferences.Replace(",", "','") + "'");
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                    transactions = (ATransactionTable)DBAccess.GDBAccessObj.SelectDT(transactions, sql, Transaction, null, 0, 0);
+
+                    // get the analysis attributes
+                    sql =
+                        String.Format("SELECT A.* from PUB_{1} AS B, PUB_{13} AS T, PUB_{0} AS A " +
+                            "WHERE B.{2} = {3} AND B.{4} = {5} AND B.{6}='{7}' " +
+                            "AND T.{2} = B.{2} AND T.{8} = B.{8} " +
+                            "AND T.{9} IN ({10}) " +
+                            "AND A.{2} = T.{2} AND A.{8} = T.{8} AND A.{11} = T.{11} AND A.{12} = T.{12}",
+                            ATransAnalAttribTable.GetTableDBName(),
+                            ABatchTable.GetTableDBName(),
+                            ABatchTable.GetLedgerNumberDBName(),
+                            ALedgerNumber,
+                            ABatchTable.GetBatchYearDBName(),
+                            AFinancialYear,
+                            ABatchTable.GetBatchStatusDBName(),
+                            MFinanceConstants.BATCH_POSTED,
+                            ATransactionTable.GetBatchNumberDBName(),
+                            ATransactionTable.GetCostCentreCodeDBName(),
+                            "'" + ACostCentres.Replace(",", "','") + "'",
+                            ATransactionTable.GetJournalNumberDBName(),
+                            ATransactionTable.GetTransactionNumberDBName(),
+                            ATransactionTable.GetTableDBName(),
+                            ABatchTable.GetBatchYearDBName());
+
+                    DBAccess.GDBAccessObj.SelectDT(TransAnalAttrib, sql, Transaction, null, 0, 0);
+
+                    TransAnalAttrib.DefaultView.Sort =
+                        ATransAnalAttribTable.GetBatchNumberDBName() + "," +
+                        ATransAnalAttribTable.GetJournalNumberDBName() + "," +
+                        ATransAnalAttribTable.GetTransactionNumberDBName();
+
+                    // get a list of all batches involved
+                    List <Int64>batches = new List <Int64>();
+                    StringBuilder batchnumbers = new StringBuilder();
+
+                    foreach (ATransactionRow r in transactions.Rows)
+                    {
+                        if (!batches.Contains(r.BatchNumber))
+                        {
+                            batches.Add(r.BatchNumber);
+                            batchnumbers.Append(r.BatchNumber.ToString() + ",");
+                        }
+                    }
+
+                    // get the other transactions in the same journal for finding the opposite cc/acc involved
+                    // for performance reasons, get all transactions of the whole batch
+                    sql =
+                        String.Format("SELECT DISTINCT TJ.* " +
+                            "FROM PUB_{0} AS TJ " +
+                            "WHERE TJ.{1} = {2} AND TJ.{3} IN ({4})",
+                            ATransactionTable.GetTableDBName(),
+                            ATransactionTable.GetLedgerNumberDBName(),
+                            ALedgerNumber,
+                            ATransactionTable.GetBatchNumberDBName(),
+                            batchnumbers.ToString() + "-1");
+
+                    allTransactionsInJournal =
+                        (ATransactionTable)DBAccess.GDBAccessObj.SelectDT(allTransactionsInJournal, sql, Transaction, null, 0, 0);
+
+                    allTransactionsInJournal.DefaultView.Sort =
+                        ATransactionTable.GetBatchNumberDBName() + "," +
+                        ATransactionTable.GetJournalNumberDBName();
+
+                    // get all names of gift batches
+                    sql =
+                        String.Format("SELECT * FROM PUB_{0} " +
+                            "WHERE {1} = {2} " +
+                            "AND {3} = {4}",
+                            AGiftBatchTable.GetTableDBName(),
+                            AGiftBatchTable.GetLedgerNumberDBName(),
+                            ALedgerNumber,
+                            AGiftBatchTable.GetBatchYearDBName(),
+                            AFinancialYear);
+
+                    DBAccess.GDBAccessObj.SelectDT(giftbatches, sql, Transaction, null, 0, 0);
+                    giftbatches.DefaultView.Sort = AGiftBatchTable.GetBatchNumberDBName();
+
+
+                    sql =
+                        String.Format("SELECT * FROM PUB_{0} " +
+                            "WHERE {1} = {2}",
+                            AAccountTable.GetTableDBName(),
+                            AAccountTable.GetLedgerNumberDBName(),
+                            ALedgerNumber);
+
+                    DBAccess.GDBAccessObj.SelectDT(accounts, sql, Transaction, null, 0, 0);
+                    accounts.DefaultView.Sort = AAccountTable.GetAccountCodeDBName();
+                });
+
+            StringBuilder sb = new StringBuilder();
             int rowCounter = 0;
 
             StringCollection costcentreCollection = StringHelper.StrSplit(ACostCentres, ",");

@@ -40,6 +40,7 @@ using Ict.Common.DB.DBCaching;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.IO;
 using Npgsql;
+using System.Diagnostics;
 using Ict.Common.Session;
 
 namespace Ict.Common.DB
@@ -294,6 +295,7 @@ namespace Ict.Common.DB
 
         /// <summary>References the current Transaction, if there is any.</summary>
         private DbTransaction FTransaction;
+        private StackTrace FTransactionStackTrace;
 
         /// <summary>Tells whether the next Command that is sent to the DB should be a 'prepared' Command.</summary>
         /// <remarks>Automatically reset to false once the Command has been executed against the DB!</remarks>
@@ -523,19 +525,23 @@ namespace Ict.Common.DB
         /// </summary>
         private void CheckDatabaseVersion()
         {
+            TDBTransaction ReadTransaction = null;
+            DataTable Tbl = null;
+
             if (TAppSettingsManager.GetValue("action", string.Empty, false) == "patchDatabase")
             {
                 // we want to upgrade the database, so don't check for the database version
                 return;
             }
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-            // now check if the database is 'up to date'; otherwise run db patch against it
-            DataTable Tbl = DBAccess.GDBAccessObj.SelectDT(
-                "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                "Temp", transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    // now check if the database is 'up to date'; otherwise run db patch against it
+                    Tbl = DBAccess.GDBAccessObj.SelectDT(
+                        "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                        "Temp", ReadTransaction);
+                });
 
             if (Tbl.Rows.Count == 0)
             {
@@ -1248,6 +1254,8 @@ namespace Ict.Common.DB
 
             if (this.Transaction != null)
             {
+                TLogging.Log("Nested Transaction problem: The StackTrace of the previous transaction is as follows:");
+                TLogging.Log(TLogging.StackTraceToText(FTransactionStackTrace));
                 throw new EOPDBException(
                     "BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction or GetNewOrExistingAutoTransaction "
                     +
@@ -1263,6 +1271,7 @@ namespace Ict.Common.DB
                         AppDomain.CurrentDomain.ToString() + " ).");
                 }
 
+                FTransactionStackTrace = new StackTrace(true);
                 FTransaction = FSqlConnection.BeginTransaction();
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
@@ -1365,6 +1374,8 @@ namespace Ict.Common.DB
 
             if (this.Transaction != null)
             {
+                TLogging.Log("Nested Transaction problem: The StackTrace of the previous transaction is as follows:");
+                TLogging.Log(TLogging.StackTraceToText(FTransactionStackTrace));
                 throw new EOPDBException(
                     "BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction or GetNewOrExistingAutoTransaction "
                     +
@@ -1383,6 +1394,7 @@ namespace Ict.Common.DB
                         AppDomain.CurrentDomain.ToString() + " ).");
                 }
 
+                FTransactionStackTrace = new StackTrace(true);
                 FTransaction = FSqlConnection.BeginTransaction(AIsolationLevel);
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)

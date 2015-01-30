@@ -144,23 +144,26 @@ namespace Tests.MFinance.Server.ICH
             File.Delete(FileName);
         }
 
-        /// <summary>
-        /// Test generation of HOSA reports
-        /// </summary>
-        [Test]
-        public void TestGenerateHOSAReports()
-        {
-            int LedgerNumber = FLedgerNumber;
-            int PeriodNumber = 4;
-            int IchNumber = 1;
-            string Currency = "USD";
-            TVerificationResultCollection VerificationResults;
-
-            TGenHOSAFilesReportsWebConnector.GenerateHOSAReports(LedgerNumber, PeriodNumber, IchNumber, Currency, out VerificationResults);
-
-            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
-                "Performing HOSA Report Generation Failed!");
-        }
+        /* Not used
+         *
+         * /// <summary>
+         * /// Test generation of HOSA reports
+         * /// </summary>
+         * [Test]
+         * public void TestGenerateHOSAReports()
+         * {
+         *  int LedgerNumber = FLedgerNumber;
+         *  int PeriodNumber = 4;
+         *  int IchNumber = 1;
+         *  string Currency = "USD";
+         *  TVerificationResultCollection VerificationResults;
+         *
+         *  TGenHOSAFilesReportsWebConnector.GenerateHOSAReports(LedgerNumber, PeriodNumber, IchNumber, Currency, out VerificationResults);
+         *
+         *  CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
+         *      "Performing HOSA Report Generation Failed!");
+         * }
+         */
 
         /// <summary>
         /// Test the exporting of gifts as part of the HOSA process
@@ -212,8 +215,8 @@ namespace Tests.MFinance.Server.ICH
                 PeriodEndDate,
                 Base,
                 IchNumber,
-                ref TableForExport,
-                ref VerificationResults);
+                TableForExport,
+                VerificationResults);
 
             TableForExport.AcceptChanges();
 

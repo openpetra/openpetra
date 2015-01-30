@@ -53,6 +53,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FLedgerNumber = value;
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
                 PopulateReceivingFieldList();
+                FPetraUtilsObject.LoadDefaultSettings(); // This was done previously, but it was too early.
             }
         }
 
@@ -71,7 +72,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             clbFields.Columns.Clear();
             clbFields.AddCheckBoxColumn("", FFieldTable.Columns[CheckedMember], 17, false);
-            clbFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns[ValueMember], 80);
+            clbFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns[ValueMember], 100);
             clbFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns[DisplayMember], 200);
             clbFields.DataBindGrid(FFieldTable, ValueMember, CheckedMember, ValueMember, false, true, false);
 

@@ -69,28 +69,21 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <returns>void</returns>
         public static System.Int64 GetNewPartnerKey(System.Int64 AFieldPartnerKey)
         {
-            Boolean NewTransaction;
-
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            PPartnerLedgerTable PartnerLedgerTable = null;
 
             if (AFieldPartnerKey == -1)
             {
                 AFieldPartnerKey = DomainManager.GSiteKey;
             }
 
-            PPartnerLedgerTable PartnerLedgerTable = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction);
+            TDBTransaction ReadTransaction = null;
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-
-                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
                 {
-                    Console.WriteLine("TNewPartnerKey.GetNewPartnerKey: committed own transaction.");
-                }
-            }
+                    PartnerLedgerTable = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction);
+                });
 
             return PartnerLedgerTable[0].PartnerKey + PartnerLedgerTable[0].LastPartnerId + 1;
         }

@@ -186,6 +186,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 DateTime DateEnd = Convert.ToDateTime(AccountingPeriodTbl.DefaultView[0].Row["a_period_end_date_d"]);
                 pm.Add("param_end_date", DateEnd);
 
+                ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                    TCacheableFinanceTablesEnum.LedgerDetails);
+                ALedgerRow LedgerRow = LedgerDetailsTable[0];
+                Boolean IsClosed = (DateEnd.Year < LedgerRow.CurrentFinancialYear) || (PeriodEnd < LedgerRow.CurrentPeriod);
+                ACalc.AddParameter("param_period_closed", IsClosed);
+
                 String PeriodTitle = " (" + DateStart.ToString("dd-MMM-yyyy") + " - " + DateEnd.ToString("dd-MMM-yyyy") + ")";
 
                 if (PeriodEnd > PeriodStart)
@@ -295,9 +301,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+            ACalc.AddParameter("param_period", true);
+            ACalc.AddStringParameter("param_linked_partner_cc", ""); // Used for auto-emailing HOSAs, this is usually blank.
 
             // 0 = Full Report. Currently the only option for this report.
-            pm.Add("param_run_number", 0);
+            pm.Add("param_ich_number", 0);
             return LoadReportDataStaticInner(this, FPetraUtilsObject, FPetraUtilsObject.FFastReportsPlugin, ACalc);
         }
     }

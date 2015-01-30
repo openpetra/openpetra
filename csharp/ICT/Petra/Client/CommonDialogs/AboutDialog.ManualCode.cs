@@ -42,7 +42,7 @@ namespace Ict.Petra.Client.CommonDialogs
 #if DEBUG
             if (TApplicationVCSInfo.AppVCSData.IsInitialised)
             {
-                FPetraUtilsObject.SetStatusBarText(btnOK, "Double-click Version Number for VCS Info!");
+                FPetraUtilsObject.SetStatusBarText(btnOK, "Click on Version Number for VCS Info!");
             }
 #endif
         }

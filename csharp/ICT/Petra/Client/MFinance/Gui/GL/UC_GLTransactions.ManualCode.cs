@@ -249,6 +249,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             UpdateRecordNumberDisplay();
             FFilterAndFindObject.SetRecordNumberDisplayProperties();
 
+            //Check for missing analysis attributes and their values
+            if (FIsUnposted && (grdDetails.Rows.Count > 1))
+            {
+                string updatedTransactions;
+
+                FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref FMainDS, out updatedTransactions);
+
+                if (updatedTransactions.Length > 0)
+                {
+                    //Remove trailing comma
+                    updatedTransactions = updatedTransactions.Remove(updatedTransactions.Length - 2);
+                    MessageBox.Show(String.Format(Catalog.GetString(
+                                "Analysis Attributes have been fixed in transaction(s): {0}.{1}{1}You will need to set their values before posting!"),
+                            updatedTransactions,
+                            Environment.NewLine),
+                        "Analysis Attributes",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    FPetraUtilsObject.SetChangedFlag();
+                }
+            }
+
+            RefreshAnalysisAttributesGrid();
+
             return DifferentBatchSelected;
         }
 
@@ -1362,7 +1386,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 //Reduce those with higher transaction number by one
-                attrView.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} > {5}",
+                attrView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}>{5}",
                     ATransAnalAttribTable.GetBatchNumberDBName(),
                     FBatchNumber,
                     ATransAnalAttribTable.GetJournalNumberDBName(),
@@ -1623,11 +1647,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ValidationContext.ToString(),
                     this, ValidationColumn, null);
                 VerificationResult.OverrideResultText(String.Format(
-                        "A value must be entered for 'Analysis Attributes' for Account Code {0} in Transaction {1}.{2}{2}" +
-                        "CLICK THE DOWN ARROW NEXT TO THE ACCOUNT CODE BOX TO OPEN THE LIST AND THEN RESELECT ACCOUNT CODE {0}",
+                        "A value must be entered for 'Analysis Attributes' for Account Code {0} in Transaction {1}.",
                         ARow.AccountCode,
-                        ARow.TransactionNumber,
-                        Environment.NewLine));
+                        ARow.TransactionNumber));
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);

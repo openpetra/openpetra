@@ -60,49 +60,38 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean GetCurrency(Int64 APartnerKey, out string ACurrencyCode, out string ACurrencyName)
         {
-            ACurrencyCode = "";
-            ACurrencyName = "";
+            TDBTransaction ReadTransaction = null;
 
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
             PcConferenceTable ConferenceTable;
             ACurrencyTable CurrencyTable;
             Boolean ReturnValue = false;
+            string CurrencyCode = string.Empty;
+            string CurrencyName = string.Empty;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            try
-            {
-                ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-
-                if (ConferenceTable.Rows.Count == 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
                 {
-                    ReturnValue = false;
-                }
-                else
-                {
-                    ACurrencyCode = ((PcConferenceRow)ConferenceTable.Rows[0]).CurrencyCode;
+                    ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
 
-                    // use the obtained currency code to retrieve the currency name
-                    CurrencyTable = ACurrencyAccess.LoadByPrimaryKey(ACurrencyCode, ReadTransaction);
-                    ACurrencyName = CurrencyTable[0].CurrencyName;
+                    if (ConferenceTable.Rows.Count == 0)
+                    {
+                        ReturnValue = false;
+                    }
+                    else
+                    {
+                        CurrencyCode = ((PcConferenceRow)ConferenceTable.Rows[0]).CurrencyCode;
 
-                    ReturnValue = true;
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.GetCurrency: rollback own transaction.");
-                }
-            }
+                        // use the obtained currency code to retrieve the currency name
+                        CurrencyTable = ACurrencyAccess.LoadByPrimaryKey(CurrencyCode, ReadTransaction);
+                        CurrencyName = CurrencyTable[0].CurrencyName;
+
+                        ReturnValue = true;
+                    }
+                });
+
+            ACurrencyCode = CurrencyCode;
+            ACurrencyName = CurrencyName;
 
             return ReturnValue;
         }
@@ -115,35 +104,22 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static DateTime GetStartDate(Int64 APartnerKey)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = null;
+
             PcConferenceTable ConferenceTable;
             DateTime ConferenceStartDate = new DateTime();
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            try
-            {
-                ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-
-                if (((PcConferenceRow)ConferenceTable.Rows[0]).Start != null)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
                 {
-                    ConferenceStartDate = (DateTime)((PcConferenceRow)ConferenceTable.Rows[0]).Start;
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.GetStartDate: rollback own transaction.");
-                }
-            }
+                    ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+
+                    if (((PcConferenceRow)ConferenceTable.Rows[0]).Start != null)
+                    {
+                        ConferenceStartDate = (DateTime)((PcConferenceRow)ConferenceTable.Rows[0]).Start;
+                    }
+                });
 
             return ConferenceStartDate;
         }
@@ -156,35 +132,22 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static DateTime GetEndDate(Int64 APartnerKey)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = null;
+
             PcConferenceTable ConferenceTable;
             DateTime ConferenceEndDate = new DateTime();
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            try
-            {
-                ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-
-                if (((PcConferenceRow)ConferenceTable.Rows[0]).End != null)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
                 {
-                    ConferenceEndDate = (DateTime)((PcConferenceRow)ConferenceTable.Rows[0]).End;
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.GetEndDate: rollback own transaction.");
-                }
-            }
+                    ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+
+                    if (((PcConferenceRow)ConferenceTable.Rows[0]).End != null)
+                    {
+                        ConferenceEndDate = (DateTime)((PcConferenceRow)ConferenceTable.Rows[0]).End;
+                    }
+                });
 
             return ConferenceEndDate;
         }
@@ -197,35 +160,23 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool CheckDiscountCriteriaCodeExists(string[] ADiscountCriteriaCode)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = null;
+
             Boolean CriteriaCodeExists = true;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            try
-            {
-                foreach (string CriteriaCode in ADiscountCriteriaCode)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
                 {
-                    if (!PcDiscountCriteriaAccess.Exists(CriteriaCode, ReadTransaction))
+                    foreach (string CriteriaCode in ADiscountCriteriaCode)
                     {
-                        CriteriaCodeExists = false;
+                        if (!PcDiscountCriteriaAccess.Exists(CriteriaCode, ReadTransaction))
+                        {
+                            CriteriaCodeExists = false;
+                            break;
+                        }
                     }
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CheckDiscountCriteriaCodeExists: rollback own transaction.");
-                }
-            }
+                });
 
             return CriteriaCodeExists;
         }
@@ -238,29 +189,16 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool CheckCostTypeExists(string ACostTypeCode)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = null;
+
             Boolean RowExists = false;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            try
-            {
-                RowExists = PcCostTypeAccess.Exists(ACostTypeCode, ReadTransaction);
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                if (NewTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CheckCostTypeExists: rollback own transaction.");
-                }
-            }
+                    RowExists = PcCostTypeAccess.Exists(ACostTypeCode, ReadTransaction);
+                });
 
             return RowExists;
         }
@@ -273,24 +211,14 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean ConferenceExists(long APartnerKey)
         {
-            TDBTransaction ReadTransaction;
+            TDBTransaction ReadTransaction = null;
             Boolean Exists = false;
 
-            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            try
-            {
-                Exists = PcConferenceAccess.Exists(APartnerKey, ReadTransaction);
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateNewConference: commit own transaction.");
-            }
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    Exists = PcConferenceAccess.Exists(APartnerKey, ReadTransaction);
+                });
 
             return Exists;
         }
@@ -303,41 +231,28 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static DataTable GetOutreachTypes(long APartnerKey)
         {
-            TDBTransaction ReadTransaction;
-
-            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction ReadTransaction = null;
 
             DataTable Table = new PUnitTable();
 
-            try
-            {
-                string OutreachPrefixCode =
-                    ((PcConferenceRow)PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction).Rows[0]).OutreachPrefix;
-
-                PUnitTable UnitTable = PUnitAccess.LoadAll(ReadTransaction);
-
-                // add PUnit rows with matching OutreachPrefixCode to the new DataTable
-                foreach (PUnitRow Row in UnitTable.Rows)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
                 {
-                    if ((Row.OutreachCode.Length == 13) && (Row.OutreachCode.Substring(0, 5) == OutreachPrefixCode))
-                    {
-                        DataRow CopyRow = Table.NewRow();
-                        ((PUnitRow)CopyRow).PartnerKey = Row.PartnerKey;
-                        ((PUnitRow)CopyRow).OutreachCode = Row.OutreachCode.Substring(5, 6);
-                        ((PUnitRow)CopyRow).UnitName = Row.UnitName;
-                        Table.Rows.Add(CopyRow);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.GetOutreachTypes: commit own transaction.");
-            }
+                    string OutreachPrefixCode =
+                        ((PcConferenceRow)PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction).Rows[0]).OutreachPrefix;
+
+                    string Query = "SELECT" +
+                                   " p_unit.p_partner_key_n," +
+                                   " SUBSTRING (p_unit.p_outreach_code_c,6,6) AS p_outreach_code_c," +
+                                   " p_unit.p_unit_name_c" +
+
+                                   " FROM p_unit" +
+
+                                   " WHERE LENGTH(p_unit.p_outreach_code_c) = 13" +
+                                   " AND SUBSTRING(p_unit.p_outreach_code_c,1,5) = '" + OutreachPrefixCode + "'";
+
+                    DBAccess.GDBAccessObj.SelectDT(Table, Query, ReadTransaction);
+                });
 
             return Table;
         }
@@ -350,91 +265,90 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static void CreateNewConference(long APartnerKey)
         {
-            TDBTransaction Transaction;
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
+
             PcConferenceTable ConferenceTable;
             PUnitTable UnitTable;
             PPartnerLocationTable PartnerLocationTable;
 
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            try
-            {
-                ConferenceTable = PcConferenceAccess.LoadAll(Transaction);
-                UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
-                PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, Transaction);
-
-                DateTime Start = new DateTime();
-                DateTime End = new DateTime();
-
-                foreach (PPartnerLocationRow PartnerLocationRow in PartnerLocationTable.Rows)
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
                 {
-                    if ((PartnerLocationRow.DateEffective != null) || (PartnerLocationRow.DateGoodUntil != null))
+                    try
                     {
-                        if (PartnerLocationRow.DateEffective != null)
+                        ConferenceTable = PcConferenceAccess.LoadAll(Transaction);
+                        UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+                        PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, Transaction);
+
+                        DateTime Start = new DateTime();
+                        DateTime End = new DateTime();
+
+                        foreach (PPartnerLocationRow PartnerLocationRow in PartnerLocationTable.Rows)
                         {
-                            Start = (DateTime)PartnerLocationRow.DateEffective;
+                            if ((PartnerLocationRow.DateEffective != null) || (PartnerLocationRow.DateGoodUntil != null))
+                            {
+                                if (PartnerLocationRow.DateEffective != null)
+                                {
+                                    Start = (DateTime)PartnerLocationRow.DateEffective;
+                                }
+
+                                if (PartnerLocationRow.DateGoodUntil != null)
+                                {
+                                    End = (DateTime)PartnerLocationRow.DateGoodUntil;
+                                }
+
+                                break;
+                            }
                         }
 
-                        if (PartnerLocationRow.DateGoodUntil != null)
+                        // set column values
+                        PcConferenceRow AddRow = ConferenceTable.NewRowTyped();
+                        AddRow.ConferenceKey = APartnerKey;
+
+                        string OutreachPrefix = ((PUnitRow)UnitTable.Rows[0]).OutreachCode;
+
+                        if (OutreachPrefix.Length > 4)
                         {
-                            End = (DateTime)PartnerLocationRow.DateGoodUntil;
+                            AddRow.OutreachPrefix = OutreachPrefix.Substring(0, 5);
+                        }
+                        else
+                        {
+                            AddRow.OutreachPrefix = OutreachPrefix;
                         }
 
-                        break;
+                        if (Start != DateTime.MinValue)
+                        {
+                            AddRow.Start = Start;
+                        }
+
+                        if (End != DateTime.MinValue)
+                        {
+                            AddRow.End = End;
+                        }
+
+                        string CurrencyCode = ((PUnitRow)UnitTable.Rows[0]).OutreachCostCurrencyCode;
+
+                        if (!string.IsNullOrEmpty(CurrencyCode))
+                        {
+                            AddRow.CurrencyCode = CurrencyCode;
+                        }
+                        else
+                        {
+                            AddRow.CurrencyCode = "USD";
+                        }
+
+                        // add new row to database table
+                        ConferenceTable.Rows.Add(AddRow);
+                        PcConferenceAccess.SubmitChanges(ConferenceTable, Transaction);
+
+                        SubmissionOK = true;
                     }
-                }
-
-                // set column values
-                PcConferenceRow AddRow = ConferenceTable.NewRowTyped();
-                AddRow.ConferenceKey = APartnerKey;
-
-                string OutreachPrefix = ((PUnitRow)UnitTable.Rows[0]).OutreachCode;
-
-                if (OutreachPrefix.Length > 4)
-                {
-                    AddRow.OutreachPrefix = OutreachPrefix.Substring(0, 5);
-                }
-                else
-                {
-                    AddRow.OutreachPrefix = OutreachPrefix;
-                }
-
-                if (Start != DateTime.MinValue)
-                {
-                    AddRow.Start = Start;
-                }
-
-                if (End != DateTime.MinValue)
-                {
-                    AddRow.End = End;
-                }
-
-                string CurrencyCode = ((PUnitRow)UnitTable.Rows[0]).OutreachCostCurrencyCode;
-
-                if (!string.IsNullOrEmpty(CurrencyCode))
-                {
-                    AddRow.CurrencyCode = CurrencyCode;
-                }
-                else
-                {
-                    AddRow.CurrencyCode = "USD";
-                }
-
-                // add new row to database table
-                ConferenceTable.Rows.Add(AddRow);
-                PcConferenceAccess.SubmitChanges(ConferenceTable, Transaction);
-
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateNewConference: commit own transaction.");
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during the creation of a new Conference:" + Environment.NewLine + Exc.ToString());
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw;
-            }
+                    catch (Exception Exc)
+                    {
+                        TLogging.Log("An Exception occured during the creation of a new Conference:" + Environment.NewLine + Exc.ToString());
+                    }
+                });
         }
 
         /// <summary>

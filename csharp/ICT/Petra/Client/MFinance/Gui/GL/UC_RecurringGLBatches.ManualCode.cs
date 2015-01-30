@@ -101,7 +101,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 SelectRowInGrid(1);
                 ((TFrmRecurringGLBatch) this.ParentForm).EnableJournals();
-                AutoEnableTransTabForBatch();
             }
             else
             {
@@ -151,7 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //If a single journal exists and it is not status=Cancelled then enable transactions tab
             if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.LastJournal == 1))
             {
-                LoadJournalsForCurrentBatch();
+                LoadJournalsForCurrentRecurringBatch();
 
                 EnableTransTab = (FMainDS.ARecurringJournal.DefaultView.Count > 0);
             }
@@ -159,7 +158,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmRecurringGLBatch) this.ParentForm).EnableTransactions(EnableTransTab);
         }
 
-        private void LoadJournalsForCurrentBatch()
+        private void LoadJournalsForCurrentRecurringBatch()
         {
             //Current Batch number
             Int32 BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
@@ -167,7 +166,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FMainDS.ARecurringJournal != null)
             {
                 FMainDS.ARecurringJournal.DefaultView.RowFilter = String.Format("{0}={1}",
-                    ARecurringTransactionTable.GetBatchNumberDBName(),
+                    ARecurringJournalTable.GetBatchNumberDBName(),
                     BatchNumber);
 
                 if (FMainDS.ARecurringJournal.DefaultView.Count == 0)

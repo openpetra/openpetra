@@ -89,17 +89,14 @@ namespace Ict.Petra.Server.MFinance.Common
             intBaseCurrencyDigits = DIGIT_INIT_VALUE;
             intForeignCurrencyDigits = DIGIT_INIT_VALUE;
 
-            bool NewTransaction;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            currencyTable = ACurrencyAccess.LoadAll(transaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                ref transaction,
+                delegate
+                {
+                    currencyTable = ACurrencyAccess.LoadAll(transaction);
+                });
 
             if (currencyTable.Rows.Count == 0)
             {
@@ -437,66 +434,65 @@ namespace Ict.Petra.Server.MFinance.Common
                 return 1.0M;
             }
 
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
+            TDBTransaction transaction = null;
+            bool oppositeRate = false;
             ADailyExchangeRateRow fittingRate = null;
 
-            // TODO: get the most recent exchange rate for the given date and currencies
-            bool oppositeRate = false;
-            ADailyExchangeRateTable rates = ADailyExchangeRateAccess.LoadByPrimaryKey(ACurrencyFrom, ACurrencyTo, ADateEffective, 0, Transaction);
-
-            if (rates.Count == 0)
-            {
-                // try other way round
-                rates = ADailyExchangeRateAccess.LoadByPrimaryKey(ACurrencyTo, ACurrencyFrom, ADateEffective, 0, Transaction);
-                oppositeRate = true;
-            }
-
-            if (rates.Count == 1)
-            {
-                fittingRate = rates[0];
-            }
-            else if (rates.Count == 0)
-            {
-                // TODO: collect exchange rate from the web; save to db
-                // see tracker http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=87
-
-                // Or look for most recent exchange rate???
-                ADailyExchangeRateTable tempTable = new ADailyExchangeRateTable();
-                ADailyExchangeRateRow templateRow = tempTable.NewRowTyped(false);
-                templateRow.FromCurrencyCode = ACurrencyFrom;
-                templateRow.ToCurrencyCode = ACurrencyTo;
-                oppositeRate = false;
-                rates = ADailyExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
-
-                if (rates.Count == 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref transaction,
+                delegate
                 {
-                    templateRow.FromCurrencyCode = ACurrencyTo;
-                    templateRow.ToCurrencyCode = ACurrencyFrom;
-                    oppositeRate = true;
-                    rates = ADailyExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
-                }
+                    // TODO: get the most recent exchange rate for the given date and currencies
+                    ADailyExchangeRateTable rates =
+                        ADailyExchangeRateAccess.LoadByPrimaryKey(ACurrencyFrom, ACurrencyTo, ADateEffective, 0, transaction);
 
-                if (rates.Count > 0)
-                {
-                    // sort rates by date, look for rate just before the date we are looking for
-                    rates.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName();
-                    rates.DefaultView.RowFilter = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
-                                                  ADateEffective.ToString("yyyy-MM-dd") + "#";
-
-                    if (rates.DefaultView.Count > 0)
+                    if (rates.Count == 0)
                     {
-                        fittingRate = (ADailyExchangeRateRow)rates.DefaultView[rates.DefaultView.Count - 1].Row;
+                        // try other way round
+                        rates = ADailyExchangeRateAccess.LoadByPrimaryKey(ACurrencyTo, ACurrencyFrom, ADateEffective, 0, transaction);
+                        oppositeRate = true;
                     }
-                }
-            }
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    if (rates.Count == 1)
+                    {
+                        fittingRate = rates[0];
+                    }
+                    else if (rates.Count == 0)
+                    {
+                        // TODO: collect exchange rate from the web; save to db
+                        // see tracker http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=87
+
+                        // Or look for most recent exchange rate???
+                        ADailyExchangeRateTable tempTable = new ADailyExchangeRateTable();
+                        ADailyExchangeRateRow templateRow = tempTable.NewRowTyped(false);
+                        templateRow.FromCurrencyCode = ACurrencyFrom;
+                        templateRow.ToCurrencyCode = ACurrencyTo;
+                        oppositeRate = false;
+                        rates = ADailyExchangeRateAccess.LoadUsingTemplate(templateRow, transaction);
+
+                        if (rates.Count == 0)
+                        {
+                            templateRow.FromCurrencyCode = ACurrencyTo;
+                            templateRow.ToCurrencyCode = ACurrencyFrom;
+                            oppositeRate = true;
+                            rates = ADailyExchangeRateAccess.LoadUsingTemplate(templateRow, transaction);
+                        }
+
+                        if (rates.Count > 0)
+                        {
+                            // sort rates by date, look for rate just before the date we are looking for
+                            rates.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName();
+                            rates.DefaultView.RowFilter = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
+                                                          ADateEffective.ToString("yyyy-MM-dd") + "#";
+
+                            if (rates.DefaultView.Count > 0)
+                            {
+                                fittingRate = (ADailyExchangeRateRow)rates.DefaultView[rates.DefaultView.Count - 1].Row;
+                            }
+                        }
+                    }
+                });
 
             if (fittingRate != null)
             {
@@ -510,8 +506,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             TLogging.Log("Cannot find daily exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
 
-            //return 1.0M;
-            //Instead, cause a validation error to force the user to select an exchange rate
+            //Returning 0 causes a validation error to force the user to select an exchange rate:
             return 0M;
         }
 
@@ -569,8 +564,7 @@ namespace Ict.Petra.Server.MFinance.Common
             templateRow.FromCurrencyCode = ACurrencyFrom;
             templateRow.ToCurrencyCode = ACurrencyTo;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {

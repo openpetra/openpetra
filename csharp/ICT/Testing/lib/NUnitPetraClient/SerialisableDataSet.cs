@@ -4,7 +4,7 @@
 // @Authors:
 //       AlanP
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -115,7 +115,9 @@ namespace Ict.Testing.NUnitPetraClient
                     return true;
 
                 case TSubmitChangesResult.scrError:
-                    Console.WriteLine("Error saving data prior to test: Submission of data failed");
+                    Console.WriteLine(
+                    "Error saving data prior to test: Submission of data failed. " +
+                    VerificationResult.BuildVerificationResultString());
                     break;
 
                 case TSubmitChangesResult.scrInfoNeeded:

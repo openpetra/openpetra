@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,16 +46,17 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         [RequireModulePermission("NONE")]
         public static Int64 GetNextSequence(TSequenceNames ASequence)
         {
-            bool NewTransaction;
+            Int64 NewSequenceValue = 0;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            Int64 NewSequenceValue = DBAccess.GDBAccessObj.GetNextSequenceValue(ASequence.ToString(), Transaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    NewSequenceValue = DBAccess.GDBAccessObj.GetNextSequenceValue(ASequence.ToString(), Transaction);
+                    SubmissionOK = true;
+                });
 
             return NewSequenceValue;
         }

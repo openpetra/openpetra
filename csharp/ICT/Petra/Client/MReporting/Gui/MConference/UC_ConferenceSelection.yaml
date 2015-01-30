@@ -16,11 +16,11 @@ RootNode:
                 Row1: [rbtAllConferences]
             Dock: Top
         rbtConference: {Label=Conference, OnChange=rbtConferenceSelectionChange, Width=150}
-        txtConference: {NoLabel=true, Type=Conference, Width=400}
+        txtConference: {NoLabel=true, Type=Conference, Width=600}
         rbtAllConferences: {Label=All Conferences, OnChange=rbtConferenceSelectionChange}
         
         grpSelectAttendees:
-            Label: SelectAttendees
+            Label: Select Attendees
             Controls:
                 Row0: [rbtAllAttendees]
                 Row1: [rbtExtract, txtExtract]

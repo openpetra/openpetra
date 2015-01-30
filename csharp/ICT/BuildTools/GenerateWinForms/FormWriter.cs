@@ -1450,6 +1450,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
 
                     enableDelete += ";" + Environment.NewLine;
+
+                    TControlDef btnDelete = FCodeStorage.GetControl("btnDelete");
+
+                    if ((btnDelete != null) && btnDelete.HasAttribute("HandleEnableInManualCode"))
+                    {
+                        enableDelete = String.Empty;
+                    }
+
                     FTemplate.AddToCodelet("ENABLEDELETEBUTTON", enableDelete);
 
                     if (bRequiresCanDeleteSelection)

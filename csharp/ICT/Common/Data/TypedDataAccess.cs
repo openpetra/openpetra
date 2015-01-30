@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -128,6 +128,14 @@ namespace Ict.Common.Data
                                " WHERE ";
             Boolean First = true;
 
+            DataRowVersion WhichVersion = DataRowVersion.Original;
+
+            if ((ADataRow.RowState == DataRowState.Added)
+                || (ATreatRowAsAdded))
+            {
+                WhichVersion = DataRowVersion.Current;
+            }
+
             foreach (int PrimKeyOrd in APrimKeyColumnOrdList)
             {
                 if (First == true)
@@ -139,18 +147,18 @@ namespace Ict.Common.Data
                     SqlString = SqlString + " AND ";
                 }
 
-                SqlString = SqlString + AColumnNames[PrimKeyOrd] + " = ?";
+                if ((CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite)
+                    && ADataRow[PrimKeyOrd, WhichVersion] is DateTime)
+                {
+                    SqlString = SqlString + "Date(" + AColumnNames[PrimKeyOrd] + ") = Date(?)";
+                }
+                else
+                {
+                    SqlString = SqlString + AColumnNames[PrimKeyOrd] + " = ?";
+                }
             }
 
             OdbcParameter[] Parameters = new OdbcParameter[APrimKeyColumnOrdList.Length];
-
-            DataRowVersion WhichVersion = DataRowVersion.Original;
-
-            if ((ADataRow.RowState == DataRowState.Added)
-                || (ATreatRowAsAdded))
-            {
-                WhichVersion = DataRowVersion.Current;
-            }
 
             Int32 Counter = 0;
 
@@ -436,6 +444,16 @@ namespace Ict.Common.Data
 
             if (LastModificationId != OriginalLastModificationID)
             {
+                if (LastModificationId == DateTime.MaxValue)
+                {
+                    throw new EDBConcurrencyException(
+                        "Cannot delete row of table " + DBTableName + " because we cannot find the row in the database",
+                        "delete",
+                        DBTableName,
+                        LastModifiedBy,
+                        LastModifiedDate);
+                }
+
                 throw new EDBConcurrencyException(
                     "Cannot delete row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
                     "delete",
@@ -446,7 +464,7 @@ namespace Ict.Common.Data
 
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateDeleteClause("PUB_" + DBTableName,
                         Columns,
-                        PrimKeyColumnOrdList), ATransaction,
+                        PrimKeyColumnOrdList, ADataRow), ATransaction,
                     GetParametersForDeleteClause(ATableId, ADataRow, PrimKeyColumnOrdList)))
             {
                 throw new EDBSubmitException("[TTypedDataAccess.DeleteRow] Problems DELETing a row", eSubmitChangesOperations.eDelete);
@@ -1620,7 +1638,8 @@ namespace Ict.Common.Data
         /// </summary>
         /// <returns>the DELETE statement
         /// </returns>
-        public static String GenerateDeleteClause(String ATableName, string[] AColumnNames, int[] APrimKeyColumnOrdList)
+        private static String GenerateDeleteClause(String ATableName, string[] AColumnNames, int[] APrimKeyColumnOrdList,
+            DataRow ADataRow)
         {
             String ReturnValue;
             Boolean First;
@@ -1641,7 +1660,15 @@ namespace Ict.Common.Data
                     ReturnValue = ReturnValue + " AND ";
                 }
 
-                ReturnValue = ReturnValue + AColumnNames[PrimKeyOrd] + " = ?";
+                if ((CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite)
+                    && ADataRow[PrimKeyOrd, DataRowVersion.Original] is DateTime)
+                {
+                    ReturnValue = ReturnValue + "Date(" + AColumnNames[PrimKeyOrd] + ") = Date(?)";
+                }
+                else
+                {
+                    ReturnValue = ReturnValue + AColumnNames[PrimKeyOrd] + " = ?";
+                }
             }
 
             return ReturnValue;

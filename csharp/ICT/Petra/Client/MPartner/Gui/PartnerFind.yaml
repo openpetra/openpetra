@@ -124,13 +124,13 @@ RootNode:
                 mniFileRecentPartner9: {Label=8}
                 mniFileRecentPartner10: {Label=9}
             mniSeparator: {Label=-}
-            mniFileNewPartner: {Label=&New Partner...}
+            mniFileNewPartner: {Label=&New Partner..., ShortcutKeys=Keys.N | Keys.Control}
             mniFileNewPartnerWithShepherd: {Label=N&ew Partner (Shepherd)}
                 mniFileNewPartnerWithShepherdFamily: {Label=Add &Family with Shepherd...}
                 mniFileNewPartnerWithShepherdChurch: {Label=Add &Church with Shepherd...}
                 mniFileNewPartnerWithShepherdOrganisation: {Label=Add &Organisation with Shepherd...}
                 mniFileNewPartnerWithShepherdUnit: {Label=Add &Unit with Shepherd...}
-            mniFileEditPartner: {Label=&Edit Partner...}
+            mniFileEditPartner: {Label=&Edit Partner..., ShortcutKeys=Keys.P | Keys.Control}
             mniFileMergePartners: {Label=Mer&ge Partners...}
             mniFileDeletePartner: {Label=&Delete Partner...}
             mniSeparator: {Label=-}
@@ -191,9 +191,9 @@ RootNode:
             mniToolsOptions:
         mniView:
             Label: Vie&w
-            mniViewPartnerInfo:
+            mniViewPartnerInfo: {ShortcutKeys=Keys.A | Keys.Control}
     Toolbar:
-        tbbEditPartner: {Label=Edit Partner, Action=actFileEditPartner}
-        tbbNewPartner: {Label=New Partner, Action=actFileNewPartner}
+        tbbEditPartner: {Label=Edit &Partner, Action=actFileEditPartner}
+        tbbNewPartner: {Label=&New Partner, Action=actFileNewPartner}
         tbbSeparator:
-        tbbPartnerInfo: {Label=Partner Info, Action=actViewPartnerInfo}
+        tbbPartnerInfo: {Label=P&artner Info, Action=actViewPartnerInfo}

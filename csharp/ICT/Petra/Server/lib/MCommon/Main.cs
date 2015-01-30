@@ -65,9 +65,7 @@ namespace Ict.Petra.Server.MCommon
             out TPartnerClass APartnerClass,
             out TStdPartnerStatusCode APartnerStatus)
         {
-            bool NewTransaction = false;
             bool Result = false;
-            TDBTransaction ReadTransaction;
 
             TPartnerClass tmpPartnerClass = new TPartnerClass();
             TStdPartnerStatusCode tmpPartnerStatus = new TStdPartnerStatusCode();
@@ -75,29 +73,19 @@ namespace Ict.Petra.Server.MCommon
 
             if (APartnerKey != 0)
             {
-                try
-                {
-                    ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
-                        out NewTransaction);
+                TDBTransaction ReadTransaction = null;
 
-                    Result = RetrievePartnerShortName(APartnerKey,
-                        out tmpPartnerShortName,
-                        out tmpPartnerClass,
-                        out tmpPartnerStatus,
-                        ReadTransaction);
-
-                    if (NewTransaction)
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref ReadTransaction,
+                    delegate
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                        TLogging.LogAtLevel(7, "RetrievePartnerShortName: committed own transaction.");
-                    }
-                }
-                catch (Exception)
-                {
-                    TLogging.Log(String.Format("Problem retrieveing partner short name for Partner {0}", APartnerKey));
-                    TLogging.LogStackTrace(TLoggingType.ToLogfile);
-                }
+                        Result = RetrievePartnerShortName(APartnerKey,
+                            out tmpPartnerShortName,
+                            out tmpPartnerClass,
+                            out tmpPartnerStatus,
+                            ReadTransaction);
+                    });
             }
             else
             {

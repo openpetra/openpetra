@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       ChristianK
+//       ChristianK, timop
 //
 // Copyright 2004-2015 by OM International
 //
@@ -69,19 +69,24 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             string PhoneExtension;
             string FaxExtension;
 
-            TPartnerContactDetails.PartnerLocationRecords = new Dictionary <long, DataTable>();
+            // collect the partner classes
+            foreach (PPartnerRow PartnerDR in AMainDS.PPartner.Rows)
+            {
+                TPartnerContactDetails.PartnerClassInformation[PartnerDR.PartnerKey] = PartnerDR.PartnerClass;
+            }
+
+            SortedList <long, DataTable>PartnerLocationsTables = new SortedList <long, DataTable>();
+
+            for (int counter = 0; counter < TPartnerContactDetails.NumberOfTables; counter++)
+            {
+                PartnerLocationsTables[counter] = TPartnerContactDetails.BestAddressHelper.GetNewPPartnerLocationTableInstance();
+            }
+
+            TPartnerContactDetails.PartnerLocationRecords = PartnerLocationsTables;
 
             foreach (PPartnerLocationRow PartnerLocationDR in AMainDS.PPartnerLocation.Rows)
             {
-                // If we haven't yet recorded the certain values of p_partner_location records for this Partner then create a new
-                // data structure for this Partner that can hold those. That data structure will be processed and used for the
-                // creation of records for the new 'Contact Details' scheme (held in the p_partner_attribute DB Table).
-                if (!TPartnerContactDetails.PartnerLocationRecords.TryGetValue(PartnerLocationDR.PartnerKey, out PartnerLocationsDT))
-                {
-                    PartnerLocationsDT = TPartnerContactDetails.BestAddressHelper.GetNewPPartnerLocationTableInstance();
-
-                    TPartnerContactDetails.PartnerLocationRecords.Add(PartnerLocationDR.PartnerKey, PartnerLocationsDT);
-                }
+                PartnerLocationsDT = PartnerLocationsTables[PartnerLocationDR.PartnerKey % TPartnerContactDetails.NumberOfTables];
 
                 // Phone Extension: Ignore if value in the dumped data is either null or 0
                 if (PartnerLocationDR.IsExtensionNull())
@@ -123,6 +128,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 // Create representation of key data of the p_partner_location row and add it to the TPartnerContactDetails.PartnerLocationRecords Data Structure
                 NewPartnerLocationDR = PartnerLocationsDT.NewRow();
+                NewPartnerLocationDR["p_partner_key_n"] = PartnerLocationDR.PartnerKey;
                 NewPartnerLocationDR["p_site_key_n"] = PartnerLocationDR.SiteKey;
                 NewPartnerLocationDR["p_location_key_i"] = PartnerLocationDR.LocationKey;
 

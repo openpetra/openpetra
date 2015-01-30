@@ -56,26 +56,50 @@
     </pageheader>
 
     <calculations>
-      <calculation id="SelectRecipients" returns="RecipientKey, RecipientName, RecipientClass" returnsFormat="row">
+      <calculation id="SelectRecipients" returns="RecipientKey, RecipientName, RecipientClass, FieldName" returnsFormat="row">
         <query>
           <queryDetail>
             <value>
             SELECT DISTINCT
               detail.p_recipient_key_n AS RecipientKey,
-              PUB_p_partner.p_partner_short_name_c AS RecipientName,
-              PUB_p_partner.p_partner_class_c AS RecipientClass,
-              detail.a_recipient_ledger_number_n
+              Recipient.p_partner_short_name_c AS RecipientName,
+              Recipient.p_partner_class_c AS RecipientClass,
+              detail.a_recipient_ledger_number_n,
+			  
+			  CASE WHEN EXISTS (SELECT 1 FROM PUB_p_partner WHERE PUB_p_partner.p_partner_key_n = PUB_p_partner_gift_destination.p_field_key_n)
+			  THEN PUB_p_partner.p_partner_short_name_c 
+			  ELSE 'UNKNOWN'
+			  END AS FieldName
+			  
             FROM
               PUB_a_gift as gift, 
               PUB_a_gift_detail as detail,
               PUB_a_gift_batch,
-              PUB_p_partner
+              PUB_p_partner AS Recipient
             </value>
           </queryDetail>
           <queryDetail condition="eq({param_recipient}, Extract)">
             <value>
               , PUB_m_extract,
               PUB_m_extract_master
+            </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+              LEFT JOIN PUB_p_partner_gift_destination
+			  ON Recipient.p_partner_class_c = 'FAMILY'
+			  AND PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n
+			  AND PUB_p_partner_gift_destination.p_date_effective_d &lt;= {#param_today#}
+			  AND (PUB_p_partner_gift_destination.p_date_expires_d IS NULL
+			  OR (PUB_p_partner_gift_destination.p_date_expires_d &gt;= {#param_today#}
+			  AND PUB_p_partner_gift_destination.p_date_effective_d &lt;&gt; PUB_p_partner_gift_destination.p_date_expires_d))
+			  
+              LEFT JOIN PUB_p_partner
+			  ON PUB_p_partner.p_partner_key_n = PUB_p_partner_gift_destination.p_field_key_n
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_recipient}, Extract)">
+            <value>
             WHERE 
               detail.p_recipient_key_n =  PUB_m_extract.p_partner_key_n
               AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
@@ -99,8 +123,8 @@
               AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-              
-              AND PUB_p_partner.p_partner_key_n = detail.p_recipient_key_n
+			  
+              AND Recipient.p_partner_key_n = detail.p_recipient_key_n
             </value>
           </queryDetail>
           <queryDetail condition="not(eq({param_report_type}, List)">
@@ -113,11 +137,21 @@
               AND detail.p_recipient_key_n = {{param_recipientkey}}
             </value>
           </queryDetail>
-          <queryDetail>
-            <value>
-              ORDER BY detail.a_recipient_ledger_number_n
-            </value>
-          </queryDetail>
+		<queryDetail condition="eq({param_order_by_name}, RecipientField)">
+			<value>
+				ORDER BY FieldName, RecipientKey
+			</value>
+		</queryDetail>
+		<queryDetail condition="eq({param_order_by_name}, RecipientKey)">
+			<value>
+				ORDER BY RecipientKey
+			</value>
+		</queryDetail>
+		<queryDetail condition="eq({param_order_by_name}, RecipientName)">
+			<value>
+				ORDER BY RecipientName
+			</value>
+		</queryDetail>
         </query>
       </calculation>
 
@@ -253,15 +287,6 @@
           <queryDetail>
             <value text="NO-SQL"/>
             <value function="assign({RecipientTotal}, 0)"/>
-          </queryDetail>
-        </query>
-      </calculation>
-
-      <calculation id="GetFieldOfRecipient" returns="automatic" returnsFormat="internal">
-        <query>
-          <queryDetail>
-            <value text="NO-SQL"/>
-            <value function="assign({FieldName}, GetFieldOfPartner({RecipientKey}))"/>
           </queryDetail>
         </query>
       </calculation>
@@ -573,20 +598,14 @@
 
       <level name="RecipientLevel">
         <header>
-          <field whichfield="header 0" pos="0cm" width="11.0cm">
+          <field whichfield="header 0" pos="0cm" width="15.0cm">
             <value text="Recipient: "/>
             <value variable="RecipientName"/>
-            <value text="  Partner Key: "/>
+            <value text="   Partner Key: "/>
             <value variable="RecipientKey" format="partnerkey"/>
+			<value condition="eq({param_report_type}, Complete) and not(eq({FieldName}, ''))" text="   Current Field: "/>
+            <value variable="FieldName" condition="eq({param_report_type}, Complete)"/>
           </field>
-          <switch>
-            <case condition="eq({param_report_type}, Complete)">
-              <field whichfield="header 1" pos="10cm" width="7.0cm" calculation="GetFieldOfRecipient">
-                <value condition="not(eq({FieldName}, ''))" text="Current Field: "/>
-                <value variable="FieldName"/>
-              </field>
-            </case>
-          </switch>
         </header>
         <detail>
           <lowerLevelReport level="ReportPerRecipient" calculation="ClearRecipientTotal"></lowerLevelReport>

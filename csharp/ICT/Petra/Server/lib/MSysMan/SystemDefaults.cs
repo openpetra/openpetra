@@ -96,25 +96,16 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         [RequireModulePermission("NONE")]
         public static SSystemDefaultsTable GetSystemDefaults()
         {
-            SSystemDefaultsTable Ret;
+            SSystemDefaultsTable Ret = null;
+            TDBTransaction ReadTransaction = null;
 
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
-
-            try
-            {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                Ret = SSystemDefaultsAccess.LoadAll(ReadTransaction);
-            }
-            finally
-            {
-                if (NewTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+                    Ret = SSystemDefaultsAccess.LoadAll(ReadTransaction);
+                });
+
             return Ret;
         }
 

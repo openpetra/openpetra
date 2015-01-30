@@ -115,7 +115,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ucoCountryComboBox = new Ict.Petra.Client.CommonControls.TUC_CountryComboBox();
             this.lblCountry = new System.Windows.Forms.Label();
             this.pnlMailingAddressOnly = new System.Windows.Forms.Panel();
-            this.chkMailingAddressOnly = new System.Windows.Forms.CheckBox();
+            this.chkMailingAddressOnly = new Ict.Common.Controls.TchkVisibleFocus();
             this.lblMailingAddressOnly = new System.Windows.Forms.Label();
             this.pnlAccountName = new System.Windows.Forms.Panel();
             this.critAccountName = new Ict.Petra.Client.CommonControls.SplitButton();
@@ -742,7 +742,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerName.Name = "lblPartnerName";
             this.lblPartnerName.Size = new System.Drawing.Size(142, 23);
             this.lblPartnerName.TabIndex = 0;
-            this.lblPartnerName.Text = "Partner &Name:";
+            this.lblPartnerName.Text = "Pa&rtner Name:";
             this.lblPartnerName.TextAlign = System.Drawing.ContentAlignment.TopRight;
 
             //
@@ -1112,13 +1112,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.chkMailingAddressOnly.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chkMailingAddressOnly.Location = new System.Drawing.Point(146, 4);
             this.chkMailingAddressOnly.Name = "chkMailingAddressOnly";
-            this.chkMailingAddressOnly.Size = new System.Drawing.Size(12, 12);
+            this.chkMailingAddressOnly.Size = new System.Drawing.Size(17, 17);
             this.chkMailingAddressOnly.TabIndex = 1;
 
             //
             // lblMailingAddressOnly
             //
-            this.lblMailingAddressOnly.Location = new System.Drawing.Point(0, 2);
+            this.lblMailingAddressOnly.Location = new System.Drawing.Point(0, 6);
             this.lblMailingAddressOnly.Name = "lblMailingAddressOnly";
             this.lblMailingAddressOnly.Size = new System.Drawing.Size(144, 23);
             this.lblMailingAddressOnly.TabIndex = 0;
@@ -1555,7 +1555,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.RadioButton rbtStatusAll;
         private System.Windows.Forms.Panel pnlMailingAddressOnly;
         private System.Windows.Forms.Label lblMailingAddressOnly;
-        private System.Windows.Forms.CheckBox chkMailingAddressOnly;
+        private Ict.Common.Controls.TchkVisibleFocus chkMailingAddressOnly;
         private System.Windows.Forms.Panel pnlPersonnelCriteria;
         private TUC_PartnerFind_PersonnelCriteria_CollapsiblePart ucoPartnerFind_PersonnelCriteria_CollapsiblePart;
         private System.Windows.Forms.TextBox txtCounty;

@@ -47,25 +47,20 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
         [RequireModulePermission("NONE")]
         public static System.Boolean GetDBVersion(out System.String APetraDBVersion)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = null;
 
-            APetraDBVersion = "Can not retrieve DB version";
+            APetraDBVersion = "Cannot retrieve DB version";
             TLogging.LogAtLevel(9, "TSysManServerLookups.GetDatabaseVersion called!");
 
             SSystemDefaultsTable SystemDefaultsDT = new SSystemDefaultsTable();
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
 
-            // Load data
-            SystemDefaultsDT = SSystemDefaultsAccess.LoadByPrimaryKey("CurrentDatabaseVersion", ReadTransaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TSysManServerLookups.GetDatabaseVersion: committed own transaction.");
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
+                {
+                    // Load data
+                    SystemDefaultsDT = SSystemDefaultsAccess.LoadByPrimaryKey("CurrentDatabaseVersion", ReadTransaction);
+                });
 
             if (SystemDefaultsDT.Rows.Count < 1)
             {

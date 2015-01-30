@@ -168,6 +168,12 @@ namespace Ict.Common
              FullDescription = "No email can be sent because the configuration is missing on the server side.")]
         public const String ERR_MISSINGEMAILCONFIGURATION = "GENC.00020V";
 
+        /// <summary>User tried to delete a record that is designed to be non-deletable.</summary>
+        [ErrCodeAttribute("Cannot delete a record marked as non-deletable",
+             ErrorMessageText = "The record cannot be deleted because it is marked as non-deletable.",
+             FullDescription = "The record cannot be deleted because it is marked as a non-deletable 'system' row in the design of the database.")]
+        public const String ERR_RECORD_DELETION_NOT_POSSIBLE_BY_DESIGN = "GENC.00021V";
+
 //        [ErrCodeAttribute("Test duplicate.")]
 //        public const String ERR_NOFUTUREDATE2 = "GENC.00002V";
 

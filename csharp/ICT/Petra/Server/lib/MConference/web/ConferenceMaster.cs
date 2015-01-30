@@ -59,21 +59,24 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("CONFERENCE")]
         public static ConferenceSetupTDS LoadConferenceSettings(long AConferenceKey, out string AConferenceName)
         {
-            Boolean NewTransaction;
-
             ConferenceSetupTDS MainDS = new ConferenceSetupTDS();
+            string ConferenceName = null;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            PPartnerLocationAccess.LoadViaPPartner(MainDS, AConferenceKey, Transaction);
-            PcConferenceAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction);
-            PcConferenceOptionAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
-            PcDiscountAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
-            PcConferenceVenueAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
-            PUnitAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction);
-            AConferenceName = PPartnerAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction).PartnerShortName;
+                ref Transaction,
+                delegate
+                {
+                    PPartnerLocationAccess.LoadViaPPartner(MainDS, AConferenceKey, Transaction);
+                    PcConferenceAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction);
+                    PcConferenceOptionAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
+                    PcDiscountAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
+                    PcConferenceVenueAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
+                    PUnitAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction);
+                    ConferenceName = PPartnerAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction).PartnerShortName;
+                });
 
             foreach (ConferenceSetupTDSPcConferenceVenueRow VenueRow in MainDS.PcConferenceVenue.Rows)
             {
@@ -91,10 +94,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            AConferenceName = ConferenceName;
 
             return MainDS;
         }

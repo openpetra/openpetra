@@ -98,18 +98,16 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void CommitLedgerChange()
         {
-            bool NewTransaction;
+            TDBTransaction transaction = null;
+            Boolean SubmissionOk = true;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
-            ALedgerAccess.SubmitChanges(FLedgerTbl, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref transaction, ref SubmissionOk,
+                delegate
+                {
+                    ALedgerAccess.SubmitChanges(FLedgerTbl, transaction);
+                });
             FLedgerTbl.AcceptChanges();
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                GetDataRow();
-            }
+            GetDataRow();
         }
 
         /// <summary>
@@ -426,139 +424,6 @@ namespace Ict.Petra.Server.MFinance.Common
     }
 
     /// <summary>
-    /// May be obsolete ...
-    /// Wait until Year End is done well ...
-    /// </summary>
-    public class TLedgerLock
-    {
-        int intLegerNumber;
-        private bool blnResult;
-        private Object synchRoot = new Object();
-
-        /// <summary>
-        ///
-        /// </summary>
-        public TLedgerLock(int ALedgerNum)
-        {
-            bool NewTransaction;
-
-            intLegerNumber = ALedgerNum;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
-            ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                intLegerNumber, TLedgerInitFlagEnum.LedgerLock.ToString(), Transaction);
-
-            ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
-            aLedgerInitFlagRow.LedgerNumber = intLegerNumber;
-            aLedgerInitFlagRow.InitOptionName = TLedgerInitFlagEnum.LedgerLock.ToString();
-
-            lock (synchRoot)
-            {
-                try
-                {
-                    aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
-                    ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, Transaction);
-                    blnResult = true;
-
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                }
-                catch (System.Data.ConstraintException Exc)
-                {
-                    TLogging.Log("A ConstraintException occured during a call to the TLedgerLock constructor:" + Environment.NewLine + Exc.ToString());
-
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-
-                    blnResult = false;
-
-                    throw;
-                }
-                catch (Exception Exc)
-                {
-                    TLogging.Log("An Exception occured during during a call to the TLedgerLock constructor:" + Environment.NewLine + Exc.ToString());
-
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-
-                    blnResult = false;
-
-                    throw;
-                }
-            }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public bool IsLocked
-        {
-            get
-            {
-                return blnResult;
-            }
-        }
-
-
-        /// <summary>
-        ///
-        /// </summary>
-        public void UnLock()
-        {
-            if (blnResult)
-            {
-                TLedgerInitFlagHandler tifh =
-                    new TLedgerInitFlagHandler(intLegerNumber, TLedgerInitFlagEnum.LedgerLock);
-                tifh.Flag = false;
-            }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public string LockInfo()
-        {
-            if (!blnResult)
-            {
-                try
-                {
-                    bool NewTransaction;
-                    TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
-                        out NewTransaction);
-                    ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                        intLegerNumber, TLedgerInitFlagEnum.LedgerLock.ToString(), Transaction);
-                    ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.Rows[0];
-                    string strAnswer = aLedgerInitFlagRow.CreatedBy + " - " +
-                                       DateTime.Parse(aLedgerInitFlagRow.DateCreated.ToString()).ToLongDateString();
-
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-
-                    return strAnswer;
-                }
-                catch (Exception)
-                {
-                    return Catalog.GetString("Free Again");
-                }
-            }
-            else
-            {
-                return String.Empty;
-            }
-        }
-    }
-
-    /// <summary>
     /// This is the list of valid Ledger-Init-Flags
     /// (the TLedgerInitFlagHandler has an internal information of the flag)
     /// </summary>
@@ -574,13 +439,6 @@ namespace Ict.Petra.Server.MFinance.Common
         Revaluation,
 
         /// <summary>
-        /// Property to lock a ledger ...
-        /// Not implemented in petra
-        /// </summary>
-        LedgerLock,
-
-
-        /// <summary>
         ///
         /// </summary>
         DatabaseAllocation
@@ -593,7 +451,7 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TLedgerInitFlagHandler
     {
-        private int intLedgerNumber;
+        private int FLedgerNumber;
         private string strFlagName;
         private string strFlagNameHelp;
 
@@ -605,7 +463,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AFlagEnum">A valid LegerInitFlag entry</param>
         public TLedgerInitFlagHandler(int ALedgerNumber, TLedgerInitFlagEnum AFlagEnum)
         {
-            intLedgerNumber = ALedgerNumber;
+            FLedgerNumber = ALedgerNumber;
             strFlagName = String.Empty;
 
             if (AFlagEnum.Equals(TLedgerInitFlagEnum.Revaluation))
@@ -662,41 +520,24 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public void SetFlagAndName(string AName)
         {
-            bool NewTransaction;
+            TDBTransaction transaction = null;
+            Boolean SubmissionOk = true;
 
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                out NewTransaction);
-
-            ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                intLedgerNumber, strFlagName, WriteTransaction);
-
-            ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
-
-            aLedgerInitFlagRow.LedgerNumber = intLedgerNumber;
-            aLedgerInitFlagRow.InitOptionName = strFlagName;
-
-            aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
-
-            try
-            {
-                ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, WriteTransaction);
-
-                if (NewTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref transaction, ref SubmissionOk,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured in SetFlagAndName:" + Environment.NewLine + Exc.ToString());
+                    ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+                        FLedgerNumber, strFlagName, transaction);
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                    ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
 
-                throw;
-            }
+                    aLedgerInitFlagRow.LedgerNumber = FLedgerNumber;
+                    aLedgerInitFlagRow.InitOptionName = strFlagName;
+
+                    aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
+
+                    ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, transaction);
+                });
         }
 
         private bool FindRecord()
@@ -709,7 +550,7 @@ namespace Ict.Petra.Server.MFinance.Common
             try
             {
                 ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                    intLedgerNumber, strFlagName, ReadTransaction);
+                    FLedgerNumber, strFlagName, ReadTransaction);
 
                 boolValue = (aLedgerInitFlagTable.Rows.Count == 1);
 
@@ -742,10 +583,10 @@ namespace Ict.Petra.Server.MFinance.Common
             try
             {
                 ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                    intLedgerNumber, strFlagName, ReadWriteTransaction);
+                    FLedgerNumber, strFlagName, ReadWriteTransaction);
 
                 ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
-                aLedgerInitFlagRow.LedgerNumber = intLedgerNumber;
+                aLedgerInitFlagRow.LedgerNumber = FLedgerNumber;
                 aLedgerInitFlagRow.InitOptionName = strFlagName;
                 aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
 
@@ -771,38 +612,23 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void DeleteRecord()
         {
-            bool NewTransaction;
-            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                out NewTransaction);
+            TDBTransaction transaction = null;
+            Boolean SubmissionOK = true;
 
-            try
-            {
-                ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                    intLedgerNumber, strFlagName, ReadWriteTransaction);
-
-                if (aLedgerInitFlagTable.Rows.Count == 1)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                ref transaction, ref SubmissionOK,
+                delegate
                 {
-                    ((ALedgerInitFlagRow)aLedgerInitFlagTable.Rows[0]).Delete();
+                    ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+                        FLedgerNumber, strFlagName, transaction);
 
-                    ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, ReadWriteTransaction);
-                }
+                    if (aLedgerInitFlagTable.Rows.Count == 1)
+                    {
+                        ((ALedgerInitFlagRow)aLedgerInitFlagTable.Rows[0]).Delete();
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured in DeleteRecord:" + Environment.NewLine + Exc.ToString());
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                throw;
-            }
+                        ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, transaction);
+                    }
+                });
         }
     }
 }

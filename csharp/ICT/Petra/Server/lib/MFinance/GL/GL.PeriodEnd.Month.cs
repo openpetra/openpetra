@@ -77,7 +77,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     TDBTransaction Transaction = null;
                     AAccountingPeriodTable PeriodTbl = null;
 
-                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted, ref Transaction,
+                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
+                        TEnforceIsolationLevel.eilMinimum,
+                        ref Transaction,
                         delegate
                         {
                             PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ledgerInfo.LedgerNumber, PeriodClosing, Transaction);
@@ -206,7 +208,9 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 AAccountingPeriodTable PeriodTbl = null;
                 TDBTransaction Transaction = null;
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted, ref Transaction,
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
                     delegate
                     {
                         PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(FledgerInfo.LedgerNumber, FledgerInfo.CurrentPeriod, Transaction);
@@ -307,45 +311,44 @@ namespace Ict.Petra.Server.MFinance.GL
                 return; // Revaluation has been performed for the current period.
             }
 
-            bool NewTransaction = false;
-            TDBTransaction transaction;
-            try
-            {
-                transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
+            TDBTransaction Transaction = null;
 
-                // TODO: could also check for the balance in this month of the foreign currency account. if all balances are zero, no revaluation is needed.
-                string testForForeignKeyAccount =
-                    String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
-                        AAccountTable.GetLedgerNumberDBName(),
-                        FledgerInfo.LedgerNumber,
-                        AAccountTable.GetForeignCurrencyFlagDBName());
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    try
+                    {
+                        // TODO: could also check for the balance in this month of the foreign currency account. if all balances are zero, no revaluation is needed.
+                        string testForForeignKeyAccount =
+                            String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
+                                AAccountTable.GetLedgerNumberDBName(),
+                                FledgerInfo.LedgerNumber,
+                                AAccountTable.GetForeignCurrencyFlagDBName());
 
-                if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, transaction)) != 0)
-                {
-                    TVerificationResult tvr = new TVerificationResult(
-                        Catalog.GetString("Ledger revaluation"),
-                        Catalog.GetString("Please run a foreign currency revaluation first."), "",
-                        TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
-                    // Error is critical but additional checks can still be done
-                    FverificationResults.Add(tvr);
-                    FHasCriticalErrors = true;
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+                        if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, Transaction)) != 0)
+                        {
+                            TVerificationResult tvr = new TVerificationResult(
+                                Catalog.GetString("Ledger revaluation"),
+                                Catalog.GetString("Please run a foreign currency revaluation first."), "",
+                                TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
+                            // Error is critical but additional checks can still be done
+                            FverificationResults.Add(tvr);
+                            FHasCriticalErrors = true;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        TLogging.Log("Unexpected error in CheckIfRevaluationIsDone(): " + ex.Message);
+                        throw ex;
+                    }
+                });
         }
 
         private void CheckForUnpostedBatches()
         {
             GetBatchInfo getBatchInfo = new GetBatchInfo(
-                FledgerInfo.LedgerNumber, FledgerInfo.CurrentPeriod);
+                FledgerInfo.LedgerNumber, FledgerInfo.CurrentFinancialYear, FledgerInfo.CurrentPeriod);
 
             if (getBatchInfo.NumberOfBatches > 0)
             {
@@ -497,12 +500,6 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ADateEndOfPeriod"></param>
         public GetUnpostedGiftInfo(int ALedgerNumber, DateTime ADateEndOfPeriod)
         {
-            //IF CAN-FIND (FIRST a_gift_batch WHERE
-            //    a_gift_batch.a_ledger_number_i EQ pv_ledger_number_i AND
-            //    a_gift_batch.a_gl_effective_date_d LE
-            //        a_accounting_period.a_period_end_date_d AND
-            //    a_gift_batch.a_batch_status_c EQ "Unposted":U) THEN DO:
-
             OdbcParameter[] ParametersArray;
             ParametersArray = new OdbcParameter[3];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
@@ -512,21 +509,20 @@ namespace Ict.Petra.Server.MFinance.GL
             ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[2].Value = MFinanceConstants.BATCH_UNPOSTED;
 
-            bool NewTransaction;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-            string strSQL = "SELECT * FROM PUB_" + AGiftBatchTable.GetTableDBName() + " ";
-            strSQL += "WHERE " + AGiftBatchTable.GetLedgerNumberDBName() + " = ? ";
-            strSQL += "AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " <= ? ";
-            strSQL += "AND " + AGiftBatchTable.GetBatchStatusDBName() + " = ? ";
-            FDataTable = DBAccess.GDBAccessObj.SelectDT(
-                strSQL, AAccountingPeriodTable.GetTableDBName(), transaction, ParametersArray);
+                ref transaction,
+                delegate
+                {
+                    string strSQL = "SELECT * FROM PUB_" + AGiftBatchTable.GetTableDBName() +
+                                    " WHERE " + AGiftBatchTable.GetLedgerNumberDBName() + " = ?" +
+                                    " AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " <= ?" +
+                                    " AND " + AGiftBatchTable.GetBatchStatusDBName() + " = ? ";
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+                    FDataTable = DBAccess.GDBAccessObj.SelectDT(
+                        strSQL, AAccountingPeriodTable.GetTableDBName(), transaction, ParametersArray);
+                });
         }
 
         /// <summary>
@@ -571,7 +567,9 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
                 delegate
                 {
                     FSuspenseAccountTable = ASuspenseAccountAccess.LoadViaALedger(ALedgerNumber, Transaction);
@@ -632,42 +630,28 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class GetBatchInfo
     {
-        DataTable batches;
+        ABatchTable Fbatches = new ABatchTable();
 
         /// <summary>
-        /// The contructor gets the root information and this are
+        /// The contructor gets the root information
         /// </summary>
-        /// <param name="ALedgerNumber">the ledger number</param>
-        /// <param name="ABatchPeriod">the number of the period the revaluation shall be done</param>
-        public GetBatchInfo(int ALedgerNumber, int ABatchPeriod)
+        public GetBatchInfo(Int32 ALedgerNumber, Int32 AYear, Int32 ABatchPeriod)
         {
-            OdbcParameter[] ParametersArray;
-            ParametersArray = new OdbcParameter[4];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ALedgerNumber;
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ABatchPeriod;
-            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar);
-            ParametersArray[2].Value = MFinanceConstants.BATCH_POSTED;
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar);
-            ParametersArray[3].Value = MFinanceConstants.BATCH_CANCELLED;
+            TDBTransaction transaction = null;
 
-            bool NewTransaction;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-            string strSQL = "SELECT * FROM PUB_" + ABatchTable.GetTableDBName() + " ";
-            strSQL += "WHERE " + ABatchTable.GetLedgerNumberDBName() + " = ? ";
-            strSQL += "AND " + ABatchTable.GetBatchPeriodDBName() + " = ? ";
-            strSQL += "AND " + ABatchTable.GetBatchStatusDBName() + " <> ? ";
-            strSQL += "AND " + ABatchTable.GetBatchStatusDBName() + " <> ? ";
-            batches = DBAccess.GDBAccessObj.SelectDT(
-                strSQL, ABatchTable.GetTableDBName(), transaction, ParametersArray);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+                ref transaction,
+                delegate
+                {
+                    string strSQL = "SELECT * FROM PUB_a_batch" +
+                                    " WHERE a_ledger_number_i=" + ALedgerNumber +
+                                    " AND a_batch_year_i=" + AYear +
+                                    " AND a_batch_period_i=" + ABatchPeriod +
+                                    " AND a_batch_status_c <> '" + MFinanceConstants.BATCH_POSTED + "'" +
+                                    " AND a_batch_status_c <> '" + MFinanceConstants.BATCH_CANCELLED + "'";
+                    DBAccess.GDBAccessObj.SelectDT(Fbatches, strSQL, transaction);
+                });
         }
 
         /// <summary>
@@ -678,7 +662,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                return batches.Rows.Count;
+                return Fbatches.Rows.Count;
             }
         }
 
@@ -687,28 +671,24 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         public override string ToString()
         {
-            //get
+            if (Fbatches.Rows.Count == 0)
             {
-                string strList = " - ";
+                return " - ";
+            }
 
-                if (NumberOfBatches != 0)
+            string strList = "";
+
+            foreach (ABatchRow Row in Fbatches.Rows)
+            {
+                if (strList != "")
                 {
-                    strList = batches.Rows[0][ABatchTable.GetBatchNumberDBName()].ToString();
-
-                    if (NumberOfBatches > 0)
-                    {
-                        for (int i = 1; i < NumberOfBatches; ++i)
-                        {
-                            strList += ", " +
-                                       batches.Rows[i][ABatchTable.GetBatchNumberDBName()].ToString();
-                        }
-                    }
-
-                    strList = "(" + strList + ")";
+                    strList += ", ";
                 }
 
-                return strList;
+                strList += Row.BatchNumber;
             }
+
+            return "(" + strList + ")";
         }
     }
 }

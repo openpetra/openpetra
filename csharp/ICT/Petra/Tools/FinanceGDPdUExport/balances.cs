@@ -52,10 +52,6 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             Console.WriteLine("Writing file: " + filename);
 
-            StringBuilder sb = new StringBuilder();
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
             string sql =
                 String.Format("SELECT GLM.{1} AS CostCentre, GLM.{0} AS Account, {2} AS StartBalance, GLMP.{3} AS EndBalance " +
                     "FROM PUB_{4} AS GLM, PUB_{10} AS A, PUB_{13} AS GLMP " +
@@ -81,21 +77,30 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName(),
                     AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName());
 
-            DataTable balances = DBAccess.GDBAccessObj.SelectDT(sql, "balances", Transaction);
+            TDBTransaction Transaction = null;
+            DataTable balances = null;
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    balances = DBAccess.GDBAccessObj.SelectDT(sql, "balances", Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            StringBuilder sb = new StringBuilder();
 
-            foreach (DataRow row in balances.Rows)
+            if (balances != null)
             {
-                sb.Append(StringHelper.StrMerge(
-                        new string[] {
-                            row["CostCentre"].ToString(),
-                            row["Account"].ToString(),
-                            String.Format("{0:N}", Convert.ToDecimal(row["StartBalance"])),
-                            String.Format("{0:N}", Convert.ToDecimal(row["EndBalance"]))
-                        }, ACSVSeparator));
+                foreach (DataRow row in balances.Rows)
+                {
+                    sb.Append(StringHelper.StrMerge(
+                            new string[] {
+                                row["CostCentre"].ToString(),
+                                row["Account"].ToString(),
+                                String.Format("{0:N}", Convert.ToDecimal(row["StartBalance"])),
+                                String.Format("{0:N}", Convert.ToDecimal(row["EndBalance"]))
+                            }, ACSVSeparator));
 
-                sb.Append(ANewLine);
+                    sb.Append(ANewLine);
+                }
             }
 
             StreamWriter sw = new StreamWriter(filename, false, Encoding.GetEncoding(1252));

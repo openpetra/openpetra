@@ -72,11 +72,15 @@
         <Table sqltable="a_account">
             <CustomField name="BankAccountFlag" type="bool"/>
             <CustomField name="CashAccountFlag" type="bool"/> <!-- will be set to true for the cacheable tables when this account reports to CASH -->
+            <CustomField name="SuspenseAccountFlag" type="bool"/>
+            <Field sqltable="a_general_ledger_master" sqlfield="a_ytd_actual_base_n"/>
+            <Field sqltable="a_general_ledger_master" sqlfield="a_ytd_actual_foreign_n"/>
         </Table>
         <Table sqltable="a_account_hierarchy"/>
         <Table sqltable="a_account_hierarchy_detail"/>
         <Table sqltable="a_account_property"/>
         <Table sqltable="a_account_property_code"/>
+        <Table sqltable="a_suspense_account"/>
 
         <Table sqltable="a_transaction_type"/>
 

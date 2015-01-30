@@ -115,11 +115,54 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 return;
             }
 
+            // Add in the Fees applicable for each row:
+
+            if (!FMainDS.AMotivationDetail.Columns.Contains("Fees"))
+            {
+                FMainDS.AMotivationDetail.Columns.Add("Fees", typeof(String));
+                FMainDS.AMotivationDetail.Columns.Add("KeyMin", typeof(String));
+            }
+
+            foreach (AMotivationDetailRow Row in FMainDS.AMotivationDetail.Rows)
+            {
+                FMainDS.AMotivationDetailFee.DefaultView.RowFilter = String.Format(
+                    "a_motivation_group_code_c='{0}' AND a_motivation_detail_code_c='{1}'",
+                    Row.MotivationGroupCode,
+                    Row.MotivationDetailCode);
+                String Fees = "";
+
+                foreach (DataRowView rv in FMainDS.AMotivationDetailFee.DefaultView)
+                {
+                    AMotivationDetailFeeRow FeeRow = (AMotivationDetailFeeRow)rv.Row;
+
+                    if (Fees != "")
+                    {
+                        Fees += ", ";
+                    }
+
+                    Fees += FeeRow.FeeCode;
+                }
+
+                Row["Fees"] = Fees;
+
+                if (Row.RecipientKey != 0)
+                {
+                    String mPartnerShortName;
+                    TPartnerClass mPartnerClass;
+
+                    if (TServerLookup.TMPartner.GetPartnerShortName(Row.RecipientKey, out mPartnerShortName, out mPartnerClass, true))
+                    {
+                        Row["KeyMin"] = mPartnerShortName;
+                    }
+                }
+            }
+
             ReportingEngine.RegisterData(FMainDS.AMotivationDetail, "MotivationDetail");
             TRptCalculator Calc = new TRptCalculator();
             ALedgerRow LedgerRow = FMainDS.ALedger[0];
             Calc.AddParameter("param_ledger_number_i", LedgerRow.LedgerNumber);
             Calc.AddStringParameter("param_ledger_name", LedgerRow.LedgerName);
+            Calc.AddParameter("param_TD", FTaxDeductiblePercentageEnabled);
 
             if (ModifierKeys.HasFlag(Keys.Control))
             {

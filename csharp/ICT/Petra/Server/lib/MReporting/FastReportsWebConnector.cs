@@ -93,6 +93,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             switch (AReportType)
             {
+                /* GL Reports */
+
                 case "BalanceSheet":
                     ResultTbl = TFinanceReportingWebConnector.BalanceSheetTable(AParameters, FDbAdapter);
                     break;
@@ -129,12 +131,26 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.TrialBalanceTable(AParameters, FDbAdapter);
                     break;
 
+                case "SurplusDeficit":
+                    ResultTbl = TFinanceReportingWebConnector.SurplusDeficitTable(AParameters, FDbAdapter);
+                    break;
+
+                /* Gift Reports */
+
                 case "GiftBatchDetail":
                     ResultTbl = TFinanceReportingWebConnector.GiftBatchDetailTable(AParameters, FDbAdapter);
                     break;
 
                 case "RecipientTaxDeductPct":
                     ResultTbl = TFinanceReportingWebConnector.RecipientTaxDeductPctTable(AParameters, FDbAdapter);
+                    break;
+
+                case "FieldLeaderGiftSummary":
+                    ResultTbl = TFinanceReportingWebConnector.FieldLeaderGiftSummary(AParameters, FDbAdapter);
+                    break;
+
+                case "TotalGiftsThroughField":
+                    ResultTbl = TFinanceReportingWebConnector.TotalGiftsThroughField(AParameters, FDbAdapter);
                     break;
 
                 default:
@@ -189,6 +205,89 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             }
 
             return MainDs;
+        }
+
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// </summary>
+        [RequireModulePermission("none")]
+        public static DataSet GetRecipientGiftStatementDataSet(Dictionary <String, TVariant>AParameters)
+        {
+            string ReportType = AParameters["param_report_type"].ToString();
+
+            FDbAdapter = new TReportingDbAdapter();
+            TLogging.SetStatusBarProcedure(WriteToStatusBar);
+            DataSet ReturnDataSet = new DataSet();
+
+            // get recipients
+            DataTable Recipients = TFinanceReportingWebConnector.RecipientGiftStatementRecipientTable(AParameters, FDbAdapter);
+
+            if (FDbAdapter.IsCancelled || (Recipients == null))
+            {
+                return null;
+            }
+
+            DataTable RecipientTotals = new DataTable("RecipientTotals");
+            RecipientTotals.Columns.Add("PreviousYearTotal", typeof(decimal));
+            RecipientTotals.Columns.Add("CurrentYearTotal", typeof(decimal));
+            DataTable Donors = new DataTable("Donors");
+
+            foreach (DataRow Row in Recipients.Rows)
+            {
+                if (ReportType == "Complete")
+                {
+                    // get year totals for recipient
+                    RecipientTotals.Merge(TFinanceReportingWebConnector.RecipientGiftStatementTotalsTable(AParameters, (Int64)Row["RecipientKey"],
+                            FDbAdapter));
+                }
+
+                // get donor information for each recipient
+                Donors.Merge(TFinanceReportingWebConnector.RecipientGiftStatementDonorTable(AParameters, (Int64)Row["RecipientKey"], FDbAdapter));
+
+                if (FDbAdapter.IsCancelled)
+                {
+                    return null;
+                }
+            }
+
+            DataView View = new DataView(Donors);
+            DataTable DistinctDonors = View.ToTable(true, "DonorKey");
+
+            DataTable DonorAddresses = new DataTable("DonorAddresses");
+
+            if ((ReportType == "Complete") || (ReportType == "Donors Only"))
+            {
+                foreach (DataRow Row in DistinctDonors.Rows)
+                {
+                    // get best address for each distinct donor
+                    DonorAddresses.Merge(TFinanceReportingWebConnector.RecipientGiftStatementDonorAddressesTable(Convert.ToInt64(Row["DonorKey"]),
+                            FDbAdapter));
+
+                    if (FDbAdapter.IsCancelled)
+                    {
+                        return null;
+                    }
+                }
+            }
+            else
+            {
+                DonorAddresses.Merge(DistinctDonors);
+            }
+
+            // We only want distinct donors for this report (i.e. no more than one per recipient)
+            if (ReportType == "Donors Only")
+            {
+                DistinctDonors = View.ToTable(true, "DonorKey", "DonorName", "RecipientKey");
+                Donors.Clear();
+                Donors.Merge(DistinctDonors);
+            }
+
+            ReturnDataSet.Tables.Add(Recipients);
+            ReturnDataSet.Tables.Add(RecipientTotals);
+            ReturnDataSet.Tables.Add(Donors);
+            ReturnDataSet.Tables.Add(DonorAddresses);
+
+            return (FDbAdapter.IsCancelled) ? null : ReturnDataSet;
         }
 
         /// <summary>

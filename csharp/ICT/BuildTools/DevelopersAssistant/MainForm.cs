@@ -58,6 +58,24 @@ namespace Ict.Tools.DevelopersAssistant
             ExternalLinks           // User links file
         };
 
+        /// <summary>
+        /// Gets the current branch location as displayed as the first entry in the drop down list for branch history
+        /// </summary>
+        private string BranchLocation
+        {
+            get
+            {
+                if (cboBranchLocation.Items.Count == 0)
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return cboBranchLocation.Items[cboBranchLocation.SelectedIndex].ToString();
+                }
+            }
+        }
+
         /**************************************************************************************************************************************
          *
          * Initialisation and GUI state routines
@@ -86,6 +104,7 @@ namespace Ict.Tools.DevelopersAssistant
             cboCompilation.SelectedIndex = _localSettings.CompilationComboID;
             cboMiscellaneous.SelectedIndex = _localSettings.MiscellaneousComboID;
             cboDatabase.SelectedIndex = _localSettings.DatabaseComboID;
+            cboSourceCode.SelectedIndex = _localSettings.SourceCodeComboID;
             chkAutoStartServer.Checked = _localSettings.AutoStartServer;
             chkAutoStopServer.Checked = _localSettings.AutoStopServer;
             chkCheckForUpdatesAtStartup.Checked = _localSettings.AutoCheckForUpdates;
@@ -93,9 +112,30 @@ namespace Ict.Tools.DevelopersAssistant
             chkTreatWarningsAsErrors.Checked = _localSettings.TreatWarningsAsErrors;
             chkCompileWinform.Checked = _localSettings.CompileWinForm;
             chkStartClientAfterGenerateWinform.Checked = _localSettings.StartClientAfterCompileWinForm;
-            txtBranchLocation.Text = _localSettings.BranchLocation;
             txtYAMLPath.Text = _localSettings.YAMLLocation;
             txtFlashAfterSeconds.Text = _localSettings.FlashAfterSeconds.ToString();
+
+            if (_localSettings.BranchLocation != String.Empty)
+            {
+                cboBranchLocation.Items.Add(_localSettings.BranchLocation);
+
+                for (int i = 1; i < 10; i++)
+                {
+                    string path = _localSettings.GetBranchHistory(i);
+
+                    if (path == String.Empty)
+                    {
+                        break;
+                    }
+
+                    cboBranchLocation.Items.Add(path);
+                }
+
+                cboBranchLocation.SelectedIndex = 0;
+            }
+
+            txtLaunchpadUserName.Text = _localSettings.LaunchpadUserName;
+
             txtBazaarPath.Text = _localSettings.BazaarPath;
             ValidateBazaarPath();
 
@@ -135,26 +175,28 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void SetBranchDependencies()
         {
-            lblBranchLocation.Text = (txtBranchLocation.Text == String.Empty) ? "Not defined" : txtBranchLocation.Text;
+            lblBranchLocation.Text = (BranchLocation == String.Empty) ? "Not defined" : BranchLocation;
 
-            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+            BuildConfiguration dbCfg = new BuildConfiguration(BranchLocation, _localSettings);
 
-            if (txtBranchLocation.Text == String.Empty)
+            if (BranchLocation == String.Empty)
             {
                 lblDbBuildConfig.Text = "";
+                lblDatabaseName.Text = "None";
             }
             else
             {
                 lblDbBuildConfig.Text = dbCfg.CurrentConfig;
+                lblDatabaseName.Text = dbCfg.CurrentDBName;
             }
 
             dbCfg.ListAllConfigs(listDbBuildConfig);        // This might add a new configuration, so we need to update our local settings
             _localSettings.DbBuildConfigurations = dbCfg.FavouriteConfigurations;
             btnRemoveDbBuildConfig.Enabled = listDbBuildConfig.Items.Count > 0;
             btnEditDbBuildConfig.Enabled = listDbBuildConfig.Items.Count > 0;
-            btnSaveDbBuildConfig.Enabled = listDbBuildConfig.Items.Count > 0 && txtBranchLocation.Text != String.Empty;
+            btnSaveDbBuildConfig.Enabled = listDbBuildConfig.Items.Count > 0 && BranchLocation != String.Empty;
 
-            if (txtBranchLocation.Text == String.Empty)
+            if (BranchLocation == String.Empty)
             {
                 txtAutoLogonUser.Text = String.Empty;
                 txtAutoLogonPW.Text = String.Empty;
@@ -164,7 +206,7 @@ namespace Ict.Tools.DevelopersAssistant
             }
             else
             {
-                ClientAutoLogOn calo = new ClientAutoLogOn(txtBranchLocation.Text);
+                ClientAutoLogOn calo = new ClientAutoLogOn(BranchLocation);
                 txtAutoLogonUser.Text = calo.UserName;
                 txtAutoLogonPW.Text = calo.Password;
                 txtAutoLogonAction.Text = calo.TestAction.Replace(",", "\r\n");
@@ -182,6 +224,7 @@ namespace Ict.Tools.DevelopersAssistant
             toolTip.SetToolTip(btnStartClient, toolTip.GetToolTip(btnStartClient) + Environment.NewLine + "Shortcut: Ctrl + O");
             toolTip.SetToolTip(linkLabelRestartServer, toolTip.GetToolTip(linkLabelRestartServer) + Environment.NewLine + "Shortcut: Ctrl + R");
             toolTip.SetToolTip(linkLabelStartServer, toolTip.GetToolTip(linkLabelStartServer) + Environment.NewLine + "Shortcut: Ctrl + S");
+            toolTip.SetToolTip(btnSourceCode, toolTip.GetToolTip(btnSourceCode) + Environment.NewLine + "Shortcut: Ctrl + U");
             toolTip.SetToolTip(btnPreviewWinform, toolTip.GetToolTip(btnPreviewWinform) + Environment.NewLine + "Shortcut: Ctrl + W");
             toolTip.SetToolTip(btnGenerateWinform, toolTip.GetToolTip(btnGenerateWinform) + Environment.NewLine + "Shortcut: Ctrl + Y");
             toolTip.SetToolTip(linkLabelBazaar, toolTip.GetToolTip(linkLabelBazaar) + Environment.NewLine + "Shortcut: Ctrl + Z");
@@ -216,11 +259,18 @@ namespace Ict.Tools.DevelopersAssistant
                 NantTask t = new NantTask(i);
                 cboDatabase.Items.Add(t.ShortDescription);
             }
+
+            // Source Code Control
+            for (BazaarTask.TaskItem i = BazaarTask.FirstBazaarItem; i <= BazaarTask.LastBazaarItem; i++)
+            {
+                BazaarTask t = new BazaarTask(i);
+                cboSourceCode.Items.Add(t.Description);
+            }
         }
 
         private void SetEnabledStates()
         {
-            bool bGotBranch = txtBranchLocation.Text != String.Empty;
+            bool bGotBranch = BranchLocation != String.Empty;
 
             linkLabelStartServer.Enabled = bGotBranch && !_serverIsRunning;
             linkLabelStopServer.Enabled = bGotBranch && _serverIsRunning;
@@ -231,6 +281,7 @@ namespace Ict.Tools.DevelopersAssistant
             btnCodeGeneration.Enabled = bGotBranch;
             btnCompilation.Enabled = bGotBranch;
             btnMiscellaneous.Enabled = bGotBranch;
+            btnSourceCode.Enabled = bGotBranch;
             btnDatabase.Enabled = bGotBranch;
             btnStartClient.Enabled = bGotBranch;
             btnRunSequence.Enabled = bGotBranch && txtSequence.Text != String.Empty;
@@ -240,7 +291,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (btnGenerateWinform.Enabled)
             {
-                string path = Path.Combine(txtBranchLocation.Text, Path.Combine(@"csharp\ICT\petra\client", txtYAMLPath.Text));
+                string path = Path.Combine(BranchLocation, Path.Combine(@"csharp\ICT\petra\client", txtYAMLPath.Text));
                 path = path.Replace(".yaml", "-generated.cs");
                 btnPreviewWinform.Enabled = File.Exists(path);
             }
@@ -323,66 +374,92 @@ namespace Ict.Tools.DevelopersAssistant
         {
             FolderBrowserDialog dlg = new FolderBrowserDialog();
 
-            dlg.ShowNewFolderButton = false;
-            dlg.Description = "Choose a new location of your working branch";
-
-            // seems you cannot set RootFolder and SelectedPath at the same time
-            // FolderBrowserDialog ignores SelectedPath property if RootFolder has been set
-            // dlg.RootFolder = Environment.SpecialFolder.MyComputer;
-
-            if (txtBranchLocation.Text != String.Empty)
-            {
-                dlg.SelectedPath = txtBranchLocation.Text;
-            }
-            else
-            {
-                string path = Environment.CurrentDirectory;
-
-                if (path.Replace('\\', '/').EndsWith("/delivery/bin"))
-                {
-                    path = path.Substring(0, path.Length - "/delivery/bin".Length);
-                }
-
-                dlg.SelectedPath = path;
-            }
+            InitialiseFolderBrowserDialog(dlg);
 
             if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
             {
                 return;
             }
 
-            if (String.Compare(dlg.SelectedPath, txtBranchLocation.Text, true) == 0)
+            if (String.Compare(dlg.SelectedPath, BranchLocation, true) == 0)
             {
                 return;                                                                         // no change
             }
 
             string tryPath = dlg.SelectedPath;
-            bool bValidChoice = true;
 
-            if (!File.Exists(tryPath + @"\OpenPetra.Build"))
+            if (!ValidateBranchPath(ref tryPath))
             {
-                tryPath = Path.Combine(tryPath, "trunk");
+                // go back to the original path in the dialog
+                tryPath = dlg.SelectedPath;
 
-                if (!File.Exists(tryPath + @"\OpenPetra.Build"))
+                // Is it empty??
+                bool isEmpty = (Directory.GetDirectories(tryPath).GetLength(0) == 0 && Directory.GetFiles(tryPath).GetLength(0) == 0);
+
+                string msg =
+                    "The location that you have chosen is not a recognised OpenPetra source folder.  The file 'OpenPetra.Build' could not be found.";
+
+                if (isEmpty)
                 {
-                    bValidChoice = false;
+                    msg += Environment.NewLine + Environment.NewLine;
+                    msg += "Do you want to create a new Launchpad branch and associate it with this folder?";
+
+                    if (MessageBox.Show(
+                            msg,
+                            Program.APP_TITLE,
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(
+                        msg,
+                        Program.APP_TITLE,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                    return;
+                }
+
+                // So we create a new branch on Launchpad then ...
+                RunCreateBazaarBranch(ref tryPath);
+
+                if (!ValidateBranchPath(ref tryPath))
+                {
+                    msg =
+                        "A problem occurred while creating the new branch.  There is no source code in the target location.  Maybe you cancelled the Launchpad operation?";
+                    MessageBox.Show(
+                        msg,
+                        Program.APP_TITLE,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                    return;
                 }
             }
 
-            if (!bValidChoice)
+            ChangeBranchLocation(tryPath);
+        }
+
+        private void cboBranchLocation_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cboBranchLocation.SelectedIndex < 1)
             {
-                MessageBox.Show(
-                    "The location that you have chosen is not a recognised OpenPetra source folder.  The file 'OpenPetra.Build' could not be found.",
-                    Program.APP_TITLE,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
                 return;
             }
 
-            txtBranchLocation.Text = tryPath;
+            // The user has chosen a different branch from the history
+            string path = cboBranchLocation.Items[cboBranchLocation.SelectedIndex].ToString();
 
-            SetBranchDependencies();
-            SetEnabledStates();
+            if (!ValidateBranchPath(ref path))
+            {
+                MessageBox.Show("The selected path has been moved and is no longer valid.", Program.APP_TITLE);
+                cboBranchLocation.SelectedIndex = 0;
+                return;
+            }
+
+            ChangeBranchLocation(path);
         }
 
         private void linkLabelYamlFile_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -392,7 +469,7 @@ namespace Ict.Tools.DevelopersAssistant
             dlg.DefaultExt = "yaml";
             dlg.AddExtension = true;
             dlg.Filter = "YAML files|*.yaml|All files|*.*";
-            dlg.InitialDirectory = txtBranchLocation.Text + "\\csharp\\ICT\\Petra\\Client";
+            dlg.InitialDirectory = BranchLocation + "\\csharp\\ICT\\Petra\\Client";
 
             if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
             {
@@ -494,7 +571,7 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
-            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+            BuildConfiguration dbCfg = new BuildConfiguration(BranchLocation, _localSettings);
             dbCfg.AddConfig(dlg.ExitData);
             SetBranchDependencies();
             listDbBuildConfig.SelectedIndex = listDbBuildConfig.Items.Count - 1;
@@ -516,7 +593,7 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
-            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+            BuildConfiguration dbCfg = new BuildConfiguration(BranchLocation, _localSettings);
             dbCfg.RemoveConfig(index);
             _localSettings.DbBuildConfigurations = dbCfg.FavouriteConfigurations;
 
@@ -540,14 +617,14 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             DlgDbBuildConfig dlg = new DlgDbBuildConfig();
-            dlg.InitializeDialog(txtBranchLocation.Text, listDbBuildConfig.SelectedIndex, _localSettings);
+            dlg.InitializeDialog(BranchLocation, listDbBuildConfig.SelectedIndex, _localSettings);
 
             if (dlg.ShowDialog() == DialogResult.Cancel)
             {
                 return;
             }
 
-            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+            BuildConfiguration dbCfg = new BuildConfiguration(BranchLocation, _localSettings);
             dbCfg.EditConfig(listDbBuildConfig.SelectedIndex, dlg.ExitData);
             _localSettings.DbBuildConfigurations = dbCfg.FavouriteConfigurations;
 
@@ -587,7 +664,7 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             //  Ok - we write the specified settings to the config file and remove the unspecified ones
-            BuildConfiguration DbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+            BuildConfiguration DbCfg = new BuildConfiguration(BranchLocation, _localSettings);
 
             if (!DbCfg.SetConfigAsDefault(listDbBuildConfig.SelectedIndex))
             {
@@ -628,7 +705,7 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnSaveCurrentDbBuildConfig_Click(object sender, EventArgs e)
         {
-            new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+            new BuildConfiguration(BranchLocation, _localSettings);
         }
 
         private void chkUseAutoLogon_CheckedChanged(object sender, EventArgs e)
@@ -649,7 +726,7 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
-            ClientAutoLogOn calo = new ClientAutoLogOn(txtBranchLocation.Text);
+            ClientAutoLogOn calo = new ClientAutoLogOn(BranchLocation);
 
             // Validate the format of the action text
             string[] sep =
@@ -710,7 +787,7 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
-            ClientAutoLogOn calo = new ClientAutoLogOn(txtBranchLocation.Text);
+            ClientAutoLogOn calo = new ClientAutoLogOn(BranchLocation);
 
             if (!calo.ResetConfig())
             {
@@ -792,7 +869,7 @@ namespace Ict.Tools.DevelopersAssistant
             _localSettings.AltSequence = ConvertSequenceListToString(_altSequence);
             _localSettings.AutoCheckForUpdates = chkCheckForUpdatesAtStartup.Checked;
             _localSettings.BazaarPath = txtBazaarPath.Text;
-            _localSettings.BranchLocation = txtBranchLocation.Text;
+            _localSettings.BranchLocation = BranchLocation;
             _localSettings.AutoStartServer = chkAutoStartServer.Checked;
             _localSettings.AutoStopServer = chkAutoStopServer.Checked;
             _localSettings.CodeGenerationComboID = cboCodeGeneration.SelectedIndex;
@@ -800,12 +877,24 @@ namespace Ict.Tools.DevelopersAssistant
             _localSettings.CompileWinForm = chkCompileWinform.Checked;
             _localSettings.DatabaseComboID = cboDatabase.SelectedIndex;
             _localSettings.FlashAfterSeconds = Convert.ToUInt32(txtFlashAfterSeconds.Text);
+            _localSettings.LaunchpadUserName = txtLaunchpadUserName.Text;
             _localSettings.MinimiseServerAtStartup = chkMinimizeServer.Checked;
             _localSettings.MiscellaneousComboID = cboMiscellaneous.SelectedIndex;
             _localSettings.Sequence = ConvertSequenceListToString(_sequence);
+            _localSettings.SourceCodeComboID = cboSourceCode.SelectedIndex;
             _localSettings.StartClientAfterCompileWinForm = chkStartClientAfterGenerateWinform.Checked;
             _localSettings.TreatWarningsAsErrors = chkTreatWarningsAsErrors.Checked;
             _localSettings.YAMLLocation = txtYAMLPath.Text;
+
+            for (int i = 1; (i < 10) && (i < cboBranchLocation.Items.Count); i++)
+            {
+                _localSettings.SetBranchHistoryItem(i, cboBranchLocation.Items[i].ToString());
+            }
+
+            for (int i = cboBranchLocation.Items.Count; i < 10; i++)
+            {
+                _localSettings.SetBranchHistoryItem(i, String.Empty);
+            }
 
             _localSettings.ContentHeader = String.Format("; Settings file for Open Petra Developer's Assistant\r\n; Application {0}\r\n",
                 lblVersion.Text);
@@ -854,6 +943,10 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case Keys.S | Keys.Control:
                         linkLabelStartServer_LinkClicked(null, null);
+                        return true;
+
+                    case Keys.U | Keys.Control:
+                        btnSourceCode_Click(null, null);
                         return true;
 
                     case Keys.W | Keys.Control:
@@ -1099,7 +1192,7 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FolderBrowserDialog dlg = new FolderBrowserDialog();
                 dlg.Description = "Select a folder to Uncrustify";
-                dlg.SelectedPath = txtBranchLocation.Text;
+                dlg.SelectedPath = BranchLocation;
                 dlg.RootFolder = Environment.SpecialFolder.MyComputer;
                 dlg.ShowNewFolderButton = false;
 
@@ -1109,7 +1202,7 @@ namespace Ict.Tools.DevelopersAssistant
                 }
 
                 // check the selection is based on teh current branch
-                if (!dlg.SelectedPath.StartsWith(txtBranchLocation.Text, StringComparison.InvariantCultureIgnoreCase))
+                if (!dlg.SelectedPath.StartsWith(BranchLocation, StringComparison.InvariantCultureIgnoreCase))
                 {
                     MessageBox.Show("You must choose a folder within the current branch.", Program.APP_TITLE);
                     return;
@@ -1131,7 +1224,7 @@ namespace Ict.Tools.DevelopersAssistant
             else if ((task.Item == NantTask.TaskItem.test) || (task.Item == NantTask.TaskItem.testWithoutDisplay)
                      || (task.Item == NantTask.TaskItem.mainNavigationTests))
             {
-                BuildConfiguration dbBldConfig = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+                BuildConfiguration dbBldConfig = new BuildConfiguration(BranchLocation, _localSettings);
                 string dbName = dbBldConfig.CurrentDBName;
 
                 if (String.Compare(dbName, "nantTest", true) != 0)
@@ -1176,9 +1269,70 @@ namespace Ict.Tools.DevelopersAssistant
             TickTimer.Enabled = true;
         }
 
+        private void btnSourceCode_Click(object sender, EventArgs e)
+        {
+            BazaarTask task = new BazaarTask((BazaarTask.TaskItem)cboSourceCode.SelectedIndex + 1);
+
+            if ((task.Item != BazaarTask.TaskItem.winexplore) && (txtBazaarPath.Text == String.Empty))
+            {
+                string msg = "The Assistant cannot find the installed location for Bazaar.  It was expected to be in the Program Files (86) folder.";
+                msg += "  You can select the 'Options' tab and manually browse to the file bzrw.exe.  Then try this action again.";
+                MessageBox.Show(msg, Program.APP_TITLE);
+                return;
+            }
+
+            if (task.Item == BazaarTask.TaskItem.qbranch)
+            {
+                // Special code to handle qbranch because we need two actions for this
+                string tryPath = String.Empty;
+
+                if (!RunCreateBazaarBranch(ref tryPath))
+                {
+                    return;
+                }
+
+                if (ValidateBranchPath(ref tryPath))
+                {
+                    string msg = "The branch was created successfully.  Do you want to set this as the current branch?";
+
+                    if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        ChangeBranchLocation(tryPath);
+                    }
+                }
+                else
+                {
+                    string msg =
+                        "A problem occurred while creating the new branch.  There is no source code in the target location.";
+                    MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+            else
+            {
+                // A standard Bazaar or winexplore command is simple...
+                string cmd = task.GetBazaarCommand();
+                System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo(cmd);
+                si.Arguments = task.GetBazaarArgs(BranchLocation, linkLabel_LaunchpadUrl.Text);
+                si.UseShellExecute = false;     // OS needs this because we access environment variables
+                si.WorkingDirectory = BranchLocation;
+
+                try
+                {
+                    Process p = Process.Start(si);
+                    p.WaitForExit();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("The Assistant failed to launch the specified command.  The system error message was: " + ex.Message,
+                        Program.APP_TITLE);
+                }
+            }
+        }
+
         private void btnDatabase_Click(object sender, EventArgs e)
         {
-            BuildConfiguration dbBldConfig = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+            BuildConfiguration dbBldConfig = new BuildConfiguration(BranchLocation, _localSettings);
             string dbName = dbBldConfig.CurrentDBName;
             NantTask task = new NantTask(cboDatabase.Items[cboDatabase.SelectedIndex].ToString());
 
@@ -1378,8 +1532,8 @@ namespace Ict.Tools.DevelopersAssistant
         {
             // Launch Bazaar using <Path-to-Bazaar> explorer <branch-location>
             System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo(txtBazaarPath.Text);
-            si.Arguments = String.Format("explorer \"{0}\"", txtBranchLocation.Text);
-            si.WorkingDirectory = txtBranchLocation.Text;
+            si.Arguments = String.Format("explorer \"{0}\"", BranchLocation);
+            si.WorkingDirectory = BranchLocation;
 
             try
             {
@@ -1418,7 +1572,7 @@ namespace Ict.Tools.DevelopersAssistant
         // It handles the display of the splash dialog and the text that will end up in the output window
         private void RunSimpleNantTarget(NantTask Task, ref int NumFailures, ref int NumWarnings)
         {
-            RunSimpleNantTarget(Task, txtBranchLocation.Text, ref NumFailures, ref NumWarnings);
+            RunSimpleNantTarget(Task, BranchLocation, ref NumFailures, ref NumWarnings);
         }
 
         private void RunSimpleNantTarget(NantTask Task, string WorkingFolder, ref int NumFailures, ref int NumWarnings)
@@ -1493,10 +1647,10 @@ namespace Ict.Tools.DevelopersAssistant
             OutputText.AppendText(OutputText.OutputStream.Both, String.Format("~~~~~~~~~~~~~~~~ {0} ...\r\n", task.LogText));
             dlg.Refresh();
 
-            if (NantExecutor.RunGenerateWinform(txtBranchLocation.Text, txtYAMLPath.Text))
+            if (NantExecutor.RunGenerateWinform(BranchLocation, txtYAMLPath.Text))
             {
                 // It ran successfully - let us check the output ...
-                OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\csharp\ICT\Petra\Client\opda.txt", ref NumFailures, ref NumWarnings);
+                OutputText.AddLogFileOutput(BranchLocation + @"\csharp\ICT\Petra\Client\opda.txt", ref NumFailures, ref NumWarnings);
             }
             else
             {
@@ -1540,10 +1694,10 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (NestedTask == NantTask.TaskItem.startPetraServer)
             {
-                if (NantExecutor.StartServer(txtBranchLocation.Text, chkMinimizeServer.Checked))
+                if (NantExecutor.StartServer(BranchLocation, chkMinimizeServer.Checked))
                 {
                     // It ran successfully - let us check the output ...
-                    OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\opda.txt", ref NumFailures, ref NumWarnings);
+                    OutputText.AddLogFileOutput(BranchLocation + @"\opda.txt", ref NumFailures, ref NumWarnings);
                     GetServerState();
                     SetEnabledStates();
                 }
@@ -1554,10 +1708,10 @@ namespace Ict.Tools.DevelopersAssistant
             }
             else
             {
-                if (NantExecutor.RunGenericNantTarget(txtBranchLocation.Text, nestedTask.TargetName))
+                if (NantExecutor.RunGenericNantTarget(BranchLocation, nestedTask.TargetName))
                 {
                     // It ran successfully - let us check the output ...
-                    OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\opda.txt", ref NumFailures, ref NumWarnings);
+                    OutputText.AddLogFileOutput(BranchLocation + @"\opda.txt", ref NumFailures, ref NumWarnings);
                 }
                 else
                 {
@@ -1581,10 +1735,10 @@ namespace Ict.Tools.DevelopersAssistant
             OutputText.AppendText(OutputText.OutputStream.Both, String.Format("~~~~~~~~~~~~~~~~ {0} ...\r\n", task.LogText));
             dlg.Refresh();
 
-            if (NantExecutor.RunPreviewWinform(txtBranchLocation.Text, txtYAMLPath.Text))
+            if (NantExecutor.RunPreviewWinform(BranchLocation, txtYAMLPath.Text))
             {
                 // It ran successfully - let us check the output ...
-                OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\csharp\ICT\Petra\Client\opda.txt", ref NumFailures, ref NumWarnings);
+                OutputText.AddLogFileOutput(BranchLocation + @"\csharp\ICT\Petra\Client\opda.txt", ref NumFailures, ref NumWarnings);
             }
             else
             {
@@ -1765,6 +1919,112 @@ namespace Ict.Tools.DevelopersAssistant
             }
         }
 
+        private bool RunCreateBazaarBranch(ref string LocalFolderLocation)
+        {
+            // Standard method to create a new branch.  This can be called from the link to change the branch location
+            //   or from the Source Code drop down option
+            if (LocalFolderLocation == String.Empty)
+            {
+                // we need to find out where to create the branch on the file system...
+                FolderBrowserDialog dlg = new FolderBrowserDialog();
+                InitialiseFolderBrowserDialog(dlg);
+
+                DialogResult result = dlg.ShowDialog();
+
+                if (result != DialogResult.OK)
+                {
+                    return false;
+                }
+
+                LocalFolderLocation = dlg.SelectedPath;
+
+                if ((Directory.GetDirectories(LocalFolderLocation).GetLength(0) > 0) || (Directory.GetFiles(LocalFolderLocation).GetLength(0) > 0))
+                {
+                    MessageBox.Show("The folder that you selected is not empty.  Please choose an empty folder.",
+                        Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return false;
+                }
+            }
+
+            BazaarTask task = new BazaarTask(BazaarTask.TaskItem.qbranch);
+            string cmd = task.GetBazaarCommand();
+
+            if (txtLaunchpadUserName.Text == String.Empty)
+            {
+                // We need to know the user's ID on Launchpad
+                DlgLaunchpadUserName dlgLaunchpad = new DlgLaunchpadUserName();
+                dlgLaunchpad.BranchName = LocalFolderLocation.Substring(LocalFolderLocation.LastIndexOf('\\') + 1);
+
+                if (dlgLaunchpad.ShowDialog() != DialogResult.OK)
+                {
+                    return false;
+                }
+
+                txtLaunchpadUserName.Text = dlgLaunchpad.txtLaunchpadUserName.Text;
+            }
+
+            string newLaunchpadUrl = linkLabel_LaunchpadUrl.Text.Substring(0, linkLabel_LaunchpadUrl.Text.LastIndexOf('/') + 1);
+            newLaunchpadUrl += LocalFolderLocation.Substring(LocalFolderLocation.LastIndexOf('\\') + 1);
+
+            System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo(cmd);
+            si.Arguments = task.GetBazaarArgs(LocalFolderLocation, newLaunchpadUrl);
+            si.UseShellExecute = false;
+
+            try
+            {
+                Process p = Process.Start(si);
+                p.WaitForExit();
+
+                if (p.ExitCode != 0)
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("The Assistant failed to launch the first qbranch command.  The system error message was: " + ex.Message,
+                    Program.APP_TITLE);
+                return false;
+            }
+
+            // Now we have to do it again with qbranch2
+            task = new BazaarTask(BazaarTask.TaskItem.qbranch2);
+            si = new System.Diagnostics.ProcessStartInfo(cmd);
+            si.Arguments = task.GetBazaarArgs(LocalFolderLocation, newLaunchpadUrl);
+            si.UseShellExecute = false;
+
+            try
+            {
+                Process p = Process.Start(si);
+                p.WaitForExit();
+
+                if (p.ExitCode != 0)
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("The Assistant failed to launch the second qbranch command.  The system error message was: " + ex.Message,
+                    Program.APP_TITLE);
+                return false;
+            }
+
+            return true;
+        }
+
+        private void linkLabel_LaunchpadUrl_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // We almost know the correct URL for Launchpad
+            string url = linkLabel_LaunchpadUrl.Text;
+
+            if (url != String.Empty)
+            {
+                url = url.Replace("lp:", "https://code.launchpad.net");
+                System.Diagnostics.Process.Start(url);
+            }
+        }
+
         private string GetWarningDisplayText()
         {
             if (chkVerbose.Checked)
@@ -1833,7 +2093,7 @@ namespace Ict.Tools.DevelopersAssistant
             // Every 10 seconds we just check that opda.txt got deleted.  Some tasks lock it until they are complete.
             // For example StartPetraClient: nant does not complete until the client window closes
             // There are two places to look ...
-            string path = Path.Combine(txtBranchLocation.Text, "opda.txt");
+            string path = Path.Combine(BranchLocation, "opda.txt");
 
             if (File.Exists(path))
             {
@@ -1846,7 +2106,7 @@ namespace Ict.Tools.DevelopersAssistant
                 }
             }
 
-            path = Path.Combine(txtBranchLocation.Text, @"csharp\ICT\Petra\Client\opda.txt");
+            path = Path.Combine(BranchLocation, @"csharp\ICT\Petra\Client\opda.txt");
 
             if (File.Exists(path))
             {
@@ -1863,7 +2123,7 @@ namespace Ict.Tools.DevelopersAssistant
         private void btnCheckForUpdates_Click(object sender, EventArgs e)
         {
             // The Check For Updates button has been clicked
-            if (CheckForUpdates.DoCheck(txtBranchLocation.Text, true))
+            if (CheckForUpdates.DoCheck(BranchLocation, true))
             {
                 RunUpdaterAndClose();
             }
@@ -1897,7 +2157,7 @@ namespace Ict.Tools.DevelopersAssistant
             }
             else if (chkCheckForUpdatesAtStartup.Checked && !ShutdownTimer.Enabled)
             {
-                if (CheckForUpdates.DoCheck(txtBranchLocation.Text, false))
+                if (CheckForUpdates.DoCheck(BranchLocation, false))
                 {
                     RunUpdaterAndClose();
                 }
@@ -1907,7 +2167,7 @@ namespace Ict.Tools.DevelopersAssistant
         private void RunUpdaterAndClose()
         {
             // get the path to the Updater application
-            string exePathInBranch = Path.Combine(txtBranchLocation.Text, "delivery/bin/Ict.Tools.DevelopersAssistantUpdater.exe");
+            string exePathInBranch = Path.Combine(BranchLocation, "delivery/bin/Ict.Tools.DevelopersAssistantUpdater.exe");
 
             if (!File.Exists(exePathInBranch))
             {
@@ -1938,6 +2198,146 @@ namespace Ict.Tools.DevelopersAssistant
                 MessageBox.Show(String.Format("Failed to launch the Updater executable: {0}",
                         exePathInBranch), Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
+        }
+
+        private bool ValidateBranchPath(ref string PathToValidate)
+        {
+            if ((PathToValidate == String.Empty) || !Directory.Exists(PathToValidate))
+            {
+                return false;
+            }
+
+            bool bValidChoice = true;
+
+            if (!File.Exists(PathToValidate + @"\OpenPetra.Build"))
+            {
+                PathToValidate = Path.Combine(PathToValidate, "trunk");
+
+                if (!File.Exists(PathToValidate + @"\OpenPetra.Build"))
+                {
+                    bValidChoice = false;
+                }
+            }
+
+            return bValidChoice;
+        }
+
+        /// <summary>
+        /// Populates the branch location history drop down list, placing the new location at the top of the list
+        /// </summary>
+        /// <param name="NewBranchLocation">New Location</param>
+        private void RePopulateBranchComboBox(string NewBranchLocation)
+        {
+            // The drop down list always starts with the new location as the first item
+            List <string>newList = new List <string>();
+            newList.Add(NewBranchLocation);
+
+            // Now add all the items from the combo, ignoring the current one and any that no longer exist
+            // This will ensure that the items in the list are ordered starting with the most recently used.
+            for (int i = 0; i < cboBranchLocation.Items.Count; i++)
+            {
+                string path = cboBranchLocation.Items[i].ToString();
+
+                if (ValidateBranchPath(ref path) && (path != NewBranchLocation))
+                {
+                    newList.Add(path);
+                }
+            }
+
+            // Now we use our working list to populate the comboBox itself
+            cboBranchLocation.Items.Clear();
+
+            for (int i = 0; i < newList.Count; i++)
+            {
+                cboBranchLocation.Items.Add(newList[i]);
+
+                if (i == 0)
+                {
+                    // This won't trigger a new call to this method because we ignore any index selection less than 1
+                    cboBranchLocation.SelectedIndex = 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the link label in response to a change in the user name text
+        /// </summary>
+        private void txtLaunchpadUserName_TextChanged(object sender, EventArgs e)
+        {
+            // Update the small helper link label so it is obvious what the result is and so it can be clicked
+            if (txtLaunchpadUserName.Text == String.Empty)
+            {
+                linkLabel_LaunchpadUrl.Text = String.Empty;
+            }
+            else
+            {
+                string branchShortName = BranchLocation.Substring(BranchLocation.LastIndexOf('\\') + 1);
+                linkLabel_LaunchpadUrl.Text = String.Format("lp:/{0}/openpetraorg/{1}", txtLaunchpadUserName.Text, branchShortName);
+            }
+        }
+
+        /// <summary>
+        /// Initialises the Folder Browser dialog including the initial folder and the title
+        /// </summary>
+        /// <param name="Dlg"></param>
+        private void InitialiseFolderBrowserDialog(FolderBrowserDialog Dlg)
+        {
+            Dlg.ShowNewFolderButton = true;
+            Dlg.Description = "Choose a new location of your working branch";
+
+            // seems you cannot set RootFolder and SelectedPath at the same time
+            // FolderBrowserDialog ignores SelectedPath property if RootFolder has been set
+            // dlg.RootFolder = Environment.SpecialFolder.MyComputer;
+
+            if (BranchLocation != String.Empty)
+            {
+                Dlg.SelectedPath = BranchLocation;
+            }
+            else
+            {
+                string path = Environment.CurrentDirectory;
+
+                if (path.Replace('\\', '/').EndsWith("/delivery/bin"))
+                {
+                    path = path.Substring(0, path.Length - "/delivery/bin".Length);
+                }
+
+                Dlg.SelectedPath = path;
+            }
+        }
+
+        /// <summary>
+        /// Runs the actions necessary when the branch location changes
+        /// </summary>
+        /// <param name="NewLocation">Full path to the new location</param>
+        private void ChangeBranchLocation(string NewLocation)
+        {
+            if (chkAutoStopServer.Checked)
+            {
+                // This is a case where we need to auto-stop the server first
+                GetServerState();
+
+                int NumFailures = 0;
+                int NumWarnings = 0;
+
+                if (_serverIsRunning)
+                {
+                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.stopPetraServer), ref NumFailures, ref NumWarnings);
+
+                    if (NumFailures > 0)
+                    {
+                        string msg =
+                            "The Assistant tried but failed to stop the server before switching branches.  Please be sure to stop the server manually.";
+                        MessageBox.Show(msg, Program.APP_TITLE);
+                    }
+                }
+            }
+
+            // These are our standard steps when initialising a new branch location
+            RePopulateBranchComboBox(NewLocation);
+
+            SetBranchDependencies();
+            SetEnabledStates();
         }
     }
 }

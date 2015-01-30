@@ -188,9 +188,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             out String ALastGiftRecipientLedgerShortName,
             out Boolean ARestrictedOrConfidentialGiftAccessDenied)
         {
-            Boolean ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             DataSet LastGiftDS;
             AGiftDetailTable GiftDetailDT;
             SGroupGiftTable GroupGiftDT;
@@ -212,14 +209,22 @@ namespace Ict.Petra.Server.MFinance.Gift
             ALastGiftGivenToShortName = "";
             ALastGiftRecipientLedger = 0;
             ALastGiftRecipientLedgerShortName = "";
-
             ARestrictedOrConfidentialGiftAccessDenied = false;
+
+            DateTime tmpLastGiftDate = ALastGiftDate;
+            decimal tmpLastGiftAmount = ALastGiftAmount;
+            Int64 tmpLastGiftGivenToPartnerKey = ALastGiftGivenToPartnerKey;
+            Int64 tmpLastGiftRecipientLedger = ALastGiftRecipientLedger;
+            String tmpLastGiftCurrencyCode = ALastGiftCurrencyCode;
+            String tmpLastGiftDisplayFormat = ALastGiftDisplayFormat;
+            String tmpLastGiftGivenToShortName = ALastGiftGivenToShortName;
+            String tmpLastGiftRecipientLedgerShortName = ALastGiftRecipientLedgerShortName;
+            Boolean tmpRestrictedOrConfidentialGiftAccessDenied = ARestrictedOrConfidentialGiftAccessDenied;
 
             if ((!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapINQUIRE, AGiftTable.GetTableDBName())))
             {
                 // User hasn't got access to a_gift Table in the DB
-                ReturnValue = false;
-                return ReturnValue;
+                return false;
             }
 
             // Set up temp DataSet
@@ -229,236 +234,248 @@ namespace Ict.Petra.Server.MFinance.Gift
             LastGiftDS.Tables.Add(new AGiftDetailTable());
             LastGiftDS.Tables.Add(new ACurrencyTable());
             LastGiftDS.Tables.Add(new PPartnerTable());
-            try
-            {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                try
-                {
-                    AGiftAccess.LoadViaPPartner(LastGiftDS, APartnerKey, null, ReadTransaction,
-                        StringHelper.InitStrArr(new String[] { "ORDER BY", AGiftTable.GetDateEnteredDBName() + " DESC" }), 0, 1);
-                }
-                catch (ESecurityDBTableAccessDeniedException)
-                {
-                    // User hasn't got access to a_gift Table in the DB
-                    ReturnValue = false;
-                    return ReturnValue;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
 
-                if (LastGiftDS.Tables[AGiftTable.GetTableName()].Rows.Count == 0)
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = true;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.RepeatableRead,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    // Partner hasn't given any Gift so far
-                    ReturnValue = false;
-                    return ReturnValue;
-                }
-
-                // Get the last gift
-                GiftDR = ((AGiftTable)LastGiftDS.Tables[AGiftTable.GetTableName()])[0];
-
-                if (GiftDR.Restricted)
-                {
-                    AccessToGift = false;
-                    GroupGiftDT = SGroupGiftAccess.LoadViaAGift(
-                        GiftDR.LedgerNumber,
-                        GiftDR.BatchNumber,
-                        GiftDR.GiftTransactionNumber,
-                        ReadTransaction);
-                    UserGroupDT = SUserGroupAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, ReadTransaction);
-
-                    // Loop over all rows of GroupGiftDT
-                    for (Counter = 0; Counter <= GroupGiftDT.Rows.Count - 1; Counter += 1)
+                    try
                     {
-                        // To be able to view a Gift, ReadAccess must be granted
-                        if (GroupGiftDT[Counter].ReadAccess)
+                        try
                         {
-                            // Find out whether the user has a row in s_user_group with the
-                            // GroupID of the GroupGift row
-                            FoundUserGroups = UserGroupDT.Select(SUserGroupTable.GetGroupIdDBName() + " = '" + GroupGiftDT[Counter].GroupId + "'");
+                            AGiftAccess.LoadViaPPartner(LastGiftDS, APartnerKey, null, Transaction,
+                                StringHelper.InitStrArr(new String[] { "ORDER BY", AGiftTable.GetDateEnteredDBName() + " DESC" }), 0, 1);
+                        }
+                        catch (ESecurityDBTableAccessDeniedException)
+                        {
+                            // User hasn't got access to a_gift Table in the DB
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            throw ex;
+                        }
 
-                            if (FoundUserGroups.Length != 0)
+                        if (LastGiftDS.Tables[AGiftTable.GetTableName()].Rows.Count == 0)
+                        {
+                            // Partner hasn't given any Gift so far
+                            return;
+                        }
+
+                        // Get the last gift
+                        GiftDR = ((AGiftTable)LastGiftDS.Tables[AGiftTable.GetTableName()])[0];
+
+                        if (GiftDR.Restricted)
+                        {
+                            AccessToGift = false;
+                            GroupGiftDT = SGroupGiftAccess.LoadViaAGift(
+                                GiftDR.LedgerNumber,
+                                GiftDR.BatchNumber,
+                                GiftDR.GiftTransactionNumber,
+                                Transaction);
+                            UserGroupDT = SUserGroupAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, Transaction);
+
+                            // Loop over all rows of GroupGiftDT
+                            for (Counter = 0; Counter <= GroupGiftDT.Rows.Count - 1; Counter += 1)
                             {
-                                // Access to gift can be granted
-                                AccessToGift = true;
-                                continue;
-
-                                // don't evaluate further GroupGiftDT rows
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    AccessToGift = true;
-                }
-
-                if (AccessToGift)
-                {
-                    ALastGiftDate = GiftDR.DateEntered;
-
-                    // Console.WriteLine('GiftDR.LedgerNumber: ' + GiftDR.LedgerNumber.ToString + '; ' +
-                    // 'GiftDR.BatchNumber:  ' + GiftDR.BatchNumber.ToString);
-                    // Load Gift Batch
-                    AGiftBatchAccess.LoadByPrimaryKey(LastGiftDS, GiftDR.LedgerNumber, GiftDR.BatchNumber,
-                        StringHelper.InitStrArr(new String[] { AGiftBatchTable.GetCurrencyCodeDBName() }), ReadTransaction, null, 0, 0);
-
-                    if (LastGiftDS.Tables[AGiftBatchTable.GetTableName()].Rows.Count != 0)
-                    {
-                        GiftBatchDR = ((AGiftBatchRow)LastGiftDS.Tables[AGiftBatchTable.GetTableName()].Rows[0]);
-                        ALastGiftCurrencyCode = GiftBatchDR.CurrencyCode;
-
-                        // Get Currency
-                        ACurrencyAccess.LoadByPrimaryKey(LastGiftDS, GiftBatchDR.CurrencyCode, ReadTransaction);
-
-                        if (LastGiftDS.Tables[ACurrencyTable.GetTableName()].Rows.Count != 0)
-                        {
-                            CurrencyDR = (ACurrencyRow)(LastGiftDS.Tables[ACurrencyTable.GetTableName()].Rows[0]);
-                            ALastGiftCurrencyCode = CurrencyDR.CurrencyCode;
-                            ALastGiftDisplayFormat = CurrencyDR.DisplayFormat;
-                        }
-                        else
-                        {
-                            ALastGiftCurrencyCode = "";
-                            ALastGiftDisplayFormat = "";
-                        }
-                    }
-                    else
-                    {
-                        // missing Currency
-                        ALastGiftCurrencyCode = "";
-                        ALastGiftDisplayFormat = "";
-                    }
-
-                    // Load Gift Detail
-                    AGiftDetailAccess.LoadViaAGift(LastGiftDS,
-                        GiftDR.LedgerNumber,
-                        GiftDR.BatchNumber,
-                        GiftDR.GiftTransactionNumber,
-                        StringHelper.InitStrArr(new String[] { AGiftDetailTable.GetGiftTransactionAmountDBName(),
-                                                               AGiftDetailTable.GetRecipientKeyDBName(),
-                                                               AGiftDetailTable.
-                                                               GetRecipientLedgerNumberDBName(), AGiftDetailTable.GetConfidentialGiftFlagDBName() }),
-                        ReadTransaction,
-                        null,
-                        0,
-                        0);
-                    GiftDetailDT = (AGiftDetailTable)LastGiftDS.Tables[AGiftDetailTable.GetTableName()];
-
-                    if (GiftDetailDT.Rows.Count != 0)
-                    {
-                        if (GiftDR.LastDetailNumber > 1)
-                        {
-                            // Gift is a Split Gift
-                            ALastGiftAmount = 0;
-
-                            for (Counter = 0; Counter <= GiftDetailDT.Rows.Count - 1; Counter += 1)
-                            {
-                                GiftDetailDR = (AGiftDetailRow)GiftDetailDT.Rows[Counter];
-
-                                // Check for confidential gift and whether the current user is allowed to see it
-                                if (GiftDetailDR.ConfidentialGiftFlag)
+                                // To be able to view a Gift, ReadAccess must be granted
+                                if (GroupGiftDT[Counter].ReadAccess)
                                 {
-                                    if (!((UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE2))
-                                          || (UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE3))))
+                                    // Find out whether the user has a row in s_user_group with the
+                                    // GroupID of the GroupGift row
+                                    FoundUserGroups =
+                                        UserGroupDT.Select(SUserGroupTable.GetGroupIdDBName() + " = '" + GroupGiftDT[Counter].GroupId + "'");
+
+                                    if (FoundUserGroups.Length != 0)
                                     {
-                                        // User isn't allowed to see the gift
-                                        ARestrictedOrConfidentialGiftAccessDenied = true;
-                                        ALastGiftAmount = 0;
-                                        ReturnValue = false;
-                                        return ReturnValue;
+                                        // Access to gift can be granted
+                                        AccessToGift = true;
+                                        continue;
+
+                                        // don't evaluate further GroupGiftDT rows
                                     }
                                 }
-
-                                ALastGiftAmount = ALastGiftAmount + GiftDetailDR.GiftTransactionAmount;
                             }
-
-                            ALastGiftGivenToShortName = "";
-                            ALastGiftRecipientLedgerShortName = "";
-                            ALastGiftGivenToPartnerKey = -1;
-                            ALastGiftRecipientLedger = -1;
                         }
                         else
                         {
-                            // Gift isn't a Split Gift
-                            GiftDetailDR = (AGiftDetailRow)GiftDetailDT.Rows[0];
+                            AccessToGift = true;
+                        }
 
-                            // Check for confidential gift and whether the current user is allowed to see it
-                            if (GiftDetailDR.ConfidentialGiftFlag)
+                        if (AccessToGift)
+                        {
+                            tmpLastGiftDate = GiftDR.DateEntered;
+
+                            // Console.WriteLine('GiftDR.LedgerNumber: ' + GiftDR.LedgerNumber.ToString + '; ' +
+                            // 'GiftDR.BatchNumber:  ' + GiftDR.BatchNumber.ToString);
+                            // Load Gift Batch
+                            AGiftBatchAccess.LoadByPrimaryKey(LastGiftDS, GiftDR.LedgerNumber, GiftDR.BatchNumber,
+                                StringHelper.InitStrArr(new String[] { AGiftBatchTable.GetCurrencyCodeDBName() }), Transaction, null, 0, 0);
+
+                            if (LastGiftDS.Tables[AGiftBatchTable.GetTableName()].Rows.Count != 0)
                             {
-                                if (!((UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE2))
-                                      || (UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE3))))
+                                GiftBatchDR = ((AGiftBatchRow)LastGiftDS.Tables[AGiftBatchTable.GetTableName()].Rows[0]);
+                                tmpLastGiftCurrencyCode = GiftBatchDR.CurrencyCode;
+
+                                // Get Currency
+                                ACurrencyAccess.LoadByPrimaryKey(LastGiftDS, GiftBatchDR.CurrencyCode, Transaction);
+
+                                if (LastGiftDS.Tables[ACurrencyTable.GetTableName()].Rows.Count != 0)
                                 {
-                                    // User isn't allowed to see the gift
-                                    ARestrictedOrConfidentialGiftAccessDenied = true;
-                                    ReturnValue = false;
-                                    return ReturnValue;
+                                    CurrencyDR = (ACurrencyRow)(LastGiftDS.Tables[ACurrencyTable.GetTableName()].Rows[0]);
+                                    tmpLastGiftCurrencyCode = CurrencyDR.CurrencyCode;
+                                    tmpLastGiftDisplayFormat = CurrencyDR.DisplayFormat;
+                                }
+                                else
+                                {
+                                    tmpLastGiftCurrencyCode = "";
+                                    tmpLastGiftDisplayFormat = "";
                                 }
                             }
-
-                            ALastGiftAmount = GiftDetailDR.GiftTransactionAmount;
-                            ALastGiftGivenToPartnerKey = GiftDetailDR.RecipientKey;
-
-                            // Get Partner ShortName
-                            PPartnerAccess.LoadByPrimaryKey(LastGiftDS, GiftDetailDR.RecipientKey,
-                                StringHelper.InitStrArr(new String[] { PPartnerTable.GetPartnerShortNameDBName() }), ReadTransaction, null, 0, 0);
-
-                            if (LastGiftDS.Tables[PPartnerTable.GetTableName()].Rows.Count != 0)
+                            else
                             {
-                                ALastGiftGivenToShortName = ((PPartnerRow)(LastGiftDS.Tables[PPartnerTable.GetTableName()].Rows[0])).PartnerShortName;
+                                // missing Currency
+                                tmpLastGiftCurrencyCode = "";
+                                tmpLastGiftDisplayFormat = "";
+                            }
+
+                            // Load Gift Detail
+                            AGiftDetailAccess.LoadViaAGift(LastGiftDS,
+                                GiftDR.LedgerNumber,
+                                GiftDR.BatchNumber,
+                                GiftDR.GiftTransactionNumber,
+                                StringHelper.InitStrArr(new String[] { AGiftDetailTable.GetGiftTransactionAmountDBName(),
+                                                                       AGiftDetailTable.GetRecipientKeyDBName(),
+                                                                       AGiftDetailTable.
+                                                                       GetRecipientLedgerNumberDBName(),
+                                                                       AGiftDetailTable.GetConfidentialGiftFlagDBName() }),
+                                Transaction,
+                                null,
+                                0,
+                                0);
+                            GiftDetailDT = (AGiftDetailTable)LastGiftDS.Tables[AGiftDetailTable.GetTableName()];
+
+                            if (GiftDetailDT.Rows.Count != 0)
+                            {
+                                if (GiftDR.LastDetailNumber > 1)
+                                {
+                                    // Gift is a Split Gift
+                                    tmpLastGiftAmount = 0;
+
+                                    for (Counter = 0; Counter <= GiftDetailDT.Rows.Count - 1; Counter += 1)
+                                    {
+                                        GiftDetailDR = (AGiftDetailRow)GiftDetailDT.Rows[Counter];
+
+                                        // Check for confidential gift and whether the current user is allowed to see it
+                                        if (GiftDetailDR.ConfidentialGiftFlag)
+                                        {
+                                            if (!((UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE2))
+                                                  || (UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE3))))
+                                            {
+                                                // User isn't allowed to see the gift
+                                                tmpRestrictedOrConfidentialGiftAccessDenied = true;
+                                                tmpLastGiftAmount = 0;
+                                                return;
+                                            }
+                                        }
+
+                                        tmpLastGiftAmount = tmpLastGiftAmount + GiftDetailDR.GiftTransactionAmount;
+                                    }
+
+                                    tmpLastGiftGivenToShortName = "";
+                                    tmpLastGiftRecipientLedgerShortName = "";
+                                    tmpLastGiftGivenToPartnerKey = -1;
+                                    tmpLastGiftRecipientLedger = -1;
+                                }
+                                else
+                                {
+                                    // Gift isn't a Split Gift
+                                    GiftDetailDR = (AGiftDetailRow)GiftDetailDT.Rows[0];
+
+                                    // Check for confidential gift and whether the current user is allowed to see it
+                                    if (GiftDetailDR.ConfidentialGiftFlag)
+                                    {
+                                        if (!((UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE2))
+                                              || (UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE3))))
+                                        {
+                                            // User isn't allowed to see the gift
+                                            tmpRestrictedOrConfidentialGiftAccessDenied = true;
+                                            return;
+                                        }
+                                    }
+
+                                    tmpLastGiftAmount = GiftDetailDR.GiftTransactionAmount;
+                                    tmpLastGiftGivenToPartnerKey = GiftDetailDR.RecipientKey;
+
+                                    // Get Partner ShortName
+                                    PPartnerAccess.LoadByPrimaryKey(LastGiftDS, GiftDetailDR.RecipientKey,
+                                        StringHelper.InitStrArr(new String[] { PPartnerTable.GetPartnerShortNameDBName() }), Transaction, null, 0, 0);
+
+                                    if (LastGiftDS.Tables[PPartnerTable.GetTableName()].Rows.Count != 0)
+                                    {
+                                        tmpLastGiftGivenToShortName =
+                                            ((PPartnerRow)(LastGiftDS.Tables[PPartnerTable.GetTableName()].Rows[0])).PartnerShortName;
+                                    }
+                                    else
+                                    {
+                                        // missing Partner
+                                        tmpLastGiftGivenToShortName = "";
+                                    }
+
+                                    // Get rid of last record because we are about to select again into the same DataTable...
+                                    LastGiftDS.Tables[PPartnerTable.GetTableName()].Rows.Clear();
+
+                                    // Get Recipient Ledger
+                                    PPartnerAccess.LoadByPrimaryKey(LastGiftDS, GiftDetailDR.RecipientLedgerNumber,
+                                        StringHelper.InitStrArr(new String[] { PPartnerTable.GetPartnerShortNameDBName() }), Transaction, null, 0, 0);
+
+                                    if (LastGiftDS.Tables[PPartnerTable.GetTableName()].Rows.Count != 0)
+                                    {
+                                        tmpLastGiftRecipientLedgerShortName =
+                                            ((PPartnerRow)(LastGiftDS.Tables[PPartnerTable.GetTableName()].Rows[0])).PartnerShortName;
+                                    }
+                                    else
+                                    {
+                                        // missing Ledger
+                                        tmpLastGiftRecipientLedgerShortName = "";
+                                    }
+                                }
                             }
                             else
                             {
-                                // missing Partner
-                                ALastGiftGivenToShortName = "";
-                            }
-
-                            // Get rid of last record because we are about to select again into the same DataTable...
-                            LastGiftDS.Tables[PPartnerTable.GetTableName()].Rows.Clear();
-
-                            // Get Recipient Ledger
-                            PPartnerAccess.LoadByPrimaryKey(LastGiftDS, GiftDetailDR.RecipientLedgerNumber,
-                                StringHelper.InitStrArr(new String[] { PPartnerTable.GetPartnerShortNameDBName() }), ReadTransaction, null, 0, 0);
-
-                            if (LastGiftDS.Tables[PPartnerTable.GetTableName()].Rows.Count != 0)
-                            {
-                                ALastGiftRecipientLedgerShortName =
-                                    ((PPartnerRow)(LastGiftDS.Tables[PPartnerTable.GetTableName()].Rows[0])).PartnerShortName;
-                            }
-                            else
-                            {
-                                // missing Ledger
-                                ALastGiftRecipientLedgerShortName = "";
+                                // missing Gift Detail
+                                tmpLastGiftAmount = 0;
+                                tmpLastGiftGivenToShortName = "";
+                                tmpLastGiftRecipientLedgerShortName = "";
+                                tmpLastGiftGivenToPartnerKey = -1;
+                                tmpLastGiftRecipientLedger = -1;
                             }
                         }
+                        else
+                        {
+                            // Gift is a restriced Gift and the current user isn't allowed to see it
+                            tmpRestrictedOrConfidentialGiftAccessDenied = true;
+                        }
                     }
-                    else
+                    finally
                     {
-                        // missing Gift Detail
-                        ALastGiftAmount = 0;
-                        ALastGiftGivenToShortName = "";
-                        ALastGiftRecipientLedgerShortName = "";
-                        ALastGiftGivenToPartnerKey = -1;
-                        ALastGiftRecipientLedger = -1;
+                        TLogging.LogAtLevel(7, "TGift.GetLastGiftDetails: committed own transaction.");
                     }
-                }
-                else
-                {
-                    // Gift is a restriced Gift and the current user isn't allowed to see it
-                    ARestrictedOrConfidentialGiftAccessDenied = true;
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TGift.GetLastGiftDetails: committed own transaction.");
-                }
-            }
+                });
+
+            ALastGiftDate = tmpLastGiftDate;
+            ALastGiftAmount = tmpLastGiftAmount;
+            ALastGiftGivenToPartnerKey = tmpLastGiftGivenToPartnerKey;
+            ALastGiftRecipientLedger = tmpLastGiftRecipientLedger;
+            ALastGiftCurrencyCode = tmpLastGiftCurrencyCode;
+            ALastGiftDisplayFormat = tmpLastGiftDisplayFormat;
+            ALastGiftGivenToShortName = tmpLastGiftGivenToShortName;
+            ALastGiftRecipientLedgerShortName = tmpLastGiftRecipientLedgerShortName;
+            ARestrictedOrConfidentialGiftAccessDenied = tmpRestrictedOrConfidentialGiftAccessDenied;
 
             return AccessToGift;
         }

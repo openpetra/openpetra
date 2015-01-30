@@ -44,40 +44,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     public class TPartnerMain
     {
         /// <summary>
-        /// Makes a server call to get the key of the last used family
-        /// <returns>FamilyKey of the last accessed family</returns>
-        /// </summary>
-        private static System.Int64 GetLastUsedFamilyKey()
-        {
-            bool LastFamilyFound = false;
-
-            System.Int64 FamilyKey = 0000000000;
-            Dictionary <long, string>RecentlyUsedPartners;
-            ArrayList PartnerClasses = new ArrayList();
-
-            PartnerClasses.Add("*");
-
-            int MaxPartnersCount = 7;
-            TServerLookup.TMPartner.GetRecentlyUsedPartners(MaxPartnersCount, PartnerClasses, out RecentlyUsedPartners);
-
-            foreach (KeyValuePair <long, string>CurrentEntry in RecentlyUsedPartners)
-            {
-                //search for the last FamilyKey
-                //assign it only to FamilyKey if there hasn't been yet found another Family
-
-                //fe. CurrentEntry.Key= 43005007 CurrentEntry.Value= Test, alex (type PERSON)
-                //TLogging.Log("CurrentEntry.Key= " + CurrentEntry.Key + " CurrentEntry.Value= " + CurrentEntry.Value);
-                if (CurrentEntry.Value.Contains("FAMILY") && !LastFamilyFound)
-                {
-                    FamilyKey = CurrentEntry.Key;
-                    LastFamilyFound = true;
-                }
-            }
-
-            return FamilyKey;
-        }
-
-        /// <summary>
         /// Opens the Partner Find screen (or activates it in case a non-modal instance was already open and
         /// ARestrictToPartnerClasses is null). If ARestrictToPartnerClasses isn't null then the screen is opened modally.
         /// </summary>
@@ -290,11 +256,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
 
-            System.Int64 FamilyKey = GetLastUsedFamilyKey();
-            TLocationPK LocationSiteKey = TRemote.MPartner.Partner.WebConnectors.DetermineBestAddress(FamilyKey);
-
-            frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "", "", false,
-                FamilyKey, LocationSiteKey.LocationKey, LocationSiteKey.SiteKey);
+            frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, String.Empty, String.Empty, false);
 
             frm.Show();
         }

@@ -4,63 +4,76 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     DetailTable: AGiftBatch
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
-    FormType: browse
+    FormType: dialog
     Template: windowSingleTable
-    WindowWidth: 660
+    WindowWidth: 720
     WindowHeight: 450
     Actions:
-        actOK: {Label=&OK, ActionClick=RevertAdjust}
+        actOK: {Label=&OK, ActionClick=BtnOk_Click}
         actClose:  {Label=Close, ActionClick=BtnCloseClick}
         actHelp: {Label=&Help, ActionClick=BtnHelpClick}
     Controls:
         pnlContent:
-            Controls: [pnlSelect, pnlDetails, pnlGrid, pnlButtons]
+            Controls: [rgrBatchSelection, pnlDetails]
             Dock: Fill
+        rgrBatchSelection:
+            Dock: Fill
+            Controls: [pnlSelect, grdDetails]
         pnlSelect:
+            Controls: [rbtNewBatch, pnlDate, rbtExistingBatch]
+            Dock: Top
+        pnlDate:
+            Controls: [dtpEffectiveDate, lblValidDateRange]
+            ControlsOrientation: horizontal
+        pnlDetails:
+            Dock: Bottom
+            Controls: [pnlComments, pnlButtons]
+            Height: 130
+        pnlComments:
             Dock: Top
             Controls:
-                Row0: [chkSelect]
-        pnlGrid:
-            Dock: Top
-            Controls: [grdDetails]
-            Height:200
+                Row0: [txtReversalCommentOne, cmbReversalCommentOneType]
+                Row1: [txtReversalCommentTwo, cmbReversalCommentTwoType]
+                Row2: [txtReversalCommentThree, cmbReversalCommentThreeType]
         pnlButtons:
-            Dock: Bottom
             Controls:
                 Row0: [btnHelp, btnOK, btnClose]
-            ColWidths: [0=Fixed:520,1=Fixed:35,2=Fixed:45]
+            Dock: Fill
+
+        grdDetails:
+            Dock: Fill
+            Enabled: false
+            Columns: [DetailBatchNumber, DetailGlEffectiveDate, DetailBatchDescription, DetailHashTotal, DetailBatchTotal, DetailCurrencyCode, DetailBankCostCentre, DetailBankAccountCode, DetailGiftType, DetailDateModified]
+            CustomColumns:
+                DetailBatchNumber: {Label=Batch}
+                DetailGlEffectiveDate: {Label=Date, Type=DateTime}
+                DetailCurrencyCode: {Label=Currency}
+
+        rbtNewBatch:
+            Label: Add reversal/adjustment gifts into a new batch:
+        rbtExistingBatch:
+            Label: Add reversal/adjustment gifts into an existing batch:
+            OnChange: SelectBatchChanged
+        lblValidDateRange: {Width=350}
+        dtpEffectiveDate: {Label=Gift Batch Date to use}
+        txtReversalCommentOne: {Label=Comment 1, Width=450}
+        txtReversalCommentTwo: {Label=Comment 2, Width=450}
+        txtReversalCommentThree: {Label=Comment 3, Width=450}
+        cmbReversalCommentOneType: {Width=100}
+            Label: for
+            OptionalValues: [Donor,Recipient,Both,Office]
+        cmbReversalCommentTwoType: {Width=100}
+            Label: for
+            OptionalValues: [Donor,Recipient,Both,Office]
+        cmbReversalCommentThreeType: {Width=100}
+            Label: for
+            OptionalValues: [Donor,Recipient,Both,Office]
+        
         btnOK:
             Action: actOK
+            Align: right
         btnClose: 
             Action: actClose
+            Align: right
         btnHelp:
             Action: actHelp
-        grdDetails:
-            TableName: AGiftBatch
-            Dock: Fill
-            Columns: [BatchNumber, GlEffectiveDate, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType, DateModified]
-        pnlDetails:
-            Dock: Top
-            Controls:
-                Row0: [lblValidDateRange]
-                Row1: [dtpEffectiveDate]
-                Row2: [txtReversalCommentOne, cmbReversalCommentOneType]
-                Row3: [txtReversalCommentTwo, cmbReversalCommentTwoType]
-                Row4: [txtReversalCommentThree, cmbReversalCommentThreeType]
-        chkSelect:
-            Label: Select Batch to Add Reversal/Adjustment into?
-            OnChange: SelectBatchChanged
-        lblValidDateRange:
-        dtpEffectiveDate: {Label=Enter the Gift Batch Date to use}
-        txtReversalCommentOne: {Label=Comment 1 for Reversal,Width=250}
-        txtReversalCommentTwo: {Label=Comment 2 for Reversal,Width=250}
-        txtReversalCommentThree: {Label=Comment 3 for Reversal,Width=250}
-        cmbReversalCommentOneType:
-            Label: for
-            OptionalValues: [Donor,Recipient,Both,Office]
-        cmbReversalCommentTwoType:
-            Label: for
-            OptionalValues: [Donor,Recipient,Both,Office]
-        cmbReversalCommentThreeType:
-            Label: for
-            OptionalValues: [Donor,Recipient,Both,Office]

@@ -102,9 +102,13 @@ namespace Ict.Common.Data.Testing
             GiftBatchTDSAccess.SubmitChanges(MainDS);
 
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            AGiftBatchTable batches = AGiftBatchAccess.LoadByPrimaryKey(batch.LedgerNumber, batch.BatchNumber, transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            TDBTransaction transaction = null;
+            AGiftBatchTable batches = null;
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref transaction,
+                delegate
+                {
+                    batches = AGiftBatchAccess.LoadByPrimaryKey(batch.LedgerNumber, batch.BatchNumber, transaction);
+                });
 
             // some problems with sqlite and datagrid
             Assert.AreEqual(typeof(decimal), batches[0][AGiftBatchTable.ColumnHashTotalId].GetType(), "type decimal");

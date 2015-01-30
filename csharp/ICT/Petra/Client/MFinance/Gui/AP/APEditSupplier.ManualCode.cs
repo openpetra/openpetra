@@ -337,6 +337,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     {
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
+
                         TMessages.MsgSecurityException(Exp, this.GetType());
 
                         ReturnValue = false;
@@ -347,30 +348,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     {
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
+
                         TMessages.MsgDBConcurrencyException(Exp, this.GetType());
 
                         ReturnValue = false;
                         FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
-                    catch (Exception exp)
+                    catch (Exception)
                     {
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
-                        TLogging.Log(
-                            Catalog.GetString(
-                                "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
-                            TLoggingType.ToLogfile);
-                        MessageBox.Show(
-                            Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine +
-                            "For details see the log file: " + TLogging.GetLogFileName(),
-                            "Server connection error",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Stop);
 
-                        ReturnValue = false;
                         FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                        return ReturnValue;
+                        throw;
                     }
 
                     switch (SubmissionResult)

@@ -390,7 +390,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                         else if (eachPart == "FAMILY")
                         {
-                            // for the case where OM-FAM and FAMILY are both in the value:
+                            // for the case where WORKER-FAM and FAMILY are both in the value:
                             // set the flags, so combo box handler knows this is the case
                             FWorkerFamOnly = false;
                             FWorkerFamPreferred = true;
@@ -463,7 +463,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblAddress3.Text = Catalog.GetString("Address &3") + ":";
             this.lblAddress2.Text = Catalog.GetString("Address &2") + ":";
             this.lblEmail.Text = Catalog.GetString("&Email") + ":";
-            this.lblPartnerName.Text = Catalog.GetString("Partner &Name") + ":";
+            this.lblPartnerName.Text = Catalog.GetString("Pa&rtner Name") + ":";
             this.lblPersonalName.Text = Catalog.GetString("Personal &(First) Name") + ":";
             this.lblPreviousName.Text = Catalog.GetString("Previous Name") + ":";
             this.lblAddress1.Text = Catalog.GetString("Address &1") + ":";
@@ -1852,9 +1852,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoCountryComboBox.AddNotSetRow("", "");
             ucoCountryComboBox.PerformDataBinding(FFindCriteriaDataTable, "Country");
 
-            txtBankKey.InitialiseUserControl();
-            txtBankKey.PerformDataBinding(FFindCriteriaDataTable.DefaultView, "BankKey");
-
             SetupPartnerClassComboBox();
 
             if (cmbPartnerClass.Items.Count > 0)
@@ -1876,6 +1873,33 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             lblCounty.Text = LocalisedCountyLabel;
+
+            /*
+             * Restore 'Mailing Addresses Only' and 'Partner Status' Criteria
+             * settings from UserDefaults
+             */
+            FindCriteriaUserDefaultRestore();
+
+            ShowOrHidePartnerKeyMatchInfoText();
+
+            // put focus on txtPartnerName on screen load
+            this.ActiveControl = txtPartnerName;
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void InitialiseBankCriteriaFields()
+        {
+            txtBankKey.InitialiseUserControl();
+            txtBankKey.PerformDataBinding(FFindCriteriaDataTable.DefaultView, "BankKey");
+
+            SetupPartnerClassComboBox();
+
+            if (cmbPartnerClass.Items.Count > 0)
+            {
+                cmbPartnerClass.SelectedIndex = 0;
+            }
 
             /*
              * Restore 'Mailing Addresses Only' and 'Partner Status' Criteria
@@ -3165,6 +3189,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void SetDefaultPartnerClass(TPartnerClass ? ADefaultClass)
         {
             cmbPartnerClass.Text = ADefaultClass.ToString();
+        }
+
+        /// <summary>
+        /// Gets the individual partner class selected in the combo box.
+        /// Null if * is selected.
+        /// </summary>
+        /// <returns></returns>
+        public string GetSelectedPartnerClass()
+        {
+            string ReturnValue = null;
+
+            if (!string.IsNullOrEmpty(cmbPartnerClass.Text) && (cmbPartnerClass.Text != "*"))
+            {
+                ReturnValue = cmbPartnerClass.Text;
+            }
+
+            return ReturnValue;
         }
 
         #region Comboboxes and the Enter key

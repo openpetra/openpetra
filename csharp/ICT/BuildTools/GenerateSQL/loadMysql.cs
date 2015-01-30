@@ -22,7 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections;
+using System.Data;
 using System.IO;
 using Ict.Common;
 using Ict.Common.DB;
@@ -38,6 +38,8 @@ namespace GenerateSQL
         public static bool LoadData(string ADatabaseName, string AUsername, string APassword, string ALoadSQLFileName)
         {
             StreamReader sr = null;
+            TDBTransaction WriteTransaction = null;
+            bool SubmissionResult = false;
 
             DBAccess.GDBAccessObj = new TDataBase(TDBType.MySQL);
             try
@@ -52,96 +54,101 @@ namespace GenerateSQL
                 return false;
             }
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-            // one command per line.
-            // file is in postgresql syntax
-            // either COPY FROM or INSERT
-
-            while (!sr.EndOfStream)
-            {
-                string line = sr.ReadLine();
-
-                if (line.Trim().ToUpper().StartsWith("INSERT"))
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref WriteTransaction,
+                ref SubmissionResult,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(line, Transaction);
-                }
-                else if (line.Trim().ToUpper().StartsWith("COPY"))
-                {
-                    // pgsql: COPY p_language FROM 'c:/p_language.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
-                    // mysql: LOAD DATA LOCAL INFILE 'c:/p_language.csv' INTO TABLE p_language FIELDS TERMINATED BY ',' ENCLOSED BY '"' ESCAPED BY '"';
+                    // one command per line.
+                    // file is in postgresql syntax
+                    // either COPY FROM or INSERT
 
-                    // need to fix the NULL value from ? to NULL
-                    string DataFilename = line.Substring(line.IndexOf("'") + 1);
-                    DataFilename = DataFilename.Substring(0, DataFilename.IndexOf("'"));
-                    string TableName = line.Substring(line.IndexOf("COPY ") + 5);
-                    TableName = TableName.Substring(0, TableName.IndexOf(" "));
-
-                    StreamReader sData = new StreamReader(DataFilename);
-                    StreamWriter sDataWriter = new StreamWriter(DataFilename + ".local");
-                    bool firstRow = true;
-
-                    while (!sData.EndOfStream)
+                    while (!sr.EndOfStream)
                     {
-                        string CSVDataQuestionMark = sData.ReadLine().Trim();
-                        string CSVDataNULL = string.Empty;
+                        string line = sr.ReadLine();
 
-                        while (CSVDataQuestionMark.Length > 0)
+                        if (line.Trim().ToUpper().StartsWith("INSERT"))
                         {
-                            bool quotedValue = CSVDataQuestionMark.StartsWith("\"");
-                            string value = StringHelper.GetNextCSV(ref CSVDataQuestionMark, ",");
-
-                            if (value == "?")
-                            {
-                                value = "NULL";
-                            }
-
-                            // if true or false is written in quotes, do not convert to integer. needed for a_account_property
-                            if ((!quotedValue && (value == "false")) || (value == "no"))
-                            {
-                                value = "0";
-                            }
-
-                            if ((!quotedValue && (value == "true")) || (value == "yes"))
-                            {
-                                value = "1";
-                            }
-
-                            CSVDataNULL = StringHelper.AddCSV(CSVDataNULL, value);
+                            DBAccess.GDBAccessObj.ExecuteNonQuery(line, WriteTransaction);
                         }
-
-                        if (CSVDataNULL.Length > 0)
+                        else if (line.Trim().ToUpper().StartsWith("COPY"))
                         {
-                            if (firstRow)
+                            // pgsql: COPY p_language FROM 'c:/p_language.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+                            // mysql: LOAD DATA LOCAL INFILE 'c:/p_language.csv' INTO TABLE p_language FIELDS TERMINATED BY ',' ENCLOSED BY '"' ESCAPED BY '"';
+
+                            // need to fix the NULL value from ? to NULL
+                            string DataFilename = line.Substring(line.IndexOf("'") + 1);
+                            DataFilename = DataFilename.Substring(0, DataFilename.IndexOf("'"));
+                            string TableName = line.Substring(line.IndexOf("COPY ") + 5);
+                            TableName = TableName.Substring(0, TableName.IndexOf(" "));
+
+                            StreamReader sData = new StreamReader(DataFilename);
+                            StreamWriter sDataWriter = new StreamWriter(DataFilename + ".local");
+                            bool firstRow = true;
+
+                            while (!sData.EndOfStream)
                             {
-                                firstRow = false;
-                            }
-                            else
-                            {
-                                sDataWriter.WriteLine();
+                                string CSVDataQuestionMark = sData.ReadLine().Trim();
+                                string CSVDataNULL = string.Empty;
+
+                                while (CSVDataQuestionMark.Length > 0)
+                                {
+                                    bool quotedValue = CSVDataQuestionMark.StartsWith("\"");
+                                    string value = StringHelper.GetNextCSV(ref CSVDataQuestionMark, ",");
+
+                                    if (value == "?")
+                                    {
+                                        value = "NULL";
+                                    }
+
+                                    // if true or false is written in quotes, do not convert to integer. needed for a_account_property
+                                    if ((!quotedValue && (value == "false")) || (value == "no"))
+                                    {
+                                        value = "0";
+                                    }
+
+                                    if ((!quotedValue && (value == "true")) || (value == "yes"))
+                                    {
+                                        value = "1";
+                                    }
+
+                                    CSVDataNULL = StringHelper.AddCSV(CSVDataNULL, value);
+                                }
+
+                                if (CSVDataNULL.Length > 0)
+                                {
+                                    if (firstRow)
+                                    {
+                                        firstRow = false;
+                                    }
+                                    else
+                                    {
+                                        sDataWriter.WriteLine();
+                                    }
+
+                                    sDataWriter.Write(CSVDataNULL);
+                                }
                             }
 
-                            sDataWriter.Write(CSVDataNULL);
+                            sData.Close();
+                            sDataWriter.Close();
+
+                            // see also http://dev.mysql.com/doc/refman/5.1/en/insert-speed.html
+                            string stmt = String.Format(
+                                "LOAD DATA LOCAL INFILE '{0}' INTO TABLE {1} FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"' LINES TERMINATED BY '"
+                                +
+                                Environment.NewLine + "';",
+                                DataFilename + ".local",
+                                TableName);
+
+                            DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, WriteTransaction);
                         }
                     }
 
-                    sData.Close();
-                    sDataWriter.Close();
+                    SubmissionResult = true;
 
-                    // see also http://dev.mysql.com/doc/refman/5.1/en/insert-speed.html
-                    string stmt = String.Format(
-                        "LOAD DATA LOCAL INFILE '{0}' INTO TABLE {1} FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"' LINES TERMINATED BY '"
-                        +
-                        Environment.NewLine + "';",
-                        DataFilename + ".local",
-                        TableName);
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, Transaction);
-                }
-            }
+                    sr.Close();
+                });
 
-            sr.Close();
-
-            DBAccess.GDBAccessObj.CommitTransaction();
             DBAccess.GDBAccessObj.CloseDBConnection();
 
             return true;

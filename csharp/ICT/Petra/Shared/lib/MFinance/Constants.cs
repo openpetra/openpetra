@@ -566,4 +566,40 @@ namespace Ict.Petra.Shared.MFinance
         /// </summary>
         moptBankingTypesAllowed
     }
+
+    /// <summary>
+    /// enum for gift reversal and adjustment functions
+    /// </summary>
+    public enum GiftAdjustmentFunctionEnum
+    {
+        /// <summary>
+        /// Reverse the Gift Batch
+        /// </summary>
+        ReverseGiftBatch,
+
+        /// <summary>
+        /// Reverse a single Gift Detail
+        /// </summary>
+            ReverseGiftDetail,
+
+        /// <summary>
+        /// Reverse a single Gift
+        /// </summary>
+            ReverseGift,
+
+        /// <summary>
+        /// Adjust a single gift
+        /// </summary>
+            AdjustGift,
+
+        /// <summary>
+        /// Field adjustment for a number of gifts from the same recipient but (potentially) over different batches
+        /// </summary>
+            FieldAdjust,
+
+        /// <summary>
+        /// TaxDeductiblePct adjustment for a number of gifts from the same recipient but (potentially) over different batches and even ledgers
+        /// </summary>
+            TaxDeductiblePctAdjust
+    }
 }

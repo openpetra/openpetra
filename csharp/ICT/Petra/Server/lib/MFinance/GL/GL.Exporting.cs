@@ -62,239 +62,241 @@ namespace Ict.Petra.Server.MFinance.GL
 
 
         /// <summary>
-        /// export all the Data of the batches array list to a String
+        /// Export all the Data of the batches array list to a String
         /// </summary>
-        /// <param name="batches"></param>
-        /// <param name="requestParams"></param>
-        /// <param name="exportString"></param>
+        /// <param name="Abatches"></param>
+        /// <param name="ArequestParams"></param>
+        /// <param name="AexportString"></param>
         /// <returns>false if batch does not exist at all</returns>
-        public bool ExportAllGLBatchData(ref ArrayList batches, Hashtable requestParams, out String exportString)
+        public bool ExportAllGLBatchData(ArrayList Abatches, Hashtable ArequestParams, out String AexportString)
         {
             FStringWriter = new StringWriter();
             FMainDS = new GLBatchTDS();
-            FDelimiter = (String)requestParams["Delimiter"];
-            FLedgerNumber = (Int32)requestParams["ALedgerNumber"];
-            FDateFormatString = (String)requestParams["DateFormatString"];
-            FSummary = (bool)requestParams["Summary"];
-            FUseBaseCurrency = (bool)requestParams["bUseBaseCurrency"];
-            FBaseCurrency = (String)requestParams["BaseCurrency"];
-            FDateForSummary = (DateTime)requestParams["DateForSummary"];
-            String NumberFormat = (String)requestParams["NumberFormat"];
+            FDelimiter = (String)ArequestParams["Delimiter"];
+            FLedgerNumber = (Int32)ArequestParams["ALedgerNumber"];
+            FDateFormatString = (String)ArequestParams["DateFormatString"];
+            FSummary = (bool)ArequestParams["Summary"];
+            FUseBaseCurrency = (bool)ArequestParams["bUseBaseCurrency"];
+            FBaseCurrency = (String)ArequestParams["BaseCurrency"];
+            FDateForSummary = (DateTime)ArequestParams["DateForSummary"];
+            String NumberFormat = (String)ArequestParams["NumberFormat"];
             FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            FTransactionsOnly = (bool)requestParams["TransactionsOnly"];
-            FDontSummarize = (bool)requestParams["bDontSummarize"];
-            FDontSummarizeAccount = (String)requestParams["DontSummarizeAccount"];
+            FTransactionsOnly = (bool)ArequestParams["TransactionsOnly"];
+            FDontSummarize = (bool)ArequestParams["bDontSummarize"];
+            FDontSummarizeAccount = (String)ArequestParams["DontSummarizeAccount"];
 
             SortedDictionary <String, AJournalSummaryRow>sdSummary = new SortedDictionary <String, AJournalSummaryRow>();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            UInt32 TProgressCounter = 0;
-            UInt32 TProgressJournalCounter = 0;
-
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Exporting GL Batches"),
-                100);
-
-            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Retrieving records"),
-                10);
-
-            while (batches.Count > 0)
-            {
-                Int32 ABatchNumber = (Int32)batches[0];
-                ABatchAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
-                AJournalAccess.LoadViaABatch(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
-
-                foreach (AJournalRow journal in FMainDS.AJournal.Rows)
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
                 {
-                    if (journal.BatchNumber.Equals(ABatchNumber) && journal.LedgerNumber.Equals(FLedgerNumber))
+                    UInt32 progressCounter = 0;
+                    UInt32 progressJournalCounter = 0;
+
+                    TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Exporting GL Batches"),
+                        100);
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Retrieving records"),
+                        10);
+
+                    while (Abatches.Count > 0)
                     {
-                        ATransactionAccess.LoadViaAJournal(FMainDS, journal.LedgerNumber,
-                            journal.BatchNumber,
-                            journal.JournalNumber,
-                            Transaction);
+                        Int32 ABatchNumber = (Int32)Abatches[0];
+                        ABatchAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
+                        AJournalAccess.LoadViaABatch(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
+
+                        foreach (AJournalRow journal in FMainDS.AJournal.Rows)
+                        {
+                            if (journal.BatchNumber.Equals(ABatchNumber) && journal.LedgerNumber.Equals(FLedgerNumber))
+                            {
+                                ATransactionAccess.LoadViaAJournal(FMainDS, journal.LedgerNumber,
+                                    journal.BatchNumber,
+                                    journal.JournalNumber,
+                                    Transaction);
+                            }
+                        }
+
+                        foreach (ATransactionRow trans in FMainDS.ATransaction.Rows)
+                        {
+                            if (trans.BatchNumber.Equals(ABatchNumber) && trans.LedgerNumber.Equals(FLedgerNumber))
+                            {
+                                ATransAnalAttribAccess.LoadViaATransaction(FMainDS, trans.LedgerNumber,
+                                    trans.BatchNumber,
+                                    trans.JournalNumber,
+                                    trans.TransactionNumber,
+                                    Transaction);
+                            }
+                        }
+
+                        Abatches.RemoveAt(0);
                     }
-                }
 
-                foreach (ATransactionRow trans in FMainDS.ATransaction.Rows)
-                {
-                    if (trans.BatchNumber.Equals(ABatchNumber) && trans.LedgerNumber.Equals(FLedgerNumber))
+                    UInt32 counter = 0;
+                    AJournalSummaryRow journalSummary = null;
+
+                    foreach (ABatchRow batch in FMainDS.ABatch.Rows)
                     {
-                        ATransAnalAttribAccess.LoadViaATransaction(FMainDS, trans.LedgerNumber,
-                            trans.BatchNumber,
-                            trans.JournalNumber,
-                            trans.TransactionNumber,
-                            Transaction);
-                    }
-                }
-
-                batches.RemoveAt(0);
-            }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-            UInt32 counter = 0;
-            AJournalSummaryRow journalSummary = null;
-
-            foreach (ABatchRow batch in FMainDS.ABatch.Rows)
-            {
-                TProgressCounter = 0;
-
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    String.Format(Catalog.GetString("Batch {0}"), batch.BatchNumber),
-                    20);
-
-                if (!FTransactionsOnly & !FSummary)
-                {
-                    WriteBatchLine(batch);
-                }
-
-                //foreach (AJournalRow journal in journalDS.AJournal.Rows)
-                foreach (AJournalRow journal in FMainDS.AJournal.Rows)
-                {
-                    if (journal.BatchNumber.Equals(batch.BatchNumber) && journal.LedgerNumber.Equals(batch.LedgerNumber))
-                    {
-                        TProgressJournalCounter = 0;
+                        progressCounter = 0;
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                            String.Format(Catalog.GetString("Batch {0}, Journal {1}"), batch.BatchNumber, journal.JournalNumber),
-                            (TProgressCounter / 25 + 4) * 5 > 90 ? 90 : (TProgressCounter / 25 + 4) * 5);
+                            String.Format(Catalog.GetString("Batch {0}"), batch.BatchNumber),
+                            20);
 
-                        if (FSummary)
+                        if (!FTransactionsOnly & !FSummary)
                         {
-                            String mapCurrency = FUseBaseCurrency ? FBaseCurrency : journal.TransactionCurrency;
-                            decimal mapExchangeRateToBase = FUseBaseCurrency ? 1 : journal.ExchangeRateToBase;
-
-                            if (!sdSummary.TryGetValue(mapCurrency, out journalSummary))
-                            {
-                                journalSummary = new AJournalSummaryRow();
-                                sdSummary.Add(mapCurrency, journalSummary);
-                            }
-
-                            //overwrite always because we want to have the last
-                            journalSummary.ExchangeRateToBase = mapExchangeRateToBase;
-                            journalSummary.TransactionCurrency = mapCurrency;
-                        }
-                        else
-                        {
-                            if (!FTransactionsOnly)
-                            {
-                                WriteJournalLine(journal);
-                            }
+                            WriteBatchLine(batch);
                         }
 
-                        FMainDS.ATransaction.DefaultView.Sort = ATransactionTable.GetTransactionNumberDBName();
-                        FMainDS.ATransaction.DefaultView.RowFilter =
-                            String.Format("{0}={1} and {2}={3} and {4}={5}",
-                                ATransactionTable.GetLedgerNumberDBName(),
-                                journal.LedgerNumber,
-                                ATransactionTable.GetBatchNumberDBName(),
-                                journal.BatchNumber,
-                                ATransactionTable.GetJournalNumberDBName(),
-                                journal.JournalNumber);
-
-                        foreach (DataRowView dv in FMainDS.ATransaction.DefaultView)
+                        //foreach (AJournalRow journal in journalDS.AJournal.Rows)
+                        foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                         {
-                            TProgressJournalCounter++;
-
-                            if (++TProgressCounter % 25 == 0)
+                            if (journal.BatchNumber.Equals(batch.BatchNumber) && journal.LedgerNumber.Equals(batch.LedgerNumber))
                             {
+                                progressJournalCounter = 0;
+
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    String.Format(Catalog.GetString("Batch {0}, Journal {1} - {2}"), batch.BatchNumber, journal.JournalNumber,
-                                        TProgressJournalCounter),
-                                    (TProgressCounter / 25 + 4) * 5 > 90 ? 90 : (TProgressCounter / 25 + 4) * 5);
-                            }
+                                    String.Format(Catalog.GetString("Batch {0}, Journal {1}"), batch.BatchNumber, journal.JournalNumber),
+                                    (progressCounter / 25 + 4) * 5 > 90 ? 90 : (progressCounter / 25 + 4) * 5);
 
-                            ATransactionRow transaction = (ATransactionRow)dv.Row;
-
-                            if (FSummary)
-                            {
-                                ATransactionSummaryRow transactionSummary;
-                                counter++;
-                                String DictionaryKey = transaction.CostCentreCode + ";" + transaction.AccountCode;
-                                int signum = transaction.DebitCreditIndicator ? 1 : -1;
-                                bool bDontSummarizeAccount = FDontSummarize && FDontSummarizeAccount != null && FDontSummarizeAccount.Length > 0
-                                                             && transaction.AccountCode.Equals(FDontSummarizeAccount);
-
-                                if (bDontSummarizeAccount)
+                                if (FSummary)
                                 {
-                                    DictionaryKey += ";" + counter.ToString("X");
-                                }
+                                    String mapCurrency = FUseBaseCurrency ? FBaseCurrency : journal.TransactionCurrency;
+                                    decimal mapExchangeRateToBase = FUseBaseCurrency ? 1 : journal.ExchangeRateToBase;
 
-                                if (journalSummary.TransactionSummaries.TryGetValue(DictionaryKey, out transactionSummary))
-                                {
-                                    transactionSummary.TransactionAmount += signum * transaction.TransactionAmount;
-                                    transactionSummary.AmountInBaseCurrency += signum * transaction.AmountInBaseCurrency;
+                                    if (!sdSummary.TryGetValue(mapCurrency, out journalSummary))
+                                    {
+                                        journalSummary = new AJournalSummaryRow();
+                                        sdSummary.Add(mapCurrency, journalSummary);
+                                    }
+
+                                    //overwrite always because we want to have the last
+                                    journalSummary.ExchangeRateToBase = mapExchangeRateToBase;
+                                    journalSummary.TransactionCurrency = mapCurrency;
                                 }
                                 else
                                 {
-                                    transactionSummary = new ATransactionSummaryRow();
-                                    transactionSummary.CostCentreCode = transaction.CostCentreCode;
-                                    transactionSummary.AccountCode = transaction.AccountCode;
-                                    transactionSummary.TransactionAmount = signum * transaction.TransactionAmount;
-                                    transactionSummary.AmountInBaseCurrency = signum * transaction.AmountInBaseCurrency;
-
-                                    if (bDontSummarizeAccount)
+                                    if (!FTransactionsOnly)
                                     {
-                                        transactionSummary.Narrative = transaction.Narrative;
-                                        transactionSummary.Reference = transaction.Reference;
+                                        WriteJournalLine(journal);
+                                    }
+                                }
+
+                                FMainDS.ATransaction.DefaultView.Sort = ATransactionTable.GetTransactionNumberDBName();
+                                FMainDS.ATransaction.DefaultView.RowFilter =
+                                    String.Format("{0}={1} and {2}={3} and {4}={5}",
+                                        ATransactionTable.GetLedgerNumberDBName(),
+                                        journal.LedgerNumber,
+                                        ATransactionTable.GetBatchNumberDBName(),
+                                        journal.BatchNumber,
+                                        ATransactionTable.GetJournalNumberDBName(),
+                                        journal.JournalNumber);
+
+                                foreach (DataRowView dv in FMainDS.ATransaction.DefaultView)
+                                {
+                                    progressJournalCounter++;
+
+                                    if (++progressCounter % 25 == 0)
+                                    {
+                                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                            String.Format(Catalog.GetString(
+                                                    "Batch {0}, Journal {1} - {2}"), batch.BatchNumber, journal.JournalNumber,
+                                                progressJournalCounter),
+                                            (progressCounter / 25 + 4) * 5 > 90 ? 90 : (progressCounter / 25 + 4) * 5);
+                                    }
+
+                                    ATransactionRow transactionRow = (ATransactionRow)dv.Row;
+
+                                    if (FSummary)
+                                    {
+                                        ATransactionSummaryRow transactionSummary;
+                                        counter++;
+                                        String DictionaryKey = transactionRow.CostCentreCode + ";" + transactionRow.AccountCode;
+                                        int signum = transactionRow.DebitCreditIndicator ? 1 : -1;
+                                        bool bDontSummarizeAccount = FDontSummarize && FDontSummarizeAccount != null
+                                                                     && FDontSummarizeAccount.Length > 0
+                                                                     && transactionRow.AccountCode.Equals(FDontSummarizeAccount);
+
+                                        if (bDontSummarizeAccount)
+                                        {
+                                            DictionaryKey += ";" + counter.ToString("X");
+                                        }
+
+                                        if (journalSummary.TransactionSummaries.TryGetValue(DictionaryKey, out transactionSummary))
+                                        {
+                                            transactionSummary.TransactionAmount += signum * transactionRow.TransactionAmount;
+                                            transactionSummary.AmountInBaseCurrency += signum * transactionRow.AmountInBaseCurrency;
+                                        }
+                                        else
+                                        {
+                                            transactionSummary = new ATransactionSummaryRow();
+                                            transactionSummary.CostCentreCode = transactionRow.CostCentreCode;
+                                            transactionSummary.AccountCode = transactionRow.AccountCode;
+                                            transactionSummary.TransactionAmount = signum * transactionRow.TransactionAmount;
+                                            transactionSummary.AmountInBaseCurrency = signum * transactionRow.AmountInBaseCurrency;
+
+                                            if (bDontSummarizeAccount)
+                                            {
+                                                transactionSummary.Narrative = transactionRow.Narrative;
+                                                transactionSummary.Reference = transactionRow.Reference;
+                                            }
+                                            else
+                                            {
+                                                transactionSummary.Narrative = summarizedData;
+                                                transactionSummary.Reference = "";
+                                            }
+
+                                            journalSummary.TransactionSummaries.Add(DictionaryKey, transactionSummary);
+                                        }
                                     }
                                     else
                                     {
-                                        transactionSummary.Narrative = summarizedData;
-                                        transactionSummary.Reference = "";
+                                        WriteTransactionLine(transactionRow);
                                     }
-
-                                    journalSummary.TransactionSummaries.Add(DictionaryKey, transactionSummary);
                                 }
-                            }
-                            else
-                            {
-                                WriteTransactionLine(transaction);
                             }
                         }
                     }
-                }
-            }
 
-            if (FSummary)
-            {
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    Catalog.GetString("Summarising"),
-                    95);
-
-                //To simplify matters this is always written even if there are no batches
-                if (!FTransactionsOnly)
-                {
-                    // no batch summary line if only transactions are to be exported
-                    WriteBatchSummaryLine();
-                }
-
-                foreach (KeyValuePair <string, AJournalSummaryRow>kvp in sdSummary)
-                {
-                    if (!FTransactionsOnly)
+                    if (FSummary)
                     {
-                        // no journal summary line if only transactions are to be exported
-                        WriteJournalSummaryLine(kvp.Value);
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            Catalog.GetString("Summarising"),
+                            95);
+
+                        //To simplify matters this is always written even if there are no batches
+                        if (!FTransactionsOnly)
+                        {
+                            // no batch summary line if only transactions are to be exported
+                            WriteBatchSummaryLine();
+                        }
+
+                        foreach (KeyValuePair <string, AJournalSummaryRow>kvp in sdSummary)
+                        {
+                            if (!FTransactionsOnly)
+                            {
+                                // no journal summary line if only transactions are to be exported
+                                WriteJournalSummaryLine(kvp.Value);
+                            }
+
+                            foreach (KeyValuePair <string, ATransactionSummaryRow>kvpt in kvp.Value.TransactionSummaries)
+                            {
+                                WriteTransactionSummaryLine(kvpt.Value);
+                            }
+                        }
                     }
 
-                    foreach (KeyValuePair <string, ATransactionSummaryRow>kvpt in kvp.Value.TransactionSummaries)
-                    {
-                        WriteTransactionSummaryLine(kvpt.Value);
-                    }
-                }
-            }
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("GL batch export successful"),
+                        100);
 
-            exportString = FStringWriter.ToString();
-
-            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("GL batch export successful"),
-                100);
-
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                });
+            AexportString = FStringWriter.ToString();
             return true;
-        }
+        } // Export All GLBatch Data
 
         void WriteBatchSummaryLine()
         {

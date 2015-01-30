@@ -49,12 +49,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// display data that is about to be validated.</param>
         /// <param name="AMinDateTime">The earliest allowable date.</param>
         /// <param name="AMaxDateTime">The latest allowable date.</param>
+        /// <param name="AIgnoreZeroRateCheck">If true a zero rate will be allowed.  This will be the case when the Daily Exchange Rate screen is modal.</param>
         public static void ValidateDailyExchangeRate(object AContext,
             ADailyExchangeRateRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection,
             TValidationControlsDict AValidationControlsDict,
             DateTime AMinDateTime,
-            DateTime AMaxDateTime)
+            DateTime AMaxDateTime,
+            bool AIgnoreZeroRateCheck)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -66,14 +68,23 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return;
             }
 
-            // RateOfExchange must be positive (definitely not zero because we can invert it)
+            // RateOfExchange must be positive (definitely not zero unless in modal mode)
             ValidationColumn = ARow.Table.Columns[ADailyExchangeRateTable.ColumnRateOfExchangeId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.RateOfExchange,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                if (AIgnoreZeroRateCheck)
+                {
+                    VerificationResult = TNumericalChecks.IsPositiveOrZeroDecimal(ARow.RateOfExchange,
+                        ValidationControlsData.ValidationControlLabel,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+                else
+                {
+                    VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.RateOfExchange,
+                        ValidationControlsData.ValidationControlLabel,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);

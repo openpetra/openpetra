@@ -159,58 +159,57 @@ namespace Ict.Petra.Server.MConference.Applications
             string ARole,
             bool AClearJSONData)
         {
-            Boolean NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+            TDBTransaction Transaction = null;
+            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            try
-            {
-                // load all attendees of this conference.
-                // only load once: GetApplications might be called for several application stati
-                if (AMainDS.PcAttendee.Rows.Count == 0)
+                ref Transaction,
+                delegate
                 {
-                    PcAttendeeRow templateAttendeeRow = AMainDS.PcAttendee.NewRowTyped(false);
-                    templateAttendeeRow.ConferenceKey = AEventPartnerKey;
-                    PcAttendeeAccess.LoadUsingTemplate(AMainDS, templateAttendeeRow, Transaction);
-                    AMainDS.PcAttendee.DefaultView.Sort = PcAttendeeTable.GetPartnerKeyDBName();
-                }
-
-                if (AConferenceOrganisingOffice && (ARegistrationOffice == -1))
-                {
-                    // avoid duplicates, who are registered by one office, but charged to another office
-                    GetApplications(ref AMainDS, AEventCode, -1, AApplicationStatus, ARole, AClearJSONData, Transaction);
-                }
-                else
-                {
-                    List <Int64>AllowedRegistrationOffices = GetRegistrationOfficeKeysOfUser(Transaction);
-
-                    foreach (Int64 RegistrationOffice in AllowedRegistrationOffices)
+                    // load all attendees of this conference.
+                    // only load once: GetApplications might be called for several application stati
+                    if (MainDS.PcAttendee.Rows.Count == 0)
                     {
-                        if ((ARegistrationOffice == RegistrationOffice) || (ARegistrationOffice == -1))
+                        PcAttendeeRow templateAttendeeRow = MainDS.PcAttendee.NewRowTyped(false);
+                        templateAttendeeRow.ConferenceKey = AEventPartnerKey;
+                        PcAttendeeAccess.LoadUsingTemplate(MainDS, templateAttendeeRow, Transaction);
+                        MainDS.PcAttendee.DefaultView.Sort = PcAttendeeTable.GetPartnerKeyDBName();
+                    }
+
+                    if (AConferenceOrganisingOffice && (ARegistrationOffice == -1))
+                    {
+                        // avoid duplicates, who are registered by one office, but charged to another office
+                        GetApplications(ref MainDS, AEventCode, -1, AApplicationStatus, ARole, AClearJSONData, Transaction);
+                    }
+                    else
+                    {
+                        List <Int64>AllowedRegistrationOffices = GetRegistrationOfficeKeysOfUser(Transaction);
+
+                        foreach (Int64 RegistrationOffice in AllowedRegistrationOffices)
                         {
-                            GetApplications(ref AMainDS, AEventCode, RegistrationOffice, AApplicationStatus, ARole, AClearJSONData, Transaction);
+                            if ((ARegistrationOffice == RegistrationOffice) || (ARegistrationOffice == -1))
+                            {
+                                GetApplications(ref MainDS, AEventCode, RegistrationOffice, AApplicationStatus, ARole, AClearJSONData, Transaction);
+                            }
                         }
                     }
-                }
 
-                // required for DefaultView.Find
-                AMainDS.PmShortTermApplication.DefaultView.Sort =
-                    PmShortTermApplicationTable.GetStConfirmedOptionDBName() + "," +
-                    PmShortTermApplicationTable.GetPartnerKeyDBName();
-                AMainDS.PmGeneralApplication.DefaultView.Sort =
-                    PmGeneralApplicationTable.GetPartnerKeyDBName() + "," +
-                    PmGeneralApplicationTable.GetApplicationKeyDBName() + "," +
-                    PmGeneralApplicationTable.GetRegistrationOfficeDBName();
-                AMainDS.PDataLabelValuePartner.DefaultView.Sort = PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + "," +
-                                                                  PDataLabelValuePartnerTable.GetPartnerKeyDBName();
-                AMainDS.PDataLabel.DefaultView.Sort = PDataLabelTable.GetTextDBName();
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    // required for DefaultView.Find
+                    MainDS.PmShortTermApplication.DefaultView.Sort =
+                        PmShortTermApplicationTable.GetStConfirmedOptionDBName() + "," +
+                        PmShortTermApplicationTable.GetPartnerKeyDBName();
+                    MainDS.PmGeneralApplication.DefaultView.Sort =
+                        PmGeneralApplicationTable.GetPartnerKeyDBName() + "," +
+                        PmGeneralApplicationTable.GetApplicationKeyDBName() + "," +
+                        PmGeneralApplicationTable.GetRegistrationOfficeDBName();
+                    MainDS.PDataLabelValuePartner.DefaultView.Sort = PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + "," +
+                                                                     PDataLabelValuePartnerTable.GetPartnerKeyDBName();
+                    MainDS.PDataLabel.DefaultView.Sort = PDataLabelTable.GetTextDBName();
+                });
+
+            AMainDS = MainDS;
 
             if (AMainDS.HasChanges())
             {

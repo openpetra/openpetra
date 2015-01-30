@@ -325,7 +325,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
 
             return paramsDictionary;
-        }
+        } // Initialise Dictionary
 
         private Boolean LoadHosaReportData(TRptCalculator ACalc)
         {
@@ -344,7 +344,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
 
             return DataOk;
-        }
+        }  // Load Hosa Report Data
 
         private Boolean LoadStewardshipReportData(TRptCalculator ACalc)
         {
@@ -442,7 +442,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
 
             return HasData;
-        }
+        } // Load Stewardship Report Data
 
         private Boolean LoadFeesReportData(TRptCalculator ACalc)
         {
@@ -482,14 +482,14 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             MyFastReportsPlugin.RegisterData(FeeNames, "FeeNames");
             MyFastReportsPlugin.RegisterData(ReportTable, "Fees");
             return true;
-        }
+        } // Load Fees Report Data
 
         /*
          *      private Boolean LoadRecipientReportData(TRptCalculator ACalc)
          *      {
          *          Dictionary<String, TVariant> paramsDictionary = InitialiseDictionary(ACalc);
          *          return false;
-         *      }
+         *      }  // Load Recipient Report Data
          */
     }
 }

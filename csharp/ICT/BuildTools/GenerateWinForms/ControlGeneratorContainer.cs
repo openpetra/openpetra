@@ -271,7 +271,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.SetControlProperty(ctrl, "DrawMode", "System.Windows.Forms.TabDrawMode.OwnerDrawFixed");
 
-            if (ctrl.HasAttribute("DragTabPageEnabled") && (ctrl.GetAttribute("DragTabPageEnabled").ToLower() == "false"))
+            // by default the tab order cannot be changed
+            if (!ctrl.HasAttribute("DragTabPageEnabled") || (ctrl.GetAttribute("DragTabPageEnabled").ToLower() == "false"))
             {
                 writer.SetControlProperty(ctrl, "AllowDrop", "false");
             }
@@ -1487,7 +1488,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     || (att.Name == "NoLabel")
                     || (att.Name == "Comparison")
                     || (att.Name == "FindComparison")
-                    || (att.Name == "CloneToComboBox"))
+                    || (att.Name == "CloneToComboBox")
+                    || (att.Name == "HasManualFilter"))
                 {
                     // we have dealt with these already
                     continue;
@@ -1548,7 +1550,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
-                    AddFilterFindProperty(writer, AControlType, APanelType, AControlName, att.Name, att.Value);
+                    string attValue = att.Value;
+                    Int32 tryInt;
+
+                    if (Int32.TryParse(attValue, out tryInt) || (attValue == "true") || (attValue == "false") || attValue.Contains("."))
+                    {
+                        AddFilterFindProperty(writer, AControlType, APanelType, AControlName, att.Name, attValue);
+                    }
+                    else
+                    {
+                        AddFilterFindProperty(writer, AControlType, APanelType, AControlName, att.Name, "\"" + attValue + "\"");
+                    }
                 }
             }
         }
@@ -1563,6 +1575,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if ((AControlAttributesList != null) && (AControlAttributesList["ClearButton"] != null))
             {
                 AHasClearButton = (AControlAttributesList["ClearButton"].Value != "false");
+            }
+
+            bool hasManualFilter = false;
+
+            if ((AControlAttributesList != null) && (AControlAttributesList["HasManualFilter"] != null))
+            {
+                hasManualFilter = true;
             }
 
             string clearValue = String.Empty;
@@ -1634,6 +1653,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (clearValue != String.Empty)
             {
                 strTag += String.Format("{0}={1};", CommonTagString.ARGUMENTCONTROLTAG_CLEARVALUE, clearValue);
+            }
+
+            if (hasManualFilter)
+            {
+                strTag += String.Format("{0};", CommonTagString.FILTER_HAS_MANUAL_FILTER);
             }
 
             return strTag == String.Empty ? "String.Empty" : String.Format("\"{0}\"", strTag);

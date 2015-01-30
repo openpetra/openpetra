@@ -106,12 +106,15 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // new database because period July has to be open
             FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            TDBTransaction Transaction = null;
+            bool CostCentreTestCasesAvailable = false;
 
-            // Check if some special test data are available - otherwise load ...
-            bool CostCentreTestCasesAvailable = ACostCentreAccess.Exists(FLedgerNumber, "4301", Transaction);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                    // Check if some special test data are available - otherwise load ...
+                    CostCentreTestCasesAvailable = ACostCentreAccess.Exists(FLedgerNumber, "4301", Transaction);
+                });
 
             if (!CostCentreTestCasesAvailable)
             {

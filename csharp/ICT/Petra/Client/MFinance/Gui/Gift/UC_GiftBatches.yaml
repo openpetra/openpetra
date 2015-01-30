@@ -16,6 +16,7 @@ RootNode:
         actImportFromClipboard: {Label=I&mport Batches From Clipboard, ActionClick=ImportFromClipboard}
         actReverseGiftBatch: {Label=Re&verse Gift Batch, ActionClick=ReverseGiftBatch}
         actSetExchangeRate:{Label=Get/Set Exchange Rate, ActionClick=SetExchangeRateValue}
+        actFieldAdjustment:{Label=Field Change Adjustment, ActionClick=FieldAdjustment}
     Controls:
         pnlContent:
             Dock: Fill
@@ -76,8 +77,8 @@ RootNode:
                 Row1: [cmbDetailBankCostCentre]
                 Row2: [cmbDetailBankAccountCode]
                 Row3: [dtpDetailGlEffectiveDate, lblValidDateRange]
-                Row4: [cmbDetailCurrencyCode, txtDetailHashTotal]
-                Row5: [txtDetailExchangeRateToBase, btnGetSetExchangeRate]
+                Row4: [cmbDetailCurrencyCode, btnGetSetExchangeRate]
+                Row5: [txtDetailExchangeRateToBase, txtDetailHashTotal]
                 Row6: [cmbDetailMethodOfPaymentCode, rgrDetailGiftType]
                 #Row6: []
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
@@ -106,6 +107,8 @@ RootNode:
             mniSeparator: {Label=-}
             mniImportTransactions: {Label=&Import Batches From File, Action: actImportBatches}
             mniImportFromClipboard: {Label=I&mport Batches From Clipboard, Action: actImportFromClipboard}
+            mniSeparator: {Label=-}
+            mniFieldAdjustment: {Action=actFieldAdjustment}
     Toolbar:
         tbbPostBatch: {Action=actPostBatch}
         tbbImportBatches: {Action=actImportBatches}

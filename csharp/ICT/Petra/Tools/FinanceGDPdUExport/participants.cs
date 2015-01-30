@@ -55,86 +55,87 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             Console.WriteLine("Writing file: " + filename);
 
-            StringBuilder sb = new StringBuilder();
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            // all gift details towards a costcentre that needs to be exported
-            string sql =
-                String.Format("SELECT DISTINCT D.* " +
-                    "FROM PUB_{0} AS B, PUB_{1} AS G, PUB_{2} AS D " +
-                    "WHERE B.{3} = {4} AND B.{5} = {6} AND B.{7}='{8}' " +
-                    "AND G.{3} = B.{3} AND G.{9} = B.{9} " +
-                    "AND D.{3} = G.{3} AND D.{9} = G.{9} AND D.{10} = G.{10} " +
-                    "AND D.{11} IN ({12}) " +
-                    "AND NOT D.{13} = '{14}'",
-                    AGiftBatchTable.GetTableDBName(),
-                    AGiftTable.GetTableDBName(),
-                    AGiftDetailTable.GetTableDBName(),
-                    AGiftBatchTable.GetLedgerNumberDBName(),
-                    ALedgerNumber,
-                    AGiftBatchTable.GetBatchYearDBName(),
-                    AFinancialYear,
-                    AGiftBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_POSTED,
-                    AGiftBatchTable.GetBatchNumberDBName(),
-                    AGiftTable.GetGiftTransactionNumberDBName(),
-                    AGiftDetailTable.GetCostCentreCodeDBName(),
-                    "'" + ACostCentres.Replace(",", "','") + "'",
-                    AGiftDetailTable.GetMotivationGroupCodeDBName(),
-                    "GIFT");
-
+            TDBTransaction Transaction = null;
             AGiftDetailTable giftdetails = new AGiftDetailTable();
-            DBAccess.GDBAccessObj.SelectDT(giftdetails, sql, Transaction, null, 0, 0);
-
-            sql = sql.Replace("SELECT DISTINCT D.*", "SELECT DISTINCT G.*");
-
             AGiftTable gifts = new AGiftTable();
-            DBAccess.GDBAccessObj.SelectDT(gifts, sql, Transaction, null, 0, 0);
-
-            gifts.DefaultView.Sort =
-                AGiftTable.GetBatchNumberDBName() + "," +
-                AGiftTable.GetGiftTransactionNumberDBName();
-
-            sql = sql.Replace("SELECT DISTINCT G.*", "SELECT DISTINCT B.*");
-
             AGiftBatchTable batches = new AGiftBatchTable();
-            DBAccess.GDBAccessObj.SelectDT(batches, sql, Transaction, null, 0, 0);
-            batches.DefaultView.Sort = AGiftTable.GetBatchNumberDBName();
-
-            sql =
-                String.Format("SELECT DISTINCT P.* " +
-                    "FROM PUB_{0} AS B, PUB_{1} AS G, PUB_{2} AS D, PUB.{15} AS P " +
-                    "WHERE B.{3} = {4} AND B.{5} = {6} AND B.{7}='{8}' " +
-                    "AND G.{3} = B.{3} AND G.{9} = B.{9} " +
-                    "AND D.{3} = G.{3} AND D.{9} = G.{9} AND D.{10} = G.{10} " +
-                    "AND D.{11} IN ({12}) " +
-                    "AND NOT D.{13} = '{14}' " +
-                    "AND P.{16} = G.{17}",
-                    AGiftBatchTable.GetTableDBName(),
-                    AGiftTable.GetTableDBName(),
-                    AGiftDetailTable.GetTableDBName(),
-                    AGiftBatchTable.GetLedgerNumberDBName(),
-                    ALedgerNumber,
-                    AGiftBatchTable.GetBatchYearDBName(),
-                    AFinancialYear,
-                    AGiftBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_POSTED,
-                    AGiftBatchTable.GetBatchNumberDBName(),
-                    AGiftTable.GetGiftTransactionNumberDBName(),
-                    AGiftDetailTable.GetCostCentreCodeDBName(),
-                    "'" + ACostCentres.Replace(",", "','") + "'",
-                    AGiftDetailTable.GetMotivationGroupCodeDBName(),
-                    "GIFT",
-                    PPersonTable.GetTableDBName(),
-                    PPersonTable.GetPartnerKeyDBName(),
-                    AGiftTable.GetDonorKeyDBName());
-
             PPersonTable persons = new PPersonTable();
-            DBAccess.GDBAccessObj.SelectDT(persons, sql, Transaction, null, 0, 0);
-            persons.DefaultView.Sort = PPersonTable.GetPartnerKeyDBName();
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    // all gift details towards a costcentre that needs to be exported
+                    string sql =
+                        String.Format("SELECT DISTINCT D.* " +
+                            "FROM PUB_{0} AS B, PUB_{1} AS G, PUB_{2} AS D " +
+                            "WHERE B.{3} = {4} AND B.{5} = {6} AND B.{7}='{8}' " +
+                            "AND G.{3} = B.{3} AND G.{9} = B.{9} " +
+                            "AND D.{3} = G.{3} AND D.{9} = G.{9} AND D.{10} = G.{10} " +
+                            "AND D.{11} IN ({12}) " +
+                            "AND NOT D.{13} = '{14}'",
+                            AGiftBatchTable.GetTableDBName(),
+                            AGiftTable.GetTableDBName(),
+                            AGiftDetailTable.GetTableDBName(),
+                            AGiftBatchTable.GetLedgerNumberDBName(),
+                            ALedgerNumber,
+                            AGiftBatchTable.GetBatchYearDBName(),
+                            AFinancialYear,
+                            AGiftBatchTable.GetBatchStatusDBName(),
+                            MFinanceConstants.BATCH_POSTED,
+                            AGiftBatchTable.GetBatchNumberDBName(),
+                            AGiftTable.GetGiftTransactionNumberDBName(),
+                            AGiftDetailTable.GetCostCentreCodeDBName(),
+                            "'" + ACostCentres.Replace(",", "','") + "'",
+                            AGiftDetailTable.GetMotivationGroupCodeDBName(),
+                            "GIFT");
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                    DBAccess.GDBAccessObj.SelectDT(giftdetails, sql, Transaction, null, 0, 0);
+
+                    sql = sql.Replace("SELECT DISTINCT D.*", "SELECT DISTINCT G.*");
+
+                    DBAccess.GDBAccessObj.SelectDT(gifts, sql, Transaction, null, 0, 0);
+
+                    gifts.DefaultView.Sort =
+                        AGiftTable.GetBatchNumberDBName() + "," +
+                        AGiftTable.GetGiftTransactionNumberDBName();
+
+                    sql = sql.Replace("SELECT DISTINCT G.*", "SELECT DISTINCT B.*");
+
+                    DBAccess.GDBAccessObj.SelectDT(batches, sql, Transaction, null, 0, 0);
+                    batches.DefaultView.Sort = AGiftTable.GetBatchNumberDBName();
+
+                    sql =
+                        String.Format("SELECT DISTINCT P.* " +
+                            "FROM PUB_{0} AS B, PUB_{1} AS G, PUB_{2} AS D, PUB.{15} AS P " +
+                            "WHERE B.{3} = {4} AND B.{5} = {6} AND B.{7}='{8}' " +
+                            "AND G.{3} = B.{3} AND G.{9} = B.{9} " +
+                            "AND D.{3} = G.{3} AND D.{9} = G.{9} AND D.{10} = G.{10} " +
+                            "AND D.{11} IN ({12}) " +
+                            "AND NOT D.{13} = '{14}' " +
+                            "AND P.{16} = G.{17}",
+                            AGiftBatchTable.GetTableDBName(),
+                            AGiftTable.GetTableDBName(),
+                            AGiftDetailTable.GetTableDBName(),
+                            AGiftBatchTable.GetLedgerNumberDBName(),
+                            ALedgerNumber,
+                            AGiftBatchTable.GetBatchYearDBName(),
+                            AFinancialYear,
+                            AGiftBatchTable.GetBatchStatusDBName(),
+                            MFinanceConstants.BATCH_POSTED,
+                            AGiftBatchTable.GetBatchNumberDBName(),
+                            AGiftTable.GetGiftTransactionNumberDBName(),
+                            AGiftDetailTable.GetCostCentreCodeDBName(),
+                            "'" + ACostCentres.Replace(",", "','") + "'",
+                            AGiftDetailTable.GetMotivationGroupCodeDBName(),
+                            "GIFT",
+                            PPersonTable.GetTableDBName(),
+                            PPersonTable.GetPartnerKeyDBName(),
+                            AGiftTable.GetDonorKeyDBName());
+
+                    DBAccess.GDBAccessObj.SelectDT(persons, sql, Transaction, null, 0, 0);
+                    persons.DefaultView.Sort = PPersonTable.GetPartnerKeyDBName();
+                });
+
+            StringBuilder sb = new StringBuilder();
 
             foreach (AGiftDetailRow detail in giftdetails.Rows)
             {

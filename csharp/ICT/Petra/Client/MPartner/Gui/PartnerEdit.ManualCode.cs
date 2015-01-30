@@ -103,6 +103,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Int64 FNewPartnerFamilyPartnerKey;
         private Int64 FNewPartnerFamilySiteKey;
         private String FNewPartnerPartnerClass;
+        private string FNewPartnerDefaultPartnerClass = SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY);
         private String FNewPartnerCountryCode;
         private String FNewPartnerSiteCountryCode;
         private String FNewPartnerAcquisitionCode;
@@ -355,6 +356,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// will be automatically setup according to the parmeters passed in.
         /// Default: true</param>
         /// <param name="AShowTabPage">The tab page that should be initially shown</param>
+        /// <param name="ADefaultPartnerClass">The default Partner Class of the new partner (Family if not specified.)</param>
         public void SetParameters(TScreenMode AScreenMode,
             String APartnerClass,
             System.Int64 ASiteKey,
@@ -366,7 +368,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int32 ANewPartnerFamilyLocationKey,
             Int64 ANewPartnerFamilySiteKey,
             Boolean AShowNewPartnerDialog,
-            TPartnerEditTabPageEnum AShowTabPage)
+            TPartnerEditTabPageEnum AShowTabPage,
+            string ADefaultPartnerClass = "FAMILY")
         {
             if (AScreenMode != TScreenMode.smNew)
             {
@@ -377,6 +380,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FNewPartnerSiteKey = ASiteKey;
             FNewPartnerPartnerKey = APartnerKey;
             FNewPartnerPartnerClass = APartnerClass;
+            FNewPartnerDefaultPartnerClass = ADefaultPartnerClass;
             FNewPartnerCountryCode = ACountryCode;
             FNewPartnerAcquisitionCode = AAcquisitionCode;
             FNewPartnerPrivatePartner = APrivatePartner;
@@ -673,12 +677,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AAcquisitionCode">AcquisitionCode that the Partner should have (optional,
         /// default: ''). If '' is passed in, the User's UserDefault setting will be
         /// used.</param>
+        /// <param name="ADefaultPartnerClass">The default Partner Class of the new partner (Family if not specified.)</param>
         public void SetParameters(TScreenMode AScreenMode,
             String APartnerClass,
             System.Int64 ASiteKey,
             System.Int64 APartnerKey,
             String ACountryCode,
-            String AAcquisitionCode)
+            String AAcquisitionCode,
+            string ADefaultPartnerClass = "FAMILY")
         {
             SetParameters(AScreenMode,
                 APartnerClass,
@@ -691,7 +697,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 -1,
                 -1,
                 true,
-                TPartnerEditTabPageEnum.petpDefault);
+                TPartnerEditTabPageEnum.petpDefault,
+                ADefaultPartnerClass);
         }
 
         /// <summary>
@@ -1085,6 +1092,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
+
                         TMessages.MsgSecurityException(Exp, this.GetType());
 
                         ReturnValue = false;
@@ -1095,30 +1103,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
+
                         TMessages.MsgDBConcurrencyException(Exp, this.GetType());
 
                         ReturnValue = false;
                         FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
-                    catch (Exception exp)
+                    catch (Exception)
                     {
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
-                        TLogging.Log(
-                            Catalog.GetString(
-                                "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
-                            TLoggingType.ToLogfile);
-                        MessageBox.Show(
-                            Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine +
-                            "For details see the log file: " + TLogging.GetLogFileName(),
-                            Catalog.GetString("Server connection error"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Stop);
 
-                        ReturnValue = false;
                         FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                        return ReturnValue;
+                        throw;
                     }
 
                     switch (SubmissionResult)
@@ -1200,6 +1198,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             // Update UserDefaults, if necessary
                             MaintainUserDefaults();
+
+                            if (SubmitDS.Tables.Contains(PPartnerTaxDeductiblePctTable.GetTableName()))
+                            {
+                                UpdateTaxDeductiblePct();
+                            }
 
                             // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
                             AInspectDS.AcceptChanges();
@@ -1581,6 +1584,260 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void UpdateTaxDeductiblePct()
+        {
+            decimal OriginalPct = 100;
+            decimal NewPct = 100;
+            DateTime OriginalValidFrom = DateTime.MinValue;
+            DateTime NewValidFrom = DateTime.MinValue;
+
+            // if a datarow already exists
+            if (FMainDS.PPartnerTaxDeductiblePct.Rows[0].HasVersion(DataRowVersion.Original))
+            {
+                OriginalPct = Convert.ToDecimal(
+                    FMainDS.PPartnerTaxDeductiblePct.Rows[0][PPartnerTaxDeductiblePctTable.GetPercentageTaxDeductibleDBName(),
+                                                             DataRowVersion.Original]);
+                OriginalValidFrom = Convert.ToDateTime(
+                    FMainDS.PPartnerTaxDeductiblePct.Rows[0][PPartnerTaxDeductiblePctTable.GetDateValidFromDBName(), DataRowVersion.Original]);
+            }
+
+            int i = 0;
+
+            // there will be either 0 or 1 rows that are not marked as deleted
+            while (FMainDS.PPartnerTaxDeductiblePct.Rows[i].RowState == DataRowState.Deleted
+                   && i < (FMainDS.PPartnerTaxDeductiblePct.Rows.Count - 1))
+            {
+                i++;
+            }
+
+            // if Tax Deductible Pct has not just been removed
+            if (FMainDS.PPartnerTaxDeductiblePct.Rows[i].HasVersion(DataRowVersion.Current))
+            {
+                NewPct = Convert.ToDecimal(
+                    FMainDS.PPartnerTaxDeductiblePct.Rows[i][PPartnerTaxDeductiblePctTable.GetPercentageTaxDeductibleDBName(),
+                                                             DataRowVersion.Current]);
+                NewValidFrom = Convert.ToDateTime(
+                    FMainDS.PPartnerTaxDeductiblePct.Rows[i][PPartnerTaxDeductiblePctTable.GetDateValidFromDBName(), DataRowVersion.Current]);
+            }
+
+            // if either pct or date has changed
+            if ((NewPct != OriginalPct) || (OriginalValidFrom != NewValidFrom))
+            {
+                DataTable GiftTotals;
+
+                // find gifts that could be affected by this change
+                if (TRemote.MFinance.Gift.WebConnectors.IsPartnerARecipient(FPartnerKey, out GiftTotals, NewPct, NewValidFrom))
+                {
+                    string StartMsg = string.Empty;
+                    string PermissionGifts = string.Empty;
+                    string NoPermissionGifts = string.Empty;
+                    bool UnpostedGifts = false;
+                    bool UnpostedGiftInLedgerWithNoPermission = false;
+                    bool PostedGifts = false;
+                    bool PostedGiftInLedgerWithNoPermission = false;
+
+                    // check what gifts we have - posted/unposted - ledger permission/no ledger permission
+                    foreach (DataRow Row in GiftTotals.Rows)
+                    {
+                        if (Convert.ToInt32(Row["Unposted"]) > 0)
+                        {
+                            if (UserInfo.GUserInfo.IsInLedger(Convert.ToInt32(Row["LedgerNumber"])))
+                            {
+                                UnpostedGifts = true;
+                            }
+                            else
+                            {
+                                UnpostedGiftInLedgerWithNoPermission = true;
+                            }
+                        }
+
+                        if (Convert.ToInt32(Row["Posted"]) > 0)
+                        {
+                            if (UserInfo.GUserInfo.IsInLedger(Convert.ToInt32(Row["LedgerNumber"])))
+                            {
+                                PostedGifts = true;
+                            }
+                            else
+                            {
+                                PostedGiftInLedgerWithNoPermission = true;
+                            }
+                        }
+                    }
+
+                    // if pct (and date) has changed
+                    if (NewPct != OriginalPct)
+                    {
+                        StartMsg = string.Format(Catalog.GetString("This partner's Tax Deductible Percentage has been changed from {0}% to {1}%."),
+                            OriginalPct.ToString("0.##"), NewPct.ToString("0.##"));
+                    }
+                    // if only date has changed
+                    else
+                    {
+                        StartMsg =
+                            string.Format(Catalog.GetString(
+                                    "This partner's Tax Deductible Percentage has been changed to {0}% for all gifts from {1}."),
+                                NewPct.ToString("0.##"), NewValidFrom.Date.ToString("dd-MMM-yyyy"));
+                    }
+
+                    /* Unposted gifts */
+
+                    if (UnpostedGifts || UnpostedGiftInLedgerWithNoPermission)
+                    {
+                        if (UnpostedGifts)
+                        {
+                            PermissionGifts = "\n\n" +
+                                              Catalog.GetString("Do you want to update all unposted gifts with this new percentage?") + "\n";
+                        }
+
+                        if (UnpostedGiftInLedgerWithNoPermission)
+                        {
+                            NoPermissionGifts = "\n\n" + Catalog.GetString(
+                                "Some unposted gifts cannot be auto updated with this new percentage as you do not have permission to access the ledger which they belong to."
+                                ) + "\n";
+                        }
+
+                        // add info on how many gifts belonging to which ledger
+                        foreach (DataRow Row in GiftTotals.Rows)
+                        {
+                            if ((Convert.ToInt32(Row["Unposted"]) > 0) && UserInfo.GUserInfo.IsInLedger(Convert.ToInt32(Row["LedgerNumber"])))
+                            {
+                                if (Convert.ToInt32(Row["Unposted"]) == 1)
+                                {
+                                    PermissionGifts += "\n" + "- " + string.Format(Catalog.GetString("1 unposted gift from Ledger {0}"),
+                                        Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                                else
+                                {
+                                    PermissionGifts += "\n" + "- " + string.Format(Catalog.GetString("{0} unposted gifts from Ledger {1}"),
+                                        Convert.ToInt32(Row["Unposted"]), Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                            }
+                            else if (Convert.ToInt32(Row["Unposted"]) > 0)
+                            {
+                                if (Convert.ToInt32(Row["Unposted"]) == 1)
+                                {
+                                    NoPermissionGifts += "\n" + "- " + string.Format(Catalog.GetString("1 unposted gift from Ledger {0}"),
+                                        Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                                else
+                                {
+                                    NoPermissionGifts += "\n" + "- " + string.Format(Catalog.GetString("{0} unposted gifts from Ledger {1}"),
+                                        Convert.ToInt32(Row["Unposted"]), Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                            }
+                        }
+
+                        // display a message box
+                        if (UnpostedGifts)
+                        {
+                            if (!string.IsNullOrEmpty(NoPermissionGifts))
+                            {
+                                NoPermissionGifts = "(" + NoPermissionGifts + ")";
+                            }
+
+                            if (MessageBox.Show(StartMsg + PermissionGifts + NoPermissionGifts,
+                                    Catalog.GetString("Tax Deductible Percentage Changed"),
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                            {
+                                // update unposted gifts
+                                TRemote.MFinance.Gift.WebConnectors.UpdateUnpostedGiftsTaxDeductiblePct(FPartnerKey, NewPct);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show(StartMsg + NoPermissionGifts,
+                                Catalog.GetString("Tax Deductible Percentage Changed"),
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                    }
+
+                    /* Posted gifts */
+
+                    if (PostedGifts || PostedGiftInLedgerWithNoPermission)
+                    {
+                        if (PostedGifts)
+                        {
+                            PermissionGifts = Environment.NewLine + Environment.NewLine +
+                                              string.Format(Catalog.GetString(
+                                    "Do you want to update all posted gifts from {0} with this new percentage?"),
+                                NewValidFrom.Date.ToString("dd-MMM-yyyy")) + Environment.NewLine;
+                        }
+
+                        if (PostedGiftInLedgerWithNoPermission)
+                        {
+                            NoPermissionGifts = Environment.NewLine + Environment.NewLine + Catalog.GetString(
+                                "Some posted gifts cannot be auto updated with this new percentage as you do not have permission to access the ledger which they belong to."
+                                ) + Environment.NewLine;
+                        }
+
+                        // add info on how many gifts belonging to which ledger
+                        foreach (DataRow Row in GiftTotals.Rows)
+                        {
+                            if ((Convert.ToInt32(Row["Posted"]) > 0) && UserInfo.GUserInfo.IsInLedger(Convert.ToInt32(Row["LedgerNumber"])))
+                            {
+                                if (Convert.ToInt32(Row["Posted"]) == 1)
+                                {
+                                    PermissionGifts += Environment.NewLine + "- " + string.Format(Catalog.GetString("1 posted gift from Ledger {0}"),
+                                        Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                                else
+                                {
+                                    PermissionGifts += Environment.NewLine + "- " +
+                                                       string.Format(Catalog.GetString("{0} posted gifts from Ledger {1}"),
+                                        Convert.ToInt32(Row["Posted"]), Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                            }
+                            else if (Convert.ToInt32(Row["Posted"]) > 0)
+                            {
+                                if (Convert.ToInt32(Row["Posted"]) == 1)
+                                {
+                                    NoPermissionGifts += Environment.NewLine + "- " + string.Format(Catalog.GetString("1 posted gift from Ledger {0}"),
+                                        Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                                else
+                                {
+                                    NoPermissionGifts += Environment.NewLine + "- " +
+                                                         string.Format(Catalog.GetString("{0} posted gifts from Ledger {1}"),
+                                        Convert.ToInt32(Row["Posted"]), Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                            }
+                        }
+
+                        // display a message box
+                        if (PostedGifts)
+                        {
+                            if (!string.IsNullOrEmpty(NoPermissionGifts))
+                            {
+                                NoPermissionGifts = "(" + NoPermissionGifts + ")";
+                            }
+
+                            TFrmExtendedMessageBox ExtendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
+
+                            if (ExtendedMessageBox.ShowDialog(StartMsg + PermissionGifts + NoPermissionGifts,
+                                    Catalog.GetString("Tax Deductible Percentage Changed"),
+                                    Catalog.GetString("Do not print the adjusting gift transactions on periodic receipts"),
+                                    TFrmExtendedMessageBox.TButtons.embbYesNo, TFrmExtendedMessageBox.TIcon.embiQuestion)
+                                == TFrmExtendedMessageBox.TResult.embrYes)
+                            {
+                                bool NoLabel;
+                                ExtendedMessageBox.GetResult(out NoLabel);
+
+                                // update posted gifts
+                                TCommonScreensForwarding.TaxDeductiblePctAdjust.Invoke(FPartnerKey, NewPct, NewValidFrom, NoLabel,
+                                    FPetraUtilsObject.GetForm());
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show(StartMsg + NoPermissionGifts,
+                                Catalog.GetString("Tax Deductible Percentage Changed"),
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                    }
+                }
+            }
+        }
+
         #endregion
 
 
@@ -1738,7 +1995,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // up to them would still be around and prevent a GC of the Form!
             FPetraUtilsObject.HookupAllControls();
 
-            ucoUpperPart.Focus();
+            ucoUpperPart.Select();
             this.Cursor = Cursors.Default;
 
 
@@ -2386,6 +2643,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                      */
                     if (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) == TPartnerClass.PERSON)
                     {
+                        if (FNewPartnerFamilyLocationKey == -1)
+                        {
+                            // Backstop: If FNewPartnerFamilyLocationKey was -1, the server will have returned the
+                            // 'Best Address' of the FAMILY in the DataSet. Now use this to create the first address of the
+                            // PERSON.
+                            FNewPartnerFamilyLocationKey = FMainDS.PPartnerLocation[0].LocationKey;
+                            FNewPartnerFamilySiteKey = FMainDS.PPartnerLocation[0].SiteKey;
+                        }
+
                         // Create Address by copying over most of the data from the Family's Address
                         try
                         {
@@ -2529,7 +2795,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     this.Cursor = Cursors.Default;
                     MessageBox.Show(
-                        "Partner with Partner Key " + FPartnerKey.ToString() + " does not exist.", "Nonexistant Partner!", MessageBoxButtons.OK,
+                        "Partner with Partner Key " + FPartnerKey.ToString() + " does not exist.", "Non-existent Partner!", MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
 
                     // for the modal dialog (called from Progress)
@@ -2547,7 +2813,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         "Location with " + Exp.Message + " does not (or no longer) exist." + "\r\n" + "\r\n" +
                         "If you tried to open the Partner from a Partner Find screen you might need to perform" + "\r\n" +
                         "the Search operation again to get valid Location(s) for this Partner.",
-                        "Nonexistant Location - Cannot Open Partner!",
+                        "Non-existent Location - Cannot Open Partner!",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
 
@@ -3146,7 +3412,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FNewPartnerPrivatePartner,
                 FNewPartnerFamilyPartnerKey,
                 FNewPartnerFamilyLocationKey,
-                FNewPartnerFamilySiteKey);
+                FNewPartnerFamilySiteKey,
+                FNewPartnerDefaultPartnerClass);
 
             if (NewPartnerDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
             {

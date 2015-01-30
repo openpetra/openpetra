@@ -388,24 +388,15 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// log the current stack trace; on Mono, that does not fully work
+        ///
         /// </summary>
-        /// <param name="ALoggingtype">destination of logging</param>
-        public static void LogStackTrace(TLoggingType ALoggingtype)
+        /// <param name="st"></param>
+        /// <returns></returns>
+        public static String StackTraceToText(StackTrace st)
         {
-            if (Utilities.DetermineExecutingCLR() == TExecutingCLREnum.eclrMono)
-            {
-                // not printing the stacktrace since that could cause an exception
-                return;
-            }
-
-            StackTrace st;
             StackFrame sf;
             Int32 Counter;
-            String msg;
-
-            st = new StackTrace(true);
-            msg = "";
+            String msg = "";
 
             for (Counter = 0; Counter <= st.FrameCount - 1; Counter += 1)
             {
@@ -425,6 +416,23 @@ namespace Ict.Common
 
                 msg = msg + Environment.NewLine;
             }
+
+            return msg;
+        }
+
+        /// <summary>
+        /// log the current stack trace; on Mono, that does not fully work
+        /// </summary>
+        /// <param name="ALoggingtype">destination of logging</param>
+        public static void LogStackTrace(TLoggingType ALoggingtype)
+        {
+            if (Utilities.DetermineExecutingCLR() == TExecutingCLREnum.eclrMono)
+            {
+                // not printing the stacktrace since that could cause an exception
+                return;
+            }
+
+            String msg = StackTraceToText(new StackTrace(true));
 
             msg = msg + "in Appdomain " + AppDomain.CurrentDomain.FriendlyName + Environment.NewLine;
             TLogging.Log(msg, ALoggingtype);

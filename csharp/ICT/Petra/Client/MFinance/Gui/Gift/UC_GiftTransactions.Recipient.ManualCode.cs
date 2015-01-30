@@ -280,12 +280,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                string NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
-                    ARecipientKey,
-                    ACurrentDetailRow.RecipientLedgerNumber,
-                    ACurrentDetailRow.DateEntered,
-                    AMotivationGroup,
-                    AMotivationDetail);
+                string NewCCCode = string.Empty;
+
+                // it is possible that there are no active motivation details and so AMotivationDetail is blank
+                if (!string.IsNullOrEmpty(AMotivationDetail))
+                {
+                    NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
+                        ARecipientKey,
+                        ACurrentDetailRow.RecipientLedgerNumber,
+                        ACurrentDetailRow.DateEntered,
+                        AMotivationGroup,
+                        AMotivationDetail);
+                }
 
                 if (ATxtDetailCostCentreCode.Text != NewCCCode)
                 {
@@ -344,25 +350,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ACurrentDetailRow.RecipientKey = APartnerKey;
                 ACurrentDetailRow.RecipientDescription = APartnerShortName;
 
-                // do not want to update motivation comboboxes if recipient key is being changed due to a new gift or the motivation detail being changed
-                if (!AMotivationDetailChangedFlag && !ACreatingNewGiftFlag
-                    && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(APartnerKey, ref AMotivationGroup, ref AMotivationDetail))
-                {
-                    if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
-                    {
-                        // note - this will also update the Motivation Detail
-                        ACmbMotivationGroupCode.SetSelectedString(AMotivationGroup);
-                    }
-
-                    if (AMotivationDetail != ACmbMotivationDetailCode.GetSelectedString())
-                    {
-                        ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
-                    }
-
-                    ACurrentDetailRow.MotivationGroupCode = AMotivationGroup;
-                    ACurrentDetailRow.MotivationDetailCode = AMotivationDetail;
-                }
-
                 APetraUtilsObject.SuppressChangeDetection = true;
 
                 //Set RecipientLedgerNumber
@@ -386,6 +373,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         AMotivationDetailChangedFlag);
                     ADoValidateGiftDestination = true;
                 }
+
+                APetraUtilsObject.SuppressChangeDetection = false;
+
+                // do not want to update motivation comboboxes if recipient key is being changed due to a new gift or the motivation detail being changed
+                if (!AMotivationDetailChangedFlag && !ACreatingNewGiftFlag
+                    && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(APartnerKey, ref AMotivationGroup, ref AMotivationDetail))
+                {
+                    if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
+                    {
+                        // note - this will also update the Motivation Detail
+                        ACmbMotivationGroupCode.SetSelectedString(AMotivationGroup);
+                    }
+
+                    if (AMotivationDetail != ACmbMotivationDetailCode.GetSelectedString())
+                    {
+                        ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
+                    }
+
+                    ACurrentDetailRow.MotivationGroupCode = AMotivationGroup;
+                    ACurrentDetailRow.MotivationDetailCode = AMotivationDetail;
+                }
+
+                APetraUtilsObject.SuppressChangeDetection = true;
 
                 if (APartnerKey > 0)
                 {
@@ -431,12 +441,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            string NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
-                ACurrentDetailRow.RecipientKey,
-                ACurrentDetailRow.RecipientLedgerNumber,
-                ACurrentDetailRow.DateEntered,
-                ACurrentDetailRow.MotivationGroupCode,
-                ACurrentDetailRow.MotivationDetailCode);
+            string NewCCCode = string.Empty;
+
+            // it is possible that there are no active motivation details and so AMotivationDetail is blank
+            if (!string.IsNullOrEmpty(ACurrentDetailRow.MotivationDetailCode))
+            {
+                NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
+                    ACurrentDetailRow.RecipientKey,
+                    ACurrentDetailRow.RecipientLedgerNumber,
+                    ACurrentDetailRow.DateEntered,
+                    ACurrentDetailRow.MotivationGroupCode,
+                    ACurrentDetailRow.MotivationDetailCode);
+            }
 
             if (ATxtDetailCostCentreCode.Text != NewCCCode)
             {

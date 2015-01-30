@@ -110,8 +110,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtMergeFrom.ShowLabel = true;
             txtMergeTo.ShowLabel = true;
 
-            txtMergeFrom.ReadOnly = true;
-            txtMergeTo.ReadOnly = true;
+            txtMergeFrom.TextBoxPartEnabled = false;
+            txtMergeTo.TextBoxPartEnabled = false;
 
             btnOK.Enabled = false;
         }

@@ -13,7 +13,7 @@
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION:BLANK
-        READCONTROLSLOCALVARS: BLANK
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
         SETCONTROLSLOCALVARS: BLANK
         REPORTSETTINGSDIRECTORY: Finance
     Security:
@@ -23,12 +23,16 @@
             Label: General Settings
             Controls: [grpReportType, grpDateSelection, rgrRecipientSelection, grpCurrencySelection]
             
+        tpgReportSorting:
+            Label: Sorting
+            Controls: [rgrSorting]
         tpgColumnSettings:
             Label: Column Settings
             Controls: [uco_Columns]
         uco_Columns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
             Dock: Fill
+
         grpReportType:
             Label: Report Type
             Stretch: horizontally
@@ -46,6 +50,14 @@
             Label: Select Currency
             Stretch: horizontally
             Controls: [cmbCurrency]
+   
+        rgrSorting: {ParameterName=param_order_by_name}
+            Label: Sorting
+            Controls: [rbtRecipientField, rbtRecipientKey, rbtRecipientName]
+        rbtRecipientField:
+        rbtRecipientKey:
+        rbtRecipientName:
+
         cmbReportType:
             ParameterName: param_report_type
             OptionalValues: [=Complete, Gifts Only, Donors Only, List, Email]
@@ -59,14 +71,17 @@
         rbtAllRecipients:
             Label: All Recipients
             ParameterValue: All Recipients
+            OnChange: RecipientSelectionChanged
         rbtExtract:
             Label: From Extract
             ParameterValue: Extract
             Controls: [txtExtract]
+            OnChange: RecipientSelectionChanged
         rbtPartner:
             Label: One Recipient
             ParameterValue: One Recipient
             Controls: [txtRecipient]
+            OnChange: RecipientSelectionChanged
         txtExtract:
             NoLabel: true
             Type: Extract

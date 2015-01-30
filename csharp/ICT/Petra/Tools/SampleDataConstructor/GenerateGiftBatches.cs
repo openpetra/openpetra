@@ -172,193 +172,191 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             GiftBatchTDS MainDS = new GiftBatchTDS();
             ALedgerTable LedgerTable = null;
 
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction ReadTransaction = null;
 
-            try
-            {
-                // get a list of potential donors (all class FAMILY)
-                string sqlGetFamilyPartnerKeys = "SELECT p_partner_key_n FROM PUB_p_family";
-                DataTable FamilyKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFamilyPartnerKeys, "keys", ReadTransaction);
-
-                // get a list of workers (all class FAMILY, with special type WORKER)
-                string sqlGetWorkerPartnerKeys =
-                    "SELECT PUB_p_family.p_partner_key_n FROM PUB_p_family, PUB_p_partner_type WHERE PUB_p_partner_type.p_partner_key_n = PUB_p_family.p_partner_key_n AND p_type_code_c = 'WORKER'";
-                DataTable WorkerKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetWorkerPartnerKeys, "keys", ReadTransaction);
-
-                // get a list of fields (all class UNIT, with unit type F)
-                string sqlGetFieldPartnerKeys =
-                    String.Format(
-                        "SELECT U.p_partner_key_n FROM PUB_p_unit U WHERE u_unit_type_code_c = 'F' AND EXISTS (SELECT * FROM PUB_a_valid_ledger_number V WHERE V.a_ledger_number_i = {0} AND V.p_partner_key_n = U.p_partner_key_n)",
-                        FLedgerNumber);
-                DataTable FieldKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFieldPartnerKeys, "keys", ReadTransaction);
-
-                // get a list of key ministries (all class UNIT, with unit type KEY-MIN), and their field ledger number and cost centre code
-                string sqlGetKeyMinPartnerKeys =
-                    "SELECT u.p_partner_key_n, us.um_parent_unit_key_n, vl.a_cost_centre_code_c " +
-                    "FROM PUB_p_unit u, PUB_um_unit_structure us, PUB_a_valid_ledger_number vl " +
-                    "WHERE u.u_unit_type_code_c = 'KEY-MIN' " +
-                    "AND us.um_child_unit_key_n = u.p_partner_key_n " +
-                    "AND vl.p_partner_key_n = us.um_parent_unit_key_n " +
-                    "AND vl.a_ledger_number_i = " + FLedgerNumber.ToString();
-                DataTable KeyMinistries = DBAccess.GDBAccessObj.SelectDT(sqlGetKeyMinPartnerKeys, "keys", ReadTransaction);
-
-                LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, ReadTransaction);
-
-                AAccountingPeriodRow AccountingPeriodRow = AAccountingPeriodAccess.LoadByPrimaryKey(FLedgerNumber, APeriodNumber, ReadTransaction)[0];
-
-                // create a gift batch for each day.
-                // TODO: could create one batch per month, if there are not so many gifts (less than 100 per month)
-                foreach (DateTime GlEffectiveDate in AGiftsPerDate.Keys)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
                 {
-                    if ((GlEffectiveDate.CompareTo(AccountingPeriodRow.PeriodStartDate) < 0)
-                        || (GlEffectiveDate.CompareTo(AccountingPeriodRow.PeriodEndDate) > 0))
+                    // get a list of potential donors (all class FAMILY)
+                    string sqlGetFamilyPartnerKeys = "SELECT p_partner_key_n FROM PUB_p_family";
+                    DataTable FamilyKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFamilyPartnerKeys,
+                        "keys",
+                        ReadTransaction);
+
+                    // get a list of workers (all class FAMILY, with special type WORKER)
+                    string sqlGetWorkerPartnerKeys =
+                        "SELECT PUB_p_family.p_partner_key_n FROM PUB_p_family, PUB_p_partner_type WHERE PUB_p_partner_type.p_partner_key_n = PUB_p_family.p_partner_key_n AND p_type_code_c = 'WORKER'";
+                    DataTable WorkerKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetWorkerPartnerKeys, "keys", ReadTransaction);
+
+                    // get a list of fields (all class UNIT, with unit type F)
+                    string sqlGetFieldPartnerKeys =
+                        String.Format(
+                            "SELECT U.p_partner_key_n FROM PUB_p_unit U WHERE u_unit_type_code_c = 'F' AND EXISTS (SELECT * FROM PUB_a_valid_ledger_number V WHERE V.a_ledger_number_i = {0} AND V.p_partner_key_n = U.p_partner_key_n)",
+                            FLedgerNumber);
+                    DataTable FieldKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFieldPartnerKeys, "keys", ReadTransaction);
+
+                    // get a list of key ministries (all class UNIT, with unit type KEY-MIN), and their field ledger number and cost centre code
+                    string sqlGetKeyMinPartnerKeys =
+                        "SELECT u.p_partner_key_n, us.um_parent_unit_key_n, vl.a_cost_centre_code_c " +
+                        "FROM PUB_p_unit u, PUB_um_unit_structure us, PUB_a_valid_ledger_number vl " +
+                        "WHERE u.u_unit_type_code_c = 'KEY-MIN' " +
+                        "AND us.um_child_unit_key_n = u.p_partner_key_n " +
+                        "AND vl.p_partner_key_n = us.um_parent_unit_key_n " +
+                        "AND vl.a_ledger_number_i = " + FLedgerNumber.ToString();
+                    DataTable KeyMinistries = DBAccess.GDBAccessObj.SelectDT(sqlGetKeyMinPartnerKeys, "keys", ReadTransaction);
+
+                    LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, ReadTransaction);
+
+                    AAccountingPeriodRow AccountingPeriodRow = AAccountingPeriodAccess.LoadByPrimaryKey(FLedgerNumber,
+                        APeriodNumber,
+                        ReadTransaction)[0];
+
+                    // create a gift batch for each day.
+                    // TODO: could create one batch per month, if there are not so many gifts (less than 100 per month)
+                    foreach (DateTime GlEffectiveDate in AGiftsPerDate.Keys)
                     {
-                        // only create gifts in that period
-                        continue;
-                    }
-
-                    AGiftBatchRow giftBatch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS,
-                        ref ReadTransaction,
-                        ref LedgerTable,
-                        FLedgerNumber,
-                        GlEffectiveDate);
-
-                    TLogging.LogAtLevel(1, "create gift batch for " + GlEffectiveDate.ToShortDateString());
-                    giftBatch.BatchDescription = "Benerator Batch for " + GlEffectiveDate.ToShortDateString();
-                    giftBatch.BatchTotal = 0.0m;
-
-                    foreach (XmlNode RecordNode in AGiftsPerDate[GlEffectiveDate])
-                    {
-                        AGiftRow gift = MainDS.AGift.NewRowTyped();
-                        gift.LedgerNumber = giftBatch.LedgerNumber;
-                        gift.BatchNumber = giftBatch.BatchNumber;
-                        gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
-                        gift.DateEntered = GlEffectiveDate;
-
-                        // set donorKey
-                        int donorID = Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "donor")) % FamilyKeys.Rows.Count;
-                        gift.DonorKey = Convert.ToInt64(FamilyKeys.Rows[donorID].ItemArray[0]);
-
-                        // calculate gift detail information
-                        int countDetails = Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "splitgift"));
-
-                        for (int counter = 1; counter <= countDetails; counter++)
+                        if ((GlEffectiveDate.CompareTo(AccountingPeriodRow.PeriodStartDate) < 0)
+                            || (GlEffectiveDate.CompareTo(AccountingPeriodRow.PeriodEndDate) > 0))
                         {
-                            AGiftDetailRow giftDetail = MainDS.AGiftDetail.NewRowTyped();
-                            giftDetail.LedgerNumber = gift.LedgerNumber;
-                            giftDetail.BatchNumber = gift.BatchNumber;
-                            giftDetail.GiftTransactionNumber = gift.GiftTransactionNumber;
-
-                            giftDetail.MotivationGroupCode = "GIFT";
-                            giftDetail.GiftTransactionAmount = Convert.ToDecimal(TXMLParser.GetAttribute(RecordNode, "amount_" + counter.ToString()));
-                            giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
-                            giftBatch.BatchTotal += giftDetail.GiftAmount;
-
-                            string motivation = TXMLParser.GetAttribute(RecordNode, "motivation_" + counter.ToString());
-
-                            if (motivation == "SUPPORT")
-                            {
-                                if (WorkerKeys.Rows.Count == 0)
-                                {
-                                    continue;
-                                }
-
-                                giftDetail.MotivationDetailCode = "SUPPORT";
-                                int recipientID =
-                                    Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "recipient_support_" +
-                                            counter.ToString())) % WorkerKeys.Rows.Count;
-                                giftDetail.RecipientKey = Convert.ToInt64(WorkerKeys.Rows[recipientID].ItemArray[0]);
-
-                                giftDetail.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(giftDetail.RecipientKey,
-                                    giftBatch.GlEffectiveDate);
-
-                                // ignore this gift detail, if there is no valid commitment period for the worker
-                                if (giftDetail.RecipientLedgerNumber == 0)
-                                {
-                                    continue;
-                                }
-                            }
-                            else if (motivation == "FIELD")
-                            {
-                                if (FieldKeys.Rows.Count == 0)
-                                {
-                                    continue;
-                                }
-
-                                giftDetail.MotivationDetailCode = "FIELD";
-                                int recipientID =
-                                    Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "recipient_field_" +
-                                            counter.ToString())) % FieldKeys.Rows.Count;
-                                giftDetail.RecipientKey = Convert.ToInt64(FieldKeys.Rows[recipientID].ItemArray[0]);
-                                giftDetail.RecipientLedgerNumber = giftDetail.RecipientKey;
-                                giftDetail.CostCentreCode = (giftDetail.RecipientKey / 10000).ToString("0000");
-                            }
-                            else if (motivation == "KEYMIN")
-                            {
-                                if (KeyMinistries.Rows.Count == 0)
-                                {
-                                    continue;
-                                }
-
-                                giftDetail.MotivationDetailCode = "KEYMIN";
-                                int recipientID =
-                                    Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "recipient_keymin_" +
-                                            counter.ToString())) % KeyMinistries.Rows.Count;
-                                giftDetail.RecipientKey = Convert.ToInt64(KeyMinistries.Rows[recipientID].ItemArray[0]);
-
-                                giftDetail.RecipientLedgerNumber = Convert.ToInt64(KeyMinistries.Rows[recipientID].ItemArray[1]);
-                                // TTransactionWebConnector.GetRecipientFundNumber(giftDetail.RecipientKey);
-                                giftDetail.CostCentreCode = KeyMinistries.Rows[recipientID].ItemArray[2].ToString();
-                                // TTransactionWebConnector.IdentifyPartnerCostCentre(FLedgerNumber, giftDetail.RecipientLedgerNumber);
-                            }
-
-                            giftDetail.DetailNumber = gift.LastDetailNumber + 1;
-                            MainDS.AGiftDetail.Rows.Add(giftDetail);
-                            gift.LastDetailNumber = giftDetail.DetailNumber;
+                            // only create gifts in that period
+                            continue;
                         }
 
-                        if (gift.LastDetailNumber > 0)
+                        AGiftBatchRow giftBatch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS,
+                            ref ReadTransaction,
+                            ref LedgerTable,
+                            FLedgerNumber,
+                            GlEffectiveDate);
+
+                        TLogging.LogAtLevel(1, "create gift batch for " + GlEffectiveDate.ToShortDateString());
+                        giftBatch.BatchDescription = "Benerator Batch for " + GlEffectiveDate.ToShortDateString();
+                        giftBatch.BatchTotal = 0.0m;
+
+                        foreach (XmlNode RecordNode in AGiftsPerDate[GlEffectiveDate])
                         {
-                            MainDS.AGift.Rows.Add(gift);
-                            giftBatch.LastGiftNumber = gift.GiftTransactionNumber;
+                            AGiftRow gift = MainDS.AGift.NewRowTyped();
+                            gift.LedgerNumber = giftBatch.LedgerNumber;
+                            gift.BatchNumber = giftBatch.BatchNumber;
+                            gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
+                            gift.DateEntered = GlEffectiveDate;
+
+                            // set donorKey
+                            int donorID = Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "donor")) % FamilyKeys.Rows.Count;
+                            gift.DonorKey = Convert.ToInt64(FamilyKeys.Rows[donorID].ItemArray[0]);
+
+                            // calculate gift detail information
+                            int countDetails = Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "splitgift"));
+
+                            for (int counter = 1; counter <= countDetails; counter++)
+                            {
+                                AGiftDetailRow giftDetail = MainDS.AGiftDetail.NewRowTyped();
+                                giftDetail.LedgerNumber = gift.LedgerNumber;
+                                giftDetail.BatchNumber = gift.BatchNumber;
+                                giftDetail.GiftTransactionNumber = gift.GiftTransactionNumber;
+
+                                giftDetail.MotivationGroupCode = "GIFT";
+                                giftDetail.GiftTransactionAmount = Convert.ToDecimal(TXMLParser.GetAttribute(RecordNode, "amount_" + counter.ToString()));
+                                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
+                                giftBatch.BatchTotal += giftDetail.GiftAmount;
+
+                                string motivation = TXMLParser.GetAttribute(RecordNode, "motivation_" + counter.ToString());
+
+                                if (motivation == "SUPPORT")
+                                {
+                                    if (WorkerKeys.Rows.Count == 0)
+                                    {
+                                        continue;
+                                    }
+
+                                    giftDetail.MotivationDetailCode = "SUPPORT";
+                                    int recipientID =
+                                        Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "recipient_support_" +
+                                                counter.ToString())) % WorkerKeys.Rows.Count;
+                                    giftDetail.RecipientKey = Convert.ToInt64(WorkerKeys.Rows[recipientID].ItemArray[0]);
+
+                                    giftDetail.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(giftDetail.RecipientKey,
+                                        giftBatch.GlEffectiveDate);
+
+                                    // ignore this gift detail, if there is no valid commitment period for the worker
+                                    if (giftDetail.RecipientLedgerNumber == 0)
+                                    {
+                                        continue;
+                                    }
+                                }
+                                else if (motivation == "FIELD")
+                                {
+                                    if (FieldKeys.Rows.Count == 0)
+                                    {
+                                        continue;
+                                    }
+
+                                    giftDetail.MotivationDetailCode = "FIELD";
+                                    int recipientID =
+                                        Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "recipient_field_" +
+                                                counter.ToString())) % FieldKeys.Rows.Count;
+                                    giftDetail.RecipientKey = Convert.ToInt64(FieldKeys.Rows[recipientID].ItemArray[0]);
+                                    giftDetail.RecipientLedgerNumber = giftDetail.RecipientKey;
+                                    giftDetail.CostCentreCode = (giftDetail.RecipientKey / 10000).ToString("0000");
+                                }
+                                else if (motivation == "KEYMIN")
+                                {
+                                    if (KeyMinistries.Rows.Count == 0)
+                                    {
+                                        continue;
+                                    }
+
+                                    giftDetail.MotivationDetailCode = "KEYMIN";
+                                    int recipientID =
+                                        Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "recipient_keymin_" +
+                                                counter.ToString())) % KeyMinistries.Rows.Count;
+                                    giftDetail.RecipientKey = Convert.ToInt64(KeyMinistries.Rows[recipientID].ItemArray[0]);
+
+                                    giftDetail.RecipientLedgerNumber = Convert.ToInt64(KeyMinistries.Rows[recipientID].ItemArray[1]);
+                                    // TTransactionWebConnector.GetRecipientFundNumber(giftDetail.RecipientKey);
+                                    giftDetail.CostCentreCode = KeyMinistries.Rows[recipientID].ItemArray[2].ToString();
+                                    // TTransactionWebConnector.IdentifyPartnerCostCentre(FLedgerNumber, giftDetail.RecipientLedgerNumber);
+                                }
+
+                                giftDetail.DetailNumber = gift.LastDetailNumber + 1;
+                                MainDS.AGiftDetail.Rows.Add(giftDetail);
+                                gift.LastDetailNumber = giftDetail.DetailNumber;
+                            }
+
+                            if (gift.LastDetailNumber > 0)
+                            {
+                                MainDS.AGift.Rows.Add(gift);
+                                giftBatch.LastGiftNumber = gift.GiftTransactionNumber;
+                            }
+
+                            if (giftBatch.LastGiftNumber >= MaxGiftsPerBatch)
+                            {
+                                break;
+                            }
                         }
 
-                        if (giftBatch.LastGiftNumber >= MaxGiftsPerBatch)
+                        if (TLogging.DebugLevel > 0)
                         {
-                            break;
+                            TLogging.Log(
+                                GlEffectiveDate.ToShortDateString() + " " + giftBatch.LastGiftNumber.ToString());
                         }
                     }
-
-                    if (TLogging.DebugLevel > 0)
-                    {
-                        TLogging.Log(
-                            GlEffectiveDate.ToShortDateString() + " " + giftBatch.LastGiftNumber.ToString());
-                    }
-                }
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                });
 
             // need to save the last gift batch number in a_ledger
             if (LedgerTable != null)
             {
-                TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                TDBTransaction WriteTransaction = null;
+                bool SubmissionOk = false;
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref WriteTransaction, ref SubmissionOk,
+                    delegate
+                    {
+                        ALedgerAccess.SubmitChanges(LedgerTable, WriteTransaction);
+                        SubmissionOk = true;
+                    });
 
-                try
+                if (!SubmissionOk)
                 {
-                    ALedgerAccess.SubmitChanges(LedgerTable, WriteTransaction);
-
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                catch (Exception Exc)
-                {
-                    TLogging.Log("An Exception occured during the creation of Gift Batches:" + Environment.NewLine + Exc.ToString());
-
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-
-                    throw;
+                    TLogging.Log("An Exception occured during the creation of Gift Batches" + Environment.NewLine);
                 }
             }
 

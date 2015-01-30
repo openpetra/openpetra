@@ -376,6 +376,22 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Gets or sets whether the TextBox part of the Control is Enabled.
+        /// </summary>
+        public bool TextBoxPartEnabled
+        {
+            get
+            {
+                return this.txtTextBox.Enabled;
+            }
+
+            set
+            {
+                this.txtTextBox.Enabled = value;
+            }
+        }
+
+        /// <summary>
         /// todoComment
         /// </summary>
         public String TextBoxLookUpMember

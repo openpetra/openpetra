@@ -137,6 +137,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             BuildValidationControlsDict();
 
+            // Ensure that the Worker Field Panel (and thus the Button on it) always comes last in the Tab Order
+            pnlWorkerField.TabIndex = 999;
+
             #region Show fields according to Partner Class
 
             txtPartnerKey.PartnerClass = FPartnerClass;
@@ -162,6 +165,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     txtPartnerClass.BackColor = TCommonControlsHelper.PartnerClassPERSONColour;
 
+                    // Ensure that the Text in the first TextBox isn't all selected when the Form is brought up
+                    txtPersonTitle.SelectionStart = 0;
+
                     break;
 
                 case TPartnerClass.FAMILY:
@@ -178,6 +184,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtFamilyFirstName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     txtFamilyFamilyName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 
+                    // Ensure that the Text in the first TextBox isn't all selected when the Form is brought up
+                    txtFamilyTitle.SelectionStart = 0;
+
                     break;
 
                 case TPartnerClass.CHURCH:
@@ -186,6 +195,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     txtChurchName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 
+                    // Ensure that the Text in the first TextBox isn't all selected when the Form is brought up
+                    txtChurchName.SelectionStart = 0;
+
                     break;
 
                 case TPartnerClass.ORGANISATION:
@@ -193,6 +205,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     pnlOther2ndLine.Visible = true;
 
                     txtOrganisationName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
+
+                    // Ensure that the Text in the first TextBox isn't all selected when the Form is brought up
+                    txtOrganisationName.SelectionStart = 0;
 
                     break;
 
@@ -203,6 +218,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtUnitName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     FMainDS.PUnit.ColumnChanging += new DataColumnChangeEventHandler(OnUnitDataColumnChanging);
 
+                    // Ensure that the Text in the first TextBox isn't all selected when the Form is brought up
+                    txtUnitName.SelectionStart = 0;
+
                     break;
 
                 case TPartnerClass.BANK:
@@ -211,6 +229,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     txtBranchName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 
+                    // Ensure that the Text in the first TextBox isn't all selected when the Form is brought up
+                    txtBranchName.SelectionStart = 0;
+
                     break;
 
                 case TPartnerClass.VENUE:
@@ -218,6 +239,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     pnlOther2ndLine.Visible = true;
 
                     txtVenueName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
+
+                    // Ensure that the Text in the first TextBox isn't all selected when the Form is brought up
+                    txtVenueName.SelectionStart = 0;
 
                     break;
 

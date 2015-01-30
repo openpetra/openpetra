@@ -229,7 +229,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (ASourceTable.Columns.Contains("p_family_key_n"))
                 {
-                    FDataGrid.AddTextColumn("Family Key", ASourceTable.Columns["p_family_key_n"]);
+                    FDataGrid.AddPartnerKeyColumn("Family Key", ASourceTable.Columns["p_family_key_n"]);
                 }
 
                 if (!ASearchForActivePartners)

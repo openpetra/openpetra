@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private TFrmGLAccountHierarchy FParentForm = null;
         private TreeNode HighlightedDropTarget = null;
         // The account selected in the parent form
-        AccountNodeDetails FSelectedAccount;
+        private AccountNodeDetails FSelectedAccount;
         Boolean FDuringInitialisation = false;
 
         /// <summary>
@@ -68,8 +68,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         public void RefreshSelectedAccount()
         {
-            trvAccounts.Focus(); // {NET Bug!} The control doesn't show the selection if it's not visible and in focus.
-
             if (FSelectedAccount != null)
             {
                 trvAccounts.SelectedNode = FSelectedAccount.linkedTreeNode;
@@ -87,6 +85,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             set
             {
+                trvAccounts.Focus(); // {NET Bug!} The control doesn't show the selection if it's not visible and in focus.
+                                     // But it's also a pain doing this - it causes validation of the existing controls.
+
                 FSelectedAccount = value;
                 RefreshSelectedAccount();
             }

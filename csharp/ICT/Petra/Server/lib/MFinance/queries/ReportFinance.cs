@@ -40,140 +40,124 @@ namespace Ict.Petra.Server.MFinance.queries
     /// </summary>
     public class QueryFinanceReport
     {
-        /// <summary>
-        /// get all gifts for the current costcentre and account
-        /// </summary>
-        public static DataTable HosaCalculateGifts(TParameterList AParameters, TResultList AResults)
-        {
-            SortedList <string, string>Defines = new SortedList <string, string>();
-            List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
-
-            try
-            {
-                if (AParameters.Get("param_filter_cost_centres").ToString() == "PersonalCostcentres")
-                {
-                    Defines.Add("PERSONALHOSA", "true");
-                }
-
-                SqlParameterList.Add(new OdbcParameter("ledgernumber", OdbcType.Decimal)
-                    {
-                        Value = AParameters.Get("param_ledger_number_i").ToDecimal()
-                    });
-                SqlParameterList.Add(new OdbcParameter("costcentre", OdbcType.VarChar)
-                    {
-                        Value = AParameters.Get("line_a_cost_centre_code_c")
-                    });
-
-                if (AParameters.Get("param_ich_number").ToInt32() == 0)
-                {
-                    Defines.Add("NOT_LIMITED_TO_ICHNUMBER", "true");
-                }
-                else
-                {
-                    SqlParameterList.Add(new OdbcParameter("ichnumber", OdbcType.Int)
-                        {
-                            Value = AParameters.Get("param_ich_number").ToInt32()
-                        });
-                }
-
-                SqlParameterList.Add(new OdbcParameter("batchstatus", OdbcType.VarChar)
-                    {
-                        Value = MFinanceConstants.BATCH_POSTED
-                    });
-
-                if (AParameters.Get("param_period").ToBool() == true)
-                {
-                    Defines.Add("BYPERIOD", "true");
-                    SqlParameterList.Add(new OdbcParameter("batchyear", OdbcType.Int)
-                        {
-                            Value = AParameters.Get("param_year_i").ToInt32()
-                        });
-                    SqlParameterList.Add(new OdbcParameter("batchperiod_start", OdbcType.Int)
-                        {
-                            Value = AParameters.Get("param_start_period_i").ToInt32()
-                        });
-                    SqlParameterList.Add(new OdbcParameter("batchperiod_end", OdbcType.Int)
-                        {
-                            Value = AParameters.Get("param_end_period_i").ToInt32()
-                        });
-                }
-                else
-                {
-                    SqlParameterList.Add(new OdbcParameter("param_start_date", OdbcType.Int)
-                        {
-                            Value = AParameters.Get("param_start_date").ToInt32()
-                        });
-                    SqlParameterList.Add(new OdbcParameter("param_end_date", OdbcType.Int)
-                        {
-                            Value = AParameters.Get("param_end_date").ToInt32()
-                        });
-                }
-
-                SqlParameterList.Add(new OdbcParameter("accountcode", OdbcType.VarChar)
-                    {
-                        Value = AParameters.Get("line_a_account_code_c")
-                    });
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("problem while preparing sql statement for HOSA report: " + e.ToString());
-                return null;
-            }
-
-            string SqlStmt = TDataBase.ReadSqlFile("ICH.HOSAReportGiftSummary.sql", Defines);
-            Boolean NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            try
-            {
-                // now run the database query
-                DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "result", Transaction,
-                    SqlParameterList.ToArray());
-
-                // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
-                if (AParameters.Get("CancelReportCalculation").ToBool() == true)
-                {
-                    return null;
-                }
-
-                resultTable.Columns.Add("a_transaction_amount_n", typeof(Decimal));
-                resultTable.Columns.Add("a_amount_in_base_currency_n", typeof(Decimal));
-                resultTable.Columns.Add("a_amount_in_intl_currency_n", typeof(Decimal));
-                resultTable.Columns.Add("a_reference_c", typeof(string));
-                resultTable.Columns.Add("a_narrative_c", typeof(string));
-
-                Boolean InternationalCurrency = AParameters.Get("param_currency").ToString() == "International";
-                Double ExchangeRate = 1.00;  // TODO Get exchange rate!
-
-                foreach (DataRow r in resultTable.Rows)
-                {
-                    r["a_transaction_amount_n"] = Convert.ToDecimal(r["GiftTransactionAmount"]);
-                    r["a_amount_in_base_currency_n"] = Convert.ToDecimal(r["GiftBaseAmount"]);
-
-                    if (InternationalCurrency)
-                    {
-                        r["a_amount_in_intl_currency_n"] = (Decimal)(Convert.ToDouble(r["GiftBaseAmount"]) * ExchangeRate);
-                    }
-
-                    r["a_reference_c"] = StringHelper.PartnerKeyToStr(Convert.ToInt64(r["RecipientKey"]));
-                    r["a_narrative_c"] = r["RecipientShortname"].ToString();
-                }
-
-                return resultTable;
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-                return null;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-        }
+        /*
+         * Not used
+         * /// <summary>
+         * /// get all gifts for the current costcentre and account
+         * /// </summary>
+         * public static DataTable HosaCalculateGifts(TParameterList AParameters, TResultList AResults)
+         * {
+         *  SortedList<string, string> Defines = new SortedList<string, string>();
+         *  List<OdbcParameter> SqlParameterList = new List<OdbcParameter>();
+         *
+         *  if (AParameters.Get("param_filter_cost_centres").ToString() == "PersonalCostcentres")
+         *  {
+         *      Defines.Add("PERSONALHOSA", "true");
+         *  }
+         *
+         *  SqlParameterList.Add(new OdbcParameter("ledgernumber", OdbcType.Decimal)
+         *      {
+         *          Value = AParameters.Get("param_ledger_number_i").ToDecimal()
+         *      });
+         *  SqlParameterList.Add(new OdbcParameter("costcentre", OdbcType.VarChar)
+         *      {
+         *          Value = AParameters.Get("line_a_cost_centre_code_c")
+         *      });
+         *
+         *  if (AParameters.Get("param_ich_number").ToInt32() == 0)
+         *  {
+         *      Defines.Add("NOT_LIMITED_TO_ICHNUMBER", "true");
+         *  }
+         *  else
+         *  {
+         *      SqlParameterList.Add(new OdbcParameter("ichnumber", OdbcType.Int)
+         *          {
+         *              Value = AParameters.Get("param_ich_number").ToInt32()
+         *          });
+         *  }
+         *
+         *  SqlParameterList.Add(new OdbcParameter("batchstatus", OdbcType.VarChar)
+         *      {
+         *          Value = MFinanceConstants.BATCH_POSTED
+         *      });
+         *
+         *  if (AParameters.Get("param_period").ToBool() == true)
+         *  {
+         *      Defines.Add("BYPERIOD", "true");
+         *      SqlParameterList.Add(new OdbcParameter("batchyear", OdbcType.Int)
+         *          {
+         *              Value = AParameters.Get("param_year_i").ToInt32()
+         *          });
+         *      SqlParameterList.Add(new OdbcParameter("batchperiod_start", OdbcType.Int)
+         *          {
+         *              Value = AParameters.Get("param_start_period_i").ToInt32()
+         *          });
+         *      SqlParameterList.Add(new OdbcParameter("batchperiod_end", OdbcType.Int)
+         *          {
+         *              Value = AParameters.Get("param_end_period_i").ToInt32()
+         *          });
+         *  }
+         *  else
+         *  {
+         *      SqlParameterList.Add(new OdbcParameter("param_start_date", OdbcType.Int)
+         *          {
+         *              Value = AParameters.Get("param_start_date").ToInt32()
+         *          });
+         *      SqlParameterList.Add(new OdbcParameter("param_end_date", OdbcType.Int)
+         *          {
+         *              Value = AParameters.Get("param_end_date").ToInt32()
+         *          });
+         *  }
+         *
+         *  SqlParameterList.Add(new OdbcParameter("accountcode", OdbcType.VarChar)
+         *      {
+         *          Value = AParameters.Get("line_a_account_code_c")
+         *      });
+         *
+         *  string SqlStmt = TDataBase.ReadSqlFile("ICH.HOSAReportGiftSummary.sql", Defines);
+         *  DataTable resultTable = null;
+         *
+         *  TDBTransaction Transaction = null;
+         *  DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref Transaction,
+         *      delegate
+         *      {
+         *
+         *          // now run the database query
+         *          resultTable = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "result", Transaction,
+         *              SqlParameterList.ToArray());
+         *      });
+         *  // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
+         *  if (AParameters.Get("CancelReportCalculation").ToBool() == true)
+         *  {
+         *      return null;
+         *  }
+         *
+         *  resultTable.Columns.Add("a_transaction_amount_n", typeof(Decimal));
+         *  resultTable.Columns.Add("a_amount_in_base_currency_n", typeof(Decimal));
+         *  resultTable.Columns.Add("a_amount_in_intl_currency_n", typeof(Decimal));
+         *  resultTable.Columns.Add("a_reference_c", typeof(string));
+         *  resultTable.Columns.Add("a_narrative_c", typeof(string));
+         *
+         *  Boolean InternationalCurrency = AParameters.Get("param_currency").ToString() == "International";
+         *  Double ExchangeRate = 1.00;  // TODO Get exchange rate!
+         *
+         *  foreach (DataRow Row in resultTable.Rows)
+         *  {
+         *      Row["a_transaction_amount_n"] = Convert.ToDecimal(Row["GiftTransactionAmount"]);
+         *      Row["a_amount_in_base_currency_n"] = Convert.ToDecimal(Row["GiftBaseAmount"]);
+         *
+         *      if (InternationalCurrency)
+         *      {
+         *          Row["a_amount_in_intl_currency_n"] = (Decimal)(Convert.ToDouble(Row["GiftBaseAmount"]) * ExchangeRate);
+         *      }
+         *
+         *      Row["a_reference_c"] = StringHelper.PartnerKeyToStr(Convert.ToInt64(Row["RecipientKey"]));
+         *      Row["a_narrative_c"] = Row["RecipientShortname"].ToString();
+         *  }
+         *
+         *  return resultTable;
+         * }
+         */
 
         /// <summary>
         /// Find all the gifts for a specific month, returning "worker", "field" and "total" results.
@@ -226,14 +210,15 @@ namespace Ict.Petra.Server.MFinance.queries
                          " AND motive.a_motivation_group_code_c = detail.a_motivation_group_code_c" +
                          " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
                          " AND motive.a_receipt_l=true");
-            Boolean newTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
-            DataTable tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
-
-            if (newTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            DataTable tempTbl = null;
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+                });
 
             DataTable resultTable = new DataTable();
             resultTable.Columns.Add("MonthName", typeof(String));               //
@@ -313,7 +298,7 @@ namespace Ict.Petra.Server.MFinance.queries
             }
 
             return resultTable;
-        }
+        } // Total Gifts Through Field Month
 
         /// <summary>
         /// Find all the gifts for a year, returning "worker", "field" and "total" results.
@@ -362,14 +347,15 @@ namespace Ict.Petra.Server.MFinance.queries
                          " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
                          " AND motive.a_receipt_l=true");
 
-            Boolean newTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
-            DataTable tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
-
-            if (newTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            DataTable tempTbl = null;
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+                });
 
             DataTable resultTable = new DataTable();
             resultTable.Columns.Add("SummaryYear", typeof(Int32));              //
@@ -466,14 +452,14 @@ namespace Ict.Petra.Server.MFinance.queries
             Boolean onlySelectedFields = AParameters.Get("param_field_selection").ToString() == "selected_fields";
             Boolean fromExtract = AParameters.Get("param_recipient").ToString() == "Extract";
             Boolean oneRecipient = AParameters.Get("param_recipient").ToString() == "One Recipient";
-            String period0Start = String.Format("'{0}'", AParameters.Get("param_from_date_0").ToString());
-            String period0End = String.Format("'{0}'", AParameters.Get("param_to_date_0").ToString());
-            String period1Start = String.Format("'{0}'", AParameters.Get("param_from_date_1").ToString());
-            String period1End = String.Format("'{0}'", AParameters.Get("param_to_date_1").ToString());
-            String period2Start = String.Format("'{0}'", AParameters.Get("param_from_date_2").ToString());
-            String period2End = String.Format("'{0}'", AParameters.Get("param_to_date_2").ToString());
-            String period3Start = String.Format("'{0}'", AParameters.Get("param_from_date_3").ToString());
-            String period3End = String.Format("'{0}'", AParameters.Get("param_to_date_3").ToString());
+            String period0Start = AParameters.Get("param_from_date_0").ToDate().ToString("yyyy-MM-dd");
+            String period0End = AParameters.Get("param_to_date_0").ToDate().ToString("yyyy-MM-dd");
+            String period1Start = AParameters.Get("param_from_date_1").ToDate().ToString("yyyy-MM-dd");
+            String period1End = AParameters.Get("param_to_date_1").ToDate().ToString("yyyy-MM-dd");
+            String period2Start = AParameters.Get("param_from_date_2").ToDate().ToString("yyyy-MM-dd");
+            String period2End = AParameters.Get("param_to_date_2").ToDate().ToString("yyyy-MM-dd");
+            String period3Start = AParameters.Get("param_from_date_3").ToDate().ToString("yyyy-MM-dd");
+            String period3End = AParameters.Get("param_to_date_3").ToDate().ToString("yyyy-MM-dd");
             String amountFieldName = (AParameters.Get("param_currency").ToString() == "International") ?
                                      "detail.a_gift_amount_intl_n" : "detail.a_gift_amount_n";
 
@@ -482,29 +468,29 @@ namespace Ict.Petra.Server.MFinance.queries
                               "donor.p_partner_short_name_c AS DonorName, donor.p_partner_class_c AS DonorClass, " +
                               "recipient.p_partner_key_n AS RecipientKey, " +
                               "recipient.p_partner_short_name_c AS RecipientName, " +
-                              "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period0Start + " AND " + period0End + " " +
+                              "SUM(CASE WHEN gift.a_date_entered_d BETWEEN '" + period0Start + "' AND '" + period0End + "' " +
                               "THEN " + amountFieldName + " ELSE 0 END )as YearTotal0, " +
-                              "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period1Start + " AND " + period1End + " " +
+                              "SUM(CASE WHEN gift.a_date_entered_d BETWEEN '" + period1Start + "' AND '" + period1End + "' " +
                               "THEN " + amountFieldName + " ELSE 0 END )as YearTotal1, " +
-                              "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period2Start + " AND " + period2End + " " +
+                              "SUM(CASE WHEN gift.a_date_entered_d BETWEEN '" + period2Start + "' AND '" + period2End + "' " +
                               "THEN " + amountFieldName + " ELSE 0 END )as YearTotal2, " +
-                              "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period3Start + " AND " + period3End + " " +
+                              "SUM(CASE WHEN gift.a_date_entered_d BETWEEN '" + period3Start + "' AND '" + period3End + "' " +
                               "THEN " + amountFieldName + " ELSE 0 END )as YearTotal3 " +
-                              "FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch, PUB_p_partner AS donor, PUB_p_partner AS recipient ";
+                              "FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch AS GiftBatch, PUB_p_partner AS donor, PUB_p_partner AS recipient ";
 
             if (onlySelectedTypes)
             {
-                SqlQuery += ", PUB_p_partner_type ";
+                SqlQuery += ", PUB_p_partner_type AS RecipientType ";
             }
 
             if (fromExtract)
             {
                 String extractName = AParameters.Get("param_extract_name").ToString();
-                SqlQuery += (", PUB_m_extract, PUB_m_extract_master " +
+                SqlQuery += (", PUB_m_extract AS Extract, PUB_m_extract_master AS ExtractMaster" +
                              "WHERE " +
-                             "partner.p_partner_key_n = PUB_m_extract.p_partner_key_n " +
-                             "AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i " +
-                             "AND PUB_m_extract_master.m_extract_name_c = '" + extractName + "' " +
+                             "partner.p_partner_key_n = Extract.p_partner_key_n " +
+                             "AND Extract.m_extract_id_i = ExtractMaster.m_extract_id_i " +
+                             "AND ExtractMaster.m_extract_name_c = '" + extractName + "' " +
                              "AND "
                              );
             }
@@ -518,11 +504,11 @@ namespace Ict.Petra.Server.MFinance.queries
                          "AND gift.p_donor_key_n = donor.p_partner_key_n " +
                          "AND detail.a_batch_number_i = gift.a_batch_number_i " +
                          "AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i " +
-                         "AND gift.a_date_entered_d BETWEEN " + period3Start + " AND " + period0End + " " +
+                         "AND gift.a_date_entered_d BETWEEN '" + period3Start + "' AND '" + period0End + "' " +
                          "AND gift.a_ledger_number_i = " + LedgerNum + " " +
-                         "AND PUB_a_gift_batch.a_batch_status_c = 'Posted' " +
-                         "AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i " +
-                         "AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNum + " "
+                         "AND GiftBatch.a_batch_status_c = 'Posted' " +
+                         "AND GiftBatch.a_batch_number_i = gift.a_batch_number_i " +
+                         "AND GiftBatch.a_ledger_number_i = " + LedgerNum + " "
                          );
 
             if (oneRecipient)
@@ -534,6 +520,7 @@ namespace Ict.Petra.Server.MFinance.queries
             if (onlySelectedFields)
             {
                 String selectedFieldList = AParameters.Get("param_clbFields").ToString();
+                selectedFieldList = selectedFieldList.Replace('\'', ' ');
                 SqlQuery += ("AND detail.a_recipient_ledger_number_n IN (" + selectedFieldList + ") ");
             }
 
@@ -542,8 +529,8 @@ namespace Ict.Petra.Server.MFinance.queries
                 String selectedTypeList = "'" + AParameters.Get("param_clbTypes").ToString() + "'";
                 selectedTypeList = selectedTypeList.Replace(",", "','");
 
-                SqlQuery += ("AND PUB_p_partner_type.p_partner_key_n = detail.p_recipient_key_n " +
-                             "AND PUB_p_partner_type.p_type_code_c IN (" + selectedTypeList + ") ");
+                SqlQuery += ("AND RecipientType.p_partner_key_n = detail.p_recipient_key_n " +
+                             "AND RecipientType.p_type_code_c IN (" + selectedTypeList + ") ");
             }
 
             SqlQuery +=
@@ -552,14 +539,14 @@ namespace Ict.Petra.Server.MFinance.queries
                     +
                     "ORDER BY recipient.p_partner_short_name_c");
 
-            Boolean newTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
-            TotalGiftsPerRecipient = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
-
-            if (newTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    TotalGiftsPerRecipient = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+                });
 
             //
             // Ok, I've got a DataTable with ALL THE DATA I need for the report,
@@ -586,13 +573,13 @@ namespace Ict.Petra.Server.MFinance.queries
             }
 
             return resultTable;
-        }
+        } // Select Gift Recipients
 
         /// <summary>
         /// Find all the gifts for a worker, presenting the results in four year columns.
         /// NOTE - the user can select the field of the donor.
         ///
-        /// All the DB work was previously done by the SelectGiftRecipients function above.
+        /// All the DB work was previously done by the Select Gift Recipients function above.
         /// I only need to filter the table by recipientKey.
         /// </summary>
         /// <returns></returns>

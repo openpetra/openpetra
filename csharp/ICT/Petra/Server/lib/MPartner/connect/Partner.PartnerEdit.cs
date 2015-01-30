@@ -310,6 +310,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
 
             localDS.RemoveEmptyTables();
+            localDS.AcceptChanges();
 
             return localDS;
         }
@@ -367,26 +368,22 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public PartnerEditTDS GetDataAddresses()
         {
             PartnerEditTDS ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = null;
 
             TLogging.LogAtLevel(9, "TPartnerEditUIConnector.GetDataAddresses called!");
             ReturnValue = new PartnerEditTDS(DATASETNAME);
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
 
-            // Load data
-            TPPartnerAddressAggregate.LoadAll(ReturnValue, FPartnerKey, ReadTransaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataAddresses: committed own transaction.");
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
+                {
+                    // Load data
+                    TPPartnerAddressAggregate.LoadAll(ReturnValue, FPartnerKey, ReadTransaction);
+                });
 
             // Remove any unused tables from the Typed DataSet
             ReturnValue.RemoveEmptyTables();
+
             return ReturnValue;
         }
 
@@ -398,38 +395,34 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public PartnerEditTDS GetDataFoundation(Boolean ABaseTableOnly)
         {
             PartnerEditTDS ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = null;
 
             TLogging.LogAtLevel(9, "TPartnerEditUIConnector.GetDataFoundation called!");
             ReturnValue = new PartnerEditTDS(DATASETNAME);
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
 
-            // Foundation Table
-            PFoundationAccess.LoadByPrimaryKey(ReturnValue, FPartnerKey, ReadTransaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
+                {
+                    // Foundation Table
+                    PFoundationAccess.LoadByPrimaryKey(ReturnValue, FPartnerKey, ReadTransaction);
 
-            if (!ABaseTableOnly)
-            {
-                // Foundation Proposal Deadline
-                PFoundationDeadlineAccess.LoadViaPFoundation(ReturnValue, FPartnerKey, ReadTransaction);
+                    if (!ABaseTableOnly)
+                    {
+                        // Foundation Proposal Deadline
+                        PFoundationDeadlineAccess.LoadViaPFoundation(ReturnValue, FPartnerKey, ReadTransaction);
 
-                // Proposal Table
-                PFoundationProposalAccess.LoadViaPFoundation(ReturnValue, FPartnerKey, ReadTransaction);
+                        // Proposal Table
+                        PFoundationProposalAccess.LoadViaPFoundation(ReturnValue, FPartnerKey, ReadTransaction);
 
-                // Proposal Detail Table
-                PFoundationProposalDetailAccess.LoadViaPFoundation(ReturnValue, FPartnerKey, ReadTransaction);
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataFoundation: committed own transaction.");
-            }
+                        // Proposal Detail Table
+                        PFoundationProposalDetailAccess.LoadViaPFoundation(ReturnValue, FPartnerKey, ReadTransaction);
+                    }
+                });
 
             // Remove any unused tables from the Typed DataSet
             ReturnValue.RemoveEmptyTables();
+
             return ReturnValue;
         }
 
@@ -463,20 +456,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <returns></returns>
         public PLocationTable GetDataLocation(Int64 ASiteKey, Int32 ALocationKey)
         {
-            PLocationTable ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            PLocationTable ReturnValue = null;
+            TDBTransaction ReadTransaction = null;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-            ReturnValue = TPPartnerAddressAggregate.LoadByPrimaryKey(ASiteKey, ALocationKey, ReadTransaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataLocation: committed own transaction.");
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
+                {
+                    ReturnValue = TPPartnerAddressAggregate.LoadByPrimaryKey(ASiteKey, ALocationKey, ReadTransaction);
+                });
 
             return ReturnValue;
         }
@@ -1032,7 +1020,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 AFamilyLocationKey,
             out String ASiteCountryCode)
         {
-            TDBTransaction ReadTransaction;
+            TDBTransaction ReadTransaction = null;
             PPartnerRow PartnerRow;
             PartnerEditTDSPPersonRow PersonRow;
             PartnerEditTDSPFamilyRow FamilyRow;
@@ -1048,6 +1036,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PLocationTable SiteLocationDT;
             StringCollection SiteLocationRequiredColumns;
             DateTime CreationDate;
+            string SiteCountryCode = null;
 
             String CreationUserID;
             String GiftReceiptingDefaults;
@@ -1087,384 +1076,395 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             FPartnerKey = FNewPartnerPartnerKey;
             FPartnerClass = FNewPartnerPartnerClass;
 
-            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead);
-
-            try
-            {
-                /*
-                 * Create DataRow for PPartner
-                 */
-                #region Calculations
-
-                // Determine Gift Processing settings
-                GiftReceiptingDefaults = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
-                    TSystemDefaultsCache.PARTNER_GIFTRECEIPTINGDEFAULTS);
-
-                if (GiftReceiptingDefaults != "")
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.RepeatableRead, ref ReadTransaction,
+                delegate
                 {
-                    GiftReceiptingDefaultsSplit = GiftReceiptingDefaults.Split(',');
-                    ReceiptLetterFrequency = GiftReceiptingDefaultsSplit[0];
+                    //
+                    // Create DataRow for PPartner
+                    //
 
-                    if (GiftReceiptingDefaultsSplit[1] == "no")
+                    #region Calculations
+
+                    // Determine Gift Processing settings
+                    GiftReceiptingDefaults = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
+                        TSystemDefaultsCache.PARTNER_GIFTRECEIPTINGDEFAULTS);
+
+                    if (GiftReceiptingDefaults != "")
                     {
-                        ReceiptEachGift = false;
+                        GiftReceiptingDefaultsSplit = GiftReceiptingDefaults.Split(',');
+                        ReceiptLetterFrequency = GiftReceiptingDefaultsSplit[0];
+
+                        if (GiftReceiptingDefaultsSplit[1] == "no")
+                        {
+                            ReceiptEachGift = false;
+                        }
+                        else
+                        {
+                            ReceiptEachGift = true;
+                        }
                     }
                     else
                     {
-                        ReceiptEachGift = true;
+                        ReceiptLetterFrequency = "Annual";
+                        ReceiptEachGift = false;
                     }
-                }
-                else
-                {
-                    ReceiptLetterFrequency = "Annual";
-                    ReceiptEachGift = false;
-                }
 
-                // Determine LanguageCode
-                if (FPartnerClass != TPartnerClass.PERSON)
-                {
-                    LanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.PARTNER_LANGUAGE, "99");
-                }
-                else
-                {
-                    PersonFamilyPartnerDT = PPartnerAccess.LoadByPrimaryKey(AFamilyPartnerKey, ReadTransaction);
-
-                    if (PersonFamilyPartnerDT[0].LanguageCode == "99")
+                    // Determine LanguageCode
+                    if (FPartnerClass != TPartnerClass.PERSON)
                     {
                         LanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.PARTNER_LANGUAGE, "99");
                     }
                     else
                     {
-                        LanguageCode = PersonFamilyPartnerDT[0].LanguageCode;
-                    }
-                }
+                        PersonFamilyPartnerDT = PPartnerAccess.LoadByPrimaryKey(AFamilyPartnerKey, ReadTransaction);
 
-                #endregion
-
-                // We get the default values for all DataColumns
-                // and then modify some.
-                PartnerRow = FPartnerEditScreenDS.PPartner.NewRowTyped(true);
-                PartnerRow.PartnerKey = FPartnerKey;
-                PartnerRow.DateCreated = CreationDate;
-                PartnerRow.CreatedBy = CreationUserID;
-                PartnerRow.PartnerClass = SharedTypes.PartnerClassEnumToString(APartnerClass);
-                PartnerRow.AcquisitionCode = AAcquisitionCode;
-
-                // logical DataColumns must be initialised for DataBinding to work
-                PartnerRow.NoSolicitations = false;
-                PartnerRow.DeletedPartner = false;
-                PartnerRow.ChildIndicator = false;
-                PartnerRow.ReceiptLetterFrequency = ReceiptLetterFrequency;
-                PartnerRow.ReceiptEachGift = ReceiptEachGift;
-                PartnerRow.LanguageCode = LanguageCode;
-
-                if (!APrivatePartner)
-                {
-                    PartnerRow.StatusCode = SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE);
-                }
-                else
-                {
-                    PartnerRow.StatusCode = SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscPRIVATE);
-                    PartnerRow.Restricted = SharedConstants.PARTNER_PRIVATE_USER;
-                    PartnerRow.UserId = CreationUserID;
-                }
-
-                PartnerRow.StatusChange = CreationDate;
-                #region Partner Types
-                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before PartnerClass switch");
-
-                switch (APartnerClass)
-                {
-                    case TPartnerClass.PERSON:
-                        // Load p_family record of the FAMILY that the PERSON will belong to
-                        PersonFamilyDT = PFamilyAccess.LoadByPrimaryKey(AFamilyPartnerKey, ReadTransaction);
-
-                        // Create DataRow for PPerson using the default values for all DataColumns
-                        TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding Person DataRow");
-
-                        PersonRow = FPartnerEditScreenDS.PPerson.NewRowTyped(true);
-                        PersonRow.PartnerKey = FPartnerKey;
-                        PersonRow.DateCreated = CreationDate;
-                        PersonRow.CreatedBy = CreationUserID;
-                        PersonRow.FamilyKey = AFamilyPartnerKey;
-                        PersonRow.FamilyName = PersonFamilyDT[0].FamilyName;
-                        FamilyIDHandling = new TPartnerFamilyIDHandling();
-
-                        if (FamilyIDHandling.GetNewFamilyID(AFamilyPartnerKey, out FamilyID, out ProblemMessage) == TFamilyIDSuccessEnum.fiError)
+                        if (PersonFamilyPartnerDT[0].LanguageCode == "99")
                         {
-                            // this should not really happen  but we cannot continue if it does
-                            throw new EPartnerFamilyIDException(ProblemMessage);
+                            LanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.PARTNER_LANGUAGE, "99");
+                        }
+                        else
+                        {
+                            LanguageCode = PersonFamilyPartnerDT[0].LanguageCode;
+                        }
+                    }
+
+                    #endregion
+
+                    // We get the default values for all DataColumns
+                    // and then modify some.
+                    PartnerRow = FPartnerEditScreenDS.PPartner.NewRowTyped(true);
+                    PartnerRow.PartnerKey = FPartnerKey;
+                    PartnerRow.DateCreated = CreationDate;
+                    PartnerRow.CreatedBy = CreationUserID;
+                    PartnerRow.PartnerClass = SharedTypes.PartnerClassEnumToString(APartnerClass);
+                    PartnerRow.AcquisitionCode = AAcquisitionCode;
+
+                    // logical DataColumns must be initialised for DataBinding to work
+                    PartnerRow.NoSolicitations = false;
+                    PartnerRow.DeletedPartner = false;
+                    PartnerRow.ChildIndicator = false;
+                    PartnerRow.ReceiptLetterFrequency = ReceiptLetterFrequency;
+                    PartnerRow.ReceiptEachGift = ReceiptEachGift;
+                    PartnerRow.LanguageCode = LanguageCode;
+
+                    if (!APrivatePartner)
+                    {
+                        PartnerRow.StatusCode = SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE);
+                    }
+                    else
+                    {
+                        PartnerRow.StatusCode = SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscPRIVATE);
+                        PartnerRow.Restricted = SharedConstants.PARTNER_PRIVATE_USER;
+                        PartnerRow.UserId = CreationUserID;
+                    }
+
+                    PartnerRow.StatusChange = CreationDate;
+
+                    #region Partner Types
+
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before PartnerClass switch");
+
+                    switch (APartnerClass)
+                    {
+                        case TPartnerClass.PERSON:
+                            // Load p_family record of the FAMILY that the PERSON will belong to
+                            PersonFamilyDT = PFamilyAccess.LoadByPrimaryKey(AFamilyPartnerKey, ReadTransaction);
+
+                            // Create DataRow for PPerson using the default values for all DataColumns
+                            TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding Person DataRow");
+
+                            PersonRow = FPartnerEditScreenDS.PPerson.NewRowTyped(true);
+                            PersonRow.PartnerKey = FPartnerKey;
+                            PersonRow.DateCreated = CreationDate;
+                            PersonRow.CreatedBy = CreationUserID;
+                            PersonRow.FamilyKey = AFamilyPartnerKey;
+                            PersonRow.FamilyName = PersonFamilyDT[0].FamilyName;
+                            FamilyIDHandling = new TPartnerFamilyIDHandling();
+
+                            if (FamilyIDHandling.GetNewFamilyID(AFamilyPartnerKey, out FamilyID, out ProblemMessage) == TFamilyIDSuccessEnum.fiError)
+                            {
+                                // this should not really happen  but we cannot continue if it does
+                                throw new EPartnerFamilyIDException(ProblemMessage);
+                            }
+
+                            PersonRow.FamilyId = FamilyID;
+                            PersonRow.OccupationCode = MPartnerConstants.DEFAULT_CODE_UNKNOWN;
+                            FPartnerEditScreenDS.PPerson.Rows.Add(PersonRow);
+                            GetFamilyMembersInternal(AFamilyPartnerKey, "", out ItemsCountFamilyMembers, true);
+
+                            /*
+                             * Remove other Partner Class Tables.
+                             * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
+                             * relies on null DataTables when determining which data of which DataTables to put into which Controls).
+                             */
+                            FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
+
+                            break;
+
+                        case TPartnerClass.FAMILY:
+                            TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding Family DataRow");
+
+                            // Create DataRow for PFamily using the default values for all DataColumns
+                            FamilyRow = FPartnerEditScreenDS.PFamily.NewRowTyped(true);
+                            FamilyRow.PartnerKey = FPartnerKey;
+                            FamilyRow.DateCreated = CreationDate;
+                            FamilyRow.CreatedBy = CreationUserID;
+                            FPartnerEditScreenDS.PFamily.Rows.Add(FamilyRow);
+
+                            /*
+                             * Remove other Partner Class Tables.
+                             * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
+                             * relies on null DataTables when determining which data of which DataTables to put into which Controls).
+                             */
+                            FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
+
+                            break;
+
+                        case TPartnerClass.CHURCH:
+                            // Create DataRow for PChurch using the default values for all DataColumns
+                            ChurchRow = FPartnerEditScreenDS.PChurch.NewRowTyped(true);
+                            ChurchRow.PartnerKey = FPartnerKey;
+                            ChurchRow.DateCreated = CreationDate;
+                            ChurchRow.CreatedBy = CreationUserID;
+
+                            // logical DataColumns must be initialised for DataBinding to work
+                            ChurchRow.Accomodation = false;
+                            ChurchRow.PrayerGroup = false;
+                            ChurchRow.MapOnFile = false;
+                            FPartnerEditScreenDS.PChurch.Rows.Add(ChurchRow);
+
+                            /*
+                             * Remove other Partner Class Tables.
+                             * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
+                             * relies on null DataTables when determining which data of which DataTables to put into which Controls).
+                             */
+                            FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
+
+                            break;
+
+                        case TPartnerClass.ORGANISATION:
+                            // Create DataRow for POrganisation using the default values for all DataColumns
+                            OrganisationRow = FPartnerEditScreenDS.POrganisation.NewRowTyped(true);
+                            OrganisationRow.PartnerKey = FPartnerKey;
+                            OrganisationRow.DateCreated = CreationDate;
+                            OrganisationRow.CreatedBy = CreationUserID;
+
+                            // logical DataColumns must be initialised for DataBinding to work
+                            OrganisationRow.Religious = false;
+                            OrganisationRow.Foundation = false;
+                            FPartnerEditScreenDS.POrganisation.Rows.Add(OrganisationRow);
+
+                            /*
+                             * Remove other Partner Class Tables.
+                             * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
+                             * relies on null DataTables when determining which data of which DataTables to put into which Controls).
+                             */
+                            FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
+
+                            break;
+
+                        case TPartnerClass.BANK:
+                            // Create DataRow for PBank using the default values for all DataColumns
+                            BankRow = FPartnerEditScreenDS.PBank.NewRowTyped(true);
+                            BankRow.PartnerKey = FPartnerKey;
+                            BankRow.DateCreated = CreationDate;
+                            BankRow.CreatedBy = CreationUserID;
+                            FPartnerEditScreenDS.PBank.Rows.Add(BankRow);
+
+                            /*
+                             * Remove other Partner Class Tables.
+                             * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
+                             * relies on null DataTables when determining which data of which DataTables to put into which Controls).
+                             */
+                            FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
+
+                            break;
+
+                        case TPartnerClass.UNIT:
+                            // Create DataRow for PUnit using the default values for all DataColumns
+                            UnitRow = FPartnerEditScreenDS.PUnit.NewRowTyped(true);
+                            UnitRow.PartnerKey = FPartnerKey;
+                            UnitRow.DateCreated = CreationDate;
+                            UnitRow.CreatedBy = CreationUserID;
+                            FPartnerEditScreenDS.PUnit.Rows.Add(UnitRow);
+
+                            /*
+                             * Remove other Partner Class Tables.
+                             * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
+                             * relies on null DataTables when determining which data of which DataTables to put into which Controls).
+                             */
+                            FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
+
+                            break;
+
+                        case TPartnerClass.VENUE:
+                            // Create DataRow for PVenue using the default values for all DataColumns
+                            VenueRow = FPartnerEditScreenDS.PVenue.NewRowTyped(true);
+                            VenueRow.PartnerKey = FPartnerKey;
+                            VenueRow.DateCreated = CreationDate;
+                            VenueRow.CreatedBy = CreationUserID;
+
+                            // Makeup a VenueCode for now, as there is now way to let the user spec one quickly...
+                            VenueRow.VenueCode = 'V' + FPartnerKey.ToString().Substring(1);
+                            FPartnerEditScreenDS.PVenue.Rows.Add(VenueRow);
+
+                            /*
+                             * Remove other Partner Class Tables.
+                             * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
+                             * relies on null DataTables when determining which data of which DataTables to put into which Controls).
+                             */
+                            FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
+                            FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
+
+                            break;
+                    }
+
+                    PartnerRow.AddresseeTypeCode = TSharedAddressHandling.GetDefaultAddresseeType(APartnerClass);
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding new Partner DataRow");
+
+                    // Add DataRow for PPartner
+                    FPartnerEditScreenDS.PPartner.Rows.Add(PartnerRow);
+
+                    if (APartnerClass == TPartnerClass.PERSON)
+                    {
+                        /*
+                         * Copy specified Family Address into the PLocation and PPartnerLocation
+                         * table (is needed on the Client side to copy this address as the default
+                         * address of the new Person and gets deleted there as soon as copying is
+                         * done)
+                         */
+
+                        if (AFamilyLocationKey == -1)
+                        {
+                            // Backstop: If AFamilyLocationKey is -1, then we don't know an Address of the FAMILY. In that
+                            // case determine the 'Best Address' of the FAMILY; the Partner Edit screen will use this to
+                            // create the first address of the new PERSON.
+                            TLocationPK FamilysBestAddr =
+                                Calculations.DetermineBestAddress(PPartnerLocationAccess.LoadViaPPartner(AFamilyPartnerKey, null, ReadTransaction));
+                            AFamilyLocationKey = FamilysBestAddr.LocationKey;
+                            AFamilySiteKey = FamilysBestAddr.SiteKey;
                         }
 
-                        PersonRow.FamilyId = FamilyID;
-                        PersonRow.OccupationCode = MPartnerConstants.DEFAULT_CODE_UNKNOWN;
-                        FPartnerEditScreenDS.PPerson.Rows.Add(PersonRow);
-                        GetFamilyMembersInternal(AFamilyPartnerKey, "", out ItemsCountFamilyMembers, true);
+                        //                  TLogging.LogAtLevel(7, "Getting Family Address - AFamilyPartnerKey: " + AFamilyPartnerKey.ToString() + "; AFamilyLocationKey: " + AFamilyLocationKey.ToString());
+                        TPPartnerAddressAggregate.LoadByPrimaryKey(FPartnerEditScreenDS,
+                            AFamilyPartnerKey,
+                            AFamilySiteKey,
+                            AFamilyLocationKey,
+                            ReadTransaction);
+
+                        // Copy Special Types from the PERSON'S FAMILY to the PERSON
+                        TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before loading Special Types from FAMILY");
+
+                        GetPartnerTypesForNewPartnerFromFamily(AFamilyPartnerKey, ReadTransaction);
 
                         /*
-                         * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
-                         * relies on null DataTables when determining which data of which DataTables to put into which Controls).
+                         * Create Relationship between Family and Person
                          */
-                        FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
+                        PartnerRelationshipRow = FPartnerEditScreenDS.PPartnerRelationship.NewRowTyped(true);
+                        PartnerRelationshipRow.PartnerKey = AFamilyPartnerKey;
+                        PartnerRelationshipRow.RelationKey = FPartnerKey;
+                        PartnerRelationshipRow.RelationName = "FAMILY";
+                        PartnerRelationshipRow.Comment = SharedConstants.ROW_IS_SYSTEM_GENERATED;
+                        PartnerRelationshipRow.DateCreated = CreationDate;
+                        PartnerRelationshipRow.CreatedBy = CreationUserID;
+                        FPartnerEditScreenDS.PPartnerRelationship.Rows.Add(PartnerRelationshipRow);
+                    }
 
-                        break;
+                    #endregion
 
-                    case TPartnerClass.FAMILY:
-                        TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding Family DataRow");
+                    // Note: Location and PartnerLocation for a new Partner are set up on the Client side!
+                    // Determine CountryCode for first Address of the Partner, if it is not overwritten
+                    if (ADesiredCountryCode == "")
+                    {
+                        // TODO 1 oChristianK cPartner Edit / New Partner : Use a proper function to determine the 'Best' Address of the Unit...
+                        SiteLocationRequiredColumns = new StringCollection();
+                        SiteLocationRequiredColumns.Add(PLocationTable.GetLocationKeyDBName());
+                        SiteLocationRequiredColumns.Add(PLocationTable.GetCountryCodeDBName());
+                        SiteLocationDT = PLocationAccess.LoadViaPPartner(ASiteKey, SiteLocationRequiredColumns, ReadTransaction, null, 0, 0);
 
-                        // Create DataRow for PFamily using the default values for all DataColumns
-                        FamilyRow = FPartnerEditScreenDS.PFamily.NewRowTyped(true);
-                        FamilyRow.PartnerKey = FPartnerKey;
-                        FamilyRow.DateCreated = CreationDate;
-                        FamilyRow.CreatedBy = CreationUserID;
-                        FPartnerEditScreenDS.PFamily.Rows.Add(FamilyRow);
-
-                        /*
-                         * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
-                         * relies on null DataTables when determining which data of which DataTables to put into which Controls).
-                         */
-                        FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
-
-                        break;
-
-                    case TPartnerClass.CHURCH:
-                        // Create DataRow for PChurch using the default values for all DataColumns
-                        ChurchRow = FPartnerEditScreenDS.PChurch.NewRowTyped(true);
-                        ChurchRow.PartnerKey = FPartnerKey;
-                        ChurchRow.DateCreated = CreationDate;
-                        ChurchRow.CreatedBy = CreationUserID;
-
-                        // logical DataColumns must be initialised for DataBinding to work
-                        ChurchRow.Accomodation = false;
-                        ChurchRow.PrayerGroup = false;
-                        ChurchRow.MapOnFile = false;
-                        FPartnerEditScreenDS.PChurch.Rows.Add(ChurchRow);
-
-                        /*
-                         * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
-                         * relies on null DataTables when determining which data of which DataTables to put into which Controls).
-                         */
-                        FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
-
-                        break;
-
-                    case TPartnerClass.ORGANISATION:
-                        // Create DataRow for POrganisation using the default values for all DataColumns
-                        OrganisationRow = FPartnerEditScreenDS.POrganisation.NewRowTyped(true);
-                        OrganisationRow.PartnerKey = FPartnerKey;
-                        OrganisationRow.DateCreated = CreationDate;
-                        OrganisationRow.CreatedBy = CreationUserID;
-
-                        // logical DataColumns must be initialised for DataBinding to work
-                        OrganisationRow.Religious = false;
-                        OrganisationRow.Foundation = false;
-                        FPartnerEditScreenDS.POrganisation.Rows.Add(OrganisationRow);
-
-                        /*
-                         * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
-                         * relies on null DataTables when determining which data of which DataTables to put into which Controls).
-                         */
-                        FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
-
-                        break;
-
-                    case TPartnerClass.BANK:
-                        // Create DataRow for PBank using the default values for all DataColumns
-                        BankRow = FPartnerEditScreenDS.PBank.NewRowTyped(true);
-                        BankRow.PartnerKey = FPartnerKey;
-                        BankRow.DateCreated = CreationDate;
-                        BankRow.CreatedBy = CreationUserID;
-                        FPartnerEditScreenDS.PBank.Rows.Add(BankRow);
-
-                        /*
-                         * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
-                         * relies on null DataTables when determining which data of which DataTables to put into which Controls).
-                         */
-                        FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
-
-                        break;
-
-                    case TPartnerClass.UNIT:
-                        // Create DataRow for PUnit using the default values for all DataColumns
-                        UnitRow = FPartnerEditScreenDS.PUnit.NewRowTyped(true);
-                        UnitRow.PartnerKey = FPartnerKey;
-                        UnitRow.DateCreated = CreationDate;
-                        UnitRow.CreatedBy = CreationUserID;
-                        FPartnerEditScreenDS.PUnit.Rows.Add(UnitRow);
-
-                        /*
-                         * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
-                         * relies on null DataTables when determining which data of which DataTables to put into which Controls).
-                         */
-                        FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
-
-                        break;
-
-                    case TPartnerClass.VENUE:
-                        // Create DataRow for PVenue using the default values for all DataColumns
-                        VenueRow = FPartnerEditScreenDS.PVenue.NewRowTyped(true);
-                        VenueRow.PartnerKey = FPartnerKey;
-                        VenueRow.DateCreated = CreationDate;
-                        VenueRow.CreatedBy = CreationUserID;
-
-                        // Makeup a VenueCode for now, as there is now way to let the user spec one quickly...
-                        VenueRow.VenueCode = 'V' + FPartnerKey.ToString().Substring(1);
-                        FPartnerEditScreenDS.PVenue.Rows.Add(VenueRow);
-
-                        /*
-                         * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
-                         * relies on null DataTables when determining which data of which DataTables to put into which Controls).
-                         */
-                        FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
-
-                        break;
-                }
-
-                PartnerRow.AddresseeTypeCode = TSharedAddressHandling.GetDefaultAddresseeType(APartnerClass);
-                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding new Partner DataRow");
-
-                // Add DataRow for PPartner
-                FPartnerEditScreenDS.PPartner.Rows.Add(PartnerRow);
-
-                if (APartnerClass == TPartnerClass.PERSON)
-                {
-                    /*
-                     * Copy specified Family Address into the PLocation and PPartnerLocation
-                     * table (is needed on the Client side to copy this address as the default
-                     * address of the new Person and gets deleted there as soon as copying is
-                     * done)
-                     */
-//                  TLogging.LogAtLevel(7, "Getting Family Address - AFamilyPartnerKey: " + AFamilyPartnerKey.ToString() + "; AFamilyLocationKey: " + AFamilyLocationKey.ToString());
-                    TPPartnerAddressAggregate.LoadByPrimaryKey(FPartnerEditScreenDS,
-                        AFamilyPartnerKey,
-                        AFamilySiteKey,
-                        AFamilyLocationKey,
-                        ReadTransaction);
-
-                    // Copy Special Types from the PERSON'S FAMILY to the PERSON
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before loading Special Types from FAMILY");
-
-                    GetPartnerTypesForNewPartnerFromFamily(AFamilyPartnerKey, ReadTransaction);
+                        // For the moment just take the CountryCode that we find in the (random) first record...
+                        SiteCountryCode = SiteLocationDT[0].CountryCode;
+                    }
 
                     /*
-                     * Create Relationship between Family and Person
+                     * Office Specific Data
                      */
-                    PartnerRelationshipRow = FPartnerEditScreenDS.PPartnerRelationship.NewRowTyped(true);
-                    PartnerRelationshipRow.PartnerKey = AFamilyPartnerKey;
-                    PartnerRelationshipRow.RelationKey = FPartnerKey;
-                    PartnerRelationshipRow.RelationName = "FAMILY";
-                    PartnerRelationshipRow.Comment = SharedConstants.ROW_IS_SYSTEM_GENERATED;
-                    PartnerRelationshipRow.DateCreated = CreationDate;
-                    PartnerRelationshipRow.CreatedBy = CreationUserID;
-                    FPartnerEditScreenDS.PPartnerRelationship.Rows.Add(PartnerRelationshipRow);
-                }
-
-                #endregion
-
-                // Note: Location and PartnerLocation for a new Partner are set up on the Client side!
-                // Determine CountryCode for first Address of the Partner, if it is not overwritten
-                if (ADesiredCountryCode == "")
-                {
-                    // TODO 1 oChristianK cPartner Edit / New Partner : Use a proper function to determine the 'Best' Address of the Unit...
-                    SiteLocationRequiredColumns = new StringCollection();
-                    SiteLocationRequiredColumns.Add(PLocationTable.GetLocationKeyDBName());
-                    SiteLocationRequiredColumns.Add(PLocationTable.GetCountryCodeDBName());
-                    SiteLocationDT = PLocationAccess.LoadViaPPartner(ASiteKey, SiteLocationRequiredColumns, ReadTransaction, null, 0, 0);
-
-                    // For the moment just take the CountryCode that we find in the (random) first record...
-                    ASiteCountryCode = SiteLocationDT[0].CountryCode;
-                }
-
-                /*
-                 * Office Specific Data
-                 */
-                OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(FPartnerKey,
-                    MCommonTypes.PartnerClassEnumToOfficeSpecificDataLabelUseEnum(FPartnerClass));
-                OfficeSpecificDataLabelsAvailable =
-                    (OfficeSpecificDataLabelsUIConnector.CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), ReadTransaction) != 0);
+                    OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(FPartnerKey,
+                        MCommonTypes.PartnerClassEnumToOfficeSpecificDataLabelUseEnum(FPartnerClass));
+                    OfficeSpecificDataLabelsAvailable =
+                        (OfficeSpecificDataLabelsUIConnector.CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), ReadTransaction) != 0);
 
 
-                MiscellaneousDataDT = FPartnerEditScreenDS.MiscellaneousData;
-                MiscellaneousDataDR = MiscellaneousDataDT.NewRowTyped(false);
-                MiscellaneousDataDR.PartnerKey = FPartnerKey;
+                    MiscellaneousDataDT = FPartnerEditScreenDS.MiscellaneousData;
+                    MiscellaneousDataDR = MiscellaneousDataDT.NewRowTyped(false);
+                    MiscellaneousDataDR.PartnerKey = FPartnerKey;
 
-                if (AFamilyLocationKey != 0)
-                {
-                    MiscellaneousDataDR.SelectedSiteKey = AFamilySiteKey;
-                    MiscellaneousDataDR.SelectedLocationKey = AFamilyLocationKey;
-                }
-                else
-                {
-                    MiscellaneousDataDR.SelectedSiteKey = -1;
-                    MiscellaneousDataDR.SelectedLocationKey = -1;
-                }
+                    if (AFamilyLocationKey != 0)
+                    {
+                        MiscellaneousDataDR.SelectedSiteKey = AFamilySiteKey;
+                        MiscellaneousDataDR.SelectedLocationKey = AFamilyLocationKey;
+                    }
+                    else
+                    {
+                        MiscellaneousDataDR.SelectedSiteKey = -1;
+                        MiscellaneousDataDR.SelectedLocationKey = -1;
+                    }
 
-                MiscellaneousDataDR.SetLastGiftDateNull();
-                MiscellaneousDataDR.LastGiftInfo = "";
-                MiscellaneousDataDR.ItemsCountAddresses = ItemsCountAddresses;
-                MiscellaneousDataDR.ItemsCountAddressesActive = ItemsCountAddressesActive;
-                MiscellaneousDataDR.ItemsCountSubscriptions = ItemsCountSubscriptions;
-                MiscellaneousDataDR.ItemsCountSubscriptionsActive = ItemsCountSubscriptionsActive;
-                MiscellaneousDataDR.ItemsCountPartnerTypes = ItemsCountPartnerTypes;
-                MiscellaneousDataDR.ItemsCountPartnerRelationships = ItemsCountPartnerRelationships;
-                MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
-                MiscellaneousDataDR.ItemsCountInterests = ItemsCountInterests;
-                MiscellaneousDataDR.OfficeSpecificDataLabelsAvailable = OfficeSpecificDataLabelsAvailable;
-                MiscellaneousDataDR.FoundationOwner1Key = FoundationOwner1Key;
-                MiscellaneousDataDR.FoundationOwner2Key = FoundationOwner2Key;
-                MiscellaneousDataDR.HasEXWORKERPartnerType = HasEXWORKERPartnerType;
-                MiscellaneousDataDR.ItemsCountContacts = ItemsCountContacts;
-                MiscellaneousDataDR.LastContactDate = LastContactDate;
-                MiscellaneousDataDT.Rows.Add(MiscellaneousDataDR);
-                MiscellaneousDataDT.AcceptChanges();
-            }
-            catch (Exception Exp)
-            {
-                TLogging.Log("Exception occured in GetDataNewPartner: " + Exp.ToString());
-            }
-            DBAccess.GDBAccessObj.CommitTransaction();
+                    MiscellaneousDataDR.SetLastGiftDateNull();
+                    MiscellaneousDataDR.LastGiftInfo = "";
+                    MiscellaneousDataDR.ItemsCountAddresses = ItemsCountAddresses;
+                    MiscellaneousDataDR.ItemsCountAddressesActive = ItemsCountAddressesActive;
+                    MiscellaneousDataDR.ItemsCountSubscriptions = ItemsCountSubscriptions;
+                    MiscellaneousDataDR.ItemsCountSubscriptionsActive = ItemsCountSubscriptionsActive;
+                    MiscellaneousDataDR.ItemsCountPartnerTypes = ItemsCountPartnerTypes;
+                    MiscellaneousDataDR.ItemsCountPartnerRelationships = ItemsCountPartnerRelationships;
+                    MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
+                    MiscellaneousDataDR.ItemsCountInterests = ItemsCountInterests;
+                    MiscellaneousDataDR.OfficeSpecificDataLabelsAvailable = OfficeSpecificDataLabelsAvailable;
+                    MiscellaneousDataDR.FoundationOwner1Key = FoundationOwner1Key;
+                    MiscellaneousDataDR.FoundationOwner2Key = FoundationOwner2Key;
+                    MiscellaneousDataDR.HasEXWORKERPartnerType = HasEXWORKERPartnerType;
+                    MiscellaneousDataDR.ItemsCountContacts = ItemsCountContacts;
+                    MiscellaneousDataDR.LastContactDate = LastContactDate;
+                    MiscellaneousDataDT.Rows.Add(MiscellaneousDataDR);
+                    MiscellaneousDataDT.AcceptChanges();
+                });
+
+            ASiteCountryCode = SiteCountryCode;
 
             // Remove all Tables that were not filled with data before remoting them
             // This will be the DataTables that exist for a certain Partner Class,
@@ -2227,6 +2227,18 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, true,
                                         TLastPartnerUse.lpuMailroomPartner);
                                     TLogging.LogAtLevel(6, "TPartnerEditUIConnector.SubmitChanges: Set Partner as Recent Partner.");
+
+                                    if (FPartnerClass == TPartnerClass.PERSON)
+                                    {
+                                        // Set FAMILY of new PERSON as recent Partner, too.
+                                        // This helps the user in the creation of multiple PERSONs, one after the other, as
+                                        // the 'New Partner' Dialog will pick up that FAMILY once the first new PERSON got
+                                        // saved (see Bug #974).
+                                        //TRecentPartnersHandling.AddRecentlyUsedPartner(InspectDS.PPerson[0].FamilyKey, TPartnerClass.FAMILY, false,
+                                        //    TLastPartnerUse.lpuMailroomPartner);
+                                        TLogging.LogAtLevel(6,
+                                            "TPartnerEditUIConnector.SubmitChanges: Set PERSON Partners' FAMILY as Recent Partner.");
+                                    }
                                 }
 
                                 if (TLogging.DebugLevel >= 4)

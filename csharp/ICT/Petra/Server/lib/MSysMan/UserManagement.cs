@@ -62,20 +62,27 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
+                TDBTransaction SubmitChangesTransaction = null;
+                bool SubmissionResult = false;
                 TPetraPrincipal tempPrincipal;
-                SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUsername.ToUpper(), out tempPrincipal);
-                SUserTable UserTable = (SUserTable)UserDR.Table;
 
-                Random r = new Random();
-                UserDR.PasswordSalt = r.Next(1000000000).ToString();
-                UserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
-                        UserDR.PasswordSalt), "SHA1");
-                UserDR.PasswordNeedsChange = APasswordNeedsChanged;
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                    ref SubmissionResult,
+                    delegate
+                    {
+                        SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUsername.ToUpper(), out tempPrincipal);
+                        SUserTable UserTable = (SUserTable)UserDR.Table;
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                SUserAccess.SubmitChanges(UserTable, Transaction);
+                        Random r = new Random();
+                        UserDR.PasswordSalt = r.Next(1000000000).ToString();
+                        UserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
+                                UserDR.PasswordSalt), "SHA1");
+                        UserDR.PasswordNeedsChange = APasswordNeedsChanged;
 
-                DBAccess.GDBAccessObj.CommitTransaction();
+                        SUserAccess.SubmitChanges(UserTable, SubmitChangesTransaction);
+
+                        SubmissionResult = true;
+                    });
 
                 return true;
             }
@@ -339,30 +346,18 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static MaintainUsersTDS LoadUsersAndModulePermissions()
         {
-            MaintainUsersTDS ReturnValue = null;
+            TDBTransaction ReadTransaction = null;
+            MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
 
-            Boolean NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            try
-            {
-                ReturnValue = new MaintainUsersTDS();
-                SUserAccess.LoadAll(ReturnValue, Transaction);
-                SUserModuleAccessPermissionAccess.LoadAll(ReturnValue, Transaction);
-                SModuleAccess.LoadAll(ReturnValue, Transaction);
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.Message);
-                TLogging.Log(e.StackTrace);
-                ReturnValue = null;
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
+                delegate
+                {
+                    SUserAccess.LoadAll(ReturnValue, ReadTransaction);
+                    SUserModuleAccessPermissionAccess.LoadAll(ReturnValue, ReadTransaction);
+                    SModuleAccess.LoadAll(ReturnValue, ReadTransaction);
+                });
 
             return ReturnValue;
         }

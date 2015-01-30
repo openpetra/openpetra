@@ -76,86 +76,76 @@ namespace Ict.Petra.Server.MCommon.queries
         protected bool CalculateExtractInternal(TParameterList AParameters, string ASqlStmt, TResultList AResults, out int AExtractId)
         {
             Boolean ReturnValue = false;
-            Boolean NewTransaction;
-            TDBTransaction Transaction;
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
             List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
             bool AddressFilterAdded;
 
-            AExtractId = -1;
+            int ExtractId = -1;
 
-            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
-            // get the partner keys from the database
-            try
-            {
-                if (FSpecialTreatment)
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
                 {
-                    ReturnValue = RunSpecialTreatment(AParameters, Transaction, out AExtractId);
-                }
-                else
-                {
-                    // call to derived class to retrieve parameters specific for extract
-                    RetrieveParameters(AParameters, ref ASqlStmt, ref SqlParameterList);
-
-                    // add address filter information to sql statement and parameter list
-                    AddressFilterAdded = AddAddressFilter(AParameters, ref ASqlStmt, ref SqlParameterList);
-
-                    // now run the database query
-                    TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-                    DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(ASqlStmt, "partners", Transaction,
-                        SqlParameterList.ToArray());
-
-                    // filter data by postcode (if applicable)
-                    PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, Transaction);
-
-                    if (NewTransaction)
+                    try
                     {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
+                        // get the partner keys from the database
+                        if (FSpecialTreatment)
+                        {
+                            ReturnValue = RunSpecialTreatment(AParameters, Transaction, out ExtractId);
+                        }
+                        else
+                        {
+                            // call to derived class to retrieve parameters specific for extract
+                            RetrieveParameters(AParameters, ref ASqlStmt, ref SqlParameterList);
 
-                    // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
-                    // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
-                    if (AParameters.Get("CancelReportCalculation").ToBool() == true)
+                            // add address filter information to sql statement and parameter list
+                            AddressFilterAdded = AddAddressFilter(AParameters, ref ASqlStmt, ref SqlParameterList);
+
+                            // now run the database query
+                            TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+                            DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(ASqlStmt, "partners", Transaction,
+                                SqlParameterList.ToArray());
+
+                            // filter data by postcode (if applicable)
+                            PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, Transaction);
+
+                            // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
+                            // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
+                            if (AParameters.Get("CancelReportCalculation").ToBool() == true)
+                            {
+                                ReturnValue = false;
+                            }
+                            else
+                            {
+                                TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+
+                                // create an extract with the given name in the parameters
+                                ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
+                                    AParameters.Get("param_extract_name").ToString(),
+                                    AParameters.Get("param_extract_description").ToString(),
+                                    out ExtractId,
+                                    partnerkeys,
+                                    0,
+                                    AddressFilterAdded,
+                                    true);
+                            }
+                        }
+
+                        if (ReturnValue)
+                        {
+                            SubmissionOK = true;
+                        }
+                    }
+                    catch (Exception Exc)
                     {
-                        return false;
+                        TLogging.Log("An Exception occured in CalculateExtractInternal:" + Environment.NewLine + Exc.ToString());
                     }
+                });
 
-                    TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+            AExtractId = ExtractId;
 
-                    // create an extract with the given name in the parameters
-                    ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
-                        AParameters.Get("param_extract_name").ToString(),
-                        AParameters.Get("param_extract_description").ToString(),
-                        out AExtractId,
-                        partnerkeys,
-                        0,
-                        AddressFilterAdded,
-                        true);
-                }
-
-                if (ReturnValue)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                return ReturnValue;
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured in CalculateExtractInternal:" + Environment.NewLine + Exc.ToString());
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                throw;
-            }
+            return ReturnValue;
         }
 
         /// <summary>

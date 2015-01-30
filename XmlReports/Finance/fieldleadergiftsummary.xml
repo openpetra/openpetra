@@ -300,6 +300,40 @@
         </query>
       </calculation>
 
+      <calculation id="SelectAmountTotal" returns="AmountTotal" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+              SELECT SUM (detail.a_gift_amount_n) AS AmountTotal
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+              SELECT SUM (detail.a_gift_amount_intl_n) AS AmountTotal
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift as gift, 
+              PUB_a_gift_detail as detail,
+              PUB_a_gift_batch
+            WHERE
+                detail.a_ledger_number_i = gift.a_ledger_number_i
+              AND detail.a_batch_number_i = gift.a_batch_number_i
+              AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+              AND detail.a_recipient_ledger_number_n = {{FieldKey}}
+              AND detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+              AND gift.a_ledger_number_i ={{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
+              AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
       <calculation id="Partner Key" returnsFormat="partnerkey" returns="text">
         <caption><value text="Partner Key"/></caption>
         <query>
@@ -385,6 +419,14 @@
           <lowerLevelReport level="YearLevel" calculation="SelectPartners"></lowerLevelReport>
         </detail>
         <footer line="below" space="below">
+		  <field whichfield="column 2" width="8cm">
+            <value text="Total for "/>
+            <value variable="FieldName"/>
+            <value text=" for this report period: "/>
+          </field>
+          <field whichfield="column {param_gift_amount_column}" calculation="SelectAmountTotal">
+            <value variable="AmountTotal"/>
+          </field>
         </footer>
       </level>
 

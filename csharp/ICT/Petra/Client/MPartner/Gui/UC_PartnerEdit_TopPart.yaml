@@ -54,7 +54,7 @@ RootNode:
             Width: 125
             
         cmbPartnerStatus: 
-            Label: Partner &Status
+            Label: Partner Stat&us
             DataField: StatusCode
             List: PartnerStatusList
             Width: 100

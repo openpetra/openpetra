@@ -15,6 +15,7 @@
       <CustomField name="BatchNumber" type="Int32" comment="The Batch number that references this rate."/>
       <CustomField name="JournalNumber" type="Int32" initial="0" comment="The Journal number that references this rate. Value is 0 for Gift Batch."/>
       <CustomField name="BatchStatus" type="String" comment="The Batch status of the batch that references this rate."/>
+      <CustomField name="Description" type="String" comment="The Batch or Journal description that references this rate."/>
       <CustomField name="TableSource" type="String" comment="The data table that contributed this row.  One of 'GB', 'J' or 'DEX'."/>
       <CustomField name="BatchYear" type="Int32" comment="The Batch Year in which this row occurs."/>
       <CustomField name="BatchPeriod" type="Int32" comment="The Batch Period of the Batch Year in which this row occurs."/>

@@ -22,6 +22,12 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Windows.Forms;
+
+using Ict.Common;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -43,6 +49,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FLedgerNumber = value;
 
                 ReportTypeChanged(this, null);
+
+                FPetraUtilsObject.LoadDefaultSettings();
+                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
         }
 
@@ -83,6 +92,58 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();
         }
 
+        private Boolean LoadReportData(TRptCalculator ACalc)
+        {
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation") && !paramsDictionary.ContainsKey(p.name))
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+            // get data for this report
+            DataSet ReportDataSet = TRemote.MReporting.WebConnectors.GetRecipientGiftStatementDataSet(paramsDictionary);
+
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled() || this.IsDisposed)
+            {
+                return false;
+            }
+
+            // if no recipients
+            if (ReportDataSet.Tables["Recipients"] == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("No recipients found for this report period.");
+                return false;
+            }
+
+            // register datatables with the report
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Recipients"], "Recipients");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["RecipientTotals"], "RecipientTotals");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Donors"], "Donors");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["DonorAddresses"], "DonorAddresses");
+
+            //
+            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+
+            Boolean HasData = ReportDataSet.Tables["Recipients"].Rows.Count > 0;
+
+            if (!HasData)
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "No Recipients found."), "Recipient Gift Statement");
+            }
+
+            return HasData;
+        }
+
         #region Event Handlers
 
         private void ReportTypeChanged(object ASender, System.EventArgs AEventArgs)
@@ -94,6 +155,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 return;
             }
 
+            if ((ReportType == "List") || (ReportType == "Email"))
+            {
+                cmbCurrency.Enabled = false;
+            }
+            else
+            {
+                cmbCurrency.Enabled = true;
+            }
+
             if ((ReportType == "List")
                 || (ReportType == "Email"))
             {
@@ -102,6 +172,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             else
             {
                 txtRecipient.PartnerClass = "WORKER,UNIT";
+            }
+        }
+
+        private void RecipientSelectionChanged(object sender, EventArgs e)
+        {
+            if (tpgReportSorting.Enabled && rbtPartner.Checked)
+            {
+                tpgReportSorting.Enabled = false;
+                this.Refresh();
+            }
+            else if (!tpgReportSorting.Enabled && (rbtAllRecipients.Checked || rbtExtract.Checked))
+            {
+                tpgReportSorting.Enabled = true;
+                this.Refresh();
             }
         }
 

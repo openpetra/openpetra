@@ -163,6 +163,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
 
+            if (ctrl.HasAttribute("ShortcutKeys"))
+            {
+                writer.SetControlProperty(ctrl, "ShortcutKeys", ctrl.GetAttribute("ShortcutKeys"));
+            }
+
             // todo: this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 
             return writer.FTemplate;

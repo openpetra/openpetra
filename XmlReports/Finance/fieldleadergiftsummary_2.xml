@@ -18,7 +18,7 @@
     <reportheader/>
     <pageheader>
       <field whichfield="title1">
-        <value text="Field Leader Gift Summary" />
+        <value text="Field Leader Gift Summary (2)" />
       </field>
 
       <field whichfield="title2">
@@ -299,6 +299,8 @@
         <query>
           <queryDetail>
             <value text="NO-SQL"/>
+            <value function="assign(SumTotalDebitAccount, add({SumTotalDebitAccount}, {SumDebitAccount}))"/>
+            <value function="assign(SumTotalCreditAccount, add({SumTotalCreditAccount}, {SumCreditAccount}))"/>
             <value function="assign(SumDebitAccount, 0)"/>
             <value function="assign(SumCreditAccount, 0)"/>
           </queryDetail>
@@ -470,8 +472,25 @@
     <levels>
       <level name="main">
         <detail>
+          <lowerLevelReport level="AccountLevels"></lowerLevelReport>
+        </detail>
+      </level>
+
+      <level name="AccountLevels">
+        <detail>
           <lowerLevelReport level="AccountLevel0" calculation="SelectAccounts"></lowerLevelReport>
         </detail>
+        <footer line="above" space="below">
+		  <field whichfield="column 0" pos="0cm" width="5cm">
+            <value text="Grand Total: "/>
+          </field>
+		  <field whichfield="column {param_debit_column}">
+			<value variable="SumTotalDebitAccount" format="currency"/>
+		  </field>
+		  <field whichfield="column {param_credit_column}">
+			<value variable="SumTotalCreditAccount" format="currency"/>
+		  </field>
+        </footer>
       </level>
 
       <!-- Hide the results where there is no entry that matches this:

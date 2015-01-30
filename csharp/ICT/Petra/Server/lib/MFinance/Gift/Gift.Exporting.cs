@@ -76,30 +76,125 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <summary>
         /// export all the Data of the batches matching the parameters to a String
         /// </summary>
-        /// <param name="requestParams">Hashtable containing the given params </param>
-        /// <param name="exportString">Big parts of the export file as a simple String</param>
+        /// <param name="ARequestParams">Hashtable containing the given params </param>
+        /// <param name="AEportString">Big parts of the export file as a simple String</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>number of exported batches</returns>
         public Int32 ExportAllGiftBatchData(
-            Hashtable requestParams,
-            out String exportString,
+            Hashtable ARequestParams,
+            out String AEportString,
             out TVerificationResultCollection AMessages)
         {
             FStringWriter = new StringWriter();
             FMainDS = new GiftBatchTDS();
-            FDelimiter = (String)requestParams["Delimiter"];
-            FLedgerNumber = (Int32)requestParams["ALedgerNumber"];
-            FDateFormatString = (String)requestParams["DateFormatString"];
-            bool Summary = (bool)requestParams["Summary"];
+            FDelimiter = (String)ARequestParams["Delimiter"];
+            FLedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
+            FDateFormatString = (String)ARequestParams["DateFormatString"];
+            bool Summary = (bool)ARequestParams["Summary"];
 
-            FUseBaseCurrency = (bool)requestParams["bUseBaseCurrency"];
-            FDateForSummary = (DateTime)requestParams["DateForSummary"];
-            String NumberFormat = (String)requestParams["NumberFormat"];
+            FUseBaseCurrency = (bool)ARequestParams["bUseBaseCurrency"];
+            FDateForSummary = (DateTime)ARequestParams["DateForSummary"];
+            String NumberFormat = (String)ARequestParams["NumberFormat"];
             FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            FTransactionsOnly = (bool)requestParams["TransactionsOnly"];
-            FExtraColumns = (bool)requestParams["ExtraColumns"];
+            FTransactionsOnly = (bool)ARequestParams["TransactionsOnly"];
+            FExtraColumns = (bool)ARequestParams["ExtraColumns"];
 
-            FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref FTransaction,
+                delegate
+                {
+                    try
+                    {
+                        ALedgerAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, FTransaction);
+
+                        List <OdbcParameter>parameters = new List <OdbcParameter>();
+
+                        SortedList <String, String>SQLCommandDefines = new SortedList <string, string>();
+
+                        if ((bool)ARequestParams["IncludeUnposted"])
+                        {
+                            SQLCommandDefines.Add("INCLUDEUNPOSTED", string.Empty);
+                        }
+
+                        OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                        param.Value = FLedgerNumber;
+                        parameters.Add(param);
+
+                        Int64 recipientNumber = (Int64)ARequestParams["RecipientNumber"];
+                        Int64 fieldNumber = (Int64)ARequestParams["FieldNumber"];
+
+                        if (recipientNumber != 0)
+                        {
+                            SQLCommandDefines.Add("BYRECIPIENT", string.Empty);
+                            param = new OdbcParameter("RecipientNumber", OdbcType.Int);
+                            param.Value = recipientNumber;
+                            parameters.Add(param);
+                        }
+
+                        if (fieldNumber != 0)
+                        {
+                            SQLCommandDefines.Add("BYFIELD", string.Empty);
+                            param = new OdbcParameter("fieldNumber", OdbcType.Int);
+                            param.Value = fieldNumber;
+                            parameters.Add(param);
+                        }
+
+                        if (ARequestParams.ContainsKey("BatchNumberStart"))
+                        {
+                            SQLCommandDefines.Add("BYBATCHNUMBER", string.Empty);
+                            param = new OdbcParameter("BatchNumberStart", OdbcType.Int);
+                            param.Value = (Int32)ARequestParams["BatchNumberStart"];
+                            parameters.Add(param);
+                            param = new OdbcParameter("BatchNumberEnd", OdbcType.Int);
+                            param.Value = (Int32)ARequestParams["BatchNumberEnd"];
+                            parameters.Add(param);
+                        }
+                        else
+                        {
+                            SQLCommandDefines.Add("BYDATERANGE", string.Empty);
+                            param = new OdbcParameter("BatchDateFrom", OdbcType.DateTime);
+                            param.Value = (DateTime)ARequestParams["BatchDateFrom"];
+                            parameters.Add(param);
+                            param = new OdbcParameter("BatchDateTo", OdbcType.DateTime);
+                            param.Value = (DateTime)ARequestParams["BatchDateTo"];
+                            parameters.Add(param);
+                        }
+
+                        string sqlStatement = TDataBase.ReadSqlFile("Gift.GetGiftsToExport.sql", SQLCommandDefines);
+
+                        DBAccess.GDBAccessObj.Select(FMainDS,
+                            "SELECT DISTINCT PUB_a_gift_batch.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName(),
+                            FMainDS.AGiftBatch.TableName,
+                            FTransaction,
+                            parameters.ToArray());
+
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            Catalog.GetString("Retrieving gift records"),
+                            10);
+
+                        DBAccess.GDBAccessObj.Select(FMainDS,
+                            "SELECT DISTINCT PUB_a_gift.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName() + ", " +
+                            AGiftTable.GetGiftTransactionNumberDBName(),
+                            FMainDS.AGift.TableName,
+                            FTransaction,
+                            parameters.ToArray());
+
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            Catalog.GetString("Retrieving gift detail records"),
+                            15);
+
+                        DBAccess.GDBAccessObj.Select(FMainDS,
+                            "SELECT DISTINCT PUB_a_gift_detail.* " + sqlStatement,
+                            FMainDS.AGiftDetail.TableName,
+                            FTransaction,
+                            parameters.ToArray());
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("Error in ExportAllGiftBatchData: " + e.Message);
+                        throw e;
+                    }
+                });
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Exporting Gift Batches"), 100);
@@ -107,97 +202,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Retrieving records"),
                 5);
-
-            try
-            {
-                ALedgerAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, FTransaction);
-
-                List <OdbcParameter>parameters = new List <OdbcParameter>();
-
-                SortedList <String, String>SQLCommandDefines = new SortedList <string, string>();
-
-                if ((bool)requestParams["IncludeUnposted"])
-                {
-                    SQLCommandDefines.Add("INCLUDEUNPOSTED", string.Empty);
-                }
-
-                OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
-                param.Value = FLedgerNumber;
-                parameters.Add(param);
-
-                Int64 recipientNumber = (Int64)requestParams["RecipientNumber"];
-                Int64 fieldNumber = (Int64)requestParams["FieldNumber"];
-
-                if (recipientNumber != 0)
-                {
-                    SQLCommandDefines.Add("BYRECIPIENT", string.Empty);
-                    param = new OdbcParameter("RecipientNumber", OdbcType.Int);
-                    param.Value = recipientNumber;
-                    parameters.Add(param);
-                }
-
-                if (fieldNumber != 0)
-                {
-                    SQLCommandDefines.Add("BYFIELD", string.Empty);
-                    param = new OdbcParameter("fieldNumber", OdbcType.Int);
-                    param.Value = fieldNumber;
-                    parameters.Add(param);
-                }
-
-                if (requestParams.ContainsKey("BatchNumberStart"))
-                {
-                    SQLCommandDefines.Add("BYBATCHNUMBER", string.Empty);
-                    param = new OdbcParameter("BatchNumberStart", OdbcType.Int);
-                    param.Value = (Int32)requestParams["BatchNumberStart"];
-                    parameters.Add(param);
-                    param = new OdbcParameter("BatchNumberEnd", OdbcType.Int);
-                    param.Value = (Int32)requestParams["BatchNumberEnd"];
-                    parameters.Add(param);
-                }
-                else
-                {
-                    SQLCommandDefines.Add("BYDATERANGE", string.Empty);
-                    param = new OdbcParameter("BatchDateFrom", OdbcType.DateTime);
-                    param.Value = (DateTime)requestParams["BatchDateFrom"];
-                    parameters.Add(param);
-                    param = new OdbcParameter("BatchDateTo", OdbcType.DateTime);
-                    param.Value = (DateTime)requestParams["BatchDateTo"];
-                    parameters.Add(param);
-                }
-
-                string sqlStatement = TDataBase.ReadSqlFile("Gift.GetGiftsToExport.sql", SQLCommandDefines);
-
-                DBAccess.GDBAccessObj.Select(FMainDS,
-                    "SELECT DISTINCT PUB_a_gift_batch.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName(),
-                    FMainDS.AGiftBatch.TableName,
-                    FTransaction,
-                    parameters.ToArray());
-
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    Catalog.GetString("Retrieving gift records"),
-                    10);
-
-                DBAccess.GDBAccessObj.Select(FMainDS,
-                    "SELECT DISTINCT PUB_a_gift.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName() + ", " +
-                    AGiftTable.GetGiftTransactionNumberDBName(),
-                    FMainDS.AGift.TableName,
-                    FTransaction,
-                    parameters.ToArray());
-
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    Catalog.GetString("Retrieving gift detail records"),
-                    15);
-
-                DBAccess.GDBAccessObj.Select(FMainDS,
-                    "SELECT DISTINCT PUB_a_gift_detail.* " + sqlStatement,
-                    FMainDS.AGiftDetail.TableName,
-                    FTransaction,
-                    parameters.ToArray());
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
 
             string BaseCurrency = FMainDS.ALedger[0].BaseCurrency;
             FCurrencyCode = BaseCurrency; // Depending on FUseBaseCurrency, this will be overwritten for each gift.
@@ -326,7 +330,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
-            exportString = FStringWriter.ToString();
+            AEportString = FStringWriter.ToString();
             AMessages = FMessages;
             return FMainDS.AGiftBatch.Count;
         }

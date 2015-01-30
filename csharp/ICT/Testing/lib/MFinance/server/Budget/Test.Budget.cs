@@ -160,11 +160,13 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                 ABudgetTable.GetTableDBName(),
                 FLedgerNumber);
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sqlChangeBudget, Transaction);
-
-            DBAccess.GDBAccessObj.CommitTransaction();
+            bool SubmissionOK = true;
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sqlChangeBudget, Transaction);
+                });
 
             // post all budgets again
             TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
@@ -190,12 +192,14 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                 ABudgetTable.GetBudgetStatusDBName(),
                 FLedgerNumber);
 
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sqlChangeBudget, Transaction);
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sqlMarkBudgetForConsolidation, Transaction);
-
-            DBAccess.GDBAccessObj.CommitTransaction();
+            SubmissionOK = true;
+            Transaction = null;
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sqlChangeBudget, Transaction);
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(sqlMarkBudgetForConsolidation, Transaction);
+                });
 
             // post only modified budget again
             TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);

@@ -52,76 +52,79 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool DeleteConference(Int64 AConferenceKey, out TVerificationResultCollection AVerificationResult)
         {
-            AVerificationResult = null;
+            TVerificationResultCollection VerificationResult = null;
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Deleting conference"), 100);
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            try
-            {
-                string[] TableNames = new string[] {
-                    PcAttendeeTable.GetTableDBName(),
-                         PcConferenceCostTable.GetTableDBName(),
-                         PcConferenceOptionTable.GetTableDBName(),
-                         PcConferenceVenueTable.GetTableDBName(),
-                         PcDiscountTable.GetTableDBName(),
-                         PcEarlyLateTable.GetTableDBName(),
-                         PcExtraCostTable.GetTableDBName(),
-                         PcGroupTable.GetTableDBName(),
-                         PcSupplementTable.GetTableDBName()
-                };
-
-                OdbcParameter[] ConferenceParameter = new OdbcParameter[] {
-                    new OdbcParameter("conferencekey", OdbcType.BigInt)
-                };
-
-                ConferenceParameter[0].Value = AConferenceKey;
-
-                int Progress = 0;
-
-                foreach (string Table in TableNames)
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
                 {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Deleting: ") + Table, 10 * Progress);
+                    try
+                    {
+                        string[] TableNames = new string[] {
+                            PcAttendeeTable.GetTableDBName(),
+                            PcConferenceCostTable.GetTableDBName(),
+                            PcConferenceOptionTable.GetTableDBName(),
+                            PcConferenceVenueTable.GetTableDBName(),
+                            PcDiscountTable.GetTableDBName(),
+                            PcEarlyLateTable.GetTableDBName(),
+                            PcExtraCostTable.GetTableDBName(),
+                            PcGroupTable.GetTableDBName(),
+                            PcSupplementTable.GetTableDBName()
+                        };
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(
-                        String.Format("DELETE FROM PUB_{0} WHERE pc_conference_key_n = ?", Table),
-                        Transaction, ConferenceParameter);
+                        OdbcParameter[] ConferenceParameter = new OdbcParameter[] {
+                            new OdbcParameter("conferencekey", OdbcType.BigInt)
+                        };
 
-                    Progress++;
-                }
+                        ConferenceParameter[0].Value = AConferenceKey;
 
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Deleting: Conference"), 90);
-                PcConferenceAccess.DeleteByPrimaryKey(AConferenceKey, Transaction);
+                        int Progress = 0;
 
-                if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
-                {
-                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-                    throw new Exception("Deletion of Conference was cancelled by the user");
-                }
+                        foreach (string Table in TableNames)
+                        {
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Deleting: ") + Table, 10 *
+                                Progress);
 
-                DBAccess.GDBAccessObj.CommitTransaction();
+                            DBAccess.GDBAccessObj.ExecuteNonQuery(
+                                String.Format("DELETE FROM PUB_{0} WHERE pc_conference_key_n = ?", Table),
+                                Transaction, ConferenceParameter);
 
-                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
+                            Progress++;
+                        }
 
-                AVerificationResult = new TVerificationResultCollection();
-                AVerificationResult.Add(new TVerificationResult(
-                        "Problems deleting conference " + AConferenceKey.ToString(),
-                        e.Message,
-                        "Cannot delete conference",
-                        string.Empty,
-                        TResultSeverity.Resv_Critical,
-                        Guid.Empty));
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TProgressTracker.CancelJob(DomainManager.GClientID.ToString());
-                return false;
-            }
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Deleting: Conference"), 90);
+                        PcConferenceAccess.DeleteByPrimaryKey(AConferenceKey, Transaction);
 
-            return true;
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == false)
+                        {
+                            SubmissionOK = true;
+                        }
+
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log(e.ToString());
+
+                        VerificationResult = new TVerificationResultCollection();
+                        VerificationResult.Add(new TVerificationResult(
+                                "Problems deleting conference " + AConferenceKey.ToString(),
+                                e.Message,
+                                "Cannot delete conference",
+                                string.Empty,
+                                TResultSeverity.Resv_Critical,
+                                Guid.Empty));
+                        TProgressTracker.CancelJob(DomainManager.GClientID.ToString());
+                    }
+                });
+
+            AVerificationResult = VerificationResult;
+
+            return SubmissionOK;
         }
     }
 }

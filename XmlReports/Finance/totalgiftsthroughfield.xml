@@ -55,7 +55,8 @@
         <query>
           <queryDetail>
             <value text="NO-SQL"/>
-            <value function="assign(param_YearBlock, sub({param_YearBlock}, 1))"/> 
+            <value function="assign(param_YearBlock, sub({param_YearBlock}, 1))"/>
+            <value function="assign(param_MonthsThisYear, 12)"/>
           </queryDetail>
         </query>
       </calculation>
@@ -135,7 +136,7 @@
         <query> 
           <queryDetail>
             <value text="NO-SQL"/>
-            <value function="div(round(div(mul({YearTotal}, 100), 12)),100)"/>
+            <value function="div(round(div(mul({YearTotal}, 100), {param_MonthsThisYear})),100)"/>
           </queryDetail>
         </query>
       </calculation>
@@ -145,7 +146,7 @@
         <query> 
           <queryDetail>
             <value text="NO-SQL"/>
-            <value function="round(div({YearTotalCount}, 12))"/>
+            <value function="round(div({YearTotalCount}, {param_MonthsThisYear}))"/>
           </queryDetail>
         </query>
       </calculation>
@@ -194,22 +195,22 @@
             <value text="Av/Mnth"/>
           </field>
           <field whichfield="column 1">
-            <value function="div(getSumLowerReport({{lineId}}, 1), 12)"/>
+            <value function="div(getSumLowerReport({{lineId}}, 1), {param_MonthsThisYear})"/>
           </field>
           <field whichfield="column 2">
-            <value function="round(div(getSumLowerReport({{lineId}}, 2), 12))"/>
+            <value function="round(div(getSumLowerReport({{lineId}}, 2), {param_MonthsThisYear}))"/>
           </field>
           <field whichfield="column 3">
-            <value function="div(getSumLowerReport({{lineId}}, 3), 12)"/>
+            <value function="div(getSumLowerReport({{lineId}}, 3), {param_MonthsThisYear})"/>
           </field>
           <field whichfield="column 4">
-            <value function="round(div(getSumLowerReport({{lineId}}, 4), 12))"/>
+            <value function="round(div(getSumLowerReport({{lineId}}, 4), {param_MonthsThisYear}))"/>
           </field>
           <field whichfield="column 5">
-            <value function="div(getSumLowerReport({{lineId}}, 5), 12)"/>
+            <value function="div(getSumLowerReport({{lineId}}, 5), {param_MonthsThisYear})"/>
           </field>
           <field whichfield="column 6">
-            <value function="round(div(getSumLowerReport({{lineId}}, 6), 12))"/>
+            <value function="round(div(getSumLowerReport({{lineId}}, 6), {param_MonthsThisYear}))"/>
           </field>
         </footer>
       </level>

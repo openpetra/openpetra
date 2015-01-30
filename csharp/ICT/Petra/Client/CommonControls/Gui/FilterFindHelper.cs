@@ -705,6 +705,11 @@ namespace Ict.Petra.Client.CommonControls
                             continue;
                         }
 
+                        if (!iffp.PanelControl.Enabled)
+                        {
+                            continue;
+                        }
+
                         if (iffp.PanelControl is CheckBox)
                         {
                             ((CheckBox)iffp.PanelControl).CheckState = CheckState.Indeterminate;

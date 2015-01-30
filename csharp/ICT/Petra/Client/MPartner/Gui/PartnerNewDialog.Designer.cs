@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // lblPartnerClass
             //
-            this.lblPartnerClass.Location = new System.Drawing.Point(18, 206);
+            this.lblPartnerClass.Location = new System.Drawing.Point(18, 208);
             this.lblPartnerClass.Name = "lblPartnerClass";
             this.lblPartnerClass.Size = new System.Drawing.Size(75, 21);
             this.lblPartnerClass.TabIndex = 4;
@@ -109,7 +109,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // Label1
             //
-            this.Label1.Location = new System.Drawing.Point(-7, 227);
+            this.Label1.Location = new System.Drawing.Point(-7, 231);
             this.Label1.Name = "Label1";
             this.Label1.Size = new System.Drawing.Size(100, 18);
             this.Label1.TabIndex = 7;
@@ -118,13 +118,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // cmbAcquisitionCode
             //
+            this.cmbAcquisitionCode.AllowDbNull = false;
             this.cmbAcquisitionCode.BackColor = System.Drawing.SystemColors.Control;
             this.cmbAcquisitionCode.CaseSensitiveSearch = false;
             this.cmbAcquisitionCode.ColumnWidthCol1 = 100;
             this.cmbAcquisitionCode.ColumnWidthCol2 = 350;
             this.cmbAcquisitionCode.ColumnWidthCol3 = 0;
             this.cmbAcquisitionCode.ColumnWidthCol4 = 0;
-            this.cmbAcquisitionCode.ComboBoxWidth = 83;
+            this.cmbAcquisitionCode.ComboBoxWidth = 100;
             this.cmbAcquisitionCode.DisplayMember = "";
             this.cmbAcquisitionCode.Filter = null;
             this.cmbAcquisitionCode.Font =
@@ -133,7 +134,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.cmbAcquisitionCode.Images = null;
             this.cmbAcquisitionCode.LabelDisplaysColumn = null;
             this.cmbAcquisitionCode.ListTable = Ict.Petra.Client.CommonControls.TCmbAutoPopulated.TListTableEnum.AcquisitionCodeList;
-            this.cmbAcquisitionCode.Location = new System.Drawing.Point(98, 225);
+            this.cmbAcquisitionCode.Location = new System.Drawing.Point(98, 229);
             this.cmbAcquisitionCode.Name = "cmbAcquisitionCode";
             this.cmbAcquisitionCode.SelectedIndex = -1;
             this.cmbAcquisitionCode.Size = new System.Drawing.Size(320, 22);
@@ -143,18 +144,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // grdInstalledSites
             //
+            this.grdInstalledSites.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.grdInstalledSites.AutoFindColumn = ((short)(-1));
-            this.grdInstalledSites.BackColor = System.Drawing.SystemColors.ControlDark;
             this.grdInstalledSites.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.grdInstalledSites.CancelEditingWithEscapeKey = false;
             this.grdInstalledSites.DeleteQuestionMessage = "You have chosen to delete this record.\'#13#10#13#10\'Do you really want to delete " +
                                                            "it?";
-            this.grdInstalledSites.EnableSort = false;
+            this.grdInstalledSites.EnableSort = true;
             this.grdInstalledSites.FixedRows = 1;
+            this.grdInstalledSites.IncludeFixedRowsInAutoSizeColumns = true;
             this.grdInstalledSites.Location = new System.Drawing.Point(98, 13);
+            this.grdInstalledSites.MaxAutoSizeRows = 999;
             this.grdInstalledSites.Name = "grdInstalledSites";
             this.grdInstalledSites.SelectionMode = SourceGrid.GridSelectionMode.Row;
-            this.grdInstalledSites.Size = new System.Drawing.Size(364, 163);
+            this.grdInstalledSites.Size = new System.Drawing.Size(450, 163);
             this.grdInstalledSites.SpecialKeys =
                 ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows | SourceGrid.GridSpecialKeys.PageDownUp) |
                                                   SourceGrid.GridSpecialKeys.Enter) |
@@ -168,13 +173,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // cmbPartnerClass
             //
+            this.cmbPartnerClass.AllowDbNull = false;
             this.cmbPartnerClass.BackColor = System.Drawing.SystemColors.Control;
             this.cmbPartnerClass.CaseSensitiveSearch = false;
             this.cmbPartnerClass.ColumnWidthCol1 = 130;
             this.cmbPartnerClass.ColumnWidthCol2 = 0;
             this.cmbPartnerClass.ColumnWidthCol3 = 0;
             this.cmbPartnerClass.ColumnWidthCol4 = 0;
-            this.cmbPartnerClass.ComboBoxWidth = 108;
+            this.cmbPartnerClass.ComboBoxWidth = 130;
             this.cmbPartnerClass.DisplayMember = "";
             this.cmbPartnerClass.Filter = null;
             this.cmbPartnerClass.Font =
@@ -183,7 +189,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.cmbPartnerClass.Images = null;
             this.cmbPartnerClass.LabelDisplaysColumn = null;
             this.cmbPartnerClass.ListTable = Ict.Petra.Client.CommonControls.TCmbAutoPopulated.TListTableEnum.PartnerClassList;
-            this.cmbPartnerClass.Location = new System.Drawing.Point(98, 203);
+            this.cmbPartnerClass.Location = new System.Drawing.Point(98, 205);
             this.cmbPartnerClass.Name = "cmbPartnerClass";
             this.cmbPartnerClass.SelectedIndex = -1;
             this.cmbPartnerClass.Size = new System.Drawing.Size(110, 22);
@@ -195,7 +201,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // chkPrivatePartner
             //
             this.chkPrivatePartner.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.chkPrivatePartner.Location = new System.Drawing.Point(8, 243);
+            this.chkPrivatePartner.Location = new System.Drawing.Point(8, 248);
             this.chkPrivatePartner.Name = "chkPrivatePartner";
             this.chkPrivatePartner.Size = new System.Drawing.Size(102, 23);
             this.chkPrivatePartner.TabIndex = 9;
@@ -212,32 +218,38 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerKey.Location = new System.Drawing.Point(98, 182);
             this.txtPartnerKey.MaxLength = 10;
             this.txtPartnerKey.Name = "txtPartnerKey";
+            this.txtPartnerKey.PartnerClass = null;
             this.txtPartnerKey.PartnerKey = ((long)(0));
             this.txtPartnerKey.ReadOnly = false;
             this.txtPartnerKey.ShowLabel = false;
             this.txtPartnerKey.Size = new System.Drawing.Size(90, 22);
             this.txtPartnerKey.TabIndex = 3;
             this.txtPartnerKey.TextBoxReadOnly = false;
-            this.txtPartnerKey.TextBoxWidth = 80;
             //
             // txtFamilyPartnerBox
             //
+            this.txtFamilyPartnerBox.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.txtFamilyPartnerBox.ASpecialSetting = true;
             this.txtFamilyPartnerBox.AutomaticallyUpdateDataSource = false;
             this.txtFamilyPartnerBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.txtFamilyPartnerBox.ButtonText = "&Family...";
             this.txtFamilyPartnerBox.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.txtFamilyPartnerBox.ButtonWidth = 70;
+            this.txtFamilyPartnerBox.DataSet = null;
+            this.txtFamilyPartnerBox.LabelVisible = true;
             this.txtFamilyPartnerBox.ListTable = Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
-            this.txtFamilyPartnerBox.Location = new System.Drawing.Point(213, 202);
+            this.txtFamilyPartnerBox.Location = new System.Drawing.Point(213, 204);
             this.txtFamilyPartnerBox.MaxLength = 32767;
             this.txtFamilyPartnerBox.Name = "txtFamilyPartnerBox";
             this.txtFamilyPartnerBox.PartnerClass = "FAMILY";
             this.txtFamilyPartnerBox.PreventFaultyLeaving = false;
-            this.txtFamilyPartnerBox.ReadOnly = true;
+            this.txtFamilyPartnerBox.ReadOnly = false;
             this.txtFamilyPartnerBox.ShowLabel = true;
-            this.txtFamilyPartnerBox.Size = new System.Drawing.Size(245, 23);
+            this.txtFamilyPartnerBox.Size = new System.Drawing.Size(335, 23);
             this.txtFamilyPartnerBox.TabIndex = 6;
+            this.txtFamilyPartnerBox.TextBoxPartEnabled = false;
             this.txtFamilyPartnerBox.TextBoxWidth = 80;
             this.txtFamilyPartnerBox.VerificationResultCollection = null;
             this.txtFamilyPartnerBox.Visible = false;
@@ -248,9 +260,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnOK.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnOK.Location = new System.Drawing.Point(423, 7);
+            this.btnOK.Location = new System.Drawing.Point(394, 7);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(62, 19);
+            this.btnOK.Size = new System.Drawing.Size(76, 24);
             this.btnOK.TabIndex = 997;
             this.btnOK.Text = "&OK";
             this.btnOK.Click += new System.EventHandler(this.BtnOK_Click);
@@ -261,9 +273,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnCancel.Location = new System.Drawing.Point(491, 7);
+            this.btnCancel.Location = new System.Drawing.Point(475, 7);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(63, 19);
+            this.btnCancel.Size = new System.Drawing.Size(76, 24);
             this.btnCancel.TabIndex = 998;
             this.btnCancel.Text = "&Cancel";
             //
@@ -271,12 +283,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.btnHelp.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnHelp.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnHelp.Location = new System.Drawing.Point(7, 9);
+            this.btnHelp.Image = ((System.Drawing.Bitmap)resources.GetObject("btnHelp.Glyph"));
+            this.btnHelp.Location = new System.Drawing.Point(10, 9);
             this.btnHelp.Name = "btnHelp";
-            this.btnHelp.Size = new System.Drawing.Size(62, 19);
-            this.btnHelp.TabIndex = 996;
-            this.btnHelp.Text = "&Help";
+            this.btnHelp.Size = new System.Drawing.Size(27, 24);
+            this.btnHelp.TabIndex = 999;
+            this.btnHelp.Text = "";
+            this.btnHelp.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnHelp.Click += new System.EventHandler(this.BtnHelp_Click);
             //
             // pnlBtnOKCancelHelpLayout
@@ -296,12 +309,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.stbMain.Name = "stbMain";
             this.stbMain.Size = new System.Drawing.Size(560, 22);
             this.stbMain.TabIndex = 997;
+            this.stbMain.UseOpenPetraToolStripRenderer = false;
             //
             // TPartnerNewDialogWinForm
             //
+            this.AcceptButton = this.btnOK;
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.CancelButton = btnCancel;
-            this.ClientSize = new System.Drawing.Size(560, 346);
+            this.CancelButton = this.btnCancel;
+            this.ClientSize = new System.Drawing.Size(560, 326);
             this.Controls.Add(this.txtFamilyPartnerBox);
             this.Controls.Add(this.txtPartnerKey);
             this.Controls.Add(this.grdInstalledSites);

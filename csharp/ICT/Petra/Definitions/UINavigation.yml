@@ -157,6 +157,7 @@ OpenPetra:
                         ExportBatches: {Description:Export to CSV file for use with Excel, ActionOpenScreen=TFrmGLBatchExport}
                     General:
                         LedgerInfo: {Description: View general information about this ledger, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmGLInfo}
+                        ForeignCurrencyAccountBalances: {Description:Display Foreign Currency Account Balances, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmForeignCurrencyAccountBalance}
                         ForeignCurrencyRevaluation: {Description:Runs a Foreign Currency Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
                         #EnterTransactions:
                         #ImportTransactions:
@@ -271,13 +272,12 @@ OpenPetra:
                         #RenameCostCentre:
                         #LinkCostCentreToPartner:
                     Other:
-                        SuspenseAccounts: {Description="Maintain Suspense Accounts", ActionOpenScreen=TFrmSetupSuspenseAccount}
                         Calendar: {Description="Maintain Accounting Periods", ActionOpenScreen=TFrmSetupAccountingPeriod}
                         FinanceModuleSubsystems: {Description="Enable/Disable Finance Module Subsystems", ActionOpenScreen=TFrmGLEnableSubsystems}
                         #ChangeNumberOfForwardingPeriods:
                     GiftReceipting: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                         MotivationGroup: {Description=Maintain Motivation Groups, ActionOpenScreen=Gift.TFrmMotivationGroupSetup}
-                        MotivationDetails: {Description: "Maintain Motivation Details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}                        
+                        MotivationDetails: {Description: "Maintain Motivation Details to which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}                        
                         AdminGrantsPayable: {Description=Maintain payable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsPayable}
                         AdminGrantsReceivable: {Description=Maintain receivable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
                     AccountsPayable:
@@ -465,7 +465,7 @@ OpenPetra:
             Database:
                 ImportExport: {DontShowNestedTasksAsLinks=true}
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}
-                    RestoreDatabaseFromBackup: {ActionClick=TSysManMain.ImportAllData, Description=This will overwrite all your existing data}
+                    RestoreDatabaseFromBackup: {ActionClick=TSysManMain.RestoreDatabase, Description=Replaces all existing data with backed-up data}
             Auditing:
                 Logs: {DontShowNestedTasksAsLinks=true}
                     #ErrorLog

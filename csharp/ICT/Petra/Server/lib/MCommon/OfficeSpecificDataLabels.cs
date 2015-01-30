@@ -312,36 +312,10 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
 
         /// <summary>
         /// Passes data as a Typed DataSet to the Screen, containing multiple DataTables.
-        ///
         /// </summary>
-        /// <returns>void</returns>
-        public OfficeSpecificDataLabelsTDS GetData()
-        {
-            OfficeSpecificDataLabelsTDS ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
-
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-            ReturnValue = GetData(ReadTransaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TOfficeSpecificDataLabelsUIConnector.GetData: committed own transaction.");
-            }
-
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// Passes data as a Typed DataSet to the Screen, containing multiple DataTables.
-        /// </summary>
-        /// <param name="AReadTransaction"></param>
         /// <returns></returns>
         [NoRemoting]
-        public OfficeSpecificDataLabelsTDS GetData(TDBTransaction AReadTransaction)
+        public OfficeSpecificDataLabelsTDS GetData()
         {
             PDataLabelUseTable DataLabelUseDT;
             String LabelUse;
@@ -352,54 +326,63 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             // create the FOfficeSpecificDataLabelsTDS DataSet that will later be passed to the Client
             FOfficeSpecificDataLabelsTDS = new OfficeSpecificDataLabelsTDS("OfficeSpecificDataLabels");
 
-            switch (FOfficeSpecificDataLabelUse)
-            {
-                case TOfficeSpecificDataLabelUseEnum.Family:
-                case TOfficeSpecificDataLabelUseEnum.Church:
-                case TOfficeSpecificDataLabelUseEnum.Organisation:
-                case TOfficeSpecificDataLabelUseEnum.Unit:
-                case TOfficeSpecificDataLabelUseEnum.Bank:
-                case TOfficeSpecificDataLabelUseEnum.Venue:
-                    PDataLabelValuePartnerAccess.LoadViaPPartnerPartnerKey(FOfficeSpecificDataLabelsTDS, FPartnerKey, AReadTransaction);
-                    break;
+            TDBTransaction ReadTransaction = null;
 
-                case TOfficeSpecificDataLabelUseEnum.Person:
-                case TOfficeSpecificDataLabelUseEnum.Personnel:
-                    PDataLabelValuePartnerAccess.LoadViaPPartnerPartnerKey(FOfficeSpecificDataLabelsTDS, FPartnerKey, AReadTransaction);
-
-                    if (FOfficeSpecificDataLabelsTDS.PDataLabelValuePartner.Rows.Count > 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
+                delegate
+                {
+                    switch (FOfficeSpecificDataLabelUse)
                     {
-                        DataLabelUseDT = PDataLabelUseAccess.LoadAll(AReadTransaction);
+                        case TOfficeSpecificDataLabelUseEnum.Family:
+                        case TOfficeSpecificDataLabelUseEnum.Church:
+                        case TOfficeSpecificDataLabelUseEnum.Organisation:
+                        case TOfficeSpecificDataLabelUseEnum.Unit:
+                        case TOfficeSpecificDataLabelUseEnum.Bank:
+                        case TOfficeSpecificDataLabelUseEnum.Venue:
+                            PDataLabelValuePartnerAccess.LoadViaPPartnerPartnerKey(FOfficeSpecificDataLabelsTDS, FPartnerKey, ReadTransaction);
+                            break;
 
-                        // Initialize 'use' criterium according to the enum
-                        LabelUse = Enum.GetName(typeof(TOfficeSpecificDataLabelUseEnum), FOfficeSpecificDataLabelUse);
+                        case TOfficeSpecificDataLabelUseEnum.Person:
+                        case TOfficeSpecificDataLabelUseEnum.Personnel:
+                            PDataLabelValuePartnerAccess.LoadViaPPartnerPartnerKey(FOfficeSpecificDataLabelsTDS, FPartnerKey, ReadTransaction);
 
-                        // for every value row: check if the label exists in the requested 'use' section
-                        // loop counts down, otherwise access violations when elements are deleted
-                        for (Counter = FOfficeSpecificDataLabelsTDS.PDataLabelValuePartner.Rows.Count - 1; Counter >= 0; Counter--)
-                        {
-                            DataLabelValueRow = FOfficeSpecificDataLabelsTDS.PDataLabelValuePartner[Counter];
-                            DataLabelUseRow = (PDataLabelUseRow)DataLabelUseDT.Rows.Find(new Object[] { DataLabelValueRow.DataLabelKey, LabelUse });
-
-                            if (DataLabelUseRow == null)
+                            if (FOfficeSpecificDataLabelsTDS.PDataLabelValuePartner.Rows.Count > 0)
                             {
-                                DataLabelValueRow.Delete();
-                                DataLabelValueRow.AcceptChanges();
+                                DataLabelUseDT = PDataLabelUseAccess.LoadAll(ReadTransaction);
+
+                                // Initialize 'use' criterium according to the enum
+                                LabelUse = Enum.GetName(typeof(TOfficeSpecificDataLabelUseEnum), FOfficeSpecificDataLabelUse);
+
+                                // for every value row: check if the label exists in the requested 'use' section
+                                // loop counts down, otherwise access violations when elements are deleted
+                                for (Counter = FOfficeSpecificDataLabelsTDS.PDataLabelValuePartner.Rows.Count - 1; Counter >= 0; Counter--)
+                                {
+                                    DataLabelValueRow = FOfficeSpecificDataLabelsTDS.PDataLabelValuePartner[Counter];
+                                    DataLabelUseRow =
+                                        (PDataLabelUseRow)DataLabelUseDT.Rows.Find(new Object[] { DataLabelValueRow.DataLabelKey, LabelUse });
+
+                                    if (DataLabelUseRow == null)
+                                    {
+                                        DataLabelValueRow.Delete();
+                                        DataLabelValueRow.AcceptChanges();
+                                    }
+                                }
                             }
-                        }
+
+                            break;
+
+                        case TOfficeSpecificDataLabelUseEnum.LongTermApp:
+                        case TOfficeSpecificDataLabelUseEnum.ShortTermApp:
+                            PDataLabelValueApplicationAccess.LoadViaPmGeneralApplication(FOfficeSpecificDataLabelsTDS,
+                            FPartnerKey,
+                            FApplicationKey,
+                            FRegistrationOffice,
+                            ReadTransaction);
+                            break;
                     }
-
-                    break;
-
-                case TOfficeSpecificDataLabelUseEnum.LongTermApp:
-                case TOfficeSpecificDataLabelUseEnum.ShortTermApp:
-                    PDataLabelValueApplicationAccess.LoadViaPmGeneralApplication(FOfficeSpecificDataLabelsTDS,
-                    FPartnerKey,
-                    FApplicationKey,
-                    FRegistrationOffice,
-                    AReadTransaction);
-                    break;
-            }
+                });
 
             return FOfficeSpecificDataLabelsTDS;
         }

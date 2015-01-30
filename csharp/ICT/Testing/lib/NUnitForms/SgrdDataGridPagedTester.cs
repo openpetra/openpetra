@@ -93,13 +93,13 @@ namespace Ict.Testing.NUnitForms
                 throw new System.Exception("Cannot select row " + ARowNumber + " because it is outside the available row numbers");
             }
 
-//            FireEvent("SelectionChanged",
-//                       new RangeRegionChangedEventArgs(new RangeRegion(
-//                              new Position(ARowNumber, 0)),
-//                              new RangeRegion(new Position(FOldSelectedRow,0))));
-//            FOldSelectedRow = ARowNumber;
-            FireEvent("FocusRowEntered",
-                new RowEventArgs(ARowNumber));
+            FireEvent("SelectionChanged",
+                new RangeRegionChangedEventArgs(new RangeRegion(
+                        new Position(ARowNumber, 0)),
+                    new RangeRegion(Position.Empty)));
+            //FOldSelectedRow = ARowNumber;
+            //FireEvent("FocusRowEntered",
+            //    new RowEventArgs(ARowNumber));
         }
     }
 }

@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       berndr
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +34,10 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MReporting;
 using GNU.Gettext;
 using Ict.Common;
+using System.Collections;
+using System.Collections.Generic;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -55,6 +60,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 FLedgerNumber = value;
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
+                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
         }
 
@@ -74,9 +80,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             cmbCurrency.SelectedIndex = 0;
             clbFields.Columns.Clear();
             clbFields.AddCheckBoxColumn("", FFieldTable.Columns[CheckedMember], 17, false);
-            clbFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns[ValueMember], 80);
+            clbFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns[ValueMember], 100);
             clbFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns[DisplayMember], 200);
             clbFields.DataBindGrid(FFieldTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+            FPetraUtilsObject.LoadDefaultSettings(); // This was done previously, but it was too early.
         }
 
         private void SelectAllFields(object sender, EventArgs e)
@@ -119,35 +126,54 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
 
-            int Years = Convert.ToInt16(txtYears.Text);
+            ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
+            //
+            // I need to get the name of the current ledger..
 
-            if ((AReportAction == TReportActionEnum.raGenerate)
-                && ((Years > 4) || (Years < 1)))
+            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+            DataView LedgerView = new DataView(LedgerNameTable);
+            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
+            String LedgerName = "";
+
+            if (LedgerView.Count > 0)
             {
-                TVerificationResult VerificationMessage = new TVerificationResult(
-                    Catalog.GetString("Set the year range between 1 and 4"),
-                    Catalog.GetString("Wrong year range entered"), TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationMessage);
+                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
             }
 
-            ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
+            ALedgerRow Row = LedgerDetailsTable[0];
+            Int32 LedgerYear = Row.CurrentFinancialYear;
+            Int32 NumPeriods = Row.NumberOfAccountingPeriods;
+            String CurrencyName = (cmbCurrency.SelectedItem.ToString() == "Base") ? Row.BaseCurrency : Row.IntlCurrency;
+            ACalc.AddStringParameter("param_currency_name", CurrencyName);
 
-            ACalc.AddParameter("Year0", DateTime.Today.Year);
-            ACalc.AddParameter("Year1", DateTime.Today.Year - 1);
-            ACalc.AddParameter("Year2", DateTime.Today.Year - 2);
-            ACalc.AddParameter("Year3", DateTime.Today.Year - 3);
+            ACalc.AddParameter("param_year0", DateTime.Today.Year);
+            ACalc.AddParameter("param_year1", DateTime.Today.Year - 1);
+            ACalc.AddParameter("param_year2", DateTime.Today.Year - 2);
+            ACalc.AddParameter("param_year3", DateTime.Today.Year - 3);
+        } // Read Controls Manual
 
-            int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
+        //
+        // This will be called if the Fast Reports Wrapper loaded OK.
+        // Returns True if the data apparently loaded OK and the report should be printed.
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            ArrayList reportParam = ACalc.GetParameters().Elems;
 
-            for (int Counter = 0; Counter <= MaxColumns; ++Counter)
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
             {
-                String ColumnName = ACalc.GetParameters().Get("param_calculation", Counter, 0).ToString();
-
-                if (ColumnName == "Gift Amount")
+                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
                 {
-                    ACalc.AddParameter("param_gift_amount_column", Counter);
+                    paramsDictionary.Add(p.name, p.value);
                 }
             }
-        }
+
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("FieldLeaderGiftSummary", paramsDictionary);
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "FieldLeaderGiftSummary");
+            return true;
+        } // Load Report Data
     }
 }

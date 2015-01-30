@@ -59,8 +59,8 @@ namespace Ict.Petra.Client.MPartner
         /// <param name="ASourceTable"></param>
         public void CreateColumns(TSgrdDataGrid AGrid, DataTable ASourceTable)
         {
-            AGrid.AddTextColumn("Site Key", ASourceTable.Columns[PPartnerLedgerTable.GetPartnerKeyDBName()], 70);
-            AGrid.AddTextColumn("Site Name", ASourceTable.Columns[PPartnerTable.GetPartnerShortNameDBName()], 300);
+            AGrid.AddPartnerKeyColumn("Site Key", ASourceTable.Columns[PPartnerLedgerTable.GetPartnerKeyDBName()], 75);
+            AGrid.AddTextColumn("Site Name", ASourceTable.Columns[PPartnerTable.GetPartnerShortNameDBName()], 353);
         }
 
         /// <summary>

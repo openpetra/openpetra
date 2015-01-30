@@ -26,6 +26,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Drawing;
 
+using Ict.Common;
 using Ict.Common.Controls;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -295,15 +296,40 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// There may or may not already be attribute assignments for this transaction.
         /// </summary>
         /// <param name="AGLBatchDS"></param>
+        /// <param name="ATransactionNumbers"></param>
+        public void ReconcileTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS, out string ATransactionNumbers)
+        {
+            ATransactionNumbers = string.Empty;
+
+            foreach (DataRowView drv in AGLBatchDS.ATransaction.DefaultView)
+            {
+                ATransactionRow tr = (ATransactionRow)drv.Row;
+
+                if (ReconcileTransAnalysisAttributes(ref AGLBatchDS, tr.AccountCode, tr.TransactionNumber))
+                {
+                    ATransactionNumbers += tr.TransactionNumber.ToString() + ", ";
+                }
+            }
+        }
+
+        /// <summary>
+        /// Need to ensure that the Analysis Attributes grid has all the entries
+        /// that are required for the selected account.
+        /// There may or may not already be attribute assignments for this transaction.
+        /// </summary>
+        /// <param name="AGLBatchDS"></param>
         /// <param name="AAccountCode"></param>
         /// <param name="ATransactionNumber"></param>
-        public void ReconcileTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS,
+        /// <returns></returns>
+        public bool ReconcileTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS,
             string AAccountCode,
             int ATransactionNumber)
         {
+            bool RetVal = false;
+
             if (string.IsNullOrEmpty(AAccountCode))
             {
-                return;
+                return RetVal;
             }
 
             StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
@@ -331,14 +357,19 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             if (existingListIsOk)
             {
-                return;
+                return RetVal;
             }
 
             // Delete any existing Analysis Type records and re-create the list (Removing any prior selections by the user).
+            //First show all attribute rows for current transaction
+            SetTransAnalAttributeDefaultView(AGLBatchDS, true, ATransactionNumber);
+
             foreach (DataRowView rv in AGLBatchDS.ATransAnalAttrib.DefaultView)
             {
                 ATransAnalAttribRow attrRowCurrent = (ATransAnalAttribRow)rv.Row;
                 attrRowCurrent.Delete();
+
+                RetVal = true;
             }
 
             foreach (String analysisTypeCode in RequiredAnalAttrCodes)
@@ -352,6 +383,32 @@ namespace Ict.Petra.Client.MFinance.Logic
                 newRow.AccountCode = AAccountCode;
 
                 AGLBatchDS.ATransAnalAttrib.Rows.Add(newRow);
+
+                RetVal = true;
+            }
+
+            return RetVal;
+        }
+
+        /// <summary>
+        /// Need to ensure that the Analysis Attributes grid has all the entries
+        /// that are required for the selected account.
+        /// There may or may not already be attribute assignments for this transaction.
+        /// </summary>
+        /// <param name="AGLBatchDS"></param>
+        /// <param name="ATransactionNumbers"></param>
+        public void ReconcileRecurringTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS, out string ATransactionNumbers)
+        {
+            ATransactionNumbers = string.Empty;
+
+            foreach (DataRowView drv in AGLBatchDS.ARecurringTransaction.DefaultView)
+            {
+                ARecurringTransactionRow tr = (ARecurringTransactionRow)drv.Row;
+
+                if (ReconcileRecurringTransAnalysisAttributes(ref AGLBatchDS, tr.AccountCode, tr.TransactionNumber))
+                {
+                    ATransactionNumbers += tr.TransactionNumber.ToString() + ", ";
+                }
             }
         }
 
@@ -363,17 +420,20 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AGLBatchDS"></param>
         /// <param name="AAccountCode"></param>
         /// <param name="ATransactionNumber"></param>
-        public void ReconcileRecurringTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS,
+        /// <returns></returns>
+        public bool ReconcileRecurringTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS,
             string AAccountCode,
             int ATransactionNumber)
         {
+            bool RetVal = false;
+
             if (string.IsNullOrEmpty(AAccountCode))
             {
-                return;
+                return RetVal;
             }
 
             StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
-                AAccountCode, false);
+                AAccountCode, true);
 
             SetRecurringTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber,
                 TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'"));
@@ -397,14 +457,19 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             if (existingListIsOk)
             {
-                return;
+                return RetVal;
             }
 
             // Delete any existing Analysis Type records and re-create the list (Removing any prior selections by the user).
+            //First show all attribute rows for current transaction
+            SetRecurringTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber);
+
             foreach (DataRowView rv in AGLBatchDS.ARecurringTransAnalAttrib.DefaultView)
             {
                 ARecurringTransAnalAttribRow attrRowCurrent = (ARecurringTransAnalAttribRow)rv.Row;
                 attrRowCurrent.Delete();
+
+                RetVal = true;
             }
 
             foreach (String analysisTypeCode in RequiredAnalAttrCodes)
@@ -418,7 +483,11 @@ namespace Ict.Petra.Client.MFinance.Logic
                 newRow.AccountCode = AAccountCode;
 
                 AGLBatchDS.ARecurringTransAnalAttrib.Rows.Add(newRow);
+
+                RetVal = true;
             }
+
+            return RetVal;
         }
 
         /// <summary>
@@ -435,13 +504,12 @@ namespace Ict.Petra.Client.MFinance.Logic
             bool AIsUnposted = true)
         {
             bool RetVal = true;
+            int NumberOfAttributes = 0;
 
             if (!AIsUnposted || string.IsNullOrEmpty(AAccountCode))
             {
                 return RetVal;
             }
-
-            int NumberOfAttributes = 0;
 
             TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, AAccountCode, out NumberOfAttributes, true);
 
@@ -517,16 +585,16 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ATransactionNumber"></param>
         /// <param name="AAccountCode"></param>
         /// <param name="AGLBatchDS"></param>
-        /// <param name="ValueRequiredForType"></param>
+        /// <param name="AValueRequiredForType"></param>
         /// <param name="AIsUnposted"></param>
         /// <returns></returns>
         public bool AccountAnalysisAttributesValuesExist(int ATransactionNumber,
             string AAccountCode,
             GLBatchTDS AGLBatchDS,
-            out String ValueRequiredForType,
+            out String AValueRequiredForType,
             bool AIsUnposted = true)
         {
-            ValueRequiredForType = "";
+            AValueRequiredForType = "";
 
             if (!AIsUnposted || string.IsNullOrEmpty(AAccountCode) || (AGLBatchDS.ATransAnalAttrib.DefaultView.Count == 0))
             {
@@ -560,7 +628,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     if (rw.IsAnalysisAttributeValueNull() || (rw.AnalysisAttributeValue == string.Empty))
                     {
-                        ValueRequiredForType = rw.AnalysisTypeCode;
+                        AValueRequiredForType = rw.AnalysisTypeCode;
                         return false;
                     }
                 }
@@ -582,9 +650,9 @@ namespace Ict.Petra.Client.MFinance.Logic
             GLBatchTDS AGLBatchDS,
             out String AValueRequiredForType)
         {
-            AValueRequiredForType = string.Empty;
+            AValueRequiredForType = "";
 
-            if (string.IsNullOrEmpty(AAccountCode) || (AGLBatchDS.ATransAnalAttrib.DefaultView.Count == 0))
+            if (string.IsNullOrEmpty(AAccountCode) || (AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.Count == 0))
             {
                 return true;
             }

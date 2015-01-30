@@ -60,18 +60,19 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool GetCurrentPeriodDates(Int32 ALedgerNumber, out DateTime AStartDate, out DateTime AEndDate)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction transaction = null;
+            AAccountingPeriodTable AccountingPeriodTable = null;
 
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                LedgerTable[0].CurrentPeriod,
-                Transaction);
-
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, ref transaction,
+                delegate
+                {
+                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
+                    AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                        LedgerTable[0].CurrentPeriod,
+                        transaction);
+                });
             AStartDate = AccountingPeriodTable[0].PeriodStartDate;
             AEndDate = AccountingPeriodTable[0].PeriodEndDate;
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
             return true;
         }
 
@@ -87,27 +88,27 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out DateTime AStartDateCurrentPeriod,
             out DateTime AEndDateLastForwardingPeriod)
         {
-            bool newTransaction = false;
+            TDBTransaction transaction = null;
+            DateTime StartDateCurrentPeriod = new DateTime();
+            DateTime EndDateLastForwardingPeriod = new DateTime();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+                delegate
+                {
+                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
+                    AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                        LedgerTable[0].CurrentPeriod,
+                        transaction);
 
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                LedgerTable[0].CurrentPeriod,
-                Transaction);
+                    StartDateCurrentPeriod = AccountingPeriodTable[0].PeriodStartDate;
 
-            AStartDateCurrentPeriod = AccountingPeriodTable[0].PeriodStartDate;
-
-            AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods,
-                Transaction);
-            AEndDateLastForwardingPeriod = AccountingPeriodTable[0].PeriodEndDate;
-
-            if (newTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
+                    AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                        LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods,
+                        transaction);
+                    EndDateLastForwardingPeriod = AccountingPeriodTable[0].PeriodEndDate;
+                });
+            AStartDateCurrentPeriod = StartDateCurrentPeriod;
+            AEndDateLastForwardingPeriod = EndDateLastForwardingPeriod;
             return true;
         }
 
@@ -167,28 +168,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// get the number of periods for the Ledger
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static Int32 GetNumberOfPeriods(
-            System.Int32 ALedgerNumber)
+        public static Int32 GetNumberOfPeriods(Int32 ALedgerNumber)
         {
             Int32 returnValue = 0;
+            TDBTransaction transaction = null;
 
-            bool newTransaction = false;
-
-            try
-            {
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
-
-                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-
-                returnValue = LedgerTable[0].NumberOfAccountingPeriods;
-            }
-            finally
-            {
-                if (newTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
+                    returnValue = LedgerTable[0].NumberOfAccountingPeriods;
+                });
 
             return returnValue;
         }
@@ -349,83 +339,69 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
         }
 
-        private static Int32 FindFinancialYearByDate(Int32 ALedgerNumber,
-            DateTime ADate)
+        private static Int32 FindFinancialYearByDate(Int32 ALedgerNumber, DateTime ADate)
         {
-            Int32 yearDateBelongsTo;
+            Int32 yearDateBelongsTo = 99;
             DateTime yearStartDate = DateTime.Today;
-            bool newTransaction = false;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
+            TDBTransaction transaction = null;
 
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-
-            if ((LedgerTable == null) || (LedgerTable.Count == 0))
-            {
-                if (newTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
 
-                return 99;
-            }
-
-            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
-            yearDateBelongsTo = LedgerRow.CurrentFinancialYear;
-
-            AAccountingPeriodTable AccPeriodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, Transaction);
-
-            if ((AccPeriodTable == null) || (AccPeriodTable.Count == 0))
-            {
-                if (newTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                return 99;
-            }
-
-            //Find earliest start date (don't assume PK order)
-            AAccountingPeriodRow AccPeriodRow = null;
-
-            for (int i = 0; i < AccPeriodTable.Count; i++)
-            {
-                DateTime currentStartDate;
-
-                AccPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[i];
-                currentStartDate = AccPeriodRow.PeriodStartDate;
-
-                if (i > 0)
-                {
-                    if (yearStartDate > currentStartDate)
+                    if (LedgerTable.Count == 0)
                     {
-                        yearStartDate = currentStartDate;
+                        return;
                     }
-                }
-                else
-                {
-                    yearStartDate = currentStartDate;
-                }
-            }
 
-            //Find the correct year
-            while (ADate < yearStartDate)
-            {
-                ADate = ADate.AddYears(1);
-                yearDateBelongsTo--;
-            }
+                    ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+                    yearDateBelongsTo = LedgerRow.CurrentFinancialYear;
 
-            if (newTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    AAccountingPeriodTable AccPeriodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, transaction);
 
+                    if (AccPeriodTable.Count == 0)
+                    {
+                        return;
+                    }
+
+                    //Find earliest start date (don't assume PK order)
+                    AAccountingPeriodRow AccPeriodRow = null;
+
+                    for (int i = 0; i < AccPeriodTable.Count; i++)
+                    {
+                        DateTime currentStartDate;
+
+                        AccPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[i];
+                        currentStartDate = AccPeriodRow.PeriodStartDate;
+
+                        if (i > 0)
+                        {
+                            if (yearStartDate > currentStartDate)
+                            {
+                                yearStartDate = currentStartDate;
+                            }
+                        }
+                        else
+                        {
+                            yearStartDate = currentStartDate;
+                        }
+                    }
+
+                    //Find the correct year
+                    while (ADate < yearStartDate)
+                    {
+                        ADate = ADate.AddYears(1);
+                        yearDateBelongsTo--;
+                    }
+                }); // Get NewOrExisting AutoReadTransaction
             //Set the year to return
             return yearDateBelongsTo;
-        }
+        } // Find FinancialYear ByDate
 
         /// <summary>
-        /// Get the azccounting year and period for a given date
+        /// Get the accounting year and period for a given date
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADate"></param>
@@ -438,11 +414,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out Int32 AYearNumber,
             out Int32 APeriodNumber)
         {
-            bool newTransaction;
             Int32 CurrentFinancialYear;
 
             //Set the year to return
-            AYearNumber = FindFinancialYearByDate(ALedgerNumber, ADate);
+            Int32 YearNumber = FindFinancialYearByDate(ALedgerNumber, ADate);
+
+            AYearNumber = YearNumber;
 
             if (AYearNumber == 99)
             {
@@ -451,48 +428,43 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 return false;
             }
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
+            Int32 PeriodNumber = 0;
 
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-
-            CurrentFinancialYear = ((ALedgerRow)LedgerTable.Rows[0]).CurrentFinancialYear;
-
-            AAccountingPeriodTable AccPeriodTableTmp = new AAccountingPeriodTable();
-            AAccountingPeriodRow TemplateRow = AccPeriodTableTmp.NewRowTyped(false);
-
-            TemplateRow.LedgerNumber = ALedgerNumber;
-            TemplateRow.PeriodStartDate = ADate.AddYears(CurrentFinancialYear - AYearNumber);
-            TemplateRow.PeriodEndDate = ADate.AddYears(CurrentFinancialYear - AYearNumber);
-
-            StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "<=", ">=" });
-
-            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadUsingTemplate(TemplateRow,
-                operators,
-                null,
-                Transaction);
-
-            if ((AccountingPeriodTable == null) || (AccountingPeriodTable.Count == 0))
-            {
-                if (newTransaction)
+            TDBTransaction transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
 
-                APeriodNumber = 0;
-                return false;
-            }
+                    CurrentFinancialYear = ((ALedgerRow)LedgerTable.Rows[0]).CurrentFinancialYear;
 
-            AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
+                    AAccountingPeriodTable AccPeriodTableTmp = new AAccountingPeriodTable();
+                    AAccountingPeriodRow TemplateRow = AccPeriodTableTmp.NewRowTyped(false);
 
-            APeriodNumber = AccountingPeriodRow.AccountingPeriodNumber;
+                    TemplateRow.LedgerNumber = ALedgerNumber;
+                    TemplateRow.PeriodStartDate = ADate.AddYears(CurrentFinancialYear - YearNumber);
+                    TemplateRow.PeriodEndDate = ADate.AddYears(CurrentFinancialYear - YearNumber);
 
-            if (newTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "<=", ">=" });
 
+                    AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadUsingTemplate(TemplateRow,
+                        operators,
+                        null,
+                        transaction);
+
+                    if (AccountingPeriodTable.Count == 0)
+                    {
+                        return;
+                    }
+
+                    AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
+
+                    PeriodNumber = AccountingPeriodRow.AccountingPeriodNumber;
+                });
+
+            APeriodNumber = PeriodNumber;
             return true;
-        }
+        } // Get AccountingYear Period ByDate
 
         /// <summary>
         /// Loads all available years with GL data into a table
@@ -531,33 +503,42 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 ADiffPeriod,
                 LedgerTable[0].NumberOfAccountingPeriods);
 
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction();
-            try
-            {
-                // add the years, which are retrieved by reading from the GL batch tables
-                string sql =
-                    String.Format("SELECT DISTINCT {0} AS availYear " + " FROM PUB_{1} " + " WHERE {2} = " +
-                        ALedgerNumber.ToString() + " ORDER BY 1 DESC",
-                        ABatchTable.GetBatchYearDBName(),
-                        ABatchTable.GetTableDBName(),
-                        ABatchTable.GetLedgerNumberDBName());
+            DataTable BatchYearTable = null;
 
-                DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
+            TDBTransaction Transaction = null;
 
-                foreach (DataRow row in BatchYearTable.Rows)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    DataRow resultRow = datTable.NewRow();
-                    DateTime SelectableYear = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0])));
-                    resultRow[0] = row[0];
-                    resultRow[1] = SelectableYear.ToString("yyyy");
-                    resultRow[2] = SelectableYear.ToString("dd-MMM-yyyy");
-                    datTable.Rows.Add(resultRow);
-                }
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    try
+                    {
+                        // add the years, which are retrieved by reading from the GL batch tables
+                        string sql =
+                            String.Format("SELECT DISTINCT {0} AS availYear " + " FROM PUB_{1} " + " WHERE {2} = " +
+                                ALedgerNumber.ToString() + " ORDER BY 1 DESC",
+                                ABatchTable.GetBatchYearDBName(),
+                                ABatchTable.GetTableDBName(),
+                                ABatchTable.GetLedgerNumberDBName());
+
+                        BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", Transaction);
+
+                        foreach (DataRow row in BatchYearTable.Rows)
+                        {
+                            DataRow resultRow = datTable.NewRow();
+                            DateTime SelectableYear = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0])));
+                            resultRow[0] = row[0];
+                            resultRow[1] = SelectableYear.ToString("yyyy");
+                            resultRow[2] = SelectableYear.ToString("dd-MMM-yyyy");
+                            datTable.Rows.Add(resultRow);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        TLogging.Log("Error in GetAvailableGLYears: " + ex.Message);
+                        throw ex;
+                    }
+                });
 
             // we should also check if the current year has been added, in case there are no batches yet
             if (datTable.Rows.Find(LedgerTable[0].CurrentFinancialYear) == null)
@@ -591,113 +572,100 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static DataTable GetAvailableGLYearEnds(Int32 ALedgerNumber,
             System.Int32 ADiffPeriod,
             bool AIncludeNextYear,
-            out String ADisplayMember, out String AValueMember)
+            out String ADisplayMember,
+            out String AValueMember)
         {
             //Create the table to populate the combobox
             DataTable ReturnTable = null;
 
-            ADisplayMember = "YearEndDate";
             AValueMember = "YearNumber";
-            string YearEnd = "YearEndDateLong";
+            ADisplayMember = "YearEndDate";
 
-            DateTime YearEndDate;
-            int YearNumber;
 
-            bool NewTransaction = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-
-            AAccountingPeriodTable AccountingPeriods = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, Transaction);
-
-            if (LedgerTable.Count < 1)
-            {
-                throw new Exception("Ledger " + ALedgerNumber + " not found");
-            }
-
-            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable[0];
-
-            AccountingPeriods.DefaultView.RowFilter = String.Format("{0}={1}",
-                AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
-                LedgerRow.NumberOfAccountingPeriods);
-
-            //Get last period row
-            AAccountingPeriodRow periodRow = (AAccountingPeriodRow)AccountingPeriods.DefaultView[0].Row;
-
-            //Create the table to populate the combobox
-            ReturnTable = new DataTable();
-            ReturnTable.Columns.Add(AValueMember, typeof(System.Int32));
-            ReturnTable.Columns.Add(ADisplayMember, typeof(String));
-            ReturnTable.Columns.Add(YearEnd, typeof(String));
-            ReturnTable.PrimaryKey = new DataColumn[] {
-                ReturnTable.Columns[0]
-            };
-
-            //Add the current year to the table
-            YearNumber = LedgerRow.CurrentFinancialYear;
-            YearEndDate = periodRow.PeriodEndDate;
-
-            DataRow ResultRow = ReturnTable.NewRow();
-            ResultRow[0] = YearNumber;
-            ResultRow[1] = YearEndDate.ToShortDateString();
-            ResultRow[2] = YearEndDate.ToLongDateString();
-            ReturnTable.Rows.Add(ResultRow);
-
-            //Retrieve all previous years
-            string sql =
-                String.Format("SELECT DISTINCT {0} AS batchYear" +
-                    " FROM PUB_{1}" +
-                    " WHERE {2} = {3} And {0} < {4}" +
-                    " ORDER BY 1 DESC",
-                    ABatchTable.GetBatchYearDBName(),
-                    ABatchTable.GetTableDBName(),
-                    ABatchTable.GetLedgerNumberDBName(),
-                    ALedgerNumber,
-                    YearNumber);
-
-            DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", Transaction);
-
-            BatchYearTable.DefaultView.Sort = String.Format("batchYear DESC");
-
-            try
-            {
-                foreach (DataRowView row in BatchYearTable.DefaultView)
+            TDBTransaction transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref transaction,
+                delegate
                 {
-                    DataRow currentBatchYearRow = row.Row;
+                    DateTime YearEndDate;
+                    int YearNumber;
+                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
+                    AAccountingPeriodTable AccountingPeriods = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, transaction);
 
-                    Int32 currentBatchYear = Convert.ToInt32(currentBatchYearRow[0]);
-
-                    if (YearNumber != currentBatchYear)
+                    if (LedgerTable.Rows.Count < 1)
                     {
-                        YearNumber -= 1;
-                        YearEndDate = DecrementYear(YearEndDate);
+                        return;
+                    }
+
+                    ALedgerRow LedgerRow = (ALedgerRow)LedgerTable[0];
+
+                    AccountingPeriods.DefaultView.RowFilter = String.Format("{0}={1}",
+                        AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
+                        LedgerRow.NumberOfAccountingPeriods);
+
+                    //Get last period row
+                    AAccountingPeriodRow periodRow = (AAccountingPeriodRow)AccountingPeriods.DefaultView[0].Row;
+
+                    //Create the table to populate the combobox
+                    ReturnTable = new DataTable();
+                    ReturnTable.Columns.Add("YearNumber", typeof(System.Int32));
+                    ReturnTable.Columns.Add("YearEndDate", typeof(String));
+                    ReturnTable.Columns.Add("YearEndDateLong", typeof(String));
+                    ReturnTable.PrimaryKey = new DataColumn[] { ReturnTable.Columns[0] };
+
+                    //Add the current year to the table
+                    YearNumber = LedgerRow.CurrentFinancialYear;
+                    YearEndDate = periodRow.PeriodEndDate;
+
+                    DataRow ResultRow = ReturnTable.NewRow();
+                    ResultRow[0] = YearNumber;
+                    ResultRow[1] = YearEndDate.ToShortDateString();
+                    ResultRow[2] = YearEndDate.ToLongDateString();
+                    ReturnTable.Rows.Add(ResultRow);
+
+                    //Retrieve all previous years
+                    string sql =
+                        String.Format("SELECT DISTINCT {0} AS batchYear" +
+                            " FROM PUB_{1}" +
+                            " WHERE {2} = {3} And {0} < {4}" +
+                            " ORDER BY 1 DESC",
+                            ABatchTable.GetBatchYearDBName(),
+                            ABatchTable.GetTableDBName(),
+                            ABatchTable.GetLedgerNumberDBName(),
+                            ALedgerNumber,
+                            YearNumber);
+
+                    DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", transaction);
+
+                    BatchYearTable.DefaultView.Sort = String.Format("batchYear DESC");
+
+                    foreach (DataRowView row in BatchYearTable.DefaultView)
+                    {
+                        DataRow currentBatchYearRow = row.Row;
+
+                        Int32 currentBatchYear = Convert.ToInt32(currentBatchYearRow[0]);
 
                         if (YearNumber != currentBatchYear)
                         {
-                            //Gap in year numbers
-                            throw new Exception(String.Format(Catalog.GetString("Year {0} not found for Ledger {1}"),
-                                    YearNumber,
-                                    ALedgerNumber));
+                            YearNumber -= 1;
+                            YearEndDate = DecrementYear(YearEndDate);
+
+                            if (YearNumber != currentBatchYear)
+                            {
+                                //Gap in year numbers
+                                throw new Exception(String.Format(Catalog.GetString("Year {0} not found for Ledger {1}"),
+                                        YearNumber,
+                                        ALedgerNumber));
+                            }
                         }
+
+                        DataRow ResultRow2 = ReturnTable.NewRow();
+                        ResultRow2[0] = YearNumber;
+                        ResultRow2[1] = YearEndDate.ToShortDateString();
+                        ReturnTable.Rows.Add(ResultRow2);
                     }
-
-                    DataRow ResultRow2 = ReturnTable.NewRow();
-                    ResultRow2[0] = YearNumber;
-                    ResultRow2[1] = YearEndDate.ToShortDateString();
-                    ReturnTable.Rows.Add(ResultRow2);
-                }
-            }
-            catch (Exception ex)
-            {
-                TLogging.Log(ex.ToString());
-                //Do nothing
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                }); // Get NewOrExisting AutoReadTransaction
 
             return ReturnTable;
         }
@@ -712,115 +680,107 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <returns>DataTable</returns>
         [RequireModulePermission("FINANCE-1")]
         public static DataTable GetAvailableGLYearsHOSA(Int32 ALedgerNumber,
-            out String ADisplayMember, out String AValueMember, out String ADescriptionMember)
+            out String ADisplayMember,
+            out String AValueMember,
+            out String ADescriptionMember)
         {
             DateTime YearEndDate;
             int YearNumber;
 
-            bool NewTransaction = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-
-            AAccountingPeriodTable AccountingPeriods = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, Transaction);
-
-            if (LedgerTable.Count < 1)
-            {
-                throw new Exception("Ledger " + ALedgerNumber + " not found");
-            }
-
-            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable[0];
-
-            AccountingPeriods.DefaultView.RowFilter = String.Format("{0}={1}",
-                AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
-                LedgerRow.NumberOfAccountingPeriods);
-
-            //Get last period row
-            AAccountingPeriodRow periodRow = (AAccountingPeriodRow)AccountingPeriods.DefaultView[0].Row;
-
-
-            //Create the table to populate the combobox
             ADisplayMember = "YearEndDate";
             AValueMember = "YearNumber";
             ADescriptionMember = "YearEndDateLong";
 
-            DataTable BatchTable = new DataTable();
-            BatchTable.Columns.Add(AValueMember, typeof(System.Int32));
-            BatchTable.Columns.Add(ADisplayMember, typeof(String));
-            BatchTable.Columns.Add(ADescriptionMember, typeof(String));
-            BatchTable.PrimaryKey = new DataColumn[] {
-                BatchTable.Columns[0]
-            };
-
-            //Add the current year to the table
-            YearNumber = LedgerRow.CurrentFinancialYear;
-            YearEndDate = periodRow.PeriodEndDate;
-
-            DataRow ResultRow = BatchTable.NewRow();
-            ResultRow[0] = YearNumber;
-            ResultRow[1] = YearEndDate.ToShortDateString();
-            ResultRow[2] = YearEndDate.ToLongDateString();
-            BatchTable.Rows.Add(ResultRow);
-
-            //Retrieve all previous years
-            string sql =
-                String.Format("SELECT DISTINCT {0} AS batchYear" +
-                    " FROM PUB_{1}" +
-                    " WHERE {2} = {3} And {0} < {4}" +
-                    " ORDER BY 1 DESC",
-                    ABatchTable.GetBatchYearDBName(),
-                    ABatchTable.GetTableDBName(),
-                    ABatchTable.GetLedgerNumberDBName(),
-                    ALedgerNumber,
-                    YearNumber);
-
-            DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", Transaction);
-
-            BatchYearTable.DefaultView.Sort = String.Format("batchYear DESC");
-
-            try
-            {
-                foreach (DataRowView row in BatchYearTable.DefaultView)
+            DataTable BatchTable = null;
+            TDBTransaction transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref transaction,
+                delegate
                 {
-                    DataRow currentBatchYearRow = row.Row;
+                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
 
-                    Int32 currentBatchYear = (Int32)currentBatchYearRow[0];
+                    AAccountingPeriodTable AccountingPeriods = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, transaction);
 
-                    if (YearNumber != currentBatchYear)
+                    if (LedgerTable.Rows.Count < 1)
                     {
-                        YearNumber -= 1;
-                        YearEndDate = DecrementYear(YearEndDate);
+                        return;
+                    }
+
+                    ALedgerRow LedgerRow = (ALedgerRow)LedgerTable[0];
+
+                    AccountingPeriods.DefaultView.RowFilter = String.Format("{0}={1}",
+                        AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
+                        LedgerRow.NumberOfAccountingPeriods);
+
+                    //Get last period row
+                    AAccountingPeriodRow periodRow = (AAccountingPeriodRow)AccountingPeriods.DefaultView[0].Row;
+
+
+                    //Create the table to populate the combobox
+                    BatchTable = new DataTable();
+                    BatchTable.Columns.Add("YearNumber", typeof(System.Int32));
+                    BatchTable.Columns.Add("YearEndDate", typeof(String));
+                    BatchTable.Columns.Add("YearEndDateLong", typeof(String));
+                    BatchTable.PrimaryKey = new DataColumn[] { BatchTable.Columns[0] };
+
+                    //Add the current year to the table
+                    YearNumber = LedgerRow.CurrentFinancialYear;
+                    YearEndDate = periodRow.PeriodEndDate;
+
+                    DataRow ResultRow = BatchTable.NewRow();
+                    ResultRow[0] = YearNumber;
+                    ResultRow[1] = YearEndDate.ToShortDateString();
+                    ResultRow[2] = YearEndDate.ToLongDateString();
+                    BatchTable.Rows.Add(ResultRow);
+
+                    //Retrieve all previous years
+                    string sql =
+                        String.Format("SELECT DISTINCT {0} AS batchYear" +
+                            " FROM PUB_{1}" +
+                            " WHERE {2} = {3} And {0} < {4}" +
+                            " ORDER BY 1 DESC",
+                            ABatchTable.GetBatchYearDBName(),
+                            ABatchTable.GetTableDBName(),
+                            ABatchTable.GetLedgerNumberDBName(),
+                            ALedgerNumber,
+                            YearNumber);
+
+                    DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", transaction);
+
+                    BatchYearTable.DefaultView.Sort = String.Format("batchYear DESC");
+
+                    foreach (DataRowView row in BatchYearTable.DefaultView)
+                    {
+                        DataRow currentBatchYearRow = row.Row;
+
+                        Int32 currentBatchYear = (Int32)currentBatchYearRow[0];
 
                         if (YearNumber != currentBatchYear)
                         {
-                            //Gap in year numbers
-                            throw new Exception(String.Format(Catalog.GetString("Year {0} not found for Ledger {1}"),
-                                    YearNumber,
-                                    ALedgerNumber));
+                            YearNumber -= 1;
+                            YearEndDate = DecrementYear(YearEndDate);
+
+                            if (YearNumber != currentBatchYear)
+                            {
+                                //Gap in year numbers
+                                throw new Exception(String.Format(Catalog.GetString("Year {0} not found for Ledger {1}"),
+                                        YearNumber,
+                                        ALedgerNumber));
+                            }
                         }
-                    }
 
-                    DataRow ResultRow2 = BatchTable.NewRow();
-                    ResultRow2[0] = YearNumber;
-                    ResultRow2[1] = YearEndDate.ToShortDateString();
-                    ResultRow2[2] = YearEndDate.ToLongDateString();
-                    BatchTable.Rows.Add(ResultRow2);
-                }
-            }
-            catch (Exception ex)
-            {
-                TLogging.Log(ex.Message);
-                //Do nothing
-            }
+                        DataRow ResultRow2 = BatchTable.NewRow();
+                        ResultRow2[0] = YearNumber;
+                        ResultRow2[1] = YearEndDate.ToShortDateString();
+                        ResultRow2[2] = YearEndDate.ToLongDateString();
+                        BatchTable.Rows.Add(ResultRow2);
+                    } // foreach
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                }); // Get NewOrExisting AutoReadTransaction
 
             return BatchTable;
-        }
+        } // Get Available GLYears HOSA
 
         /// <summary>
         /// Returns the date 1 year prior to the input date, accounting for leap years

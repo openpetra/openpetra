@@ -48,9 +48,12 @@ public class {#TABLENAME}Validation
         TValidationControlsData ValidationControlsData;
         TVerificationResult VerificationResult;
 
+{#IFNDEF DELETABLEROWVALIDATION}
         // Don't validate deleted DataRows
-        if (ARow.RowState == DataRowState.Deleted)
+{#ENDIFN DELETABLEROWVALIDATION}
+        if ((ARow.RowState == DataRowState.Deleted) || (ARow.RowState == DataRowState.Detached))
         {
+            {#DELETABLEROWVALIDATION}
             return;
         }
         
@@ -126,6 +129,21 @@ if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControls
     // Handle addition to/removal from TVerificationResultCollection
     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
 }
+
+{##SNIPDELETABLEROWVALIDATION}
+if (ARow.RowState == DataRowState.Deleted)
+{
+    // Special case for server side validation during saving
+    if (AValidationControlsDict.AllControlsAreNull && (Convert.ToBoolean(ARow[{#TABLENAME}Table.Column{#COLUMNNAME}Id, DataRowVersion.Original]) == false))
+    {
+        // Add an error notification
+        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext,
+            new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_BY_DESIGN)),
+            ARow.Table.Columns[{#TABLENAME}Table.Column{#COLUMNNAME}Id]);
+    }
+}
+// No further validation on deleted or detached rows
+
 
 {##CHECKEMPTYSTRING}
 VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.{#COLUMNNAME},

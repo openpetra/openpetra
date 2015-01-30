@@ -649,6 +649,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenOccupationCodeFindScreen = @TOccupationCodeSetupManager.OpenModalForm;
             TCommonScreensForwarding.OpenGetMergeDataDialog = @TGetMergeDataManager.OpenModalForm;
             TCommonScreensForwarding.OpenPrintPartnerDialog = @TPrintPartnerModal.OpenModalForm;
+            TCommonScreensForwarding.TaxDeductiblePctAdjust = @TFrmGiftTaxDeductiblePctAdjustment.TaxDeductiblePctAdjustment;
 
             // Set up Delegate for the opening of Forms from the Main Menu
             Ict.Common.Controls.TLstTasks.OpenNewOrExistingForm = @Ict.Petra.Client.CommonForms.TFormsList.OpenNewOrExistingForm;
