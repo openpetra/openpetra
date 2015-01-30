@@ -4,7 +4,7 @@
 // @Authors:
 //       AlanP
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -72,7 +72,13 @@ namespace Tests.MFinance.Client.ExchangeRates
             {
                 TTypedDataTable TableChanges = ADailyExchangeRate.GetChangesTyped();
 
-                return SerialisableDS.SaveChanges(ADailyExchangeRate, TableChanges, ADailyExchangeRateTable.GetTableDBName());
+                if (!SerialisableDS.SaveChanges(ADailyExchangeRate, TableChanges, ADailyExchangeRateTable.GetTableDBName()))
+                {
+                    // throwing an exception because the return value is not verified in many places
+                    throw new Exception("TDailyExchangeRateTest:FMainDS:SaveChanges: Could not save the changes. see log for details");
+                }
+
+                return true;
             }
 
             public static void DeleteAllRows()

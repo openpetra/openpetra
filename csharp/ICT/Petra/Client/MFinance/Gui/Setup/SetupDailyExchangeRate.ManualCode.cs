@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, alanP
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -132,7 +132,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 row.BatchNumber,
                                 row.JournalNumber,
                                 row.BatchStatus,
-                                row.RateOfExchange,
+                                row.RateOfExchange.ToString(CultureInfo.InvariantCulture),
                                 row.DateEffectiveFrom.ToString("yyyy-MM-dd"),
                                 row.TimeEffectiveFrom);
                         }
@@ -1125,7 +1125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     ExchangeRateTDSADailyExchangeRateUsageTable.GetDateEffectiveFromDBName(),
                     ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture),
                     ExchangeRateTDSADailyExchangeRateUsageTable.GetRateOfExchangeDBName(),
-                    ARow.RateOfExchange);
+                    ARow.RateOfExchange.ToString(CultureInfo.InvariantCulture));
                 FMainDS.ADailyExchangeRateUsage.DefaultView.RowFilter = rowFilter;
 
                 if (grdRateUsage.Rows.Count > 1)
@@ -1356,7 +1356,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Now check to see if it is a duplicate rate
                 filter += String.Format(" and {0}={1} and {2}=#{3}#",
                     ADailyExchangeRateTable.GetRateOfExchangeDBName(),
-                    ARow.RateOfExchange,
+                    ARow.RateOfExchange.ToString(CultureInfo.InvariantCulture),
                     ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
                     ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture));
                 myView = new DataView(FMainDS.ADailyExchangeRate, filter, String.Empty, DataViewRowState.CurrentRows);

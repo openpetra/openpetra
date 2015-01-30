@@ -4,7 +4,7 @@
 // @Authors:
 //       alanP
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -481,7 +481,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                     ADailyExchangeRateTable.GetTimeEffectiveFromDBName(),
                     AEffectiveTime,
                     ADailyExchangeRateTable.GetRateOfExchangeDBName(),
-                    ARateOfExchange), "", DataViewRowState.CurrentRows);
+                    ARateOfExchange.ToString(CultureInfo.InvariantCulture)), "", DataViewRowState.CurrentRows);
 
             foreach (DataRowView drv in dv)
             {
