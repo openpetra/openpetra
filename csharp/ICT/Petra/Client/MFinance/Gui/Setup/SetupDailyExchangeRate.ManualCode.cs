@@ -416,9 +416,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else if ((grdDetails.Rows.Count > 1) && (FPetraUtilsObject.GetCallerForm() != null))
             {
                 // Don't do this when testing - caller form will be null
-                // Otherwise we can  restrict the initial filter to recent rates
+                // Otherwise we can restrict the initial filter to recent rates
+                // By default it is 60 days prior to the most recent effective date used anywhere in the database.
+                DataView dv = new DataView(FMainDS.ADailyExchangeRate, String.Empty,
+                    String.Format("{0} DESC", ADailyExchangeRateTable.GetDateEffectiveFromDBName()), DataViewRowState.CurrentRows);
+                DateTime lastDbDate = ((ADailyExchangeRateRow)dv[0].Row).DateEffectiveFrom;
+
                 TtxtPetraDate dateFilter = (TtxtPetraDate)FFilterAndFindObject.FilterPanelControls.FindControlByName("dtpDetailDateEffectiveFrom");
-                dateFilter.Date = dtpDetailDateEffectiveFrom.Date.Value.AddDays(-30);
+                dateFilter.Date = lastDbDate.AddDays(-60);
             }
 
             // Now sort out the initial focus
@@ -642,12 +647,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            // If there have been changes we save them without asking, since that is part of the deal of clicking OK
-            if (FPetraUtilsObject.HasChanges && !SaveChanges())
-            {
-                return;
-            }
-
+            // 'Save' our selected values in our public return variables
             if (txtDetailRateOfExchange.NumberValueDecimal.HasValue)
             {
                 modalRateOfExchange = txtDetailRateOfExchange.NumberValueDecimal.Value;
@@ -655,6 +655,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             modalEffectiveDate = FPreviouslySelectedDetailRow.DateEffectiveFrom;
             modalEffectiveTime = FPreviouslySelectedDetailRow.TimeEffectiveFrom;
+
+            // If there have been changes we save them without asking, since that is part of the deal of clicking OK
+            // Note that saving may remove the row that is currently selected, if it is a later duplicate (but that doesn't rwally matter to our return values)
+            if (FPetraUtilsObject.HasChanges && !SaveChanges())
+            {
+                return;
+            }
 
             DialogResult = DialogResult.OK;
             Close();
@@ -922,6 +929,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             // Note that we use Leave because it is fired before control validation
             // Get a new time and rate for the date
+
+            // We need to protect the situation where our saving code has auto-deleted a row.  In that case we will be leaving in order to select an existing row.
+            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Detached) || (FPreviouslySelectedDetailRow.RowState == DataRowState.Deleted))
+            {
+                return;
+            }
+
             int suggestedTime;
             decimal suggestedRate;
 
@@ -975,6 +989,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // This gets called whenever the user leaves a currency box
             // This could be a real change or it could just be a tab through
             // The key thing is that we get called before control validation so the data will not be updated yet
+
+            // We need to protect the situation where our saving code has auto-deleted a row.  In that case we will be leaving in order to select an existing row.
+            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Detached) || (FPreviouslySelectedDetailRow.RowState == DataRowState.Deleted))
+            {
+                return;
+            }
+
             string strFrom = cmbDetailFromCurrencyCode.GetSelectedString();
             string strTo = cmbDetailToCurrencyCode.GetSelectedString();
 
@@ -1365,6 +1386,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // We need to update the details and validate them first
             // When we return from this method the standard code will do the validation again and might not allow the save to go ahead
             FPetraUtilsObject.VerificationResultCollection.Clear();
+            // Get the current row details
+            // No messages so any duplicates (which we are about to delete) won't trigger a message
+            //   but that is better than two dialogs which we would get for any other reason - because our caller method is also about
+            //   to call ValidateAllData.  So we keep this one silent.
             ValidateAllData(false, false);
 
             if (!TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
@@ -1372,20 +1397,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            // Now go through all the data checking all the added rows.  Keep a list of inverses
+            // Now go through all the data checking all the added or modified rows.  Keep a list of inverses.
+            //  (Remember that modified rows must by definition be unused so its ok to delete them.)
             DataView dv = new DataView(FMainDS.ADailyExchangeRate, String.Empty, SortByDateDescending, DataViewRowState.CurrentRows);
             List <tInverseItem>lstInverses = new List <tInverseItem>();
 
             for (int i = 0; i < dv.Count; i++)
             {
                 ADailyExchangeRateRow row = (ADailyExchangeRateRow)dv[i].Row;
+                TLogging.LogAtLevel(2, String.Format("Testing row {5} of {6} for auto-deletion: From {0}, To {1}, Date {2}, Rate {3}, Time {4}",
+                        row.FromCurrencyCode, row.ToCurrencyCode, row.DateEffectiveFrom.ToString("yyyy-MM-dd"), row.RateOfExchange,
+                        row.TimeEffectiveFrom, i + 1, dv.Count));
 
-                if (row.RowState == DataRowState.Added)
+                if ((row.RowState == DataRowState.Added) || (row.RowState == DataRowState.Modified))
                 {
                     // Remove it if it has a zero rate of exchange (from a modal screen)
                     if (row.RateOfExchange == 0.0m)
                     {
+                        TLogging.LogAtLevel(2, String.Format("Zero rate of exchange auto-deletion: From {0}, To {1}, Date {2}, Time {3}",
+                                row.FromCurrencyCode, row.ToCurrencyCode, row.DateEffectiveFrom.ToString("yyyy-MM-dd"), row.TimeEffectiveFrom));
                         row.Delete();
+                        // The DataView will automatically remove this row from the view
+                        i--;
                         continue;
                     }
 
@@ -1397,7 +1430,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         ADailyExchangeRateRow tryRow = (ADailyExchangeRateRow)dv[k].Row;
 
-                        if (tryRow.RowState == DataRowState.Deleted)
+                        // Ignore rows we deleted in this loop
+                        if ((tryRow.RowState == DataRowState.Deleted) || (tryRow.RowState == DataRowState.Detached))
                         {
                             continue;
                         }
@@ -1409,8 +1443,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             // same from/to/date so remove our working row
                             if (tryRow.RateOfExchange == row.RateOfExchange)
                             {
+                                TLogging.LogAtLevel(2,
+                                    String.Format(
+                                        "Duplicate rate of exchange (B) auto-deletion: From {0}, To {1}, Date {2}, Rate {3}, Time deleted {4}, Time retained {5}",
+                                        row.FromCurrencyCode, row.ToCurrencyCode, row.DateEffectiveFrom.ToString("yyyy-MM-dd"), row.RateOfExchange,
+                                        row.TimeEffectiveFrom, tryRow.TimeEffectiveFrom));
                                 row.Delete();
                                 rowDeleted = true;
+                                // The DataView will automatically remove this row from the view
+                                i--;
                                 break;
                             }
                         }
@@ -1429,14 +1470,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     // Now do the same looking forwards
                     rowDeleted = false;
 
-                    for (int k = 1; k < dv.Count; k++)
+                    for (int k = i + 1; k < dv.Count; k++)
                     {
                         ADailyExchangeRateRow tryRow = (ADailyExchangeRateRow)dv[k].Row;
-
-                        if (tryRow.RowState == DataRowState.Deleted)
-                        {
-                            continue;
-                        }
 
                         if ((tryRow.FromCurrencyCode == row.FromCurrencyCode)
                             && (tryRow.ToCurrencyCode == row.ToCurrencyCode)
@@ -1445,8 +1481,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             // same from/to/date so remove our working row
                             if (tryRow.RateOfExchange == row.RateOfExchange)
                             {
+                                TLogging.LogAtLevel(2,
+                                    String.Format(
+                                        "Duplicate rate of exchange (F) auto-deletion: From {0}, To {1}, Date {2}, Rate {3}, Time deleted {4}, Time retained {5}",
+                                        row.FromCurrencyCode, row.ToCurrencyCode, row.DateEffectiveFrom.ToString("yyyy-MM-dd"), row.RateOfExchange,
+                                        row.TimeEffectiveFrom, tryRow.TimeEffectiveFrom));
                                 row.Delete();
                                 rowDeleted = true;
+                                // The DataView will automatically remove this row from the view
+                                i--;
                                 break;
                             }
                         }
@@ -1462,7 +1505,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         continue;
                     }
 
-                    // Now, as we have retained this added row, note the inverse settings
+                    // Now, as we have retained this added or modiified row, note the inverse settings
                     tInverseItem item = new tInverseItem();
                     item.FromCurrencyCode = row.ToCurrencyCode;
                     item.ToCurrencyCode = row.FromCurrencyCode;
@@ -1509,6 +1552,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             // Now make sure to select the row that was currently selected when we started the Save operation
+            // If we auto-deleted the 'current' row, this method will select the first row
             SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1);
         }
 

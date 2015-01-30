@@ -411,6 +411,9 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                         timeOffset = (moveForwards) ? timeOffset + 60 : timeOffset - 60;
                         drNext.EndEdit();
                         i++;            // we can increment our main loop counter now that we have dealt with our 'next' row.
+                        TLogging.LogAtLevel(2, String.Format("Modifying {0} row: From {1}, To {2}, Date {3}, Time {4}, new Time {5}",
+                                drThis.TableSource, drThis.FromCurrencyCode, drThis.ToCurrencyCode, drThis.DateEffectiveFrom.ToString("yyyy-MM-dd"),
+                                prevTimeEffectiveFrom, drNext.TimeEffectiveFrom), TLoggingType.ToLogfile);
 
                         // Modify all the rows in the usage table that refer to the previous time
                         OnModifyEffectiveTime(WorkingDS.ADailyExchangeRateUsage, drNext.FromCurrencyCode, drNext.ToCurrencyCode,
@@ -418,7 +421,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                             prevTimeEffectiveFrom, drNext.TimeEffectiveFrom, drNext.RateOfExchange);
 
                         // Now look ahead even further than the 'next' row and modify those times too, adding 1 more minute to each
-                        for (int k = i + 2;; k++)
+                        for (int k = i + 1;; k++)
                         {
                             ExchangeRateTDSADailyExchangeRateRow drLookAhead = (ExchangeRateTDSADailyExchangeRateRow)dv[k].Row;
 
@@ -438,6 +441,10 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                             timeOffset = (moveForwards) ? timeOffset + 60 : timeOffset - 60;
                             drLookAhead.EndEdit();
                             i++;
+                            TLogging.LogAtLevel(2, String.Format("Modifying additional {0} row: From {1}, To {2}, Date {3}, Time {4}, new Time {5}",
+                                    drThis.TableSource, drThis.FromCurrencyCode, drThis.ToCurrencyCode,
+                                    drThis.DateEffectiveFrom.ToString("yyyy-MM-dd"),
+                                    prevTimeEffectiveFrom, drLookAhead.TimeEffectiveFrom), TLoggingType.ToLogfile);
 
                             OnModifyEffectiveTime(WorkingDS.ADailyExchangeRateUsage, drLookAhead.FromCurrencyCode, drLookAhead.ToCurrencyCode,
                                 drLookAhead.DateEffectiveFrom, prevTimeEffectiveFrom, drLookAhead.TimeEffectiveFrom, drLookAhead.RateOfExchange);

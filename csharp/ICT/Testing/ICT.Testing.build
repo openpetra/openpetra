@@ -18,6 +18,11 @@
     <!-- stop old server that might still be running from earlier (failed) builds -->
     <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
     <nant inheritall="false" target="startServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+    <!-- If we were called by 'test-all' we have done a database reset already and the property 'combinedTest' will have been set.
+         Otherwise, by simply calling test-client we need to do a resetDatabase now so as to get Corporate Exchange Rates set correctly... -->
+    <if test="${not property::exists('combinedTest')}">
+      <nant inheritall="false" target="resetDatabase" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+    </if>
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Controls.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.ExchangeRates.dll" />
@@ -97,6 +102,7 @@
 <target name="test-all">
     <echo message="Target test-all started at: ${datetime::now()}" /> 
     
+    <property name="combinedTest" value="true"/>
     <call target="test-without-display"/>
     <call target="test-client"/>
     
