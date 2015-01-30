@@ -276,6 +276,8 @@ namespace Ict.Petra.Client.CommonControls
         private Boolean FAllowDbNull = false;
         private string FNullValueDesciption = ApplWideResourcestrings.StrUndefined;
 
+        #region Properties
+        
         /// <summary>
         /// Gets or sets the text associated with this Control (in this case: the text in the editable part of the ComboBox)
         /// </summary>
@@ -404,6 +406,10 @@ namespace Ict.Petra.Client.CommonControls
                 cmbCombobox.Tag = value;
             }
         }
+        
+        #endregion
+        
+        #region Events        
 
         /**
          * This Event is thrown when the internal ComboBox throws the SelectedValueChanged Event.
@@ -439,6 +445,25 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
+        /**
+         * This Event is thrown when the internal ComboBox throws the SelectedValueChanged Event.
+         */
+        [Category("Action"),
+         Browsable(true),
+         RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
+         Description("Occurs when when the internal ComboBox throws the DropDownClosed Event.")]
+        public event System.EventHandler DropDownClosed;
+
+        private void CmbCombobox_DropDownClosed(System.Object sender, EventArgs e)
+        {
+            if (DropDownClosed != null)
+            {
+                DropDownClosed(this, e);
+            }
+        }
+        
+        #endregion
+        
         /// <summary>
         /// constructor
         /// </summary>
@@ -1073,6 +1098,7 @@ namespace Ict.Petra.Client.CommonControls
             {
                 this.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
                 this.cmbCombobox.TextChanged += new System.EventHandler(this.CmbCombobox_TextChanged);
+                this.cmbCombobox.DropDownClosed += new System.EventHandler(this.CmbCombobox_DropDownClosed);
             }
 
             if (FAddNotSetValue)
