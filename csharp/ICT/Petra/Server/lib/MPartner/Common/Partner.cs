@@ -935,81 +935,81 @@ namespace Ict.Petra.Server.MPartner.Partner
             PPartnerRelationshipRow RelationshipRow;
             TPartnerFamilyIDHandling FamilyIDHandling;
             Int32 NewFamilyID;
+            string ProblemMessage = string.Empty;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            try
-            {
-                PersonDT = PPersonAccess.LoadByPrimaryKey(APersonKey, Transaction);
-
-                FamilyIDHandling = new TPartnerFamilyIDHandling();
-
-                if (FamilyIDHandling.GetNewFamilyID_FamilyChange(ANewFamilyKey, PersonDT[0].FamilyId, out NewFamilyID,
-                        out AProblemMessage) == TFamilyIDSuccessEnum.fiError)
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
                 {
-                    // this should not really happen  but we cannot continue if it does
-                    Result = false;
-                }
-
-                if (Result)
-                {
-                    // reset family id and family key for person
-                    PersonDT[0].FamilyId = NewFamilyID;
-                    PersonDT[0].FamilyKey = ANewFamilyKey;
-
-                    PPersonAccess.SubmitChanges(PersonDT, Transaction);
-
-                    // reset family members flag in old family if this person was the last family member
-                    if (PPersonAccess.CountViaPFamily(AOldFamilyKey, Transaction) == 0)
+                    try
                     {
-                        OldFamilyDT = PFamilyAccess.LoadByPrimaryKey(AOldFamilyKey, Transaction);
+                        PersonDT = PPersonAccess.LoadByPrimaryKey(APersonKey, Transaction);
 
-                        OldFamilyDT[0].FamilyMembers = false;
+                        FamilyIDHandling = new TPartnerFamilyIDHandling();
 
-                        PFamilyAccess.SubmitChanges(OldFamilyDT, Transaction);
+                        if (FamilyIDHandling.GetNewFamilyID_FamilyChange(ANewFamilyKey, PersonDT[0].FamilyId, out NewFamilyID,
+                                out ProblemMessage) == TFamilyIDSuccessEnum.fiError)
+                        {
+                            // this should not really happen  but we cannot continue if it does
+                            Result = false;
+                        }
+
+                        if (Result)
+                        {
+                            // reset family id and family key for person
+                            PersonDT[0].FamilyId = NewFamilyID;
+                            PersonDT[0].FamilyKey = ANewFamilyKey;
+
+                            PPersonAccess.SubmitChanges(PersonDT, Transaction);
+
+                            // reset family members flag in old family if this person was the last family member
+                            if (PPersonAccess.CountViaPFamily(AOldFamilyKey, Transaction) == 0)
+                            {
+                                OldFamilyDT = PFamilyAccess.LoadByPrimaryKey(AOldFamilyKey, Transaction);
+
+                                OldFamilyDT[0].FamilyMembers = false;
+
+                                PFamilyAccess.SubmitChanges(OldFamilyDT, Transaction);
+                            }
+
+                            // remove relationships between person and old family
+                            PPartnerRelationshipAccess.DeleteByPrimaryKey(AOldFamilyKey, "FAMILY", APersonKey, Transaction);
+
+                            // set family members flag for new family as there is now at least one member
+                            NewFamilyDT = PFamilyAccess.LoadByPrimaryKey(ANewFamilyKey, Transaction);
+                            NewFamilyDT[0].FamilyMembers = true;
+                            PFamilyAccess.SubmitChanges(NewFamilyDT, Transaction);
+
+                            // create relationship between person and new family
+                            if ((!PPartnerRelationshipAccess.Exists(ANewFamilyKey, "FAMILY", APersonKey, Transaction)))
+                            {
+                                RelationshipDT = new PPartnerRelationshipTable();
+                                RelationshipRow = RelationshipDT.NewRowTyped(true);
+                                RelationshipRow.PartnerKey = ANewFamilyKey;
+                                RelationshipRow.RelationKey = APersonKey;
+                                RelationshipRow.RelationName = "FAMILY";
+                                RelationshipRow.Comment = "System Generated";
+
+                                RelationshipDT.Rows.Add(RelationshipRow);
+
+                                PPartnerRelationshipAccess.SubmitChanges(RelationshipDT, Transaction);
+                            }
+                        }
+
+                        if (Result)
+                        {
+                            SubmissionOK = true;
+                        }
                     }
-
-                    // remove relationships between person and old family
-                    PPartnerRelationshipAccess.DeleteByPrimaryKey(AOldFamilyKey, "FAMILY", APersonKey, Transaction);
-
-                    // set family members flag for new family as there is now at least one member
-                    NewFamilyDT = PFamilyAccess.LoadByPrimaryKey(ANewFamilyKey, Transaction);
-                    NewFamilyDT[0].FamilyMembers = true;
-                    PFamilyAccess.SubmitChanges(NewFamilyDT, Transaction);
-
-                    // create relationship between person and new family
-                    if ((!PPartnerRelationshipAccess.Exists(ANewFamilyKey, "FAMILY", APersonKey, Transaction)))
+                    catch (Exception Exc)
                     {
-                        RelationshipDT = new PPartnerRelationshipTable();
-                        RelationshipRow = RelationshipDT.NewRowTyped(true);
-                        RelationshipRow.PartnerKey = ANewFamilyKey;
-                        RelationshipRow.RelationKey = APersonKey;
-                        RelationshipRow.RelationName = "FAMILY";
-                        RelationshipRow.Comment = "System Generated";
-
-                        RelationshipDT.Rows.Add(RelationshipRow);
-
-                        PPartnerRelationshipAccess.SubmitChanges(RelationshipDT, Transaction);
+                        TLogging.Log("An Exception occured during a change of a Family:" + Environment.NewLine + Exc.ToString());
                     }
-                }
+                });
 
-                if (Result)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during a change of a Family:" + Environment.NewLine + Exc.ToString());
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw;
-            }
+            AProblemMessage = ProblemMessage;
 
             return Result;
         }

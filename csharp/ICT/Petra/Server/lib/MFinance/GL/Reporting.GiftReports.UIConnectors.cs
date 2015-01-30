@@ -127,7 +127,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable RecipientGiftStatementRecipientTable(Dictionary <String, TVariant>AParameters)
+        public static DataTable RecipientGiftStatementRecipientTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             TDBTransaction Transaction = null;
 
@@ -234,7 +234,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Query += " ORDER BY RecipientName";
                     }
 
-                    Results = DBAccess.GDBAccessObj.SelectDT(Query, "Recipients", Transaction);
+                    Results = DbAdapter.RunQuery(Query, "Recipients", Transaction);
                 });
 
             return Results;
@@ -244,7 +244,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable RecipientGiftStatementTotalsTable(Dictionary <String, TVariant>AParameters, Int64 ARecipientKey)
+        public static DataTable RecipientGiftStatementTotalsTable(Dictionary <String, TVariant>AParameters,
+            Int64 ARecipientKey,
+            TReportingDbAdapter DbAdapter)
         {
             TDBTransaction Transaction = null;
 
@@ -300,7 +302,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                                    " GROUP BY GiftDetail.p_recipient_key_n";
 
-                    Results = DBAccess.GDBAccessObj.SelectDT(Query, "RecipientTotals", Transaction);
+                    Results = DbAdapter.RunQuery(Query, "RecipientTotals", Transaction);
                 });
 
             return Results;
@@ -310,7 +312,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable RecipientGiftStatementDonorTable(Dictionary <String, TVariant>AParameters, Int64 ARecipientKey)
+        public static DataTable RecipientGiftStatementDonorTable(Dictionary <String, TVariant>AParameters,
+            Int64 ARecipientKey,
+            TReportingDbAdapter DbAdapter)
         {
             TDBTransaction Transaction = null;
 
@@ -396,7 +400,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Query += " ORDER BY DonorPartner.p_partner_short_name_c";
                     }
 
-                    Results = DBAccess.GDBAccessObj.SelectDT(Query, "Donors", Transaction);
+                    Results = DbAdapter.RunQuery(Query, "Donors", Transaction);
                 });
 
             return Results;
@@ -406,7 +410,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable RecipientGiftStatementDonorAddressesTable(Int64 ADonorKey)
+        public static DataTable RecipientGiftStatementDonorAddressesTable(Int64 ADonorKey, TReportingDbAdapter DbAdapter)
         {
             TDBTransaction Transaction = null;
 
@@ -443,7 +447,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                            " PUB_p_location.p_site_key_n = " + BestAddress.SiteKey +
                                            " AND PUB_p_location.p_location_key_i = " + BestAddress.LocationKey;
 
-                    Results.Merge(DBAccess.GDBAccessObj.SelectDT(QueryLocation, "DonorAddresses", Transaction));
+                    Results.Merge(DbAdapter.RunQuery(QueryLocation, "DonorAddresses", Transaction));
 
                     Results.Rows[0]["DonorKey"] = ADonorKey;
                 });

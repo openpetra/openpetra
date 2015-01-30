@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        // carry out the adjustment
+        // carry out the field adjustment
         private void FieldChangeAdjustment(System.Object sender, EventArgs e)
         {
             if (!ValidateControls())
@@ -96,22 +96,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            // Carry out the gift adjustment
+            GiftAdjustment(GiftBatchDS, null, chkNoReceipt.Checked, this);
+
+            // refresh batches
+            this.Cursor = Cursors.WaitCursor;
+            ((TFrmGiftBatch)FPetraUtilsObject.GetCallerForm()).RefreshAll();
+            this.Cursor = Cursors.Default;
+            this.Close();
+        }
+
+        /// <summary>
+        /// Carry out the gift adjustment (field or tax deductible pct)
+        /// </summary>
+        /// <param name="AGiftBatchDS">Gift Batch containing GiftDetail rows for all gifts to be adjusted.</param>
+        /// <param name="ANewPct">New Tax Deductible Percentage (null if not being used)</param>
+        /// <param name="ANoReceipt">True if no receipt</param>
+        /// <param name="AParentForm"></param>
+        public static void GiftAdjustment(GiftBatchTDS AGiftBatchDS, decimal? ANewPct, bool ANoReceipt, Form AParentForm)
+        {
             // sort gift batches so like batches are together
-            GiftBatchDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetCurrencyCodeDBName() + " ASC, " +
-                                                      AGiftBatchTable.GetBankCostCentreDBName() + " ASC, " +
-                                                      AGiftBatchTable.GetBankAccountCodeDBName() + " ASC, " + AGiftBatchTable.GetGiftTypeDBName() +
-                                                      " ASC";
+            AGiftBatchDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetLedgerNumberDBName() + " ASC, " +
+                                                       AGiftBatchTable.GetCurrencyCodeDBName() + " ASC, " +
+                                                       AGiftBatchTable.GetBankCostCentreDBName() + " ASC, " +
+                                                       AGiftBatchTable.GetBankAccountCodeDBName() + " ASC, " + AGiftBatchTable.GetGiftTypeDBName() +
+                                                       " ASC";
 
             GiftBatchTDS NewGiftDS = new GiftBatchTDS();
             NewGiftDS.AGiftDetail.Merge(new GiftBatchTDSAGiftDetailTable());
 
-            for (int i = 0; i < GiftBatchDS.AGiftBatch.Rows.Count; i++)
+            for (int i = 0; i < AGiftBatchDS.AGiftBatch.Rows.Count; i++)
             {
-                AGiftBatchRow OldGiftBatch = (AGiftBatchRow)GiftBatchDS.AGiftBatch.DefaultView[i].Row;
+                AGiftBatchRow OldGiftBatch = (AGiftBatchRow)AGiftBatchDS.AGiftBatch.DefaultView[i].Row;
                 AGiftBatchRow NextGiftBatch = null;
 
                 // add batch's gift/s to dataset
-                DataView Gifts = new DataView(GiftBatchDS.AGift);
+                DataView Gifts = new DataView(AGiftBatchDS.AGift);
                 Gifts.RowFilter = string.Format("{0}={1}",
                     AGiftDetailTable.GetBatchNumberDBName(),
                     OldGiftBatch.BatchNumber);
@@ -123,7 +143,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 // add batch's gift detail/s to dataset
-                DataView GiftDetails = new DataView(GiftBatchDS.AGiftDetail);
+                DataView GiftDetails = new DataView(AGiftBatchDS.AGiftDetail);
                 GiftDetails.RowFilter = string.Format("{0}={1}",
                     AGiftDetailTable.GetBatchNumberDBName(),
                     OldGiftBatch.BatchNumber);
@@ -135,9 +155,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 // if not the last row
-                if (i != GiftBatchDS.AGiftBatch.Rows.Count - 1)
+                if (i != AGiftBatchDS.AGiftBatch.Rows.Count - 1)
                 {
-                    NextGiftBatch = (AGiftBatchRow)GiftBatchDS.AGiftBatch.DefaultView[i + 1].Row;
+                    NextGiftBatch = (AGiftBatchRow)AGiftBatchDS.AGiftBatch.DefaultView[i + 1].Row;
                 }
 
                 // if this is the last batch or if the next batch's gifts need to be added to a different new batch
@@ -147,18 +167,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     || (NextGiftBatch.BankAccountCode != OldGiftBatch.BankAccountCode)
                     || (NextGiftBatch.GiftType != OldGiftBatch.GiftType))
                 {
-                    TFrmGiftRevertAdjust AdjustForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
+                    TFrmGiftRevertAdjust AdjustForm = new TFrmGiftRevertAdjust(AParentForm);
 
                     try
                     {
-                        FPetraUtilsObject.GetCallerForm().ShowInTaskbar = false;
+                        AParentForm.ShowInTaskbar = false;
 
-                        AdjustForm.LedgerNumber = FLedgerNumber;
+                        AdjustForm.LedgerNumber = OldGiftBatch.LedgerNumber;
                         AdjustForm.CurrencyCode = OldGiftBatch.CurrencyCode;
                         AdjustForm.Text = "Adjust Gift";
                         AdjustForm.AddParam("Function", GiftAdjustmentFunctionEnum.FieldAdjust);
                         AdjustForm.GiftMainDS = NewGiftDS;
-                        AdjustForm.NoReceipt = chkNoReceipt.Checked;
+                        AdjustForm.NoReceipt = ANoReceipt;
+
+                        if (ANewPct != null)
+                        {
+                            AdjustForm.AddParam("Function", GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust);
+                            AdjustForm.AddParam("NewPct", ANewPct);
+                        }
+                        else
+                        {
+                            AdjustForm.AddParam("Function", GiftAdjustmentFunctionEnum.FieldAdjust);
+                        }
 
                         AdjustForm.GiftDetailRow = NewGiftDS.AGiftDetail[0];
 
@@ -169,21 +199,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                     finally
                     {
-                        this.Cursor = Cursors.WaitCursor;
+                        AParentForm.Cursor = Cursors.WaitCursor;
                         AdjustForm.Dispose();
-                        FPetraUtilsObject.GetCallerForm().ShowInTaskbar = true;
+                        AParentForm.ShowInTaskbar = true;
                         NewGiftDS.AGiftDetail.Clear();
                         NewGiftDS.AGift.Clear();
-                        this.Cursor = Cursors.Default;
+                        AParentForm.Cursor = Cursors.Default;
                     }
                 }
             }
-
-            // refresh batches
-            this.Cursor = Cursors.WaitCursor;
-            ((TFrmGiftBatch)FPetraUtilsObject.GetCallerForm()).RefreshAll();
-            this.Cursor = Cursors.Default;
-            this.Close();
         }
 
         private bool GetAllDataNeeded(ref GiftBatchTDS AGiftBatchDS)

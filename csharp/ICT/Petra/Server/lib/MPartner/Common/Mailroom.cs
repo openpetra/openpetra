@@ -55,35 +55,36 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ALastContactDate"></param>
         public static void GetLastContactDate(Int64 APartnerKey, out DateTime ALastContactDate)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = null;
+
             DataSet LastContactDS;
             PContactLogRow ContactDR;
+            DateTime LastContactDate = new DateTime();
 
             LastContactDS = new DataSet("LastContactDate");
             LastContactDS.Tables.Add(new PContactLogTable());
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-            PContactLogAccess.LoadViaPPartnerPPartnerContact(LastContactDS, APartnerKey,
-                StringHelper.InitStrArr(new String[] { PContactLogTable.GetContactDateDBName() }), ReadTransaction,
-                StringHelper.InitStrArr(new String[] { "ORDER BY " + PContactLogTable.GetContactDateDBName() + " DESC" }), 0, 1);
+                ref ReadTransaction,
+                delegate
+                {
+                    PContactLogAccess.LoadViaPPartnerPPartnerContact(LastContactDS, APartnerKey,
+                        StringHelper.InitStrArr(new String[] { PContactLogTable.GetContactDateDBName() }), ReadTransaction,
+                        StringHelper.InitStrArr(new String[] { "ORDER BY " + PContactLogTable.GetContactDateDBName() + " DESC" }), 0, 1);
 
-            if (LastContactDS.Tables[PContactLogTable.GetTableName()].Rows.Count > 0)
-            {
-                ContactDR = ((PContactLogTable)LastContactDS.Tables[PContactLogTable.GetTableName()])[0];
-                ALastContactDate = ContactDR.ContactDate;
-            }
-            else
-            {
-                ALastContactDate = DateTime.MinValue;
-            }
+                    if (LastContactDS.Tables[PContactLogTable.GetTableName()].Rows.Count > 0)
+                    {
+                        ContactDR = ((PContactLogTable)LastContactDS.Tables[PContactLogTable.GetTableName()])[0];
+                        LastContactDate = ContactDR.ContactDate;
+                    }
+                    else
+                    {
+                        LastContactDate = DateTime.MinValue;
+                    }
+                });
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TMailroom.GetLastContactDate: committed own transaction.");
-            }
+            ALastContactDate = LastContactDate;
         }
     }
 }

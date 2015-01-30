@@ -216,10 +216,11 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             string ReportType = AParameters["param_report_type"].ToString();
 
             FDbAdapter = new TReportingDbAdapter();
+            TLogging.SetStatusBarProcedure(WriteToStatusBar);
             DataSet ReturnDataSet = new DataSet();
 
             // get recipients
-            DataTable Recipients = TFinanceReportingWebConnector.RecipientGiftStatementRecipientTable(AParameters);
+            DataTable Recipients = TFinanceReportingWebConnector.RecipientGiftStatementRecipientTable(AParameters, FDbAdapter);
 
             if (FDbAdapter.IsCancelled || (Recipients == null))
             {
@@ -236,11 +237,17 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 if (ReportType == "Complete")
                 {
                     // get year totals for recipient
-                    RecipientTotals.Merge(TFinanceReportingWebConnector.RecipientGiftStatementTotalsTable(AParameters, (Int64)Row["RecipientKey"]));
+                    RecipientTotals.Merge(TFinanceReportingWebConnector.RecipientGiftStatementTotalsTable(AParameters, (Int64)Row["RecipientKey"],
+                            FDbAdapter));
                 }
 
                 // get donor information for each recipient
-                Donors.Merge(TFinanceReportingWebConnector.RecipientGiftStatementDonorTable(AParameters, (Int64)Row["RecipientKey"]));
+                Donors.Merge(TFinanceReportingWebConnector.RecipientGiftStatementDonorTable(AParameters, (Int64)Row["RecipientKey"], FDbAdapter));
+
+                if (FDbAdapter.IsCancelled)
+                {
+                    return null;
+                }
             }
 
             DataView View = new DataView(Donors);
@@ -253,7 +260,13 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 foreach (DataRow Row in DistinctDonors.Rows)
                 {
                     // get best address for each distinct donor
-                    DonorAddresses.Merge(TFinanceReportingWebConnector.RecipientGiftStatementDonorAddressesTable(Convert.ToInt64(Row["DonorKey"])));
+                    DonorAddresses.Merge(TFinanceReportingWebConnector.RecipientGiftStatementDonorAddressesTable(Convert.ToInt64(Row["DonorKey"]),
+                            FDbAdapter));
+
+                    if (FDbAdapter.IsCancelled)
+                    {
+                        return null;
+                    }
                 }
             }
             else
@@ -274,7 +287,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             ReturnDataSet.Tables.Add(Donors);
             ReturnDataSet.Tables.Add(DonorAddresses);
 
-            return ReturnDataSet;
+            return (FDbAdapter.IsCancelled) ? null : ReturnDataSet;
         }
 
         /// <summary>

@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: windowTDS
     WindowWidth: 860
-    WindowHeight: 680
+    WindowHeight: 700
     Actions:
         actAddNewAccount: {Label=&Add Account, ActionClick=AddNewAccount}
         actDeleteAccount: {Label=&Delete Account, Help=This only works for accounts that have not been used yet; otherwise deactivate the account, ActionClick=DeleteAccount}
@@ -59,7 +59,9 @@ RootNode:
                 Row9: [pnlForeignCurrency]
                 Row10: [pnlBudget]
         pnlFlags: {ColSpan=2, ControlsOrientation = horizontal}
-            Controls: [chkDetailBankAccountFlag, chkDetailAccountActiveFlag]
+            Controls: 
+                Row0: [chkDetailBankAccountFlag, chkDetailSuspenseAccountFlag]
+                Row1: [chkDetailAccountActiveFlag]
         pnlSummary: {ColSpan=2, ControlsOrientation = horizontal}
             Controls: [chkDetailIsSummary, txtRptOrder]
         pnlForeignCurrency: {ColSpan=2, ControlsOrientation = horizontal}
@@ -83,8 +85,9 @@ RootNode:
         # TODO: analysis attributes
         # TODO: which bank account (pbankingdetail) is this account linked to
         chkDetailBankAccountFlag: {LabelWidth=124, Label=Bank Account}
+        chkDetailSuspenseAccountFlag: {LabelWidth=124, Label=Suspense Account, OnChange=OnChange_SuspenseAccount}
         # TODO: system account, standard account
-        chkDetailAccountActiveFlag: {LabelWidth=73, Label=Active}
+        chkDetailAccountActiveFlag: {Label=Active}
         chkDetailIsSummary: {LabelWidth=124, Label=Summary}
         txtRptOrder: {LabelWidth=73, Width=45}
         chkDetailForeignCurrencyFlag: {LabelWidth=124, Label=Foreign Currency}

@@ -47,6 +47,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
         static TDelegateOpenOccupationCodeFindScreen FOpenOccupationCodeFindScreen;
         static TDelegateOpenGetMergeDataDialog FOpenGetMergeDataDialog;
         static TDelegateOpenPrintPartnerDialog FOpenPrintPartnerDialog;
+        static TDelegateTaxDeductiblePctAdjust FTaxDeductiblePctAdjust;
 
         /// <summary>
         /// This property is used to provide a function which opens a modal Partner Find screen.
@@ -285,6 +286,23 @@ namespace Ict.Petra.Client.CommonControls.Logic
             set
             {
                 FOpenPrintPartnerDialog = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is used to provide a function which does a TaxDeductiblePct adjustment.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TDelegateTaxDeductiblePctAdjust TaxDeductiblePctAdjust
+        {
+            get
+            {
+                return FTaxDeductiblePctAdjust;
+            }
+
+            set
+            {
+                FTaxDeductiblePctAdjust = value;
             }
         }
     }

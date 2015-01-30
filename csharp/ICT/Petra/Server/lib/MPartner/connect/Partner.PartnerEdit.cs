@@ -310,6 +310,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
 
             localDS.RemoveEmptyTables();
+            localDS.AcceptChanges();
 
             return localDS;
         }

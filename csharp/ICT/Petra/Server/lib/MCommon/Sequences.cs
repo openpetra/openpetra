@@ -46,16 +46,15 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         [RequireModulePermission("NONE")]
         public static Int64 GetNextSequence(TSequenceNames ASequence)
         {
-            bool NewTransaction;
+            Int64 NewSequenceValue = 0;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            Int64 NewSequenceValue = DBAccess.GDBAccessObj.GetNextSequenceValue(ASequence.ToString(), Transaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+                delegate
+                {
+                    NewSequenceValue = DBAccess.GDBAccessObj.GetNextSequenceValue(ASequence.ToString(), Transaction);
+                });
 
             return NewSequenceValue;
         }

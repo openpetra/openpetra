@@ -1208,6 +1208,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // Update UserDefaults, if necessary
                             MaintainUserDefaults();
 
+                            if (SubmitDS.Tables.Contains(PPartnerTaxDeductiblePctTable.GetTableName()))
+                            {
+                                UpdateTaxDeductiblePct();
+                            }
+
                             // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
                             AInspectDS.AcceptChanges();
 #if DATASETDEBUGGING
@@ -1585,6 +1590,260 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 //              MessageBox.Show("Detected changed AcquisitionCode: " + FMainDS.PPartner[0].AcquisitionCode);
                 TUserDefaults.SetDefault(TUserDefaults.PARTNER_ACQUISITIONCODE, FMainDS.PPartner[0].AcquisitionCode);
+            }
+        }
+
+        private void UpdateTaxDeductiblePct()
+        {
+            decimal OriginalPct = 100;
+            decimal NewPct = 100;
+            DateTime OriginalValidFrom = DateTime.MinValue;
+            DateTime NewValidFrom = DateTime.MinValue;
+
+            // if a datarow already exists
+            if (FMainDS.PPartnerTaxDeductiblePct.Rows[0].HasVersion(DataRowVersion.Original))
+            {
+                OriginalPct = Convert.ToDecimal(
+                    FMainDS.PPartnerTaxDeductiblePct.Rows[0][PPartnerTaxDeductiblePctTable.GetPercentageTaxDeductibleDBName(),
+                                                             DataRowVersion.Original]);
+                OriginalValidFrom = Convert.ToDateTime(
+                    FMainDS.PPartnerTaxDeductiblePct.Rows[0][PPartnerTaxDeductiblePctTable.GetDateValidFromDBName(), DataRowVersion.Original]);
+            }
+
+            int i = 0;
+
+            // there will be either 0 or 1 rows that are not marked as deleted
+            while (FMainDS.PPartnerTaxDeductiblePct.Rows[i].RowState == DataRowState.Deleted
+                   && i < (FMainDS.PPartnerTaxDeductiblePct.Rows.Count - 1))
+            {
+                i++;
+            }
+
+            // if Tax Deductible Pct has not just been removed
+            if (FMainDS.PPartnerTaxDeductiblePct.Rows[i].HasVersion(DataRowVersion.Current))
+            {
+                NewPct = Convert.ToDecimal(
+                    FMainDS.PPartnerTaxDeductiblePct.Rows[i][PPartnerTaxDeductiblePctTable.GetPercentageTaxDeductibleDBName(),
+                                                             DataRowVersion.Current]);
+                NewValidFrom = Convert.ToDateTime(
+                    FMainDS.PPartnerTaxDeductiblePct.Rows[i][PPartnerTaxDeductiblePctTable.GetDateValidFromDBName(), DataRowVersion.Current]);
+            }
+
+            // if either pct or date has changed
+            if ((NewPct != OriginalPct) || (OriginalValidFrom != NewValidFrom))
+            {
+                DataTable GiftTotals;
+
+                // find gifts that could be affected by this change
+                if (TRemote.MFinance.Gift.WebConnectors.IsPartnerARecipient(FPartnerKey, out GiftTotals, NewPct, NewValidFrom))
+                {
+                    string StartMsg = string.Empty;
+                    string PermissionGifts = string.Empty;
+                    string NoPermissionGifts = string.Empty;
+                    bool UnpostedGifts = false;
+                    bool UnpostedGiftInLedgerWithNoPermission = false;
+                    bool PostedGifts = false;
+                    bool PostedGiftInLedgerWithNoPermission = false;
+
+                    // check what gifts we have - posted/unposted - ledger permission/no ledger permission
+                    foreach (DataRow Row in GiftTotals.Rows)
+                    {
+                        if (Convert.ToInt32(Row["Unposted"]) > 0)
+                        {
+                            if (UserInfo.GUserInfo.IsInLedger(Convert.ToInt32(Row["LedgerNumber"])))
+                            {
+                                UnpostedGifts = true;
+                            }
+                            else
+                            {
+                                UnpostedGiftInLedgerWithNoPermission = true;
+                            }
+                        }
+
+                        if (Convert.ToInt32(Row["Posted"]) > 0)
+                        {
+                            if (UserInfo.GUserInfo.IsInLedger(Convert.ToInt32(Row["LedgerNumber"])))
+                            {
+                                PostedGifts = true;
+                            }
+                            else
+                            {
+                                PostedGiftInLedgerWithNoPermission = true;
+                            }
+                        }
+                    }
+
+                    // if pct (and date) has changed
+                    if (NewPct != OriginalPct)
+                    {
+                        StartMsg = string.Format(Catalog.GetString("This partner's Tax Deductible Percentage has been changed from {0}% to {1}%."),
+                            OriginalPct.ToString("0.##"), NewPct.ToString("0.##"));
+                    }
+                    // if only date has changed
+                    else
+                    {
+                        StartMsg =
+                            string.Format(Catalog.GetString(
+                                    "This partner's Tax Deductible Percentage has been changed to {0}% for all gifts from {1}."),
+                                NewPct.ToString("0.##"), NewValidFrom.Date.ToString("dd-MMM-yyyy"));
+                    }
+
+                    /* Unposted gifts */
+
+                    if (UnpostedGifts || UnpostedGiftInLedgerWithNoPermission)
+                    {
+                        if (UnpostedGifts)
+                        {
+                            PermissionGifts = "\n\n" +
+                                              Catalog.GetString("Do you want to update all unposted gifts with this new percentage?") + "\n";
+                        }
+
+                        if (UnpostedGiftInLedgerWithNoPermission)
+                        {
+                            NoPermissionGifts = "\n\n" + Catalog.GetString(
+                                "Some unposted gifts cannot be auto updated with this new percentage as you do not have permission to access the ledger which they belong to."
+                                ) + "\n";
+                        }
+
+                        // add info on how many gifts belonging to which ledger
+                        foreach (DataRow Row in GiftTotals.Rows)
+                        {
+                            if ((Convert.ToInt32(Row["Unposted"]) > 0) && UserInfo.GUserInfo.IsInLedger(Convert.ToInt32(Row["LedgerNumber"])))
+                            {
+                                if (Convert.ToInt32(Row["Unposted"]) == 1)
+                                {
+                                    PermissionGifts += "\n" + "- " + string.Format(Catalog.GetString("1 unposted gift from Ledger {0}"),
+                                        Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                                else
+                                {
+                                    PermissionGifts += "\n" + "- " + string.Format(Catalog.GetString("{0} unposted gifts from Ledger {1}"),
+                                        Convert.ToInt32(Row["Unposted"]), Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                            }
+                            else if (Convert.ToInt32(Row["Unposted"]) > 0)
+                            {
+                                if (Convert.ToInt32(Row["Unposted"]) == 1)
+                                {
+                                    NoPermissionGifts += "\n" + "- " + string.Format(Catalog.GetString("1 unposted gift from Ledger {0}"),
+                                        Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                                else
+                                {
+                                    NoPermissionGifts += "\n" + "- " + string.Format(Catalog.GetString("{0} unposted gifts from Ledger {1}"),
+                                        Convert.ToInt32(Row["Unposted"]), Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                            }
+                        }
+
+                        // display a message box
+                        if (UnpostedGifts)
+                        {
+                            if (!string.IsNullOrEmpty(NoPermissionGifts))
+                            {
+                                NoPermissionGifts = "(" + NoPermissionGifts + ")";
+                            }
+
+                            if (MessageBox.Show(StartMsg + PermissionGifts + NoPermissionGifts,
+                                    Catalog.GetString("Tax Deductible Percentage Changed"),
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                            {
+                                // update unposted gifts
+                                TRemote.MFinance.Gift.WebConnectors.UpdateUnpostedGiftsTaxDeductiblePct(FPartnerKey, NewPct);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show(StartMsg + NoPermissionGifts,
+                                Catalog.GetString("Tax Deductible Percentage Changed"),
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                    }
+
+                    /* Posted gifts */
+
+                    if (PostedGifts || PostedGiftInLedgerWithNoPermission)
+                    {
+                        if (PostedGifts)
+                        {
+                            PermissionGifts = Environment.NewLine + Environment.NewLine +
+                                              string.Format(Catalog.GetString(
+                                    "Do you want to update all posted gifts from {0} with this new percentage?"),
+                                NewValidFrom.Date.ToString("dd-MMM-yyyy")) + Environment.NewLine;
+                        }
+
+                        if (PostedGiftInLedgerWithNoPermission)
+                        {
+                            NoPermissionGifts = Environment.NewLine + Environment.NewLine + Catalog.GetString(
+                                "Some posted gifts cannot be auto updated with this new percentage as you do not have permission to access the ledger which they belong to."
+                                ) + Environment.NewLine;
+                        }
+
+                        // add info on how many gifts belonging to which ledger
+                        foreach (DataRow Row in GiftTotals.Rows)
+                        {
+                            if ((Convert.ToInt32(Row["Posted"]) > 0) && UserInfo.GUserInfo.IsInLedger(Convert.ToInt32(Row["LedgerNumber"])))
+                            {
+                                if (Convert.ToInt32(Row["Posted"]) == 1)
+                                {
+                                    PermissionGifts += Environment.NewLine + "- " + string.Format(Catalog.GetString("1 posted gift from Ledger {0}"),
+                                        Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                                else
+                                {
+                                    PermissionGifts += Environment.NewLine + "- " +
+                                                       string.Format(Catalog.GetString("{0} posted gifts from Ledger {1}"),
+                                        Convert.ToInt32(Row["Posted"]), Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                            }
+                            else if (Convert.ToInt32(Row["Posted"]) > 0)
+                            {
+                                if (Convert.ToInt32(Row["Posted"]) == 1)
+                                {
+                                    NoPermissionGifts += Environment.NewLine + "- " + string.Format(Catalog.GetString("1 posted gift from Ledger {0}"),
+                                        Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                                else
+                                {
+                                    NoPermissionGifts += Environment.NewLine + "- " +
+                                                         string.Format(Catalog.GetString("{0} posted gifts from Ledger {1}"),
+                                        Convert.ToInt32(Row["Posted"]), Convert.ToInt32(Row["LedgerNumber"]));
+                                }
+                            }
+                        }
+
+                        // display a message box
+                        if (PostedGifts)
+                        {
+                            if (!string.IsNullOrEmpty(NoPermissionGifts))
+                            {
+                                NoPermissionGifts = "(" + NoPermissionGifts + ")";
+                            }
+
+                            TFrmExtendedMessageBox ExtendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
+
+                            if (ExtendedMessageBox.ShowDialog(StartMsg + PermissionGifts + NoPermissionGifts,
+                                    Catalog.GetString("Tax Deductible Percentage Changed"),
+                                    Catalog.GetString("Do not print the adjusting gift transactions on periodic receipts"),
+                                    TFrmExtendedMessageBox.TButtons.embbYesNo, TFrmExtendedMessageBox.TIcon.embiQuestion)
+                                == TFrmExtendedMessageBox.TResult.embrYes)
+                            {
+                                bool NoLabel;
+                                ExtendedMessageBox.GetResult(out NoLabel);
+
+                                // update posted gifts
+                                TCommonScreensForwarding.TaxDeductiblePctAdjust.Invoke(FPartnerKey, NewPct, NewValidFrom, NoLabel,
+                                    FPetraUtilsObject.GetForm());
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show(StartMsg + NoPermissionGifts,
+                                Catalog.GetString("Tax Deductible Percentage Changed"),
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                    }
+                }
             }
         }
 

@@ -108,4 +108,11 @@ namespace Ict.Petra.Client.CommonControls.Logic
     /// <summary>Delegate for a call to open a Modal Print Partner report screen</summary>
     public delegate bool TDelegateOpenPrintPartnerDialog(long APartnerKey,
         Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Print Partner report screen</summary>
+    public delegate void TDelegateTaxDeductiblePctAdjust(Int64 ARecipientKey,
+        decimal ANewPct,
+        DateTime AValidFrom,
+        bool ANoLabel,
+        Form AParentForm);
 }

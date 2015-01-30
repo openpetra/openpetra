@@ -137,6 +137,22 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // default is 100%
                 txtTaxDeductiblePercentage.NumberValueDecimal = 100;
+
+                // user can only change the tax deductible percentage if they have access to the finance module
+                if (!UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
+                {
+                    chkLimitTaxDeductibility.CheckedChanged -= new System.EventHandler(this.ChkLimitTaxDeductibility_Change);
+                    chkLimitTaxDeductibility.Enabled = false;
+                    txtTaxDeductiblePercentage.Enabled = false;
+                    dtpTaxDeductibleValidFrom.Enabled = false;
+
+                    ToolTip toolTip = new ToolTip();
+                    toolTip.ShowAlways = true;
+                    string Caption = Catalog.GetString("Only users with access to the Finance module can edit this control.");
+                    toolTip.SetToolTip(lblLimitTaxDeductibility, Caption);
+                    toolTip.SetToolTip(lblTaxDeductiblePercentage, Caption);
+                    toolTip.SetToolTip(lblTaxDeductibleValidFrom, Caption);
+                }
             }
             else
             {
@@ -445,9 +461,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                         {
                             if (Row.RowState != DataRowState.Deleted)
                             {
-                                Row.DateValidFrom = Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text);
-                                Row.PercentageTaxDeductible = (decimal)txtTaxDeductiblePercentage.NumberValueDecimal;
-                                CreateNewRow = false;
+                                if (Row.DateValidFrom == Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text))
+                                {
+                                    Row.DateValidFrom = Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text);
+                                    Row.PercentageTaxDeductible = (decimal)txtTaxDeductiblePercentage.NumberValueDecimal;
+                                    CreateNewRow = false;
+                                }
+                                else
+                                {
+                                    Row.Delete();
+                                }
                             }
                         }
 

@@ -123,7 +123,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AddParam("GiftDetailNumber", giftDetailRow.DetailNumber);
                 AddParam("CostCentre", giftDetailRow.CostCentreCode);
 
-                if ((GiftAdjustmentFunctionEnum)requestParams["Function"] != GiftAdjustmentFunctionEnum.FieldAdjust)
+                if (((GiftAdjustmentFunctionEnum)requestParams["Function"] != GiftAdjustmentFunctionEnum.FieldAdjust)
+                    && ((GiftAdjustmentFunctionEnum)requestParams["Function"] != GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust))
                 {
                     // Now we have the criteria we can retrieve all the data we need from the database
                     GetGiftsForReverseAdjust();
@@ -357,6 +358,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     case GiftAdjustmentFunctionEnum.FieldAdjust:
                         MessageBox.Show(Catalog.GetString("Gift Field Adjustment transactions have been successfully added to Batch " +
+                            AdjustmentBatchNumber +
+                            "."),
+                        Catalog.GetString("Adjust Gift"));
+                        break;
+
+                    case GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust:
+                        MessageBox.Show(Catalog.GetString("Tax Deductible Percentage Adjustment transactions have been successfully added to Batch "
+                            +
                             AdjustmentBatchNumber +
                             "."),
                         Catalog.GetString("Adjust Gift"));

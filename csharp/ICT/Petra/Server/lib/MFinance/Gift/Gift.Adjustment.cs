@@ -175,7 +175,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// Check that none of the gifts have been reversed before.
         /// </summary>
-        private static bool CheckGiftsNotPreviouslyReversed(GiftBatchTDS AGiftDS, out TVerificationResultCollection AMessages)
+        [RequireModulePermission("FINANCE-1")]
+        public static bool CheckGiftsNotPreviouslyReversed(GiftBatchTDS AGiftDS, out TVerificationResultCollection AMessages)
         {
             string Message = string.Empty;
             string Message2 = string.Empty;
@@ -427,7 +428,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     cycle++;
                 } while ((cycle < 2)
-                         && (Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift) || Function.Equals(GiftAdjustmentFunctionEnum.FieldAdjust)));
+                         && (Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift) || Function.Equals(GiftAdjustmentFunctionEnum.FieldAdjust)
+                             || Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust)));
 
                 //When reversing into a new or existing batch, set batch total
                 if (!Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift))
@@ -503,6 +505,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 ReturnValue.BatchDescription = Catalog.GetString("Gift Adjustment (Field Change)");
             }
+            else if (Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust))
+            {
+                ReturnValue.BatchDescription = Catalog.GetString("Gift Adjustment (Tax Deductible Pct Change)");
+            }
             else
             {
                 ReturnValue.BatchDescription = Catalog.GetString("Reverse Gift");
@@ -530,6 +536,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
                 TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
 
+            GiftAdjustmentFunctionEnum Function = (GiftAdjustmentFunctionEnum)ARequestParams["Function"];
+
             AGiftDetailRow giftDetail = AMainDS.AGiftDetail.NewRowTyped(true);
 
             DataUtilities.CopyAllColumnValuesWithoutPK(AOldGiftDetail, giftDetail);
@@ -548,12 +556,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (TaxDeductiblePercentageEnabled)
             {
-                giftDetail.TaxDeductibleAmount = signum * AOldGiftDetail.TaxDeductibleAmount;
-                giftDetail.TaxDeductibleAmountBase = signum * AOldGiftDetail.TaxDeductibleAmountBase;
-                giftDetail.TaxDeductibleAmountIntl = signum * AOldGiftDetail.TaxDeductibleAmountIntl;
-                giftDetail.NonDeductibleAmount = signum * AOldGiftDetail.NonDeductibleAmount;
-                giftDetail.NonDeductibleAmountBase = signum * AOldGiftDetail.NonDeductibleAmountBase;
-                giftDetail.NonDeductibleAmountIntl = signum * AOldGiftDetail.NonDeductibleAmountIntl;
+                if (Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust) && !AReversal)
+                {
+                    giftDetail.TaxDeductiblePct = Convert.ToDecimal(ARequestParams["NewPct"]);
+                    TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetail);
+                }
+                else
+                {
+                    giftDetail.TaxDeductibleAmount = signum * AOldGiftDetail.TaxDeductibleAmount;
+                    giftDetail.TaxDeductibleAmountBase = signum * AOldGiftDetail.TaxDeductibleAmountBase;
+                    giftDetail.TaxDeductibleAmountIntl = signum * AOldGiftDetail.TaxDeductibleAmountIntl;
+                    giftDetail.NonDeductibleAmount = signum * AOldGiftDetail.NonDeductibleAmount;
+                    giftDetail.NonDeductibleAmountBase = signum * AOldGiftDetail.NonDeductibleAmountBase;
+                    giftDetail.NonDeductibleAmountIntl = signum * AOldGiftDetail.NonDeductibleAmountIntl;
+                }
             }
 
             if (AGiftCommentOne != null)

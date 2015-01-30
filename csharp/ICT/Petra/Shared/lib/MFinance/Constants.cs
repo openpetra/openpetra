@@ -595,6 +595,11 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>
         /// Field adjustment for a number of gifts from the same recipient but (potentially) over different batches
         /// </summary>
-            FieldAdjust
+            FieldAdjust,
+
+        /// <summary>
+        /// TaxDeductiblePct adjustment for a number of gifts from the same recipient but (potentially) over different batches and even ledgers
+        /// </summary>
+            TaxDeductiblePctAdjust
     }
 }

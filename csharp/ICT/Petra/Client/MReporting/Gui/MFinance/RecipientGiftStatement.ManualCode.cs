@@ -109,6 +109,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // get data for this report
             DataSet ReportDataSet = TRemote.MReporting.WebConnectors.GetRecipientGiftStatementDataSet(paramsDictionary);
 
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled() || this.IsDisposed)
+            {
+                return false;
+            }
+
             // if no recipients
             if (ReportDataSet.Tables["Recipients"] == null)
             {

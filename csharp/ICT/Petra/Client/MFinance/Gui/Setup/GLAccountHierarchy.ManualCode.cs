@@ -551,6 +551,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 cmbDetailForeignCurrencyCode.Enabled = chkDetailForeignCurrencyFlag.Checked;
 
                 chkDetailBankAccountFlag.Enabled = !ARow.SystemAccountFlag;
+                chkDetailSuspenseAccountFlag.Enabled = !ARow.SystemAccountFlag;
                 chkDetailBudgetControlFlag.Enabled = !ARow.SystemAccountFlag
                                                      && FMainDS.ALedger[0].BudgetControlFlag;
                 lblDetailBudgetControlFlag.Enabled = FMainDS.ALedger[0].BudgetControlFlag;
@@ -1036,6 +1037,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
 
                 lblDetailForeignCurrencyFlag.Enabled = chkDetailForeignCurrencyFlag.Enabled;
+            }
+        }
+
+        private void OnChange_SuspenseAccount(object sender, EventArgs e)
+        {
+            GLSetupTDSAAccountRow Row = GetSelectedDetailRowManual();
+
+            // if suspense account is unmarked then check if account has a balance and if so warn the user
+            if (!FPetraUtilsObject.SuppressChangeDetection && (Row != null) && !chkDetailSuspenseAccountFlag.Checked)
+            {
+                if ((!Row.IsYtdActualBaseNull() && (Row.YtdActualBase != 0))
+                    || (!Row.IsYtdActualForeignNull() && (Row.YtdActualForeign != 0)))
+                {
+                    if (MessageBox.Show(Catalog.GetString("This suspense account still has a balance. " +
+                                "Are you sure you no longer want it to be marked as a suspense account?"),
+                            Catalog.GetString("Suspense Account unselected"),
+                            MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1)
+                        == System.Windows.Forms.DialogResult.No)
+                    {
+                        // reselect
+                        chkDetailSuspenseAccountFlag.Checked = true;
+                    }
+                }
             }
         }
 
