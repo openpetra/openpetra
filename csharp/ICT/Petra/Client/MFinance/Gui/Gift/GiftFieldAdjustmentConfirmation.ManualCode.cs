@@ -68,7 +68,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 int RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
                 lblRecordCounter.Text = String.Format(
-                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount, true),
+                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
+                        true),
                     RecordCount);
             }
         }

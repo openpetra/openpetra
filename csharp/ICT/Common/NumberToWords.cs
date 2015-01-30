@@ -193,7 +193,11 @@ namespace Ict.Common
         /// <param name="AMinorUnitSingular"></param>
         /// <param name="AMinorUnitPlural"></param>
         /// <returns></returns>
-        public static string AmountToWords(decimal AValue, string AMajorUnitSingular, string AMajorUnitPlural, string AMinorUnitSingular, string AMinorUnitPlural)
+        public static string AmountToWords(decimal AValue,
+            string AMajorUnitSingular,
+            string AMajorUnitPlural,
+            string AMinorUnitSingular,
+            string AMinorUnitPlural)
         {
             Int64 IntValue = Convert.ToInt64(Math.Floor(AValue));
             Int32 Decimals = Convert.ToInt32(Math.Floor(AValue * 100)) % 100;
@@ -203,11 +207,11 @@ namespace Ict.Common
                 string Result = AmountToWordsInternalDE(IntValue);
                 Result = Result.Substring(0, 1).ToUpper() + Result.Substring(1);
 
-                if (AMajorUnitSingular.Length > 0 && IntValue == 1)
+                if ((AMajorUnitSingular.Length > 0) && (IntValue == 1))
                 {
                     Result += " " + AMajorUnitSingular;
                 }
-                else if (AMajorUnitPlural.Length > 0 && IntValue != 1)
+                else if ((AMajorUnitPlural.Length > 0) && (IntValue != 1))
                 {
                     Result += " " + AMajorUnitPlural;
                 }
@@ -218,11 +222,11 @@ namespace Ict.Common
                     DecimalResult = DecimalResult.Substring(0, 1).ToUpper() + DecimalResult.Substring(1);
                     Result += " " + DecimalResult;
 
-                    if (AMinorUnitSingular.Length > 0 && Decimals == 1)
+                    if ((AMinorUnitSingular.Length > 0) && (Decimals == 1))
                     {
                         Result += " " + AMinorUnitSingular;
                     }
-                    else if (AMinorUnitPlural.Length > 0 && Decimals != 1)
+                    else if ((AMinorUnitPlural.Length > 0) && (Decimals != 1))
                     {
                         Result += " " + AMinorUnitPlural;
                     }
@@ -234,11 +238,11 @@ namespace Ict.Common
             {
                 string Result = AmountToWordsInternalUK(IntValue);
 
-                if (AMajorUnitSingular.Length > 0 && IntValue == 1)
+                if ((AMajorUnitSingular.Length > 0) && (IntValue == 1))
                 {
                     Result += " " + AMajorUnitSingular;
                 }
-                else if (AMajorUnitPlural.Length > 0 && IntValue != 1)
+                else if ((AMajorUnitPlural.Length > 0) && (IntValue != 1))
                 {
                     Result += " " + AMajorUnitPlural;
                 }
@@ -248,11 +252,11 @@ namespace Ict.Common
                     string DecimalResult = AmountToWordsInternalUK(Decimals);
                     Result += " " + DecimalResult;
 
-                    if (AMinorUnitSingular.Length > 0 && Decimals == 1)
+                    if ((AMinorUnitSingular.Length > 0) && (Decimals == 1))
                     {
                         Result += " " + AMinorUnitSingular;
                     }
-                    else if (AMinorUnitPlural.Length > 0 && Decimals != 1)
+                    else if ((AMinorUnitPlural.Length > 0) && (Decimals != 1))
                     {
                         Result += " " + AMinorUnitPlural;
                     }

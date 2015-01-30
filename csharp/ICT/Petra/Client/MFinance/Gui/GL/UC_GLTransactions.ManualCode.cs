@@ -1362,7 +1362,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 //Reduce those with higher transaction number by one
-                attrView.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} > {5}",
+                attrView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}>{5}",
                     ATransAnalAttribTable.GetBatchNumberDBName(),
                     FBatchNumber,
                     ATransAnalAttribTable.GetJournalNumberDBName(),

@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //clear any transactions currently being editied in the Transaction Tab
                 FMyForm.GetTransactionsControl().ClearCurrentSelection();
 
-                //Clear gifts and details etc for current Batch
+                //Clear gifts and details etc for current and any other loaded batches
                 FMainDS.AGiftDetail.Clear();
                 FMainDS.AGift.Clear();
 
@@ -142,21 +142,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 //Batch is only cancelled and never deleted
-                ACurrentBatchRow.BeginEdit();
                 ACurrentBatchRow.BatchTotal = 0;
                 ACurrentBatchRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-                ACurrentBatchRow.EndEdit();
 
-                FPetraUtilsObject.HasChanges = true;
+                FPetraUtilsObject.SetChangedFlag();
 
-                // save first, then post
+                // save first
                 if (!FMyForm.SaveChanges())
                 {
-                    ACurrentBatchRow.BeginEdit();
                     //Should normally be Unposted, but allow for other status values in future
                     ACurrentBatchRow.BatchTotal = ExistingBatchTotal;
                     ACurrentBatchRow.BatchStatus = ExistingBatchStatus;
-                    ACurrentBatchRow.EndEdit();
 
                     // saving failed, therefore do not try to cancel
                     MessageBox.Show(Catalog.GetString("The cancelled batch failed to save!"));

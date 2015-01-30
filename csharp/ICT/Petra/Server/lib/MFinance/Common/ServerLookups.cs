@@ -181,6 +181,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         {
             //string ReturnValue = "";
             DataTable ForeignCurrencyAccounts = AForeignCurrencyAccounts.Clone();
+
             ForeignCurrencyAccounts.Merge(AForeignCurrencyAccounts);
             string CostCentreCode = "[" + ALedgerNumber + "]";
             TDBTransaction Transaction = null;
@@ -191,9 +192,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                     foreach (DataRow ForeignCurrencyAccountRow in ForeignCurrencyAccounts.Rows)
                     {
                         AGeneralLedgerMasterTable Table = AGeneralLedgerMasterAccess.LoadByUniqueKey(
-                            ALedgerNumber, AYear, ForeignCurrencyAccountRow[AAccountTable.GetAccountCodeDBName()].ToString(), CostCentreCode, Transaction);
+                            ALedgerNumber, AYear, ForeignCurrencyAccountRow[AAccountTable.GetAccountCodeDBName()].ToString(), CostCentreCode,
+                            Transaction);
 
-                        if (Table != null && Table.Rows.Count > 0)
+                        if ((Table != null) && (Table.Rows.Count > 0))
                         {
                             AGeneralLedgerMasterRow Row = Table[0];
 
@@ -205,7 +207,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                             {
                                 ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()] = Row.YtdActualForeign;
                             }
-                                
+
                             ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()] = Row.YtdActualBase;
                         }
                         else
@@ -237,7 +239,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 {
                     ACurrencyLanguageTable CurrencyLanguageTable = ACurrencyLanguageAccess.LoadByPrimaryKey(ACurrencyCode, Language, Transaction);
 
-                    if (CurrencyLanguageTable != null && CurrencyLanguageTable.Rows.Count > 0)
+                    if ((CurrencyLanguageTable != null) && (CurrencyLanguageTable.Rows.Count > 0))
                     {
                         ReturnValue = CurrencyLanguageTable[0];
                     }

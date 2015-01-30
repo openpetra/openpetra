@@ -115,8 +115,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.AddTextColumn(Catalog.GetString("Currency Code"), FMainDS.AAccount.ColumnForeignCurrencyCode);
             grdDetails.AddTextColumn(Catalog.GetString("Account Code"), FMainDS.AAccount.ColumnAccountCode);
             grdDetails.AddTextColumn(Catalog.GetString("Short"), FMainDS.AAccount.ColumnAccountCodeShortDesc);
-            grdDetails.AddCurrencyColumn(Catalog.GetString("YTD Total"), FForeignCurrencyAccountsDT.Columns[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()]);
-            grdDetails.AddCurrencyColumn(Catalog.GetString("YTD Total (BASE)"), FForeignCurrencyAccountsDT.Columns[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()]);
+            grdDetails.AddCurrencyColumn(Catalog.GetString("YTD Total"),
+                FForeignCurrencyAccountsDT.Columns[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()]);
+            grdDetails.AddCurrencyColumn(Catalog.GetString("YTD Total (BASE)"),
+                FForeignCurrencyAccountsDT.Columns[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()]);
         }
 
         private void EditAccount(System.Object sender, EventArgs e)
@@ -182,7 +184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.AAccount.Merge(CacheDT);
 
                 GetData();
-                
+
                 // reapply filter
                 FFilterAndFindObject.ApplyFilter();
 
@@ -191,7 +193,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     SelectAccountInGrid(CurrentlySelectedAccountCode);
                 }
-                
+
                 UpdateRecordNumberDisplay();
 
                 MessageProcessed = true;

@@ -534,7 +534,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // wait until the label and the partner class have been updated for txtDetailRecipientKey
             while (txtDetailRecipientKey.LabelText != FPartnerShortName
-                || (txtDetailRecipientKey.CurrentPartnerClass == null && Convert.ToInt32(txtDetailRecipientKey.Text) > 0))
+                   || (txtDetailRecipientKey.CurrentPartnerClass == null && Convert.ToInt32(txtDetailRecipientKey.Text) > 0))
             {
                 Thread.Sleep(10);
             }
@@ -1832,7 +1832,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ParentForm.ShowInTaskbar = false;
                 revertForm.LedgerNumber = FLedgerNumber;
                 revertForm.CurrencyCode = ((AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(
-                    new object[] { workingLedgerNumber, workingBatchNumber })).CurrencyCode;
+                                               new object[] { workingLedgerNumber, workingBatchNumber })).CurrencyCode;
 
                 // put spaces inbetween words
                 revertForm.Text = Regex.Replace(AFunctionName.ToString(), "([a-z])([A-Z])", @"$1 $2");
@@ -1842,7 +1842,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 revertForm.GiftDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
                     new object[] { workingLedgerNumber, workingBatchNumber, workingTransactionNumber, workingDetailNumber });
 
-                if (!revertForm.IsDisposed && revertForm.ShowDialog() == DialogResult.OK)
+                if (!revertForm.IsDisposed && (revertForm.ShowDialog() == DialogResult.OK))
                 {
                     ((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
                     ((TFrmGiftBatch)ParentForm).RefreshAll();

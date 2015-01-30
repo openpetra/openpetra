@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RecipientKeyChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection)
         {
-            if (APartnerKey > 0 && AValidSelection)
+            if ((APartnerKey > 0) && AValidSelection)
             {
                 // get recipeint's current Gift Destination
                 txtCurrentField.Text = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey, DateTime.Today).ToString();
@@ -90,15 +90,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // show the list of gift to be adjusted and ask the user for confirmation
             TFrmGiftFieldAdjustmentConfirmation ConfirmationForm = new TFrmGiftFieldAdjustmentConfirmation(this);
             ConfirmationForm.MainDS = GiftBatchDS;
-            
+
             if (ConfirmationForm.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
             {
                 return;
             }
 
             // sort gift batches so like batches are together
-            GiftBatchDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetCurrencyCodeDBName() + " ASC, " + AGiftBatchTable.GetBankCostCentreDBName() + " ASC, " +
-                AGiftBatchTable.GetBankAccountCodeDBName() + " ASC, " + AGiftBatchTable.GetGiftTypeDBName() + " ASC";
+            GiftBatchDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetCurrencyCodeDBName() + " ASC, " +
+                                                      AGiftBatchTable.GetBankCostCentreDBName() + " ASC, " +
+                                                      AGiftBatchTable.GetBankAccountCodeDBName() + " ASC, " + AGiftBatchTable.GetGiftTypeDBName() +
+                                                      " ASC";
 
             GiftBatchTDS NewGiftDS = new GiftBatchTDS();
             NewGiftDS.AGiftDetail.Merge(new GiftBatchTDSAGiftDetailTable());
@@ -135,15 +137,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // if not the last row
                 if (i != GiftBatchDS.AGiftBatch.Rows.Count - 1)
                 {
-                    NextGiftBatch = (AGiftBatchRow)GiftBatchDS.AGiftBatch.DefaultView[i+1].Row;
+                    NextGiftBatch = (AGiftBatchRow)GiftBatchDS.AGiftBatch.DefaultView[i + 1].Row;
                 }
 
                 // if this is the last batch or if the next batch's gifts need to be added to a different new batch
-                if (NextGiftBatch == null || 
-                    NextGiftBatch.CurrencyCode != OldGiftBatch.CurrencyCode || 
-                    NextGiftBatch.BankCostCentre != OldGiftBatch.BankCostCentre || 
-                    NextGiftBatch.BankAccountCode != OldGiftBatch.BankAccountCode || 
-                    NextGiftBatch.GiftType != OldGiftBatch.GiftType)
+                if ((NextGiftBatch == null)
+                    || (NextGiftBatch.CurrencyCode != OldGiftBatch.CurrencyCode)
+                    || (NextGiftBatch.BankCostCentre != OldGiftBatch.BankCostCentre)
+                    || (NextGiftBatch.BankAccountCode != OldGiftBatch.BankAccountCode)
+                    || (NextGiftBatch.GiftType != OldGiftBatch.GiftType))
                 {
                     TFrmGiftRevertAdjust AdjustForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
 
@@ -160,7 +162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                         AdjustForm.GiftDetailRow = NewGiftDS.AGiftDetail[0];
 
-                        if (AdjustForm.IsDisposed || AdjustForm.ShowDialog() != DialogResult.OK)
+                        if (AdjustForm.IsDisposed || (AdjustForm.ShowDialog() != DialogResult.OK))
                         {
                             return;
                         }
@@ -179,7 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // refresh batches
             this.Cursor = Cursors.WaitCursor;
-            ((TFrmGiftBatch) FPetraUtilsObject.GetCallerForm()).RefreshAll();
+            ((TFrmGiftBatch)FPetraUtilsObject.GetCallerForm()).RefreshAll();
             this.Cursor = Cursors.Default;
             this.Close();
         }
@@ -234,7 +236,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             // if there are no gifts to be adjusted
-            if (AGiftBatchDS.AGiftDetail == null || AGiftBatchDS.AGiftDetail.Rows.Count == 0)
+            if ((AGiftBatchDS.AGiftDetail == null) || (AGiftBatchDS.AGiftDetail.Rows.Count == 0))
             {
                 MessageBox.Show(Catalog.GetString("There are no gifts to adjust."));
                 return false;
@@ -271,7 +273,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return false;
             }
 
-            if (!string.IsNullOrEmpty(dtpEndDate.Text) && dtpEndDate.Date < dtpStartDate.Date)
+            if (!string.IsNullOrEmpty(dtpEndDate.Text) && (dtpEndDate.Date < dtpStartDate.Date))
             {
                 MessageBox.Show(Catalog.GetString("The 'To' date must come after the 'From' date."));
                 dtpEndDate.Focus();

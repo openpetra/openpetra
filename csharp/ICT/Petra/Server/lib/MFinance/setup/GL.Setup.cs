@@ -4141,16 +4141,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 delegate
                 {
                     string Query = "SELECT * FROM a_general_ledger_master " +
-                        "WHERE a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber +
-                        " AND a_general_ledger_master.a_account_code_c = '" + AAccountCode + "'" +
-                        " AND a_general_ledger_master.a_cost_centre_code_c = '[" + ALedgerNumber + "]'" +
-                        " AND EXISTS (SELECT * FROM a_general_ledger_master_period " +
-                        "WHERE a_general_ledger_master_period.a_glm_sequence_i = a_general_ledger_master.a_glm_sequence_i" +
-                        " AND a_general_ledger_master_period.a_actual_base_n <> 0)";
+                                   "WHERE a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber +
+                                   " AND a_general_ledger_master.a_account_code_c = '" + AAccountCode + "'" +
+                                   " AND a_general_ledger_master.a_cost_centre_code_c = '[" + ALedgerNumber + "]'" +
+                                   " AND EXISTS (SELECT * FROM a_general_ledger_master_period " +
+                                   "WHERE a_general_ledger_master_period.a_glm_sequence_i = a_general_ledger_master.a_glm_sequence_i" +
+                                   " AND a_general_ledger_master_period.a_actual_base_n <> 0)";
 
                     DataTable dT = DBAccess.GDBAccessObj.SelectDT(Query, "DataTable", Transaction);
 
-                    if (dT != null && dT.Rows.Count > 0)
+                    if ((dT != null) && (dT.Rows.Count > 0))
                     {
                         ReturnValue = false;
                     }
@@ -4179,9 +4179,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         ALedgerNumber, AYear, AAccountCode, "[" + ALedgerNumber + "]", Transaction);
 
                     {
-                        if (GeneralLedgerMasterTable != null && GeneralLedgerMasterTable.Rows.Count > 0)
+                        if ((GeneralLedgerMasterTable != null) && (GeneralLedgerMasterTable.Rows.Count > 0))
                         {
-                            if (!GeneralLedgerMasterTable[0].IsYtdActualForeignNull() && GeneralLedgerMasterTable[0].YtdActualForeign != 0)
+                            if (!GeneralLedgerMasterTable[0].IsYtdActualForeignNull() && (GeneralLedgerMasterTable[0].YtdActualForeign != 0))
                             {
                                 ReturnValue = true;
                             }
@@ -4211,13 +4211,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     foreach (string AccountCode in AAccountCode)
                     {
                         string Query = "SELECT a_general_ledger_master.* " +
-                            "FROM a_general_ledger_master, a_cost_centre " +
-                            "WHERE a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber +
-                            " AND a_general_ledger_master.a_account_code_c = '" + AccountCode + "'" +
-                            " AND a_general_ledger_master.a_year_i = " + AYear +
-                            " AND a_cost_centre.a_cost_centre_code_c = a_general_ledger_master.a_cost_centre_code_c" +
-                            " AND a_cost_centre.a_ledger_number_i = " + ALedgerNumber +
-                            " AND a_cost_centre.a_posting_cost_centre_flag_l = true";
+                                       "FROM a_general_ledger_master, a_cost_centre " +
+                                       "WHERE a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber +
+                                       " AND a_general_ledger_master.a_account_code_c = '" + AccountCode + "'" +
+                                       " AND a_general_ledger_master.a_year_i = " + AYear +
+                                       " AND a_cost_centre.a_cost_centre_code_c = a_general_ledger_master.a_cost_centre_code_c" +
+                                       " AND a_cost_centre.a_ledger_number_i = " + ALedgerNumber +
+                                       " AND a_cost_centre.a_posting_cost_centre_flag_l = true";
 
                         AGeneralLedgerMasterTable GeneralLedgerMasterTable = new AGeneralLedgerMasterTable();
                         DBAccess.GDBAccessObj.SelectDT(GeneralLedgerMasterTable, Query, Transaction);
@@ -4228,7 +4228,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             Row[AGeneralLedgerMasterTable.GetStartBalanceForeignDBName()] = 0;
 
                             AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable =
-                                AGeneralLedgerMasterPeriodAccess.LoadViaAGeneralLedgerMaster((int) Row[AGeneralLedgerMasterTable.GetGlmSequenceDBName()], Transaction);
+                                AGeneralLedgerMasterPeriodAccess.LoadViaAGeneralLedgerMaster((int)Row[AGeneralLedgerMasterTable.GetGlmSequenceDBName()
+                                    ], Transaction);
 
                             foreach (AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow in GeneralLedgerMasterPeriodTable.Rows)
                             {
@@ -4244,6 +4245,5 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             return SubmissionOK;
         }
-
     } // TGLSetupWebConnector
 } // namespace

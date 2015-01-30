@@ -683,7 +683,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             System.Int64 ASiteKey,
             System.Int64 APartnerKey,
             String ACountryCode,
-            String AAcquisitionCode, 
+            String AAcquisitionCode,
             string ADefaultPartnerClass = "FAMILY")
         {
             SetParameters(AScreenMode,

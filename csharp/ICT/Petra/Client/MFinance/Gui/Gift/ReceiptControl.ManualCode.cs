@@ -259,8 +259,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 if (MessageBox.Show(Msg,
-                    Catalog.GetString("Receipt Printing"),
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        Catalog.GetString("Receipt Printing"),
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                 {
                     this.Cursor = Cursors.Default;
                     return;

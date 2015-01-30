@@ -479,7 +479,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // do not want to update motivation comboboxes if recipient key is being changed due to a new gift or the motivation detail being changed
                 if (!FMotivationDetailChangedFlag //&& !ACreatingNewGiftFlag
                     && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
-                            APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
+                        APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
                 {
                     if (FMotivationGroup != cmbDetailMotivationGroupCode.GetSelectedString())
                     {
@@ -579,7 +579,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // wait until the label and the partner class have been updated for txtDetailRecipientKey
             while (txtDetailRecipientKey.LabelText != FPartnerShortName
-                || (txtDetailRecipientKey.CurrentPartnerClass == null && Convert.ToInt32(txtDetailRecipientKey.Text) > 0))
+                   || (txtDetailRecipientKey.CurrentPartnerClass == null && Convert.ToInt32(txtDetailRecipientKey.Text) > 0))
             {
                 Thread.Sleep(10);
             }

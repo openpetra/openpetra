@@ -161,7 +161,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private string FNameForNewAccounts;
 
         // list of accounts that need their foreign currency balances put to zero (i.e. they are no longer foreign currency accounts)
-        private List<string> FZeroForeignCurrencyBalances = new List<string>();
+        private List <string>FZeroForeignCurrencyBalances = new List <string>();
 
         /// <summary>
         /// Called from the user controls when the user selects a row,
@@ -414,10 +414,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 cmbDetailForeignCurrencyCode.SetSelectedString(CurrencyLabel, -1);
             }
             // if checkbox has been checked by the user
-            else if (chkDetailForeignCurrencyFlag.Checked && GetSelectedDetailRowManual().ForeignCurrencyFlag == false)
+            else if (chkDetailForeignCurrencyFlag.Checked && (GetSelectedDetailRowManual().ForeignCurrencyFlag == false))
             {
-                if (GetSelectedDetailRowManual() != null &&
-                    TRemote.MFinance.Setup.WebConnectors.CheckAccountCanBeMadeForeign(FLedgerNumber, GetSelectedDetailRowManual().AccountCode))
+                if ((GetSelectedDetailRowManual() != null)
+                    && TRemote.MFinance.Setup.WebConnectors.CheckAccountCanBeMadeForeign(FLedgerNumber, GetSelectedDetailRowManual().AccountCode))
                 {
                     cmbDetailForeignCurrencyCode.Enabled = true;
 
@@ -436,19 +436,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
             // if checkbox has been unchecked by the user
-            else if (!chkDetailForeignCurrencyFlag.Checked && GetSelectedDetailRowManual().ForeignCurrencyFlag == true)
+            else if (!chkDetailForeignCurrencyFlag.Checked && (GetSelectedDetailRowManual().ForeignCurrencyFlag == true))
             {
                 Int32 Year = (Int32)TDataCache.TMFinance.GetCacheableFinanceTable(
                     TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber).Rows[0][ALedgerTable.GetCurrentFinancialYearDBName()];
 
                 // if account has balances for the current year
                 if (TRemote.MFinance.Setup.WebConnectors.CheckForeignAccountHasBalances(
-                    FLedgerNumber, Year, GetSelectedDetailRowManual().AccountCode))
+                        FLedgerNumber, Year, GetSelectedDetailRowManual().AccountCode))
                 {
                     if (MessageBox.Show(Catalog.GetString("This foreign currency account still has a balance. " +
-                        "Are you sure you no longer want it to be marked as a foreign currency account?"),
-                        Catalog.GetString("Foreign Currency Account"),
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                                "Are you sure you no longer want it to be marked as a foreign currency account?"),
+                            Catalog.GetString("Foreign Currency Account"),
+                            MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                     {
                         // auto check without firing event
                         chkDetailForeignCurrencyFlag.CheckedChanged -= new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
@@ -457,7 +457,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                         return;
                     }
-                    
+
                     // the foreign balances for this account will need zeroed during save
                     FZeroForeignCurrencyBalances.Add(GetSelectedDetailRowManual().AccountCode);
                 }
@@ -543,7 +543,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 else
                 {
                     chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag
-                        && (ARow.AccountType == MFinanceConstants.ACCOUNT_TYPE_LIABILITY || ARow.AccountType == MFinanceConstants.ACCOUNT_TYPE_ASSET));
+                                                            && (ARow.AccountType == MFinanceConstants.ACCOUNT_TYPE_LIABILITY || ARow.AccountType ==
+                                                                MFinanceConstants.ACCOUNT_TYPE_ASSET));
                 }
 
                 lblDetailForeignCurrencyFlag.Enabled = chkDetailForeignCurrencyFlag.Enabled;
@@ -785,7 +786,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (ServerResult == TSubmitChangesResult.scrOK)
             {
-                if (FZeroForeignCurrencyBalances != null && FZeroForeignCurrencyBalances.Count > 0)
+                if ((FZeroForeignCurrencyBalances != null) && (FZeroForeignCurrencyBalances.Count > 0))
                 {
                     Int32 Year = (Int32)TDataCache.TMFinance.GetCacheableFinanceTable(
                         TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber).Rows[0][ALedgerTable.GetCurrentFinancialYearDBName()];
@@ -1030,8 +1031,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 else
                 {
                     chkDetailForeignCurrencyFlag.Enabled = (!chkDetailIsSummary.Checked && !GetSelectedDetailRowManual().SystemAccountFlag
-                        && (cmbDetailAccountType.GetSelectedString() == MFinanceConstants.ACCOUNT_TYPE_LIABILITY
-                            || cmbDetailAccountType.GetSelectedString() == MFinanceConstants.ACCOUNT_TYPE_ASSET));
+                                                            && (cmbDetailAccountType.GetSelectedString() == MFinanceConstants.ACCOUNT_TYPE_LIABILITY
+                                                                || cmbDetailAccountType.GetSelectedString() == MFinanceConstants.ACCOUNT_TYPE_ASSET));
                 }
 
                 lblDetailForeignCurrencyFlag.Enabled = chkDetailForeignCurrencyFlag.Enabled;

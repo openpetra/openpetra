@@ -905,10 +905,12 @@ namespace Ict.Common.Testing
             Assert.AreEqual("twelve thousand three hundred Euros", NumberToWords.AmountToWords(12300, "Euro", "Euros", "Cent", "Cents"));
             Assert.AreEqual("one hundred and twenty-three thousand Euros", NumberToWords.AmountToWords(123000, "Euro", "Euros", "Cent", "Cents"));
             Assert.AreEqual("one hundred and twenty-three thousand one Euros", NumberToWords.AmountToWords(123001, "Euro", "Euros", "Cent", "Cents"));
-            Assert.AreEqual("one hundred and twenty-three thousand one hundred and one Euros", NumberToWords.AmountToWords(123101, "Euro", "Euros", "Cent", "Cents"));
+            Assert.AreEqual("one hundred and twenty-three thousand one hundred and one Euros",
+                NumberToWords.AmountToWords(123101, "Euro", "Euros", "Cent", "Cents"));
             Assert.AreEqual("one hundred and twenty-three thousand one hundred and thirty-one Euros",
                 NumberToWords.AmountToWords(123131, "Euro", "Euros", "Cent", "Cents"));
-            Assert.AreEqual("one hundred and twenty-three thousand two hundred and thirteen Euros", NumberToWords.AmountToWords(123213, "Euro", "Euros", "Cent", "Cents"));
+            Assert.AreEqual("one hundred and twenty-three thousand two hundred and thirteen Euros",
+                NumberToWords.AmountToWords(123213, "Euro", "Euros", "Cent", "Cents"));
             Assert.AreEqual("three Euros twenty-three Cents", NumberToWords.AmountToWords(3.23M, "Euro", "Euros", "Cent", "Cents"));
             Assert.AreEqual("three Euros seventy-five Cents", NumberToWords.AmountToWords(3.75M, "Euro", "Euros", "Cent", "Cents"));
             Assert.AreEqual("zero Euros one Cent", NumberToWords.AmountToWords(0.01M, "Euro", "Euros", "Cent", "Cents"));
@@ -923,8 +925,10 @@ namespace Ict.Common.Testing
             Assert.AreEqual("Einhundertdreiundzwanzigtausend Euro", NumberToWords.AmountToWords(123000, "Euro", "Euro", "Cent", "Cent"));
             Assert.AreEqual("Einhundertdreiundzwanzigtausendeins Euro", NumberToWords.AmountToWords(123001, "Euro", "Euro", "Cent", "Cent"));
             Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteins Euro", NumberToWords.AmountToWords(123101, "Euro", "Euro", "Cent", "Cent"));
-            Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteinunddreißig Euro", NumberToWords.AmountToWords(123131, "Euro", "Euro", "Cent", "Cent"));
-            Assert.AreEqual("Einhundertdreiundzwanzigtausendzweihundertdreizehn Euro", NumberToWords.AmountToWords(123213, "Euro", "Euro", "Cent", "Cent"));
+            Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteinunddreißig Euro",
+                NumberToWords.AmountToWords(123131, "Euro", "Euro", "Cent", "Cent"));
+            Assert.AreEqual("Einhundertdreiundzwanzigtausendzweihundertdreizehn Euro",
+                NumberToWords.AmountToWords(123213, "Euro", "Euro", "Cent", "Cent"));
             Assert.AreEqual("Drei Euro Dreiundzwanzig Cent", NumberToWords.AmountToWords(3.23M, "Euro", "Euro", "Cent", "Cent"));
             Assert.AreEqual("Drei Euro Fünfundsiebzig Cent", NumberToWords.AmountToWords(3.75M, "Euro", "Euro", "Cent", "Cent"));
             Assert.AreEqual("Null Euro Ein Cent", NumberToWords.AmountToWords(0.01M, "Euro", "Euro", "Cent", "Cent"));

@@ -1212,7 +1212,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 foreach (DataRowView drv in AllBatchesToProcess)
                 {
                     AGiftDetailRow gdr = (AGiftDetailRow)drv.Row;
-                    int batchNumber = gdr.BatchNumber;
+                    int batchNumber;
+
+                    try
+                    {
+                        batchNumber = gdr.BatchNumber;
+                    }
+                    catch (Exception)
+                    {
+                        // for deleted batches
+                        batchNumber = (Int32)gdr[AGiftDetailTable.ColumnBatchNumberId, DataRowVersion.Original];
+                    }
 
                     if (!ListAllGiftBatchesToProcess.Contains(batchNumber))
                     {
@@ -1228,7 +1238,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 foreach (DataRowView drv in AllBatchesToProcess)
                 {
                     AGiftRow gdr = (AGiftRow)drv.Row;
-                    int batchNumber = gdr.BatchNumber;
+                    int batchNumber;
+
+                    try
+                    {
+                        batchNumber = gdr.BatchNumber;
+                    }
+                    catch (Exception)
+                    {
+                        // for deleted batches
+                        batchNumber = (Int32)gdr[AGiftTable.ColumnBatchNumberId, DataRowVersion.Original];
+                    }
 
                     if (!ListAllGiftBatchesToProcess.Contains(batchNumber))
                     {
@@ -1244,7 +1264,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 foreach (DataRowView drv in AllBatchesToProcess)
                 {
                     AGiftBatchRow gdr = (AGiftBatchRow)drv.Row;
-                    int batchNumber = gdr.BatchNumber;
+                    int batchNumber;
+
+                    try
+                    {
+                        batchNumber = gdr.BatchNumber;
+                    }
+                    catch (Exception)
+                    {
+                        // for deleted batches
+                        batchNumber = (Int32)gdr[AGiftBatchTable.ColumnBatchNumberId, DataRowVersion.Original];
+                    }
 
                     if (!ListAllGiftBatchesToProcess.Contains(batchNumber))
                     {

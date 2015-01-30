@@ -580,21 +580,21 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>
         /// Reverse a single Gift Detail
         /// </summary>
-        ReverseGiftDetail,
+            ReverseGiftDetail,
 
         /// <summary>
         /// Reverse a single Gift
         /// </summary>
-        ReverseGift,
+            ReverseGift,
 
         /// <summary>
         /// Adjust a single gift
         /// </summary>
-        AdjustGift,
+            AdjustGift,
 
         /// <summary>
         /// Field adjustment for a number of gifts from the same recipient but (potentially) over different batches
         /// </summary>
-        FieldAdjust
+            FieldAdjust
     }
 }

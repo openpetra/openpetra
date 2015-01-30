@@ -64,6 +64,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 GiftDetailNumber = (Int32)requestParams["GiftDetailNumber"];
             Int32 GiftNumber = (Int32)requestParams["GiftNumber"];
             Int32 BatchNumber = (Int32)requestParams["BatchNumber"];
+
             AMessages = new TVerificationResultCollection();
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -117,11 +118,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int64 ARecipientKey,
             DateTime AStartDate,
             DateTime AEndDate,
-            Int64 AOldField, 
+            Int64 AOldField,
             out TVerificationResultCollection AMessages)
         {
             TDBTransaction Transaction = null;
             GiftBatchTDS MainDS = new GiftBatchTDS();
+
             AMessages = new TVerificationResultCollection();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
@@ -129,7 +131,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     string SqlStmt = TDataBase.ReadSqlFile("Gift.GetGiftsToAdjustField.sql");
 
-                    List<OdbcParameter> parameters = new List<OdbcParameter>();
+                    List <OdbcParameter>parameters = new List <OdbcParameter>();
                     OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
                     param.Value = ALedgerNumber;
                     parameters.Add(param);
@@ -152,7 +154,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     foreach (GiftBatchTDSAGiftDetailRow Row in MainDS.AGiftDetail.Rows)
                     {
                         AGiftBatchAccess.LoadByPrimaryKey(MainDS, Row.LedgerNumber, Row.BatchNumber, Transaction);
-                        AGiftRow GiftRow = AGiftAccess.LoadByPrimaryKey(MainDS, Row.LedgerNumber, Row.BatchNumber, Row.GiftTransactionNumber, Transaction);
+                        AGiftRow GiftRow =
+                            AGiftAccess.LoadByPrimaryKey(MainDS, Row.LedgerNumber, Row.BatchNumber, Row.GiftTransactionNumber, Transaction);
 
                         Row.DateEntered = GiftRow.DateEntered;
                         Row.DonorKey = GiftRow.DonorKey;
@@ -173,6 +176,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string Message = string.Empty;
             string Message2 = string.Empty;
             int GiftCount = 0;
+
             AMessages = new TVerificationResultCollection();
 
             // sort gifts
@@ -188,7 +192,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (GiftDetailRow.ModifiedDetail)
                 {
                     Message += "\n" + String.Format(Catalog.GetString("Gift {0} with Detail {1} in Batch {2}"),
-                                GiftDetailRow.GiftTransactionNumber, GiftDetailRow.DetailNumber, GiftDetailRow.BatchNumber);
+                        GiftDetailRow.GiftTransactionNumber, GiftDetailRow.DetailNumber, GiftDetailRow.BatchNumber);
 
                     GiftCount++;
                 }
@@ -198,13 +202,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 if (GiftCount > 1)
                 {
-                    Message = String.Format(Catalog.GetString("Cannot reverse or adjust the following gifts:")) + "\n" + Message
-                        + "\n\n" + Catalog.GetString("They have already been adjusted or reversed.");
+                    Message = String.Format(Catalog.GetString("Cannot reverse or adjust the following gifts:")) + "\n" + Message +
+                              "\n\n" + Catalog.GetString("They have already been adjusted or reversed.");
                 }
                 else if (GiftCount > 0)
                 {
-                    Message = String.Format(Catalog.GetString("Cannot reverse or adjust the following gift:")) + "\n" + Message
-                        + "\n\n" + Catalog.GetString("It has already been adjusted or reversed.");
+                    Message = String.Format(Catalog.GetString("Cannot reverse or adjust the following gift:")) + "\n" + Message +
+                              "\n\n" + Catalog.GetString("It has already been adjusted or reversed.");
                 }
 
                 AMessages.Add(new TVerificationResult(null, Message, TResultSeverity.Resv_Critical));
@@ -311,7 +315,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             AAdjustmentBatchNumber = 0;
 
-            if (AGiftDS == null || AGiftDS.AGiftDetail == null || AGiftDS.AGiftDetail.Rows.Count == 0)
+            if ((AGiftDS == null) || (AGiftDS.AGiftDetail == null) || (AGiftDS.AGiftDetail.Rows.Count == 0))
             {
                 TLogging.Log("Empty dataset sent to GiftRevertAdjust");
 
@@ -403,7 +407,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 // if gift detail belongs to gift
                                 if ((oldGiftDetail.GiftTransactionNumber == oldGift.GiftTransactionNumber)
                                     && (oldGiftDetail.BatchNumber == oldGift.BatchNumber)
-                                    && (!Function.Equals(GiftAdjustmentFunctionEnum.ReverseGiftDetail) || (oldGiftDetail.DetailNumber == GiftDetailNumber)))
+                                    && (!Function.Equals(GiftAdjustmentFunctionEnum.ReverseGiftDetail)
+                                        || (oldGiftDetail.DetailNumber == GiftDetailNumber)))
                                 {
                                     AddDuplicateGiftDetailToGift(ref AGiftDS, ref gift, oldGiftDetail, cycle == 0, null, requestParams);
 
@@ -417,7 +422,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
 
                     cycle++;
-                } while ((cycle < 2) && (Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift) || Function.Equals(GiftAdjustmentFunctionEnum.FieldAdjust)));
+                } while ((cycle < 2)
+                         && (Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift) || Function.Equals(GiftAdjustmentFunctionEnum.FieldAdjust)));
 
                 //When reversing into a new or existing batch, set batch total
                 if (!Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift))
@@ -451,11 +457,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// create a new gift batch using some of the details of an existing gift batch
-        private static AGiftBatchRow CreateNewGiftBatch(Hashtable requestParams, ref GiftBatchTDS AMainDS, out DateTime ADateEffective, ref ALedgerTable ALedgerTable, TDBTransaction ATransaction)
+        private static AGiftBatchRow CreateNewGiftBatch(Hashtable requestParams,
+            ref GiftBatchTDS AMainDS,
+            out DateTime ADateEffective,
+            ref ALedgerTable ALedgerTable,
+            TDBTransaction ATransaction)
         {
             AGiftBatchRow ReturnValue;
 
             Int32 LedgerNumber = (Int32)requestParams["ALedgerNumber"];
+
             ADateEffective = (DateTime)requestParams["GlEffectiveDate"];
             GiftAdjustmentFunctionEnum Function = (GiftAdjustmentFunctionEnum)requestParams["Function"];
             Int32 BatchNumber = (Int32)requestParams["BatchNumber"];
@@ -505,12 +516,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AReversal">True for reverse or false for straight duplicate</param>
         /// <param name="AGiftCommentOne"></param>
         /// <param name="ARequestParams"></param>
-        private static void AddDuplicateGiftDetailToGift(ref GiftBatchTDS AMainDS, ref AGiftRow AGift, AGiftDetailRow AOldGiftDetail, bool AReversal, string AGiftCommentOne, Hashtable ARequestParams = null)
+        private static void AddDuplicateGiftDetailToGift(ref GiftBatchTDS AMainDS,
+            ref AGiftRow AGift,
+            AGiftDetailRow AOldGiftDetail,
+            bool AReversal,
+            string AGiftCommentOne,
+            Hashtable ARequestParams = null)
         {
             bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
                 TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
 
             AGiftDetailRow giftDetail = AMainDS.AGiftDetail.NewRowTyped(true);
+
             DataUtilities.CopyAllColumnValuesWithoutPK(AOldGiftDetail, giftDetail);
 
             giftDetail.DetailNumber = ++AGift.LastDetailNumber;

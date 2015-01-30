@@ -377,8 +377,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Setup screen with default values
                 InitialiseUI();
 
-                if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON)
-                    || FDefaultPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+                if ((FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+                    || (FDefaultPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON)))
                 {
                     ShowFamilyPartnerSelection(true);
                 }

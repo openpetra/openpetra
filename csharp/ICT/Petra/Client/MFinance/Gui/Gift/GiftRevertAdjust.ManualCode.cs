@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Preset the effective date.
         /// </summary>
-        public DateTime? PresetEffectiveDate
+        public DateTime ? PresetEffectiveDate
         {
             set
             {
@@ -240,8 +240,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (rbtNewBatch.Checked && 
-                string.IsNullOrEmpty(dtpEffectiveDate.Text) &&!dtpEffectiveDate.ValidDate())
+            if (rbtNewBatch.Checked
+                && string.IsNullOrEmpty(dtpEffectiveDate.Text) && !dtpEffectiveDate.ValidDate())
             {
                 dtpEffectiveDate.Focus();
                 return;
@@ -333,7 +333,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 switch (Function)
                 {
-                    case GiftAdjustmentFunctionEnum.ReverseGiftBatch:
+                    case GiftAdjustmentFunctionEnum.ReverseGiftBatch :
                         MessageBox.Show(Catalog.GetString("Reversed gift batch has been successfully created with Batch Number " +
                             AdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift Batch"));
@@ -356,7 +356,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         break;
 
                     case GiftAdjustmentFunctionEnum.FieldAdjust:
-                        MessageBox.Show(Catalog.GetString("Gift Field Adjustment transactions have been successfully added to Batch " + AdjustmentBatchNumber +
+                        MessageBox.Show(Catalog.GetString("Gift Field Adjustment transactions have been successfully added to Batch " +
+                            AdjustmentBatchNumber +
                             "."),
                         Catalog.GetString("Adjust Gift"));
                         break;

@@ -61,7 +61,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (ARow.ForeignCurrencyFlag)
             {
-                if (ARow.AccountType != MFinanceConstants.ACCOUNT_TYPE_ASSET && ARow.AccountType != MFinanceConstants.ACCOUNT_TYPE_LIABILITY)
+                if ((ARow.AccountType != MFinanceConstants.ACCOUNT_TYPE_ASSET) && (ARow.AccountType != MFinanceConstants.ACCOUNT_TYPE_LIABILITY))
                 {
                     DataColumn ValidationColumn = ARow.Table.Columns[AAccountTable.ColumnAccountTypeId];
 
@@ -75,7 +75,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     TScreenVerificationResult VerificationResult = new TScreenVerificationResult(
                         AContext,
                         ValidationColumn,
-                        string.Format(Catalog.GetString("A foreign currency account's Account Type must be either '{0}' or '{1}'."), 
+                        string.Format(Catalog.GetString("A foreign currency account's Account Type must be either '{0}' or '{1}'."),
                             MFinanceConstants.ACCOUNT_TYPE_ASSET, MFinanceConstants.ACCOUNT_TYPE_LIABILITY),
                         targetControl,
                         TResultSeverity.Resv_Critical);

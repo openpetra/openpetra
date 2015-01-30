@@ -3176,7 +3176,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             string ReturnValue = null;
 
-            if (!string.IsNullOrEmpty(cmbPartnerClass.Text) && cmbPartnerClass.Text != "*")
+            if (!string.IsNullOrEmpty(cmbPartnerClass.Text) && (cmbPartnerClass.Text != "*"))
             {
                 ReturnValue = cmbPartnerClass.Text;
             }

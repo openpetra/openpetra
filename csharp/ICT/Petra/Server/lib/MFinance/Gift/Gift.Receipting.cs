@@ -338,11 +338,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     rowTexts += RowTemplate.
                                 Replace("#DONATIONDATE", dateEntered.ToString("dd.MM.yyyy")).
                                 Replace("#AMOUNTCURRENCY", currency).
-                                Replace("#AMOUNTINWORDS", NumberToWords.AmountToWords(amount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                                Replace("#AMOUNTINWORDS",
+                        NumberToWords.AmountToWords(amount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                                 Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(amount, currency)).
-                                Replace("#TAXDEDUCTAMOUNTINWORDS", NumberToWords.AmountToWords(taxDeductibleAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                                Replace("#TAXDEDUCTAMOUNTINWORDS",
+                        NumberToWords.AmountToWords(taxDeductibleAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                                 Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(taxDeductibleAmount, currency)).
-                                Replace("#TAXNONDEDUCTAMNTINWORDS", NumberToWords.AmountToWords(nonDeductibleAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                                Replace("#TAXNONDEDUCTAMNTINWORDS",
+                        NumberToWords.AmountToWords(nonDeductibleAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                                 Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(nonDeductibleAmount, currency)).
                                 Replace("#COMMENTONE", commentOne).
                                 Replace("#ACCOUNTDESC", accountDesc).
@@ -366,11 +369,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         rowTexts += RowTemplate.
                                     Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
                                     Replace("#AMOUNTCURRENCY", prevCurrency).
-                                    Replace("#AMOUNTINWORDS", NumberToWords.AmountToWords(prevAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                                    Replace("#AMOUNTINWORDS",
+                            NumberToWords.AmountToWords(prevAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                                     Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
-                                    Replace("#TAXDEDUCTAMOUNTINWORDS", NumberToWords.AmountToWords(prevAmountTaxDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                                    Replace("#TAXDEDUCTAMOUNTINWORDS",
+                            NumberToWords.AmountToWords(prevAmountTaxDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular,
+                                MinorUnitPlural)).
                                     Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountTaxDeduct, prevCurrency)).
-                                    Replace("#TAXNONDEDUCTAMNTINWORDS", NumberToWords.AmountToWords(prevAmountNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                                    Replace("#TAXNONDEDUCTAMNTINWORDS",
+                            NumberToWords.AmountToWords(prevAmountNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular,
+                                MinorUnitPlural)).
                                     Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency)).
                                     Replace("#COMMENTONE", prevCommentOne).
                                     Replace("#ACCOUNTDESC", prevAccountDesc).
@@ -421,11 +429,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 rowTexts += RowTemplate.
                             Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
                             Replace("#AMOUNTCURRENCY", prevCurrency).
-                            Replace("#AMOUNTINWORDS", NumberToWords.AmountToWords(prevAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                            Replace("#AMOUNTINWORDS",
+                    NumberToWords.AmountToWords(prevAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                             Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
-                            Replace("#TAXDEDUCTAMOUNTINWORDS", NumberToWords.AmountToWords(prevAmountTaxDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                            Replace("#TAXDEDUCTAMOUNTINWORDS",
+                    NumberToWords.AmountToWords(prevAmountTaxDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                             Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountTaxDeduct, prevCurrency)).
-                            Replace("#TAXNONDEDUCTAMNTINWORDS", NumberToWords.AmountToWords(prevAmountNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                            Replace("#TAXNONDEDUCTAMNTINWORDS",
+                    NumberToWords.AmountToWords(prevAmountNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                             Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency)).
                             Replace("#COMMENTONE", prevCommentOne).
                             Replace("#ACCOUNTDESC", prevAccountDesc).
@@ -452,14 +463,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             GetUnitLabels(ABaseCurrency, ref MajorUnitSingular, ref MajorUnitPlural, ref MinorUnitSingular, ref MinorUnitPlural);
 
-            msg = msg.Replace("#TOTALAMOUNTINWORDS", NumberToWords.AmountToWords(sum, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
-                  Replace("#OVERALLTAXDEDUCTAMNTINWORDS", NumberToWords.AmountToWords(sumTaxDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
-                  Replace("#OVERALLTAXNONDEDUCTAMNTINWORDS", NumberToWords.AmountToWords(sumNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural));
+            msg =
+                msg.Replace("#TOTALAMOUNTINWORDS",
+                    NumberToWords.AmountToWords(sum, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                Replace("#OVERALLTAXDEDUCTAMNTINWORDS",
+                    NumberToWords.AmountToWords(sumTaxDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                Replace("#OVERALLTAXNONDEDUCTAMNTINWORDS",
+                    NumberToWords.AmountToWords(sumNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural));
 
             return msg.Replace("#ROWTEMPLATE", rowTexts);
         }
 
-        private static void GetUnitLabels(string ACurrency, ref string AMajorUnitSingular, ref string AMajorUnitPlural, ref string AMinorUnitSingular, ref string AMinorUnitPlural)
+        private static void GetUnitLabels(string ACurrency,
+            ref string AMajorUnitSingular,
+            ref string AMajorUnitPlural,
+            ref string AMinorUnitSingular,
+            ref string AMinorUnitPlural)
         {
             ACurrencyLanguageRow CurrencyLanguage = TFinanceServerLookups.GetCurrencyLanguage(ACurrency);
 
