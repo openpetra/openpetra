@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -446,14 +447,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FInRecipientKeyChanging = true;
             txtDetailRecipientKeyMinistry.Text = string.Empty;
+            bool DoValidateGiftDestination = false;
 
             try
             {
                 FPreviouslySelectedDetailRow.RecipientKey = APartnerKey;
                 FPreviouslySelectedDetailRow.RecipientDescription = APartnerShortName;
 
-                if (!FMotivationDetailChangedFlag && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
-                        APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
+                FPetraUtilsObject.SuppressChangeDetection = true;
+
+                //Set RecipientLedgerNumber
+                if (APartnerKey > 0)
+                {
+                    FPreviouslySelectedDetailRow.RecipientLedgerNumber =
+                        TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey, DateTime.Today);
+                }
+                else
+                {
+                    FPreviouslySelectedDetailRow.RecipientLedgerNumber = 0;
+                }
+
+                if (!FInKeyMinistryChanging)
+                {
+                    GetRecipientData(APartnerKey);
+
+                    DoValidateGiftDestination = true;
+                }
+
+                FPetraUtilsObject.SuppressChangeDetection = false;
+
+                // do not want to update motivation comboboxes if recipient key is being changed due to a new gift or the motivation detail being changed
+                if (!FMotivationDetailChangedFlag //&& !ACreatingNewGiftFlag
+                    && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
+                            APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
                 {
                     if (FMotivationGroup != cmbDetailMotivationGroupCode.GetSelectedString())
                     {
@@ -472,23 +498,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FPetraUtilsObject.SuppressChangeDetection = true;
 
-                //Set RecipientLedgerNumber
-                if (APartnerKey > 0)
-                {
-                    FPreviouslySelectedDetailRow.RecipientLedgerNumber =
-                        TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey, DateTime.Today);
-                }
-                else
-                {
-                    FPreviouslySelectedDetailRow.RecipientLedgerNumber = 0;
-                }
-
-                if (!FInKeyMinistryChanging)
-                {
-                    GetRecipientData(APartnerKey);
-                    ValidateGiftDestination();
-                }
-
                 if (APartnerKey > 0)
                 {
                     RetrieveRecipientCostCentreCode(APartnerKey);
@@ -497,6 +506,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     UpdateRecipientKeyText(APartnerKey);
                     RetrieveMotivationDetailCostCentreCode();
+                }
+
+                if (DoValidateGiftDestination)
+                {
+                    FPartnerShortName = APartnerShortName;
+
+                    //Thread only invokes ValidateGiftDestination once Partner Short Name has been updated.
+                    // Otherwise the Gift Destination screen is displayed and then the screen focus moves to this screen again
+                    // when the Partner Short Name is updated.
+                    new Thread(ValidateRecipientLedgerNumberThread).Start();
                 }
             }
             finally
@@ -516,12 +535,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            string NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FLedgerNumber,
-                FPreviouslySelectedDetailRow.RecipientKey,
-                FPreviouslySelectedDetailRow.RecipientLedgerNumber,
-                FPreviouslySelectedDetailRow.DateEntered,
-                FPreviouslySelectedDetailRow.MotivationGroupCode,
-                FPreviouslySelectedDetailRow.MotivationDetailCode);
+            string NewCCCode = string.Empty;
+
+            // it is possible that there are no active motivation details and so AMotivationDetail is blank
+            if (!string.IsNullOrEmpty(FPreviouslySelectedDetailRow.MotivationDetailCode))
+            {
+                NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FLedgerNumber,
+                    FPreviouslySelectedDetailRow.RecipientKey,
+                    FPreviouslySelectedDetailRow.RecipientLedgerNumber,
+                    FPreviouslySelectedDetailRow.DateEntered,
+                    FPreviouslySelectedDetailRow.MotivationGroupCode,
+                    FPreviouslySelectedDetailRow.MotivationDetailCode);
+            }
 
             if (txtDetailCostCentreCode.Text != NewCCCode)
             {
@@ -544,6 +569,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPreviouslySelectedDetailRow.RecipientDescription = string.Empty;
                 }
             }
+        }
+
+        // used for ValidateGiftDestinationThread
+        private string FPartnerShortName = "";
+        private delegate void SimpleDelegate();
+
+        private void ValidateRecipientLedgerNumberThread()
+        {
+            // wait until the label and the partner class have been updated for txtDetailRecipientKey
+            while (txtDetailRecipientKey.LabelText != FPartnerShortName
+                || (txtDetailRecipientKey.CurrentPartnerClass == null && Convert.ToInt32(txtDetailRecipientKey.Text) > 0))
+            {
+                Thread.Sleep(10);
+            }
+
+            Invoke(new SimpleDelegate(ValidateRecipientLedgerNumber));
         }
 
         private void DonorKeyChanged(Int64 APartnerKey,
@@ -762,7 +803,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (!FInRecipientKeyChanging)
             {
-                ValidateGiftDestination();
+                ValidateRecipientLedgerNumber();
             }
         }
 
@@ -771,7 +812,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //FMotivationbDetail will change by next process
             string motivationDetail = FMotivationDetail;
 
-            ResetMotivationDetailCodeFilter();
             TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, FMotivationGroup);
             FMotivationDetail = motivationDetail;
 
@@ -992,12 +1032,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                string NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FLedgerNumber,
-                    partnerKey,
-                    FPreviouslySelectedDetailRow.RecipientLedgerNumber,
-                    FPreviouslySelectedDetailRow.DateEntered,
-                    FMotivationGroup,
-                    FMotivationDetail);
+                string NewCCCode = string.Empty;
+
+                // it is possible that there are no active motivation details and so AMotivationDetail is blank
+                if (!string.IsNullOrEmpty(FMotivationDetail))
+                {
+                    NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FLedgerNumber,
+                        partnerKey,
+                        FPreviouslySelectedDetailRow.RecipientLedgerNumber,
+                        FPreviouslySelectedDetailRow.DateEntered,
+                        FMotivationGroup,
+                        FMotivationDetail);
+                }
 
                 if (txtDetailCostCentreCode.Text != NewCCCode)
                 {
@@ -2485,10 +2531,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FValidationControlsDict);
         }
 
-        private void ValidateGiftDestination()
+        private void ValidateRecipientLedgerNumber()
         {
             // if no gift destination exists for Family parter then give the user the option to open Gift Destination maintenance screen
-            if ((FPreviouslySelectedDetailRow != null)
+            if (FInEditMode
+                && (FPreviouslySelectedDetailRow != null)
                 && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
                 && (FPreviouslySelectedDetailRow.RecipientKey != 0)
                 && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT))

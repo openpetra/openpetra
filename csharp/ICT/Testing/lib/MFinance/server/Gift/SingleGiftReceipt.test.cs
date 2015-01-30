@@ -72,7 +72,7 @@ namespace Tests.MFinance.Server.Gift
         /// <summary>
         /// print single gift receipt
         /// </summary>
-        [Test]
+        //[Test]
         public void TestSingleReceipt()
         {
             CommonNUnitFunctions.ResetDatabase();

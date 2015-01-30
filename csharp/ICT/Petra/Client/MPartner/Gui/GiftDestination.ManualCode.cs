@@ -330,7 +330,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             bool MessageProcessed = false;
 
-            if (((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPersonnelCommitmentChanged))
+            if ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPersonnelCommitmentChanged)
                 && (((IFormsMessagePartnerInterface)AFormsMessage.MessageObject).PartnerKey == FPartnerKey))
             {
                 TSearchCriteria[] Search = new TSearchCriteria[1];

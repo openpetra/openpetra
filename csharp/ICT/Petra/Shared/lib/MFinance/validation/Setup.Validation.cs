@@ -59,9 +59,52 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             TValidationControlsData ValidationControlsData;
 
-            // If this account is foreign, its currency must be assigned!
             if (ARow.ForeignCurrencyFlag)
             {
+                if (ARow.AccountType != MFinanceConstants.ACCOUNT_TYPE_ASSET && ARow.AccountType != MFinanceConstants.ACCOUNT_TYPE_LIABILITY)
+                {
+                    DataColumn ValidationColumn = ARow.Table.Columns[AAccountTable.ColumnAccountTypeId];
+
+                    Control targetControl = null;
+
+                    if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        targetControl = ValidationControlsData.ValidationControl;
+                    }
+
+                    TScreenVerificationResult VerificationResult = new TScreenVerificationResult(
+                        AContext,
+                        ValidationColumn,
+                        string.Format(Catalog.GetString("A foreign currency account's Account Type must be either '{0}' or '{1}'."), 
+                            MFinanceConstants.ACCOUNT_TYPE_ASSET, MFinanceConstants.ACCOUNT_TYPE_LIABILITY),
+                        targetControl,
+                        TResultSeverity.Resv_Critical);
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+
+                if (!ARow.PostingStatus)
+                {
+                    DataColumn ValidationColumn = ARow.Table.Columns[AAccountTable.ColumnPostingStatusId];
+
+                    Control targetControl = null;
+
+                    if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        targetControl = ValidationControlsData.ValidationControl;
+                    }
+
+                    TScreenVerificationResult VerificationResult = new TScreenVerificationResult(
+                        AContext,
+                        ValidationColumn,
+                        Catalog.GetString("A foreign currency account must be a posting account; it cannot be a summary account."),
+                        targetControl,
+                        TResultSeverity.Resv_Critical);
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+
+                // If this account is foreign, its currency must be assigned!
                 if (ARow.ForeignCurrencyCode == "")
                 {
                     DataColumn ValidationColumn = ARow.Table.Columns[AAccountTable.ColumnForeignCurrencyCodeId];

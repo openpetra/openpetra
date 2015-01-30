@@ -205,10 +205,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (MessageBox.Show(
                         Catalog.GetString(
-                            "Press OK if receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") +
+                            "Were receipts to the following donors printed ok?\n\n") +
                         ReceiptedDonorsList,
                         Catalog.GetString("Receipt Printing"),
-                        MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+                        MessageBoxButtons.YesNo) == DialogResult.No)
                 {
                     this.Cursor = Cursors.Default;
                     return;
@@ -217,7 +217,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //
                 // These receipts that have been printed can now be marked in the database, so that they won't be printed again..
                 //
-                OnBtnRemove(sender, e);
+                RemoveReceipts(false);
             }
             catch (Exception ex)
             {
@@ -229,6 +229,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void OnBtnRemove(Object sender, EventArgs e)
         {
+            RemoveReceipts();
+        }
+
+        private void RemoveReceipts(bool AAskPermission = true)
+        {
             DataTable SelectedRecords = GetSelectedRecords();
 
             if (SelectedRecords.Rows.Count == 0)
@@ -238,6 +243,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 this.Cursor = Cursors.Default;
                 return;
+            }
+
+            if (AAskPermission)
+            {
+                string Msg = string.Empty;
+
+                if (SelectedRecords.Rows.Count == 1)
+                {
+                    Msg = Catalog.GetString("Are you sure you want to remove the selected receipt?");
+                }
+                else
+                {
+                    Msg = string.Format(Catalog.GetString("Are you sure you want to remove the {0} selected receipts?"), (SelectedRecords.Rows.Count));
+                }
+
+                if (MessageBox.Show(Msg,
+                    Catalog.GetString("Receipt Printing"),
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                {
+                    this.Cursor = Cursors.Default;
+                    return;
+                }
             }
 
             this.Cursor = Cursors.WaitCursor;

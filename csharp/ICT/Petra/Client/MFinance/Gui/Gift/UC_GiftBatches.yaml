@@ -16,6 +16,7 @@ RootNode:
         actImportFromClipboard: {Label=I&mport Batches From Clipboard, ActionClick=ImportFromClipboard}
         actReverseGiftBatch: {Label=Re&verse Gift Batch, ActionClick=ReverseGiftBatch}
         actSetExchangeRate:{Label=Get/Set Exchange Rate, ActionClick=SetExchangeRateValue}
+        actFieldAdjustment:{Label=Field Change Adjustment, ActionClick=FieldAdjustment}
     Controls:
         pnlContent:
             Dock: Fill
@@ -106,6 +107,8 @@ RootNode:
             mniSeparator: {Label=-}
             mniImportTransactions: {Label=&Import Batches From File, Action: actImportBatches}
             mniImportFromClipboard: {Label=I&mport Batches From Clipboard, Action: actImportFromClipboard}
+            mniSeparator: {Label=-}
+            mniFieldAdjustment: {Action=actFieldAdjustment}
     Toolbar:
         tbbPostBatch: {Action=actPostBatch}
         tbbImportBatches: {Action=actImportBatches}

@@ -53,6 +53,12 @@ namespace Ict.Common
         {
             string Result = "";
 
+            if (IntValue < 0)
+            {
+                IntValue = Math.Abs(IntValue);
+                Result = "minus";
+            }
+
             if (IntValue < 10)
             {
                 Result = SingleDigitsDE[IntValue];
@@ -120,13 +126,19 @@ namespace Ict.Common
 
             Int64 IntValue = Convert.ToInt64(Math.Floor(AValue));
 
+            if (IntValue < 0)
+            {
+                IntValue = Math.Abs(IntValue);
+                Result = "minus";
+            }
+
             if (IntValue < 10)
             {
-                Result = SingleDigitsUK[IntValue];
+                Result += SingleDigitsUK[IntValue];
             }
             else if (IntValue < 20)
             {
-                Result = TenTo19UK[IntValue - 10];
+                Result += TenTo19UK[IntValue - 10];
             }
             else
             {
@@ -172,14 +184,16 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// convert currency amount to words.
-        /// this uses the current culture to determine the language.
+        /// Convert currency amount to words.
+        /// This uses the current culture to determine the language.
         /// </summary>
-        /// <param name="AValue"></param>
-        /// <param name="ACurrencyName"></param>
-        /// <param name="ACentName"></param>
+        /// <param name="AValue">Amount as a decimal</param>
+        /// <param name="AMajorUnitSingular"></param>
+        /// <param name="AMajorUnitPlural"></param>
+        /// <param name="AMinorUnitSingular"></param>
+        /// <param name="AMinorUnitPlural"></param>
         /// <returns></returns>
-        public static string AmountToWords(decimal AValue, string ACurrencyName, string ACentName)
+        public static string AmountToWords(decimal AValue, string AMajorUnitSingular, string AMajorUnitPlural, string AMinorUnitSingular, string AMinorUnitPlural)
         {
             Int64 IntValue = Convert.ToInt64(Math.Floor(AValue));
             Int32 Decimals = Convert.ToInt32(Math.Floor(AValue * 100)) % 100;
@@ -189,9 +203,13 @@ namespace Ict.Common
                 string Result = AmountToWordsInternalDE(IntValue);
                 Result = Result.Substring(0, 1).ToUpper() + Result.Substring(1);
 
-                if (ACurrencyName.Length > 0)
+                if (AMajorUnitSingular.Length > 0 && IntValue == 1)
                 {
-                    Result += " " + ACurrencyName;
+                    Result += " " + AMajorUnitSingular;
+                }
+                else if (AMajorUnitPlural.Length > 0 && IntValue != 1)
+                {
+                    Result += " " + AMajorUnitPlural;
                 }
 
                 if (Decimals > 0)
@@ -200,9 +218,13 @@ namespace Ict.Common
                     DecimalResult = DecimalResult.Substring(0, 1).ToUpper() + DecimalResult.Substring(1);
                     Result += " " + DecimalResult;
 
-                    if (ACentName.Length > 0)
+                    if (AMinorUnitSingular.Length > 0 && Decimals == 1)
                     {
-                        Result += " " + ACentName;
+                        Result += " " + AMinorUnitSingular;
+                    }
+                    else if (AMinorUnitPlural.Length > 0 && Decimals != 1)
+                    {
+                        Result += " " + AMinorUnitPlural;
                     }
                 }
 
@@ -212,9 +234,13 @@ namespace Ict.Common
             {
                 string Result = AmountToWordsInternalUK(IntValue);
 
-                if (ACurrencyName.Length > 0)
+                if (AMajorUnitSingular.Length > 0 && IntValue == 1)
                 {
-                    Result += " " + ACurrencyName;
+                    Result += " " + AMajorUnitSingular;
+                }
+                else if (AMajorUnitPlural.Length > 0 && IntValue != 1)
+                {
+                    Result += " " + AMajorUnitPlural;
                 }
 
                 if (Decimals > 0)
@@ -222,9 +248,13 @@ namespace Ict.Common
                     string DecimalResult = AmountToWordsInternalUK(Decimals);
                     Result += " " + DecimalResult;
 
-                    if (ACentName.Length > 0)
+                    if (AMinorUnitSingular.Length > 0 && Decimals == 1)
                     {
-                        Result += " " + ACentName;
+                        Result += " " + AMinorUnitSingular;
+                    }
+                    else if (AMinorUnitPlural.Length > 0 && Decimals != 1)
+                    {
+                        Result += " " + AMinorUnitPlural;
                     }
                 }
 

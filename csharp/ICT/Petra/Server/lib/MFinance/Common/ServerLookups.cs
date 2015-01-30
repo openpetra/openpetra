@@ -33,8 +33,10 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 {
@@ -163,6 +165,82 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 delegate
                 {
                     ReturnValue = ((ALedgerRow)ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction).Rows[0]).BaseCurrency;
+                });
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Get Foreign Currency Accounts' YTD Actuals
+        /// </summary>
+        /// <param name="AForeignCurrencyAccounts">DataTable containing rows of Foreign Currency Accounts</param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AYear"></param>
+        [RequireModulePermission("FINANCE-1")]
+        public static void GetForeignCurrencyAccountActuals(ref DataTable AForeignCurrencyAccounts, Int32 ALedgerNumber, Int32 AYear)
+        {
+            //string ReturnValue = "";
+            DataTable ForeignCurrencyAccounts = AForeignCurrencyAccounts.Clone();
+            ForeignCurrencyAccounts.Merge(AForeignCurrencyAccounts);
+            string CostCentreCode = "[" + ALedgerNumber + "]";
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                    foreach (DataRow ForeignCurrencyAccountRow in ForeignCurrencyAccounts.Rows)
+                    {
+                        AGeneralLedgerMasterTable Table = AGeneralLedgerMasterAccess.LoadByUniqueKey(
+                            ALedgerNumber, AYear, ForeignCurrencyAccountRow[AAccountTable.GetAccountCodeDBName()].ToString(), CostCentreCode, Transaction);
+
+                        if (Table != null && Table.Rows.Count > 0)
+                        {
+                            AGeneralLedgerMasterRow Row = Table[0];
+
+                            if (Row.IsYtdActualForeignNull())
+                            {
+                                ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()] = 0;
+                            }
+                            else
+                            {
+                                ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()] = Row.YtdActualForeign;
+                            }
+                                
+                            ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()] = Row.YtdActualBase;
+                        }
+                        else
+                        {
+                            ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()] = 0;
+                            ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()] = 0;
+                        }
+                    }
+                });
+
+            AForeignCurrencyAccounts = ForeignCurrencyAccounts;
+        }
+
+        /// <summary>
+        /// Returns CurrencyLanguageRow for a corresponding currency code
+        /// </summary>
+        /// <param name="ACurrencyCode">Currency Code</param>
+        /// <returns></returns>
+        [RequireModulePermission("NONE")]
+        public static ACurrencyLanguageRow GetCurrencyLanguage(string ACurrencyCode)
+        {
+            ACurrencyLanguageRow ReturnValue = null;
+            string Language = TUserDefaults.GetStringDefault(MSysManConstants.USERDEFAULT_UILANGUAGE);
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    ACurrencyLanguageTable CurrencyLanguageTable = ACurrencyLanguageAccess.LoadByPrimaryKey(ACurrencyCode, Language, Transaction);
+
+                    if (CurrencyLanguageTable != null && CurrencyLanguageTable.Rows.Count > 0)
+                    {
+                        ReturnValue = CurrencyLanguageTable[0];
+                    }
                 });
 
             return ReturnValue;

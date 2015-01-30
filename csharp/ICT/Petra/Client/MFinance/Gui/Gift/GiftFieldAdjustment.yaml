@@ -2,29 +2,48 @@
     BaseYaml: ../../../CommonForms/PetraForm.yaml
     FormTitle: Field Change Adjustment
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
-    FormType: browse
+    FormType: dialog
     Template: window
-    WindowWidth: 754
-    WindowHeight: 623
+    WindowWidth: 530
+    WindowHeight: 220
     Actions:
-        actFieldChangeAdjustment: {Label=&Adjust gifts after field change, ActionClick=FieldChangeAdjustment}
+        actOK: {Label=&OK, ActionClick=FieldChangeAdjustment}
+        actCancel:  {Label=Cancel, ActionClick=BtnCancelClick}
+        actHelp: {Label=&Help, ActionClick=BtnHelpClick}
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlParameters]
+            Controls: [pnlParameters, pnlButtons]
         pnlParameters:
+            Dock: Fill
             Controls:
-                Row0: [dtpStartDate, dtpEndDate]
-                Row1: [dtpDateEffective]
-                Row2: [txtRecipientKey]
+                Row0: [lblDateLabel, dtpStartDate, dtpEndDate]
+                Row1: [txtRecipientKey]
+                Row2: [txtCurrentField]
                 Row3: [txtOldFieldKey]
                 Row4: [chkNoReceipt]
-        dtpStartDate: {Tooltip=Fix Gifts from this date onwards}
-        dtpEndDate: {Tooltip=Fix Gifts till this date (inclusive)}
-        dtpDateEffective: {Tooltip=Date for adjusted Gift batch}
-        txtRecipientKey: {Type=PartnerKey}
-        txtOldFieldKey: {Type=PartnerKey}
-        chkNoReceipt: {Tooltip=tick this if the gift was already receipted last year, CheckBoxAttachedLabel=right}
-    Menu:
-    Toolbar:
-        tbbFieldChangeAdjustment:
+
+        lblDateLabel: {Label=Date of Field Change, Width=148}
+        dtpStartDate: {Label=From, Tooltip=Fix Gifts from this date onwards}
+        dtpEndDate: {Label=To (optional), Tooltip=Fix Gifts till this date (inclusive)}
+        txtRecipientKey: {Label=Recipient, Type=PartnerKey, ColSpan=3, OnChange=RecipientKeyChanged}
+        txtCurrentField: {Label=Current Field, Type=PartnerKey, ReadOnly=true, ColSpan=3}
+        txtOldFieldKey: {Label=Old Field, Type=PartnerKey, ColSpan=3}
+        chkNoReceipt:
+            Label: Do not print the adjusting gift transactions on periodic receipts.
+            Tooltip: Tick this if the gift was already receipted last year
+            CheckBoxAttachedLabel: right
+            ColSpan: 3
+
+        pnlButtons:
+            Dock: Bottom
+            Controls:
+                Row0: [btnHelp, btnOK, btnClose]
+        btnOK:
+            Action: actOK
+            Align: right
+        btnClose: 
+            Action: actCancel
+            Align: right
+        btnHelp:
+            Action: actHelp

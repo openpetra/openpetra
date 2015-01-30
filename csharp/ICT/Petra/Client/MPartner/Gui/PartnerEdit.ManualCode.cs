@@ -103,6 +103,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Int64 FNewPartnerFamilyPartnerKey;
         private Int64 FNewPartnerFamilySiteKey;
         private String FNewPartnerPartnerClass;
+        private string FNewPartnerDefaultPartnerClass = SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY);
         private String FNewPartnerCountryCode;
         private String FNewPartnerSiteCountryCode;
         private String FNewPartnerAcquisitionCode;
@@ -355,6 +356,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// will be automatically setup according to the parmeters passed in.
         /// Default: true</param>
         /// <param name="AShowTabPage">The tab page that should be initially shown</param>
+        /// <param name="ADefaultPartnerClass">The default Partner Class of the new partner (Family if not specified.)</param>
         public void SetParameters(TScreenMode AScreenMode,
             String APartnerClass,
             System.Int64 ASiteKey,
@@ -366,7 +368,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int32 ANewPartnerFamilyLocationKey,
             Int64 ANewPartnerFamilySiteKey,
             Boolean AShowNewPartnerDialog,
-            TPartnerEditTabPageEnum AShowTabPage)
+            TPartnerEditTabPageEnum AShowTabPage,
+            string ADefaultPartnerClass = "FAMILY")
         {
             if (AScreenMode != TScreenMode.smNew)
             {
@@ -377,6 +380,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FNewPartnerSiteKey = ASiteKey;
             FNewPartnerPartnerKey = APartnerKey;
             FNewPartnerPartnerClass = APartnerClass;
+            FNewPartnerDefaultPartnerClass = ADefaultPartnerClass;
             FNewPartnerCountryCode = ACountryCode;
             FNewPartnerAcquisitionCode = AAcquisitionCode;
             FNewPartnerPrivatePartner = APrivatePartner;
@@ -673,12 +677,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AAcquisitionCode">AcquisitionCode that the Partner should have (optional,
         /// default: ''). If '' is passed in, the User's UserDefault setting will be
         /// used.</param>
+        /// <param name="ADefaultPartnerClass">The default Partner Class of the new partner (Family if not specified.)</param>
         public void SetParameters(TScreenMode AScreenMode,
             String APartnerClass,
             System.Int64 ASiteKey,
             System.Int64 APartnerKey,
             String ACountryCode,
-            String AAcquisitionCode)
+            String AAcquisitionCode, 
+            string ADefaultPartnerClass = "FAMILY")
         {
             SetParameters(AScreenMode,
                 APartnerClass,
@@ -691,7 +697,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 -1,
                 -1,
                 true,
-                TPartnerEditTabPageEnum.petpDefault);
+                TPartnerEditTabPageEnum.petpDefault,
+                ADefaultPartnerClass);
         }
 
         /// <summary>
@@ -3146,7 +3153,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FNewPartnerPrivatePartner,
                 FNewPartnerFamilyPartnerKey,
                 FNewPartnerFamilyLocationKey,
-                FNewPartnerFamilySiteKey);
+                FNewPartnerFamilySiteKey,
+                FNewPartnerDefaultPartnerClass);
 
             if (NewPartnerDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
             {

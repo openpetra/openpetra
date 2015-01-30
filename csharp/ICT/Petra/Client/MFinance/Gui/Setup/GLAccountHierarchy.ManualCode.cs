@@ -24,6 +24,7 @@
 //
 using System;
 using System.Data;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Xml;
@@ -34,11 +35,11 @@ using Ict.Common.IO;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.App.Core;
-using System.Drawing;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
@@ -158,6 +159,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private string FRecentlyUpdatedDetailAccountCode = INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE;
         private string FNameForNewAccounts;
+
+        // list of accounts that need their foreign currency balances put to zero (i.e. they are no longer foreign currency accounts)
+        private List<string> FZeroForeignCurrencyBalances = new List<string>();
 
         /// <summary>
         /// Called from the user controls when the user selects a row,
@@ -303,6 +307,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtDetailAccountCode.Validated -= ControlValidatedHandler; // Don't trigger validation on change - I need to do it manually
 
             chkDetailForeignCurrencyFlag.CheckedChanged += new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
+            chkDetailForeignCurrencyFlag.Validated += new System.EventHandler(this.ControlValidatedHandler);
             chkDetailIsSummary.CheckedChanged += chkDetailIsSummary_CheckedChanged;
 
             FPetraUtilsObject.ControlChanged += new TValueChangedHandler(FPetraUtilsObject_ControlChanged);
@@ -389,6 +394,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         chkDetailIsSummary.Checked = true;
                     }
                 }
+
+                UpdateForeignCurrencyCheckbox();
             }
         }
 
@@ -399,9 +406,66 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void chkDetailForeignCurrencyFlag_CheckedChanged(object sender, EventArgs e)
         {
-            cmbDetailForeignCurrencyCode.Enabled = chkDetailForeignCurrencyFlag.Checked;
-            String CurrencyLabel = (cmbDetailForeignCurrencyCode.Enabled ? GetSelectedDetailRowManual().ForeignCurrencyCode : "");
-            cmbDetailForeignCurrencyCode.SetSelectedString(CurrencyLabel, -1);
+            // if checkbox has been changed because a new record is being shown
+            if (GetSelectedDetailRowManual().ForeignCurrencyFlag == chkDetailForeignCurrencyFlag.Checked)
+            {
+                cmbDetailForeignCurrencyCode.Enabled = chkDetailForeignCurrencyFlag.Checked;
+                String CurrencyLabel = (cmbDetailForeignCurrencyCode.Enabled ? GetSelectedDetailRowManual().ForeignCurrencyCode : "");
+                cmbDetailForeignCurrencyCode.SetSelectedString(CurrencyLabel, -1);
+            }
+            // if checkbox has been checked by the user
+            else if (chkDetailForeignCurrencyFlag.Checked && GetSelectedDetailRowManual().ForeignCurrencyFlag == false)
+            {
+                if (GetSelectedDetailRowManual() != null &&
+                    TRemote.MFinance.Setup.WebConnectors.CheckAccountCanBeMadeForeign(FLedgerNumber, GetSelectedDetailRowManual().AccountCode))
+                {
+                    cmbDetailForeignCurrencyCode.Enabled = true;
+
+                    // if chkDetailForeignCurrencyFlag has been unchecked and then checked, stop this account from being zeroed
+                    FZeroForeignCurrencyBalances.Remove(GetSelectedDetailRowManual().AccountCode);
+                }
+                else
+                {
+                    MessageBox.Show(Catalog.GetString("You cannot set this account up as a foreign currency account as it is already in use."),
+                        Catalog.GetString("Foreign Currency Account"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    // auto uncheck without firing event
+                    chkDetailForeignCurrencyFlag.CheckedChanged -= new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
+                    chkDetailForeignCurrencyFlag.Checked = false;
+                    chkDetailForeignCurrencyFlag.CheckedChanged += new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
+                }
+            }
+            // if checkbox has been unchecked by the user
+            else if (!chkDetailForeignCurrencyFlag.Checked && GetSelectedDetailRowManual().ForeignCurrencyFlag == true)
+            {
+                Int32 Year = (Int32)TDataCache.TMFinance.GetCacheableFinanceTable(
+                    TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber).Rows[0][ALedgerTable.GetCurrentFinancialYearDBName()];
+
+                // if account has balances for the current year
+                if (TRemote.MFinance.Setup.WebConnectors.CheckForeignAccountHasBalances(
+                    FLedgerNumber, Year, GetSelectedDetailRowManual().AccountCode))
+                {
+                    if (MessageBox.Show(Catalog.GetString("This foreign currency account still has a balance. " +
+                        "Are you sure you no longer want it to be marked as a foreign currency account?"),
+                        Catalog.GetString("Foreign Currency Account"),
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                    {
+                        // auto check without firing event
+                        chkDetailForeignCurrencyFlag.CheckedChanged -= new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
+                        chkDetailForeignCurrencyFlag.Checked = true;
+                        chkDetailForeignCurrencyFlag.CheckedChanged += new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
+
+                        return;
+                    }
+                    
+                    // the foreign balances for this account will need zeroed during save
+                    FZeroForeignCurrencyBalances.Add(GetSelectedDetailRowManual().AccountCode);
+                }
+
+                cmbDetailForeignCurrencyCode.Enabled = false;
+                cmbDetailForeignCurrencyCode.SetSelectedString("", -1);
+                UpdateForeignCurrencyCheckbox();
+            }
         }
 
         private void AutoFillDescriptions(object sender, EventArgs e)
@@ -470,13 +534,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
                 FPetraUtilsObject.DisableDataChangedEvent();
 
-                chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
+                // enable/disable foreign currency controls
+                if (chkDetailForeignCurrencyFlag.Checked)
+                {
+                    // always enabled if checked (any problems will be picked up during validation)
+                    chkDetailForeignCurrencyFlag.Enabled = true;
+                }
+                else
+                {
+                    chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag
+                        && (ARow.AccountType == MFinanceConstants.ACCOUNT_TYPE_LIABILITY || ARow.AccountType == MFinanceConstants.ACCOUNT_TYPE_ASSET));
+                }
+
+                lblDetailForeignCurrencyFlag.Enabled = chkDetailForeignCurrencyFlag.Enabled;
+                cmbDetailForeignCurrencyCode.Enabled = chkDetailForeignCurrencyFlag.Checked;
+
                 chkDetailBankAccountFlag.Enabled = !ARow.SystemAccountFlag;
                 chkDetailBudgetControlFlag.Enabled = !ARow.SystemAccountFlag
                                                      && FMainDS.ALedger[0].BudgetControlFlag;
                 lblDetailBudgetControlFlag.Enabled = FMainDS.ALedger[0].BudgetControlFlag;
-
-                cmbDetailForeignCurrencyCode.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
 
                 chkDetailIsSummary.Checked = !ARow.PostingStatus;
                 chkDetailIsSummary.Enabled = !ARow.SystemAccountFlag;
@@ -665,6 +741,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        /// <summary>
+        /// Stores the manual code.
+        /// </summary>
+        /// <param name="ASubmitDS">a submit ds.</param>
+        /// <param name="AVerificationResult">a verification result.</param>
+        /// <returns></returns>
         private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
             //
@@ -700,6 +782,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TSubmitChangesResult ServerResult =
                 TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
             TDataCache.TMFinance.RefreshCacheableFinanceTable(Shared.TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+
+            if (ServerResult == TSubmitChangesResult.scrOK)
+            {
+                if (FZeroForeignCurrencyBalances != null && FZeroForeignCurrencyBalances.Count > 0)
+                {
+                    Int32 Year = (Int32)TDataCache.TMFinance.GetCacheableFinanceTable(
+                        TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber).Rows[0][ALedgerTable.GetCurrentFinancialYearDBName()];
+
+                    // Makes all foreign currency balances zero for the given accounts in the current ledger year for all posting cost centres
+                    TRemote.MFinance.Setup.WebConnectors.ZeroForeignCurrencyBalances(FLedgerNumber, Year, FZeroForeignCurrencyBalances.ToArray());
+                    FZeroForeignCurrencyBalances.Clear();
+                }
+
+                // Broadcast message to update partner's Partner Edit screen if open
+                TFormsMessage BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcAccountsChanged);
+                BroadcastMessage.SetMessageDataAccounts();
+                TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+            }
+
             return ServerResult;
         }
 
@@ -909,6 +1010,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 ucoAccountsList.UpdateRecordNumberDisplay();
                 ucoAccountsList.Focus();
+            }
+        }
+
+        private void OnAccountTypeChanged(object sender, EventArgs e)
+        {
+            UpdateForeignCurrencyCheckbox();
+        }
+
+        private void UpdateForeignCurrencyCheckbox()
+        {
+            if (GetSelectedDetailRowManual() != null)
+            {
+                if (chkDetailForeignCurrencyFlag.Checked)
+                {
+                    // always enabled if checked (any problems will be picked up during validation)
+                    chkDetailForeignCurrencyFlag.Enabled = true;
+                }
+                else
+                {
+                    chkDetailForeignCurrencyFlag.Enabled = (!chkDetailIsSummary.Checked && !GetSelectedDetailRowManual().SystemAccountFlag
+                        && (cmbDetailAccountType.GetSelectedString() == MFinanceConstants.ACCOUNT_TYPE_LIABILITY
+                            || cmbDetailAccountType.GetSelectedString() == MFinanceConstants.ACCOUNT_TYPE_ASSET));
+                }
+
+                lblDetailForeignCurrencyFlag.Enabled = chkDetailForeignCurrencyFlag.Enabled;
             }
         }
 

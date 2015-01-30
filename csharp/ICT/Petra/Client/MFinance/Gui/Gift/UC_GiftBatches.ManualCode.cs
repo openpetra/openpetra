@@ -1012,7 +1012,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ReverseGiftBatch(System.Object sender, System.EventArgs e)
         {
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ReverseGiftBatch(null, null);     //.ShowRevertAdjustForm("ReverseGiftBatch");
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ReverseGiftBatch(null, null);
+        }
+
+        private void FieldAdjustment(System.Object sender, System.EventArgs e)
+        {
+            TFrmGiftFieldAdjustment FieldAdjustmentForm = new TFrmGiftFieldAdjustment(ParentForm);
+
+            FieldAdjustmentForm.LedgerNumber = FLedgerNumber;
+
+            FieldAdjustmentForm.ShowDialog();
         }
 
         private void RecalculateTransactionAmounts(decimal ANewExchangeRate = 0)

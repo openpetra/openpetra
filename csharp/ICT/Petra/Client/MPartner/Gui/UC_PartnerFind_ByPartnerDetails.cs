@@ -1488,7 +1488,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void OpenNewPartnerEditScreen(bool ARunAsModalForm)
         {
-            string PartnerClass = String.Empty;
+            string RestrictedPartnerClass = String.Empty;
             TFrmPartnerEdit frm;
 
             this.Cursor = Cursors.WaitCursor;
@@ -1507,7 +1507,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (ucoPartnerFindCriteria.RestrictedPartnerClass.Length > 0)
                     {
                         /* at least one entry so use first one */
-                        PartnerClass = ucoPartnerFindCriteria.RestrictedPartnerClass[0];
+                        RestrictedPartnerClass = ucoPartnerFindCriteria.RestrictedPartnerClass[0];
                     }
 
                     /*
@@ -1518,13 +1518,29 @@ namespace Ict.Petra.Client.MPartner.Gui
                      */
                     FNewPartnerContext = System.Guid.NewGuid().ToString();
 
-                    PartnerClass = PartnerClass.Replace("OM-FAM", "FAMILY");
+                    RestrictedPartnerClass = RestrictedPartnerClass.Replace("WORKER-FAM", "FAMILY");
+                }
+
+                string DefaultPartnerClass = string.Empty;
+
+                if (RestrictedPartnerClass == String.Empty)
+                {
+                    DefaultPartnerClass = ucoPartnerFindCriteria.GetSelectedPartnerClass();
+
+                    if (string.IsNullOrEmpty(DefaultPartnerClass))
+                    {
+                        DefaultPartnerClass = "FAMILY";
+                    }
+                }
+                else
+                {
+                    DefaultPartnerClass = RestrictedPartnerClass;
                 }
 
                 frm = new Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
                 frm.SetParameters(TScreenMode.smNew,
-                    PartnerClass, -1, -1, String.Empty);
+                    RestrictedPartnerClass, -1, -1, String.Empty, String.Empty, DefaultPartnerClass);
                 frm.CallerContext = FNewPartnerContext;
 
                 if (!ARunAsModalForm)

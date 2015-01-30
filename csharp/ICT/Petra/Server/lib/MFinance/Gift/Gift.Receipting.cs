@@ -43,6 +43,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -232,6 +233,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             PLocationTable Location;
             string CountryName;
 
+            string MajorUnitSingular = string.Empty;
+            string MajorUnitPlural = string.Empty;
+            string MinorUnitSingular = string.Empty;
+            string MinorUnitPlural = string.Empty;
+
             if (!TAddressTools.GetBestAddress(ADonorKey, out Location, out CountryName, ATransaction))
             {
                 return "";
@@ -327,11 +333,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND);
                     }
 
+                    GetUnitLabels(currency, ref MajorUnitSingular, ref MajorUnitPlural, ref MinorUnitSingular, ref MinorUnitPlural);
+
                     rowTexts += RowTemplate.
                                 Replace("#DONATIONDATE", dateEntered.ToString("dd.MM.yyyy")).
                                 Replace("#AMOUNTCURRENCY", currency).
+                                Replace("#AMOUNTINWORDS", NumberToWords.AmountToWords(amount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                                 Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(amount, currency)).
+                                Replace("#TAXDEDUCTAMOUNTINWORDS", NumberToWords.AmountToWords(taxDeductibleAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                                 Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(taxDeductibleAmount, currency)).
+                                Replace("#TAXNONDEDUCTAMNTINWORDS", NumberToWords.AmountToWords(nonDeductibleAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                                 Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(nonDeductibleAmount, currency)).
                                 Replace("#COMMENTONE", commentOne).
                                 Replace("#ACCOUNTDESC", accountDesc).
@@ -350,11 +361,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND);
                         }
 
+                        GetUnitLabels(prevCurrency, ref MajorUnitSingular, ref MajorUnitPlural, ref MinorUnitSingular, ref MinorUnitPlural);
+
                         rowTexts += RowTemplate.
                                     Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
                                     Replace("#AMOUNTCURRENCY", prevCurrency).
+                                    Replace("#AMOUNTINWORDS", NumberToWords.AmountToWords(prevAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                                     Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
+                                    Replace("#TAXDEDUCTAMOUNTINWORDS", NumberToWords.AmountToWords(prevAmountTaxDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                                     Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountTaxDeduct, prevCurrency)).
+                                    Replace("#TAXNONDEDUCTAMNTINWORDS", NumberToWords.AmountToWords(prevAmountNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                                     Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency)).
                                     Replace("#COMMENTONE", prevCommentOne).
                                     Replace("#ACCOUNTDESC", prevAccountDesc).
@@ -400,11 +416,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND);
                 }
 
+                GetUnitLabels(prevCurrency, ref MajorUnitSingular, ref MajorUnitPlural, ref MinorUnitSingular, ref MinorUnitPlural);
+
                 rowTexts += RowTemplate.
                             Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
                             Replace("#AMOUNTCURRENCY", prevCurrency).
+                            Replace("#AMOUNTINWORDS", NumberToWords.AmountToWords(prevAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                             Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
+                            Replace("#TAXDEDUCTAMOUNTINWORDS", NumberToWords.AmountToWords(prevAmountTaxDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                             Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountTaxDeduct, prevCurrency)).
+                            Replace("#TAXNONDEDUCTAMNTINWORDS", NumberToWords.AmountToWords(prevAmountNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                             Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency)).
                             Replace("#COMMENTONE", prevCommentOne).
                             Replace("#ACCOUNTDESC", prevAccountDesc).
@@ -429,12 +450,57 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 msg = msg.Replace("#DONATIONDATE", Convert.ToDateTime(ADonations.Rows[0]["DateEntered"]).ToString("dd.MM.yyyy"));
             }
 
-            // TODO allow other currencies. use a_currency table, and base currency
-            msg = msg.Replace("#TOTALAMOUNTINWORDS", NumberToWords.AmountToWords(sum, "Euro", "Cent")).
-                  Replace("#TOTALTAXDEDUCTAMOUNTINWORDS", NumberToWords.AmountToWords(sumTaxDeduct, "Euro", "Cent")).
-                  Replace("#TOTALTAXNONDEDUCTAMOUNTINWORDS", NumberToWords.AmountToWords(sumNonDeduct, "Euro", "Cent"));
+            GetUnitLabels(ABaseCurrency, ref MajorUnitSingular, ref MajorUnitPlural, ref MinorUnitSingular, ref MinorUnitPlural);
+
+            msg = msg.Replace("#TOTALAMOUNTINWORDS", NumberToWords.AmountToWords(sum, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                  Replace("#OVERALLTAXDEDUCTAMNTINWORDS", NumberToWords.AmountToWords(sumTaxDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
+                  Replace("#OVERALLTAXNONDEDUCTAMNTINWORDS", NumberToWords.AmountToWords(sumNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural));
 
             return msg.Replace("#ROWTEMPLATE", rowTexts);
+        }
+
+        private static void GetUnitLabels(string ACurrency, ref string AMajorUnitSingular, ref string AMajorUnitPlural, ref string AMinorUnitSingular, ref string AMinorUnitPlural)
+        {
+            ACurrencyLanguageRow CurrencyLanguage = TFinanceServerLookups.GetCurrencyLanguage(ACurrency);
+
+            if (CurrencyLanguage != null)
+            {
+                if (!CurrencyLanguage.IsUnitLabelSingularNull())
+                {
+                    AMajorUnitSingular = CurrencyLanguage.UnitLabelSingular;
+                }
+                else
+                {
+                    AMajorUnitSingular = string.Empty;
+                }
+
+                if (!CurrencyLanguage.IsUnitLabelPluralNull())
+                {
+                    AMajorUnitPlural = CurrencyLanguage.UnitLabelPlural;
+                }
+                else
+                {
+                    AMajorUnitPlural = string.Empty;
+                }
+
+                if (!CurrencyLanguage.IsDecimalLabelSingularNull())
+                {
+                    AMinorUnitSingular = CurrencyLanguage.DecimalLabelSingular;
+                }
+                else
+                {
+                    AMinorUnitSingular = string.Empty;
+                }
+
+                if (!CurrencyLanguage.IsDecimalLabelPluralNull())
+                {
+                    AMinorUnitPlural = CurrencyLanguage.DecimalLabelPlural;
+                }
+                else
+                {
+                    AMinorUnitPlural = string.Empty;
+                }
+            }
         }
 
         /// <summary>

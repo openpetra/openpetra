@@ -78,6 +78,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("TransactionCountAccount", 0);
             ACalc.AddParameter("SumDebitAccount", 0);
             ACalc.AddParameter("SumCreditAccount", 0);
+            ACalc.AddParameter("SumTotalDebitAccount", 0);
+            ACalc.AddParameter("SumTotalCreditAccount", 0);
 
             int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
 

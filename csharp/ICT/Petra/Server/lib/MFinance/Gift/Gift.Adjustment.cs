@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop,matthiash
+//       timop,matthiash, peters
 //
 // Copyright 2004-2010 by OM International
 //
@@ -34,10 +34,13 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -47,229 +50,169 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
     public class TAdjustmentWebConnector
     {
         /// <summary>
-        /// The field of a worker has changed, and we need to adjust previous gifts that have been posted to the wrong field.
+        /// Get all data that is needed for a reverse or adjust (not Field Adjust)
         /// </summary>
+        /// <param name="requestParams">Hashtable containing the given params</param>
+        /// <param name="AGiftDS">DataSet containing all gift data needed</param>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool GetGiftsForReverseAdjust(
+            Hashtable requestParams, ref GiftBatchTDS AGiftDS, out TVerificationResultCollection AMessages)
+        {
+            GiftAdjustmentFunctionEnum Function = (GiftAdjustmentFunctionEnum)requestParams["Function"];
+            Int32 LedgerNumber = (Int32)requestParams["ALedgerNumber"];
+            Int32 GiftDetailNumber = (Int32)requestParams["GiftDetailNumber"];
+            Int32 GiftNumber = (Int32)requestParams["GiftNumber"];
+            Int32 BatchNumber = (Int32)requestParams["BatchNumber"];
+            AMessages = new TVerificationResultCollection();
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    // get data needed for new gifts
+                    if (Function.Equals(GiftAdjustmentFunctionEnum.ReverseGiftBatch))
+                    {
+                        AGiftAccess.LoadViaAGiftBatch(MainDS, LedgerNumber, BatchNumber, Transaction);
+
+                        foreach (AGiftRow gift in MainDS.AGift.Rows)
+                        {
+                            AGiftDetailAccess.LoadViaAGift(MainDS, LedgerNumber, BatchNumber, gift.GiftTransactionNumber, Transaction);
+                        }
+                    }
+                    else
+                    {
+                        AGiftAccess.LoadByPrimaryKey(MainDS, LedgerNumber, BatchNumber, GiftNumber, Transaction);
+
+                        if (Function.Equals(GiftAdjustmentFunctionEnum.ReverseGiftDetail))
+                        {
+                            AGiftDetailAccess.LoadByPrimaryKey(MainDS, LedgerNumber, BatchNumber, GiftNumber, GiftDetailNumber, Transaction);
+                        }
+                        else
+                        {
+                            AGiftDetailAccess.LoadViaAGift(MainDS, LedgerNumber, BatchNumber, GiftNumber, Transaction);
+                        }
+                    }
+                });
+
+            AGiftDS = MainDS;
+
+            return CheckGiftsNotPreviouslyReversed(AGiftDS, out AMessages);
+        }
+
+        /// <summary>
+        /// Find all gifts that need their field adjusted
+        /// </summary>
+        /// <param name="AGiftDS">Gift Batch containing all the data needed for a Field Change Adjustment</param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ARecipientKey"></param>
         /// <param name="AStartDate">start of period where we want to fix gifts</param>
         /// <param name="AEndDate">end of period where we want to fix gifts</param>
         /// <param name="AOldField">the wrong field</param>
-        /// <param name="ADateCorrection">the date where we want to create the correction gift batch</param>
-        /// <param name="AWithReceipt">if the gifts have already been receipted in the old year, and correction is in the new year. don't print receipts again in the new year.</param>
-        /// <returns>the gift batch</returns>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
         [RequireModulePermission("FINANCE-1")]
-        public static Int32 FieldChangeAdjustment(Int32 ALedgerNumber,
+        public static bool GetGiftsForFieldChangeAdjustment(ref GiftBatchTDS AGiftDS, Int32 ALedgerNumber,
             Int64 ARecipientKey,
             DateTime AStartDate,
             DateTime AEndDate,
-            Int64 AOldField,
-            DateTime ADateCorrection,
-            bool AWithReceipt)
+            Int64 AOldField, 
+            out TVerificationResultCollection AMessages)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            GiftBatchTDS oldGiftDS = new GiftBatchTDS();
+            TDBTransaction Transaction = null;
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+            AMessages = new TVerificationResultCollection();
 
-            try
-            {
-                // find all gifts that need reversing.
-                // criteria:
-                // posted gift batches only
-                // no adjusted/reversed gifts
-                // date of gift batch in specified date range
-                // recipient field is the old field
-                string SqlStmt = TDataBase.ReadSqlFile("Gift.GetGiftsToReverse.sql");
-
-                List <OdbcParameter>parameters = new List <OdbcParameter>();
-                OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
-                param.Value = ALedgerNumber;
-                parameters.Add(param);
-                param = new OdbcParameter("StartDate", OdbcType.Date);
-                param.Value = AStartDate;
-                parameters.Add(param);
-                param = new OdbcParameter("EndDate", OdbcType.Date);
-                param.Value = AEndDate;
-                parameters.Add(param);
-                param = new OdbcParameter("RecipientKey", OdbcType.BigInt);
-                param.Value = ARecipientKey;
-                parameters.Add(param);
-                param = new OdbcParameter("OldField", OdbcType.BigInt);
-                param.Value = AOldField;
-                parameters.Add(param);
-
-                DBAccess.GDBAccessObj.Select(oldGiftDS, SqlStmt, oldGiftDS.AGiftDetail.TableName, Transaction, parameters.ToArray());
-
-                // load the gift and the gift batch records if they have not been loaded yet
-                foreach (AGiftDetailRow giftdetail in oldGiftDS.AGiftDetail.Rows)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
                 {
-                    oldGiftDS.AGift.DefaultView.RowFilter = String.Format("{0} = {1} and {2} = {3}",
-                        AGiftTable.GetBatchNumberDBName(),
-                        giftdetail.BatchNumber,
-                        AGiftTable.GetGiftTransactionNumberDBName(),
-                        giftdetail.GiftTransactionNumber);
+                    string SqlStmt = TDataBase.ReadSqlFile("Gift.GetGiftsToAdjustField.sql");
 
-                    if (oldGiftDS.AGift.DefaultView.Count == 0)
+                    List<OdbcParameter> parameters = new List<OdbcParameter>();
+                    OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                    param.Value = ALedgerNumber;
+                    parameters.Add(param);
+                    param = new OdbcParameter("StartDate", OdbcType.Date);
+                    param.Value = AStartDate;
+                    parameters.Add(param);
+                    param = new OdbcParameter("EndDate", OdbcType.Date);
+                    param.Value = AEndDate;
+                    parameters.Add(param);
+                    param = new OdbcParameter("RecipientKey", OdbcType.BigInt);
+                    param.Value = ARecipientKey;
+                    parameters.Add(param);
+                    param = new OdbcParameter("OldField", OdbcType.BigInt);
+                    param.Value = AOldField;
+                    parameters.Add(param);
+
+                    DBAccess.GDBAccessObj.Select(MainDS, SqlStmt, MainDS.AGiftDetail.TableName, Transaction, parameters.ToArray());
+
+                    // get additional data
+                    foreach (GiftBatchTDSAGiftDetailRow Row in MainDS.AGiftDetail.Rows)
                     {
-                        AGiftTable tempGiftTable =
-                            AGiftAccess.LoadByPrimaryKey(giftdetail.LedgerNumber,
-                                giftdetail.BatchNumber,
-                                giftdetail.GiftTransactionNumber,
-                                Transaction);
-                        oldGiftDS.AGift.Merge(tempGiftTable);
+                        AGiftBatchAccess.LoadByPrimaryKey(MainDS, Row.LedgerNumber, Row.BatchNumber, Transaction);
+                        AGiftRow GiftRow = AGiftAccess.LoadByPrimaryKey(MainDS, Row.LedgerNumber, Row.BatchNumber, Row.GiftTransactionNumber, Transaction);
+
+                        Row.DateEntered = GiftRow.DateEntered;
+                        Row.DonorKey = GiftRow.DonorKey;
+                        Row.DonorName = PPartnerAccess.LoadByPrimaryKey(Row.DonorKey, Transaction)[0].PartnerShortName;
                     }
+                });
 
-                    oldGiftDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = {1}",
-                        AGiftTable.GetBatchNumberDBName(),
-                        giftdetail.BatchNumber);
+            AGiftDS = MainDS;
 
-                    if (oldGiftDS.AGiftBatch.DefaultView.Count == 0)
-                    {
-                        AGiftBatchTable tempGiftBatchTable =
-                            AGiftBatchAccess.LoadByPrimaryKey(giftdetail.LedgerNumber,
-                                giftdetail.BatchNumber,
-                                Transaction);
-                        oldGiftDS.AGiftBatch.Merge(tempGiftBatchTable);
-                    }
-                }
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-            catch (Exception)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw;
-            }
-
-            // we need to create a gift batch for each set of gifts with the same Currency, BankAccountCode, BankCostCentre, and Gift Type
-            SortedList <string, GiftBatchTDS>NewGiftBatches = new SortedList <string, GiftBatchTDS>();
-
-            foreach (GiftBatchTDSAGiftDetailRow oldGiftDetail in oldGiftDS.AGiftDetail.Rows)
-            {
-                // get the gift batch row for this detail
-                oldGiftDS.AGiftBatch.DefaultView.RowFilter =
-                    String.Format("{0} = {1}",
-                        AGiftTable.GetBatchNumberDBName(), oldGiftDetail.BatchNumber);
-
-                AGiftBatchRow oldGiftBatch = (AGiftBatchRow)oldGiftDS.AGiftBatch.DefaultView[0].Row;
-
-                GiftBatchTDS GiftDS = CreateNewGiftBatch(NewGiftBatches, oldGiftBatch, ADateCorrection);
-
-                AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
-
-                // get the gift row for this detail
-                DataView v = oldGiftDS.AGift.DefaultView;
-                v.RowFilter =
-                    String.Format("{0} = {1} and {2} = {3}",
-                        AGiftTable.GetBatchNumberDBName(), oldGiftDetail.BatchNumber,
-                        AGiftTable.GetGiftTransactionNumberDBName(), oldGiftDetail.GiftTransactionNumber);
-
-                AGiftRow oldGift = (AGiftRow)v[0].Row;
-
-                AGiftRow gift = GiftDS.AGift.NewRowTyped();
-                gift.LedgerNumber = giftbatchRow.LedgerNumber;
-                gift.BatchNumber = giftbatchRow.BatchNumber;
-                gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
-                gift.DonorKey = oldGift.DonorKey;
-                gift.DateEntered = ADateCorrection;
-                giftbatchRow.LastGiftNumber++;
-                GiftDS.AGift.Rows.Add(gift);
-
-                if (!AWithReceipt)
-                {
-                    gift.ReceiptLetterCode = "NO*RECET";
-                }
-
-                // reverse the original gift
-                GiftBatchTDSAGiftDetailRow detail = GiftDS.AGiftDetail.NewRowTyped();
-
-                DataUtilities.CopyAllColumnValues(oldGiftDetail, detail);
-
-                detail.LedgerNumber = gift.LedgerNumber;
-                detail.BatchNumber = gift.BatchNumber;
-                detail.GiftTransactionNumber = gift.GiftTransactionNumber;
-                detail.DetailNumber = gift.LastDetailNumber + 1;
-                detail.GiftAmount = detail.GiftAmount * -1;
-                detail.GiftAmountIntl = detail.GiftAmountIntl * -1;
-                detail.GiftTransactionAmount = detail.GiftTransactionAmount * -1;
-                gift.LastDetailNumber++;
-
-                GiftDS.AGiftDetail.Rows.Add(detail);
-
-                // create the detail for the corrected gift to the new field
-                detail = GiftDS.AGiftDetail.NewRowTyped();
-
-                DataUtilities.CopyAllColumnValues(oldGiftDetail, detail);
-
-                detail.LedgerNumber = gift.LedgerNumber;
-                detail.BatchNumber = gift.BatchNumber;
-                detail.GiftTransactionNumber = gift.GiftTransactionNumber;
-                detail.DetailNumber = gift.LastDetailNumber + 1;
-                detail.GiftCommentOne = String.Format(Catalog.GetString("posted on {0}"), oldGiftBatch.GlEffectiveDate.ToShortDateString());
-                gift.LastDetailNumber++;
-
-                // TODO: calculate costcentre code from current commitment; this currently is done only at time of posting
-                // detail.RecipientLedgerNumber = oldGiftDetail.RecipientLedgerNumber;
-                // detail.CostCentreCode = oldGiftDetail.CostCentreCode;
-
-                GiftDS.AGiftDetail.Rows.Add(detail);
-
-                // TODO: how to make sure that the gl transaction is marked as System generated? avoid display on HOSA?
-
-                // mark original gift detail as modified
-                oldGiftDetail.ModifiedDetail = true;
-            }
-
-            TVerificationResultCollection VerificationResult;
-
-            TSubmitChangesResult result = TSubmitChangesResult.scrOK;
-
-            for (Int32 batchCounter = 0; batchCounter < NewGiftBatches.Count; batchCounter++)
-            {
-                if (result == TSubmitChangesResult.scrOK)
-                {
-                    GiftBatchTDS GiftDS = NewGiftBatches.Values[batchCounter];
-                    result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult);
-                }
-            }
-
-            if (result == TSubmitChangesResult.scrOK)
-            {
-                result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref oldGiftDS, out VerificationResult);
-
-                if ((result == TSubmitChangesResult.scrOK) && (NewGiftBatches.Count > 0))
-                {
-                    return NewGiftBatches.Values[0].AGiftBatch[0].BatchNumber;
-                }
-            }
-
-            return -1;
+            return CheckGiftsNotPreviouslyReversed(AGiftDS, out AMessages);
         }
 
-        /// try to find a new gift batch that does already have the same properties
-        private static GiftBatchTDS CreateNewGiftBatch(SortedList <string, GiftBatchTDS>ANewGiftBatches,
-            AGiftBatchRow AOldGiftBatch,
-            DateTime ADateCorrection)
+        /// <summary>
+        /// Check that none of the gifts have been reversed before.
+        /// </summary>
+        private static bool CheckGiftsNotPreviouslyReversed(GiftBatchTDS AGiftDS, out TVerificationResultCollection AMessages)
         {
-            string key = AOldGiftBatch.CurrencyCode + ";" +
-                         AOldGiftBatch.BankAccountCode + ";" +
-                         AOldGiftBatch.BankCostCentre + ";" +
-                         AOldGiftBatch.GiftType;
+            string Message = string.Empty;
+            string Message2 = string.Empty;
+            int GiftCount = 0;
+            AMessages = new TVerificationResultCollection();
 
-            if (!ANewGiftBatches.ContainsKey(key))
-            {
-                GiftBatchTDS GiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(AOldGiftBatch.LedgerNumber, ADateCorrection,
-                    Catalog.GetString("Gift Adjustment (Field Change)"));
-                AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
-                giftbatchRow.BankCostCentre = AOldGiftBatch.BankCostCentre;
-                giftbatchRow.BankAccountCode = AOldGiftBatch.BankAccountCode;
-                giftbatchRow.GiftType = AOldGiftBatch.GiftType;
-                ANewGiftBatches.Add(key, GiftDS);
+            // sort gifts
+            AGiftDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}, {2}",
+                AGiftDetailTable.GetBatchNumberDBName(),
+                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                AGiftDetailTable.GetDetailNumberDBName());
 
-                return GiftDS;
-            }
-            else
+            foreach (DataRowView RowView in AGiftDS.AGiftDetail.DefaultView)
             {
-                return ANewGiftBatches[key];
+                AGiftDetailRow GiftDetailRow = (AGiftDetailRow)RowView.Row;
+
+                if (GiftDetailRow.ModifiedDetail)
+                {
+                    Message += "\n" + String.Format(Catalog.GetString("Gift {0} with Detail {1} in Batch {2}"),
+                                GiftDetailRow.GiftTransactionNumber, GiftDetailRow.DetailNumber, GiftDetailRow.BatchNumber);
+
+                    GiftCount++;
+                }
             }
+
+            if (GiftCount != 0)
+            {
+                if (GiftCount > 1)
+                {
+                    Message = String.Format(Catalog.GetString("Cannot reverse or adjust the following gifts:")) + "\n" + Message
+                        + "\n\n" + Catalog.GetString("They have already been adjusted or reversed.");
+                }
+                else if (GiftCount > 0)
+                {
+                    Message = String.Format(Catalog.GetString("Cannot reverse or adjust the following gift:")) + "\n" + Message
+                        + "\n\n" + Catalog.GetString("It has already been adjusted or reversed.");
+                }
+
+                AMessages.Add(new TVerificationResult(null, Message, TResultSeverity.Resv_Critical));
+
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -361,38 +304,36 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="requestParams">Hashtable containing the given params</param>
         /// <param name="AAdjustmentBatchNumber">Batch that adjustment transactions have been added to</param>
-        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <param name="AGiftDS">DataSet containing all gift data needed</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool GiftRevertAdjust(Hashtable requestParams, out int AAdjustmentBatchNumber, out TVerificationResultCollection AMessages)
+        public static bool GiftRevertAdjust(Hashtable requestParams, out int AAdjustmentBatchNumber, GiftBatchTDS AGiftDS)
         {
-            AMessages = new TVerificationResultCollection();
+            AAdjustmentBatchNumber = 0;
+
+            if (AGiftDS == null || AGiftDS.AGiftDetail == null || AGiftDS.AGiftDetail.Rows.Count == 0)
+            {
+                TLogging.Log("Empty dataset sent to GiftRevertAdjust");
+
+                return false;
+            }
 
             Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
-            Boolean batchSelected = (Boolean)requestParams["NewBatchSelected"];
+            Boolean BatchSelected = (Boolean)requestParams["NewBatchSelected"];
+            GiftAdjustmentFunctionEnum Function = (GiftAdjustmentFunctionEnum)requestParams["Function"];
+            Int32 GiftDetailNumber = (Int32)requestParams["GiftDetailNumber"];
+            bool NoReceipt = (Boolean)requestParams["NoReceipt"];
+
+            DateTime DateEffective;
+            decimal batchGiftTotal = 0;
             Int32 ANewBatchNumber = 0;
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
-
-            if (batchSelected)
+            if (BatchSelected)
             {
                 ANewBatchNumber = (Int32)requestParams["NewBatchNumber"];
             }
 
-            String Function = (String)requestParams["Function"];
-            Int32 AGiftDetailNumber = (Int32)requestParams["GiftDetailNumber"];
-            Int32 AGiftNumber = (Int32)requestParams["GiftNumber"];
-            Int32 ABatchNumber = (Int32)requestParams["BatchNumber"];
-
-            //decimal batchHashTotal = 0;
-            decimal batchGiftTotal = 0;
-
-            GiftBatchTDS MainDS = new GiftBatchTDS();
-            TDBTransaction Transaction = null;
-            DateTime ADateEffective;
-
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             try
             {
@@ -400,83 +341,32 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 AGiftBatchRow giftBatch;
 
-                if (!batchSelected)
+                // if we need to create a new gift batch
+                if (!BatchSelected)
                 {
-                    ADateEffective = (DateTime)requestParams["GlEffectiveDate"];
-
-                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-
-                    AGiftBatchRow oldGiftBatch = MainDS.AGiftBatch[0];
-                    TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
-                    giftBatch = MainDS.AGiftBatch[1];
-                    giftBatch.BankAccountCode = oldGiftBatch.BankAccountCode;
-                    giftBatch.BankCostCentre = oldGiftBatch.BankCostCentre;
-                    giftBatch.CurrencyCode = oldGiftBatch.CurrencyCode;
-                    giftBatch.ExchangeRateToBase = oldGiftBatch.ExchangeRateToBase;
-                    giftBatch.MethodOfPaymentCode = oldGiftBatch.MethodOfPaymentCode;
-                    giftBatch.HashTotal = 0;
-
-                    if (giftBatch.MethodOfPaymentCode.Length == 0)
-                    {
-                        giftBatch.SetMethodOfPaymentCodeNull();
-                    }
-
-                    giftBatch.BankCostCentre = oldGiftBatch.BankCostCentre;
-                    giftBatch.GiftType = oldGiftBatch.GiftType;
-
-                    if (Function.Equals("AdjustGift"))
-                    {
-                        giftBatch.BatchDescription = Catalog.GetString("Gift Adjustment");
-                    }
-                    else
-                    {
-                        giftBatch.BatchDescription = Catalog.GetString("Reverse Gift");
-                    }
+                    giftBatch = CreateNewGiftBatch(requestParams, ref AGiftDS, out DateEffective, ref LedgerTable, Transaction);
                 }
-                else
+                else  // using an existing gift batch
                 {
-                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ANewBatchNumber, Transaction);
+                    AGiftBatchAccess.LoadByPrimaryKey(AGiftDS, ALedgerNumber, ANewBatchNumber, Transaction);
 
-                    giftBatch = MainDS.AGiftBatch[0];
-                    ADateEffective = giftBatch.GlEffectiveDate;
+                    giftBatch = AGiftDS.AGiftBatch[0];
+                    DateEffective = giftBatch.GlEffectiveDate;
                     //If into an existing batch, then retrive the existing batch total
                     batchGiftTotal = giftBatch.BatchTotal;
                 }
 
                 AAdjustmentBatchNumber = giftBatch.BatchNumber;
 
-                if (Function.Equals("ReverseGiftBatch"))
-                {
-                    AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-
-                    foreach (AGiftRow gift in MainDS.AGift.Rows)
-                    {
-                        AGiftDetailAccess.LoadViaAGift(MainDS, ALedgerNumber, ABatchNumber, gift.GiftTransactionNumber, Transaction);
-                    }
-                }
-                else
-                {
-                    AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftNumber, Transaction);
-
-                    if (Function.Equals("ReverseGiftDetail"))
-                    {
-                        AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftNumber, AGiftDetailNumber, Transaction);
-                    }
-                    else
-                    {
-                        AGiftDetailAccess.LoadViaAGift(MainDS, ALedgerNumber, ABatchNumber, AGiftNumber, Transaction);
-                    }
-                }
-
                 //assuming new elements are added after these static borders
 
                 int cycle = 0;
 
-                MainDS.AGift.DefaultView.Sort = string.Format("{0}, {1}",
+                AGiftDS.AGift.DefaultView.Sort = string.Format("{0}, {1}",
                     AGiftTable.GetBatchNumberDBName(),
                     AGiftTable.GetGiftTransactionNumberDBName());
 
-                MainDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}, {2}",
+                AGiftDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}, {2}",
                     AGiftDetailTable.GetBatchNumberDBName(),
                     AGiftDetailTable.GetGiftTransactionNumberDBName(),
                     AGiftDetailTable.GetDetailNumberDBName());
@@ -484,94 +374,40 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // first cycle creates gift reversal; second cycle creates new adjusted gift (if needed)
                 do
                 {
-                    foreach (DataRowView giftRow in MainDS.AGift.DefaultView)
+                    foreach (DataRowView giftRow in AGiftDS.AGift.DefaultView)
                     {
                         AGiftRow oldGift = (AGiftRow)giftRow.Row;
 
-                        if ((oldGift.BatchNumber == ABatchNumber) && (oldGift.LedgerNumber == ALedgerNumber)
-                            && (Function.Equals("ReverseGiftBatch") || (oldGift.GiftTransactionNumber == AGiftNumber)))
+                        if (oldGift.RowState != DataRowState.Added)
                         {
-                            AGiftRow gift = MainDS.AGift.NewRowTyped(true);
+                            AGiftRow gift = AGiftDS.AGift.NewRowTyped(true);
                             DataUtilities.CopyAllColumnValuesWithoutPK(oldGift, gift);
                             gift.LedgerNumber = giftBatch.LedgerNumber;
                             gift.BatchNumber = giftBatch.BatchNumber;
-                            gift.DateEntered = ADateEffective;
+                            gift.DateEntered = DateEffective;
                             gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
                             giftBatch.LastGiftNumber++;
                             gift.LastDetailNumber = 0;
 
-                            MainDS.AGift.Rows.Add(gift);
+                            if (NoReceipt)
+                            {
+                                gift.ReceiptLetterCode = "NO*RECET";
+                            }
 
-                            foreach (DataRowView giftDetailRow in MainDS.AGiftDetail.DefaultView)
+                            AGiftDS.AGift.Rows.Add(gift);
+
+                            foreach (DataRowView giftDetailRow in AGiftDS.AGiftDetail.DefaultView)
                             {
                                 AGiftDetailRow oldGiftDetail = (AGiftDetailRow)giftDetailRow.Row;
 
+                                // if gift detail belongs to gift
                                 if ((oldGiftDetail.GiftTransactionNumber == oldGift.GiftTransactionNumber)
-                                    && (oldGiftDetail.BatchNumber == ABatchNumber)
-                                    && (oldGiftDetail.LedgerNumber == ALedgerNumber)
-                                    && (!Function.Equals("ReverseGiftDetail") || (oldGiftDetail.DetailNumber == AGiftDetailNumber)))
+                                    && (oldGiftDetail.BatchNumber == oldGift.BatchNumber)
+                                    && (!Function.Equals(GiftAdjustmentFunctionEnum.ReverseGiftDetail) || (oldGiftDetail.DetailNumber == GiftDetailNumber)))
                                 {
-                                    if ((cycle == 0) && oldGiftDetail.ModifiedDetail)
-                                    {
-                                        AMessages.Add(new TVerificationResult(
-                                                String.Format(Catalog.GetString("Cannot reverse or adjust Gift {0} with Detail {1} in Batch {2}"),
-                                                    oldGiftDetail.GiftTransactionNumber, oldGiftDetail.DetailNumber, oldGiftDetail.BatchNumber),
-                                                String.Format(Catalog.GetString("It was already adjusted or reversed.")),
-                                                TResultSeverity.Resv_Critical));
+                                    AddDuplicateGiftDetailToGift(ref AGiftDS, ref gift, oldGiftDetail, cycle == 0, null, requestParams);
 
-                                        DBAccess.GDBAccessObj.RollbackTransaction();
-
-                                        return false;
-                                    }
-
-                                    AGiftDetailRow giftDetail = MainDS.AGiftDetail.NewRowTyped(true);
-                                    DataUtilities.CopyAllColumnValuesWithoutPK(oldGiftDetail, giftDetail);
-
-                                    giftDetail.DetailNumber = ++gift.LastDetailNumber;
-
-                                    giftDetail.LedgerNumber = gift.LedgerNumber;
-                                    giftDetail.BatchNumber = giftBatch.BatchNumber;
-                                    giftDetail.GiftTransactionNumber = gift.GiftTransactionNumber;
-
-                                    decimal signum = (cycle == 0) ? -1 : 1;
-                                    giftDetail.GiftTransactionAmount = signum * oldGiftDetail.GiftTransactionAmount;
-                                    batchGiftTotal += giftDetail.GiftTransactionAmount;
-                                    giftDetail.GiftAmount = signum * oldGiftDetail.GiftAmount;
-                                    giftDetail.GiftAmountIntl = signum * oldGiftDetail.GiftAmountIntl;
-
-                                    if (TaxDeductiblePercentageEnabled)
-                                    {
-                                        giftDetail.TaxDeductibleAmount = signum * oldGiftDetail.TaxDeductibleAmount;
-                                        giftDetail.TaxDeductibleAmountBase = signum * oldGiftDetail.TaxDeductibleAmountBase;
-                                        giftDetail.TaxDeductibleAmountIntl = signum * oldGiftDetail.TaxDeductibleAmountIntl;
-                                        giftDetail.NonDeductibleAmount = signum * oldGiftDetail.NonDeductibleAmount;
-                                        giftDetail.NonDeductibleAmountBase = signum * oldGiftDetail.NonDeductibleAmountBase;
-                                        giftDetail.NonDeductibleAmountIntl = signum * oldGiftDetail.NonDeductibleAmountIntl;
-                                    }
-
-                                    giftDetail.GiftCommentOne = (String)requestParams["ReversalCommentOne"];
-                                    giftDetail.GiftCommentTwo = (String)requestParams["ReversalCommentTwo"];
-                                    giftDetail.GiftCommentThree = (String)requestParams["ReversalCommentThree"];
-                                    giftDetail.CommentOneType = (String)requestParams["ReversalCommentOneType"];
-                                    giftDetail.CommentTwoType = (String)requestParams["ReversalCommentTwoType"];
-                                    giftDetail.CommentThreeType = (String)requestParams["ReversalCommentThreeType"];
-
-                                    // Mark the first new gift as a reversal
-                                    if (cycle == 0)
-                                    {
-                                        giftDetail.ModifiedDetail = true;
-
-                                        //Identify the reversal source
-                                        giftDetail.ModifiedDetailKey = "|" + oldGiftDetail.BatchNumber.ToString() + "|" +
-                                                                       oldGiftDetail.GiftTransactionNumber.ToString() + "|" +
-                                                                       oldGiftDetail.DetailNumber.ToString();
-                                    }
-                                    else
-                                    {
-                                        giftDetail.ModifiedDetail = false;
-                                    }
-
-                                    MainDS.AGiftDetail.Rows.Add(giftDetail);
+                                    batchGiftTotal += oldGiftDetail.GiftTransactionAmount * ((cycle == 0) ? -1 : 1);
 
                                     // original gift also gets marked as a reversal
                                     oldGiftDetail.ModifiedDetail = true;
@@ -581,24 +417,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
 
                     cycle++;
-                } while ((cycle < 2) && Function.Equals("AdjustGift"));
+                } while ((cycle < 2) && (Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift) || Function.Equals(GiftAdjustmentFunctionEnum.FieldAdjust)));
 
                 //When reversing into a new or existing batch, set batch total
-                if (!Function.Equals("AdjustGift"))
+                if (!Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift))
                 {
                     giftBatch.BatchTotal = batchGiftTotal;
                 }
 
                 // save everything at the end
-                AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction);
+                AGiftBatchAccess.SubmitChanges(AGiftDS.AGiftBatch, Transaction);
 
                 ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
 
-                AGiftAccess.SubmitChanges(MainDS.AGift, Transaction);
+                AGiftAccess.SubmitChanges(AGiftDS.AGift, Transaction);
 
-                AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, Transaction);
+                AGiftDetailAccess.SubmitChanges(AGiftDS.AGiftDetail, Transaction);
 
-                MainDS.AGiftBatch.AcceptChanges();
+                AGiftDS.AGiftBatch.AcceptChanges();
 
                 DBAccess.GDBAccessObj.CommitTransaction();
 
@@ -612,6 +448,124 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 throw new EOPAppException(Catalog.GetString("Gift Reverse/Adjust failed."), Exc);
             }
+        }
+
+        /// create a new gift batch using some of the details of an existing gift batch
+        private static AGiftBatchRow CreateNewGiftBatch(Hashtable requestParams, ref GiftBatchTDS AMainDS, out DateTime ADateEffective, ref ALedgerTable ALedgerTable, TDBTransaction ATransaction)
+        {
+            AGiftBatchRow ReturnValue;
+
+            Int32 LedgerNumber = (Int32)requestParams["ALedgerNumber"];
+            ADateEffective = (DateTime)requestParams["GlEffectiveDate"];
+            GiftAdjustmentFunctionEnum Function = (GiftAdjustmentFunctionEnum)requestParams["Function"];
+            Int32 BatchNumber = (Int32)requestParams["BatchNumber"];
+
+            AGiftBatchAccess.LoadByPrimaryKey(AMainDS, LedgerNumber, BatchNumber, ATransaction);
+
+            AGiftBatchRow oldGiftBatch = AMainDS.AGiftBatch[0];
+            TGiftBatchFunctions.CreateANewGiftBatchRow(ref AMainDS, ref ATransaction, ref ALedgerTable, LedgerNumber, ADateEffective);
+            ReturnValue = AMainDS.AGiftBatch[1];
+            ReturnValue.BankAccountCode = oldGiftBatch.BankAccountCode;
+            ReturnValue.BankCostCentre = oldGiftBatch.BankCostCentre;
+            ReturnValue.CurrencyCode = oldGiftBatch.CurrencyCode;
+            ReturnValue.ExchangeRateToBase = oldGiftBatch.ExchangeRateToBase;
+            ReturnValue.MethodOfPaymentCode = oldGiftBatch.MethodOfPaymentCode;
+            ReturnValue.HashTotal = 0;
+
+            if (ReturnValue.MethodOfPaymentCode.Length == 0)
+            {
+                ReturnValue.SetMethodOfPaymentCodeNull();
+            }
+
+            ReturnValue.BankCostCentre = oldGiftBatch.BankCostCentre;
+            ReturnValue.GiftType = oldGiftBatch.GiftType;
+
+            if (Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift))
+            {
+                ReturnValue.BatchDescription = Catalog.GetString("Gift Adjustment");
+            }
+            else if (Function.Equals(GiftAdjustmentFunctionEnum.FieldAdjust))
+            {
+                ReturnValue.BatchDescription = Catalog.GetString("Gift Adjustment (Field Change)");
+            }
+            else
+            {
+                ReturnValue.BatchDescription = Catalog.GetString("Reverse Gift");
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Adds a duplicate Gift Detail (or reversed duplicate GiftDetail) to Gift.
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="AGift"></param>
+        /// <param name="AOldGiftDetail"></param>
+        /// <param name="AReversal">True for reverse or false for straight duplicate</param>
+        /// <param name="AGiftCommentOne"></param>
+        /// <param name="ARequestParams"></param>
+        private static void AddDuplicateGiftDetailToGift(ref GiftBatchTDS AMainDS, ref AGiftRow AGift, AGiftDetailRow AOldGiftDetail, bool AReversal, string AGiftCommentOne, Hashtable ARequestParams = null)
+        {
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
+            AGiftDetailRow giftDetail = AMainDS.AGiftDetail.NewRowTyped(true);
+            DataUtilities.CopyAllColumnValuesWithoutPK(AOldGiftDetail, giftDetail);
+
+            giftDetail.DetailNumber = ++AGift.LastDetailNumber;
+            AGift.LastDetailNumber++;
+
+            giftDetail.LedgerNumber = AGift.LedgerNumber;
+            giftDetail.BatchNumber = AGift.BatchNumber;
+            giftDetail.GiftTransactionNumber = AGift.GiftTransactionNumber;
+
+            decimal signum = (AReversal) ? -1 : 1;
+            giftDetail.GiftTransactionAmount = signum * AOldGiftDetail.GiftTransactionAmount;
+            giftDetail.GiftAmount = signum * AOldGiftDetail.GiftAmount;
+            giftDetail.GiftAmountIntl = signum * AOldGiftDetail.GiftAmountIntl;
+
+            if (TaxDeductiblePercentageEnabled)
+            {
+                giftDetail.TaxDeductibleAmount = signum * AOldGiftDetail.TaxDeductibleAmount;
+                giftDetail.TaxDeductibleAmountBase = signum * AOldGiftDetail.TaxDeductibleAmountBase;
+                giftDetail.TaxDeductibleAmountIntl = signum * AOldGiftDetail.TaxDeductibleAmountIntl;
+                giftDetail.NonDeductibleAmount = signum * AOldGiftDetail.NonDeductibleAmount;
+                giftDetail.NonDeductibleAmountBase = signum * AOldGiftDetail.NonDeductibleAmountBase;
+                giftDetail.NonDeductibleAmountIntl = signum * AOldGiftDetail.NonDeductibleAmountIntl;
+            }
+
+            if (AGiftCommentOne != null)
+            {
+                giftDetail.GiftCommentOne = AGiftCommentOne;
+            }
+
+            if (ARequestParams != null)
+            {
+                giftDetail.GiftCommentOne = (String)ARequestParams["ReversalCommentOne"];
+                giftDetail.GiftCommentTwo = (String)ARequestParams["ReversalCommentTwo"];
+                giftDetail.GiftCommentThree = (String)ARequestParams["ReversalCommentThree"];
+                giftDetail.CommentOneType = (String)ARequestParams["ReversalCommentOneType"];
+                giftDetail.CommentTwoType = (String)ARequestParams["ReversalCommentTwoType"];
+                giftDetail.CommentThreeType = (String)ARequestParams["ReversalCommentThreeType"];
+            }
+
+            // If reversal: mark the new gift as a reversal
+            if (AReversal)
+            {
+                giftDetail.ModifiedDetail = true;
+
+                //Identify the reversal source
+                giftDetail.ModifiedDetailKey = "|" + AOldGiftDetail.BatchNumber.ToString() + "|" +
+                                               AOldGiftDetail.GiftTransactionNumber.ToString() + "|" +
+                                               AOldGiftDetail.DetailNumber.ToString();
+            }
+            else
+            {
+                giftDetail.ModifiedDetail = false;
+            }
+
+            AMainDS.AGiftDetail.Rows.Add(giftDetail);
         }
     }
 }

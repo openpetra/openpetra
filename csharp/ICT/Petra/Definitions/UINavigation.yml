@@ -157,6 +157,7 @@ OpenPetra:
                         ExportBatches: {Description:Export to CSV file for use with Excel, ActionOpenScreen=TFrmGLBatchExport}
                     General:
                         LedgerInfo: {Description: View general information about this ledger, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmGLInfo}
+                        ForeignCurrencyAccountBalances: {Description:Display Foreign Currency Account Balances, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmForeignCurrencyAccountBalance}
                         ForeignCurrencyRevaluation: {Description:Runs a Foreign Currency Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
                         #EnterTransactions:
                         #ImportTransactions:

@@ -390,7 +390,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                         else if (eachPart == "FAMILY")
                         {
-                            // for the case where OM-FAM and FAMILY are both in the value:
+                            // for the case where WORKER-FAM and FAMILY are both in the value:
                             // set the flags, so combo box handler knows this is the case
                             FWorkerFamOnly = false;
                             FWorkerFamPreferred = true;
@@ -3165,6 +3165,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void SetDefaultPartnerClass(TPartnerClass ? ADefaultClass)
         {
             cmbPartnerClass.Text = ADefaultClass.ToString();
+        }
+
+        /// <summary>
+        /// Gets the individual partner class selected in the combo box.
+        /// Null if * is selected.
+        /// </summary>
+        /// <returns></returns>
+        public string GetSelectedPartnerClass()
+        {
+            string ReturnValue = null;
+
+            if (!string.IsNullOrEmpty(cmbPartnerClass.Text) && cmbPartnerClass.Text != "*")
+            {
+                ReturnValue = cmbPartnerClass.Text;
+            }
+
+            return ReturnValue;
         }
 
         #region Comboboxes and the Enter key

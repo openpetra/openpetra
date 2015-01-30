@@ -32,7 +32,7 @@ using Ict.Petra.Server.MFinance.GL.Data.Access;
 namespace Ict.Petra.Server.MFinance.Common
 {
     /// <summary>
-    /// This Tool creates a batch enables to add a journal and to add transactions to a yournal
+    /// This Tool creates a batch enables to add a journal and to add transactions to a journal
     /// All internal "pointers" and control data are set internal and the structure is "read to post".
     /// </summary>
     public class TCommonAccountingTool

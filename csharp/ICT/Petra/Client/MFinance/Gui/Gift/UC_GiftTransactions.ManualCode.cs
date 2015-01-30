@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -531,10 +532,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateRecipientLedgerNumberThread()
         {
-            // Check whether this thread should still execute
-            while (txtDetailRecipientKey.LabelText != FPartnerShortName)
+            // wait until the label and the partner class have been updated for txtDetailRecipientKey
+            while (txtDetailRecipientKey.LabelText != FPartnerShortName
+                || (txtDetailRecipientKey.CurrentPartnerClass == null && Convert.ToInt32(txtDetailRecipientKey.Text) > 0))
             {
-                // Wait and see if anything has changed
                 Thread.Sleep(10);
             }
 
@@ -1653,7 +1654,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict, txtDetailRecipientKey.CurrentPartnerClass, null, null, null, FPreviouslySelectedDetailRow.RecipientField);
+                FValidationControlsDict, txtDetailRecipientKey.CurrentPartnerClass, null, null, null);
 
             //It is necessary to validate the unbound control for date entered. This requires us to pass the control.
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
@@ -1763,16 +1764,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ReverseGift(System.Object sender, System.EventArgs e)
         {
-            ShowRevertAdjustForm("Reverse Gift");
+            ShowRevertAdjustForm(GiftAdjustmentFunctionEnum.ReverseGift);
         }
 
         /// <summary>
         /// show the form for the gift reversal/adjustment
         /// </summary>
         /// <param name="AFunctionName">Which function shall be called on the server</param>
-        public void ShowRevertAdjustForm(String AFunctionName)
+        public void ShowRevertAdjustForm(GiftAdjustmentFunctionEnum AFunctionName)
         {
-            bool reverseWholeBatch = (AFunctionName == "Reverse Gift Batch");
+            bool reverseWholeBatch = (AFunctionName == GiftAdjustmentFunctionEnum.ReverseGiftBatch);
 
             if (!((TFrmGiftBatch)ParentForm).SaveChangesManual())
             {
@@ -1830,21 +1831,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 ParentForm.ShowInTaskbar = false;
                 revertForm.LedgerNumber = FLedgerNumber;
-                revertForm.Text = AFunctionName;
+                revertForm.CurrencyCode = ((AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(
+                    new object[] { workingLedgerNumber, workingBatchNumber })).CurrencyCode;
 
-                revertForm.AddParam("Function", AFunctionName.Replace(" ", string.Empty));
+                // put spaces inbetween words
+                revertForm.Text = Regex.Replace(AFunctionName.ToString(), "([a-z])([A-Z])", @"$1 $2");
 
-                if (reverseWholeBatch)
-                {
-                    revertForm.GiftMainDS = FMainDS;
-                }
-
-                //revertForm.GiftBatchRow = giftBatch;   // TODO Decide whether to remove altogether
+                revertForm.AddParam("Function", AFunctionName);
 
                 revertForm.GiftDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
                     new object[] { workingLedgerNumber, workingBatchNumber, workingTransactionNumber, workingDetailNumber });
 
-                if (revertForm.ShowDialog() == DialogResult.OK)
+                if (!revertForm.IsDisposed && revertForm.ShowDialog() == DialogResult.OK)
                 {
                     ((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
                     ((TFrmGiftBatch)ParentForm).RefreshAll();
@@ -1866,17 +1864,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         public void ReverseGiftBatch(System.Object sender, System.EventArgs e)
         {
-            ShowRevertAdjustForm("Reverse Gift Batch");
+            ShowRevertAdjustForm(GiftAdjustmentFunctionEnum.ReverseGiftBatch);
         }
 
         private void ReverseGiftDetail(System.Object sender, System.EventArgs e)
         {
-            ShowRevertAdjustForm("Reverse Gift Detail");
+            ShowRevertAdjustForm(GiftAdjustmentFunctionEnum.ReverseGiftDetail);
         }
 
         private void AdjustGift(System.Object sender, System.EventArgs e)
         {
-            ShowRevertAdjustForm("Adjust Gift");
+            ShowRevertAdjustForm(GiftAdjustmentFunctionEnum.AdjustGift);
         }
 
         /// <summary>

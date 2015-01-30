@@ -43,8 +43,9 @@ RootNode:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountsList
             Dock: Fill
         pnlDetails: {Dock=Fill}
-            Controls: [pnlDetailTop, pnlFlags, pnlSummary, pnlForeignCurrency, pnlBudget, ucoAccountAnalysisAttributes, txtStatus]
+            Controls: [pnlDetailTop, ucoAccountAnalysisAttributes, txtStatus]
         pnlDetailTop:
+            Stretch: horizontally
             Controls: 
                 Row0: [txtDetailAccountCode, btnRename]
                 Row1: [cmbDetailAccountType]
@@ -53,42 +54,48 @@ RootNode:
                 Row4: [txtDetailAccountCodeLongDesc]
                 Row5: [txtDetailAccountCodeShortDesc]
                 Row6: [cmbDetailValidCcCombo]
-        pnlFlags: {ControlsOrientation = horizontal}
+                Row7: [pnlFlags]
+                Row8: [pnlSummary]
+                Row9: [pnlForeignCurrency]
+                Row10: [pnlBudget]
+        pnlFlags: {ColSpan=2, ControlsOrientation = horizontal}
             Controls: [chkDetailBankAccountFlag, chkDetailAccountActiveFlag]
-        pnlSummary: {ControlsOrientation = horizontal}
+        pnlSummary: {ColSpan=2, ControlsOrientation = horizontal}
             Controls: [chkDetailIsSummary, txtRptOrder]
-        pnlForeignCurrency: {ControlsOrientation = horizontal}
+        pnlForeignCurrency: {ColSpan=2, ControlsOrientation = horizontal}
             Controls: [chkDetailForeignCurrencyFlag, cmbDetailForeignCurrencyCode]
         pnlBudget:
             Controls: [chkDetailBudgetControlFlag]
-        chkDetailBudgetControlFlag:
-            LabelWidth:130
-            Label: Budget Control
-        txtDetailAccountCode: {LabelWidth=150, OnLeave=ChangeAccountCodeValue, CharacterCasing=Upper }
+        txtDetailAccountCode: {OnLeave=ChangeAccountCodeValue, CharacterCasing=Upper, Width=150}
         btnRename:
-        cmbDetailAccountType: {LabelWidth=150}
+        cmbDetailAccountType:
             OptionalValues: [Income, Expense, Asset, Equity, Liability]
+            OnChange: OnAccountTypeChanged
+            Width: 100
         # TODO: still need english and local description? easier to use different account hierarchies?
-        txtDetailEngAccountCodeLongDesc: {LabelWidth=130, Label=Descr Long English}
-        txtDetailEngAccountCodeShortDesc: {LabelWidth=130, Label=Descr Short English}
-        txtDetailAccountCodeLongDesc: {LabelWidth=130, Label=Descr Long Local}
-        txtDetailAccountCodeShortDesc: {LabelWidth=130, Label=Descr Short Local}
-        cmbDetailValidCcCombo: {LabelWidth=130, Label=Valid Cost Centres}
+        txtDetailEngAccountCodeLongDesc: {Width=650, Stretch=horizontally, ColSpan=2, Label=Descr Long English}
+        txtDetailEngAccountCodeShortDesc: {Stretch=horizontally, ColSpan=2, Label=Descr Short English}
+        txtDetailAccountCodeLongDesc: {Stretch=horizontally, ColSpan=2, Label=Descr Long Local}
+        txtDetailAccountCodeShortDesc: {Stretch=horizontally, ColSpan=2, Label=Descr Short Local}
+        cmbDetailValidCcCombo: {Label=Valid Cost Centres, Width=100}
             OptionalValues: [All, Foreign, Local]
         # TODO: budget type, budget control
         # TODO: analysis attributes
         # TODO: which bank account (pbankingdetail) is this account linked to
-        chkDetailBankAccountFlag: {LabelWidth=130, Label=Bank Account}
+        chkDetailBankAccountFlag: {LabelWidth=124, Label=Bank Account}
         # TODO: system account, standard account
-        chkDetailAccountActiveFlag: {Label=Active}
-        chkDetailIsSummary: {LabelWidth=130, Label=Summary}
+        chkDetailAccountActiveFlag: {LabelWidth=73, Label=Active}
+        chkDetailIsSummary: {LabelWidth=124, Label=Summary}
         txtRptOrder: {LabelWidth=73, Width=45}
-        chkDetailForeignCurrencyFlag: {LabelWidth=130, Label=Foreign Currency}
-        cmbDetailForeignCurrencyCode: {Width=180, NoLabel=true, List=CurrencyCodeList}
+        chkDetailForeignCurrencyFlag: {LabelWidth=124, Label=Foreign Currency}
+        cmbDetailForeignCurrencyCode: {Stretch=horizontally, NoLabel=true, List=CurrencyCodeList}
+        chkDetailBudgetControlFlag:
+            LabelWidth:124
+            Label: Budget Control
         ucoAccountAnalysisAttributes:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes
             Height:170
-            Width:290
+            Stretch: horizontally
         txtStatus:
             NoLabel:true
             Height:76
@@ -96,6 +103,7 @@ RootNode:
             Multiline:true
             ScrollBars:Vertical
             ReadOnly:true
+            Stretch: horizontally
 
     Menu:
         mniAccounts:

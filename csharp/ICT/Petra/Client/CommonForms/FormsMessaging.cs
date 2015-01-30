@@ -165,6 +165,9 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>A new extract has been created.</summary>
         mcExtractCreated,
 
+        /// <summary>Account records have been changed and saved in GL Account Hierarchy.</summary>
+        mcAccountsChanged,
+
         /// <summary>The GL Batch or Gift Batch screen has successfully saved data.</summary>
         mcGLOrGiftBatchSaved
     }
@@ -376,6 +379,26 @@ namespace Ict.Petra.Client.CommonForms
                 default:
                     throw new ApplicationException(
                     "Method 'SetMessageDataUnitHierarchy' must not be called for MessageClass '" +
+                    Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
+            }
+        }
+
+        /// <summary>
+        /// Allows setting of Partner Data for 'Form Messages' of MessageClass
+        /// <see cref="TFormsMessageClassEnum.mcAccountsChanged"></see>,
+        /// </summary>
+        public void SetMessageDataAccounts()
+        {
+            switch (FMessageClass)
+            {
+                case TFormsMessageClassEnum.mcAccountsChanged:
+
+                    FMessageObject = new FormsMessageUnitHierarchy();
+                    break;
+
+                default:
+                    throw new ApplicationException(
+                    "Method 'SetMessageDataAccounts' must not be called for MessageClass '" +
                     Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
             }
         }

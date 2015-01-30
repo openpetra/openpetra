@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       matthiash, peters
 //
 // Copyright 2004-2010 by OM International
 //
@@ -42,12 +42,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Hashtable requestParams = new Hashtable();
-        private GiftBatchTDS giftMainDS = null;
-//        private AGiftBatchRow giftBatchRow = null;   // TODO Decide whether to remove altogether
+        private GiftBatchTDS giftMainDS = new GiftBatchTDS();
         private AGiftDetailRow giftDetailRow = null;
+        private string FCurrencyCode = null;
         private Boolean ok = false;
-        DateTime StartDateCurrentPeriod;
-        DateTime EndDateLastForwardingPeriod;
+        private Boolean FNoReceipt = false;
+        private DateTime StartDateCurrentPeriod;
+        private DateTime EndDateLastForwardingPeriod;
 
         /// <summary>
         /// Return if the revert/adjust action was Ok (then a refresh is needed; otherwise rollback was done)
@@ -60,7 +61,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// A gift DS is injected if needed
+        /// Sets a value indicating whether to print adjusting gift transactions on periodic receipts
+        /// </summary>
+        public bool NoReceipt
+        {
+            set
+            {
+                FNoReceipt = value;
+            }
+        }
+
+        /// <summary>
+        /// Gift DS is injected if needed (only for Field Adjustment)
         /// </summary>
         public GiftBatchTDS GiftMainDS {
             set
@@ -69,16 +81,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-// TODO Decide whether to remove altogether
-//        /// <summary>
-//        /// A Gift Batch Row is injected
-//        /// </summary>
-//        public AGiftBatchRow GiftBatchRow {
-//            set
-//            {
-//                giftBatchRow = value;
-//            }
-//        }
+        /// <summary>
+        /// Preset the effective date.
+        /// </summary>
+        public DateTime? PresetEffectiveDate
+        {
+            set
+            {
+                dtpEffectiveDate.Date = value;
+            }
+        }
 
         /// <summary>
         /// A Gift Detail Row is injected
@@ -105,11 +117,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     txtReversalCommentThree.Text = giftDetailRow.GiftCommentThree;
                     cmbReversalCommentThreeType.Text = giftDetailRow.CommentThreeType;
                 }
+
+                AddParam("BatchNumber", giftDetailRow.BatchNumber);
+                AddParam("GiftNumber", giftDetailRow.GiftTransactionNumber);
+                AddParam("GiftDetailNumber", giftDetailRow.DetailNumber);
+                AddParam("CostCentre", giftDetailRow.CostCentreCode);
+
+                if ((GiftAdjustmentFunctionEnum)requestParams["Function"] != GiftAdjustmentFunctionEnum.FieldAdjust)
+                {
+                    // Now we have the criteria we can retrieve all the data we need from the database
+                    GetGiftsForReverseAdjust();
+                }
             }
         }
 
         /// <summary>
-        /// Ledger Number is injected
+        /// Gift's currency code
+        /// (This is needed to correctly display which batches gift reversals/adjustments can be added to.)
+        /// </summary>
+        public string CurrencyCode
+        {
+            set
+            {
+                FCurrencyCode = value;
+            }
+        }
+
+        /// <summary>
+        /// Ledger Number
         /// </summary>
         public int LedgerNumber {
             set
@@ -123,8 +158,67 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     out StartDateCurrentPeriod,
                     out EndDateLastForwardingPeriod,
                     out DefaultDate);
-                lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
+                lblValidDateRange.Text = String.Format(Catalog.GetString("(Must be between {0} and {1}.)"),
                     StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
+            }
+        }
+
+        private void InitializeManualCode()
+        {
+            //FLedger is still zero at this point
+            FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                AGiftBatchTable.GetBatchStatusDBName(),
+                MFinanceConstants.BATCH_UNPOSTED
+                );
+            FMainDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetBatchNumberDBName() + " DESC";
+
+            SelectBatchChanged(null, null);
+
+            // validation is not done automatically on this form
+            dtpEffectiveDate.ShowWarningOnLostFocus = true;
+
+            rbtNewBatch.Checked = true;
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            grdDetails.Enabled = false;
+            grdDetails.DataSource = null;
+        }
+
+        private void GetGiftsForReverseAdjust()
+        {
+            Boolean ok;
+            TVerificationResultCollection Messages;
+
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+
+                ok = TRemote.MFinance.Gift.WebConnectors.GetGiftsForReverseAdjust(requestParams, ref giftMainDS, out Messages);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
+
+            // If one or more of the gifts have already been reversed.
+            if (!ok)
+            {
+                if (Messages.Count > 0)
+                {
+                    foreach (TVerificationResult message in Messages)
+                    {
+                        if (message.ResultText.Length > 0)
+                        {
+                            MessageBox.Show(this.Text + Catalog.GetString(" cancelled. ") + message.ResultText,
+                                this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                }
+
+                DialogResult = System.Windows.Forms.DialogResult.Abort;
+                Close();
             }
         }
 
@@ -137,33 +231,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             requestParams.Add(paramName, param);
         }
 
-        private void RevertAdjust(System.Object sender, System.EventArgs e)
+        private void BtnOk_Click(System.Object sender, System.EventArgs e)
         {
-            if (chkSelect.Checked && (GetSelectedDetailRow() == null))
+            if (rbtExistingBatch.Checked && (GetSelectedDetailRow() == null))
             {
                 // nothing seleted
                 MessageBox.Show(Catalog.GetString("Please select a batch."));
                 return;
             }
 
-            if ((giftDetailRow != null) && giftDetailRow.ModifiedDetail)
-            {
-                MessageBox.Show(Catalog.GetString("A Gift can only be reversed once!"));
-                return;
-            }
-
-            if (!dtpEffectiveDate.ValidDate())
+            if (rbtNewBatch.Checked && 
+                string.IsNullOrEmpty(dtpEffectiveDate.Text) &&!dtpEffectiveDate.ValidDate())
             {
                 dtpEffectiveDate.Focus();
                 return;
             }
 
-            Boolean ok;
-            TVerificationResultCollection AMessages;
+            AddParam("NewBatchSelected", rbtExistingBatch.Checked);
 
-            AddParam("NewBatchSelected", chkSelect.Checked);
-
-            if (chkSelect.Checked)
+            if (rbtExistingBatch.Checked)
             {
                 AddParam("NewBatchNumber", GetSelectedDetailRow().BatchNumber);
             }
@@ -213,23 +299,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            AddParam("BatchNumber", giftDetailRow.BatchNumber);
-            AddParam("GiftNumber", giftDetailRow.GiftTransactionNumber);
-            AddParam("GiftDetailNumber", giftDetailRow.DetailNumber);
-            AddParam("CostCentre", giftDetailRow.CostCentreCode);
             AddParam("ReversalCommentOne", txtReversalCommentOne.Text);
             AddParam("ReversalCommentTwo", txtReversalCommentTwo.Text);
             AddParam("ReversalCommentThree", txtReversalCommentThree.Text);
             AddParam("ReversalCommentOneType", cmbReversalCommentOneType.Text);
             AddParam("ReversalCommentTwoType", cmbReversalCommentTwoType.Text);
             AddParam("ReversalCommentThreeType", cmbReversalCommentThreeType.Text);
+            AddParam("NoReceipt", FNoReceipt);
 
+            ReverseAdjust();
+        }
+
+        // do the actual reversal / adjustment
+        private void ReverseAdjust()
+        {
             int AdjustmentBatchNumber;
+            Boolean ok;
 
             try
             {
                 this.Cursor = Cursors.WaitCursor;
-                ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AdjustmentBatchNumber, out AMessages);
+
+                ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AdjustmentBatchNumber, giftMainDS);
             }
             finally
             {
@@ -238,28 +329,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ok)
             {
-                String function = (String)requestParams["Function"];
+                GiftAdjustmentFunctionEnum Function = (GiftAdjustmentFunctionEnum)requestParams["Function"];
 
-                switch (function)
+                switch (Function)
                 {
-                    case "ReverseGiftBatch":
+                    case GiftAdjustmentFunctionEnum.ReverseGiftBatch:
                         MessageBox.Show(Catalog.GetString("Reversed gift batch has been successfully created with Batch Number " +
                             AdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift Batch"));
                         break;
 
-                    case "ReverseGiftDetail":
+                    case GiftAdjustmentFunctionEnum.ReverseGiftDetail:
                         MessageBox.Show(Catalog.GetString("Reversed gift detail has been successfully added to Batch " + AdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift Detail"));
                         break;
 
-                    case "ReverseGift":
+                    case GiftAdjustmentFunctionEnum.ReverseGift:
                         MessageBox.Show(Catalog.GetString("Reversed gift has been successfully added to Batch " + AdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift"));
                         break;
 
-                    case "AdjustGift":
+                    case GiftAdjustmentFunctionEnum.AdjustGift:
                         MessageBox.Show(Catalog.GetString("Adjustment transactions have been successfully added to Batch " + AdjustmentBatchNumber +
+                            "."),
+                        Catalog.GetString("Adjust Gift"));
+                        break;
+
+                    case GiftAdjustmentFunctionEnum.FieldAdjust:
+                        MessageBox.Show(Catalog.GetString("Gift Field Adjustment transactions have been successfully added to Batch " + AdjustmentBatchNumber +
                             "."),
                         Catalog.GetString("Adjust Gift"));
                         break;
@@ -270,58 +367,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                ShowMessages(AMessages);
                 DialogResult = System.Windows.Forms.DialogResult.Abort;
                 Close();
             }
-
-            return;
-        }
-
-        private void InitializeManualCode()
-        {
-            grdDetails.Visible = false;
-
-            //FLedger is still zero at this point
-            FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                AGiftBatchTable.GetBatchStatusDBName(),
-                MFinanceConstants.BATCH_UNPOSTED
-                );
-            FMainDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetBatchNumberDBName() + " DESC";
-
-            SelectBatchChanged(null, null);
-
-            //add the focused event temporarily to allow execution of more manual code right at the
-            //  end of the initialisation process.
-            this.btnHelp.Enter += new System.EventHandler(this.HelpFocussed);
-
-            // validation is not done automatically on this form
-            dtpEffectiveDate.ShowWarningOnLostFocus = true;
-        }
-
-        private void HelpFocussed(System.Object sender, EventArgs e)
-        {
-            grdDetails.DataSource = null;
-            grdDetails.Visible = true;
-            dtpEffectiveDate.Focus();
-            this.btnOK.Enter -= new System.EventHandler(this.HelpFocussed);
-            chkSelect.Enabled = (giftMainDS == null);
         }
 
         private void SelectBatchChanged(System.Object sender, EventArgs e)
         {
-            bool isChecked = chkSelect.Checked;
+            bool isChecked = rbtExistingBatch.Checked;
 
             if (isChecked)
             {
                 //First pass FLedgerNumber = 0 so need to add Ledger to the filter when the user first checks the checkbox
                 if ((FLedgerNumber != 0) && !FMainDS.AGiftBatch.DefaultView.RowFilter.Contains(AGiftBatchTable.GetLedgerNumberDBName()))
                 {
-                    FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = {1} AND {2} = '{3}'",
+                    FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = {1} AND {2} = '{3}' AND {4} = '{5}'",
                         AGiftBatchTable.GetLedgerNumberDBName(),
                         FLedgerNumber,
                         AGiftBatchTable.GetBatchStatusDBName(),
-                        MFinanceConstants.BATCH_UNPOSTED
+                        MFinanceConstants.BATCH_UNPOSTED,
+                        AGiftBatchTable.GetCurrencyCodeDBName(),
+                        FCurrencyCode
                         );
                 }
 
@@ -337,6 +403,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtReversalCommentOne.SelectAll();
                 txtReversalCommentOne.Focus();
                 dtpEffectiveDate.Enabled = false;
+
+                grdDetails.AutoResizeGrid();
+                grdDetails.Enabled = true;
             }
             else
             {
@@ -360,24 +429,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void BtnHelpClick(object sender, EventArgs e)
         {
             // TODO
-        }
-
-        private void ShowMessages(TVerificationResultCollection AMessages)
-        {
-            string ErrorMessages = String.Empty;
-
-            if (AMessages.Count > 0)
-            {
-                foreach (TVerificationResult message in AMessages)
-                {
-                    ErrorMessages += "[" + message.ResultContext + "] " + message.ResultTextCaption + ": " + message.ResultText + Environment.NewLine;
-                }
-            }
-
-            if (ErrorMessages.Length > 0)
-            {
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
         }
     }
 }

@@ -4124,5 +4124,126 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             return RenameComplete;
         } // RenameCostCentreCode
+
+        /// <summary>
+        /// Checks an account can be made a foreign currency account.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAccountCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool CheckAccountCanBeMadeForeign(Int32 ALedgerNumber, string AAccountCode)
+        {
+            bool ReturnValue = true;
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    string Query = "SELECT * FROM a_general_ledger_master " +
+                        "WHERE a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber +
+                        " AND a_general_ledger_master.a_account_code_c = '" + AAccountCode + "'" +
+                        " AND a_general_ledger_master.a_cost_centre_code_c = '[" + ALedgerNumber + "]'" +
+                        " AND EXISTS (SELECT * FROM a_general_ledger_master_period " +
+                        "WHERE a_general_ledger_master_period.a_glm_sequence_i = a_general_ledger_master.a_glm_sequence_i" +
+                        " AND a_general_ledger_master_period.a_actual_base_n <> 0)";
+
+                    DataTable dT = DBAccess.GDBAccessObj.SelectDT(Query, "DataTable", Transaction);
+
+                    if (dT != null && dT.Rows.Count > 0)
+                    {
+                        ReturnValue = false;
+                    }
+                });
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks if a foreign currency account has no balances.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AYear"></param>
+        /// <param name="AAccountCode"></param>
+        /// <returns>True if balances exist</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool CheckForeignAccountHasBalances(Int32 ALedgerNumber, Int32 AYear, string AAccountCode)
+        {
+            bool ReturnValue = false;
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    AGeneralLedgerMasterTable GeneralLedgerMasterTable = AGeneralLedgerMasterAccess.LoadByUniqueKey(
+                        ALedgerNumber, AYear, AAccountCode, "[" + ALedgerNumber + "]", Transaction);
+
+                    {
+                        if (GeneralLedgerMasterTable != null && GeneralLedgerMasterTable.Rows.Count > 0)
+                        {
+                            if (!GeneralLedgerMasterTable[0].IsYtdActualForeignNull() && GeneralLedgerMasterTable[0].YtdActualForeign != 0)
+                            {
+                                ReturnValue = true;
+                            }
+                        }
+                    }
+                });
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Makes all foreign currency balances zero for the given account on the given year for all posting cost centres
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AYear"></param>
+        /// <param name="AAccountCode"></param>
+        /// <returns>True if successful</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ZeroForeignCurrencyBalances(Int32 ALedgerNumber, Int32 AYear, string[] AAccountCode)
+        {
+            bool SubmissionOK = true;
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    foreach (string AccountCode in AAccountCode)
+                    {
+                        string Query = "SELECT a_general_ledger_master.* " +
+                            "FROM a_general_ledger_master, a_cost_centre " +
+                            "WHERE a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber +
+                            " AND a_general_ledger_master.a_account_code_c = '" + AccountCode + "'" +
+                            " AND a_general_ledger_master.a_year_i = " + AYear +
+                            " AND a_cost_centre.a_cost_centre_code_c = a_general_ledger_master.a_cost_centre_code_c" +
+                            " AND a_cost_centre.a_ledger_number_i = " + ALedgerNumber +
+                            " AND a_cost_centre.a_posting_cost_centre_flag_l = true";
+
+                        AGeneralLedgerMasterTable GeneralLedgerMasterTable = new AGeneralLedgerMasterTable();
+                        DBAccess.GDBAccessObj.SelectDT(GeneralLedgerMasterTable, Query, Transaction);
+
+                        foreach (DataRow Row in GeneralLedgerMasterTable.Rows)
+                        {
+                            Row[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()] = 0;
+                            Row[AGeneralLedgerMasterTable.GetStartBalanceForeignDBName()] = 0;
+
+                            AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable =
+                                AGeneralLedgerMasterPeriodAccess.LoadViaAGeneralLedgerMaster((int) Row[AGeneralLedgerMasterTable.GetGlmSequenceDBName()], Transaction);
+
+                            foreach (AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow in GeneralLedgerMasterPeriodTable.Rows)
+                            {
+                                GeneralLedgerMasterPeriodRow.ActualForeign = 0;
+                            }
+
+                            AGeneralLedgerMasterPeriodAccess.SubmitChanges(GeneralLedgerMasterPeriodTable, Transaction);
+                        }
+
+                        AGeneralLedgerMasterAccess.SubmitChanges(GeneralLedgerMasterTable, Transaction);
+                    }
+                });
+
+            return SubmissionOK;
+        }
+
     } // TGLSetupWebConnector
 } // namespace

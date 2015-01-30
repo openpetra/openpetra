@@ -80,6 +80,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Int64 FPartnerKey;
         private Int64 FSiteKey;
         private String FPartnerClass;
+        private String FDefaultPartnerClass = SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY);
         private String FAcquisitionCode;
         private Int64 FFamilyPartnerKey;
         private Int32 FFamilyLocationKey;
@@ -323,13 +324,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FPartnerClass != "")
             {
                 cmbPartnerClass.SetSelectedString(FPartnerClass);
-                txtPartnerKey.PartnerClass = cmbPartnerClass.GetSelectedString();
             }
             else
             {
                 // Default value: FAMILY
-                cmbPartnerClass.SetSelectedString("FAMILY");
+                cmbPartnerClass.SetSelectedString(FDefaultPartnerClass);
             }
+
+            txtPartnerKey.PartnerClass = cmbPartnerClass.GetSelectedString();
 
             if (FAcquisitionCode != "")
             {
@@ -375,7 +377,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Setup screen with default values
                 InitialiseUI();
 
-                if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+                if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON)
+                    || FDefaultPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
                     ShowFamilyPartnerSelection(true);
                 }
@@ -410,6 +413,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AFamilyPartnerKey"></param>
         /// <param name="AFamilyLocationKey"></param>
         /// <param name="AFamilySiteKey"></param>
+        /// <param name="ADefaultPartnerClass"></param>
         public void SetParameters(IPartnerUIConnectorsPartnerEdit APartnerEditUIConnector,
             String APartnerClass,
             System.Int64 ASiteKey,
@@ -418,12 +422,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             Boolean APrivatePartner,
             Int64 AFamilyPartnerKey,
             Int32 AFamilyLocationKey,
-            Int64 AFamilySiteKey)
+            Int64 AFamilySiteKey,
+            string ADefaultPartnerClass = "FAMILY")
         {
             FPartnerEditUIConnector = APartnerEditUIConnector;
             FPartnerKey = APartnerKey;
             FSiteKey = ASiteKey;
             FPartnerClass = APartnerClass;
+            FDefaultPartnerClass = ADefaultPartnerClass;
             FAcquisitionCode = AAcquisitionCode;
             FPrivatePartner = APrivatePartner;
             FFamilyPartnerKey = AFamilyPartnerKey;

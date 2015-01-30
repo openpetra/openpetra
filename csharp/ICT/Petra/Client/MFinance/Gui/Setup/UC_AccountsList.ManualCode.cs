@@ -105,6 +105,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             FParentForm = ParentForm;
             grdAccounts.Selection.SelectionChanged += Selection_SelectionChanged;
+            grdAccounts.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(grdAccounts_FocusRowLeaving);
+        }
+
+        private void grdAccounts_FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
+        {
+            if (!FParentForm.CheckControlsValidateOk())
+            {
+                e.Cancel = true;
+            }
         }
 
         void Selection_SelectionChanged(object sender, SourceGrid.RangeRegionChangedEventArgs e)
