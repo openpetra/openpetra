@@ -1723,7 +1723,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <param name="AValue">Value that should replace THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER in the Hyperlink Format strin</param>
         /// <param name="ALinkEnd">Character position of the end of the Link. Used for distinguishing different Links with the
-        /// same Link in case of <see cref="Ict.Common.THyperLinkHandling.THyperLinkType.Http_With_Value_Replacement"/>.</param>
+        /// same Link in case of THyperLinkType.Http_With_Value_Replacement.</param>
         /// <returns>URL with the Value replacing THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER.</returns>
         private string BuildLinkWithValue(string AValue, int ALinkEnd)
         {
