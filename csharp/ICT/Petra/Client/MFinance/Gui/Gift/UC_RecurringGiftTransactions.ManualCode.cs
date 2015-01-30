@@ -591,6 +591,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String APartnerShortName,
             bool AValidSelection)
         {
+            //An invalid donor number can stop deletion of a new row, so need to stop invalid entries
+            if (!AValidSelection && (APartnerKey != 0))
+            {
+                txtDetailDonorKey.Text = String.Format("{0:0000000000}", 0);
+                return;
+            }
+
             // At the moment this event is thrown twice
             // We want to deal only on manual entered changes, i.e. not on selections changes, and on non-zero keys
             if (FPetraUtilsObject.SuppressChangeDetection || (APartnerKey == 0))

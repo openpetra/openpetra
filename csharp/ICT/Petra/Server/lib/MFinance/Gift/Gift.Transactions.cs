@@ -637,7 +637,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDSAGiftDetailTable LoadDonorLastGift(Int64 ADonorPartnerKey)
         {
-            GiftBatchTDSAGiftDetailTable ReturnValue = null;
+            bool DonorExists = true;
+
+            GiftBatchTDSAGiftDetailTable LastGiftData = null;
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = null;
@@ -651,6 +653,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     if ((GiftTable == null) || (GiftTable.Rows.Count == 0))
                     {
+                        DonorExists = false;
                         return;
                     }
 
@@ -668,12 +671,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     // load gift details for the latest gift
                     AGiftDetailAccess.LoadViaAGift(MainDS, LatestGiftRow.LedgerNumber, LatestGiftRow.BatchNumber, LatestGiftRow.GiftTransactionNumber,
                         Transaction);
-                    ReturnValue.Merge(MainDS.AGiftDetail);
+                    LastGiftData.Merge(MainDS.AGiftDetail);
 
-                    if (ReturnValue.Rows.Count > 1)
+                    if (LastGiftData.Rows.Count > 1)
                     {
                         // get the name of each recipient
-                        foreach (GiftBatchTDSAGiftDetailRow Row in ReturnValue.Rows)
+                        foreach (GiftBatchTDSAGiftDetailRow Row in LastGiftData.Rows)
                         {
                             PPartnerRow RecipientRow = (PPartnerRow)PPartnerAccess.LoadByPrimaryKey(Row.RecipientKey, Transaction).Rows[0];
                             Row.RecipientDescription = RecipientRow.PartnerShortName;
@@ -681,8 +684,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 });
 
-            ReturnValue.AcceptChanges();
-            return ReturnValue;
+            if (DonorExists)
+            {
+                LastGiftData.AcceptChanges();
+            }
+
+            return LastGiftData;
         }
 
         /// <summary>
@@ -3271,6 +3278,28 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Check if the partner key is valid
+        /// </summary>
+        /// <returns>If exists</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool VerifyPartnerKey(Int64 APartnerKey)
+        {
+            PPartnerTable PartnerTable = null;
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+                });
+
+            return PartnerTable != null && PartnerTable.Rows.Count > 0;
+        }
+
+        /// <summary>
         /// Load Partner Data
         /// </summary>
         /// <param name="PartnerKey">Partner Key </param>
@@ -3334,7 +3363,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 });
 
-            DonorBankingDetails.AcceptChanges();
+            if (DonorBankingDetails != null)
+            {
+                DonorBankingDetails.AcceptChanges();
+            }
+
             return DonorBankingDetails;
         }
 

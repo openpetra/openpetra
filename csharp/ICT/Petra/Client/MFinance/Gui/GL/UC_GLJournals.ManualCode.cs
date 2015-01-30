@@ -324,6 +324,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ((TFrmGLBatch) this.ParentForm).EnableTransactions();
             }
+
+            txtDetailJournalDescription.Text = FBatchRow.BatchDescription;
         }
 
         /// <summary>
