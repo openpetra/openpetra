@@ -91,7 +91,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             // make sure search button is initially default button so user can press enter to search after entering search criteria
             AcceptButton = btnSearch;
-            txtExtractName.Focus();
+            txtExtractName.Select();
 
             this.ShowDialog();
 
