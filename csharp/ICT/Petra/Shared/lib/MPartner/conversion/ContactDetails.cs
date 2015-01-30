@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       ChristianK
+//       ChristianK, timop
 //
 // Copyright 2004-2015 by OM International
 //
@@ -74,7 +74,12 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         /// <summary>
         /// Holds the p_partner_location records of each Partner.
         /// </summary>
-        private static Dictionary <Int64, DataTable>FPartnerLocationRecords = new Dictionary <Int64, DataTable>();
+        private static SortedList <long, DataTable>FPartnerLocationRecords = null;
+
+        /// <summary>
+        /// we split all partner locations by modulo of the partner key, to improve the speed of the search
+        /// </summary>
+        public const int NumberOfTables = 20;
 
         /// <summary>
         /// Number for the p_sequence_i Column. Gets increased with every p_partner_attribute record that gets produced!
@@ -109,7 +114,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         /// <summary>
         /// Holds the p_partner_location records of each Partner.
         /// </summary>
-        public static Dictionary <Int64, DataTable>PartnerLocationRecords
+        public static SortedList <long, DataTable>PartnerLocationRecords
         {
             get
             {
@@ -212,6 +217,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 DataTable ReturnValue = new DataTable("Partners_PPartnerLocation");
                 DataColumn IconForSortingCol;
 
+                ReturnValue.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
                 ReturnValue.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
                 ReturnValue.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
                 ReturnValue.Columns.Add(new System.Data.DataColumn("p_date_effective_d", typeof(System.DateTime)));
@@ -237,7 +243,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
                 // Specify the Primary Key of the new DataTabe
                 ReturnValue.PrimaryKey = new DataColumn[] {
-                    ReturnValue.Columns["p_site_key_n"], ReturnValue.Columns["p_location_key_i"]
+                    ReturnValue.Columns["p_partner_key_n"], ReturnValue.Columns["p_site_key_n"], ReturnValue.Columns["p_location_key_i"]
                 };
 
                 return ReturnValue;
@@ -409,34 +415,39 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         public static int PopulatePPartnerAttribute()
         {
             int RowCounter = 0;
-            DataTable PPartnersLocationsDT;
-            Int64 PartnerKey;
             Int64 BestPartnerLocSiteKey;
             int BestPartnerLocLocationKey;
 
             List <PPartnerAttributeRecord>PPARecords;
-            DataView SortedRecordsDV;
 
             if (FEmptyStringIndicator == null)
             {
                 throw new EOPException("'FEmptyStringIndicator' must be set before Method 'PopulatePPartnerAttribute' gets called!");
             }
 
-//            TLogging.Log(String.Format("PPartnerLocationRecords holds entries for {0} Partners.", FPartnerLocationRecords.Count));
-
             // FPartnerLocationRecords got created when the p_partner_location table got processed; it holds selected Columns of all
             // p_partner_location records of each Partner that gets loaded.
+//            TLogging.Log(String.Format("We have entries for {0} Partners.", FPartnerClassInformation.Count));
 
             // Process each Partner and its p_partner_location records
-            foreach (var PPartnerLoctationRec in FPartnerLocationRecords)
+            foreach (Int64 PartnerKey in FPartnerClassInformation.Keys)
             {
                 FInsertionOrderPerPartner = -1;
 
-                // Get PartnerKey of Partner that we are working on at present from PPartnerLocationRecords
-                PartnerKey = PPartnerLoctationRec.Key;
-
                 // Get that Partner's p_partner_location records from PPartnerLocationRecords
-                PPartnersLocationsDT = PPartnerLoctationRec.Value;
+                DataRow[] CurrentRows = FPartnerLocationRecords[PartnerKey % NumberOfTables].Select("p_partner_key_n = " + PartnerKey.ToString());
+
+                if (CurrentRows.Length == 0)
+                {
+                    continue;
+                }
+
+                DataTable PPartnersLocationsDT = TPartnerContactDetails.BestAddressHelper.GetNewPPartnerLocationTableInstance();
+
+                foreach (DataRow r in CurrentRows)
+                {
+                    PPartnersLocationsDT.Rows.Add(r.ItemArray);
+                }
 
                 // We hazard a guess that we will possibly create 2 times as many p_partner_attribute records as there are
                 // p_partner_location records - but in some cases there will be more (if we need to create many 'primary'
@@ -453,7 +464,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                         out BestPartnerLocSiteKey, out BestPartnerLocLocationKey))
                 {
                     throw new Exception(String.Format(
-                            "Problem determining the 'Best Address' for the p_parter_location records of Partner with PartnerKey {0}! Number of p_parter_location records: {1}",
+                            "Problem determining the 'Best Address' for the p_partner_location records of Partner with PartnerKey {0}! Number of p_partner_location records: {1}",
                             PartnerKey, PPartnersLocationsDT.Rows.Count));
                 }
                 else
@@ -473,7 +484,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
                     // We want to create the p_partner_attribute records in the same order that the user
                     // would see the p_location records (that we lift them from) on the Address Tab.
-                    SortedRecordsDV = PPartnersLocationsDT.DefaultView;
+                    DataView SortedRecordsDV = PPartnersLocationsDT.DefaultView;
                     SortedRecordsDV.Sort = "Icon_For_Sorting ASC, p_date_effective_d DESC";
 
                     for (int Counter = 0; Counter < SortedRecordsDV.Count; Counter++)
