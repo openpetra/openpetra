@@ -41,6 +41,90 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
     ///</summary>
     public static class TCrossLedger
     {
+        // Two static variables that are used in our code to automatically clean the Daily Exchange Rate table
+        private static DateTime PreviousDailyExchangeRateCleanTime = DateTime.UtcNow.AddDays(-30);
+        private static DateTime PreviousDailyExchangeRateAccessTime = DateTime.UtcNow.AddHours(-24);
+
+        /// <summary>
+        /// This method is called when clients access the Daily Exchange Rate data.
+        /// The Daily Exchange Rate table is unusual in that it doesn't really need to hold any data because the DataSet that the client receives
+        /// contains all the used rates from the GL/Gift tables whether or not those rates are in the DER table itself.  Any rates in the DER table
+        /// that are NOT used are also returned, but, of course, because they are not used anywhere they are not very inetresting!
+        /// Additionally, because the GL/Gift tables do not necessarily hold a time or a time that matches the same rate in the DER table, it is possible
+        /// for the DER table to have a rate that is used on the date but at a different time.  As a result the client sometimes does not see all rows
+        /// from the DER table - and so has no way of deleting them.
+        ///
+        /// That is the reason why we need to automatically clean the table.
+        ///
+        /// But there is some value in having some 'unused' rows that are work-in-progress.  So we delete everything in the DER table that
+        /// applies to dates older than 30 days.  In the future this might become a configurable server option.
+        /// </summary>
+        private static void DoDailyExchangeRateClean()
+        {
+            if ((DateTime.UtcNow - PreviousDailyExchangeRateAccessTime).TotalHours > 8)
+            {
+                // Nobody has opened a DailyExchangeRate screen for 8 hours
+                if ((DateTime.UtcNow - PreviousDailyExchangeRateCleanTime).TotalHours > 24)
+                {
+                    // It is more than 24 hours since our last clean
+                    TDBTransaction t = null;
+                    bool bSubmissionOk = false;
+                    DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref t, ref bSubmissionOk,
+                        delegate
+                        {
+                            string logMsg = String.Empty;
+                            int affectedRowCount = 0;
+
+                            // Standard is that we delete rows applicable to dates more than 60 days old
+                            string criticalDate = DateTime.Now.AddDays(-60).ToString("yyyy-MM-dd");
+
+                            try
+                            {
+                                // Our deletion rule is to delete rows where
+                                //  either the effective date is too old and we have no info about creation or modification
+                                //  or     the creation date is too old and we have no info about any modification
+                                //  or     the modification date is too old
+                                // These rules ensure that if rates are added to a DB that is past its last accounting period (like SA-DB)
+                                //  we can still continue to use the DER screen to add unused rates because they will have create/modify times
+                                //  that can be long past the final accounting period because we will keep
+                                //         any row that has been modified recently, whatever the effective date or creation date
+                                //         any row that was created recently but not subsequently modified, whatever the effective date
+                                //         any row where we don't have info about create/modify but where the effective date is recent
+                                string sql = String.Format(
+                                    "DELETE FROM PUB_{0} WHERE (({1}<'{2}') and {3} is NULL and {4} is NULL) or (({3}<'{2}') and {4} is NULL) or ({4}<'{2}')",
+                                    ADailyExchangeRateTable.GetTableDBName(),
+                                    ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
+                                    criticalDate,
+                                    ADailyExchangeRateTable.GetDateCreatedDBName(),
+                                    ADailyExchangeRateTable.GetDateModifiedDBName());
+                                affectedRowCount = DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                                bSubmissionOk = true;
+                                PreviousDailyExchangeRateCleanTime = DateTime.UtcNow;
+                            }
+                            catch (Exception ex)
+                            {
+                                logMsg = "An error occurred while trying to purge the Daily Exchange Rate table of 'aged' rows.";
+                                logMsg += String.Format("  The exception message was: {0}", ex.Message);
+                            }
+
+                            if ((affectedRowCount > 0) && (logMsg == String.Empty))
+                            {
+                                logMsg =
+                                    String.Format("The Daily Exchange Rate table was purged of {0} entries applicable prior to ",
+                                        affectedRowCount) + criticalDate;
+                            }
+
+                            if (logMsg != String.Empty)
+                            {
+                                TLogging.Log(logMsg);
+                            }
+                        });
+                }
+            }
+
+            PreviousDailyExchangeRateAccessTime = DateTime.UtcNow;
+        }
+
         /// <summary>
         /// This is the main method to load all the data required by the Daily Exchange rate Setup screen.
         /// It slices and dices the exchange rate data in two ways:
@@ -57,10 +141,15 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
         /// </summary>
         /// <returns>A complete typed data set containing three tables.</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static ExchangeRateTDS LoadDailyExchangeRateData()
+        public static ExchangeRateTDS LoadDailyExchangeRateData(bool ADeleteAgedExchangeRatesFirst)
         {
-            ExchangeRateTDS WorkingDS = new ExchangeRateTDS();
+            // If relevant, we do a clean of the data table first, purging 'aged' data
+            if (ADeleteAgedExchangeRatesFirst)
+            {
+                DoDailyExchangeRateClean();
+            }
 
+            ExchangeRateTDS WorkingDS = new ExchangeRateTDS();
             WorkingDS.EnforceConstraints = false;
             TDBTransaction Transaction = null;
 
@@ -69,112 +158,138 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    // Load the table so we can read bits of it into our dataset
-                    ADailyExchangeRateTable exchangeRates = ADailyExchangeRateAccess.LoadAll(Transaction);
-
                     // Populate the ExchangeRateTDSADailyExchangeRate table
                     //-- This is the complete query for the DAILYEXCHANGERATE TABLE
-                    //-- It returns all the rows from the DailyExchangeRate table
-                    //-- PLUS all rows from the Journal and Gift Batch tables that are NOT referenced by the Daily Exchange Rate table.
-                    string strSQL = "SELECT * FROM ( ";
+                    //-- It returns all rows from the Journal and Gift Batch tables
+                    //-- PLUS all the rows from the DailyExchangeRate table that are NOT referenced by the Journal and Gift Batch tables.
+                    string strSQL = "SELECT * FROM ";
+                    strSQL += "( ";
 
-                    // -- This part of the query returns all the rows from the ExchangeRate table
-                    // -- All rows in Journal and Gift that DO match an entry are reported in the usage count
-                    // -- It will always return exactly the same number of rows that are in the Daily Exchange Rate table itself.
-                    // --  In the development database case it returns 312 rows.
-                    // --  It includes 86 Journal entries and 1 Gift Batch entry
-                    strSQL += "SELECT der.a_from_currency_code_c, ";
-                    strSQL += "  der.a_to_currency_code_c, ";
-                    strSQL += "  der.a_rate_of_exchange_n, ";
-                    strSQL += "  der.a_date_effective_from_d, ";
-                    strSQL += "  der.a_time_effective_from_i, ";
+                    // This returns all the rows in Daily Exchange rate that do NOT match any journal or gift
+                    strSQL += "SELECT ";
                     strSQL += String.Format(
-                        "  count(j.a_journal_number_i) AS {0}, count(gb.a_batch_number_i) AS {1}, 'DEX' as {2} ",
+                        "  0 AS {0}, 0 AS {1}, 'DER' AS {2}, ",
                         ExchangeRateTDSADailyExchangeRateTable.GetJournalUsageDBName(),
                         ExchangeRateTDSADailyExchangeRateTable.GetGiftBatchUsageDBName(),
                         ExchangeRateTDSADailyExchangeRateTable.GetTableSourceDBName());
+                    strSQL += "  der.* ";
                     strSQL += "FROM PUB_a_daily_exchange_rate AS der ";
-                    strSQL += "LEFT OUTER JOIN PUB_a_journal j ";
-                    strSQL += "  ON j.a_transaction_currency_c = der.a_from_currency_code_c ";
-                    strSQL += "  AND j.a_base_currency_c = der.a_to_currency_code_c ";
-                    strSQL += "  AND j.a_exchange_rate_to_base_n = der.a_rate_of_exchange_n ";
-                    strSQL += "  AND j.a_date_effective_d = der.a_date_effective_from_d ";
-                    strSQL += "  AND a_exchange_rate_time_i = der.a_time_effective_from_i ";
-                    strSQL += "LEFT OUTER JOIN PUB_a_gift_batch AS gb ";
-                    strSQL += "  ON gb.a_currency_code_c = der.a_from_currency_code_c ";
-                    strSQL += "  AND gb.a_exchange_rate_to_base_n = der.a_rate_of_exchange_n ";
-                    strSQL += "  AND gb.a_gl_effective_date_d = der.a_date_effective_from_d ";
-                    strSQL += "LEFT OUTER JOIN PUB_a_ledger AS ldg ";
-                    strSQL += "  ON ldg.a_ledger_number_i = gb.a_ledger_number_i ";
-                    strSQL += "  AND ldg.a_base_currency_c = der.a_to_currency_code_c ";
-                    strSQL +=
-                        "GROUP BY der.a_from_currency_code_c, der.a_to_currency_code_c, der.a_rate_of_exchange_n, der.a_date_effective_from_d, der.a_time_effective_from_i ";
-
-                    strSQL += Environment.NewLine;
-                    strSQL += "UNION ";
-                    strSQL += Environment.NewLine;
-
-                    // -- This part of the query returns all the rows from the journal table that do NOT have an
-                    // -- entry in the exchange rate table
-                    // -- Using the devlopment database it returns 41 unique rows associated with 53 Journal entries
+                    // By doing a left join and only selecting the NULL rows we get the rows from DER that are NOT used
+                    strSQL += "LEFT JOIN ";
+                    strSQL += "( ";
+                    // This SELECT returns all the used rows (372 rows in the case of SA-DB)
                     strSQL += "SELECT ";
+                    strSQL += "  j.a_batch_number_i AS a_batch_number_i, ";
                     strSQL += "  j.a_transaction_currency_c AS a_from_currency_code_c, ";
-                    strSQL += "  j.a_base_currency_c AS a_to_currency_code_c, ";
-                    strSQL += "  j.a_exchange_rate_to_base_n AS a_rate_of_exchange_n, ";
+                    strSQL += "  ldg.a_base_currency_c AS a_to_currency_code_c, ";
                     strSQL += "  j.a_date_effective_d AS a_date_effective_from_d, ";
-                    strSQL += "  j.a_exchange_rate_time_i AS a_time_effective_from_i, ";
-                    strSQL += String.Format(
-                        "  count(j.a_transaction_currency_c) AS {0},  0 AS {1},  'J' AS {2} ",
-                        ExchangeRateTDSADailyExchangeRateTable.GetJournalUsageDBName(),
-                        ExchangeRateTDSADailyExchangeRateTable.GetGiftBatchUsageDBName(),
-                        ExchangeRateTDSADailyExchangeRateTable.GetTableSourceDBName());
-                    strSQL += "FROM a_journal j ";
-                    strSQL += "LEFT JOIN a_daily_exchange_rate der ";
-                    strSQL += "  ON der.a_from_currency_code_c = j.a_transaction_currency_c ";
-                    strSQL += "  AND der.a_to_currency_code_c = j.a_base_currency_c ";
-                    strSQL += "  AND der.a_date_effective_from_d = j.a_date_effective_d ";
-                    strSQL += "  AND der.a_time_effective_from_i = j.a_exchange_rate_time_i ";
-                    strSQL += "  AND der.a_rate_of_exchange_n = j.a_exchange_rate_to_base_n ";
-                    strSQL += "WHERE j.a_transaction_currency_c <> j.a_base_currency_c ";
-                    strSQL += "  AND der.a_from_currency_code_c IS NULL ";
-                    strSQL +=
-                        "GROUP BY j.a_transaction_currency_c, j.a_base_currency_c, j.a_exchange_rate_to_base_n, j.a_date_effective_d, j.a_exchange_rate_time_i ";
+                    strSQL += "  j.a_exchange_rate_to_base_n AS a_rate_of_exchange_n ";
+                    strSQL += "FROM PUB_a_journal AS j ";
+                    strSQL += "JOIN PUB_a_ledger AS ldg ON ";
+                    strSQL += "  ldg.a_ledger_number_i = j.a_ledger_number_i ";
+                    strSQL += "WHERE ";
+                    strSQL += "  j.a_transaction_currency_c <> ldg.a_base_currency_c ";
 
                     strSQL += Environment.NewLine;
-                    strSQL += "UNION ";
+                    strSQL += "UNION ALL ";
                     strSQL += Environment.NewLine;
 
-                    // -- This part of the query returns all the rows in the gift batch table that do NOT have an
-                    // -- entry in the exchange rate table
-                    // -- Using the devlopment database it returns 0 rows, because the one row in the gift batch table has already been included
-                    // --   in the first query (on the Daily Exchange rate table)
                     strSQL += "SELECT ";
+                    strSQL += "  gb.a_batch_number_i AS a_batch_number_i, ";
                     strSQL += "  gb.a_currency_code_c AS a_from_currency_code_c, ";
                     strSQL += "  ldg.a_base_currency_c AS a_to_currency_code_c, ";
-                    strSQL += "  gb.a_exchange_rate_to_base_n AS a_rate_of_exchange_n, ";
                     strSQL += "  gb.a_gl_effective_date_d AS a_date_effective_from_d, ";
-                    strSQL += "  0 AS a_time_effective_from_i, ";
+                    strSQL += "  gb.a_exchange_rate_to_base_n AS a_rate_of_exchange_n ";
+                    strSQL += "FROM PUB_a_gift_batch AS gb ";
+                    strSQL += "JOIN PUB_a_ledger AS ldg ON ";
+                    strSQL += "  ldg.a_ledger_number_i = gb.a_ledger_number_i ";
+                    strSQL += "WHERE ";
+                    strSQL += "  gb.a_currency_code_c <> ldg.a_base_currency_c ";
+                    strSQL += ") AS j_and_gb ";
+                    strSQL += "ON ";
+                    strSQL += "  der.a_from_currency_code_c = j_and_gb.a_from_currency_code_c ";
+                    strSQL += "  AND der.a_to_currency_code_c = j_and_gb.a_to_currency_code_c ";
+                    strSQL += "  AND der.a_date_effective_from_d = j_and_gb.a_date_effective_from_d ";
+                    strSQL += "  AND der.a_rate_of_exchange_n = j_and_gb.a_rate_of_exchange_n ";
+                    strSQL += "WHERE ";
+                    strSQL += "  a_batch_number_i IS NULL ";
+
+                    strSQL += Environment.NewLine;
+                    strSQL += "UNION ALL ";
+                    strSQL += Environment.NewLine;
+
+                    // The second half of the UNION returns all the Forex rows from journal and gift
+                    //  They are aggregated by from/to/date/rate and the time is the min time.
+                    //  We also get the usage count as well as whether the row originated in the DER table or one of gift or batch
+                    strSQL += "SELECT ";
                     strSQL += String.Format(
-                        "  0 AS {0}, count(gb.a_currency_code_c) AS {1}, 'GB' AS {2} ",
+                        "  sum(journalUsage) AS {0}, sum(giftBatchUsage) AS {1}, 'GBJ' AS {2}, ",
                         ExchangeRateTDSADailyExchangeRateTable.GetJournalUsageDBName(),
                         ExchangeRateTDSADailyExchangeRateTable.GetGiftBatchUsageDBName(),
                         ExchangeRateTDSADailyExchangeRateTable.GetTableSourceDBName());
-                    strSQL += "FROM a_gift_batch gb ";
-                    strSQL += "LEFT JOIN a_ledger ldg ";
-                    strSQL += "  ON ldg.a_ledger_number_i = gb.a_ledger_number_i ";
-                    strSQL += "LEFT JOIN a_daily_exchange_rate der ";
-                    strSQL += "  ON der.a_from_currency_code_c = gb.a_currency_code_c ";
-                    strSQL += "  AND der.a_to_currency_code_c = ldg.a_base_currency_c ";
-                    strSQL += "  AND der.a_date_effective_from_d = gb.a_gl_effective_date_d ";
-                    strSQL += "  AND der.a_rate_of_exchange_n = gb.a_exchange_rate_to_base_n ";
-                    strSQL += "WHERE gb.a_currency_code_c <> ldg.a_base_currency_c ";
-                    strSQL += "  AND der.a_from_currency_code_c IS NULL ";
-                    strSQL += "GROUP BY gb.a_currency_code_c, ldg.a_base_currency_c, gb.a_exchange_rate_to_base_n, gb.a_gl_effective_date_d ";
+                    strSQL += "  a_from_currency_code_c, ";
+                    strSQL += "  a_to_currency_code_c, ";
+                    strSQL += "  a_rate_of_exchange_n, ";
+                    strSQL += "  a_date_effective_from_d, ";
+                    strSQL += "  min(a_time_effective_from_i), ";
+                    strSQL += "  NULL AS s_date_created_d, ";
+                    strSQL += "  NULL AS s_created_by_c, ";
+                    strSQL += "  NULL AS s_date_modified_d, ";
+                    strSQL += "  NULL AS s_modified_by_c, ";
+                    strSQL += "  NULL AS s_modification_id_t ";
+                    strSQL += "FROM ";
+                    strSQL += "( ";
+                    // These are all the used rows again (same as part of the query above) but this time we can count the usages from the two tables
+                    strSQL += "SELECT ";
+                    strSQL += "  1 AS journalUsage, ";
+                    strSQL += "  0 AS giftBatchUsage, ";
+                    strSQL += "  j.a_transaction_currency_c AS a_from_currency_code_c, ";
+                    strSQL += "  ldg.a_base_currency_c AS a_to_currency_code_c, ";
+                    strSQL += "  j.a_date_effective_d AS a_date_effective_from_d, ";
+                    strSQL += "  j.a_exchange_rate_time_i AS a_time_effective_from_i, ";
+                    strSQL += "  j.a_exchange_rate_to_base_n AS a_rate_of_exchange_n ";
+                    strSQL += "FROM PUB_a_journal AS j ";
+                    strSQL += "JOIN PUB_a_ledger AS ldg ON ";
+                    strSQL += "  ldg.a_ledger_number_i = j.a_ledger_number_i ";
+                    strSQL += "WHERE ";
+                    strSQL += "  j.a_transaction_currency_c <> ldg.a_base_currency_c ";
 
-                    strSQL += ") AS allrates ";
-                    strSQL += "ORDER BY allrates.a_date_effective_from_d DESC, allrates.a_time_effective_from_i DESC ";
+                    strSQL += Environment.NewLine;
+                    strSQL += "UNION ALL ";
+                    strSQL += Environment.NewLine;
+
+                    strSQL += "SELECT ";
+                    strSQL += "  0 AS journalUsage, ";
+                    strSQL += "  1 AS giftBatchUsage, ";
+                    strSQL += "  gb.a_currency_code_c AS a_from_currency_code_c, ";
+                    strSQL += "  ldg.a_base_currency_c AS a_to_currency_code_c, ";
+                    strSQL += "  gb.a_gl_effective_date_d AS a_date_effective_from_d, ";
+                    strSQL += "  0 AS a_time_effective_from_i, ";
+                    strSQL += "  gb.a_exchange_rate_to_base_n AS a_rate_of_exchange_n ";
+                    strSQL += "FROM PUB_a_gift_batch AS gb ";
+                    strSQL += "JOIN PUB_a_ledger AS ldg ON ";
+                    strSQL += "  ldg.a_ledger_number_i = gb.a_ledger_number_i ";
+                    strSQL += "WHERE ";
+                    strSQL += "  gb.a_currency_code_c <> ldg.a_base_currency_c ";
+                    strSQL += ") AS j_and_gb ";
+
+                    // GROUP the second half of the query (the UNION of used rates)
+                    strSQL += "GROUP BY ";
+                    strSQL += "  a_from_currency_code_c, ";
+                    strSQL += "  a_to_currency_code_c, ";
+                    strSQL += "  a_date_effective_from_d, ";
+                    strSQL += "  a_rate_of_exchange_n ";
+                    strSQL += ") AS all_rates ";
+
+                    // ORDER of the outermost SELECT
+                    strSQL += "ORDER BY ";
+                    strSQL += "  a_to_currency_code_c, ";
+                    strSQL += "  a_from_currency_code_c, ";
+                    strSQL += "  a_date_effective_from_d DESC, ";
+                    strSQL += "  a_time_effective_from_i DESC ";
 
                     DBAccess.GDBAccessObj.Select(WorkingDS, strSQL, WorkingDS.ADailyExchangeRate.TableName, Transaction);
+
 
                     // Now populate the ExchangeRateTDSADailyExchangerateUsage table
                     //-- COMPLETE QUERY TO RETURN ADailyExchangeRateUsage
@@ -187,24 +302,27 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                     //-- This part of the query returns the use cases from the Journal table
                     strSQL += "SELECT ";
                     strSQL += "  j.a_transaction_currency_c AS a_from_currency_code_c, ";
-                    strSQL += "  j.a_base_currency_c AS a_to_currency_code_c, ";
+                    strSQL += "  ldg.a_base_currency_c AS a_to_currency_code_c, ";
                     strSQL += "  j.a_exchange_rate_to_base_n AS a_rate_of_exchange_n, ";
                     strSQL += "  j.a_date_effective_d AS a_date_effective_from_d, ";
                     strSQL += "  j.a_exchange_rate_time_i AS a_time_effective_from_i, ";
                     strSQL += String.Format(
-                        "  j.a_ledger_number_i AS {0}, j.a_batch_number_i AS {1}, j.a_journal_number_i AS {2}, b.a_batch_status_c AS {3}, b.a_batch_year_i AS {4}, b.a_batch_period_i AS {5}, 'J' AS {6} ",
+                        "  j.a_ledger_number_i AS {0}, j.a_batch_number_i AS {1}, j.a_journal_number_i AS {2}, b.a_batch_status_c AS {3}, j.a_journal_description_c AS {4}, b.a_batch_year_i AS {5}, b.a_batch_period_i AS {6}, 'J' AS {7} ",
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetLedgerNumberDBName(),
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetBatchNumberDBName(),
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetJournalNumberDBName(),
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetBatchStatusDBName(),
+                        ExchangeRateTDSADailyExchangeRateUsageTable.GetDescriptionDBName(),
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetBatchYearDBName(),
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetBatchPeriodDBName(),
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetTableSourceDBName());
                     strSQL += "FROM a_journal j ";
+                    strSQL += "JOIN a_ledger ldg ";
+                    strSQL += "  ON ldg.a_ledger_number_i = j.a_ledger_number_i ";
                     strSQL += "JOIN a_batch b ";
                     strSQL += "  ON b.a_batch_number_i = j.a_batch_number_i ";
                     strSQL += "  AND b.a_ledger_number_i = j.a_ledger_number_i ";
-                    strSQL += "WHERE j.a_transaction_currency_c <> j.a_base_currency_c ";
+                    strSQL += "WHERE j.a_transaction_currency_c <> ldg.a_base_currency_c ";
 
                     strSQL += Environment.NewLine;
                     strSQL += "UNION ";
@@ -218,11 +336,12 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                     strSQL += "  gb.a_gl_effective_date_d AS a_date_effective_from_d, ";
                     strSQL += "  0 AS a_time_effective_from_i, ";
                     strSQL += String.Format(
-                        "  gb.a_ledger_number_i AS {0}, gb.a_batch_number_i AS {1}, 0 AS {2}, gb.a_batch_status_c AS {3}, gb.a_batch_year_i AS {4}, gb.a_batch_period_i AS {5}, 'GB' AS {6} ",
+                        "  gb.a_ledger_number_i AS {0}, gb.a_batch_number_i AS {1}, 0 AS {2}, gb.a_batch_status_c AS {3}, gb.a_batch_description_c AS {4}, gb.a_batch_year_i AS {5}, gb.a_batch_period_i AS {6}, 'GB' AS {7} ",
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetLedgerNumberDBName(),
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetBatchNumberDBName(),
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetJournalNumberDBName(),
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetBatchStatusDBName(),
+                        ExchangeRateTDSADailyExchangeRateUsageTable.GetDescriptionDBName(),
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetBatchYearDBName(),
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetBatchPeriodDBName(),
                         ExchangeRateTDSADailyExchangeRateUsageTable.GetTableSourceDBName());
@@ -242,17 +361,18 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                     // This is because there is no constraint that enforces the batch/journal tables to use a time from the exch rate table.
                     // So we have to go through all the rows in our data table and potentially change the time to make it possible to get our primary key.
 
-                    // Start by creating a data view on the whole result set.  The oredering is important because we are going to step through the set row by row.
-                    // We order on: From, To, Date, Time, JournalUsage, GiftBatchUsage
+                    // Start by creating a data view on the whole result set.  The ordering is important because we are going to step through the set row by row.
+                    // Within one group of from/to/date it is essential that the first 'source' is the DER table because we don't change the time on that one -
+                    //   and of course that must stay the same because the user can modify that one.
                     // We need to deal with the following possibilities:
-                    //   From  To   Date         Time   Rate  Journals  Gifts  TableSource
-                    //   EUR   GBP  2014-01-01   1234   2.115  0        0      DEX
-                    //   EUR   GBP  2014-01-01   1234   2.11   3        0      J
-                    //   EUR   GBP  2014-01-01   1234   2.22   1        0      J
-                    //   EUR   GBP  2014-01-01   1234   3.11   0        1      GB
+                    //   From  To   Date         Time  Source   Rate
+                    //   EUR   GBP  2014-01-01   1234   DER     2.11
+                    //   EUR   GBP  2014-01-01   1234   GBJ     2.115
+                    //   EUR   GBP  2014-01-01   1234   GBJ     2.22
+                    //   EUR   GBP  2014-01-01   1234   GBJ     3.11
                     //
-                    // In the first row we have an entry from the DEX table that is not used anywhere, but a (slightly) different rate is actually used
-                    //   in a Journal.  So we actually don't show the DEX row.
+                    // In the first row we have an entry from the DER table that is not used anywhere, but a (slightly) different rate is actually used
+                    //   in a Journal.
                     // In the other rows we have 3 different rates - all used somewhere.  We need to adjust the times so they are different.
 
                     DataView dv = new DataView(WorkingDS.ADailyExchangeRate, "",
@@ -261,34 +381,14 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                             ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
                             ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
                             ADailyExchangeRateTable.GetTimeEffectiveFromDBName(),
-                            ExchangeRateTDSADailyExchangeRateTable.GetJournalUsageDBName(),
-                            ExchangeRateTDSADailyExchangeRateTable.GetGiftBatchUsageDBName()), DataViewRowState.CurrentRows);
+                            ExchangeRateTDSADailyExchangeRateTable.GetTableSourceDBName(),
+                            ADailyExchangeRateTable.GetRateOfExchangeDBName()), DataViewRowState.CurrentRows);
 
                     for (int i = 0; i < dv.Count - 1; i++)
                     {
                         // Get the 'current' row and the 'next' one...
                         ExchangeRateTDSADailyExchangeRateRow drThis = (ExchangeRateTDSADailyExchangeRateRow)dv[i].Row;
                         ExchangeRateTDSADailyExchangeRateRow drNext = (ExchangeRateTDSADailyExchangeRateRow)dv[i + 1].Row;
-
-                        if ((drThis.JournalUsage == 0) && (drThis.GiftBatchUsage == 0))
-                        {
-                            // This will be a row that the client can edit/delete, so we need to add the modification info
-                            ADailyExchangeRateRow foundRow = (ADailyExchangeRateRow)exchangeRates.Rows.Find(new object[] {
-                                    drThis.FromCurrencyCode, drThis.ToCurrencyCode, drThis.DateEffectiveFrom, drThis.TimeEffectiveFrom
-                                });
-
-                            if (foundRow != null)
-                            {
-                                // it should always be non-null
-                                drThis.BeginEdit();
-                                drThis.ModificationId = foundRow.ModificationId;
-                                drThis.DateModified = foundRow.DateModified;
-                                drThis.ModifiedBy = foundRow.ModifiedBy;
-                                drThis.DateCreated = foundRow.DateCreated;
-                                drThis.CreatedBy = foundRow.CreatedBy;
-                                drThis.EndEdit();
-                            }
-                        }
 
                         if (!drThis.FromCurrencyCode.Equals(drNext.FromCurrencyCode)
                             || !drThis.ToCurrencyCode.Equals(drNext.ToCurrencyCode)
@@ -299,7 +399,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                             continue;
                         }
 
-                        // We have got two (or more) rows with the same potential primary key and different rates.
+                        // We have got two (or more) rows with the same potential primary key and different rates/usages.
                         // We need to work out how many rows ahead also have the same time and adjust them all
                         bool moveForwards = (drThis.TimeEffectiveFrom < 43200);
                         int timeOffset = 60;        // 1 minute

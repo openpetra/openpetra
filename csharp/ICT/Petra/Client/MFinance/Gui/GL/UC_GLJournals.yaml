@@ -67,14 +67,14 @@ RootNode:
             EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
-            Height: 185
+            Height: 175
             Controls: 
                 Row0: [txtDetailJournalDescription]
                 Row1: [cmbDetailSubSystemCode]
                 Row2: [cmbDetailTransactionTypeCode, btnAddAllocations]
-                Row3: [cmbDetailTransactionCurrency]
-                Row4: [dtpDetailDateEffective]
-                Row5: [txtDetailExchangeRateToBase, btnGetSetExchangeRate]
+                Row3: [dtpDetailDateEffective]
+                Row4: [cmbDetailTransactionCurrency, btnGetSetExchangeRate]
+                Row5: [txtDetailExchangeRateToBase]
         txtDetailJournalDescription: {Label=Journal Description, Width=350}
         # SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
         cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}

@@ -175,6 +175,10 @@ namespace Ict.Tools.DevelopersAssistant
             /// </summary>
             testWithoutDisplay,
             /// <summary>
+            /// Run the client GUI tests
+            /// </summary>
+            testClient,
+            /// <summary>
             /// Run all Main Navigation Screens tests
             /// </summary>
             mainNavigationTests,
@@ -351,6 +355,10 @@ namespace Ict.Tools.DevelopersAssistant
                 else if (TaskName.IndexOf("basic tests", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
                     _taskItem = TaskItem.testWithoutDisplay;
+                }
+                else if (TaskName.IndexOf("gui tests", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    _taskItem = TaskItem.testClient;
                 }
                 else if (TaskName.IndexOf("preview", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
@@ -531,6 +539,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.testWithoutDisplay: return "Running the common and server tests ... Please wait ...";
 
+                    case TaskItem.testClient: return "Running the client GUI tests ... Please wait ...";
+
                     case TaskItem.mainNavigationTests: return "Running the tests for the main navigation screens ... Please wait ...";
 
                     case TaskItem.uncrustify: return "Uncrustifying the source code ... Please wait ...";
@@ -558,6 +568,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.quickCompileTools: return "quickCompile -D:solution=Tools";
 
                     case TaskItem.testWithoutDisplay: return "test-without-display";
+
+                    case TaskItem.testClient: return "test-client";
 
                     case TaskItem.mainNavigationTests: return "test-main-navigation-screens-core";
 
@@ -636,6 +648,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.test: return "Running all tests";
 
                     case TaskItem.testWithoutDisplay: return "Running all the common and server tests";
+
+                    case TaskItem.testClient: return "Running all the client GUI tests";
 
                     case TaskItem.mainNavigationTests: return "Running the tests for the main navigation screens";
 
@@ -717,6 +731,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.testWithoutDisplay: return "Run all common and server tests";
 
+                    case TaskItem.testClient: return "Run all client GUI tests";
+
                     case TaskItem.mainNavigationTests: return "Run all the main navigation screens tests";
 
                     case TaskItem.uncrustify: return "Uncrustify the source code";
@@ -743,17 +759,17 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.generateGlue: return "Generate the glue";
 
-                    case TaskItem.generateORMAccess: return "Generate the ORM access files";
+                    case TaskItem.generateORMAccess: return "   Generate the ORM access files";
 
-                    case TaskItem.generateORMCachedTables: return "Generate the ORM cached tables";
+                    case TaskItem.generateORMCachedTables: return "   Generate the ORM cached tables";
 
-                    case TaskItem.generateORMData: return "Generate the ORM data";
+                    case TaskItem.generateORMData: return "   Generate the ORM data";
 
-                    case TaskItem.generateORMReferenceCounts: return "Generate the ORM reference count files";
+                    case TaskItem.generateORMReferenceCounts: return "   Generate the ORM reference count files";
 
                     case TaskItem.generateSolution: return "Generate the solution with full compile";
 
-                    case TaskItem.generateSolutionNoCompile: return "Generate the solution with no compile";
+                    case TaskItem.generateSolutionNoCompile: return "   Generate the solution with no compile";
 
                     case TaskItem.generateWinform: return "Generate a Windows form";
 
@@ -765,19 +781,19 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.patchDatabase: return "Patch the existing database";
 
-                    case TaskItem.minimalGenerateSolution: return "Generate the solution with minimal compile";
+                    case TaskItem.minimalGenerateSolution: return "   Generate the solution with minimal compile";
 
                     case TaskItem.quickClean: return "Quick clean";
 
                     case TaskItem.quickCompile: return "Quick compile of complete solution";
 
-                    case TaskItem.quickCompileClient: return "Quick compile of client solution";
+                    case TaskItem.quickCompileClient: return "   Quick compile of client solution";
 
-                    case TaskItem.quickCompileServer: return "Quick compile of server solution";
+                    case TaskItem.quickCompileServer: return "   Quick compile of server solution";
 
-                    case TaskItem.quickCompileTesting: return "Quick compile of testing solution";
+                    case TaskItem.quickCompileTesting: return "   Quick compile of testing solution";
 
-                    case TaskItem.quickCompileTools: return "Quick compile of tools solution";
+                    case TaskItem.quickCompileTools: return "   Quick compile of tools solution";
 
                     case TaskItem.recreateDatabase: return "Re-create the complete database";
 
@@ -795,7 +811,9 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.test: return "Run all tests";
 
-                    case TaskItem.testWithoutDisplay: return "Run all basic tests";
+                    case TaskItem.testWithoutDisplay: return "   Run all basic tests";
+
+                    case TaskItem.testClient: return "   Run all client GUI tests";
 
                     case TaskItem.mainNavigationTests: return "Run all the main navigation screens tests";
 

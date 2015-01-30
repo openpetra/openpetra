@@ -499,10 +499,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FPreviouslySelectedDetailRow.TransactionCurrency = FTransactionCurrency;
 
-                FPreviouslySelectedDetailRow.ExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
-                    FTransactionCurrency,
-                    FMainDS.ALedger[0].BaseCurrency,
-                    FBatchRow.DateEffective);
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = 0.0m;
+                //FPreviouslySelectedDetailRow.ExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
+                //    FTransactionCurrency,
+                //    FMainDS.ALedger[0].BaseCurrency,
+                //    FBatchRow.DateEffective);
 
                 if (FPreviouslySelectedDetailRow.ExchangeRateToBase > 0)
                 {
@@ -541,7 +542,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FLedgerNumber,
                     dtpDetailDateEffective.Date.HasValue ? dtpDetailDateEffective.Date.Value : DateTime.Today,
                     cmbDetailTransactionCurrency.GetSelectedString(),
-                    DEFAULT_CURRENCY_EXCHANGE,
+                    (txtDetailExchangeRateToBase.NumberValueDecimal == null) ? 0.0m : txtDetailExchangeRateToBase.NumberValueDecimal.Value,
                     out SelectedExchangeRate,
                     out SelectedEffectiveDate,
                     out SelectedEffectiveTime) == DialogResult.Cancel)
@@ -556,6 +557,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             FPreviouslySelectedDetailRow.ExchangeRateToBase = SelectedExchangeRate;
+            txtDetailExchangeRateToBase.NumberValueDecimal = SelectedExchangeRate;
+            FPreviouslySelectedDetailRow.ExchangeRateTime = SelectedEffectiveTime;
 
             RefreshCurrencyAndExchangeRate();
         }

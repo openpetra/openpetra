@@ -44,10 +44,14 @@ RootNode:
             Dock: Left
             ExpandedWidth: 175
             InitiallyExpanded: true     
-            ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
+            ShowFilterIsAlwaysOnLabel: FilterContext.StandardAndExtraFilter
             FilterControls: [pnlDisplayOptions]
-            ExtraFilterControls: [cmbDetailFromCurrencyCode, cmbDetailToCurrencyCode]
+            ExtraFilterControls: [cmbDetailFromCurrencyCode, cmbDetailToCurrencyCode, dtpDetailDateEffectiveFrom]
             FindControls: [cmbDetailFromCurrencyCode, cmbDetailToCurrencyCode]
+            ControlAttributes: 
+                cmbDetailFromCurrencyCode: {HasManualFilter=true}
+                cmbDetailToCurrencyCode: {HasManualFilter=true}
+                dtpDetailDateEffectiveFrom: {Comparison=gte, Label=Since Effective Date}
             Panels:
                 pnlDisplayOptions:
                     Controls: [rgrShowRates]
@@ -72,6 +76,7 @@ RootNode:
         btnDelete: 
             Action: actDelete
             Width: 80
+            HandleEnableInManualCode: True
         btnClose: 
             Action: actClose
             Stretch: horizontally

@@ -99,6 +99,20 @@ namespace Ict.Tools.DevelopersAssistant
         }
 
         /// <summary>
+        /// The selected index for the miscellaneous combo box
+        /// </summary>
+        public int MiscellaneousComboID {
+            get; set;
+        }
+
+        /// <summary>
+        /// The selected index for the source code combo box
+        /// </summary>
+        public int SourceCodeComboID {
+            get; set;
+        }
+
+        /// <summary>
         /// The selected index for the database combo box
         /// </summary>
         public int DatabaseComboID {
@@ -109,13 +123,6 @@ namespace Ict.Tools.DevelopersAssistant
         /// The number of seconds a task must run for before flashing the application window on completeion of a task
         /// </summary>
         public uint FlashAfterSeconds {
-            get; set;
-        }
-
-        /// <summary>
-        /// The selected index for the miscellaneous combo box
-        /// </summary>
-        public int MiscellaneousComboID {
             get; set;
         }
 
@@ -183,10 +190,57 @@ namespace Ict.Tools.DevelopersAssistant
             get; set;
         }
 
+        /// <summary>
+        /// Gets/Sets the user name on Launchpad for the current user
+        /// </summary>
+        public string LaunchpadUserName {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets the branch history item at the specified index
+        /// </summary>
+        /// <param name="Index">A number between 1 and BRANCH_HISTORY_SIZE indicating the history item to fetch</param>
+        /// <returns>Full path to the specified historical branch location</returns>
+        public string GetBranchHistory(int Index)
+        {
+            if ((Index < 1) || (Index > BRANCH_HISTORY_SIZE))
+            {
+                return String.Empty;
+            }
+
+            return this["BranchHistory" + Index.ToString()];
+        }
+
+        /// <summary>
+        /// Sets the branch history item at the specified index
+        /// </summary>
+        /// <param name="Index">A number between 1 and BRANCH_HISTORY_SIZE indicating the history item to set</param>
+        /// <param name="value">Full path to the specified historical branch location</param>
+        public void SetBranchHistoryItem(int Index, string value)
+        {
+            if ((Index < 1) || (Index > BRANCH_HISTORY_SIZE))
+            {
+                return;
+            }
+
+            string key = "BranchHistory" + Index.ToString();
+
+            if (this.ContainsKey(key))
+            {
+                this[key] = value;
+            }
+            else
+            {
+                this.Add(key, value);
+            }
+        }
 
         // Private members
         private string _path;       // path to local settings file
         private string _applicationVersion;
+        private const int BRANCH_HISTORY_SIZE = 9;
+
 
         /// <summary>
         /// Main Constructor
@@ -203,14 +257,16 @@ namespace Ict.Tools.DevelopersAssistant
             BazaarPath = String.Empty;
             BranchLocation = String.Empty;
             DbBuildConfigurations = String.Empty;
+            LaunchpadUserName = String.Empty;
             Sequence = String.Empty;
             YAMLLocation = String.Empty;
 
             CodeGenerationComboID = 2;
             CompilationComboID = 2;
+            MiscellaneousComboID = 0;
+            SourceCodeComboID = 0;
             DatabaseComboID = 1;
             FlashAfterSeconds = 15;
-            MiscellaneousComboID = 0;
 
             AutoStartServer = true;
             AutoStopServer = true;
@@ -227,14 +283,16 @@ namespace Ict.Tools.DevelopersAssistant
             this.Add("BazaarPath", BazaarPath);
             this.Add("BranchLocation", BranchLocation);
             this.Add("DbBuildConfigurations", DbBuildConfigurations);
+            this.Add("LaunchpadUserName", LaunchpadUserName);
             this.Add("Sequence", Sequence);
             this.Add("YAMLLocation", YAMLLocation);
 
             this.Add("CodeGenerationComboID", CodeGenerationComboID.ToString());
             this.Add("CompilationComboID", CompilationComboID.ToString());
+            this.Add("MiscellaneousComboID", MiscellaneousComboID.ToString());
+            this.Add("SourceCodeComboID", SourceCodeComboID.ToString());
             this.Add("DatabaseComboID", DatabaseComboID.ToString());
             this.Add("FlashAfterSeconds", FlashAfterSeconds.ToString());
-            this.Add("MiscellaneousComboID", MiscellaneousComboID.ToString());
 
             this.Add("AutoStartServer", AutoStartServer ? "1" : "0");
             this.Add("AutoStopServer", AutoStopServer ? "1" : "0");
@@ -245,6 +303,11 @@ namespace Ict.Tools.DevelopersAssistant
             this.Add("CompileWinForm", CompileWinForm ? "1" : "0");
             this.Add("StartClientAfterCompileWinForm", StartClientAfterCompileWinForm ? "1" : "0");
             this.Add("AutoCheckForUpdates", AutoCheckForUpdates ? "1" : "0");
+
+            for (int i = 1; i < 10; i++)
+            {
+                SetBranchHistoryItem(i, String.Empty);
+            }
         }
 
         /// <summary>
@@ -260,14 +323,16 @@ namespace Ict.Tools.DevelopersAssistant
             BazaarPath = this["BazaarPath"];
             BranchLocation = this["BranchLocation"];
             DbBuildConfigurations = this["DbBuildConfigurations"];
+            LaunchpadUserName = this["LaunchpadUserName"];
             Sequence = this["Sequence"];
             YAMLLocation = this["YAMLLocation"];
 
             CodeGenerationComboID = Convert.ToInt32(this["CodeGenerationComboID"]);
             CompilationComboID = Convert.ToInt32(this["CompilationComboID"]);
+            MiscellaneousComboID = Convert.ToInt32(this["MiscellaneousComboID"]);
+            SourceCodeComboID = Convert.ToInt32(this["SourceCodeComboID"]);
             DatabaseComboID = Convert.ToInt32(this["DatabaseComboID"]);
             FlashAfterSeconds = Convert.ToUInt32(this["FlashAfterSeconds"]);
-            MiscellaneousComboID = Convert.ToInt32(this["MiscellaneousComboID"]);
 
             AutoStartServer = (this["AutoStartServer"] != "0");
             AutoStopServer = (this["AutoStopServer"] != "0");
@@ -282,6 +347,7 @@ namespace Ict.Tools.DevelopersAssistant
             // Do version-specific upgrades
             if (this.ContainsKey("ApplicationVersion"))
             {
+                // This tells us the version of OPDA that saved the ini file we have just read ...
                 if (this["ApplicationVersion"].StartsWith("1.0.1."))
                 {
                     // We no longer support 'clean' on the compilation combo
@@ -289,6 +355,30 @@ namespace Ict.Tools.DevelopersAssistant
                     {
                         CompilationComboID = CompilationComboID - 1;
                         this["CompilationComboID"] = CompilationComboID.ToString();
+                    }
+                }
+
+                //  Work out the app version from the string - prefix the string with . so there are 4 dots
+                string prevAppVersion = "." + this["ApplicationVersion"];
+                int nPrevAppVersion = 0;
+                int nMultiplier = 1;
+
+                // Now go through the string separating the four parts
+                for (int i = 0; i < 4; i++)
+                {
+                    int p = prevAppVersion.LastIndexOf('.');
+                    nPrevAppVersion += (nMultiplier * Convert.ToInt32(prevAppVersion.Substring(p + 1)));
+                    nMultiplier *= 100;
+                    prevAppVersion = prevAppVersion.Substring(0, p);
+                }
+
+                if ((nPrevAppVersion <= 1000400) && (nPrevAppVersion > 0))
+                {
+                    // We added client gui tests in position 7 after version 1.0.4.0
+                    if (MiscellaneousComboID == 7)
+                    {
+                        MiscellaneousComboID++;
+                        this["CompilationComboID"] = MiscellaneousComboID.ToString();
                     }
                 }
             }
@@ -307,14 +397,16 @@ namespace Ict.Tools.DevelopersAssistant
             this["BazaarPath"] = BazaarPath;
             this["BranchLocation"] = BranchLocation;
             this["DbBuildConfigurations"] = DbBuildConfigurations;
+            this["LaunchpadUserName"] = LaunchpadUserName;
             this["Sequence"] = Sequence;
             this["YAMLLocation"] = YAMLLocation;
 
             this["CodeGenerationComboID"] = CodeGenerationComboID.ToString();
             this["CompilationComboID"] = CompilationComboID.ToString();
+            this["MiscellaneousComboID"] = MiscellaneousComboID.ToString();
+            this["SourceCodeComboID"] = SourceCodeComboID.ToString();
             this["DatabaseComboID"] = DatabaseComboID.ToString();
             this["FlashAfterSeconds"] = FlashAfterSeconds.ToString();
-            this["MiscellaneousComboID"] = MiscellaneousComboID.ToString();
 
             this["AutoStartServer"] = AutoStartServer ? "1" : "0";
             this["AutoStopServer"] = AutoStopServer ? "1" : "0";

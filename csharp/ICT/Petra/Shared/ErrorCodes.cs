@@ -220,6 +220,13 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Percentage cannot be greater than 100%.")]
         public const String ERR_PERCENTAGE_TOO_LARGE = "FIN.00011V";
 
+        /// <summary>Warning message that two exchange rates differ by more than 10%.</summary>
+        [ErrCodeAttribute("Duplicate exchange rate for currencies and date.",
+             ErrorMessageText =
+                 "There is already a row for this currency pair at the same rate for this date.")
+        ]
+        public const String ERR_EXCH_RATE_IS_DUPLICATE = "FIN.000012N";
+
         #endregion
 
         #region Partner Module-specific error codes

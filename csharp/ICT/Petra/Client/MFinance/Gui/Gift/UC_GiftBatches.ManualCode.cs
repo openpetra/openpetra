@@ -691,7 +691,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPreviouslySelectedDetailRow.CurrencyCode = CurrencyCode;
                 RecalculateTransactionAmounts();
-                RefreshCurrencyAndExchangeRateControls(true);
+                RefreshCurrencyAndExchangeRateControls();
             }
         }
 
@@ -1035,13 +1035,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     ANewExchangeRate = 1;
                 }
-                else
-                {
-                    ANewExchangeRate = TExchangeRateCache.GetDailyExchangeRate(
-                        CurrencyCode,
-                        FMainDS.ALedger[0].BaseCurrency,
-                        EffectiveDate);
-                }
+
+                //else
+                //{
+                //    ANewExchangeRate = TExchangeRateCache.GetDailyExchangeRate(
+                //        CurrencyCode,
+                //        FMainDS.ALedger[0].BaseCurrency,
+                //        EffectiveDate);
+                //}
             }
 
             //Need to get the exchange rate
@@ -1051,7 +1052,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
         }
 
-        private void RefreshCurrencyAndExchangeRateControls(bool AFromUserAction = false)
+        private void RefreshCurrencyAndExchangeRateControls()
         {
             if (FPreviouslySelectedDetailRow == null)
             {
@@ -1071,10 +1072,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
 
-            if (AFromUserAction && btnGetSetExchangeRate.Enabled)
-            {
-                btnGetSetExchangeRate.Focus();
-            }
+            // Note from AlanP Jan 2015:
+            // We used to put the focus on the Get/Set button as the text in the currency box changed.
+            // This was bad for two reasons
+            //  1. Some currencies do not have a unique first letter.  So as a typist you would need to type two or even three letters to select your currency.
+            //     This was impossible once the focus had shifted to the button.
+            //  2. It was worse than that.  Once the focus is on the button Windows has this great 'feature' that typing a letter perofrms the
+            //     action of ALT+letter without needing to press the ALT key!  So very unexpected things happened.
+            //if (AFromUserAction && btnGetSetExchangeRate.Enabled)
+            //{
+            //    btnGetSetExchangeRate.Focus();
+            //}
         }
 
         private void SetExchangeRateValue(Object sender, EventArgs e)
@@ -1090,7 +1098,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FLedgerNumber,
                     dtpDetailGlEffectiveDate.Date.Value,
                     cmbDetailCurrencyCode.GetSelectedString(),
-                    DEFAULT_CURRENCY_EXCHANGE,
+                    (txtDetailExchangeRateToBase.NumberValueDecimal == null) ? 0.0m : txtDetailExchangeRateToBase.NumberValueDecimal.Value,
                     out selectedExchangeRate,
                     out selectedEffectiveDate,
                     out selectedEffectiveTime) == DialogResult.Cancel)
@@ -1101,6 +1109,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FPreviouslySelectedDetailRow.ExchangeRateToBase != selectedExchangeRate)
             {
                 FPreviouslySelectedDetailRow.ExchangeRateToBase = selectedExchangeRate;
+                txtDetailExchangeRateToBase.NumberValueDecimal = selectedExchangeRate;
                 RecalculateTransactionAmounts(selectedExchangeRate);
 
                 //Enforce save needed condition

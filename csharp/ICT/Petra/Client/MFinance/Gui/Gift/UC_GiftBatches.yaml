@@ -77,8 +77,8 @@ RootNode:
                 Row1: [cmbDetailBankCostCentre]
                 Row2: [cmbDetailBankAccountCode]
                 Row3: [dtpDetailGlEffectiveDate, lblValidDateRange]
-                Row4: [cmbDetailCurrencyCode, txtDetailHashTotal]
-                Row5: [txtDetailExchangeRateToBase, btnGetSetExchangeRate]
+                Row4: [cmbDetailCurrencyCode, btnGetSetExchangeRate]
+                Row5: [txtDetailExchangeRateToBase, txtDetailHashTotal]
                 Row6: [cmbDetailMethodOfPaymentCode, rgrDetailGiftType]
                 #Row6: []
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}

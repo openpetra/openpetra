@@ -125,7 +125,6 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
-            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
@@ -166,7 +165,6 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
-            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
@@ -274,7 +272,6 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
-            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
@@ -354,7 +351,6 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
-            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
@@ -428,9 +424,11 @@ namespace Tests.MFinance.Client.ExchangeRates
                 MessageBoxTester tester = new MessageBoxTester(hWnd);
                 tester.SendCommand(MessageBoxTester.Command.No);
             };
+            // We have added 2 new rows but the same rate at different times of day
+            // When we save the duplicate row will get removed, so we will end up with 10 data rows
             mainScreen.SaveChanges();
             Assert.IsFalse(btnSave.Enabled, "The Save button should be disabled after the new row has been saved");
-            Assert.AreEqual(13, grdDetails.Rows.Count, "There should be 12 rows in the grid after saving 2 new rows");
+            Assert.AreEqual(11, grdDetails.Rows.Count, "There should be 10 rows in the grid after saving 2 new rows (but duplicates of each other)");
 
             mainScreen.Close();
         }
@@ -463,7 +461,6 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
-            mainScreen.ShowUnusedRates();
 
             // Controls
             ButtonTester btnNew = new ButtonTester("btnNew", mainScreen);
@@ -485,6 +482,9 @@ namespace Tests.MFinance.Client.ExchangeRates
             dtpEffectiveDate.Date = DateTime.Today.AddYears(-1);
             txtExchangeRate.Focus();
             Assert.AreEqual(0.0m, txtExchangeRate.NumberValueDecimal, "After changing the date the rate should now be 0.0m");
+
+            // Do not leave the rate on 0.0
+            txtExchangeRate.NumberValueDecimal = 2.1m;
         }
 
         #endregion
@@ -507,7 +507,6 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
-            mainScreen.ShowUnusedRates();
 
             // Controls
             ButtonTester btnNew = new ButtonTester("btnNew", mainScreen);
@@ -515,8 +514,6 @@ namespace Tests.MFinance.Client.ExchangeRates
             TCmbAutoPopulated cmbToCurrency = (new TCmbAutoPopulatedTester("cmbDetailToCurrencyCode", mainScreen)).Properties;
             TtxtPetraDate dtpEffectiveDate = (new TTxtPetraDateTester("dtpDetailDateEffectiveFrom", mainScreen)).Properties;
             TTxtNumericTextBox txtExchangeRate = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", mainScreen)).Properties;
-
-            mainScreen.ShowUnusedRates();
 
             // Create a new row based on the last row
             SelectRowInGrid(8);
@@ -554,7 +551,6 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
-            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
@@ -576,8 +572,11 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Add three rows
             btnNew.Click();
+            txtExchangeRate.NumberValueDecimal = 1.95m;
             btnNew.Click();
+            txtExchangeRate.NumberValueDecimal = 1.94m;
             btnNew.Click();
+            txtExchangeRate.NumberValueDecimal = 1.93m;
 
             DateTime expectedDate = DateTime.Today;
             string expectedT1 = "02:00";
@@ -589,7 +588,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(EffectiveCurrency(FToCurrencyId), cmbToCurrency.GetSelectedString());
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date);
             Assert.AreEqual(expectedT3, txtTimeEffective.Text);
-            Assert.AreEqual(EffectiveRate(), txtExchangeRate.NumberValueDecimal.Value);
+            Assert.AreEqual(1.93m, txtExchangeRate.NumberValueDecimal.Value);
             Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
 
             // Focus on the from currency, then change it to 'BEF'
@@ -610,7 +609,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date.Value);
             Assert.AreEqual(expectedT3, txtTimeEffective.Text);
-            Assert.AreEqual(EffectiveRate(), txtExchangeRate.NumberValueDecimal);
+            Assert.AreEqual(1.94m, txtExchangeRate.NumberValueDecimal);
             Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
 
             // Repeat for the To currency
@@ -631,8 +630,11 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date.Value);
             Assert.AreEqual(expectedT3, txtTimeEffective.Text);
-            Assert.AreEqual(EffectiveRate(), txtExchangeRate.NumberValueDecimal);
+            Assert.AreEqual(1.94m, txtExchangeRate.NumberValueDecimal);
             Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
+
+            // That is a duplicate row now
+            txtExchangeRate.NumberValueDecimal = 1.944m;
 
             // Finally check what happens when editing the date
             SelectRowInGrid(5);
@@ -676,7 +678,6 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
-            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButtonTester btnSaveTester = new ToolStripButtonTester("tbbSave", mainScreen);
@@ -697,8 +698,11 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Create 3 new rows
             btnNewTester.Click();
+            txtExchangeRate.NumberValueDecimal = 1.95m;
             btnNewTester.Click();
+            txtExchangeRate.NumberValueDecimal = 1.94m;
             btnNewTester.Click();
+            txtExchangeRate.NumberValueDecimal = 1.93m;
 
             Assert.AreEqual(12, grdDetails.Rows.Count);
             Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
@@ -816,7 +820,6 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
-            mainScreen.ShowUnusedRates();
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
@@ -866,7 +869,6 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
-            mainScreen.ShowUnusedRates();
 
             // Save and New buttons
             ToolStripButtonTester btnSave = new ToolStripButtonTester("tbbSave", mainScreen);
@@ -892,6 +894,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Add another row, but this time close without saving
             btnNew.Click();
+            txtExchangeRate.NumberValueDecimal = 10.1m;
 
             ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
             {
@@ -914,6 +917,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Add another row, but this time close AND save
             btnNew.Click();
+            txtExchangeRate.NumberValueDecimal = 10.1m;
 
             ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
             {
@@ -1023,7 +1027,6 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
-            mainScreen.ShowUnusedRates();
 
             ButtonTester btnNew = new ButtonTester("btnNew", mainScreen);
             TCmbAutoPopulated cmbFromCurrency = (new TCmbAutoPopulatedTester("cmbDetailFromCurrencyCode", mainScreen)).Properties;

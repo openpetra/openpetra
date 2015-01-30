@@ -50,8 +50,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
         public static void InsertTableValidation(ProcessTemplate Template, TTable currentTable, TTable origTable, string WhereToInsert)
         {
             ProcessTemplate snippet = Template.GetSnippet("TABLEVALIDATION");
+            ProcessTemplate deletableRowSnippet = Template.GetSnippet("SNIPDELETABLEROWVALIDATION");
+
             string ReasonForAutomValidation;
             bool CheckForEmptyDateGenerated;
+            bool FoundDeletableRowValidation = false;
 
             snippet.SetCodeletComment("TABLE_DESCRIPTION", currentTable.strDescription);
             snippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
@@ -60,6 +63,13 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 ProcessTemplate columnTemplate;
                 ProcessTemplate validateColumnTemplate;
+
+                if ((col.strNameDotNet == "Deletable") || (col.strNameDotNet == "DeletableFlag") || (col.strNameDotNet == "TypeDeletable"))
+                {
+                    deletableRowSnippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
+                    deletableRowSnippet.SetCodelet("COLUMNNAME", col.strNameDotNet);
+                    FoundDeletableRowValidation = true;
+                }
 
                 CheckForEmptyDateGenerated = false;
 
@@ -170,6 +180,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                     snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
                 }
+            }
+
+            if (FoundDeletableRowValidation)
+            {
+                snippet.InsertSnippet("DELETABLEROWVALIDATION", deletableRowSnippet);
+            }
+            else
+            {
+                snippet.SetCodelet("DELETABLEROWVALIDATION", String.Empty);
             }
 
             Template.InsertSnippet(WhereToInsert, snippet);

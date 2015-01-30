@@ -2062,7 +2062,8 @@ namespace Ict.Petra.Client.CommonControls
                 ControlToClearInstance = ((Panel)ClearArgumentButton.Parent).Controls[ControlToClearName];
             }
 
-            if (ControlToClearInstance != null)
+            // Confirm that we have a control to clear and that it is enabled
+            if ((ControlToClearInstance != null) && ControlToClearInstance.Enabled)
             {
                 // Different 'clear' logic for different kinds of Controls (TextBoxes, ComboBoxes, CheckBoxes)
 

@@ -56,10 +56,10 @@ namespace Ict.Tools.DevelopersAssistant
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.TaskPage = new System.Windows.Forms.TabPage();
+            this.cboBranchLocation = new System.Windows.Forms.ComboBox();
             this.chkTreatWarningsAsErrors = new System.Windows.Forms.CheckBox();
             this.linkLabelBazaar = new System.Windows.Forms.LinkLabel();
             this.linkLabelBranchLocation = new System.Windows.Forms.LinkLabel();
-            this.txtBranchLocation = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.grpMultiple = new System.Windows.Forms.GroupBox();
             this.btnRunAltSequence = new System.Windows.Forms.Button();
@@ -71,6 +71,10 @@ namespace Ict.Tools.DevelopersAssistant
             this.txtSequence = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.grpSingle = new System.Windows.Forms.GroupBox();
+            this.lblDatabaseName = new System.Windows.Forms.Label();
+            this.btnSourceCode = new System.Windows.Forms.Button();
+            this.cboSourceCode = new System.Windows.Forms.ComboBox();
+            this.label18 = new System.Windows.Forms.Label();
             this.btnPreviewWinform = new System.Windows.Forms.Button();
             this.chkStartClientAfterGenerateWinform = new System.Windows.Forms.CheckBox();
             this.chkCompileWinform = new System.Windows.Forms.CheckBox();
@@ -126,6 +130,10 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkCheckForUpdatesAtStartup = new System.Windows.Forms.CheckBox();
             this.btnCheckForUpdates = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.linkLabel_LaunchpadUrl = new System.Windows.Forms.LinkLabel();
+            this.label20 = new System.Windows.Forms.Label();
+            this.txtLaunchpadUserName = new System.Windows.Forms.TextBox();
+            this.label19 = new System.Windows.Forms.Label();
             this.btnAdvancedOptions = new System.Windows.Forms.Button();
             this.btnBrowseBazaar = new System.Windows.Forms.Button();
             this.txtBazaarPath = new System.Windows.Forms.TextBox();
@@ -181,10 +189,10 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // TaskPage
             //
+            this.TaskPage.Controls.Add(this.cboBranchLocation);
             this.TaskPage.Controls.Add(this.chkTreatWarningsAsErrors);
             this.TaskPage.Controls.Add(this.linkLabelBazaar);
             this.TaskPage.Controls.Add(this.linkLabelBranchLocation);
-            this.TaskPage.Controls.Add(this.txtBranchLocation);
             this.TaskPage.Controls.Add(this.label1);
             this.TaskPage.Controls.Add(this.grpMultiple);
             this.TaskPage.Controls.Add(this.grpSingle);
@@ -196,13 +204,23 @@ namespace Ict.Tools.DevelopersAssistant
             this.TaskPage.Text = "Tasks";
             this.TaskPage.UseVisualStyleBackColor = true;
             //
+            // cboBranchLocation
+            //
+            this.cboBranchLocation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboBranchLocation.FormattingEnabled = true;
+            this.cboBranchLocation.Location = new System.Drawing.Point(93, 9);
+            this.cboBranchLocation.Name = "cboBranchLocation";
+            this.cboBranchLocation.Size = new System.Drawing.Size(615, 21);
+            this.cboBranchLocation.TabIndex = 1;
+            this.cboBranchLocation.SelectedIndexChanged += new System.EventHandler(this.cboBranchLocation_SelectedIndexChanged);
+            //
             // chkTreatWarningsAsErrors
             //
             this.chkTreatWarningsAsErrors.AutoSize = true;
             this.chkTreatWarningsAsErrors.Location = new System.Drawing.Point(15, 433);
             this.chkTreatWarningsAsErrors.Name = "chkTreatWarningsAsErrors";
             this.chkTreatWarningsAsErrors.Size = new System.Drawing.Size(196, 17);
-            this.chkTreatWarningsAsErrors.TabIndex = 22;
+            this.chkTreatWarningsAsErrors.TabIndex = 6;
             this.chkTreatWarningsAsErrors.Text = "Treat errors and warnings as failures";
             this.toolTip.SetToolTip(this.chkTreatWarningsAsErrors,
                 "Check this to be alerted when warnings or errors occur.  Un-check to be alerted t" +
@@ -213,10 +231,10 @@ namespace Ict.Tools.DevelopersAssistant
             //
             this.linkLabelBazaar.AutoSize = true;
             this.linkLabelBazaar.Enabled = false;
-            this.linkLabelBazaar.Location = new System.Drawing.Point(574, 34);
+            this.linkLabelBazaar.Location = new System.Drawing.Point(548, 34);
             this.linkLabelBazaar.Name = "linkLabelBazaar";
             this.linkLabelBazaar.Size = new System.Drawing.Size(134, 13);
-            this.linkLabelBazaar.TabIndex = 5;
+            this.linkLabelBazaar.TabIndex = 3;
             this.linkLabelBazaar.TabStop = true;
             this.linkLabelBazaar.Text = "Open Bazaar Explorer here";
             this.toolTip.SetToolTip(this.linkLabelBazaar, "Bazaar is the source code control system used by Open Petra developers.");
@@ -234,17 +252,6 @@ namespace Ict.Tools.DevelopersAssistant
             this.toolTip.SetToolTip(this.linkLabelBranchLocation, "Set the location of you woking branch on the local file system.");
             this.linkLabelBranchLocation.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(
                 this.linkLabelBranchLocation_LinkClicked);
-            //
-            // txtBranchLocation
-            //
-            this.txtBranchLocation.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
-                                                      System.Windows.Forms.AnchorStyles.Right)));
-            this.txtBranchLocation.Location = new System.Drawing.Point(93, 11);
-            this.txtBranchLocation.Name = "txtBranchLocation";
-            this.txtBranchLocation.ReadOnly = true;
-            this.txtBranchLocation.Size = new System.Drawing.Size(615, 20);
-            this.txtBranchLocation.TabIndex = 1;
             //
             // label1
             //
@@ -272,7 +279,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.grpMultiple.Location = new System.Drawing.Point(405, 52);
             this.grpMultiple.Name = "grpMultiple";
             this.grpMultiple.Size = new System.Drawing.Size(322, 398);
-            this.grpMultiple.TabIndex = 4;
+            this.grpMultiple.TabIndex = 5;
             this.grpMultiple.TabStop = false;
             this.grpMultiple.Text = "Multiple Tasks";
             //
@@ -364,6 +371,10 @@ namespace Ict.Tools.DevelopersAssistant
             // grpSingle
             //
             this.grpSingle.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.grpSingle.Controls.Add(this.lblDatabaseName);
+            this.grpSingle.Controls.Add(this.btnSourceCode);
+            this.grpSingle.Controls.Add(this.cboSourceCode);
+            this.grpSingle.Controls.Add(this.label18);
             this.grpSingle.Controls.Add(this.btnPreviewWinform);
             this.grpSingle.Controls.Add(this.chkStartClientAfterGenerateWinform);
             this.grpSingle.Controls.Add(this.chkCompileWinform);
@@ -394,16 +405,54 @@ namespace Ict.Tools.DevelopersAssistant
             this.grpSingle.Location = new System.Drawing.Point(6, 52);
             this.grpSingle.Name = "grpSingle";
             this.grpSingle.Size = new System.Drawing.Size(390, 375);
-            this.grpSingle.TabIndex = 3;
+            this.grpSingle.TabIndex = 4;
             this.grpSingle.TabStop = false;
             this.grpSingle.Text = "Individual Tasks";
+            //
+            // lblDatabaseName
+            //
+            this.lblDatabaseName.AutoSize = true;
+            this.lblDatabaseName.Location = new System.Drawing.Point(211, 25);
+            this.lblDatabaseName.Name = "lblDatabaseName";
+            this.lblDatabaseName.Size = new System.Drawing.Size(33, 13);
+            this.lblDatabaseName.TabIndex = 1;
+            this.lblDatabaseName.Text = "None";
+            //
+            // btnSourceCode
+            //
+            this.btnSourceCode.Location = new System.Drawing.Point(352, 305);
+            this.btnSourceCode.Name = "btnSourceCode";
+            this.btnSourceCode.Size = new System.Drawing.Size(32, 23);
+            this.btnSourceCode.TabIndex = 23;
+            this.btnSourceCode.Text = "Go";
+            this.toolTip.SetToolTip(this.btnSourceCode, "Run the source code task specified in the adjacent list.");
+            this.btnSourceCode.UseVisualStyleBackColor = true;
+            this.btnSourceCode.Click += new System.EventHandler(this.btnSourceCode_Click);
+            //
+            // cboSourceCode
+            //
+            this.cboSourceCode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSourceCode.FormattingEnabled = true;
+            this.cboSourceCode.Location = new System.Drawing.Point(97, 306);
+            this.cboSourceCode.Name = "cboSourceCode";
+            this.cboSourceCode.Size = new System.Drawing.Size(249, 21);
+            this.cboSourceCode.TabIndex = 22;
+            //
+            // label18
+            //
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(6, 309);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(68, 13);
+            this.label18.TabIndex = 21;
+            this.label18.Text = "Source code";
             //
             // btnPreviewWinform
             //
             this.btnPreviewWinform.Location = new System.Drawing.Point(9, 142);
             this.btnPreviewWinform.Name = "btnPreviewWinform";
             this.btnPreviewWinform.Size = new System.Drawing.Size(58, 23);
-            this.btnPreviewWinform.TabIndex = 22;
+            this.btnPreviewWinform.TabIndex = 11;
             this.btnPreviewWinform.Text = "Preview";
             this.toolTip.SetToolTip(this.btnPreviewWinform, "Preview the Windows Form");
             this.btnPreviewWinform.UseVisualStyleBackColor = true;
@@ -417,7 +466,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkStartClientAfterGenerateWinform.Location = new System.Drawing.Point(150, 148);
             this.chkStartClientAfterGenerateWinform.Name = "chkStartClientAfterGenerateWinform";
             this.chkStartClientAfterGenerateWinform.Size = new System.Drawing.Size(156, 17);
-            this.chkStartClientAfterGenerateWinform.TabIndex = 8;
+            this.chkStartClientAfterGenerateWinform.TabIndex = 9;
             this.chkStartClientAfterGenerateWinform.Text = "Start client after compilation";
             this.toolTip.SetToolTip(this.chkStartClientAfterGenerateWinform, "Start the Open Petra client application on successful compilation.");
             this.chkStartClientAfterGenerateWinform.UseVisualStyleBackColor = true;
@@ -430,7 +479,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkCompileWinform.Location = new System.Drawing.Point(150, 125);
             this.chkCompileWinform.Name = "chkCompileWinform";
             this.chkCompileWinform.Size = new System.Drawing.Size(181, 17);
-            this.chkCompileWinform.TabIndex = 7;
+            this.chkCompileWinform.TabIndex = 8;
             this.chkCompileWinform.Text = "Compile after generating the form";
             this.toolTip.SetToolTip(this.chkCompileWinform, "Compile the c# code that was generated from the YAML (assuming no errors occurred" +
                 ").");
@@ -439,10 +488,10 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // btnCompilation
             //
-            this.btnCompilation.Location = new System.Drawing.Point(352, 242);
+            this.btnCompilation.Location = new System.Drawing.Point(352, 225);
             this.btnCompilation.Name = "btnCompilation";
             this.btnCompilation.Size = new System.Drawing.Size(32, 23);
-            this.btnCompilation.TabIndex = 15;
+            this.btnCompilation.TabIndex = 17;
             this.btnCompilation.Text = "Go";
             this.toolTip.SetToolTip(this.btnCompilation, "Run the compilation task specified in the adjacent list.");
             this.btnCompilation.UseVisualStyleBackColor = true;
@@ -450,10 +499,10 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // btnCodeGeneration
             //
-            this.btnCodeGeneration.Location = new System.Drawing.Point(352, 192);
+            this.btnCodeGeneration.Location = new System.Drawing.Point(352, 185);
             this.btnCodeGeneration.Name = "btnCodeGeneration";
             this.btnCodeGeneration.Size = new System.Drawing.Size(32, 23);
-            this.btnCodeGeneration.TabIndex = 12;
+            this.btnCodeGeneration.TabIndex = 14;
             this.btnCodeGeneration.Text = "Go";
             this.toolTip.SetToolTip(this.btnCodeGeneration, "Run the code generation task specified in the adjacent list.");
             this.btnCodeGeneration.UseVisualStyleBackColor = true;
@@ -463,36 +512,36 @@ namespace Ict.Tools.DevelopersAssistant
             //
             this.cboCompilation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboCompilation.FormattingEnabled = true;
-            this.cboCompilation.Location = new System.Drawing.Point(97, 244);
+            this.cboCompilation.Location = new System.Drawing.Point(97, 226);
             this.cboCompilation.Name = "cboCompilation";
             this.cboCompilation.Size = new System.Drawing.Size(249, 21);
-            this.cboCompilation.TabIndex = 14;
+            this.cboCompilation.TabIndex = 16;
             //
             // cboCodeGeneration
             //
             this.cboCodeGeneration.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboCodeGeneration.FormattingEnabled = true;
-            this.cboCodeGeneration.Location = new System.Drawing.Point(97, 194);
+            this.cboCodeGeneration.Location = new System.Drawing.Point(97, 186);
             this.cboCodeGeneration.Name = "cboCodeGeneration";
             this.cboCodeGeneration.Size = new System.Drawing.Size(249, 21);
-            this.cboCodeGeneration.TabIndex = 11;
+            this.cboCodeGeneration.TabIndex = 13;
             //
             // label8
             //
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 247);
+            this.label8.Location = new System.Drawing.Point(6, 229);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(61, 13);
-            this.label8.TabIndex = 13;
+            this.label8.TabIndex = 15;
             this.label8.Text = "Compilation";
             //
             // label5
             //
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 197);
+            this.label5.Location = new System.Drawing.Point(6, 189);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(85, 13);
-            this.label5.TabIndex = 10;
+            this.label5.TabIndex = 12;
             this.label5.Text = "Code generation";
             //
             // linkLabelRestartServer
@@ -501,7 +550,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelRestartServer.Location = new System.Drawing.Point(246, 48);
             this.linkLabelRestartServer.Name = "linkLabelRestartServer";
             this.linkLabelRestartServer.Size = new System.Drawing.Size(76, 13);
-            this.linkLabelRestartServer.TabIndex = 3;
+            this.linkLabelRestartServer.TabIndex = 4;
             this.linkLabelRestartServer.TabStop = true;
             this.linkLabelRestartServer.Text = "Re-start server";
             this.toolTip.SetToolTip(this.linkLabelRestartServer, "Restart the Open Petra server (and refresh all tables).");
@@ -514,7 +563,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelStopServer.Location = new System.Drawing.Point(139, 48);
             this.linkLabelStopServer.Name = "linkLabelStopServer";
             this.linkLabelStopServer.Size = new System.Drawing.Size(61, 13);
-            this.linkLabelStopServer.TabIndex = 2;
+            this.linkLabelStopServer.TabIndex = 3;
             this.linkLabelStopServer.TabStop = true;
             this.linkLabelStopServer.Text = "Stop server";
             this.toolTip.SetToolTip(this.linkLabelStopServer, "Stop the Open Petra server.");
@@ -526,7 +575,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelStartServer.Location = new System.Drawing.Point(38, 48);
             this.linkLabelStartServer.Name = "linkLabelStartServer";
             this.linkLabelStartServer.Size = new System.Drawing.Size(61, 13);
-            this.linkLabelStartServer.TabIndex = 1;
+            this.linkLabelStartServer.TabIndex = 2;
             this.linkLabelStartServer.TabStop = true;
             this.linkLabelStartServer.Text = "Start server";
             this.toolTip.SetToolTip(this.linkLabelStartServer, "Start the Open Petra server application.");
@@ -538,7 +587,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelYamlFile.Location = new System.Drawing.Point(6, 122);
             this.linkLabelYamlFile.Name = "linkLabelYamlFile";
             this.linkLabelYamlFile.Size = new System.Drawing.Size(104, 13);
-            this.linkLabelYamlFile.TabIndex = 6;
+            this.linkLabelYamlFile.TabIndex = 7;
             this.linkLabelYamlFile.TabStop = true;
             this.linkLabelYamlFile.Text = "Change the filename";
             this.toolTip.SetToolTip(this.linkLabelYamlFile, "Select the working YAML file from which to generate Windows Forms code");
@@ -548,10 +597,10 @@ namespace Ict.Tools.DevelopersAssistant
             //
             this.btnMiscellaneous.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnMiscellaneous.Location = new System.Drawing.Point(352, 292);
+            this.btnMiscellaneous.Location = new System.Drawing.Point(352, 265);
             this.btnMiscellaneous.Name = "btnMiscellaneous";
             this.btnMiscellaneous.Size = new System.Drawing.Size(32, 23);
-            this.btnMiscellaneous.TabIndex = 18;
+            this.btnMiscellaneous.TabIndex = 20;
             this.btnMiscellaneous.Text = "Go";
             this.toolTip.SetToolTip(this.btnMiscellaneous, "Run the miscellaneous task specified in the adjacent list.");
             this.btnMiscellaneous.UseVisualStyleBackColor = true;
@@ -564,18 +613,18 @@ namespace Ict.Tools.DevelopersAssistant
                                                       System.Windows.Forms.AnchorStyles.Right)));
             this.cboMiscellaneous.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboMiscellaneous.FormattingEnabled = true;
-            this.cboMiscellaneous.Location = new System.Drawing.Point(97, 294);
+            this.cboMiscellaneous.Location = new System.Drawing.Point(97, 266);
             this.cboMiscellaneous.Name = "cboMiscellaneous";
             this.cboMiscellaneous.Size = new System.Drawing.Size(249, 21);
-            this.cboMiscellaneous.TabIndex = 17;
+            this.cboMiscellaneous.TabIndex = 19;
             //
             // label6
             //
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 297);
+            this.label6.Location = new System.Drawing.Point(6, 269);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(74, 13);
-            this.label6.TabIndex = 16;
+            this.label6.TabIndex = 18;
             this.label6.Text = "Miscellaneous";
             //
             // btnStartClient
@@ -585,7 +634,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnStartClient.Location = new System.Drawing.Point(352, 342);
             this.btnStartClient.Name = "btnStartClient";
             this.btnStartClient.Size = new System.Drawing.Size(32, 23);
-            this.btnStartClient.TabIndex = 20;
+            this.btnStartClient.TabIndex = 25;
             this.btnStartClient.Text = "Go";
             this.toolTip.SetToolTip(this.btnStartClient, "Start the Open Petra client application.");
             this.btnStartClient.UseVisualStyleBackColor = true;
@@ -597,7 +646,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.label4.Location = new System.Drawing.Point(94, 347);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(115, 13);
-            this.label4.TabIndex = 19;
+            this.label4.TabIndex = 24;
             this.label4.Text = "Start Open Petra Client";
             //
             // label3
@@ -611,9 +660,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.label3.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label3.Location = new System.Drawing.Point(6, 25);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(66, 13);
+            this.label3.Size = new System.Drawing.Size(199, 13);
             this.label3.TabIndex = 0;
-            this.label3.Text = "Petra Server";
+            this.label3.Text = "Petra Server    - connecting to database:";
             //
             // btnGenerateWinform
             //
@@ -622,7 +671,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnGenerateWinform.Location = new System.Drawing.Point(352, 142);
             this.btnGenerateWinform.Name = "btnGenerateWinform";
             this.btnGenerateWinform.Size = new System.Drawing.Size(32, 23);
-            this.btnGenerateWinform.TabIndex = 9;
+            this.btnGenerateWinform.TabIndex = 10;
             this.btnGenerateWinform.Text = "Go";
             this.toolTip.SetToolTip(this.btnGenerateWinform, "Generate the Windows form code using the specified YAML file as the source.");
             this.btnGenerateWinform.UseVisualStyleBackColor = true;
@@ -637,7 +686,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.txtYAMLPath.Name = "txtYAMLPath";
             this.txtYAMLPath.ReadOnly = true;
             this.txtYAMLPath.Size = new System.Drawing.Size(375, 20);
-            this.txtYAMLPath.TabIndex = 5;
+            this.txtYAMLPath.TabIndex = 6;
             //
             // label2
             //
@@ -645,7 +694,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.label2.Location = new System.Drawing.Point(6, 83);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(188, 13);
-            this.label2.TabIndex = 4;
+            this.label2.TabIndex = 5;
             this.label2.Text = "Generate a Windows Form from YAML";
             //
             // DatabasePage
@@ -1003,6 +1052,10 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // groupBox4
             //
+            this.groupBox4.Controls.Add(this.linkLabel_LaunchpadUrl);
+            this.groupBox4.Controls.Add(this.label20);
+            this.groupBox4.Controls.Add(this.txtLaunchpadUserName);
+            this.groupBox4.Controls.Add(this.label19);
             this.groupBox4.Controls.Add(this.btnAdvancedOptions);
             this.groupBox4.Controls.Add(this.btnBrowseBazaar);
             this.groupBox4.Controls.Add(this.txtBazaarPath);
@@ -1017,12 +1070,51 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Miscellaneous Options";
             //
+            // linkLabel_LaunchpadUrl
+            //
+            this.linkLabel_LaunchpadUrl.AutoSize = true;
+            this.linkLabel_LaunchpadUrl.Location = new System.Drawing.Point(172, 96);
+            this.linkLabel_LaunchpadUrl.Name = "linkLabel_LaunchpadUrl";
+            this.linkLabel_LaunchpadUrl.Size = new System.Drawing.Size(55, 13);
+            this.linkLabel_LaunchpadUrl.TabIndex = 9;
+            this.linkLabel_LaunchpadUrl.TabStop = true;
+            this.linkLabel_LaunchpadUrl.Text = "linkLabel1";
+            this.linkLabel_LaunchpadUrl.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(
+                this.linkLabel_LaunchpadUrl_LinkClicked);
+            //
+            // label20
+            //
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(85, 96);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(81, 13);
+            this.label20.TabIndex = 8;
+            this.label20.Text = "which points to:";
+            //
+            // txtLaunchpadUserName
+            //
+            this.txtLaunchpadUserName.Location = new System.Drawing.Point(172, 73);
+            this.txtLaunchpadUserName.Name = "txtLaunchpadUserName";
+            this.txtLaunchpadUserName.Size = new System.Drawing.Size(123, 20);
+            this.txtLaunchpadUserName.TabIndex = 7;
+            this.txtLaunchpadUserName.Text = "Unknown";
+            this.txtLaunchpadUserName.TextChanged += new System.EventHandler(this.txtLaunchpadUserName_TextChanged);
+            //
+            // label19
+            //
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(26, 76);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(140, 13);
+            this.label19.TabIndex = 6;
+            this.label19.Text = "My Launchpad user name is";
+            //
             // btnAdvancedOptions
             //
-            this.btnAdvancedOptions.Location = new System.Drawing.Point(29, 95);
+            this.btnAdvancedOptions.Location = new System.Drawing.Point(610, 95);
             this.btnAdvancedOptions.Name = "btnAdvancedOptions";
             this.btnAdvancedOptions.Size = new System.Drawing.Size(75, 23);
-            this.btnAdvancedOptions.TabIndex = 6;
+            this.btnAdvancedOptions.TabIndex = 10;
             this.btnAdvancedOptions.Text = "Advanced";
             this.toolTip.SetToolTip(this.btnAdvancedOptions, "Click to set more advanced options.");
             this.btnAdvancedOptions.UseVisualStyleBackColor = true;
@@ -1030,7 +1122,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // btnBrowseBazaar
             //
-            this.btnBrowseBazaar.Location = new System.Drawing.Point(659, 54);
+            this.btnBrowseBazaar.Location = new System.Drawing.Point(659, 42);
             this.btnBrowseBazaar.Name = "btnBrowseBazaar";
             this.btnBrowseBazaar.Size = new System.Drawing.Size(26, 23);
             this.btnBrowseBazaar.TabIndex = 5;
@@ -1041,7 +1133,7 @@ namespace Ict.Tools.DevelopersAssistant
             // txtBazaarPath
             //
             this.txtBazaarPath.Enabled = false;
-            this.txtBazaarPath.Location = new System.Drawing.Point(135, 56);
+            this.txtBazaarPath.Location = new System.Drawing.Point(135, 44);
             this.txtBazaarPath.Name = "txtBazaarPath";
             this.txtBazaarPath.Size = new System.Drawing.Size(518, 20);
             this.txtBazaarPath.TabIndex = 4;
@@ -1049,7 +1141,7 @@ namespace Ict.Tools.DevelopersAssistant
             // label17
             //
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(26, 59);
+            this.label17.Location = new System.Drawing.Point(26, 47);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(103, 13);
             this.label17.TabIndex = 3;
@@ -1058,7 +1150,7 @@ namespace Ict.Tools.DevelopersAssistant
             // label14
             //
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(299, 29);
+            this.label14.Location = new System.Drawing.Point(299, 21);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(297, 13);
             this.label14.TabIndex = 2;
@@ -1066,7 +1158,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // txtFlashAfterSeconds
             //
-            this.txtFlashAfterSeconds.Location = new System.Drawing.Point(264, 26);
+            this.txtFlashAfterSeconds.Location = new System.Drawing.Point(264, 18);
             this.txtFlashAfterSeconds.Name = "txtFlashAfterSeconds";
             this.txtFlashAfterSeconds.Size = new System.Drawing.Size(29, 20);
             this.txtFlashAfterSeconds.TabIndex = 1;
@@ -1076,7 +1168,7 @@ namespace Ict.Tools.DevelopersAssistant
             // label13
             //
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(26, 29);
+            this.label13.Location = new System.Drawing.Point(26, 21);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(232, 13);
             this.label13.TabIndex = 0;
@@ -1305,7 +1397,6 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.CheckBox chkVerbose;
         private System.Windows.Forms.TextBox txtOutput;
         private System.Windows.Forms.LinkLabel linkLabelBranchLocation;
-        private System.Windows.Forms.TextBox txtBranchLocation;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cboMiscellaneous;
         private System.Windows.Forms.Label label6;
@@ -1394,5 +1485,14 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.Timer TickTimer;
         private System.Windows.Forms.Button btnCheckForUpdates;
         private System.Windows.Forms.CheckBox chkCheckForUpdatesAtStartup;
+        private System.Windows.Forms.ComboBox cboBranchLocation;
+        private System.Windows.Forms.Button btnSourceCode;
+        private System.Windows.Forms.ComboBox cboSourceCode;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.TextBox txtLaunchpadUserName;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label lblDatabaseName;
+        private System.Windows.Forms.LinkLabel linkLabel_LaunchpadUrl;
     }
 }
