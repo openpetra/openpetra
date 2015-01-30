@@ -347,7 +347,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AEndPeriod"></param>
         /// <param name="AYTD"></param>
         /// <param name="ACurrencySelect"></param>
-        /// <returns></returns>
+        /// <returns>Budget Amount</returns>
         private static decimal CalculateBudget(int AGLMSeq, int AStartPeriod, int AEndPeriod, bool AYTD, string ACurrencySelect)
         {
             decimal retVal = 0;
@@ -360,9 +360,6 @@ namespace Ict.Petra.Server.MFinance.Common
                 return retVal;
             }
 
-            bool NewTransaction = false;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
             AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = null;
             AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
 
@@ -371,30 +368,32 @@ namespace Ict.Petra.Server.MFinance.Common
                 AStartPeriod = AEndPeriod;
             }
 
-            for (lv_ytd_period_i = AStartPeriod; lv_ytd_period_i <= AEndPeriod; lv_ytd_period_i++)
-            {
-                GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeq, lv_ytd_period_i, transaction);
-                GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
-
-                if (GeneralLedgerMasterPeriodRow != null)
+            TDBTransaction transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref transaction,
+                delegate
                 {
-                    if (ACurrencySelect == MFinanceConstants.CURRENCY_BASE)
+                    for (lv_ytd_period_i = AStartPeriod; lv_ytd_period_i <= AEndPeriod; lv_ytd_period_i++)
                     {
-                        lv_currency_amount_n += GeneralLedgerMasterPeriodRow.BudgetBase;
+                        GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeq, lv_ytd_period_i, transaction);
+                        GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+
+                        if (GeneralLedgerMasterPeriodRow != null)
+                        {
+                            if (ACurrencySelect == MFinanceConstants.CURRENCY_BASE)
+                            {
+                                lv_currency_amount_n += GeneralLedgerMasterPeriodRow.BudgetBase;
+                            }
+                            else if (ACurrencySelect == MFinanceConstants.CURRENCY_INTERNATIONAL)
+                            {
+                                lv_currency_amount_n += GeneralLedgerMasterPeriodRow.BudgetIntl;
+                            }
+                        }
                     }
-                    else if (ACurrencySelect == MFinanceConstants.CURRENCY_INTERNATIONAL)
-                    {
-                        lv_currency_amount_n += GeneralLedgerMasterPeriodRow.BudgetIntl;
-                    }
-                }
-            }
+                });
 
             retVal = lv_currency_amount_n;
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
 
             return retVal;
         }

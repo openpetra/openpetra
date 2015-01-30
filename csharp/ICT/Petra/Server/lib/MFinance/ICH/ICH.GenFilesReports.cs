@@ -635,19 +635,19 @@ namespace Ict.Petra.Server.MFinance.ICH
         }
 
         /// <summary>
-        /// Imports all available stewardships (reading from a specific directory)
-        ///   into the current period.
+        /// Imports all available stewardships (reading from a specific directory) into the current period.
+        /// Not currently called from anywhere!
         /// </summary>
         /// <param name="ALedgerNumber">THe ICH Ledger number</param>
         /// <param name="AICHFolder">The ICH folder</param>
         public void ImportAllAvailableStewardshipReports(int ALedgerNumber, string AICHFolder)
         {
-            string LogFile;
             string PendingDir;
-            string NewDir;
+            string NewDir = AICHFolder + @"\" + DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("00") + DateTime.Today.Day.ToString(
+                "00");
             string CurrentFile;
             string InputLine;
-            string UnsuccessfulFileList;
+            string UnsuccessfulFileList = string.Empty;
             DateTime Time;
             int Hours;
             int Count;
@@ -668,181 +668,184 @@ namespace Ict.Petra.Server.MFinance.ICH
             FileListTable.Columns.Add("RunNumber", typeof(int));
 
             PendingDir = AICHFolder + @"\pending";
-
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-
-            /* Check that previous period has been closed so that these stewardships go into the right period.
-             *                     If it hasn't been closed then don't go any further */
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, DBTransaction);
-            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
-
-            int LedgerCurrentPeriod = LedgerRow.CurrentPeriod;
-
-            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, LedgerCurrentPeriod, DBTransaction);
-            AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-
-            if (AccountingPeriodRow != null)
-            {
-                if (DateTime.Today > AccountingPeriodRow.PeriodStartDate.AddDays(60))
-                {
-                    //TODO: MESSAGE "It looks like you need to close the current period before processing the current batch of Stewardships"
-                    return;
-                }
-            }
-
-            LogFile = Path.GetDirectoryName(TSrvSetting.ServerLogFile) + @"\Stewardship Import.log";
-
+            string LogFile = Path.GetDirectoryName(TSrvSetting.ServerLogFile) + @"\Stewardship Import.log";
             TextWriter LogWrite = new StreamWriter(LogFile);
 
-            // write a line of text to the file
-            LogWrite.WriteLine("Import Started: " + DateTime.Today.ToShortDateString() + " " + DateTime.Today.ToShortTimeString());
-
-            /* create new directory to store processed stewardships (named by current date) */
-            NewDir = AICHFolder + @"\" + DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("00") + DateTime.Today.Day.ToString("00");
-            Directory.CreateDirectory(NewDir);
-
-            UnsuccessfulFileList = string.Empty;
-
-            DateTime FileDate;
-            DataRow DatRow;
-
-            /* Process every .txt file in pending stewardship directory */
-            string[] FileEntries = Directory.GetFiles(PendingDir, "*.txt");
-
-            foreach (string FileName in FileEntries)
-            {
-                CurrentFile = FileName;
-                FormatOK = true;
-                Count = 1;
-
-                DatRow = (DataRow)FileListTable.NewRow();
-
-                int YearNo;
-                int PeriodNo;
-                int RunNo = 0;
-
-                /* look at first 6 lines in file (ie. header lines) and pick up key information
-                 * (report date and time, fund number, period, year, run number) */
-                using (StreamReader FileReader = new StreamReader(FileName))
+            TDBTransaction DBTransaction = null;
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.Serializable, ref DBTransaction,
+                delegate
                 {
-                    while (Count < 7 && FormatOK)
+                    /* Check that previous period has been closed so that these stewardships go into the right period.
+                     *                     If it hasn't been closed then don't go any further */
+                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, DBTransaction);
+                    ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+
+                    int LedgerCurrentPeriod = LedgerRow.CurrentPeriod;
+
+                    AAccountingPeriodTable AccountingPeriodTable =
+                        AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, LedgerCurrentPeriod, DBTransaction);
+                    AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
+
+                    if (AccountingPeriodRow != null)
                     {
-                        InputLine = FileReader.ReadLine().Trim();
-
-                        if (FileReader.Peek() >= 0)
+                        if (DateTime.Today > AccountingPeriodRow.PeriodStartDate.AddDays(60))
                         {
-                            if (!((InputLine.Length == 0) && (Count == 1)))
-                            {
-                                switch (Count)
-                                {
-                                    case 1:
-                                        FormatOK = (DateTime.TryParse(InputLine.Substring(69, 11), out FileDate));
-                                        DatRow["ReportDate"] = FileDate;
-                                        break;
-
-                                    case 2:
-                                        Time = Convert.ToDateTime(InputLine.Substring(69).Trim());
-                                        Hours = Time.Hour;
-                                        Mins = Time.Minute;
-                                        DatRow["ReportTimeInMins"] = (Hours * 60) + Mins;
-                                        break;
-
-                                    case 5:
-
-                                        if (InputLine.Length == 0)
-                                        {
-                                            /* on reports for closed years there are some extra blank lines before the Ledger line */
-                                            InputLine = FileReader.ReadLine().Trim();
-                                        }
-
-                                        DatRow["Ledger"] = InputLine.Substring(7, 3);
-                                        DateLineValid = (DateTime.TryParse(InputLine.Substring(64, 12), out PeriodDate));
-
-                                        /* if the report is from an old year then the date may be offset by 3 characters */
-
-                                        if (!DateLineValid)
-                                        {
-                                            DateLineValid = (DateTime.TryParse(InputLine.Substring(67, 12), out PeriodDate));
-                                        }
-
-                                        if (!DateLineValid)
-                                        {
-                                            FormatOK = false;
-                                        }
-                                        else
-                                        {
-                                            /* if start date is greater than 20th of the month then consider it the next month (to cope with
-                                             * strange period dates in Korea) */
-                                            if (PeriodDate.Day > 20)
-                                            {
-                                                PeriodDate.AddDays(30);
-                                            }
-
-                                            /* handle 13th period stewardship separately (needs to be treated as
-                                             *                 another period 12 one with run number 999) */
-                                            if ((PeriodDate.Day == 31) && (PeriodDate.Month == 12))
-                                            {
-                                                DatRow["Period"] = 12;
-                                                DatRow["Year"] = PeriodDate.Year;
-                                                RunNo = 999;
-                                                DatRow["RunNumber"] = RunNo;
-                                            }
-                                            else
-                                            {
-                                                AAccountingPeriodTable AccPeriodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber,
-                                                    DBTransaction);
-
-                                                string SqlExpression = "MONTH(" + AAccountingPeriodTable.GetPeriodStartDateDBName() + ") = " +
-                                                                       PeriodDate.Month.ToString();
-                                                DataRow[] AccPeriodRows = AccPeriodTable.Select(SqlExpression);
-                                                DataRow AccPeriodRow = AccPeriodRows[0];
-
-                                                PeriodNo = Convert.ToInt32(AccPeriodRow[AAccountingPeriodTable.GetAccountingPeriodNumberDBName()]);
-                                                DatRow["Period"] = PeriodNo;
-                                                YearNo = PeriodDate.Year;
-                                                DatRow["Year"] = YearNo;
-                                                // string Period = PeriodNo.ToString("00") + (YearNo - 2000).ToString("00");
-                                            }
-                                        }
-
-                                        break;
-
-                                    case 6:
-
-                                        if (RunNo != 999)
-                                        {
-                                            DatRow["RunNumber"] = Convert.ToInt32(InputLine.Substring(76, 6).Trim());
-                                        }
-
-                                        break;
-
-                                    default:
-                                        break;
-                                }
-
-                                Count += 1;
-                            }
+                            //TODO: MESSAGE "It looks like you need to close the current period before processing the current batch of Stewardships"
+                            return;
                         }
                     }
-                }
 
-                if (FormatOK)
-                {
-                    DatRow["FileName"] = CurrentFile;
-                    //Add the new row
-                    FileListTable.Rows.Add(DatRow);
-                }
-                else
-                {
-                    LogWrite.WriteLine(String.Format(Catalog.GetString("File: {0} is not in the correct format and will therefore be skipped."),
-                            CurrentFile));
-                    UnsuccessfulFileList += CurrentFile + ",";
-                    DatRow.Delete();
-                }
-            }
+                    // write a line of text to the file
+                    LogWrite.WriteLine("Import Started: " + DateTime.Today.ToShortDateString() + " " + DateTime.Today.ToShortTimeString());
 
-            GenerateStewardshipBatchFromFileList(ALedgerNumber, ref FileListTable, ref LogWrite, ref UnsuccessfulFileList, NewDir, ref DBTransaction);
+                    /* create new directory to store processed stewardships (named by current date) */
+                    Directory.CreateDirectory(NewDir);
+
+
+                    DateTime FileDate;
+                    DataRow DatRow;
+
+                    /* Process every .txt file in pending stewardship directory */
+                    string[] FileEntries = Directory.GetFiles(PendingDir, "*.txt");
+
+                    foreach (string FileName in FileEntries)
+                    {
+                        CurrentFile = FileName;
+                        FormatOK = true;
+                        Count = 1;
+
+                        DatRow = (DataRow)FileListTable.NewRow();
+
+                        int YearNo;
+                        int PeriodNo;
+                        int RunNo = 0;
+
+                        /* look at first 6 lines in file (ie. header lines) and pick up key information
+                         * (report date and time, fund number, period, year, run number) */
+                        using (StreamReader FileReader = new StreamReader(FileName))
+                        {
+                            while (Count < 7 && FormatOK)
+                            {
+                                InputLine = FileReader.ReadLine().Trim();
+
+                                if (FileReader.Peek() >= 0)
+                                {
+                                    if (!((InputLine.Length == 0) && (Count == 1)))
+                                    {
+                                        switch (Count)
+                                        {
+                                            case 1:
+                                                FormatOK = (DateTime.TryParse(InputLine.Substring(69, 11), out FileDate));
+                                                DatRow["ReportDate"] = FileDate;
+                                                break;
+
+                                            case 2:
+                                                Time = Convert.ToDateTime(InputLine.Substring(69).Trim());
+                                                Hours = Time.Hour;
+                                                Mins = Time.Minute;
+                                                DatRow["ReportTimeInMins"] = (Hours * 60) + Mins;
+                                                break;
+
+                                            case 5:
+
+                                                if (InputLine.Length == 0)
+                                                {
+                                                    /* on reports for closed years there are some extra blank lines before the Ledger line */
+                                                    InputLine = FileReader.ReadLine().Trim();
+                                                }
+
+                                                DatRow["Ledger"] = InputLine.Substring(7, 3);
+                                                DateLineValid = (DateTime.TryParse(InputLine.Substring(64, 12), out PeriodDate));
+
+                                                /* if the report is from an old year then the date may be offset by 3 characters */
+
+                                                if (!DateLineValid)
+                                                {
+                                                    DateLineValid = (DateTime.TryParse(InputLine.Substring(67, 12), out PeriodDate));
+                                                }
+
+                                                if (!DateLineValid)
+                                                {
+                                                    FormatOK = false;
+                                                }
+                                                else
+                                                {
+                                                    /* if start date is greater than 20th of the month then consider it the next month (to cope with
+                                                     * strange period dates in Korea) */
+                                                    if (PeriodDate.Day > 20)
+                                                    {
+                                                        PeriodDate.AddDays(30);
+                                                    }
+
+                                                    /* handle 13th period stewardship separately (needs to be treated as
+                                                     *                 another period 12 one with run number 999) */
+                                                    if ((PeriodDate.Day == 31) && (PeriodDate.Month == 12))
+                                                    {
+                                                        DatRow["Period"] = 12;
+                                                        DatRow["Year"] = PeriodDate.Year;
+                                                        RunNo = 999;
+                                                        DatRow["RunNumber"] = RunNo;
+                                                    }
+                                                    else
+                                                    {
+                                                        AAccountingPeriodTable AccPeriodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber,
+                                                            DBTransaction);
+
+                                                        string SqlExpression = "MONTH(" + AAccountingPeriodTable.GetPeriodStartDateDBName() +
+                                                                               ") = " +
+                                                                               PeriodDate.Month.ToString();
+                                                        DataRow[] AccPeriodRows = AccPeriodTable.Select(SqlExpression);
+                                                        DataRow AccPeriodRow = AccPeriodRows[0];
+
+                                                        PeriodNo =
+                                                            Convert.ToInt32(AccPeriodRow[AAccountingPeriodTable.GetAccountingPeriodNumberDBName()]);
+                                                        DatRow["Period"] = PeriodNo;
+                                                        YearNo = PeriodDate.Year;
+                                                        DatRow["Year"] = YearNo;
+                                                        // string Period = PeriodNo.ToString("00") + (YearNo - 2000).ToString("00");
+                                                    }
+                                                }
+
+                                                break;
+
+                                            case 6:
+
+                                                if (RunNo != 999)
+                                                {
+                                                    DatRow["RunNumber"] = Convert.ToInt32(InputLine.Substring(76, 6).Trim());
+                                                }
+
+                                                break;
+
+                                            default:
+                                                break;
+                                        }
+
+                                        Count += 1;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (FormatOK)
+                        {
+                            DatRow["FileName"] = CurrentFile;
+                            //Add the new row
+                            FileListTable.Rows.Add(DatRow);
+                        }
+                        else
+                        {
+                            LogWrite.WriteLine(String.Format(Catalog.GetString(
+                                        "File: {0} is not in the correct format and will therefore be skipped."),
+                                    CurrentFile));
+                            UnsuccessfulFileList += CurrentFile + ",";
+                            DatRow.Delete();
+                        }
+                    } // foreach filename
+
+                }); // Begin AutoRead Transaction
+
+            GenerateStewardshipBatchFromFileList(ALedgerNumber, ref FileListTable, ref LogWrite, ref UnsuccessfulFileList, NewDir);
 
             // close the stream
             LogWrite.Close();
@@ -858,13 +861,11 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="ALogWriter">TextWriter for the log file</param>
         /// <param name="AUnsuccessfulFileList">List of files that failed</param>
         /// <param name="ANewDir"></param>
-        /// <param name="ADBTransaction"></param>
         private void GenerateStewardshipBatchFromFileList(int ALedgerNumber,
             ref DataTable AFileList,
             ref TextWriter ALogWriter,
             ref string AUnsuccessfulFileList,
-            string ANewDir,
-            ref TDBTransaction ADBTransaction)
+            string ANewDir)
         {
             int PreviousLedger = 0;
             int PreviousRunNumber = 0;
@@ -900,7 +901,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 if ((LedgerNo != PreviousLedger) || (PeriodNo != PreviousPeriod) || (RunNo != PreviousRunNumber))
                 {
                     Successful = GenerateStewardshipBatchFromReportFile(ALedgerNumber, YearNo, PeriodNo, RunNo, LedgerNo.ToString(
-                            "00") + "00", FileName, ref ALogWriter);
+                            "00") + "00", FileName, ALogWriter);
                 }
                 else
                 {
@@ -954,7 +955,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             int ARunNumber,
             string AFromCostCentre,
             string AFileName,
-            ref TextWriter ALogWriter)
+            TextWriter ALogWriter)
         {
             string InputLine;
             string LogMessage = string.Empty;
@@ -979,7 +980,6 @@ namespace Ict.Petra.Server.MFinance.ICH
             bool BatchCreateOk = false;
             bool JournalCreateOk = false;
             bool TransCreateOk = false;
-            bool Complete = false;
             bool ContinueImporting;
             bool ProcessFile = true;
             bool EmptyStewardship = false;
@@ -988,404 +988,395 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             //DEFINE BUFFER a_current_period_b FOR a_accounting_period.
 
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction DBTransaction = null;
+            Boolean SubmissionOK = false;
 
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, DBTransaction);
-            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
-
-            /* find accounting period to which this stewardship applies */
-            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriod, DBTransaction);
-            AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-
-            PeriodName = AccountingPeriodRow.AccountingPeriodDesc;
-
-            /* find current period of ICH ledger */
-            AAccountingPeriodTable AccPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, LedgerRow.CurrentPeriod, DBTransaction);
-            AAccountingPeriodRow AccPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[0];
-
-            /* if this stewardship applies to a period more than 12 months ago we can't process it as it gets
-             * too difficult to figure out whether it is a duplicate or not */
-            if ((AYear < AccPeriodRow.PeriodStartDate.Year)
-                && (APeriod < LedgerRow.CurrentPeriod))
-            {
-                LogMessage =
-                    String.Format(Catalog.GetString(
-                            "File {0} is for a period more than 12 months prior to the current period and will need to be processed manually."),
-                        AFileName);
-                ALogWriter.WriteLine(LogMessage);
-                return false;
-            }
-
-            ACostCentreTable CostCentreTable = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, AFromCostCentre, DBTransaction);
-            ACostCentreRow CostCentreRow = (ACostCentreRow)CostCentreTable.Rows[0];
-
-            if (CostCentreRow == null)
-            {
-                LogMessage = String.Format(Catalog.GetString("Cost Centre {0} does not exist. File {1} will be skipped."), AFromCostCentre, AFileName);
-                ALogWriter.WriteLine(LogMessage);
-                return false;
-            }
-
-            /* set batch description and transaction reference based on fund, period, year and run number */
-            FromCostCentreName = CostCentreRow.CostCentreName;
-            BatchDescription = PeriodName + " " + AYear.ToString() + " Stewardship For " + FromCostCentreName;
-            Reference = AFromCostCentre.Substring(0, AFromCostCentre.Length - 2) + APeriod.ToString("00") + ARunNumber.ToString("000");
-
-            /* if run number is not 0 then add it to the description (if it is 999 this means it is a period 13
-             *      stewardship and this needs to be specified) */
-            if (ARunNumber == 999)
-            {
-                BatchDescription += " (Period 13)";
-            }
-            else if (ARunNumber > 0)
-            {
-                BatchDescription += " (Run " + ARunNumber.ToString() + ")";
-            }
-
-            /* look for any previously entered batches that appear to match this stewardship (ie. same fund,
-             * period, run number) */
-            MatchingBatchNumber = FindMatchingStewardshipBatch(ALedgerNumber,
-                Reference,
-                AYear,
-                APeriod,
-                LedgerRow.CurrentPeriod,
-                AccPeriodRow.PeriodStartDate.Year,
-                ref DBTransaction);
-
-            if (!CostCentreRow.CostCentreActiveFlag)
-            {
-                LogMessage = String.Format(Catalog.GetString("Cost Centre {0} is not active. File {1} will be skipped."), AFromCostCentre, AFileName);
-                ALogWriter.WriteLine(LogMessage);
-                return false;
-            }
-
-            /* get currency information from the header */
-            Count = 1;
-            using (StreamReader FileReader = new StreamReader(AFileName))
-            {
-                while (Count <= 6)
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref DBTransaction, ref SubmissionOK,
+                delegate
                 {
-                    InputLine = FileReader.ReadLine().Trim();
+                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, DBTransaction);
+                    ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
 
-                    if (FileReader.Peek() >= 0)
+                    /* find accounting period to which this stewardship applies */
+                    AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriod, DBTransaction);
+                    AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
+
+                    PeriodName = AccountingPeriodRow.AccountingPeriodDesc;
+
+                    /* find current period of ICH ledger */
+                    AAccountingPeriodTable AccPeriodTable =
+                        AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, LedgerRow.CurrentPeriod, DBTransaction);
+                    AAccountingPeriodRow AccPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[0];
+
+                    /* if this stewardship applies to a period more than 12 months ago we can't process it as it gets
+                     * too difficult to figure out whether it is a duplicate or not */
+                    if ((AYear < AccPeriodRow.PeriodStartDate.Year)
+                        && (APeriod < LedgerRow.CurrentPeriod))
                     {
-                        /* ignore any blank lines at beginning */
-                        if (!((Count == 1) && (InputLine == string.Empty)))
+                        LogMessage =
+                            String.Format(Catalog.GetString(
+                                    "File {0} is for a period more than 12 months prior to the current period and will need to be processed manually."),
+                                AFileName);
+                        ALogWriter.WriteLine(LogMessage);
+                        return;
+                    }
+
+                    ACostCentreTable CostCentreTable = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, AFromCostCentre, DBTransaction);
+                    ACostCentreRow CostCentreRow = (ACostCentreRow)CostCentreTable.Rows[0];
+
+                    if (CostCentreRow == null)
+                    {
+                        LogMessage =
+                            String.Format(Catalog.GetString("Cost Centre {0} does not exist. File {1} will be skipped."), AFromCostCentre, AFileName);
+                        ALogWriter.WriteLine(LogMessage);
+                        return;
+                    }
+
+                    /* set batch description and transaction reference based on fund, period, year and run number */
+                    FromCostCentreName = CostCentreRow.CostCentreName;
+                    BatchDescription = PeriodName + " " + AYear.ToString() + " Stewardship For " + FromCostCentreName;
+                    Reference = AFromCostCentre.Substring(0, AFromCostCentre.Length - 2) + APeriod.ToString("00") + ARunNumber.ToString("000");
+
+                    /* if run number is not 0 then add it to the description (if it is 999 this means it is a period 13
+                     *      stewardship and this needs to be specified) */
+                    if (ARunNumber == 999)
+                    {
+                        BatchDescription += " (Period 13)";
+                    }
+                    else if (ARunNumber > 0)
+                    {
+                        BatchDescription += " (Run " + ARunNumber.ToString() + ")";
+                    }
+
+                    /* look for any previously entered batches that appear to match this stewardship (ie. same fund,
+                     * period, run number) */
+                    MatchingBatchNumber = FindMatchingStewardshipBatch(ALedgerNumber,
+                        Reference,
+                        AYear,
+                        APeriod,
+                        LedgerRow.CurrentPeriod,
+                        AccPeriodRow.PeriodStartDate.Year,
+                        ref DBTransaction);
+
+                    if (!CostCentreRow.CostCentreActiveFlag)
+                    {
+                        LogMessage =
+                            String.Format(Catalog.GetString("Cost Centre {0} is not active. File {1} will be skipped."), AFromCostCentre, AFileName);
+                        ALogWriter.WriteLine(LogMessage);
+                        return;
+                    }
+
+                    /* get currency information from the header */
+                    Count = 1;
+                    using (StreamReader FileReader = new StreamReader(AFileName))
+                    {
+                        while (Count <= 6)
                         {
-                            if (Count == 6)
+                            InputLine = FileReader.ReadLine().Trim();
+
+                            if (FileReader.Peek() >= 0)
                             {
-                                Currency = InputLine.Substring(10, 3);
+                                /* ignore any blank lines at beginning */
+                                if (!((Count == 1) && (InputLine == string.Empty)))
+                                {
+                                    if (Count == 6)
+                                    {
+                                        Currency = InputLine.Substring(10, 3);
+                                    }
+                                }
                             }
+
+                            Count += 1;
                         }
                     }
 
-                    Count += 1;
-                }
-            }
+                    ACurrencyTable CurrencyTable = ACurrencyAccess.LoadByPrimaryKey(Currency, DBTransaction);
+                    ACurrencyRow CurrencyRow = (ACurrencyRow)CurrencyTable.Rows[0];
 
-            ACurrencyTable CurrencyTable = ACurrencyAccess.LoadByPrimaryKey(Currency, DBTransaction);
-            ACurrencyRow CurrencyRow = (ACurrencyRow)CurrencyTable.Rows[0];
-
-            if (CurrencyRow == null)
-            {
-                LogMessage = String.Format(Catalog.GetString("Currency {0} does not exist. File {1} will be skipped."), Currency, AFileName);
-                ALogWriter.WriteLine(LogMessage);
-                return false;
-            }
-
-            /* work out which date to get the exchange rate for (should be for the period of the stewardship) */
-            ExchangeRateDate = AccountingPeriodRow.PeriodStartDate;
-
-            while (ExchangeRateDate.Year > AYear)
-            {
-                ExchangeRateDate = ExchangeRateDate.AddYears(-1);
-            }
-
-            /* get the rate */
-            if (Currency == LedgerRow.BaseCurrency)
-            {
-                ExchangeRate = 1;
-            }
-            else
-            {
-                ACorporateExchangeRateTable CorporateExchangeRateTable = ACorporateExchangeRateAccess.LoadByPrimaryKey(Currency,
-                    LedgerRow.BaseCurrency,
-                    ExchangeRateDate,
-                    DBTransaction);
-                ACorporateExchangeRateRow CorporateExchangeRateRow = (ACorporateExchangeRateRow)CorporateExchangeRateTable.Rows[0];
-
-                if (CorporateExchangeRateRow != null)
-                {
-                    ExchangeRate = CorporateExchangeRateRow.RateOfExchange;
-                }
-                else
-                {
-                    LogMessage =
-                        String.Format(Catalog.GetString(
-                                "File {0} could not be imported as there is no Corporate Exchange Rate for currency {1} period {2} year {3}"),
-                            AFileName, Currency, APeriod.ToString(), AYear);
-                    ALogWriter.WriteLine(LogMessage);
-                    return false;
-                }
-            }
-
-            CurrentPeriodDate = AccPeriodRow.PeriodEndDate;
-
-            /* create the batch, journal and transactions */
-
-            //Start of GenerateBatch process
-
-            //Use Commit and Rollback here
-
-            GLBatchTDS MainDS = TGLPosting.CreateABatch(ALedgerNumber, BatchDescription, 0, CurrentPeriodDate);
-
-            BatchNumber = MainDS.ABatch[0].BatchNumber;
-
-            BatchCreateOk = (MainDS != null);
-
-            if (!BatchCreateOk)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                goto PostGenerateBatch;
-            }
-
-            int LastJournalNumber = 0; //always for the creation of a new batch
-
-            JournalCreateOk = TGLPosting.CreateAJournal(
-                MainDS,
-                ALedgerNumber,
-                BatchNumber,
-                LastJournalNumber,
-                BatchDescription,
-                Currency,
-                ExchangeRate,
-                CurrentPeriodDate,
-                APeriod,
-                out JournalNumber);
-
-            if (!JournalCreateOk)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                goto PostGenerateBatch;
-            }
-
-            ContinueImporting = true;
-
-            using (StreamReader FileReader = new StreamReader(AFileName))
-            {
-                while (ContinueImporting)
-                {
-                    InputLine = FileReader.ReadLine().Trim();
-
-                    if (FileReader.Peek() >= 0)
+                    if (CurrencyRow == null)
                     {
-                        if (Count > 10)
+                        LogMessage = String.Format(Catalog.GetString("Currency {0} does not exist. File {1} will be skipped."), Currency, AFileName);
+                        ALogWriter.WriteLine(LogMessage);
+                        return;
+                    }
+
+                    /* work out which date to get the exchange rate for (should be for the period of the stewardship) */
+                    ExchangeRateDate = AccountingPeriodRow.PeriodStartDate;
+
+                    while (ExchangeRateDate.Year > AYear)
+                    {
+                        ExchangeRateDate = ExchangeRateDate.AddYears(-1);
+                    }
+
+                    /* get the rate */
+                    if (Currency == LedgerRow.BaseCurrency)
+                    {
+                        ExchangeRate = 1;
+                    }
+                    else
+                    {
+                        ACorporateExchangeRateTable CorporateExchangeRateTable = ACorporateExchangeRateAccess.LoadByPrimaryKey(Currency,
+                            LedgerRow.BaseCurrency,
+                            ExchangeRateDate,
+                            DBTransaction);
+                        ACorporateExchangeRateRow CorporateExchangeRateRow = (ACorporateExchangeRateRow)CorporateExchangeRateTable.Rows[0];
+
+                        if (CorporateExchangeRateRow != null)
                         {
-                            if (InputLine.IndexOf("---") != -1)
-                            {
-                                ContinueImporting = false;                 /* if this happens it is an empty stewardship */
-                            }
-                            else
-                            {
-                                /* read cost centre and income, expense, transfer amounts for this transaction
-                                 * and accumulate totals for use in creating the summary transactions later */
-                                ToCostCentre = InputLine.Substring(0, 5).Trim();
-                                Income = Convert.ToDecimal(ChangeToAmericanFormat(InputLine.Substring(44, 19).Trim()));
-                                Expense = Convert.ToDecimal(ChangeToAmericanFormat(InputLine.Substring(64, 19).Trim()));
-                                Transfer = Convert.ToDecimal(ChangeToAmericanFormat(InputLine.Substring(84, 19).Trim()));
-                                TotalIncome += Income;
-                                TotalExpense += Expense;
-                                TotalTransfer += Transfer;
-
-                                /* create one transaction for income, one for expense, one for transfers */
-                                Narrative = PeriodName + " Income " + FromCostCentreName;
-                                TransCreateOk = CreateStewardshipTransaction(
-                                    MainDS,
-                                    ALedgerNumber,
-                                    BatchNumber,
-                                    JournalNumber,
-                                    MFinanceConstants.TRANSACTION_TYPE_INCOME,
-                                    ToCostCentre,
-                                    Narrative,
-                                    Income,
-                                    Reference,
-                                    CurrentPeriodDate,
-                                    false,
-                                    ref ALogWriter,
-                                    ref DBTransaction);
-
-                                if (!TransCreateOk)
-                                {
-                                    DBAccess.GDBAccessObj.RollbackTransaction();
-                                    goto PostGenerateBatch;
-                                }
-
-                                Narrative = "AE " + PeriodName + " " + FromCostCentreName;
-                                TransCreateOk = CreateStewardshipTransaction(
-                                    MainDS,
-                                    ALedgerNumber,
-                                    BatchNumber,
-                                    JournalNumber,
-                                    MFinanceConstants.TRANSACTION_TYPE_EXPENSE,
-                                    ToCostCentre,
-                                    Narrative,
-                                    Expense,
-                                    Reference,
-                                    CurrentPeriodDate,
-                                    false,
-                                    ref ALogWriter,
-                                    ref DBTransaction);
-
-                                if (!TransCreateOk)
-                                {
-                                    DBAccess.GDBAccessObj.RollbackTransaction();
-                                    goto PostGenerateBatch;
-                                }
-
-                                Narrative = PeriodName + " Direct xfer " + FromCostCentreName;
-                                TransCreateOk = CreateStewardshipTransaction(
-                                    MainDS,
-                                    ALedgerNumber,
-                                    BatchNumber,
-                                    JournalNumber,
-                                    MFinanceConstants.TRANSACTION_TYPE_TRANSFER,
-                                    ToCostCentre,
-                                    Narrative,
-                                    Transfer,
-                                    Reference,
-                                    CurrentPeriodDate,
-                                    false,
-                                    ref ALogWriter,
-                                    ref DBTransaction);
-
-                                if (!TransCreateOk)
-                                {
-                                    DBAccess.GDBAccessObj.RollbackTransaction();
-                                    goto PostGenerateBatch;
-                                }
-                            }
+                            ExchangeRate = CorporateExchangeRateRow.RateOfExchange;
+                        }
+                        else
+                        {
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "File {0} could not be imported as there is no Corporate Exchange Rate for currency {1} period {2} year {3}"),
+                                    AFileName, Currency, APeriod.ToString(), AYear);
+                            ALogWriter.WriteLine(LogMessage);
+                            return;
                         }
                     }
 
-                    Count += 1;
-                }
-            }
+                    CurrentPeriodDate = AccPeriodRow.PeriodEndDate;
 
-            /* if we found an apparently matching batch for this stewardship earlier then we now need to
-             *     check whether the totals we have just calculated from this file match that previously entered
-             *     batch (this will affect what we write to the logfile about it and may affect whether
-             *     or not we go ahead and process it) */
+                    /* create the batch, journal and transactions */
+                    //Start of GenerateBatch process
 
-            if (MatchingBatchNumber != 0)
-            {
-                DealWithMatchingStewardshipBatch(ALedgerNumber,
-                    MatchingBatchNumber,
-                    ARunNumber,
-                    AYear,
-                    AFileName,
-                    AFromCostCentre,
-                    FromCostCentreName,
-                    PeriodName,
-                    TotalIncome,
-                    TotalExpense,
-                    TotalTransfer,
-                    ref ALogWriter,
-                    ref DBTransaction,
-                    out ProcessFile);
 
-                if (!ProcessFile)
-                {
-                    Complete = true;
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    goto PostGenerateBatch;
-                }
-            }
+                    GLBatchTDS MainDS = TGLPosting.CreateABatch(ALedgerNumber, BatchDescription, 0, CurrentPeriodDate);
 
-            /* create the summary transactions for income, expense and transfers */
-            Narrative = PeriodName + " Income For Others " + FromCostCentreName;
-            TransCreateOk = CreateStewardshipTransaction(
-                MainDS,
-                ALedgerNumber,
-                BatchNumber,
-                JournalNumber,
-                MFinanceConstants.TRANSACTION_TYPE_INCOME,
-                AFromCostCentre,
-                Narrative,
-                TotalIncome,
-                Reference,
-                CurrentPeriodDate,
-                true,
-                ref ALogWriter,
-                ref DBTransaction);
+                    BatchNumber = MainDS.ABatch[0].BatchNumber;
 
-            if (!TransCreateOk)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                goto PostGenerateBatch;
-            }
+                    BatchCreateOk = (MainDS != null);
 
-            Narrative = "AE For Others " + PeriodName + " " + FromCostCentreName;
-            TransCreateOk = CreateStewardshipTransaction(
-                MainDS,
-                ALedgerNumber,
-                BatchNumber,
-                JournalNumber,
-                MFinanceConstants.TRANSACTION_TYPE_EXPENSE,
-                AFromCostCentre,
-                Narrative,
-                TotalExpense,
-                Reference,
-                CurrentPeriodDate,
-                true,
-                ref ALogWriter,
-                ref DBTransaction);
+                    if (!BatchCreateOk)
+                    {
+                        return;
+                    }
 
-            if (!TransCreateOk)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                goto PostGenerateBatch;
-            }
+                    int LastJournalNumber = 0; //always for the creation of a new batch
 
-            Narrative = PeriodName + " Direct xfer For Others " + FromCostCentreName;
-            TransCreateOk = CreateStewardshipTransaction(
-                MainDS,
-                ALedgerNumber,
-                BatchNumber,
-                JournalNumber,
-                MFinanceConstants.TRANSACTION_TYPE_TRANSFER,
-                AFromCostCentre,
-                Narrative,
-                TotalTransfer,
-                Reference,
-                CurrentPeriodDate,
-                true,
-                ref ALogWriter,
-                ref DBTransaction);
+                    JournalCreateOk = TGLPosting.CreateAJournal(
+                        MainDS,
+                        ALedgerNumber,
+                        BatchNumber,
+                        LastJournalNumber,
+                        BatchDescription,
+                        Currency,
+                        ExchangeRate,
+                        CurrentPeriodDate,
+                        APeriod,
+                        out JournalNumber);
 
-            if (!TransCreateOk)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                goto PostGenerateBatch;
-            }
+                    if (!JournalCreateOk)
+                    {
+                        return;
+                    }
 
-            /* if it was an empty stewardship then undo batch creation */
-            if ((TotalIncome == 0) && (TotalExpense == 0) && (TotalTransfer == 0) && (Income == 0) && (Expense == 0) && (Transfer == 0))
-            {
-                Complete = true;
-                EmptyStewardship = true;
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                goto PostGenerateBatch;
-            }
+                    ContinueImporting = true;
 
-            GLBatchTDSAccess.SubmitChanges(MainDS);
+                    using (StreamReader FileReader = new StreamReader(AFileName))
+                    {
+                        while (ContinueImporting)
+                        {
+                            InputLine = FileReader.ReadLine().Trim();
 
-            Complete = true;
+                            if (FileReader.Peek() >= 0)
+                            {
+                                if (Count > 10)
+                                {
+                                    if (InputLine.IndexOf("---") != -1)
+                                    {
+                                        ContinueImporting = false;                 /* if this happens it is an empty stewardship */
+                                    }
+                                    else
+                                    {
+                                        /* read cost centre and income, expense, transfer amounts for this transaction
+                                         * and accumulate totals for use in creating the summary transactions later */
+                                        ToCostCentre = InputLine.Substring(0, 5).Trim();
+                                        Income = Convert.ToDecimal(ChangeToAmericanFormat(InputLine.Substring(44, 19).Trim()));
+                                        Expense = Convert.ToDecimal(ChangeToAmericanFormat(InputLine.Substring(64, 19).Trim()));
+                                        Transfer = Convert.ToDecimal(ChangeToAmericanFormat(InputLine.Substring(84, 19).Trim()));
+                                        TotalIncome += Income;
+                                        TotalExpense += Expense;
+                                        TotalTransfer += Transfer;
 
-            //End of Generate Batch
-PostGenerateBatch:
+                                        /* create one transaction for income, one for expense, one for transfers */
+                                        Narrative = PeriodName + " Income " + FromCostCentreName;
+                                        TransCreateOk = CreateStewardshipTransaction(
+                                            MainDS,
+                                            ALedgerNumber,
+                                            BatchNumber,
+                                            JournalNumber,
+                                            MFinanceConstants.TRANSACTION_TYPE_INCOME,
+                                            ToCostCentre,
+                                            Narrative,
+                                            Income,
+                                            Reference,
+                                            CurrentPeriodDate,
+                                            false,
+                                            ref ALogWriter,
+                                            ref DBTransaction);
+
+                                        if (!TransCreateOk)
+                                        {
+                                            return;
+                                        }
+
+                                        Narrative = "AE " + PeriodName + " " + FromCostCentreName;
+                                        TransCreateOk = CreateStewardshipTransaction(
+                                            MainDS,
+                                            ALedgerNumber,
+                                            BatchNumber,
+                                            JournalNumber,
+                                            MFinanceConstants.TRANSACTION_TYPE_EXPENSE,
+                                            ToCostCentre,
+                                            Narrative,
+                                            Expense,
+                                            Reference,
+                                            CurrentPeriodDate,
+                                            false,
+                                            ref ALogWriter,
+                                            ref DBTransaction);
+
+                                        if (!TransCreateOk)
+                                        {
+                                            return;
+                                        }
+
+                                        Narrative = PeriodName + " Direct xfer " + FromCostCentreName;
+                                        TransCreateOk = CreateStewardshipTransaction(
+                                            MainDS,
+                                            ALedgerNumber,
+                                            BatchNumber,
+                                            JournalNumber,
+                                            MFinanceConstants.TRANSACTION_TYPE_TRANSFER,
+                                            ToCostCentre,
+                                            Narrative,
+                                            Transfer,
+                                            Reference,
+                                            CurrentPeriodDate,
+                                            false,
+                                            ref ALogWriter,
+                                            ref DBTransaction);
+
+                                        if (!TransCreateOk)
+                                        {
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+
+                            Count += 1;
+                        }
+                    }
+
+                    /* if we found an apparently matching batch for this stewardship earlier then we now need to
+                     *     check whether the totals we have just calculated from this file match that previously entered
+                     *     batch (this will affect what we write to the logfile about it and may affect whether
+                     *     or not we go ahead and process it) */
+
+                    if (MatchingBatchNumber != 0)
+                    {
+                        DealWithMatchingStewardshipBatch(ALedgerNumber,
+                            MatchingBatchNumber,
+                            ARunNumber,
+                            AYear,
+                            AFileName,
+                            AFromCostCentre,
+                            FromCostCentreName,
+                            PeriodName,
+                            TotalIncome,
+                            TotalExpense,
+                            TotalTransfer,
+                            ref ALogWriter,
+                            ref DBTransaction,
+                            out ProcessFile);
+
+                        if (!ProcessFile)
+                        {
+                            SubmissionOK = true;
+                            return;
+                        }
+                    }
+
+                    /* create the summary transactions for income, expense and transfers */
+                    Narrative = PeriodName + " Income For Others " + FromCostCentreName;
+                    TransCreateOk = CreateStewardshipTransaction(
+                        MainDS,
+                        ALedgerNumber,
+                        BatchNumber,
+                        JournalNumber,
+                        MFinanceConstants.TRANSACTION_TYPE_INCOME,
+                        AFromCostCentre,
+                        Narrative,
+                        TotalIncome,
+                        Reference,
+                        CurrentPeriodDate,
+                        true,
+                        ref ALogWriter,
+                        ref DBTransaction);
+
+                    if (!TransCreateOk)
+                    {
+                        return;
+                    }
+
+                    Narrative = "AE For Others " + PeriodName + " " + FromCostCentreName;
+                    TransCreateOk = CreateStewardshipTransaction(
+                        MainDS,
+                        ALedgerNumber,
+                        BatchNumber,
+                        JournalNumber,
+                        MFinanceConstants.TRANSACTION_TYPE_EXPENSE,
+                        AFromCostCentre,
+                        Narrative,
+                        TotalExpense,
+                        Reference,
+                        CurrentPeriodDate,
+                        true,
+                        ref ALogWriter,
+                        ref DBTransaction);
+
+                    if (!TransCreateOk)
+                    {
+                        return;
+                    }
+
+                    Narrative = PeriodName + " Direct xfer For Others " + FromCostCentreName;
+                    TransCreateOk = CreateStewardshipTransaction(
+                        MainDS,
+                        ALedgerNumber,
+                        BatchNumber,
+                        JournalNumber,
+                        MFinanceConstants.TRANSACTION_TYPE_TRANSFER,
+                        AFromCostCentre,
+                        Narrative,
+                        TotalTransfer,
+                        Reference,
+                        CurrentPeriodDate,
+                        true,
+                        ref ALogWriter,
+                        ref DBTransaction);
+
+                    if (!TransCreateOk)
+                    {
+                        return;
+                    }
+
+                    /* if it was an empty stewardship then undo batch creation */
+                    if ((TotalIncome == 0) && (TotalExpense == 0) && (TotalTransfer == 0) && (Income == 0) && (Expense == 0) && (Transfer == 0))
+                    {
+                        SubmissionOK = true;
+                        EmptyStewardship = true;
+                        return;
+                    }
+
+                    SubmissionOK = true;
+                });
 
             /* if something went wrong write something appropriate to the logfile */
-            if (!Complete)
+            if (!SubmissionOK)
             {
                 if (!BatchCreateOk)
                 {
@@ -1431,13 +1422,12 @@ PostGenerateBatch:
             }
             else if (ProcessFile && EmptyStewardship)
             {
-                /* if the stewardship was empty we still want to make it as successful even though we didn't create
-                 *              a batch */
+                // if the stewardship was empty we still want to make it as successful even though we didn't create a batch
                 return true;
             }
 
             return false;
-        }
+        } // Generate StewardshipBatch From ReportFile
 
         /// <summary>
         /// Looks at the specified batch and works out whether it is a duplicate

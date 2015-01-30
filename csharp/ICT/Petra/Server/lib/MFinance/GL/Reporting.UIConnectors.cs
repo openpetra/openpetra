@@ -34,6 +34,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.App.Core.Security;
@@ -44,6 +45,8 @@ using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 
@@ -128,7 +131,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction();
             try
             {
-                sql = "SELECT DISTINCT " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " AS " + AValueMember +
+                sql = "SELECT DISTINCT to_char(" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
+                      ",'0000000000') AS " + AValueMember +
                       ", " +
                       PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + " AS " + ADisplayMember +
                       " FROM " + PPartnerTable.GetTableDBName() + ", " +
@@ -2191,7 +2195,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable ExecutiveSummaryTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapte)
+        public static DataTable ExecutiveSummaryTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             TDBTransaction Transaction = null;
 
@@ -2481,6 +2485,419 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Results.Rows.Add(ResultRow);
 
             return Results;
+        }
+
+/* This has been moved to GiftReports.UIConnectors
+ *
+ *      /// <summary>
+ *      /// Returns a DataTable to the client for use in client-side reporting
+ *      /// </summary>
+ *      [NoRemoting]
+ *      public static DataTable GiftBatchDetailTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+ *      {
+ *          TDBTransaction Transaction = null;
+ *
+ *          int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+ *          int BatchNumber = AParameters["param_batch_number_i"].ToInt32();
+ *
+ *          // create new datatable
+ *          DataTable Results = new DataTable();
+ *
+ *          DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+ *              ref Transaction,
+ *              delegate
+ *              {
+ *                  DateTime CurrentDate = DateTime.Today;
+ *
+ *                  string Query =
+ *                      "SELECT DISTINCT a_gift_batch.a_batch_description_c, a_gift_batch.a_batch_status_c, a_gift_batch.a_gift_type_c, a_gift_batch.a_gl_effective_date_d, "
+ +
+ +                      "a_gift_batch.a_bank_cost_centre_c, a_gift_batch.a_bank_account_code_c, a_gift_batch.a_currency_code_c, a_gift_batch.a_hash_total_n, a_gift_batch.a_batch_total_n, "
+ +
+ +
+ +                      "a_gift_detail.a_gift_transaction_number_i, a_gift_detail.a_detail_number_i, a_gift_detail.a_confidential_gift_flag_l, "
+ +
+ +                      "a_gift_detail.p_recipient_key_n, a_gift_detail.a_gift_amount_n, a_gift_detail.a_gift_amount_intl_n, a_gift_detail.a_gift_transaction_amount_n, "
+ +
+ +                      "a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, a_gift_detail.a_recipient_ledger_number_n, "
+ +
+ +                      "a_gift_detail.a_gift_comment_one_c, a_gift_detail.a_gift_comment_two_c, a_gift_detail.a_gift_comment_three_c, a_gift_detail.a_tax_deductible_pct_n, "
+ +
+ +
+ +                      "a_gift.p_donor_key_n, a_gift.a_reference_c, a_gift.a_method_of_giving_code_c, a_gift.a_method_of_payment_code_c, "
+ +
+ +                      "a_gift.a_receipt_letter_code_c, a_gift.a_date_entered_d, a_gift.a_first_time_gift_l, a_gift.a_receipt_number_i, "
+ +
+ + "substring(Donor.p_partner_class_c FROM 1 for 1) AS DonorClass, "
+ + "Donor.p_partner_short_name_c, Donor.p_receipt_letter_frequency_c, Donor.p_receipt_each_gift_l, "
+ + "substring(Recipient.p_partner_class_c FROM 1 for 1) AS RecipientClass, Recipient.p_partner_short_name_c, "
+ + "a_gift_detail.p_mailing_code_c AS MailingCode, "
+ + "a_gift_detail.a_charge_flag_l AS ChargeFlag, "
+ +
+ +                      // true if donor has a valid Ex-Worker special type
+ +                      "CASE WHEN EXISTS (SELECT p_partner_type.* FROM p_partner_type WHERE " +
+ +                      "p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
+ +                      " AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
+ +                      " AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
+ +                      " AND p_partner_type.p_type_code_c LIKE '" +
+ +                      TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
+ +                      ") THEN True ELSE False END AS EXWORKER, " +
+ +
+ +                      // true if the gift is restricted for the user
+ +                      "CASE WHEN EXISTS (SELECT s_user_group.* FROM s_user_group " +
+ +                      "WHERE a_gift.a_restricted_l IS true" +
+ +                      " AND NOT EXISTS (SELECT s_group_gift.s_read_access_l FROM s_group_gift, s_user_group " +
+ +                      "WHERE s_group_gift.s_read_access_l" +
+ +                      " AND s_group_gift.a_ledger_number_i = " + LedgerNumber +
+ +                      " AND s_group_gift.a_batch_number_i = " + BatchNumber +
+ +                      " AND s_group_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
+ +                      " AND s_user_group.s_user_id_c = '" + UserInfo.GUserInfo.UserID + "'" +
+ +                      " AND s_user_group.s_group_id_c = s_group_gift.s_group_id_c" +
+ +                      " AND s_user_group.s_unit_key_n = s_group_gift.s_group_unit_key_n)" +
+ +                      ") THEN False ELSE True END AS ReadAccess " +
+ +
+ +                      "FROM a_gift_batch, a_gift_detail, a_gift, p_partner AS Donor, p_partner AS Recipient " +
+ +
+ +                      "WHERE a_gift_batch.a_ledger_number_i = " + LedgerNumber + " AND a_gift_batch.a_batch_number_i = " + BatchNumber +
+ +                      " AND a_gift.a_ledger_number_i = " + LedgerNumber + " AND a_gift.a_batch_number_i = " + BatchNumber +
+ +                      " AND a_gift_detail.a_ledger_number_i = " + LedgerNumber + " AND a_gift_detail.a_batch_number_i = " +
+ +                      BatchNumber +
+ +                      " AND a_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i " +
+ +                      " AND Donor.p_partner_key_n = a_gift.p_donor_key_n" +
+ +                      " AND Recipient.p_partner_key_n = a_gift_detail.p_recipient_key_n";
+ +
+ +                  Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
+ +              });
+ +
+ +          return Results;
+ +      }
+ +
+ +      /// <summary>
+ +      /// Returns a DataTable to the client for use in client-side reporting
+ +      /// </summary>
+ +      [NoRemoting]
+ +      public static DataTable RecipientTaxDeductPctTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+ +      {
+ +          TDBTransaction Transaction = null;
+ +
+ +          // create new datatable
+ +          DataTable Results = new DataTable();
+ +
+ +          DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+ +              delegate
+ +              {
+ +                  DateTime CurrentDate = DateTime.Today;
+ +
+ +                  string RecipientSelection = AParameters["param_recipient_selection"].ToString();
+ +
+ +                  string Query =
+ +                      "SELECT DISTINCT p_partner_tax_deductible_pct.p_partner_key_n, p_partner_tax_deductible_pct.p_date_valid_from_d, " +
+ +                      "p_partner_tax_deductible_pct.p_percentage_tax_deductible_n, p_partner.p_partner_short_name_c, " +
+ +                      "p_partner_gift_destination.p_field_key_n, um_unit_structure.um_parent_unit_key_n " +
+ +
+ +                      "FROM p_partner_tax_deductible_pct " +
+ +
+ +                      "LEFT JOIN p_partner " +
+ +                      "ON p_partner.p_partner_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
+ +
+ +                      "LEFT JOIN p_partner_gift_destination " +
+ +                      "ON CASE WHEN p_partner.p_partner_class_c = 'FAMILY' " +
+ +                      "THEN p_partner.p_partner_key_n = p_partner_gift_destination.p_partner_key_n " +
+ +                      "AND p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate + "' " +
+ +                      "AND (p_partner_gift_destination.p_date_expires_d IS NULL " +
+ +                      "OR (p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate + "' " +
+ +                      "AND p_partner_gift_destination.p_date_effective_d <> p_partner_gift_destination.p_date_expires_d)) END " +
+ +
+ +                      "LEFT JOIN um_unit_structure " +
+ +                      "ON CASE WHEN p_partner.p_partner_class_c = 'UNIT' " +
+ +                      "THEN NOT EXISTS (SELECT * FROM p_partner_type " +
+ +                      "WHERE p_partner_type.p_partner_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
+ +                      "AND p_partner_type.p_type_code_c = 'LEDGER') " +
+ +                      "AND um_unit_structure.um_child_unit_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
+ +                      "AND um_unit_structure.um_child_unit_key_n <> um_unit_structure.um_parent_unit_key_n END";
+ +
+ +                  if (RecipientSelection == "one_partner")
+ +                  {
+ +                      Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = " + AParameters["param_recipient_key"].ToInt64();
+ +                  }
+ +                  else if (RecipientSelection == "Extract")
+ +                  {
+ +                      // recipient must be part of extract
+ +                      Query += " WHERE EXISTS(SELECT * FROM m_extract, m_extract_master";
+ +
+ +                      if (!AParameters["param_chkPrintAllExtract"].ToBool())
+ +                      {
+ +                          Query += ", a_gift_detail, a_gift_batch";
+ +                      }
+ +
+ +                      Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = m_extract.p_partner_key_n " +
+ +                               "AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i " +
+ +                               "AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"] + "'";
+ +
+ +                      if (!AParameters["param_chkPrintAllExtract"].ToBool())
+ +                      {
+ +                          // recipient must have a posted gift
+ +                          Query += " AND a_gift_detail.a_ledger_number_i = " + AParameters["param_ledger_number_i"] +
+ +                                   " AND a_gift_detail.p_recipient_key_n = m_extract.p_partner_key_n " +
+ +                                   "AND a_gift_batch.a_ledger_number_i = " + AParameters["param_ledger_number_i"] +
+ +                                   " AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i " +
+ +                                   "AND a_gift_batch.a_batch_status_c = 'Posted'";
+ +                      }
+ +
+ +                      Query += ")";
+ +                  }
+ +
+ +                  Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
+ +              });
+ +
+ +          return Results;
+ +      }
+ +
+ */
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable FieldLeaderGiftSummary(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            String selectedFieldList = AParameters["param_clbFields"].ToString();
+
+            selectedFieldList = selectedFieldList.Replace('\'', ' ');
+            String FieldFilter = " AND partnerfield.p_partner_key_n IN (" + selectedFieldList + ") ";
+            Int32 LedgerNum = AParameters["param_ledger_number_i"].ToInt32();
+            DateTime PeriodStart = AParameters["param_from_date"].ToDate();
+            DateTime PeriodEnd = AParameters["param_to_date"].ToDate();
+            String PeriodRange = "BETWEEN '" + PeriodStart.ToString("yyyy-MM-dd") + "' AND '" + PeriodEnd.ToString("yyyy-MM-dd") + "'";
+            Int32 PeriodYear = PeriodEnd.Year;
+
+            DateTime Year = new DateTime(AParameters["param_year0"].ToInt32(), 1, 1);
+            String Year1Range = "BETWEEN '" + Year.ToString("yyyy-MM-dd") + "' AND '" + Year.AddYears(1).AddDays(-1).ToString("yyyy-MM-dd") + "'";
+
+            Year = new DateTime(AParameters["param_year1"].ToInt32(), 1, 1);
+            String Year2Range = "BETWEEN '" + Year.ToString("yyyy-MM-dd") + "' AND '" + Year.AddYears(1).AddDays(-1).ToString("yyyy-MM-dd") + "'";
+
+            Year = new DateTime(AParameters["param_year2"].ToInt32(), 1, 1);
+            String Year3Range = "BETWEEN '" + Year.ToString("yyyy-MM-dd") + "' AND '" + Year.AddYears(1).AddDays(-1).ToString("yyyy-MM-dd") + "'";
+
+            Year = new DateTime(AParameters["param_year3"].ToInt32(), 1, 1);
+            String Year4Range = "BETWEEN '" + Year.ToString("yyyy-MM-dd") + "' AND '" + Year.AddYears(1).AddDays(-1).ToString("yyyy-MM-dd") + "'";
+            DateTime FirstDate = Year;
+
+            if (PeriodStart < FirstDate)
+            {
+                FirstDate = PeriodStart;
+            }
+
+            String TotalDateRange = "BETWEEN '" + FirstDate.ToString("yyyy-MM-dd") + "' AND '" + new DateTime(DateTime.Today.Year, 12, 31).ToString(
+                "yyyy-MM-dd") + "'";
+
+
+            String Query =
+                " SELECT * FROM (" +
+                " SELECT " +
+                " partnerfield.p_partner_key_n AS FieldKey," +
+                " partnerfield.p_partner_short_name_c AS FieldName,"
+
+                + " partnerrecipient.p_partner_key_n AS RecipientKey," +
+                " partnerrecipient.p_partner_short_name_c AS RecipientName," +
+                " partnerrecipient.p_partner_class_c AS RecipientClass," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + PeriodRange + " THEN detail.a_gift_amount_n ELSE 0 END) AS AmountPeriod," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + Year1Range + " THEN detail.a_gift_amount_n ELSE 0 END) AS AmountYear1," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + Year2Range + " THEN detail.a_gift_amount_n ELSE 0 END) AS AmountYear2," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + Year3Range + " THEN detail.a_gift_amount_n ELSE 0 END) AS AmountYear3," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + Year4Range + " THEN detail.a_gift_amount_n ELSE 0 END) AS AmountYear4"
+
+                + " FROM" +
+                " PUB_p_partner as partnerfield," +
+                " PUB_p_partner as partnerrecipient," +
+                " PUB_a_gift as gift," +
+                " PUB_a_gift_detail as detail," +
+                " PUB_a_gift_batch as giftbatch"
+
+                + " WHERE" +
+                " detail.a_batch_number_i = gift.a_batch_number_i" +
+                " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i" +
+                " AND detail.a_recipient_ledger_number_n = partnerfield.p_partner_key_n" +
+                " AND detail.a_ledger_number_i = " + LedgerNum +
+                " AND gift.a_ledger_number_i = " + LedgerNum +
+                " AND gift.a_date_entered_d " + TotalDateRange +
+                " AND giftbatch.a_batch_status_c = 'Posted'" +
+                " AND giftbatch.a_batch_number_i = gift.a_batch_number_i" +
+                " AND giftbatch.a_ledger_number_i = " + LedgerNum
+
+                + " AND partnerrecipient.p_partner_key_n = detail.p_recipient_key_n"
+
+                + FieldFilter +
+                " GROUP BY partnerfield.p_partner_short_name_c, partnerfield.p_partner_key_n, partnerrecipient.p_partner_key_n, partnerrecipient.p_partner_short_name_c, partnerrecipient.p_partner_class_c "
+                +
+                ") AllData WHERE AmountPeriod > 0 ORDER BY FieldKey, RecipientName"
+            ;
+            DataTable resultTable = new DataTable();
+            try
+            {
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+                resultTable = DbAdapter.RunQuery(Query, "FieldLeaderGiftSummary", Transaction);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            return resultTable;
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// Derived from the existing method in MFinanceQueries\ReportFinance.cs
+        /// </summary>
+        [NoRemoting]
+        public static DataTable TotalGiftsThroughField(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            Int32 LedgerNum = AParameters["param_ledger_number_i"].ToInt32();
+            DateTime startDate = AParameters["param_StartDate"].ToDate();
+            string strStartDate = startDate.ToString("#yyyy-MM-dd#");
+            DateTime endDate = AParameters["param_EndDate"].ToDate();
+            string strEndDate = endDate.ToString("#yyyy-MM-dd#");
+
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
+            string SqlQuery = "SELECT batch.a_gl_effective_date_d as Date, motive.a_report_column_c AS ReportColumn, ";
+
+            if (AParameters["param_currency"].ToString() == "Base")
+            {
+                SqlQuery += "detail.a_gift_amount_n AS Amount";
+
+                if (TaxDeductiblePercentageEnabled)
+                {
+                    SqlQuery += ", detail.a_tax_deductible_amount_base_n AS TaxDeductAmount";
+                }
+            }
+            else
+            {
+                SqlQuery += "detail.a_gift_amount_intl_n AS Amount";
+
+                if (TaxDeductiblePercentageEnabled)
+                {
+                    SqlQuery += ", detail.a_tax_deductible_amount_intl_n AS TaxDeductAmount";
+                }
+            }
+
+            SqlQuery += (" FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch as batch, PUB_a_motivation_detail AS motive"
+
+                         + " WHERE detail.a_ledger_number_i = " + LedgerNum +
+                         " AND batch.a_batch_status_c = 'Posted'" +
+                         " AND batch.a_batch_number_i = gift.a_batch_number_i" +
+                         " AND batch.a_ledger_number_i = " + LedgerNum +
+                         " AND batch.a_gl_effective_date_d >= " + strStartDate +
+                         " AND batch.a_gl_effective_date_d <= " + strEndDate
+
+                         + " AND gift.a_ledger_number_i = " + LedgerNum +
+                         " AND detail.a_batch_number_i = gift.a_batch_number_i" +
+                         " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i"
+
+                         + " AND motive.a_ledger_number_i = " + LedgerNum +
+                         " AND motive.a_motivation_group_code_c = detail.a_motivation_group_code_c" +
+                         " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
+                         " AND motive.a_receipt_l=true"
+
+                         + " ORDER BY batch.a_gl_effective_date_d"
+                         );
+            DataTable tempTbl;
+            try
+            {
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+                tempTbl = DbAdapter.RunQuery(SqlQuery, "AllGifts", Transaction);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            DataTable resultTable = new DataTable();
+            resultTable.Columns.Add("Year", typeof(Int32));
+            resultTable.Columns.Add("Month", typeof(Int32));
+            resultTable.Columns.Add("MonthName", typeof(String));
+            resultTable.Columns.Add("MonthWorker", typeof(Decimal));
+            resultTable.Columns.Add("MonthWorkerCount", typeof(Int32));
+            resultTable.Columns.Add("MonthField", typeof(Decimal));
+            resultTable.Columns.Add("MonthFieldCount", typeof(Int32));
+            resultTable.Columns.Add("MonthTotal", typeof(Decimal));
+            resultTable.Columns.Add("MonthTotalCount", typeof(Int32));
+            resultTable.Columns.Add("MonthWorkerTaxDeduct", typeof(Decimal));
+            resultTable.Columns.Add("MonthFieldTaxDeduct", typeof(Decimal));
+            resultTable.Columns.Add("MonthTotalTaxDeduct", typeof(Decimal));
+
+            for (Int32 Year = endDate.Year; Year >= startDate.Year; Year--)
+            {
+                for (Int32 Month = 1; Month <= 12; Month++)
+                {
+                    string monthStart = String.Format("#{0:0000}-{1:00}-01#", Year, Month);
+                    string nextMonthStart = String.Format("#{0:0000}-{1:00}-01#", Year, Month + 1);
+
+                    if (Month == 12)
+                    {
+                        nextMonthStart = String.Format("#{0:0000}-01-01#", Year + 1);
+                    }
+
+                    tempTbl.DefaultView.RowFilter = "Date >= " + monthStart + " AND Date < " + nextMonthStart;
+
+                    DataRow resultRow = resultTable.NewRow();
+
+                    Decimal WorkerTotal = 0;
+                    Decimal FieldTotal = 0;
+                    Int32 WorkerCount = 0;
+                    Int32 FieldCount = 0;
+                    Int32 TotalCount = tempTbl.DefaultView.Count;
+
+                    Decimal WorkerTotalTaxDeduct = 0;
+                    Decimal FieldTotalTaxDeduct = 0;
+
+                    foreach (DataRowView rv in tempTbl.DefaultView)
+                    {
+                        DataRow Row = rv.Row;
+
+                        if (Row["ReportColumn"].ToString() == "Worker")
+                        {
+                            WorkerCount++;
+                            WorkerTotal += Convert.ToDecimal(Row["Amount"]);
+
+                            if (TaxDeductiblePercentageEnabled)
+                            {
+                                WorkerTotalTaxDeduct += Convert.ToDecimal(Row["TaxDeductAmount"]);
+                            }
+                        }
+                        else
+                        {
+                            FieldCount++;
+                            FieldTotal += Convert.ToDecimal(Row["Amount"]);
+
+                            if (TaxDeductiblePercentageEnabled)
+                            {
+                                FieldTotalTaxDeduct += Convert.ToDecimal(Row["TaxDeductAmount"]);
+                            }
+                        }
+                    }
+
+                    resultRow["Year"] = Year;
+                    resultRow["Month"] = Month;
+                    resultRow["MonthName"] = StringHelper.GetLongMonthName(Month);
+                    resultRow["MonthWorker"] = WorkerTotal;
+                    resultRow["MonthWorkerCount"] = WorkerCount;
+                    resultRow["MonthField"] = FieldTotal;
+                    resultRow["MonthFieldCount"] = FieldCount;
+                    resultRow["MonthTotal"] = WorkerTotal + FieldTotal;
+                    resultRow["MonthTotalCount"] = TotalCount;
+
+                    resultRow["MonthWorkerTaxDeduct"] = WorkerTotalTaxDeduct;
+                    resultRow["MonthFieldTaxDeduct"] = FieldTotalTaxDeduct;
+                    resultRow["MonthTotalTaxDeduct"] = WorkerTotalTaxDeduct + FieldTotalTaxDeduct;
+
+                    resultTable.Rows.Add(resultRow);
+                } // For Month
+
+            } // For Year
+
+            return resultTable;
         }
 
         // get Actuals for this month, YTD and Prior YTD and Budget YTD

@@ -338,7 +338,9 @@ namespace Ict.Petra.Server.MPartner.Common
             TDBTransaction Transaction = null;
             bool FoundBestAddress = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
                 delegate
                 {
                     DataSet PartnerLocationsDS = new DataSet();

@@ -80,12 +80,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // System.Diagnostics.Debug.WriteLine(
             UnloadTestData_GetBatchInfo();
             Assert.AreEqual(0, new GetBatchInfo(
-                    FLedgerNumber, FledgerInfo.CurrentPeriod).NumberOfBatches, "No unposted batch shall be found");
+                    FLedgerNumber, FledgerInfo.CurrentFinancialYear, FledgerInfo.CurrentPeriod).NumberOfBatches, "No unposted batch shall be found");
 
             LoadTestData_GetBatchInfo();
 
             Assert.AreEqual(2, new GetBatchInfo(
-                    FLedgerNumber, FledgerInfo.CurrentPeriod).NumberOfBatches, "Two of the four batches shall be found");
+                    FLedgerNumber,
+                    FledgerInfo.CurrentFinancialYear,
+                    FledgerInfo.CurrentPeriod).NumberOfBatches, "Two of the four batches shall be found");
             //UnloadTestData_GetBatchInfo();
 
             TVerificationResultCollection verificationResult;
@@ -450,27 +452,30 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         public void Unsuspense()
         {
-            try
-            {
-                OdbcParameter[] ParametersArray;
-                ParametersArray = new OdbcParameter[2];
-                ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-                ParametersArray[0].Value = ledgerNumber;
-                ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
-                ParametersArray[1].Value = strAcount;
+//            try
+//            {
+            OdbcParameter[] ParametersArray;
+            ParametersArray = new OdbcParameter[2];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[0].Value = ledgerNumber;
+            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
+            ParametersArray[1].Value = strAcount;
 
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-                string strSQL = "DELETE FROM PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
-                strSQL += "WHERE " + ASuspenseAccountTable.GetLedgerNumberDBName() + " = ? ";
-                strSQL += "AND " + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + " = ? ";
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            string strSQL = "DELETE FROM PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
+            strSQL += "WHERE " + ASuspenseAccountTable.GetLedgerNumberDBName() + " = ? ";
+            strSQL += "AND " + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + " = ? ";
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            catch (Exception)
-            {
-                Assert.Fail("No database access to run the test");
-            }
+            DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
+            DBAccess.GDBAccessObj.CommitTransaction();
+
+/*
+ *          }
+ *          catch (Exception)
+ *          {
+ *              Assert.Fail("No database access to run the test");
+ *          }
+ */
         }
     }
 }

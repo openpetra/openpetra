@@ -185,7 +185,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 DataRow currentRow = FPreviouslySelectedDetailRow;
 
                 FFilterAndFindObject.ToggleFilter();
-                FParentForm.SetSelectedAccountCode(currentRow.ItemArray[1].ToString());
+
+                if (currentRow != null)
+                {
+                    FParentForm.SetSelectedAccountCode(currentRow.ItemArray[1].ToString());
+                }
             }
         }
 

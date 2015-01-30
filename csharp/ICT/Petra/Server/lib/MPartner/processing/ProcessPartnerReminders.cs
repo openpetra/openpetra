@@ -113,6 +113,18 @@ namespace Ict.Petra.Server.MPartner.Processing
                     return;
                 }
 
+                TSmtpSender Sender = new TSmtpSender();
+
+                if (!Sender.FInitOk)
+                {
+                    TLogging.Log(
+                        TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing +
+                        ": Could not send Partner Reminders because SMTP server didn't initialise.");
+
+                    DBAccessObj.RollbackTransaction();
+                    return;
+                }
+
                 // Retrieve all PartnerReminders we need to process.
                 ReminderResultsDS = GetRemindersToProcess(LastReminderDate, out PartnerReminderDT,
                     DBAccessObj, ReadWriteTransaction);
@@ -163,7 +175,7 @@ namespace Ict.Petra.Server.MPartner.Processing
                                 ": Sending email for Reminder ID {0} for Partner {1}.", PartnerReminderDR.ReminderId, PartnerReminderDR.PartnerKey));
                     }
 
-                    if (SendReminderEmail(PartnerReminderDR, ReadWriteTransaction))
+                    if (SendReminderEmail(PartnerReminderDR, ReadWriteTransaction, Sender))
                     {
                         // Accept the edit
                         if (TLogging.DebugLevel >= 4)
@@ -390,8 +402,9 @@ namespace Ict.Petra.Server.MPartner.Processing
         /// </summary>
         /// <param name="APartnerReminderDR">DataRow containing the Reminder data.</param>
         /// <param name="AReadWriteTransaction">Already instantiated DB Transaction.</param>
+        /// <param name="Sender">Already instantiated SMTP sender.</param>
         /// <returns>True if the sending of the Reminder Email succeeded, otherwise false.</returns>
-        private static bool SendReminderEmail(PPartnerReminderRow APartnerReminderDR, TDBTransaction AReadWriteTransaction)
+        private static bool SendReminderEmail(PPartnerReminderRow APartnerReminderDR, TDBTransaction AReadWriteTransaction, TSmtpSender Sender)
         {
             string Subject = "";
             string Body = "";
@@ -443,7 +456,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             }
 
             // Send Email (this picks up the SMTPServer AppSetting from the Server Config File)
-            return new TSmtpSender().SendEmail(Destination, "OpenPetra Server", Destination, Subject, Body);
+            return Sender.SendEmail(Destination, "OpenPetra Server", Destination, Subject, Body);
         }
 
         /// <summary>

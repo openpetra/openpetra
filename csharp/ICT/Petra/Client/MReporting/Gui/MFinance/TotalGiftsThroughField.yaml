@@ -7,8 +7,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
         XMLFILES: [Finance\\\\totalgiftsthroughfield.xml,Finance\\\\finance.xml,common.xml]
-        REPORTNAME: TotalGiftsThroughField
-        CURRENTREPORT: TotalGiftsThroughField
+        REPORTNAME: Total Gifts Through Field
+        CURRENTREPORT: Total Gifts Through Field
         SETAVAILABLEFUNCTIONS:
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
@@ -33,21 +33,3 @@ RootNode:
         txtYears:
             Label: For last years (1-4)
             Format: Integer
-        
-        tpgAdditionalSettings:
-            Label: Additional Settings
-            Controls: [rgrFormatCurrency]
-        rgrFormatCurrency:
-            ParameterName: param_currency_format
-            Label: Format currency numbers:
-            Controls: [rbtCurrencyComplete, rbtCurrencyWithoutDecimals, rbtCurrencyThousands]
-        rbtCurrencyComplete:
-            Label: Complete
-            ParameterValue: CurrencyComplete
-        rbtCurrencyWithoutDecimals:
-            Label: Without decimals
-            ParameterValue: CurrencyWithoutDecimals
-        rbtCurrencyThousands:
-            Label: Only Thousands
-            ParameterValue: CurrencyThousands
-        

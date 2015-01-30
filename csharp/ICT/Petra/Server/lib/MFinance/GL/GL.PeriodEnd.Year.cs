@@ -68,10 +68,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool AIsInInfoMode,
             out TVerificationResultCollection AVerificationResult)
         {
-            bool NewTransaction;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
             try
             {
                 TLedgerInfo LedgerInfo = new TLedgerInfo(ALedgerNum);
@@ -83,25 +79,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     AVerificationResult.Add(new TVerificationResult("Year End", SuccessMsg, "Success", TResultSeverity.Resv_Status));
                 }
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-
                 return res;
             }
             catch (Exception e)
             {
-                TLogging.Log("TPeriodIntervalConnector.TPeriodYearEnd() throws " + e.ToString());
+                TLogging.Log("TPeriodIntervalConnector.TPeriodYearEnd() throws exception " + e.ToString());
                 AVerificationResult = new TVerificationResultCollection();
                 AVerificationResult.Add(
                     new TVerificationResult(
                         Catalog.GetString("Year End"),
-                        Catalog.GetString("Uncaught Exception: ") + e.Message,
+                        Catalog.GetString("Exception: ") + e.Message,
                         TResultSeverity.Resv_Critical));
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
                 return false;
             }
         }

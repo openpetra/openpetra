@@ -95,14 +95,16 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static Boolean HasSuspenseAccounts(Int32 ALedgerNumber)
         {
-            Boolean ReturnValue;
+            Boolean ReturnValue = false;
+            TDBTransaction transaction = null;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            ReturnValue = (ASuspenseAccountAccess.CountViaALedger(ALedgerNumber, Transaction) > 0);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref transaction,
+                delegate
+                {
+                    ReturnValue = (ASuspenseAccountAccess.CountViaALedger(ALedgerNumber, transaction) > 0);
+                });
             return ReturnValue;
         }
 
@@ -119,34 +121,39 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         {
             Boolean ReturnValue = false;
 
-            APartnerKey = 0;
+            Int64 PartnerKey = 0;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction transaction = null;
 
-            ACostCentreTable CostCentreTable;
-            CostCentreTable = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);
-
-            if (CostCentreTable.Count > 0)
-            {
-                ACostCentreRow CostCentreRow = (ACostCentreRow)CostCentreTable.Rows[0];
-
-                if (CostCentreRow.CostCentreType == MFinanceConstants.FOREIGN_CC_TYPE)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref transaction,
+                delegate
                 {
-                    AValidLedgerNumberTable ValidLedgerNumberTable;
-                    AValidLedgerNumberRow ValidLedgerNumberRow;
-                    ValidLedgerNumberTable = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
+                    ACostCentreTable CostCentreTable;
+                    CostCentreTable = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, transaction);
 
-                    if (ValidLedgerNumberTable.Count > 0)
+                    if (CostCentreTable.Count > 0)
                     {
-                        ValidLedgerNumberRow = (AValidLedgerNumberRow)ValidLedgerNumberTable.Rows[0];
-                        APartnerKey = ValidLedgerNumberRow.PartnerKey;
-                        ReturnValue = true;
+                        ACostCentreRow CostCentreRow = (ACostCentreRow)CostCentreTable.Rows[0];
+
+                        if (CostCentreRow.CostCentreType == MFinanceConstants.FOREIGN_CC_TYPE)
+                        {
+                            AValidLedgerNumberTable ValidLedgerNumberTable;
+                            AValidLedgerNumberRow ValidLedgerNumberRow;
+                            ValidLedgerNumberTable = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, transaction);
+
+                            if (ValidLedgerNumberTable.Count > 0)
+                            {
+                                ValidLedgerNumberRow = (AValidLedgerNumberRow)ValidLedgerNumberTable.Rows[0];
+                                PartnerKey = ValidLedgerNumberRow.PartnerKey;
+                                ReturnValue = true;
+                            }
+                        }
                     }
-                }
-            }
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
+            APartnerKey = PartnerKey;
             return ReturnValue;
         }
 
@@ -234,7 +241,9 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
                 delegate
                 {
                     ACurrencyLanguageTable CurrencyLanguageTable = ACurrencyLanguageAccess.LoadByPrimaryKey(ACurrencyCode, Language, Transaction);

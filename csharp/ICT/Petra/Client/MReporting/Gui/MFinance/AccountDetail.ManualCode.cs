@@ -302,6 +302,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ALedgerRow Row = ReportDs.ALedger[0];
                 ACalc.AddStringParameter("param_ledger_name", Row.LedgerName);
                 ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+                ACalc.AddStringParameter("param_base_currency_name", Row.BaseCurrency);
             }
 
             if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())

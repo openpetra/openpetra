@@ -2536,7 +2536,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     this.Cursor = Cursors.Default;
                     MessageBox.Show(
-                        "Partner with Partner Key " + FPartnerKey.ToString() + " does not exist.", "Nonexistant Partner!", MessageBoxButtons.OK,
+                        "Partner with Partner Key " + FPartnerKey.ToString() + " does not exist.", "Non-existent Partner!", MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
 
                     // for the modal dialog (called from Progress)
@@ -2554,7 +2554,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         "Location with " + Exp.Message + " does not (or no longer) exist." + "\r\n" + "\r\n" +
                         "If you tried to open the Partner from a Partner Find screen you might need to perform" + "\r\n" +
                         "the Search operation again to get valid Location(s) for this Partner.",
-                        "Nonexistant Location - Cannot Open Partner!",
+                        "Non-existent Location - Cannot Open Partner!",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
 

@@ -289,7 +289,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             String exportString = null;
 
-            Thread ExportThread = new Thread(() => ExportAllGLBatchData(ref batches, requestParams, out exportString));
+            Thread ExportThread = new Thread(() => ExportAllGLBatchData(batches, requestParams, out exportString));
             using (TProgressDialog ExportDialog = new TProgressDialog(ExportThread))
             {
                 ExportDialog.ShowDialog();
@@ -313,7 +313,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ArequestParams"></param>
         /// <param name="exportString"></param>
         private void ExportAllGLBatchData(
-            ref ArrayList Abatches,
+            ArrayList Abatches,
             Hashtable ArequestParams,
             out string exportString)
         {
@@ -323,7 +323,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             do
             {
                 Acompleted = TRemote.MFinance.GL.WebConnectors.ExportAllGLBatchData(
-                    ref Abatches,
+                    Abatches,
                     ArequestParams,
                     out AexportString);
             } while (!Acompleted);

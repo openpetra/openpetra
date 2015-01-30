@@ -40,6 +40,7 @@ using Ict.Common.DB.DBCaching;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.IO;
 using Npgsql;
+using System.Diagnostics;
 using Ict.Common.Session;
 
 namespace Ict.Common.DB
@@ -294,6 +295,7 @@ namespace Ict.Common.DB
 
         /// <summary>References the current Transaction, if there is any.</summary>
         private DbTransaction FTransaction;
+        private StackTrace FTransactionStackTrace;
 
         /// <summary>Tells whether the next Command that is sent to the DB should be a 'prepared' Command.</summary>
         /// <remarks>Automatically reset to false once the Command has been executed against the DB!</remarks>
@@ -1252,6 +1254,8 @@ namespace Ict.Common.DB
 
             if (this.Transaction != null)
             {
+                TLogging.Log("Nested Transaction problem: The StackTrace of the previous transaction is as follows:");
+                TLogging.Log(TLogging.StackTraceToText(FTransactionStackTrace));
                 throw new EOPDBException(
                     "BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction or GetNewOrExistingAutoTransaction "
                     +
@@ -1267,6 +1271,7 @@ namespace Ict.Common.DB
                         AppDomain.CurrentDomain.ToString() + " ).");
                 }
 
+                FTransactionStackTrace = new StackTrace(true);
                 FTransaction = FSqlConnection.BeginTransaction();
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
@@ -1369,6 +1374,8 @@ namespace Ict.Common.DB
 
             if (this.Transaction != null)
             {
+                TLogging.Log("Nested Transaction problem: The StackTrace of the previous transaction is as follows:");
+                TLogging.Log(TLogging.StackTraceToText(FTransactionStackTrace));
                 throw new EOPDBException(
                     "BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction or GetNewOrExistingAutoTransaction "
                     +
@@ -1387,6 +1394,7 @@ namespace Ict.Common.DB
                         AppDomain.CurrentDomain.ToString() + " ).");
                 }
 
+                FTransactionStackTrace = new StackTrace(true);
                 FTransaction = FSqlConnection.BeginTransaction(AIsolationLevel);
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)

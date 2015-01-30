@@ -2,9 +2,7 @@
 <Parameters>
   <Parameter id="systemsettings" value="eBoolean:true" />
   <Parameter id="xmlfiles" value="eString:Finance\\totalgiftsthroughfield.xml,Finance\\finance.xml,common.xml" />
-  <Parameter id="currentReport" value="eString:TotalGiftsThroughField" />
-  <Parameter id="MaxDisplayColumns" value="eInteger:0" />
+  <Parameter id="currentReport" value="eString:Total Gifts Through Field" />
   <Parameter id="param_currency" value="eString:Base" />
   <Parameter id="param_txtYears" value="eInteger:2" />
-  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
 </Parameters>

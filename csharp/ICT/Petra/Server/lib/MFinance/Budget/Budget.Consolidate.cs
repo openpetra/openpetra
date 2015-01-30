@@ -161,83 +161,68 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         [RequireModulePermission("FINANCE-3")]
         public static void ConsolidateBudgets(Int32 ALedgerNumber, bool AConsolidateAll)
         {
-            bool NewTransaction = false;
-            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                out NewTransaction);
+            TDBTransaction transaction = null;
+            Boolean SubmissionOK = false;
 
-            ALedgerRow LedgerRow = FBudgetTDS.ALedger[0];
-
-            try
-            {
-                // first clear the old budget from GLMPeriods
-                if (AConsolidateAll)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref transaction, ref SubmissionOK,
+                delegate
                 {
+                    ALedgerRow LedgerRow = FBudgetTDS.ALedger[0];
+
+                    // first clear the old budget from GLMPeriods
+                    if (AConsolidateAll)
+                    {
+                        foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
+                        {
+                            BudgetRow.BudgetStatus = false;
+                        }
+
+                        foreach (AGeneralLedgerMasterRow GeneralLedgerMasterRow in GLPostingDS.AGeneralLedgerMaster.Rows)
+                        {
+                            for (int Period = 1; Period <= LedgerRow.NumberOfAccountingPeriods; Period++)
+                            {
+                                ClearAllBudgetValues(GeneralLedgerMasterRow.GlmSequence, Period);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
+                        {
+                            if (!BudgetRow.BudgetStatus)
+                            {
+                                UnPostBudget(BudgetRow, ALedgerNumber);
+                            }
+                        }
+                    }
+
                     foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
                     {
-                        BudgetRow.BudgetStatus = false;
-                    }
-
-                    foreach (AGeneralLedgerMasterRow GeneralLedgerMasterRow in GLPostingDS.AGeneralLedgerMaster.Rows)
-                    {
-                        for (int Period = 1; Period <= LedgerRow.NumberOfAccountingPeriods; Period++)
+                        if (!BudgetRow.BudgetStatus || AConsolidateAll)
                         {
-                            ClearAllBudgetValues(GeneralLedgerMasterRow.GlmSequence, Period);
+                            List <ABudgetPeriodRow>budgetPeriods = new List <ABudgetPeriodRow>();
+
+                            FBudgetTDS.ABudgetPeriod.DefaultView.RowFilter = ABudgetPeriodTable.GetBudgetSequenceDBName() + " = " +
+                                                                             BudgetRow.BudgetSequence.ToString();
+
+                            foreach (DataRowView rv in FBudgetTDS.ABudgetPeriod.DefaultView)
+                            {
+                                budgetPeriods.Add((ABudgetPeriodRow)rv.Row);
+                            }
+
+                            PostBudget(ALedgerNumber, BudgetRow, budgetPeriods);
                         }
                     }
-                }
-                else
-                {
-                    foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
-                    {
-                        if (!BudgetRow.BudgetStatus)
-                        {
-                            UnPostBudget(BudgetRow, ALedgerNumber);
-                        }
-                    }
-                }
 
-                foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
-                {
-                    if (!BudgetRow.BudgetStatus || AConsolidateAll)
-                    {
-                        List <ABudgetPeriodRow>budgetPeriods = new List <ABudgetPeriodRow>();
-
-                        FBudgetTDS.ABudgetPeriod.DefaultView.RowFilter = ABudgetPeriodTable.GetBudgetSequenceDBName() + " = " +
-                                                                         BudgetRow.BudgetSequence.ToString();
-
-                        foreach (DataRowView rv in FBudgetTDS.ABudgetPeriod.DefaultView)
-                        {
-                            budgetPeriods.Add((ABudgetPeriodRow)rv.Row);
-                        }
-
-                        PostBudget(ALedgerNumber, BudgetRow, budgetPeriods);
-                    }
-                }
-
-                FinishConsolidateBudget(SubmitChangesTransaction);
+                    FinishConsolidateBudget(transaction);
 
 
-                GLPostingDS.ThrowAwayAfterSubmitChanges = true;
-                GLPostingTDSAccess.SubmitChanges(GLPostingDS);
-                GLPostingDS.Clear();
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during the consolidation of Budgets:" + Environment.NewLine + Exc.ToString());
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                throw;
-            }
-        }
+                    GLPostingDS.ThrowAwayAfterSubmitChanges = true;
+                    GLPostingTDSAccess.SubmitChanges(GLPostingDS);
+                    GLPostingDS.Clear();
+                    SubmissionOK = true;
+                }); // Get NewOrExisting AutoTransaction
+        } // Consolidate Budgets
 
         /// <summary>
         /// Complete the Budget consolidation process

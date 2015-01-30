@@ -70,8 +70,7 @@ namespace Ict.Petra.Server.MFinance.queries
         }
 
         /// <summary>
-        /// This method needs to be implemented by extracts that can't follow the default processing with just
-        /// one query.
+        /// This method needs to be implemented by extracts that can't follow the default processing with just one query.
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ATransaction"></param>
@@ -79,75 +78,68 @@ namespace Ict.Petra.Server.MFinance.queries
         protected override bool RunSpecialTreatment(TParameterList AParameters, TDBTransaction ATransaction, out int AExtractId)
         {
             Boolean ReturnValue = false;
-            Boolean NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                out NewTransaction);
-            DataTable giftdetails;
+            Int32 ExtractId = -1;
+            TDBTransaction Transaction = null;
 
-            string SqlStmt = TDataBase.ReadSqlFile("Gift.Queries.ExtractDonorByAmount.sql");
-
-            List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
-            bool AddressFilterAdded;
-            DataTable partnerkeys = new DataTable();
-
-            AExtractId = -1;
-
-            // call to derived class to retrieve parameters specific for extract
-            RetrieveParameters(AParameters, ref SqlStmt, ref SqlParameterList);
-
-            try
-            {
-                // add address filter information to sql statement and parameter list
-                AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
-
-                // now run the database query
-                TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-                giftdetails = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction,
-                    SqlParameterList.ToArray());
-            }
-            finally
-            {
-                if (NewTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+                    DataTable giftdetails;
 
-            // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
-            // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
-            if (AParameters.Get("CancelReportCalculation").ToBool() == true)
-            {
-                return false;
-            }
+                    string SqlStmt = TDataBase.ReadSqlFile("Gift.Queries.ExtractDonorByAmount.sql");
 
-            TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+                    List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
+                    bool AddressFilterAdded;
+                    DataTable partnerkeys = new DataTable();
 
-            // With the result of the original query process the data and identify the partner keys for
-            // the extract.
-            partnerkeys.Columns.Add("0", typeof(Int64));
-            partnerkeys.Columns.Add("1", typeof(string));
-            partnerkeys.Columns.Add("p_site_key_n", typeof(Int64));
-            partnerkeys.Columns.Add("p_location_key_i", typeof(Int32));
-            ProcessGiftDetailRecords(giftdetails, AddressFilterAdded, AParameters, ref partnerkeys);
 
-            // filter data by postcode (if applicable)
-            ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, Transaction);
+                    // call to derived class to retrieve parameters specific for extract
+                    RetrieveParameters(AParameters, ref SqlStmt, ref SqlParameterList);
 
-            // create an extract with the given name in the parameters
-            ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
-                AParameters.Get("param_extract_name").ToString(),
-                AParameters.Get("param_extract_description").ToString(),
-                out AExtractId,
-                partnerkeys,
-                0,
-                AddressFilterAdded,
-                true);
+                    // add address filter information to sql statement and parameter list
+                    AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
+                    // now run the database query
+                    TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+                    giftdetails = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction,
+                        SqlParameterList.ToArray());
+
+                    // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
+                    // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
+                    if (AParameters.Get("CancelReportCalculation").ToBool() == true)
+                    {
+                        return;
+                    }
+
+                    TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+
+                    // With the result of the original query process the data and identify the partner keys for
+                    // the extract.
+                    partnerkeys.Columns.Add("0", typeof(Int64));
+                    partnerkeys.Columns.Add("1", typeof(string));
+                    partnerkeys.Columns.Add("p_site_key_n", typeof(Int64));
+                    partnerkeys.Columns.Add("p_location_key_i", typeof(Int32));
+                    ProcessGiftDetailRecords(giftdetails, AddressFilterAdded, AParameters, ref partnerkeys);
+
+                    // filter data by postcode (if applicable)
+                    ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, Transaction);
+
+                    // create an extract with the given name in the parameters
+                    ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
+                        AParameters.Get("param_extract_name").ToString(),
+                        AParameters.Get("param_extract_description").ToString(),
+                        out ExtractId,
+                        partnerkeys,
+                        0,
+                        AddressFilterAdded,
+                        true);
+                });
+            AExtractId = ExtractId;
             return ReturnValue;
-        }
+        } // Run Special Treatment
 
         /// <summary>
-        /// retrieve parameters from client sent in AParameters and build up AParameterList to run SQL query
+        /// Retrieve parameters from client sent in AParameters and build up AParameterList to run SQL query
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ASqlStmt"></param>

@@ -36,24 +36,14 @@ RootNode:
             OptionalValues: [Base, International]
         grpDateSelection:
             Label: Select Report Range
-            Controls: [dtpFromDate, dtpToDate, txtYears]
-        txtYears:
-            Label: For last years (1-4)
-            Format: Integer
+            Controls: [dtpFromDate, dtpToDate]
         dtpFromDate:
             Label: From
             ParameterName: param_from_date
         dtpToDate:
             Label: To
             ParameterName: param_to_date
-        
-        tpgColumnSettings:
-            Label: Column Settings
-            Controls: [uco_Columns]
-        uco_Columns:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
-            Dock: Fill
-        
+
         tpgFields:
             Label: Fields
             Controls: [rgrFields]
@@ -86,43 +76,3 @@ RootNode:
         btnUnselectAllFields:
             Label: Unselect All
             Action: actUnselectAllFields
-            
-        tpgAdditionalSettings:
-            Label: Additional Settings
-            Controls: [rgrFormatCurrency]
-        rgrFormatCurrency:
-            ParameterName: param_currency_format
-            Label: Format currency numbers:
-            Controls: [rbtCurrencyComplete, rbtCurrencyWithoutDecimals, rbtCurrencyThousands]
-        rbtCurrencyComplete:
-            Label: Complete
-            ParameterValue: CurrencyComplete
-        rbtCurrencyWithoutDecimals:
-            Label: Without decimals
-            ParameterValue: CurrencyWithoutDecimals
-        rbtCurrencyThousands:
-            Label: Only Thousands
-            ParameterValue: CurrencyThousands
-        
-    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
-        Para0:
-            Name: Partner Name
-            Parameter: 3.5
-        Para1:
-            Name: Partner Key
-            Parameter: 2.0
-        Para2:
-            Name: Partner Class
-            Parameter: 2.0
-        Para7:
-            Name: Gift Amount
-            Parameter: 2.0
-        Para24:
-            Name: Field
-            Parameter: 2.5
-        Para25:
-            Name: Motivation Detail
-            Parameter: 3.5
-        Para26:
-            Name: Motivation Group
-            Parameter: 3.5
