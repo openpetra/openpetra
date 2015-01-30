@@ -1743,7 +1743,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //Reload batch contents from server
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(FLedgerNumber, ABatchNumber));
-                FMainDS.AcceptChanges();
 
                 RetVal = true;
             }

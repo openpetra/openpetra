@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Transactions
         };
 
-        private eGLTabs FPreviouslySelectedTab = eGLTabs.Batches;
+        private eGLTabs FPreviousTab = eGLTabs.Batches;
         private Int32 FLedgerNumber = -1;
         private Int32 FStandardTabIndex = 0;
         private bool FLoadForImport = false;
@@ -324,7 +324,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     ucoBatches.AutoEnableTransTabForBatch();
                     ucoBatches.SetInitialFocus();
-                    FPreviouslySelectedTab = eGLTabs.Batches;
+                    FPreviousTab = eGLTabs.Batches;
                 }
                 else if ((ucoBatches.GetSelectedDetailRow() != null) && (ATab == eGLTabs.Journals))
                 {
@@ -342,7 +342,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                         this.ucoJournals.UpdateHeaderTotals(ucoBatches.GetSelectedDetailRow());
 
-                        FPreviouslySelectedTab = eGLTabs.Journals;
+                        FPreviousTab = eGLTabs.Journals;
                     }
                 }
                 else if (ATab == eGLTabs.Transactions)
@@ -354,7 +354,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                         bool fromBatchTab = false;
 
-                        if (FPreviouslySelectedTab == eGLTabs.Batches)
+                        if (FPreviousTab == eGLTabs.Batches)
                         {
                             fromBatchTab = true;
                             //This only happens when the user clicks from Batch to Transactions,
@@ -375,7 +375,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             ucoBatches.GetSelectedDetailRow().BatchStatus,
                             ucoJournals.GetSelectedDetailRow().JournalStatus);
 
-                        FPreviouslySelectedTab = eGLTabs.Transactions;
+                        FPreviousTab = eGLTabs.Transactions;
                     }
                 }
             }

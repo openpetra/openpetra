@@ -604,7 +604,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     //Load tables afresh
                     FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(FLedgerNumber, batchNumber));
-                    FMainDS.AcceptChanges();
                 }
 
                 ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().DeleteCurrentRecurringBatchGiftData(batchNumber);
@@ -612,7 +611,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // Delete the recurring batch row.
                 ARowToDelete.Delete();
 
-                //FMainDS.AcceptChanges();
                 FPreviouslySelectedDetailRow = null;
 
                 deletionSuccessful = true;

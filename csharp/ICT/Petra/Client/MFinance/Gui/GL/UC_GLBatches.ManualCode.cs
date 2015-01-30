@@ -268,7 +268,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FMainDS.AJournal != null)
             {
                 FMainDS.AJournal.DefaultView.RowFilter = String.Format("{0}={1}",
-                    ATransactionTable.GetBatchNumberDBName(),
+                    AJournalTable.GetBatchNumberDBName(),
                     BatchNumber);
 
                 if (FMainDS.AJournal.DefaultView.Count == 0)

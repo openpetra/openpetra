@@ -814,6 +814,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 });
 
+            MainDS.AcceptChanges();
+
             return MainDS;
         }
 
@@ -1556,7 +1558,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 foreach (DataRowView drv in AllBatchesToProcess)
                 {
                     ARecurringGiftDetailRow gdr = (ARecurringGiftDetailRow)drv.Row;
-                    int batchNumber = gdr.BatchNumber;
+                    int batchNumber;
+
+                    try
+                    {
+                        batchNumber = gdr.BatchNumber;
+                    }
+                    catch (Exception)
+                    {
+                        // for deleted batches
+                        batchNumber = (Int32)gdr[ARecurringGiftDetailTable.ColumnBatchNumberId, DataRowVersion.Original];
+                    }
 
                     if (!ListAllGiftBatchesToProcess.Contains(batchNumber))
                     {
@@ -1572,7 +1584,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 foreach (DataRowView drv in AllBatchesToProcess)
                 {
                     ARecurringGiftRow gdr = (ARecurringGiftRow)drv.Row;
-                    int batchNumber = gdr.BatchNumber;
+                    int batchNumber;
+
+                    try
+                    {
+                        batchNumber = gdr.BatchNumber;
+                    }
+                    catch (Exception)
+                    {
+                        // for deleted batches
+                        batchNumber = (Int32)gdr[ARecurringGiftTable.ColumnBatchNumberId, DataRowVersion.Original];
+                    }
 
                     if (!ListAllGiftBatchesToProcess.Contains(batchNumber))
                     {
@@ -1588,7 +1610,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 foreach (DataRowView drv in AllBatchesToProcess)
                 {
                     ARecurringGiftBatchRow gdr = (ARecurringGiftBatchRow)drv.Row;
-                    int batchNumber = gdr.BatchNumber;
+                    int batchNumber;
+
+                    try
+                    {
+                        batchNumber = gdr.BatchNumber;
+                    }
+                    catch (Exception)
+                    {
+                        // for deleted batches
+                        batchNumber = (Int32)gdr[ARecurringGiftBatchTable.ColumnBatchNumberId, DataRowVersion.Original];
+                    }
 
                     if (!ListAllGiftBatchesToProcess.Contains(batchNumber))
                     {
@@ -2429,6 +2461,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // if RecipientLedgerNumber has been updated then this should immediately be saved to the database
                 GiftBatchTDSAccess.SubmitChanges(MainDS);
             }
+
+            MainDS.AcceptChanges();
 
             return MainDS;
         }
