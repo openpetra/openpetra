@@ -123,7 +123,18 @@ namespace Ict.Petra.Client.App.Core
 
                 UEDialogue.NonRecoverable = AEventArgs.IsTerminating;
                 UEDialogue.TheException = (Exception)AEventArgs.ExceptionObject;
-                UEDialogue.ShowDialog();
+
+                Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
+                
+                // Ensure UEDialogue is shown on the UI Thread!
+                if (MainMenuForm.InvokeRequired) 
+                {
+                    MainMenuForm.Invoke((MethodInvoker) delegate { UEDialogue.ShowDialog(); });                    
+                }
+                else
+                {
+                    UEDialogue.ShowDialog();
+                }
             }
         }
     }
@@ -190,7 +201,18 @@ namespace Ict.Petra.Client.App.Core
 
                 UEDialogue.NonRecoverable = false;
                 UEDialogue.TheException = AEventArgs.Exception;
-                UEDialogue.ShowDialog();
+                
+                Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
+                
+                // Ensure UEDialogue is shown on the UI Thread!
+                if (MainMenuForm.InvokeRequired) 
+                {
+                    MainMenuForm.Invoke((MethodInvoker) delegate { UEDialogue.ShowDialog(); });                    
+                }
+                else
+                {
+                    UEDialogue.ShowDialog();
+                }
             }
         }
 
