@@ -118,105 +118,66 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         public static SUserRow LoadUser(String AUserID, out TPetraIdentity APetraIdentity)
         {
             SUserRow ReturnValue;
-            TDBTransaction ReadWriteTransaction;
-            Boolean NewTransaction;
-            SUserTable UserDT;
+            TDBTransaction ReadTransaction = null;
+            SUserTable UserDT = null;
             SUserRow UserDR;
-            Boolean UserExists;
             DateTime LastLoginDateTime;
             DateTime FailedLoginDateTime;
 
-            ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            // Check if user exists in s_user DB Table
-            try
-            {
-                UserExists = SUserAccess.Exists(AUserID, ReadWriteTransaction);
-            }
-            catch
-            {
-                if (NewTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TUserManager.LoadUser: committed own transaction.");
-                }
+                    // Check if user exists in s_user DB Table
+                    if (!SUserAccess.Exists(AUserID, ReadTransaction))
+                    {
+                        throw new EUserNotExistantException(StrInvalidUserIDPassword);
+                    }
 
-                throw;
-            }
+                    // User exists, so load User record
+                    UserDT = SUserAccess.LoadByPrimaryKey(AUserID, ReadTransaction);
+                });
 
-            if (!UserExists)
+            UserDR = UserDT[0];
+
+            if (!UserDR.IsFailedLoginDateNull())
             {
-                throw new EUserNotExistantException(StrInvalidUserIDPassword);
+                FailedLoginDateTime = UserDR.FailedLoginDate.Value;
+                FailedLoginDateTime = FailedLoginDateTime.AddSeconds(Convert.ToDouble(UserDR.FailedLoginTime));
             }
             else
             {
-                try
-                {
-                    // Load User record
-                    UserDT = SUserAccess.LoadByPrimaryKey(AUserID, ReadWriteTransaction);
-                }
-                catch (Exception Exp)
-                {
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                        TLogging.LogAtLevel(7, "TUserManager.LoadUser: committed own transaction.");
-                    }
-
-                    TLogging.LogAtLevel(8, "Exception occured while loading a s_user record: " + Exp.ToString());
-
-                    throw;
-                }
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TUserManager.LoadUser: committed own transaction.");
-                }
-
-                UserDR = UserDT[0];
-
-                if (!UserDR.IsFailedLoginDateNull())
-                {
-                    FailedLoginDateTime = UserDR.FailedLoginDate.Value;
-                    FailedLoginDateTime = FailedLoginDateTime.AddSeconds(Convert.ToDouble(UserDR.FailedLoginTime));
-                }
-                else
-                {
-                    FailedLoginDateTime = DateTime.MinValue;
-                }
-
-                if (!UserDR.IsLastLoginDateNull())
-                {
-                    LastLoginDateTime = UserDR.LastLoginDate.Value;
-                    LastLoginDateTime = LastLoginDateTime.AddSeconds(Convert.ToDouble(UserDR.LastLoginTime));
-                }
-                else
-                {
-                    LastLoginDateTime = DateTime.MinValue;
-                }
-
-                Int64 PartnerKey;
-
-                if (!UserDR.IsPartnerKeyNull())
-                {
-                    PartnerKey = UserDR.PartnerKey;
-                }
-                else
-                {
-                    // to make it not match PartnerKey 0, which might be stored in the DB or in a variable
-                    PartnerKey = -1;
-                }
-
-                // Create PetraIdentity
-                APetraIdentity = new Ict.Petra.Shared.Security.TPetraIdentity(
-                    AUserID.ToUpper(), UserDR.LastName, UserDR.FirstName, UserDR.LanguageCode, UserDR.AcquisitionCode, DateTime.MinValue,
-                    LastLoginDateTime, FailedLoginDateTime, UserDR.FailedLogins, PartnerKey, UserDR.DefaultLedgerNumber, UserDR.Retired,
-                    UserDR.CanModify);
-                ReturnValue = UserDR;
+                FailedLoginDateTime = DateTime.MinValue;
             }
+
+            if (!UserDR.IsLastLoginDateNull())
+            {
+                LastLoginDateTime = UserDR.LastLoginDate.Value;
+                LastLoginDateTime = LastLoginDateTime.AddSeconds(Convert.ToDouble(UserDR.LastLoginTime));
+            }
+            else
+            {
+                LastLoginDateTime = DateTime.MinValue;
+            }
+
+            Int64 PartnerKey;
+
+            if (!UserDR.IsPartnerKeyNull())
+            {
+                PartnerKey = UserDR.PartnerKey;
+            }
+            else
+            {
+                // to make it not match PartnerKey 0, which might be stored in the DB or in a variable
+                PartnerKey = -1;
+            }
+
+            // Create PetraIdentity
+            APetraIdentity = new Ict.Petra.Shared.Security.TPetraIdentity(
+                AUserID.ToUpper(), UserDR.LastName, UserDR.FirstName, UserDR.LanguageCode, UserDR.AcquisitionCode, DateTime.MinValue,
+                LastLoginDateTime, FailedLoginDateTime, UserDR.FailedLogins, PartnerKey, UserDR.DefaultLedgerNumber, UserDR.Retired,
+                UserDR.CanModify);
+            ReturnValue = UserDR;
 
             return ReturnValue;
         }

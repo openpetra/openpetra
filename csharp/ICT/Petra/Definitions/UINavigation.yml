@@ -466,7 +466,7 @@ OpenPetra:
             Database:
                 ImportExport: {DontShowNestedTasksAsLinks=true}
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}
-                    RestoreDatabaseFromBackup: {ActionClick=TSysManMain.ImportAllData, Description=This will overwrite all your existing data}
+                    RestoreDatabaseFromBackup: {ActionClick=TSysManMain.RestoreDatabase, Description=Replaces all existing data with backed-up data}
             Auditing:
                 Logs: {DontShowNestedTasksAsLinks=true}
                     #ErrorLog

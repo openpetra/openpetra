@@ -170,8 +170,8 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
         /// <returns>void</returns>
         private void SubmitChangesInternal()
         {
-            TDBTransaction SubmitChangesTransaction;
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrOK;
+            TDBTransaction SubmitChangesTransaction = null;
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
             MExtractTable ExtractDT;
             PSubscriptionTable SubscriptionTable;
 
@@ -199,97 +199,100 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
 
                 // Set up asynchronous execution
                 TProgressTracker.SetCurrentState(FProgressID, "Checking Partners' Subscriptions...", 0.0m);
-                try
-                {
-                    SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-//                  TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: loading Subscriptions for ExtractID " + FExtractID.ToString() + "...");
-                    ExtractDT = MExtractAccess.LoadViaMExtractMaster(FExtractID, RequiredColumns, SubmitChangesTransaction);
-                    PartnersInExtract = ExtractDT.Rows.Count;
-//                  TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: ExtractID has " + PartnersInExtract.ToString() + " Partners.");
 
-                    // Go throught all the Partners in the extract
-                    foreach (MExtractRow ExtractRow in ExtractDT.Rows)
+
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                    ref SubmissionResult,
+                    delegate
                     {
-                        RowCounter = RowCounter + 1;
-
-                        // Calculate how much Partners we have checked. Let all Partners be a maximum of 70%.
-                        TProgressTracker.SetCurrentState(
-                            FProgressID,
-                            string.Empty,
-                            Convert.ToInt16((((double)RowCounter / (double)PartnersInExtract) * 100) * (MAX_PERCENTAGE_CHECKS / 100.0)));
-                        TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: loadbyPrimaryKey");
-
-                        SubscriptionTable = PSubscriptionAccess.LoadByPrimaryKey(
-                            FInspectDT[0].PublicationCode,
-                            ExtractRow.PartnerKey,
-                            SubmitChangesTransaction);
-
-                        // if the Partner does not yet have the subscription, add the subscription to this partner.
-                        if (SubscriptionTable.Rows.Count == 0)
+                        try
                         {
-                            TLogging.LogAtLevel(
-                                7,
-                                "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: will add Subscription to Partner with PartnerKey " +
-                                ExtractRow.PartnerKey.ToString());
-                            FInspectDT[0].PartnerKey = ExtractRow.PartnerKey;
-                            TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: importing Row into FSubmissionDT...");
-                            FSubmissionDT.ImportRow(FInspectDT[0]);
-                        }
-                        else
-                        {
-                            // The partner already has this Subscription: add the partner to the ResponseTable
-//                          TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: won't add Subscription to Partner with PartnerKey " + ExtractRow.PartnerKey.ToString());
-                            PartnerTable = PPartnerAccess.LoadByPrimaryKey(ExtractRow.PartnerKey, RequiredColumns2, SubmitChangesTransaction);
+                            //                  TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: loading Subscriptions for ExtractID " + FExtractID.ToString() + "...");
+                            ExtractDT = MExtractAccess.LoadViaMExtractMaster(FExtractID, RequiredColumns, SubmitChangesTransaction);
+                            PartnersInExtract = ExtractDT.Rows.Count;
+                            //                  TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: ExtractID has " + PartnersInExtract.ToString() + " Partners.");
 
-                            if (FResponseDT == null)
+                            // Go throught all the Partners in the extract
+                            foreach (MExtractRow ExtractRow in ExtractDT.Rows)
                             {
-                                FResponseDT = PartnerTable.Clone();
+                                RowCounter = RowCounter + 1;
+
+                                // Calculate how much Partners we have checked. Let all Partners be a maximum of 70%.
+                                TProgressTracker.SetCurrentState(
+                                    FProgressID,
+                                    string.Empty,
+                                    Convert.ToInt16((((double)RowCounter / (double)PartnersInExtract) * 100) * (MAX_PERCENTAGE_CHECKS / 100.0)));
+                                TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: loadbyPrimaryKey");
+
+                                SubscriptionTable = PSubscriptionAccess.LoadByPrimaryKey(
+                                    FInspectDT[0].PublicationCode,
+                                    ExtractRow.PartnerKey,
+                                    SubmitChangesTransaction);
+
+                                // if the Partner does not yet have the subscription, add the subscription to this partner.
+                                if (SubscriptionTable.Rows.Count == 0)
+                                {
+                                    TLogging.LogAtLevel(
+                                        7,
+                                        "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: will add Subscription to Partner with PartnerKey "
+                                        + ExtractRow.PartnerKey.ToString());
+                                    FInspectDT[0].PartnerKey = ExtractRow.PartnerKey;
+                                    TLogging.LogAtLevel(7,
+                                        "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: importing Row into FSubmissionDT...");
+                                    FSubmissionDT.ImportRow(FInspectDT[0]);
+                                }
+                                else
+                                {
+                                    // The partner already has this Subscription: add the partner to the ResponseTable
+                                    //                          TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: won't add Subscription to Partner with PartnerKey " + ExtractRow.PartnerKey.ToString());
+                                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(ExtractRow.PartnerKey, RequiredColumns2, SubmitChangesTransaction);
+
+                                    if (FResponseDT == null)
+                                    {
+                                        FResponseDT = PartnerTable.Clone();
+                                    }
+
+                                    FResponseDT.ImportRow(PartnerTable[0]);
+                                }
                             }
 
-                            FResponseDT.ImportRow(PartnerTable[0]);
+                            TLogging.LogAtLevel(7,
+                                "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: Finished checking Partner's Subscriptions.");
+
+                            if (FSubmissionDT.Rows.Count > 0)
+                            {
+                                // Submit the Partners with new Subscriptions to the PSubscription Table.
+                                TProgressTracker.SetCurrentState(
+                                    FProgressID,
+                                    "Adding Subscriptions to " + FSubmissionDT.Rows.Count.ToString() + " Partners...",
+                                    MAX_PERCENTAGE_CHECKS);
+                                //                      TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: " + FAsyncExecProgress.ProgressInformation);
+
+                                PSubscriptionAccess.SubmitChanges((PSubscriptionTable)FSubmissionDT, SubmitChangesTransaction);
+                            }
+                            else
+                            {
+                                TLogging.LogAtLevel(
+                                    7,
+                                    "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: no Subscriptions were added to Partners because all the Partners in the Extract already had this Subscription.");
+                            }
+
+                            SubmissionResult = TSubmitChangesResult.scrOK;
                         }
-                    }
+                        catch (Exception Exp)
+                        {
+                            TLogging.LogAtLevel(7,
+                                "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: Exception occured, Transaction will get ROLLED BACK. Exception: "
+                                + Exp.ToString());
 
-                    TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: Finished checking Partner's Subscriptions.");
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                            FSubmitResult = SubmissionResult;
+                            FSubmitException = Exp;
+                            TProgressTracker.CancelJob(FProgressID);
 
-                    if (FSubmissionDT.Rows.Count > 0)
-                    {
-                        // Submit the Partners with new Subscriptions to the PSubscription Table.
-                        TProgressTracker.SetCurrentState(
-                            FProgressID,
-                            "Adding Subscriptions to " + FSubmissionDT.Rows.Count.ToString() + " Partners...",
-                            MAX_PERCENTAGE_CHECKS);
-//                      TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: " + FAsyncExecProgress.ProgressInformation);
-
-                        PSubscriptionAccess.SubmitChanges((PSubscriptionTable)FSubmissionDT, SubmitChangesTransaction);
-                    }
-                    else
-                    {
-                        TLogging.LogAtLevel(
-                            7,
-                            "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: no Subscriptions were added to Partners because all the Partners in the Extract already had this Subscription.");
-                    }
-
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                catch (Exception Exp)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-
-                    TLogging.LogAtLevel(7,
-                        "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: Exception occured, Transaction ROLLED BACK. Exception: " +
-                        Exp.ToString());
-
-                    FSubmitResult = TSubmitChangesResult.scrError;
-                    FSubmitException = Exp;
-                    TProgressTracker.CancelJob(FProgressID);
-
-                    return;
-                }
-            }
-            else
-            {
-                SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
+                            return;
+                        }
+                    });
             }
 
             // if no values at response table, it needs to be created. If not creates, will raise exeption at client side.

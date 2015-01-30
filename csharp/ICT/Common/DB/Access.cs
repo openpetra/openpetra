@@ -523,19 +523,23 @@ namespace Ict.Common.DB
         /// </summary>
         private void CheckDatabaseVersion()
         {
+            TDBTransaction ReadTransaction = null;
+            DataTable Tbl = null;
+
             if (TAppSettingsManager.GetValue("action", string.Empty, false) == "patchDatabase")
             {
                 // we want to upgrade the database, so don't check for the database version
                 return;
             }
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-            // now check if the database is 'up to date'; otherwise run db patch against it
-            DataTable Tbl = DBAccess.GDBAccessObj.SelectDT(
-                "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                "Temp", transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    // now check if the database is 'up to date'; otherwise run db patch against it
+                    Tbl = DBAccess.GDBAccessObj.SelectDT(
+                        "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                        "Temp", ReadTransaction);
+                });
 
             if (Tbl.Rows.Count == 0)
             {

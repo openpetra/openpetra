@@ -63,40 +63,58 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// this will delete the current database, and reset it with the data selected
         /// </summary>
         /// <param name="AParentForm"></param>
-        public static void ImportAllData(Form AParentForm)
+        public static void RestoreDatabase(Form AParentForm)
         {
+            string StrImportCancelledMsg = Catalog.GetString("Restoring of database got cancelled; no existing data has been deleted or modified!");
+            string StrImportCancelledTitle = Catalog.GetString("Restore Cancelled");
+
             DialogResult r = MessageBox.Show(
-                Catalog.GetString("WARNING: this will reset the database! Do you really want to delete the current database?"),
-                Catalog.GetString("WARNING: this will reset the database!"),
+                Catalog.GetString(
+                    "WARNING: This will THROW AWAY ALL CURRENT DATA that is held in the database (including the users and passwords!) and replace it with the data that was previously backed up and which you chose to restore!\r\n\r\nDo you REALLY want to restore that data?"),
+                Catalog.GetString("WARNING: Replace All Data With Previously Backed Up Data?"),
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning,
                 MessageBoxDefaultButton.Button2);
 
             if (r == DialogResult.Yes)
             {
-                string zippedYml = TImportExportDialogs.ImportWithDialogYMLGz(Catalog.GetString("Please select the file to import from"));
+                string zippedYml = TImportExportDialogs.ImportWithDialogYMLGz(Catalog.GetString("Select Backup File to Restore From"));
 
                 if (zippedYml != null)
                 {
-                    Thread t = new Thread(() => ResetDatabaseInThread(zippedYml));
+                    Thread ResetDBThread = new Thread(() => ResetDatabaseInThread(zippedYml));
 
-                    using (TProgressDialog dialog = new TProgressDialog(t))
+                    using (TProgressDialog dialog = new TProgressDialog(ResetDBThread))
                     {
                         if (dialog.ShowDialog() == DialogResult.Cancel)
                         {
+                            MessageBox.Show(StrImportCancelledMsg, StrImportCancelledTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                             return;
                         }
                     }
 
+                    // Ensure that WebConnectorResult got set in Method 'ResetDatabaseInThread' before we get to the if statement below...
+                    ResetDBThread.Join();
+
                     if (WebConnectorResult)
                     {
                         // TODO: reset all caches? for comboboxes etc
-                        MessageBox.Show(Catalog.GetString("Import of database was successful. Please restart your OpenPetra client"));
+                        MessageBox.Show(Catalog.GetString(
+                                "The data was successfully restored.\r\n\r\nPlease restart your OpenPetra Client immediately!"),
+                            Catalog.GetString("Restore Successful"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        MessageBox.Show(Catalog.GetString("Failed import of database. Please check the Server.log file on the server"));
+                        MessageBox.Show(Catalog.GetString("The restoring of the data FAILED. No existing data has been deleted or modified!\r\n\r\n"
+                                + "Please check the Server.log file on the server for errors!"), Catalog.GetString("Restore Failed"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                }
+                else
+                {
+                    MessageBox.Show(StrImportCancelledMsg, StrImportCancelledTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }

@@ -340,6 +340,9 @@ namespace Ict.Tools.PatchTool.Library
         /// <returns></returns>
         private Boolean RunDBPatch(TFileVersionInfo ADesiredVersion, Boolean ALastPatch)
         {
+            TDBTransaction WriteTransaction = null;
+            bool SubmissionResult = false;
+
             // TODO: run sql script or code from DLL to update the database
             // TODO: if last patch, send an email to central support etc
             TLogging.Log("RunDBPatch " + ADesiredVersion.ToString());
@@ -364,41 +367,45 @@ namespace Ict.Tools.PatchTool.Library
 
             TLogging.Log("Applying " + Path.GetFileName(files[0]));
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-            // always upgrade the version number
-            DBAccess.GDBAccessObj.ExecuteNonQuery(
-                String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}.{1}.{2}-0' WHERE s_default_code_c='CurrentDatabaseVersion'",
-                    ADesiredVersion.FileMajorPart,
-                    ADesiredVersion.FileMinorPart,
-                    ADesiredVersion.FileBuildPart), Transaction);
-
-            StreamReader reader = new StreamReader(files[0]);
-            string line;
-            string stmt = string.Empty;
-
-            while ((line = reader.ReadLine()) != null)
-            {
-                if (!line.Trim().StartsWith("--"))
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref WriteTransaction,
+                ref SubmissionResult,
+                delegate
                 {
-                    if (!line.Trim().EndsWith(";"))
-                    {
-                        stmt += line.Trim() + " ";
-                    }
-                    else
-                    {
-                        stmt += line.Trim();
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, Transaction);
-                    }
-                }
+                    // always upgrade the version number
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(
+                        String.Format(
+                            "UPDATE s_system_defaults SET s_default_value_c = '{0}.{1}.{2}-0' WHERE s_default_code_c='CurrentDatabaseVersion'",
+                            ADesiredVersion.FileMajorPart,
+                            ADesiredVersion.FileMinorPart,
+                            ADesiredVersion.FileBuildPart), WriteTransaction);
 
-                if (stmt.Length > 0)
-                {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, Transaction);
-                }
-            }
+                    StreamReader reader = new StreamReader(files[0]);
+                    string line;
+                    string stmt = string.Empty;
 
-            DBAccess.GDBAccessObj.CommitTransaction();
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        if (!line.Trim().StartsWith("--"))
+                        {
+                            if (!line.Trim().EndsWith(";"))
+                            {
+                                stmt += line.Trim() + " ";
+                            }
+                            else
+                            {
+                                stmt += line.Trim();
+                                DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, WriteTransaction);
+                            }
+                        }
+
+                        if (stmt.Length > 0)
+                        {
+                            DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, WriteTransaction);
+                        }
+                    }
+
+                    SubmissionResult = true;
+                });
 
             return true;
         }

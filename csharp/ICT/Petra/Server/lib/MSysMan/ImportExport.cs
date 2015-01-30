@@ -91,6 +91,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         private static void ExportTables(XmlNode ARootNode, string AModuleName, string ASubModuleName, Assembly ATypedTablesAssembly)
         {
             XmlElement moduleNode = ARootNode.OwnerDocument.CreateElement(AModuleName + ASubModuleName);
+            TDBTransaction ReadTransaction = null;
 
             ARootNode.AppendChild(moduleNode);
 
@@ -103,8 +104,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             namespaceName += ".Data";
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
             SortedList <string, Type>SortedTypes = new SortedList <string, Type>();
 
             foreach (Type type in ATypedTablesAssembly.GetTypes())
@@ -115,13 +114,15 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 }
             }
 
-            // export the tables, ordered by name
-            foreach (string typeName in SortedTypes.Keys)
-            {
-                ExportTable(moduleNode, ATypedTablesAssembly, SortedTypes[typeName], Transaction);
-            }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    // export the tables, ordered by name
+                    foreach (string typeName in SortedTypes.Keys)
+                    {
+                        ExportTable(moduleNode, ATypedTablesAssembly, SortedTypes[typeName], ReadTransaction);
+                    }
+                });
         }
 
         private static void ExportTable(XmlNode AModuleNode, Assembly AAsm, Type ATableType, TDBTransaction ATransaction)
@@ -213,20 +214,21 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         private static void ExportSequences(XmlNode ARootNode)
         {
             XmlElement sequencesNode = ARootNode.OwnerDocument.CreateElement("Sequences");
+            TDBTransaction ReadTransaction = null;
 
             ARootNode.AppendChild(sequencesNode);
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    foreach (string seq in TTableList.GetDBSequenceNames())
+                    {
+                        XmlElement sequenceNode = ARootNode.OwnerDocument.CreateElement(StringHelper.UpperCamelCase(seq, false, false));
+                        sequencesNode.AppendChild(sequenceNode);
 
-            foreach (string seq in TTableList.GetDBSequenceNames())
-            {
-                XmlElement sequenceNode = ARootNode.OwnerDocument.CreateElement(StringHelper.UpperCamelCase(seq, false, false));
-                sequencesNode.AppendChild(sequenceNode);
-
-                sequenceNode.SetAttribute("value", DBAccess.GDBAccessObj.GetCurrentSequenceValue(seq, Transaction).ToString());
-            }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                        sequenceNode.SetAttribute("value", DBAccess.GDBAccessObj.GetCurrentSequenceValue(seq, ReadTransaction).ToString());
+                    }
+                });
         }
 
         /// <summary>
@@ -238,6 +240,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         public static bool ResetDatabase(string AZippedNewDatabaseData)
         {
             List <string>tables = TTableList.GetDBNames();
+            bool SubmissionResult = false;
+            TDBTransaction Transaction = null;
 
             string ClientID = "ClientID";
 
@@ -250,130 +254,136 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             }
 
             TProgressTracker.InitProgressTracker(ClientID,
-                Catalog.GetString("Importing database"),
+                Catalog.GetString("Restoring Database..."),
                 tables.Count + 3);
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            try
-            {
-                tables.Reverse();
-
-                TProgressTracker.SetCurrentState(ClientID,
-                    Catalog.GetString("deleting current data"),
-                    0);
-
-                foreach (string table in tables)
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction,
+                ref SubmissionResult,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM pub_" + table, Transaction);
-                }
-
-                if (TProgressTracker.GetCurrentState(ClientID).CancelJob == true)
-                {
-                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    return false;
-                }
-
-                TSimpleYmlParser ymlParser = new TSimpleYmlParser(PackTools.UnzipString(AZippedNewDatabaseData));
-
-                ymlParser.ParseCaptions();
-
-                tables.Reverse();
-
-                TProgressTracker.SetCurrentState(ClientID,
-                    Catalog.GetString("loading initial tables"),
-                    1);
-
-                // one transaction to import the user table and user permissions. otherwise logging in will not be possible if other import fails?
-                bool success = true;
-                success = success && LoadTable("s_user", ymlParser, Transaction);
-                success = success && LoadTable("s_module", ymlParser, Transaction);
-                success = success && LoadTable("s_user_module_access_permission", ymlParser, Transaction);
-                success = success && LoadTable("s_system_defaults", ymlParser, Transaction);
-                success = success && LoadTable("s_system_status", ymlParser, Transaction);
-
-                // make sure we have the correct database version
-                TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
-                DBAccess.GDBAccessObj.ExecuteNonQuery(String.Format(
-                        "UPDATE PUB_s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                        serverExeInfo.ToString()), Transaction);
-
-                if (!success)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    return false;
-                }
-
-                if (TProgressTracker.GetCurrentState(ClientID).CancelJob == true)
-                {
-                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    return false;
-                }
-
-                DBAccess.GDBAccessObj.CommitTransaction();
-
-                tables.Remove("s_user");
-                tables.Remove("s_module");
-                tables.Remove("s_user_module_access_permission");
-                tables.Remove("s_system_defaults");
-                tables.Remove("s_system_status");
-
-                FCurrencyPerLedger = new SortedList <int, string>();
-
-                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-                int tableCounter = 2;
-
-                foreach (string table in tables)
-                {
-                    TProgressTracker.SetCurrentState(ClientID,
-                        String.Format(Catalog.GetString("loading table {0}"), table),
-                        tableCounter);
-
-                    tableCounter++;
-
-                    if (TProgressTracker.GetCurrentState(ClientID).CancelJob == true)
+                    try
                     {
-                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                        return false;
+                        tables.Reverse();
+
+                        TProgressTracker.SetCurrentState(ClientID,
+                            Catalog.GetString("Deleting current data..."),
+                            0);
+
+                        foreach (string table in tables)
+                        {
+                            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM pub_" + table, Transaction);
+                        }
+
+                        if (TProgressTracker.GetCurrentState(ClientID).CancelJob == true)
+                        {
+                            TProgressTracker.FinishJob(ClientID);
+
+                            // As SubmissionResult is still false, a DB Transaction Rollback will get
+                            // executed automatically and the Method will be exited with return value 'false'!
+                            return;
+                        }
+
+                        TSimpleYmlParser ymlParser = new TSimpleYmlParser(PackTools.UnzipString(AZippedNewDatabaseData));
+
+                        ymlParser.ParseCaptions();
+
+                        tables.Reverse();
+
+                        TProgressTracker.SetCurrentState(ClientID,
+                            Catalog.GetString("Loading initial tables..."),
+                            1);
+
+                        // one transaction to import the user table and user permissions. otherwise logging in will not be possible if other import fails?
+                        bool success = true;
+                        success = success && LoadTable("s_user", ymlParser, Transaction);
+                        success = success && LoadTable("s_module", ymlParser, Transaction);
+                        success = success && LoadTable("s_user_module_access_permission", ymlParser, Transaction);
+                        success = success && LoadTable("s_system_defaults", ymlParser, Transaction);
+                        success = success && LoadTable("s_system_status", ymlParser, Transaction);
+
+                        // make sure we have the correct database version
+                        TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(String.Format(
+                                "UPDATE PUB_s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                                serverExeInfo.ToString()), Transaction);
+
+                        if (!success)
+                        {
+                            // As SubmissionResult is still TSubmitChangesResult.scrError, a DB Transaction Rollback will get
+                            // executed automatically and the Method will be exited with return value 'false'!
+                            return;
+                        }
+
+                        if (TProgressTracker.GetCurrentState(ClientID).CancelJob == true)
+                        {
+                            TProgressTracker.FinishJob(ClientID);
+
+                            // As SubmissionResult is still false, a DB Transaction Rollback will get
+                            // executed automatically and the Method will be exited with return value 'false'!
+                            return;
+                        }
+
+                        tables.Remove("s_user");
+                        tables.Remove("s_module");
+                        tables.Remove("s_user_module_access_permission");
+                        tables.Remove("s_system_defaults");
+                        tables.Remove("s_system_status");
+
+                        FCurrencyPerLedger = new SortedList <int, string>();
+
+                        int tableCounter = 2;
+
+                        foreach (string table in tables)
+                        {
+                            TProgressTracker.SetCurrentState(ClientID,
+                                String.Format(Catalog.GetString("Loading Table {0}..."), table),
+                                tableCounter);
+
+                            tableCounter++;
+
+                            if (TProgressTracker.GetCurrentState(ClientID).CancelJob == true)
+                            {
+                                TProgressTracker.FinishJob(ClientID);
+
+                                // As SubmissionResult is still false, a DB Transaction Rollback will get
+                                // executed automatically and the Method will be exited with return value 'false'!
+                                return;
+                            }
+
+                            LoadTable(table, ymlParser, Transaction);
+                        }
+
+                        TProgressTracker.SetCurrentState(ClientID,
+                            Catalog.GetString("Loading Sequences..."),
+                            tables.Count + 5 + 3);
+
+                        // set sequences appropriately, not lagging behind the imported data
+                        foreach (string seq in TTableList.GetDBSequenceNames())
+                        {
+                            LoadSequence(seq, ymlParser, Transaction);
+                        }
+
+                        TProgressTracker.SetCurrentState(ClientID,
+                            Catalog.GetString("Finishing Restore..."),
+                            tables.Count + 5 + 4);
+
+                        SubmissionResult = true;
+
+                        // reset all cached tables
+                        TCacheableTablesManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
+
+                        TProgressTracker.FinishJob(ClientID);
                     }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("Problem in ResetDatabase: " + e.ToString());
+                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
 
-                    LoadTable(table, ymlParser, Transaction);
-                }
+                        throw;
+                    }
+                });
 
-                TProgressTracker.SetCurrentState(ClientID,
-                    Catalog.GetString("loading sequences"),
-                    tables.Count + 5 + 3);
-
-                // set sequences appropriately, not lagging behind the imported data
-                foreach (string seq in TTableList.GetDBSequenceNames())
-                {
-                    LoadSequence(seq, ymlParser, Transaction);
-                }
-
-                TProgressTracker.SetCurrentState(ClientID,
-                    Catalog.GetString("finish import"),
-                    tables.Count + 5 + 4);
-
-                DBAccess.GDBAccessObj.CommitTransaction();
-
-                // reset all cached tables
-                TCacheableTablesManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
-
-                TProgressTracker.FinishJob(ClientID);
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("Problem in ResetDatabase: " + e.Message);
-                TLogging.Log(e.StackTrace);
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                return false;
-            }
-
-            return true;
+            return SubmissionResult;
         }
 
         private static bool LoadSequence(string ASequenceName, TSimpleYmlParser AYmlParser, TDBTransaction ATransaction)
