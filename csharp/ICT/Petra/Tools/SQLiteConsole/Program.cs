@@ -99,7 +99,7 @@ namespace Ict.Tools.SQLiteConsole
                     {
                         result = DBAccess.GDBAccessObj.SelectDT(SQLCommand, "temp", transaction);
                     });
-                
+
                 if (result == null)
                 {
                     TLogging.Log("The query returned a NULL table of results!");

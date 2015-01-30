@@ -235,7 +235,8 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                                     TLogging.LogAtLevel(
                                         7,
                                         "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: will add Subscription to Partner with PartnerKey "
-                                        + ExtractRow.PartnerKey.ToString());
+                                        +
+                                        ExtractRow.PartnerKey.ToString());
                                     FInspectDT[0].PartnerKey = ExtractRow.PartnerKey;
                                     TLogging.LogAtLevel(7,
                                         "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: importing Row into FSubmissionDT...");
@@ -283,7 +284,8 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                         {
                             TLogging.LogAtLevel(7,
                                 "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: Exception occured, Transaction will get ROLLED BACK. Exception: "
-                                + Exp.ToString());
+                                +
+                                Exp.ToString());
 
                             SubmissionResult = TSubmitChangesResult.scrError;
                             FSubmitResult = SubmissionResult;

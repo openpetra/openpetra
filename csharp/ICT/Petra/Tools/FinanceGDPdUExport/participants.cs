@@ -63,7 +63,6 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
                 delegate
                 {
-
                     // all gift details towards a costcentre that needs to be exported
                     string sql =
                         String.Format("SELECT DISTINCT D.* " +

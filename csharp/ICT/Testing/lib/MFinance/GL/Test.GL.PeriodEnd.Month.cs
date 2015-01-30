@@ -474,17 +474,17 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[1].Value = strAcount;
 
-                TDBTransaction transaction = null;
-                bool SubmissionOK = true;
-                DBAccess.GDBAccessObj.BeginAutoTransaction(ref transaction, ref SubmissionOK,
-                    delegate
-                    {
-                        string strSQL = "DELETE FROM PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
-                        strSQL += "WHERE " + ASuspenseAccountTable.GetLedgerNumberDBName() + " = ? ";
-                        strSQL += "AND " + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + " = ? ";
+            TDBTransaction transaction = null;
+            bool SubmissionOK = true;
+            DBAccess.GDBAccessObj.BeginAutoTransaction(ref transaction, ref SubmissionOK,
+                delegate
+                {
+                    string strSQL = "DELETE FROM PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
+                    strSQL += "WHERE " + ASuspenseAccountTable.GetLedgerNumberDBName() + " = ? ";
+                    strSQL += "AND " + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + " = ? ";
 
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
-                    });
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
+                });
         }
     }
 }

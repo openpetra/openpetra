@@ -181,7 +181,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                         ATransAnalAttribTable.GetTransactionNumberDBName();
 
                     // get a list of all batches involved
-                    List<Int64> batches = new List<Int64>();
+                    List <Int64>batches = new List <Int64>();
                     StringBuilder batchnumbers = new StringBuilder();
 
                     foreach (ATransactionRow r in transactions.Rows)
@@ -205,7 +205,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                             ATransactionTable.GetBatchNumberDBName(),
                             batchnumbers.ToString() + "-1");
 
-                    allTransactionsInJournal = (ATransactionTable)DBAccess.GDBAccessObj.SelectDT(allTransactionsInJournal, sql, Transaction, null, 0, 0);
+                    allTransactionsInJournal =
+                        (ATransactionTable)DBAccess.GDBAccessObj.SelectDT(allTransactionsInJournal, sql, Transaction, null, 0, 0);
 
                     allTransactionsInJournal.DefaultView.Sort =
                         ATransactionTable.GetBatchNumberDBName() + "," +

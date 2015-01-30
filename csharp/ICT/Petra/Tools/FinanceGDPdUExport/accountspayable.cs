@@ -79,7 +79,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                             MFinanceConstants.AP_DOCUMENT_PAID,
                             AApDocumentTable.GetDateIssuedDBName());
 
-                    List<OdbcParameter> Parameters = new List<OdbcParameter>();
+                    List <OdbcParameter>Parameters = new List <OdbcParameter>();
                     OdbcParameter param = new OdbcParameter("startdate", OdbcType.DateTime);
                     param.Value = TAccountingPeriodsWebConnector.GetPeriodStartDate(ALedgerNumber, AFinancialYear, 0, 1);
                     Parameters.Add(param);
@@ -239,17 +239,17 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
                             sb.Append(StringHelper.StrMerge(
                                     new string[] {
-                                doc.ApNumber.ToString(),
-                                detail.DetailNumber.ToString(),
-                                doc.DateIssued.ToString("yyyyMMdd"),
-                                DatePaid,
-                                doc.PartnerKey.ToString(),
-                                supplier.PartnerShortName,
-                                detail.CostCentreCode,
-                                detail.AccountCode,
-                                String.Format("{0:N}", detail.Amount),
-                                detail.Narrative
-                            }, ACSVSeparator));
+                                        doc.ApNumber.ToString(),
+                                        detail.DetailNumber.ToString(),
+                                        doc.DateIssued.ToString("yyyyMMdd"),
+                                        DatePaid,
+                                        doc.PartnerKey.ToString(),
+                                        supplier.PartnerShortName,
+                                        detail.CostCentreCode,
+                                        detail.AccountCode,
+                                        String.Format("{0:N}", detail.Amount),
+                                        detail.Narrative
+                                    }, ACSVSeparator));
                             sb.Append(ANewLine);
                         }
                     }

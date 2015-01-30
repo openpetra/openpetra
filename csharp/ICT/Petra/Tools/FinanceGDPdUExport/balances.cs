@@ -93,11 +93,11 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 {
                     sb.Append(StringHelper.StrMerge(
                             new string[] {
-                            row["CostCentre"].ToString(),
-                            row["Account"].ToString(),
-                            String.Format("{0:N}", Convert.ToDecimal(row["StartBalance"])),
-                            String.Format("{0:N}", Convert.ToDecimal(row["EndBalance"]))
-                        }, ACSVSeparator));
+                                row["CostCentre"].ToString(),
+                                row["Account"].ToString(),
+                                String.Format("{0:N}", Convert.ToDecimal(row["StartBalance"])),
+                                String.Format("{0:N}", Convert.ToDecimal(row["EndBalance"]))
+                            }, ACSVSeparator));
 
                     sb.Append(ANewLine);
                 }

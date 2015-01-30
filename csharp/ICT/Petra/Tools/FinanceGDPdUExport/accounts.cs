@@ -164,7 +164,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     if (AAccounts.Contains(row[0].ToString()))
                     {
                         sb.Append(StringHelper.StrMerge(new string[] { row[0].ToString(), row[1].ToString(),
-                                                                   Convert.ToBoolean(row[2]) ? "Soll" : "Haben" }, ACSVSeparator));
+                                                                       Convert.ToBoolean(row[2]) ? "Soll" : "Haben" }, ACSVSeparator));
                         sb.Append(ANewLine);
                     }
                 }

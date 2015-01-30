@@ -173,12 +173,15 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             ALedgerTable LedgerTable = null;
 
             TDBTransaction ReadTransaction = null;
+
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
                 delegate
                 {
                     // get a list of potential donors (all class FAMILY)
                     string sqlGetFamilyPartnerKeys = "SELECT p_partner_key_n FROM PUB_p_family";
-                    DataTable FamilyKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFamilyPartnerKeys, "keys", ReadTransaction);
+                    DataTable FamilyKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFamilyPartnerKeys,
+                        "keys",
+                        ReadTransaction);
 
                     // get a list of workers (all class FAMILY, with special type WORKER)
                     string sqlGetWorkerPartnerKeys =
@@ -204,7 +207,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
                     LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, ReadTransaction);
 
-                    AAccountingPeriodRow AccountingPeriodRow = AAccountingPeriodAccess.LoadByPrimaryKey(FLedgerNumber, APeriodNumber, ReadTransaction)[0];
+                    AAccountingPeriodRow AccountingPeriodRow = AAccountingPeriodAccess.LoadByPrimaryKey(FLedgerNumber,
+                        APeriodNumber,
+                        ReadTransaction)[0];
 
                     // create a gift batch for each day.
                     // TODO: could create one batch per month, if there are not so many gifts (less than 100 per month)
@@ -343,11 +348,11 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 TDBTransaction WriteTransaction = null;
                 bool SubmissionOk = false;
                 DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref WriteTransaction, ref SubmissionOk,
-                delegate
-                {
-                    ALedgerAccess.SubmitChanges(LedgerTable, WriteTransaction);
-                    SubmissionOk = true;
-                });
+                    delegate
+                    {
+                        ALedgerAccess.SubmitChanges(LedgerTable, WriteTransaction);
+                        SubmissionOk = true;
+                    });
 
                 if (!SubmissionOk)
                 {

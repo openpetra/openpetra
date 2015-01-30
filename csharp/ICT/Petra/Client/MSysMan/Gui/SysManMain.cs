@@ -108,7 +108,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     else
                     {
                         MessageBox.Show(Catalog.GetString("The restoring of the data FAILED. No existing data has been deleted or modified!\r\n\r\n"
-                                + "Please check the Server.log file on the server for errors!"), Catalog.GetString("Restore Failed"),
+                                +
+                                "Please check the Server.log file on the server for errors!"), Catalog.GetString("Restore Failed"),
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
