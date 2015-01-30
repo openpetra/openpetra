@@ -101,51 +101,56 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, int AYear, int APeriod)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-
-            string FilterByPeriod = string.Empty;
-
-            if (AYear > -1)
-            {
-                FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
-                    ABatchTable.GetTableDBName(),
-                    ABatchTable.GetBatchYearDBName(),
-                    AYear);
-
-                if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    //Return current and forwarding periods
-                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
-                        ABatchTable.GetTableDBName(),
-                        ABatchTable.GetBatchPeriodDBName(),
-                        MainDS.ALedger[0].CurrentPeriod);
-                }
-                else if (APeriod > 0)
-                {
-                    //Return only specified period
-                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
-                        ABatchTable.GetTableDBName(),
-                        ABatchTable.GetBatchPeriodDBName(),
-                        APeriod);
-                }
-                else
-                {
-                    //Nothing to add, returns all periods
-                }
-            }
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
-            string SelectClause =
-                String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
-                    ABatchTable.GetTableDBName(),
-                    ABatchTable.GetLedgerNumberDBName(),
-                    ALedgerNumber);
+                    string FilterByPeriod = string.Empty;
 
-            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod,
-                MainDS.ABatch.TableName, Transaction);
+                    if (AYear > -1)
+                    {
+                        FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
+                            ABatchTable.GetTableDBName(),
+                            ABatchTable.GetBatchYearDBName(),
+                            AYear);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                        if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
+                        {
+                            //Return current and forwarding periods
+                            FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
+                                ABatchTable.GetTableDBName(),
+                                ABatchTable.GetBatchPeriodDBName(),
+                                MainDS.ALedger[0].CurrentPeriod);
+                        }
+                        else if (APeriod > 0)
+                        {
+                            //Return only specified period
+                            FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
+                                ABatchTable.GetTableDBName(),
+                                ABatchTable.GetBatchPeriodDBName(),
+                                APeriod);
+                        }
+                        else
+                        {
+                            //Nothing to add, returns all periods
+                        }
+                    }
+
+                    string SelectClause =
+                        String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
+                            ABatchTable.GetTableDBName(),
+                            ABatchTable.GetLedgerNumberDBName(),
+                            ALedgerNumber);
+
+                    DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod,
+                        MainDS.ABatch.TableName, Transaction);
+                });
+
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -160,11 +165,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -179,15 +189,20 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadABatchAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-            ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            ATransAnalAttribAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    ATransAnalAttribAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -201,13 +216,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadABatchAJournalATransaction(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -221,17 +241,22 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadABatchAJournal(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
         /// <summary>
-        /// load the specified batch and its journals.
+        /// load the specified batch and specified journals.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
@@ -241,12 +266,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadABatchAJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            AJournalAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    AJournalAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -260,16 +290,21 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadAJournal(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
         /// <summary>
-        /// Loads a list of journals for the given ledger, batch and journal
+        /// Loads a journal for the given ledger, batch and journal number
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
@@ -279,11 +314,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadAJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            AJournalAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    AJournalAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -297,12 +337,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadAJournalATransaction(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -316,7 +361,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadAJournalAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-
             TDBTransaction Transaction = null;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -342,7 +386,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadARecurringJournalAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-
             TDBTransaction Transaction = null;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -377,32 +420,28 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadARecurringTransactionAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            Boolean NewTransaction = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
             GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = null;
 
-            ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
-            ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
+                    ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
 
-            TemplateTransactionRow.LedgerNumber = ALedgerNumber;
-            TemplateTransactionRow.BatchNumber = ABatchNumber;
-            ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);
+                    TemplateTransactionRow.LedgerNumber = ALedgerNumber;
+                    TemplateTransactionRow.BatchNumber = ABatchNumber;
+                    ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);
 
-            ARecurringTransAnalAttribTable TransAnalAttribTable = new ARecurringTransAnalAttribTable();
-            ARecurringTransAnalAttribRow TemplateTransAnalAttribRow = TransAnalAttribTable.NewRowTyped(false);
-            TemplateTransAnalAttribRow.LedgerNumber = ALedgerNumber;
-            TemplateTransAnalAttribRow.BatchNumber = ABatchNumber;
-            ARecurringTransAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateTransAnalAttribRow, Transaction);
+                    ARecurringTransAnalAttribTable TransAnalAttribTable = new ARecurringTransAnalAttribTable();
+                    ARecurringTransAnalAttribRow TemplateTransAnalAttribRow = TransAnalAttribTable.NewRowTyped(false);
+                    TemplateTransAnalAttribRow.LedgerNumber = ALedgerNumber;
+                    TemplateTransAnalAttribRow.BatchNumber = ABatchNumber;
+                    ARecurringTransAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateTransAnalAttribRow, Transaction);
+                });
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -417,12 +456,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadAJournalATransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            AJournalAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
-            ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    AJournalAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                    ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -437,11 +481,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadATransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -455,11 +504,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadATransactionForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -473,18 +527,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadATransactionATransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
-            string strAnalAttr = string.Empty;
-            bool newTransaction = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out newTransaction);
+            string AnalAttrList = string.Empty;
 
             GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = null;
 
-            ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
-
-            ATransAnalAttribAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                    ATransAnalAttribAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                });
 
             foreach (GLBatchTDSATransactionRow transRow in MainDS.ATransaction.Rows)
             {
@@ -496,32 +550,26 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     ATransAnalAttribRow Row = (ATransAnalAttribRow)rv.Row;
 
-                    if (strAnalAttr.Length > 0)
+                    if (AnalAttrList.Length > 0)
                     {
-                        strAnalAttr += ", ";
+                        AnalAttrList += ", ";
                     }
 
-                    strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                    AnalAttrList += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
                 }
 
-                if (transRow.AnalysisAttributes != strAnalAttr)
+                if (transRow.AnalysisAttributes != AnalAttrList)
                 {
-                    transRow.AnalysisAttributes = strAnalAttr;
+                    transRow.AnalysisAttributes = AnalAttrList;
                 }
 
                 //reset the attributes string
-                strAnalAttr = string.Empty;
+                AnalAttrList = string.Empty;
             }
 
             MainDS.ATransAnalAttrib.DefaultView.RowFilter = string.Empty;
 
-            if (newTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
             MainDS.AcceptChanges();
-
             return MainDS;
         }
 
@@ -537,34 +585,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadATransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ATransAnalAttribAccess.LoadViaATransaction(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, Transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
-            return MainDS;
-        }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ATransAnalAttribAccess.LoadViaATransaction(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, Transaction);
+                });
 
-        /// <summary>
-        /// loads a list of attributes for the given Batch Journal (identified by ledger,batch, journal)
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AJournalNumber"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadATransAnalAttribForJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
-        {
-            GLBatchTDS MainDS = new GLBatchTDS();
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
-            ATransAnalAttribAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -578,10 +608,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadATransAnalAttribForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ATransAnalAttribAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ATransAnalAttribAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
+
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -595,38 +631,38 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLSetupTDS LoadAAnalysisAttributes(Int32 ALedgerNumber, Boolean AActiveOnly = false)
         {
             GLSetupTDS CacheDS = new GLSetupTDS();
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            AAnalysisTypeAccess.LoadAll(CacheDS, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    AAnalysisTypeAccess.LoadAll(CacheDS, Transaction);
 
-            if (!AActiveOnly)
-            {
-                AFreeformAnalysisAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
-                AAnalysisAttributeAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
-            }
-            else
-            {
-                AFreeformAnalysisTable FFTable = new AFreeformAnalysisTable();
-                AFreeformAnalysisRow TemplateFFRow = FFTable.NewRowTyped(false);
-                TemplateFFRow.LedgerNumber = ALedgerNumber;
-                TemplateFFRow.Active = true;
+                    if (!AActiveOnly)
+                    {
+                        AFreeformAnalysisAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
+                        AAnalysisAttributeAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
+                    }
+                    else
+                    {
+                        AFreeformAnalysisTable FFTable = new AFreeformAnalysisTable();
+                        AFreeformAnalysisRow TemplateFFRow = FFTable.NewRowTyped(false);
+                        TemplateFFRow.LedgerNumber = ALedgerNumber;
+                        TemplateFFRow.Active = true;
 
-                AFreeformAnalysisAccess.LoadUsingTemplate(CacheDS, TemplateFFRow, Transaction);
+                        AFreeformAnalysisAccess.LoadUsingTemplate(CacheDS, TemplateFFRow, Transaction);
 
-                AAnalysisAttributeTable AATable = new AAnalysisAttributeTable();
-                AAnalysisAttributeRow TemplateAARow = AATable.NewRowTyped(false);
-                TemplateAARow.LedgerNumber = ALedgerNumber;
-                TemplateAARow.Active = true;
+                        AAnalysisAttributeTable AATable = new AAnalysisAttributeTable();
+                        AAnalysisAttributeRow TemplateAARow = AATable.NewRowTyped(false);
+                        TemplateAARow.LedgerNumber = ALedgerNumber;
+                        TemplateAARow.Active = true;
 
-                AAnalysisAttributeAccess.LoadUsingTemplate(CacheDS, TemplateAARow, Transaction);
-            }
+                        AAnalysisAttributeAccess.LoadUsingTemplate(CacheDS, TemplateAARow, Transaction);
+                    }
+                });
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
+            CacheDS.AcceptChanges();
             return CacheDS;
         }
 
@@ -639,19 +675,19 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadALedgerTable(Int32 ALedgerNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = null;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-
-            // Accept row changes here so that the Client gets 'unmodified' rows
-            MainDS.AcceptChanges();
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                });
 
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -664,44 +700,40 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadARecurringBatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus)
         {
-            Boolean NewTransaction = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
             GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = null;
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
-            string SelectClause =
-                String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
-                    ARecurringBatchTable.GetTableDBName(),
-                    ARecurringBatchTable.GetLedgerNumberDBName(),
-                    ALedgerNumber);
+                    string SelectClause =
+                        String.Format("SELECT * FROM PUB_{0} WHERE {1}={2}",
+                            ARecurringBatchTable.GetTableDBName(),
+                            ARecurringBatchTable.GetLedgerNumberDBName(),
+                            ALedgerNumber);
 
-            string FilterByBatchStatus = string.Empty;
+                    string FilterByBatchStatus = string.Empty;
 
-            if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
-            {
-                // FilterByBatchStatus is empty
-            }
-            else if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
-            {
-                FilterByBatchStatus =
-                    string.Format(" AND {0} = '{1}'",
-                        ARecurringBatchTable.GetBatchStatusDBName(),
-                        MFinanceConstants.BATCH_UNPOSTED);
-            }
+                    if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
+                    {
+                        // FilterByBatchStatus is empty
+                    }
+                    else if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
+                    {
+                        FilterByBatchStatus =
+                            string.Format(" AND {0} = '{1}'",
+                                ARecurringBatchTable.GetBatchStatusDBName(),
+                                MFinanceConstants.BATCH_UNPOSTED);
+                    }
 
-            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByBatchStatus,
-                MainDS.ARecurringBatch.TableName, Transaction);
+                    DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByBatchStatus,
+                        MainDS.ARecurringBatch.TableName, Transaction);
+                });
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -715,35 +747,31 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadARecurringBatchAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            Boolean NewTransaction = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            ARecurringBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            ARecurringJournalAccess.LoadViaARecurringBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            TDBTransaction Transaction = null;
 
-            ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
-            ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
-            TemplateTransactionRow.LedgerNumber = ALedgerNumber;
-            TemplateTransactionRow.BatchNumber = ABatchNumber;
-            ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ARecurringBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    ARecurringJournalAccess.LoadViaARecurringBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 
-            ARecurringTransAnalAttribTable TransAnalAttribTable = new ARecurringTransAnalAttribTable();
-            ARecurringTransAnalAttribRow TemplateTransAnalAttribRow = TransAnalAttribTable.NewRowTyped(false);
-            TemplateTransAnalAttribRow.LedgerNumber = ALedgerNumber;
-            TemplateTransAnalAttribRow.BatchNumber = ABatchNumber;
-            ARecurringTransAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateTransAnalAttribRow, Transaction);
+                    ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
+                    ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
+                    TemplateTransactionRow.LedgerNumber = ALedgerNumber;
+                    TemplateTransactionRow.BatchNumber = ABatchNumber;
+                    ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    ARecurringTransAnalAttribTable TransAnalAttribTable = new ARecurringTransAnalAttribTable();
+                    ARecurringTransAnalAttribRow TemplateTransAnalAttribRow = TransAnalAttribTable.NewRowTyped(false);
+                    TemplateTransAnalAttribRow.LedgerNumber = ALedgerNumber;
+                    TemplateTransAnalAttribRow.BatchNumber = ABatchNumber;
+                    ARecurringTransAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateTransAnalAttribRow, Transaction);
+                });
 
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -756,21 +784,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadARecurringJournal(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            Boolean NewTransaction = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            ARecurringJournalAccess.LoadViaARecurringBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            TDBTransaction Transaction = null;
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ARecurringJournalAccess.LoadViaARecurringBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                });
 
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -784,18 +809,19 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadARecurringTransactionARecurringTransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
-            string strAnalAttr = string.Empty;
-            bool newTransaction = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out newTransaction);
+            string AnalAttrList = string.Empty;
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            ARecurringTransactionAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+            TDBTransaction Transaction = null;
 
-            ARecurringTransAnalAttribAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ARecurringTransactionAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                    ARecurringTransAnalAttribAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                });
 
             foreach (GLBatchTDSARecurringTransactionRow transRow in MainDS.ARecurringTransaction.Rows)
             {
@@ -807,27 +833,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     ARecurringTransAnalAttribRow Row = (ARecurringTransAnalAttribRow)rv.Row;
 
-                    if (strAnalAttr.Length > 0)
+                    if (AnalAttrList.Length > 0)
                     {
-                        strAnalAttr += ", ";
+                        AnalAttrList += ", ";
                     }
 
-                    strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                    AnalAttrList += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
                 }
 
-                transRow.AnalysisAttributes = strAnalAttr;
+                transRow.AnalysisAttributes = AnalAttrList;
 
                 //clear the attributes string and table
-                strAnalAttr = string.Empty;
+                AnalAttrList = string.Empty;
             }
 
             MainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = string.Empty;
 
-            if (newTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -845,26 +867,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 AJournalNumber,
             Int32 ATransactionNumber)
         {
-            Boolean NewTransaction = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            ARecurringTransAnalAttribAccess.LoadViaARecurringTransaction(MainDS,
-                ALedgerNumber,
-                ABatchNumber,
-                AJournalNumber,
-                ATransactionNumber,
-                Transaction);
+            TDBTransaction Transaction = null;
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ARecurringTransAnalAttribAccess.LoadViaARecurringTransaction(MainDS,
+                        ALedgerNumber,
+                        ABatchNumber,
+                        AJournalNumber,
+                        ATransactionNumber,
+                        Transaction);
+                });
 
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -879,11 +898,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadARecurringTransAnalAttribForJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ARecurringTransAnalAttribAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ARecurringTransAnalAttribAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            MainDS.AcceptChanges();
             return MainDS;
         }
 
