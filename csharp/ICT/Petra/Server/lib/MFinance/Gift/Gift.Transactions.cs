@@ -672,12 +672,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     AGiftDetailAccess.LoadViaAGift(MainDS, LatestGiftRow.LedgerNumber, LatestGiftRow.BatchNumber, LatestGiftRow.GiftTransactionNumber,
                         Transaction);
 
-                    if (MainDS.AGiftDetail != null)
+                    if ((MainDS.AGiftDetail != null) && (MainDS.AGiftDetail.Rows.Count > 0))
                     {
                         LastGiftData.Merge(MainDS.AGiftDetail);
                     }
 
-                    if ((LastGiftData != null) && (LastGiftData.Rows.Count > 1))
+                    if ((LastGiftData != null) && (LastGiftData.Rows.Count > 0))
                     {
                         // get the name of each recipient
                         foreach (GiftBatchTDSAGiftDetailRow Row in LastGiftData.Rows)
