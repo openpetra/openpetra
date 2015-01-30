@@ -885,7 +885,6 @@ namespace Ict.Petra.Server.MFinance.GL
                         MainDS.ABatch.AcceptChanges();
 
                         // Now we are done!!!
-                        DBAccess.GDBAccessObj.CommitTransaction();
                         submissionOK = true;
                     }); // Begin Auto Transaction
             } // try

@@ -543,51 +543,44 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         override public Int32 RunOperation()
         {
-            bool NewTransaction;
             Int32 JobSize = 0;
 
-            Boolean ShouldCommit = false;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
             AAccountingPeriodTable AccountingPeriodTbl = null;
 
-            try
-            {
-                AccountingPeriodTbl = AAccountingPeriodAccess.LoadViaALedger(FLedgerNumber, Transaction);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-                foreach (AAccountingPeriodRow accountingPeriodRow in AccountingPeriodTbl.Rows)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    accountingPeriodRow.PeriodStartDate =
-                        accountingPeriodRow.PeriodStartDate.AddDays(1).AddYears(1).AddDays(-1);
-                    accountingPeriodRow.PeriodEndDate =
-                        accountingPeriodRow.PeriodEndDate.AddDays(1).AddYears(1).AddDays(-1);
-                    JobSize++;
-                }
+                    try
+                    {
+                        AccountingPeriodTbl = AAccountingPeriodAccess.LoadViaALedger(FLedgerNumber, Transaction);
 
-                if (DoExecuteableCode)
-                {
-                    AAccountingPeriodAccess.SubmitChanges(AccountingPeriodTbl, Transaction);
-                    ShouldCommit = true;
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("Exception during running the AccountPeriod To New Year operation:" + Environment.NewLine + Exc.ToString());
-                throw;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    if (ShouldCommit)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        foreach (AAccountingPeriodRow accountingPeriodRow in AccountingPeriodTbl.Rows)
+                        {
+                            accountingPeriodRow.PeriodStartDate =
+                                accountingPeriodRow.PeriodStartDate.AddDays(1).AddYears(1).AddDays(-1);
+                            accountingPeriodRow.PeriodEndDate =
+                                accountingPeriodRow.PeriodEndDate.AddDays(1).AddYears(1).AddDays(-1);
+                            JobSize++;
+                        }
+
+                        if (DoExecuteableCode)
+                        {
+                            AAccountingPeriodAccess.SubmitChanges(AccountingPeriodTbl, Transaction);
+                            SubmissionOK = true;
+                        }
                     }
-                    else
+                    catch (Exception Exc)
                     {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        TLogging.Log("Exception during running the AccountPeriod To New Year operation:" + Environment.NewLine + Exc.ToString());
+                        throw Exc;
                     }
-                }
-            }
+                });
+
             return JobSize;
         }  // RunOperation
     } // TAccountPeriodToNewYear
@@ -621,36 +614,28 @@ namespace Ict.Petra.Server.MFinance.GL
             FLedgerAccountingPeriods = FLedgerInfo.NumberOfAccountingPeriods; // Don't call these properties in a loop,
             FLedgerFwdPeriods = FLedgerInfo.NumberFwdPostingPeriods;          // as they reload the row from the DB!
 
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                DataTable GlmTble = LoadTable(FLedgerInfo.LedgerNumber, FOldYearNum, Transaction);
-                FGlmPostingFrom.Merge(GlmTble);
-                GlmTble = LoadTable(FLedgerInfo.LedgerNumber, FNewYearNum, Transaction);
-                GlmTDS.AGeneralLedgerMaster.Merge(GlmTble);
-                GlmTDS.AGeneralLedgerMaster.DefaultView.Sort =
-                    AGeneralLedgerMasterTable.GetAccountCodeDBName() + "," +
-                    AGeneralLedgerMasterTable.GetCostCentreCodeDBName();
-
-                DataTable GlmpTbl = GetGlmpRows(FOldYearNum, Transaction, FLedgerAccountingPeriods);
-                FGlmpFrom.Merge(GlmpTbl);
-                FGlmpFrom.DefaultView.Sort = "a_glm_sequence_i,a_period_number_i";
-
-                GlmpTbl = GetGlmpRows(FNewYearNum, Transaction, 0);
-                GlmTDS.AGeneralLedgerMasterPeriod.Merge(GlmpTbl);
-                GlmTDS.AGeneralLedgerMasterPeriod.DefaultView.Sort = "a_glm_sequence_i,a_period_number_i";
-            }
-            finally
-            {
-                if (NewTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+                    DataTable GlmTble = LoadTable(FLedgerInfo.LedgerNumber, FOldYearNum, Transaction);
+                    FGlmPostingFrom.Merge(GlmTble);
+                    GlmTble = LoadTable(FLedgerInfo.LedgerNumber, FNewYearNum, Transaction);
+                    GlmTDS.AGeneralLedgerMaster.Merge(GlmTble);
+                    GlmTDS.AGeneralLedgerMaster.DefaultView.Sort =
+                        AGeneralLedgerMasterTable.GetAccountCodeDBName() + "," +
+                        AGeneralLedgerMasterTable.GetCostCentreCodeDBName();
+
+                    DataTable GlmpTbl = GetGlmpRows(FOldYearNum, Transaction, FLedgerAccountingPeriods);
+                    FGlmpFrom.Merge(GlmpTbl);
+                    FGlmpFrom.DefaultView.Sort = "a_glm_sequence_i,a_period_number_i";
+
+                    GlmpTbl = GetGlmpRows(FNewYearNum, Transaction, 0);
+                    GlmTDS.AGeneralLedgerMasterPeriod.Merge(GlmpTbl);
+                    GlmTDS.AGeneralLedgerMasterPeriod.DefaultView.Sort = "a_glm_sequence_i,a_period_number_i";
+                });
         }
 
         /// <summary>
@@ -927,101 +912,97 @@ namespace Ict.Petra.Server.MFinance.GL
         public override Int32 RunOperation()
         {
             Int32 JobSize = 0;
-            bool NewTransaction;
-            Boolean ShouldCommit = false;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
 
-            try
-            {
-                String Query =
-                    "SELECT * FROM PUB_a_batch WHERE " +
-                    "a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
-                    " AND a_batch_year_i=" + FOldYearNum +
-                    " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
-                ABatchTable BatchTbl = new ABatchTable();
-                DBAccess.GDBAccessObj.SelectDT(BatchTbl, Query, Transaction);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-                if (BatchTbl.Rows.Count > 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    JobSize = BatchTbl.Rows.Count;
-
-                    if (!FInfoMode)
+                    try
                     {
-                        foreach (ABatchRow BatchRow in BatchTbl.Rows)
+                        String Query =
+                            "SELECT * FROM PUB_a_batch WHERE " +
+                            "a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
+                            " AND a_batch_year_i=" + FOldYearNum +
+                            " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
+                        ABatchTable BatchTbl = new ABatchTable();
+                        DBAccess.GDBAccessObj.SelectDT(BatchTbl, Query, Transaction);
+
+                        if (BatchTbl.Rows.Count > 0)
                         {
-                            BatchRow.BatchPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
-                            BatchRow.BatchYear += 1;
+                            JobSize = BatchTbl.Rows.Count;
+
+                            if (!FInfoMode)
+                            {
+                                foreach (ABatchRow BatchRow in BatchTbl.Rows)
+                                {
+                                    BatchRow.BatchPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
+                                    BatchRow.BatchYear += 1;
+                                }
+
+                                ABatchAccess.SubmitChanges(BatchTbl, Transaction);
+                                SubmissionOK = true;
+                            }
                         }
 
-                        ABatchAccess.SubmitChanges(BatchTbl, Transaction);
-                        ShouldCommit = true;
-                    }
-                }
+                        Query =
+                            "SELECT PUB_a_journal.* FROM PUB_a_batch, PUB_a_journal WHERE " +
+                            " PUB_a_journal.a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
+                            " AND PUB_a_batch.a_batch_number_i= PUB_a_journal.a_batch_number_i" +
+                            " AND PUB_a_batch.a_batch_year_i=" + FOldYearNum +
+                            " AND a_journal_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
+                        AJournalTable JournalTbl = new AJournalTable();
+                        DBAccess.GDBAccessObj.SelectDT(JournalTbl, Query, Transaction);
 
-                Query =
-                    "SELECT PUB_a_journal.* FROM PUB_a_batch, PUB_a_journal WHERE " +
-                    " PUB_a_journal.a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
-                    " AND PUB_a_batch.a_batch_number_i= PUB_a_journal.a_batch_number_i" +
-                    " AND PUB_a_batch.a_batch_year_i=" + FOldYearNum +
-                    " AND a_journal_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
-                AJournalTable JournalTbl = new AJournalTable();
-                DBAccess.GDBAccessObj.SelectDT(JournalTbl, Query, Transaction);
-
-                if (JournalTbl.Rows.Count > 0)
-                {
-                    if (!FInfoMode)
-                    {
-                        foreach (AJournalRow JournalRow in JournalTbl.Rows)
+                        if (JournalTbl.Rows.Count > 0)
                         {
-                            JournalRow.JournalPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
+                            if (!FInfoMode)
+                            {
+                                foreach (AJournalRow JournalRow in JournalTbl.Rows)
+                                {
+                                    JournalRow.JournalPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
+                                }
+
+                                AJournalAccess.SubmitChanges(JournalTbl, Transaction);
+                                SubmissionOK = true;
+                            }
                         }
 
-                        AJournalAccess.SubmitChanges(JournalTbl, Transaction);
-                        ShouldCommit = true;
-                    }
-                }
+                        Query =
+                            "SELECT * FROM PUB_a_gift_batch WHERE " +
+                            " a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
+                            " AND a_batch_year_i=" + FOldYearNum +
+                            " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
+                        AGiftBatchTable GiftBatchTbl = new AGiftBatchTable();
+                        DBAccess.GDBAccessObj.SelectDT(GiftBatchTbl, Query, Transaction);
 
-                Query =
-                    "SELECT * FROM PUB_a_gift_batch WHERE " +
-                    " a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
-                    " AND a_batch_year_i=" + FOldYearNum +
-                    " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
-                AGiftBatchTable GiftBatchTbl = new AGiftBatchTable();
-                DBAccess.GDBAccessObj.SelectDT(GiftBatchTbl, Query, Transaction);
-
-                if (GiftBatchTbl.Rows.Count > 0)
-                {
-                    JobSize += GiftBatchTbl.Rows.Count;
-
-                    if (!FInfoMode)
-                    {
-                        foreach (AGiftBatchRow GiftBatchRow in GiftBatchTbl.Rows)
+                        if (GiftBatchTbl.Rows.Count > 0)
                         {
-                            GiftBatchRow.BatchPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
-                            GiftBatchRow.BatchYear += 1;
-                        }
+                            JobSize += GiftBatchTbl.Rows.Count;
 
-                        AGiftBatchAccess.SubmitChanges(GiftBatchTbl, Transaction);
-                        ShouldCommit = true;
+                            if (!FInfoMode)
+                            {
+                                foreach (AGiftBatchRow GiftBatchRow in GiftBatchTbl.Rows)
+                                {
+                                    GiftBatchRow.BatchPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
+                                    GiftBatchRow.BatchYear += 1;
+                                }
+
+                                AGiftBatchAccess.SubmitChanges(GiftBatchTbl, Transaction);
+                                SubmissionOK = true;
+                            }
+                        }
                     }
-                }
-            }     // try
-            finally
-            {
-                if (NewTransaction)
-                {
-                    if (ShouldCommit)
+                    catch (Exception e)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        TLogging.Log("Error in RunOperation: " + e.Message);
+                        throw e;
                     }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-                }
-            }
+                });
+
             return JobSize;
         }
     }     // TResetForwardPeriodBatches
@@ -1068,61 +1049,57 @@ namespace Ict.Petra.Server.MFinance.GL
         public override Int32 RunOperation()
         {
             Int32 JobSize = 0;
-            bool NewTransaction;
-            Boolean ShouldCommit = false;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
 
-            try
-            {
-                String Query =
-                    "SELECT * FROM PUB_a_ich_stewardship WHERE " +
-                    "a_ledger_number_i=" + FLedgerInfo.LedgerNumber;
-                DataTable Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "AIchStewardship", Transaction);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-                if (Tbl.Rows.Count > 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    AIchStewardshipTable StewardshipTbl = new AIchStewardshipTable();
-                    StewardshipTbl.Merge(Tbl);
-
-                    for (Int32 Idx = StewardshipTbl.Rows.Count - 1; Idx >= 0; Idx--)
+                    try
                     {
-                        AIchStewardshipRow StewardshipRow = StewardshipTbl[Idx];
+                        String Query =
+                            "SELECT * FROM PUB_a_ich_stewardship WHERE " +
+                            "a_ledger_number_i=" + FLedgerInfo.LedgerNumber;
+                        DataTable Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "AIchStewardship", Transaction);
 
-                        if (StewardshipRow.PeriodNumber > FLedgerInfo.NumberOfAccountingPeriods)
+                        if (Tbl.Rows.Count > 0)
                         {
-                            StewardshipRow.PeriodNumber -= FLedgerInfo.NumberOfAccountingPeriods;
-                            JobSize++;
-                        }
-                        else
-                        {
-                            StewardshipRow.Delete();
-                        }
-                    }
+                            AIchStewardshipTable StewardshipTbl = new AIchStewardshipTable();
+                            StewardshipTbl.Merge(Tbl);
 
-                    if (!FInfoMode)
-                    {
-                        StewardshipTbl.ThrowAwayAfterSubmitChanges = true;
-                        AIchStewardshipAccess.SubmitChanges(StewardshipTbl, Transaction);
-                        ShouldCommit = true;
+                            for (Int32 Idx = StewardshipTbl.Rows.Count - 1; Idx >= 0; Idx--)
+                            {
+                                AIchStewardshipRow StewardshipRow = StewardshipTbl[Idx];
+
+                                if (StewardshipRow.PeriodNumber > FLedgerInfo.NumberOfAccountingPeriods)
+                                {
+                                    StewardshipRow.PeriodNumber -= FLedgerInfo.NumberOfAccountingPeriods;
+                                    JobSize++;
+                                }
+                                else
+                                {
+                                    StewardshipRow.Delete();
+                                }
+                            }
+
+                            if (!FInfoMode)
+                            {
+                                StewardshipTbl.ThrowAwayAfterSubmitChanges = true;
+                                AIchStewardshipAccess.SubmitChanges(StewardshipTbl, Transaction);
+                                SubmissionOK = true;
+                            }
+                        }
                     }
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    if (ShouldCommit)
+                    catch (Exception e)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        TLogging.Log("Error in RunOperation: " + e.Message);
+                        throw e;
                     }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-                }
-            }
+                });
+
             return JobSize;
         }
     }     // TResetForwardPeriodICH

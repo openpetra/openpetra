@@ -311,39 +311,38 @@ namespace Ict.Petra.Server.MFinance.GL
                 return; // Revaluation has been performed for the current period.
             }
 
-            bool NewTransaction = false;
-            TDBTransaction transaction;
-            try
-            {
-                transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
+            TDBTransaction Transaction = null;
 
-                // TODO: could also check for the balance in this month of the foreign currency account. if all balances are zero, no revaluation is needed.
-                string testForForeignKeyAccount =
-                    String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
-                        AAccountTable.GetLedgerNumberDBName(),
-                        FledgerInfo.LedgerNumber,
-                        AAccountTable.GetForeignCurrencyFlagDBName());
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    try
+                    {
+                        // TODO: could also check for the balance in this month of the foreign currency account. if all balances are zero, no revaluation is needed.
+                        string testForForeignKeyAccount =
+                            String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
+                                AAccountTable.GetLedgerNumberDBName(),
+                                FledgerInfo.LedgerNumber,
+                                AAccountTable.GetForeignCurrencyFlagDBName());
 
-                if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, transaction)) != 0)
-                {
-                    TVerificationResult tvr = new TVerificationResult(
-                        Catalog.GetString("Ledger revaluation"),
-                        Catalog.GetString("Please run a foreign currency revaluation first."), "",
-                        TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
-                    // Error is critical but additional checks can still be done
-                    FverificationResults.Add(tvr);
-                    FHasCriticalErrors = true;
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+                        if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, Transaction)) != 0)
+                        {
+                            TVerificationResult tvr = new TVerificationResult(
+                                Catalog.GetString("Ledger revaluation"),
+                                Catalog.GetString("Please run a foreign currency revaluation first."), "",
+                                TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
+                            // Error is critical but additional checks can still be done
+                            FverificationResults.Add(tvr);
+                            FHasCriticalErrors = true;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        TLogging.Log("Unexpected error in CheckIfRevaluationIsDone(): " + ex.Message);
+                        throw ex;
+                    }
+                });
         }
 
         private void CheckForUnpostedBatches()

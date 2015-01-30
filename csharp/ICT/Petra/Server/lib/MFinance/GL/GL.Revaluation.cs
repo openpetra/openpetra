@@ -170,36 +170,36 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void RunRevaluationIntern()
         {
-            Boolean NewTransaction;
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-            AAccountTable accountTable = new AAccountTable();
+            AAccountTable AccountTable = new AAccountTable();
+            AGeneralLedgerMasterTable GlmTable = new AGeneralLedgerMasterTable();
 
-            AAccountRow accountTemplate = (AAccountRow)accountTable.NewRowTyped(false);
+            TDBTransaction Transaction = null;
 
-            accountTemplate.LedgerNumber = F_LedgerNum;
-            accountTemplate.AccountActiveFlag = true;
-            accountTemplate.ForeignCurrencyFlag = true;
-            accountTable = AAccountAccess.LoadUsingTemplate(accountTemplate, DBTransaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    AAccountRow accountTemplate = (AAccountRow)AccountTable.NewRowTyped(false);
 
-            AGeneralLedgerMasterTable glmTable = new AGeneralLedgerMasterTable();
-            AGeneralLedgerMasterRow glmTemplate = (AGeneralLedgerMasterRow)glmTable.NewRowTyped(false);
-            glmTemplate.LedgerNumber = F_LedgerNum;
-            glmTemplate.Year = F_FinancialYear;
-            glmTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(glmTemplate, DBTransaction);
+                    accountTemplate.LedgerNumber = F_LedgerNum;
+                    accountTemplate.AccountActiveFlag = true;
+                    accountTemplate.ForeignCurrencyFlag = true;
+                    AccountTable = AAccountAccess.LoadUsingTemplate(accountTemplate, Transaction);
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    AGeneralLedgerMasterRow glmTemplate = (AGeneralLedgerMasterRow)GlmTable.NewRowTyped(false);
+                    glmTemplate.LedgerNumber = F_LedgerNum;
+                    glmTemplate.Year = F_FinancialYear;
+                    GlmTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(glmTemplate, Transaction);
+                });
 
-            if (accountTable.Rows.Count == 0) // not using any foreign accounts?
+            if (AccountTable.Rows.Count == 0) // not using any foreign accounts?
             {
                 return;
             }
 
-            for (int iCnt = 0; iCnt < accountTable.Rows.Count; ++iCnt)
+            for (int iCnt = 0; iCnt < AccountTable.Rows.Count; ++iCnt)
             {
-                AAccountRow accountRow = (AAccountRow)accountTable[iCnt];
+                AAccountRow accountRow = (AAccountRow)AccountTable[iCnt];
 
                 for (int kCnt = 0; kCnt < F_CurrencyCode.Length; ++kCnt)
                 {
@@ -207,11 +207,11 @@ namespace Ict.Petra.Server.MFinance.GL
                     // for this account resp. for the currency of the account
                     if (accountRow.ForeignCurrencyCode.Equals(F_CurrencyCode[kCnt]))
                     {
-                        glmTable.DefaultView.RowFilter = "a_account_code_c = '" + accountRow.AccountCode + "'";
+                        GlmTable.DefaultView.RowFilter = "a_account_code_c = '" + accountRow.AccountCode + "'";
 
-                        if (glmTable.DefaultView.Count > 0)
+                        if (GlmTable.DefaultView.Count > 0)
                         {
-                            RevaluateAccount(glmTable.DefaultView, F_ExchangeRate[kCnt]);
+                            RevaluateAccount(GlmTable.DefaultView, F_ExchangeRate[kCnt]);
                         }
                     }
                 }
@@ -229,6 +229,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 AGeneralLedgerMasterPeriodTable glmpTbl = null;
 
                 TDBTransaction transaction = null;
+
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref transaction,
@@ -369,23 +370,23 @@ namespace Ict.Petra.Server.MFinance.GL
         private void CreateTransaction(string AMessage, string AAccount,
             bool ADebitFlag, string ACostCenter, decimal Aamount)
         {
-            ATransactionRow transaction = null;
+            ATransactionRow TransactionRow = null;
 
-            transaction = F_GLDataset.ATransaction.NewRowTyped();
-            transaction.LedgerNumber = F_journal.LedgerNumber;
-            transaction.BatchNumber = F_journal.BatchNumber;
-            transaction.JournalNumber = F_journal.JournalNumber;
-            transaction.TransactionNumber = ++F_journal.LastTransactionNumber;
-            transaction.AccountCode = AAccount;
-            transaction.CostCentreCode = ACostCenter;
-            transaction.Narrative = AMessage;
-            transaction.Reference = CommonAccountingTransactionTypesEnum.REVAL.ToString();
-            transaction.DebitCreditIndicator = ADebitFlag;
-            transaction.AmountInBaseCurrency = Aamount;
-            transaction.TransactionAmount = Aamount;
-            transaction.TransactionDate = F_batch.DateEffective;
+            TransactionRow = F_GLDataset.ATransaction.NewRowTyped();
+            TransactionRow.LedgerNumber = F_journal.LedgerNumber;
+            TransactionRow.BatchNumber = F_journal.BatchNumber;
+            TransactionRow.JournalNumber = F_journal.JournalNumber;
+            TransactionRow.TransactionNumber = ++F_journal.LastTransactionNumber;
+            TransactionRow.AccountCode = AAccount;
+            TransactionRow.CostCentreCode = ACostCenter;
+            TransactionRow.Narrative = AMessage;
+            TransactionRow.Reference = CommonAccountingTransactionTypesEnum.REVAL.ToString();
+            TransactionRow.DebitCreditIndicator = ADebitFlag;
+            TransactionRow.AmountInBaseCurrency = Aamount;
+            TransactionRow.TransactionAmount = Aamount;
+            TransactionRow.TransactionDate = F_batch.DateEffective;
 
-            F_GLDataset.ATransaction.Rows.Add(transaction);
+            F_GLDataset.ATransaction.Rows.Add(TransactionRow);
         }
 
         private void CloseRevaluationAccountingBatch()

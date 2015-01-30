@@ -87,8 +87,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
             SortedDictionary <String, AJournalSummaryRow>sdSummary = new SortedDictionary <String, AJournalSummaryRow>();
 
-            TDBTransaction transaction = null;
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref transaction,
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
                 delegate
                 {
                     UInt32 progressCounter = 0;
@@ -105,8 +105,8 @@ namespace Ict.Petra.Server.MFinance.GL
                     while (Abatches.Count > 0)
                     {
                         Int32 ABatchNumber = (Int32)Abatches[0];
-                        ABatchAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, ABatchNumber, transaction);
-                        AJournalAccess.LoadViaABatch(FMainDS, FLedgerNumber, ABatchNumber, transaction);
+                        ABatchAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
+                        AJournalAccess.LoadViaABatch(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
 
                         foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                         {
@@ -115,7 +115,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 ATransactionAccess.LoadViaAJournal(FMainDS, journal.LedgerNumber,
                                     journal.BatchNumber,
                                     journal.JournalNumber,
-                                    transaction);
+                                    Transaction);
                             }
                         }
 
@@ -127,14 +127,13 @@ namespace Ict.Petra.Server.MFinance.GL
                                     trans.BatchNumber,
                                     trans.JournalNumber,
                                     trans.TransactionNumber,
-                                    transaction);
+                                    Transaction);
                             }
                         }
 
                         Abatches.RemoveAt(0);
                     }
 
-                    DBAccess.GDBAccessObj.RollbackTransaction();
                     UInt32 counter = 0;
                     AJournalSummaryRow journalSummary = null;
 
