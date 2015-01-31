@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -639,7 +639,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             bool DonorExists = true;
 
-            GiftBatchTDSAGiftDetailTable LastGiftData = null;
+            GiftBatchTDSAGiftDetailTable LastGiftData = new GiftBatchTDSAGiftDetailTable();
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = null;

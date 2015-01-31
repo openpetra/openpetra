@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -99,10 +99,7 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public Boolean PatchApplies(String APatchZipFile)
         {
-            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
-            TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
-
-            return patchStartVersion.Compare(this) == 0;
+            return TPatchFileVersionInfo.PatchApplies(this, APatchZipFile);
         }
 
         /// <summary>
@@ -112,6 +109,13 @@ namespace Ict.Common.IO
         {
             StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
             TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
+
+            // generic patch
+            if (patchStartVersion.FilePrivatePart == 0)
+            {
+                TFileVersionInfo patchEndVersion = new TFileVersionInfo(versions[1]);
+                return patchEndVersion.Compare(ACurrentVersion) > 0;
+            }
 
             return patchStartVersion.Compare(ACurrentVersion) == 0;
         }
@@ -1139,7 +1143,7 @@ namespace Ict.Common.IO
                 fileStartVersion = TPatchFileVersionInfo.GetStartVersionFromDiffZipName(filename);
                 filePatchVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(filename);
 
-                if ((fileStartVersion.Compare(FCurrentlyInstalledVersion) >= 0)
+                if ((fileStartVersion.FilePrivatePart == 0 || fileStartVersion.Compare(FCurrentlyInstalledVersion) >= 0)
                     && (filePatchVersion.Compare(FCurrentlyInstalledVersion) > 0))
                 {
                     FListOfNewPatches.Add(filename, filename);
@@ -1215,20 +1219,6 @@ namespace Ict.Common.IO
 
             if (FLatestAvailablePatch.Compare(testPatchVersion) != 0)
             {
-                // check for a generic patch file, starting from version 0.0.99.99
-                foreach (string patch in AOrderedListOfAllPatches.GetValueList())
-                {
-                    if (patch.Contains("0.0.99.99"))
-                    {
-                        testPatchVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch);
-                        ResultPatchList.Clear();
-                        ResultPatchList.Add(patch, patch);
-                    }
-                }
-            }
-
-            if (FLatestAvailablePatch.Compare(testPatchVersion) != 0)
-            {
                 TLogging.Log("missing patchfile from version " + testPatchVersion.ToString() + " to " + FLatestAvailablePatch.ToString());
                 return new SortedList();
             }
@@ -1282,6 +1272,16 @@ namespace Ict.Common.IO
                         APatchDirectory + Path.DirectorySeparatorChar + Path.GetFileName(patchExeFile), true);
                 }
             }
+
+            // compiling on Linux with Mono, we cannot use the manifest that tells the UAC that running a exe with patch in the name is fine without administrator rights
+            // therefore we rename the file so that the normal user can execute it
+            string newNameUAC = APatchDirectory + Path.DirectorySeparatorChar + "Ict.Tools.Ptchtool.exe";
+            if (File.Exists(newNameUAC))
+            {
+               File.Delete(newNameUAC);
+            }
+
+            File.Move(APatchDirectory + Path.DirectorySeparatorChar + "Ict.Tools.PatchTool.exe", newNameUAC);
 
             // check for the latest version of those files in the new patches
             foreach (string patch in FListOfNewPatches.GetValueList())

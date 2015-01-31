@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -157,16 +157,16 @@ namespace Ict.Common
             // The string contains index references to other spots in the string, so we need placeholders so we can compute the offsets.
             // The <<<<<<<_ strings are just placeholders. I'll backpatch the actual values afterwards.
             sb.Append(
-                @"Format:HTML Format
-Version:1.0
-StartHTML:<<<<<<<1
-EndHTML:<<<<<<<2
-StartFragment:<<<<<<<3
-EndFragment:<<<<<<<4
-StartSelection:<<<<<<<3
-EndSelection:<<<<<<<4
-SourceURL:OpenPetra
-"                                                                                                                                                                                                   );
+                "Format:HTML Format" + Environment.NewLine +
+                "Version:1.0" + Environment.NewLine +
+                "StartHTML:<<<<<<<1" + Environment.NewLine +
+                "EndHTML:<<<<<<<2" + Environment.NewLine +
+                "StartFragment:<<<<<<<3" + Environment.NewLine +
+                "EndFragment:<<<<<<<4" + Environment.NewLine +
+                "StartSelection:<<<<<<<3" + Environment.NewLine +
+                "EndSelection:<<<<<<<4" + Environment.NewLine +
+                "SourceURL:OpenPetra" + Environment.NewLine);
+
             int startHTML = sb.Length;
             int fragmentEnd;
             int fragmentStart = HtmlString.ToLower().IndexOf("<body>");

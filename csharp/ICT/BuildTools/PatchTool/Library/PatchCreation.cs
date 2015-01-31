@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -248,10 +248,18 @@ namespace Ict.Tools.PatchTool.Library
             PreparePatchTmpDirectory(DiffDirectory);
             Directory.CreateDirectory(DiffDirectory + Path.DirectorySeparatorChar + "openpetraorg-" + newPatch);
 
+            string oldPath = ATmpDirectory + Path.DirectorySeparatorChar + oldPatch + Path.DirectorySeparatorChar + "openpetraorg-" + oldPatch;
+            string newPath = ATmpDirectory + Path.DirectorySeparatorChar + newPatch + Path.DirectorySeparatorChar + "openpetraorg-" + newPatch;
+
+            if ((oldPatch == newPatch) && oldPatch.EndsWith("0"))
+            {
+                oldPath = ATmpDirectory + Path.DirectorySeparatorChar + "NotExisting";
+            }
+
             CreateDiffFiles(ATmpDirectory,
                 DiffDirectory + Path.DirectorySeparatorChar + "openpetraorg-" + newPatch,
-                ATmpDirectory + Path.DirectorySeparatorChar + oldPatch + Path.DirectorySeparatorChar + "openpetraorg-" + oldPatch,
-                ATmpDirectory + Path.DirectorySeparatorChar + newPatch + Path.DirectorySeparatorChar + "openpetraorg-" + newPatch,
+                oldPath,
+                newPath,
                 string.Empty);
 
             // put it all into a zip file
