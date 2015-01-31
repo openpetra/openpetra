@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -220,7 +220,8 @@ namespace Ict.Common.Remoting.Shared
         {
             if (o.GetType() == typeof(string))
             {
-                if (((string)o).IndexOfAny(new char[] { ',', ':', '<', '>' }) > -1)
+                // need to make sure that yml.gz will always be encoded in binary
+                if (((string)o).Length > 500 || ((string)o).IndexOfAny(new char[] { ',', ':', '<', '>' }) > -1)
                 {
                     // Avoid System.Web.HttpRequestValidationException: A potentially dangerous Request.Form value was detected from the client
                     // when sending for example an html template.
