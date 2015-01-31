@@ -31,6 +31,7 @@ using System.Xml;
 using System.IO;
 using System.Text;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
