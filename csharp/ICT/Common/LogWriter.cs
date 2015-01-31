@@ -168,7 +168,7 @@ namespace Ict.Common
                 }
             }
 
-            ///<description>change the newest logfile to -01.log</description>
+            // change the newest logfile to -01.log
             string Name = LogFileNameWithoutExtension + "-01" + Extension;
             string NewFile = Path.Combine(LogfilePath, Name);
 
