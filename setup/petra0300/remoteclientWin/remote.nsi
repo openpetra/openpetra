@@ -7,10 +7,13 @@
 
   !include "MUI2.nsh"
   !include LogicLib.nsh
+  !include "StrFunc.nsh"
+  ${StrTok}
 ;--------------------------------
 ;General
 
 !define ORGNAME "{#ORGNAME}"
+!define ORGNAMEWITHOUTSPACE "{#ORGNAMEWITHOUTSPACE}"
 !define VERSION "{#RELEASEVERSION}"
 !define PRODUCT_WEB_SITE "http://{#PUBLISHERURL}"
 
@@ -18,15 +21,15 @@
 
   ;Name and file
   Name "${MUI_PRODUCT}"
-  OutFile "{#DELIVERY.DIR}/OpenPetraRemoteSetup-${ORGNAME}-${VERSION}.exe"
+  OutFile "{#DELIVERY.DIR}/OpenPetraRemoteSetup-${ORGNAMEWITHOUTSPACE}-${VERSION}.exe"
   BrandingText "by developers of OpenPetra.org"
 
 
   ;Default installation folder
-  InstallDir "$APPDATA\OpenPetra${ORGNAME}"
+  InstallDir "$APPDATA\OpenPetra${ORGNAMEWITHOUTSPACE}"
 
   ;Get installation folder from registry if available
-  InstallDirRegKey HKCU "Software\OpenPetra${ORGNAME}" ""
+  InstallDirRegKey HKCU "Software\OpenPetra${ORGNAMEWITHOUTSPACE}" ""
 
   ;Request application privileges for Windows Vista
   RequestExecutionLevel user
@@ -41,7 +44,7 @@
 
   ;Remember the installer language
   !define MUI_LANGDLL_REGISTRY_ROOT "HKCU" 
-  !define MUI_LANGDLL_REGISTRY_KEY "Software\OpenPetra${ORGNAME}" 
+  !define MUI_LANGDLL_REGISTRY_KEY "Software\OpenPetra${ORGNAMEWITHOUTSPACE}" 
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
   
 ;--------------------------------
@@ -78,7 +81,40 @@
 ; TODO: several languages
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
- 
+
+; see http://nsis.sourceforge.net/Sharing_functions_between_Installer_and_Uninstaller
+!macro MGETAFTERCHAR un
+; see http://nsis.sourceforge.net/Get_last_directory_path_part
+Function ${un}GetAfterChar
+  Exch $0 ; chop char
+  Exch
+  Exch $1 ; input string
+  Push $2
+  Push $3
+  StrCpy $2 0
+  loop:
+    IntOp $2 $2 - 1
+    StrCpy $3 $1 1 $2
+    StrCmp $3 "" 0 +3
+      StrCpy $0 ""
+      Goto exit2
+    StrCmp $3 $0 exit1
+    Goto loop
+  exit1:
+    IntOp $2 $2 + 1
+    StrCpy $0 $1 "" $2
+  exit2:
+    Pop $3
+    Pop $2
+    Pop $1
+    Exch $0 ; output
+FunctionEnd
+!macroend
+
+; Insert function as an installer and uninstaller function.
+!insertmacro MGETAFTERCHAR ""
+!insertmacro MGETAFTERCHAR "un."
+
 ;--------------------------------
 ;Installer Sections
 
@@ -128,7 +164,7 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\resources\petraico-big.ico
   
   ;Store installation folder
-  WriteRegStr HKCU "Software\OpenPetra${ORGNAME}" "" $INSTDIR
+  WriteRegStr HKCU "Software\OpenPetra${ORGNAMEWITHOUTSPACE}" "" $INSTDIR
 
   ; Now create shortcuts
   CreateDirectory "$SMPROGRAMS\${MUI_PRODUCT}"
@@ -151,50 +187,26 @@ Function .onInit
 FunctionEnd
 ;--------------------------------
 
-; see http://nsis.sourceforge.net/Check_for_a_Registry_Key
-!macro IfKeyExists ROOT MAIN_KEY KEY
-  Push $R0
-  Push $R1
-  Push $R2
- 
-  # XXX bug if ${ROOT}, ${MAIN_KEY} or ${KEY} use $R0 or $R1
- 
-  StrCpy $R1 "0" # loop index
-  StrCpy $R2 "0" # not found
- 
-  ${Do}
-    EnumRegKey $R0 ${ROOT} "${MAIN_KEY}" "$R1"
-    ${If} $R0 == "${KEY}"
-      StrCpy $R2 "1" # found
-      ${Break}
-    ${EndIf}
-    IntOp $R1 $R1 + 1
-  ${LoopWhile} $R0 != ""
- 
-  ClearErrors
- 
-  Exch 2
-  Pop $R0
-  Pop $R1
-  Exch $R2
-!macroend
-
-; see also http://nsis.sourceforge.net/Get_.NET_Version and http://nsis.sourceforge.net/DotNET
-; GetCORVersion always returns v2.0, but not the installed v3.5
+; see also http://nsis.sourceforge.net/Get_.NET_Version and http://nsis.sourceforge.net/DotNET and http://nsis.sourceforge.net/How_to_Detect_any_.NET_Framework
+; see https://msdn.microsoft.com/en-us/library/hh925568%28v=vs.110%29.aspx#net_b
 ; we don't want to install .Net directly, since the user might not have admin permissions
 Function CheckDotNETVersion
-    !insertmacro IfKeyExists "HKLM" "SOFTWARE\Microsoft\.NETFramework\Policy" "v4.0"
-    Pop $R0
-    ;$R0 contains 0 (not present) or 1 (present)
 
-  ${If} $R0 == 0
-    DetailPrint ".NET Framework v4.0 not installed."
-    DetailPrint "Please first install this .NET Framework version from www.microsoft.com!"
-    MessageBox MB_OK|MB_ICONSTOP \
-    ".NET Framework v4.0 not installed.$\nPlease first install this .NET Framework version from www.microsoft.com!"
-    Abort
-  ${EndIf}
-FunctionEnd
+    ClearErrors
+    ReadRegDWORD $0 "HKLM" "SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Client" "Release"
+    IfErrors WrongFramework 0
+
+    IntCmp $0 378389 FrameworkFine WrongFramework FrameworkFine
+
+    WrongFramework: 
+      DetailPrint ".NET Framework v4.5 not installed."
+      DetailPrint "Please first install this .NET Framework version from www.microsoft.com!"
+      MessageBox MB_OK|MB_ICONSTOP \
+      ".NET Framework v4.5 not installed.$\nPlease first install this .NET Framework version from www.microsoft.com!"
+      Abort
+
+    FrameworkFine:
+ FunctionEnd
 
 ;Uninstaller Section
 
@@ -236,6 +248,6 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\${MUI_PRODUCT}\*.*"
   RmDir  "$SMPROGRAMS\${MUI_PRODUCT}"  
 
-  DeleteRegKey /ifempty HKCU "Software\OpenPetra${ORGNAME}"
+  DeleteRegKey /ifempty HKCU "Software\OpenPetra${ORGNAMEWITHOUTSPACE}"
 
 SectionEnd
