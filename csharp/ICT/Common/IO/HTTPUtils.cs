@@ -53,10 +53,6 @@ namespace Ict.Common.IO
             {
                 this.CookieContainer = c;
 
-                // see http://blogs.msdn.com/b/carloc/archive/2007/02/13/webclient-2-0-class-not-working-under-win2000-with-https.aspx
-                // it seems we need to specify SSL3 instead of TLS
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
-
                 // see http://stackoverflow.com/questions/566437/http-post-returns-the-error-417-expectation-failed-c
                 System.Net.ServicePointManager.Expect100Continue = false;
 
