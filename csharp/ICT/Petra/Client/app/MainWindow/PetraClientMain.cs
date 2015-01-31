@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -259,7 +259,7 @@ namespace Ict.Petra.Client.App.PetraClient
                     // check for newer patchtool
                     patchTools.CopyLatestPatchProgram(TempPath);
 
-                    string PatchToolExe = TempPath + Path.DirectorySeparatorChar + "Ict.Tools.PatchTool.exe";
+                    string PatchToolExe = TempPath + Path.DirectorySeparatorChar + "Ict.Tools.PtchTool.exe";
 
                     if (!File.Exists(PatchToolExe))
                     {
