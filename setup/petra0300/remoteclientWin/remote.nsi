@@ -82,39 +82,6 @@
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
-; see http://nsis.sourceforge.net/Sharing_functions_between_Installer_and_Uninstaller
-!macro MGETAFTERCHAR un
-; see http://nsis.sourceforge.net/Get_last_directory_path_part
-Function ${un}GetAfterChar
-  Exch $0 ; chop char
-  Exch
-  Exch $1 ; input string
-  Push $2
-  Push $3
-  StrCpy $2 0
-  loop:
-    IntOp $2 $2 - 1
-    StrCpy $3 $1 1 $2
-    StrCmp $3 "" 0 +3
-      StrCpy $0 ""
-      Goto exit2
-    StrCmp $3 $0 exit1
-    Goto loop
-  exit1:
-    IntOp $2 $2 + 1
-    StrCpy $0 $1 "" $2
-  exit2:
-    Pop $3
-    Pop $2
-    Pop $1
-    Exch $0 ; output
-FunctionEnd
-!macroend
-
-; Insert function as an installer and uninstaller function.
-!insertmacro MGETAFTERCHAR ""
-!insertmacro MGETAFTERCHAR "un."
-
 ;--------------------------------
 ;Installer Sections
 
