@@ -229,6 +229,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <!-- for remote installer -->
     <if test="${property::exists('HostedServer')}">
         <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#ORGNAME}', OrgName)}"/>
+        <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#ORGNAMEWITHOUTSPACE}', OrgNameWithoutSpace)}"/>
         <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#PUBLISHERURL}', PublisherUrl)}"/>
         <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SERVERHOST}', HostedServer)}"/>
         <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SERVERPORT}', HostedPort)}"/>
