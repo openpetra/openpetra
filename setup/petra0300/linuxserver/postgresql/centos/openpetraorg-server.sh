@@ -192,6 +192,9 @@ init() {
     chmod 600 /home/$userName/.pgpass
     chown $userName /home/$userName/.pgpass
 
+    # installing SSL root certificates from Mozilla
+    su $userName -c ". $mono_path/env.sh; mozroots --import --ask-remove"
+
     echo "creating tables..."
     su $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraOrgPath/db30/createtables-PostgreSQL.sql"
     echo "enabling indexes and constraints..."
