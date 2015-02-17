@@ -1,6 +1,5 @@
 #!/bin/sh
 #
-# chkconfig: 345 96 24
 # description: Starts and stops the openpetraorg server running with Mono
 #
 
@@ -25,15 +24,9 @@ then
   export OPENPETRA_DBNAME=openpetra
   export OPENPETRA_DBPORT=5432
   export OPENPETRA_PORT=@HostedPort@
-  export POSTGRESQLVERSION=@PostgreSQL.Version@
   export backupfile=$OpenPetraOrgPath/backup30/backup-`date +%Y%m%d`.sql.gz
-  export mono_path=/opt/mono
   export FASTCGI_MONO_SERVER=fastcgi-mono-server4
   export mono=mono
-  # for pg_dump, do not use an older version of postgresql
-  export PATH=/usr/pgsql-${POSTGRESQLVERSION}/bin/:$PATH
-  export pg_dump=/usr/pgsql-${POSTGRESQLVERSION}/bin/pg_dump
-  export LD_LIBRARY_PATH=/usr/pgsql-${POSTGRESQLVERSION}/lib:$mono_path/lib:$LD_LIBRARY_PATH
 fi
 
 # Override defaults from /etc/sysconfig/openpetra if file is present
@@ -55,7 +48,7 @@ log_end_msg() { [ $1 -eq 0 ] && RES=OK; logger ${RES:=FAIL}; }
 start() {
     log_daemon_msg "Starting OpenPetra.org server"
 
-    su $userName -c ". $mono_path/env.sh; $FASTCGI_MONO_SERVER /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=/home/$userName/etc/PetraServerConsole.config /logfile=/home/$userName/log/mono.log /loglevels=Standard >& /dev/null &"
+    su $userName -c "$FASTCGI_MONO_SERVER /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=/home/$userName/etc/PetraServerConsole.config /logfile=/home/$userName/log/mono.log /loglevels=Standard >& /dev/null &"
     # other options for loglevels: Debug Notice Warning Error Standard(=Notice Warning Error) All(=Debug Standard)
     status=0
     log_end_msg $status
@@ -66,7 +59,7 @@ stop() {
     log_daemon_msg "Stopping OpenPetra.org server"
     cd $OpenPetraOrgPath/bin30
     
-    su $userName -c ". $mono_path/env.sh; $mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop"
+    su $userName -c "mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop"
     
     status=0
     log_end_msg $status
@@ -75,7 +68,7 @@ stop() {
 # load a new database from a yml.gz file. this will overwrite the current database!
 loadYmlGz() {
     cd $OpenPetraOrgPath/bin30
-    su $userName -c ". $mono_path/env.sh; $mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:LoadYmlGz -YmlGzFile:$ymlgzfile"
+    su $userName -c "mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:LoadYmlGz -YmlGzFile:$ymlgzfile"
     status=0
     log_end_msg $status
 }
@@ -83,7 +76,7 @@ loadYmlGz() {
 # display a menu to check for logged in users etc
 menu() {
     cd $OpenPetraOrgPath/bin30
-    su $userName -c ". $mono_path/env.sh; $mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
+    su $userName -c "mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
 }
 
 # backup the postgresql database
@@ -109,12 +102,12 @@ restore() {
     echo "dropping tables and sequences..."
 
     delCommand="SELECT 'DROP TABLE ' || n.nspname || '.' || c.relname || ' CASCADE;' FROM pg_catalog.pg_class AS c LEFT JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE relkind = 'r' AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid)" 
-    su $userName -c "PATH=$PATH psql -t -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -c \"$delCommand\" > /tmp/deleteAllTables.sql"
+    su $userName -c "psql -t -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -c \"$delCommand\" > /tmp/deleteAllTables.sql"
 
     delCommand="SELECT 'DROP SEQUENCE ' || n.nspname || '.' || c.relname || ';' FROM pg_catalog.pg_class AS c LEFT JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE relkind = 'S' AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid)" 
-    su $userName -c "PATH=$PATH psql -t -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -c \"$delCommand\" > /tmp/deleteAllSequences.sql"
-    su $userName -c "PATH=$PATH psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f /tmp/deleteAllTables.sql"
-    su $userName -c "PATH=$PATH psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f /tmp/deleteAllSequences.sql"
+    su $userName -c "psql -t -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -c \"$delCommand\" > /tmp/deleteAllSequences.sql"
+    su $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f /tmp/deleteAllTables.sql"
+    su $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f /tmp/deleteAllSequences.sql"
 
     rm /tmp/deleteAllTables.sql
     rm /tmp/deleteAllSequences.sql
@@ -122,41 +115,41 @@ restore() {
     export PGOPTIONS='--client-min-messages=warning'
 
     echo "creating tables..."
-    su $userName -c "PATH=$PATH psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraOrgPath/db30/createtables-PostgreSQL.sql"
+    su $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraOrgPath/db30/createtables-PostgreSQL.sql"
 
     echo "loading data..."
     echo $backupfile|grep -qE '\.gz$'
     if [ $? -eq 0 ]
     then
-        su $userName -c "PATH=$PATH cat $backupfile | gunzip | psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q > /home/$userName/log/pgload.log"
+        su $userName -c "cat $backupfile | gunzip | psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q > /home/$userName/log/pgload.log"
     else
-        su $userName -c "PATH=$PATH psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $backupfile > /home/$userName/log/pgload.log"
+        su $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $backupfile > /home/$userName/log/pgload.log"
     fi
 
     echo "enabling indexes and constraints..."
-    su $userName -c "PATH=$PATH psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraOrgPath/db30/createconstraints-PostgreSQL.sql"
+    su $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraOrgPath/db30/createconstraints-PostgreSQL.sql"
 
     echo `date` "Finished!"
 }
 
 init() {
     echo "creating database..."
-    service postgresql-$POSTGRESQLVERSION initdb
-    service postgresql-$POSTGRESQLVERSION start
-    chkconfig postgresql-$POSTGRESQLVERSION on
+    postgresql-setup initdb
+    systemctl start postgresql
+    systemctl enable postgresql
 
-    if [ ! "`cat /var/lib/pgsql/$POSTGRESQLVERSION/data/pg_hba.conf | grep '^host  '$OPENPETRA_DBNAME' '$OPENPETRA_DBUSER'  ::1/128   md5'`" ]; then 
-       echo "local  $OPENPETRA_DBNAME $OPENPETRA_DBUSER   md5" > /var/lib/pgsql/$POSTGRESQLVERSION/data/pg_hba.conf.new 
-       echo "host  $OPENPETRA_DBNAME $OPENPETRA_DBUSER  ::1/128   md5" >> /var/lib/pgsql/$POSTGRESQLVERSION/data/pg_hba.conf.new 
-       echo "host  $OPENPETRA_DBNAME $OPENPETRA_DBUSER  127.0.0.1/32   md5" >> /var/lib/pgsql/$POSTGRESQLVERSION/data/pg_hba.conf.new 
-       cat /var/lib/pgsql/$POSTGRESQLVERSION/data/pg_hba.conf >> /var/lib/pgsql/$POSTGRESQLVERSION/data/pg_hba.conf.new 
-       mv -f /var/lib/pgsql/$POSTGRESQLVERSION/data/pg_hba.conf.new /var/lib/pgsql/$POSTGRESQLVERSION/data/pg_hba.conf 
-       /etc/init.d/postgresql-$POSTGRESQLVERSION restart 
+    if [ ! "`cat /var/lib/pgsql/data/pg_hba.conf | grep '^host  '$OPENPETRA_DBNAME' '$OPENPETRA_DBUSER'  ::1/128   md5'`" ]; then 
+       echo "local  $OPENPETRA_DBNAME $OPENPETRA_DBUSER   md5" > /var/lib/pgsql/data/pg_hba.conf.new 
+       echo "host  $OPENPETRA_DBNAME $OPENPETRA_DBUSER  ::1/128   md5" >> /var/lib/pgsql/data/pg_hba.conf.new 
+       echo "host  $OPENPETRA_DBNAME $OPENPETRA_DBUSER  127.0.0.1/32   md5" >> /var/lib/pgsql/data/pg_hba.conf.new 
+       cat /var/lib/pgsql/data/pg_hba.conf >> /var/lib/pgsql/data/pg_hba.conf.new 
+       mv -f /var/lib/pgsql/data/pg_hba.conf.new /var/lib/pgsql/data/pg_hba.conf 
+       systemctl restart postgresql
        su postgres -c "psql -q -p $OPENPETRA_DBPORT -c \"CREATE USER \\\"$OPENPETRA_DBUSER\\\" PASSWORD '$OPENPETRA_DBPWD'\"" 
        su postgres -c "createdb -p $OPENPETRA_DBPORT -T template0 -O $OPENPETRA_DBUSER $OPENPETRA_DBNAME" 
     else 
        # there has already been an installation. 
-       service ${NAME} stop 
+       systemctl stop ${NAME}
     fi 
 
     useradd --home /home/$userName $userName
@@ -192,9 +185,6 @@ init() {
     chmod 600 /home/$userName/.pgpass
     chown $userName /home/$userName/.pgpass
 
-    # installing SSL root certificates from Mozilla
-    su $userName -c ". $mono_path/env.sh; mozroots --import --ask-remove"
-
     echo "creating tables..."
     su $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraOrgPath/db30/createtables-PostgreSQL.sql"
     echo "enabling indexes and constraints..."
@@ -223,11 +213,11 @@ FINISH
     sed -i 's/server.use-ipv6 = "enable"/server.use-ipv6 = "disable"/g' /etc/lighttpd/lighttpd.conf
     sed -i 's/server.max-connections = 1024/server.max-connections = 512/g' /etc/lighttpd/lighttpd.conf
     sed -i 's~#include_shell "cat /etc/lighttpd/vhosts\.d/\*\.conf"~include_shell "cat /etc/lighttpd/vhosts.d/*.conf"~g' /etc/lighttpd/lighttpd.conf
-    service lighttpd restart
-    chkconfig lighttpd on
-    chkconfig ${NAME} on
-    chkconfig postgresql-$POSTGRESQLVERSION on
-    service ${NAME} start
+    systemctl restart lighttpd
+    systemctl enable lighttpd
+    systemctl enable ${NAME}
+    systemctl enable postgresql
+    systemctl start ${NAME}
     ymlgzfile=$OpenPetraOrgPath/db30/demo.yml.gz
     if [ ! -f $ymlgzfile ]
     then
