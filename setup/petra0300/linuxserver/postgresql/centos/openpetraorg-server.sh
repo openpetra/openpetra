@@ -1,36 +1,32 @@
 #!/bin/sh
 #
-# description: Starts and stops the openpetraorg server running with Mono
+# description: Starts and stops the OpenPetra server running with Mono
 #
 
-# Find the name of the script
-NAME=`basename $0`
-if [ ${NAME:0:1} = "S" -o ${NAME:0:1} = "K" ]
+if [ -z "$OpenPetraPath" ]
 then
-    NAME=${NAME:3}
-fi
-
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
-
-if [ -z "$OpenPetraOrgPath" ]
-then
-  export OpenPetraOrgPath=/usr/local/openpetraorg
-  export userName=openpetra
+  export OpenPetraPath=/usr/local/openpetra
   export documentroot=/var/www/openpetra
+  export OPENPETRA_DBPORT=5432
   export OPENPETRA_RDBMSType=postgresql
   export OPENPETRA_DBHOST=localhost
+
+  export userName=openpetra
   export OPENPETRA_DBPWD=@RandomDBPassword@
   export OPENPETRA_DBUSER=petraserver
   export OPENPETRA_DBNAME=openpetra
-  export OPENPETRA_DBPORT=5432
   export OPENPETRA_PORT=@HostedPort@
-  export backupfile=$OpenPetraOrgPath/backup30/backup-`date +%Y%m%d`.sql.gz
-  export FASTCGI_MONO_SERVER=fastcgi-mono-server4
-  export mono=mono
 fi
 
+# Find the name of the script
+NAME=`basename $0`
 # Override defaults from /etc/sysconfig/openpetra if file is present
 [ -f /etc/sysconfig/openpetra/${NAME} ] && . /etc/sysconfig/openpetra/${NAME}
+
+if [ -z "$backupfile" ]
+then
+  export backupfile=/home/$userName/backup/backup-`date +%Y%m%d`.sql.gz
+fi
 
 if [ "$2" != "" ]
 then
@@ -44,21 +40,21 @@ fi
 log_daemon_msg() { logger "$@"; echo "$@"; }
 log_end_msg() { [ $1 -eq 0 ] && RES=OK; logger ${RES:=FAIL}; }
 
-# start the openpetraorg server
+# start the openpetra server
 start() {
-    log_daemon_msg "Starting OpenPetra.org server"
+    log_daemon_msg "Starting OpenPetra server"
 
-    su - $userName -c "$FASTCGI_MONO_SERVER /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=/home/$userName/etc/PetraServerConsole.config /logfile=/home/$userName/log/mono.log /loglevels=Standard >& /dev/null &"
+    su - $userName -c "fastcgi-mono-server4 /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=/home/$userName/etc/PetraServerConsole.config /logfile=/home/$userName/log/mono.log /loglevels=Standard >& /dev/null &"
     # other options for loglevels: Debug Notice Warning Error Standard(=Notice Warning Error) All(=Debug Standard)
     status=0
     log_end_msg $status
 }
 
-# stop the openpetraorg server
+# stop the openpetra server
 stop() {
-    log_daemon_msg "Stopping OpenPetra.org server"
+    log_daemon_msg "Stopping OpenPetra server"
 
-    su - $userName -c "cd $OpenPetraOrgPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop"
+    su - $userName -c "cd $OpenPetraPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop"
     
     status=0
     log_end_msg $status
@@ -66,14 +62,14 @@ stop() {
 
 # load a new database from a yml.gz file. this will overwrite the current database!
 loadYmlGz() {
-    su - $userName -c "cd $OpenPetraOrgPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:LoadYmlGz -YmlGzFile:$ymlgzfile"
+    su - $userName -c "cd $OpenPetraPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:LoadYmlGz -YmlGzFile:$ymlgzfile"
     status=0
     log_end_msg $status
 }
 
 # display a menu to check for logged in users etc
 menu() {
-    su - $userName -c "cd $OpenPetraOrgPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
+    su - $userName -c "cd $OpenPetraPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
 }
 
 # backup the postgresql database
@@ -112,7 +108,7 @@ restore() {
     export PGOPTIONS='--client-min-messages=warning'
 
     echo "creating tables..."
-    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraOrgPath/db30/createtables-PostgreSQL.sql"
+    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createtables-PostgreSQL.sql"
 
     echo "loading data..."
     echo $backupfile|grep -qE '\.gz$'
@@ -124,7 +120,7 @@ restore() {
     fi
 
     echo "enabling indexes and constraints..."
-    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraOrgPath/db30/createconstraints-PostgreSQL.sql"
+    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createconstraints-PostgreSQL.sql"
 
     echo `date` "Finished!"
 }
@@ -153,16 +149,17 @@ init() {
     mkdir -p /home/$userName/log
     mkdir -p /home/$userName/tmp
     mkdir -p /home/$userName/etc
+    mkdir -p /home/$userName/backup
     hostname=`hostname`
     # copy config files (server, serveradmin.config) to etc, with adjustments
-    cat $OpenPetraOrgPath/etc30/PetraServerConsole.config \
+    cat $OpenPetraPath/etc30/PetraServerConsole.config \
        | sed -e "s/OPENPETRA_DBHOST/$OPENPETRA_DBHOST/" \
        | sed -e "s/OPENPETRA_DBUSER/$OPENPETRA_DBUSER/" \
        | sed -e "s/OPENPETRA_DBNAME/$OPENPETRA_DBNAME/" \
        | sed -e "s/OPENPETRA_DBPORT/$OPENPETRA_DBPORT/" \
        | sed -e "s/USERNAME/$userName/" \
        > /home/$userName/etc/PetraServerConsole.config
-    cat $OpenPetraOrgPath/etc30/PetraServerAdminConsole.config \
+    cat $OpenPetraPath/etc30/PetraServerAdminConsole.config \
        | sed -e "s/USERNAME/$userName/" \
        | sed -e "s/OPENPETRA_PORT/$OPENPETRA_PORT/" \
        > /home/$userName/etc/PetraServerAdminConsole.config
@@ -183,9 +180,9 @@ init() {
     chown $userName /home/$userName/.pgpass
 
     echo "creating tables..."
-    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraOrgPath/db30/createtables-PostgreSQL.sql"
+    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createtables-PostgreSQL.sql"
     echo "enabling indexes and constraints..."
-    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraOrgPath/db30/createconstraints-PostgreSQL.sql"
+    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createconstraints-PostgreSQL.sql"
 
     # configure lighttpd
     cat > /etc/lighttpd/vhosts.d/openpetra$OPENPETRA_PORT.conf <<FINISH
@@ -215,10 +212,10 @@ FINISH
     systemctl enable ${NAME}
     systemctl enable postgresql
     systemctl start ${NAME}
-    ymlgzfile=$OpenPetraOrgPath/db30/demo.yml.gz
+    ymlgzfile=$OpenPetraPath/db30/demo.yml.gz
     if [ ! -f $ymlgzfile ]
     then
-      ymlgzfile=$OpenPetraOrgPath/db30/base.yml.gz
+      ymlgzfile=$OpenPetraPath/db30/base.yml.gz
     fi
     loadYmlGz
 }
