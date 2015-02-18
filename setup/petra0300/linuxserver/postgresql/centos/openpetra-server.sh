@@ -184,6 +184,15 @@ init() {
     echo "enabling indexes and constraints..."
     su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createconstraints-PostgreSQL.sql"
 
+    # insert initial data so that loadymlgz will work
+    cat > $OpenPetraPath/db30/init-PostgreSQL.sql <<FINISH
+insert into s_user(s_user_id_c) values ('SYSADMIN');
+insert into s_module(s_module_id_c) values ('SYSMAN');
+insert into s_user_module_access_permission(s_user_id_c, s_module_id_c, s_can_access_l) values('SYSADMIN', 'SYSMAN', true);
+insert into s_system_status (s_user_id_c, s_system_login_status_l) values ('SYSADMIN', true);
+FINISH
+    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/init-PostgreSQL.sql"
+
     # configure lighttpd
     cat > /etc/lighttpd/vhosts.d/openpetra$OPENPETRA_PORT.conf <<FINISH
 \$HTTP["url"] =~ "^/openpetra$OPENPETRA_PORT" {
@@ -212,11 +221,9 @@ FINISH
     systemctl enable ${NAME}
     systemctl enable postgresql
     systemctl start ${NAME}
-    ymlgzfile=$OpenPetraPath/db30/demo.yml.gz
-    if [ ! -f $ymlgzfile ]
-    then
-      ymlgzfile=$OpenPetraPath/db30/base.yml.gz
-    fi
+
+    # load the base database with demo and sysadmin user
+    ymlgzfile=$OpenPetraPath/db30/base.yml.gz
     loadYmlGz
 }
 
