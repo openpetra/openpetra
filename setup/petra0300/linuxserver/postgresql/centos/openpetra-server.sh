@@ -18,11 +18,6 @@ then
   export OPENPETRA_PORT=@HostedPort@
 fi
 
-# Find the name of the script
-NAME=`basename $0`
-# Override defaults from /etc/sysconfig/openpetra if file is present
-[ -f /etc/sysconfig/openpetra/${NAME} ] && . /etc/sysconfig/openpetra/${NAME}
-
 if [ -z "$backupfile" ]
 then
   export backupfile=/home/$userName/backup/backup-`date +%Y%m%d`.sql.gz
@@ -35,36 +30,33 @@ then
   ymlgzfile=$2
 fi
 
-. /lib/lsb/init-functions
-
-log_daemon_msg() { logger "$@"; echo "$@"; }
-log_end_msg() { [ $1 -eq 0 ] && RES=OK; logger ${RES:=FAIL}; }
-
 # start the openpetra server
 start() {
-    log_daemon_msg "Starting OpenPetra server"
-
-    su - $userName -c "fastcgi-mono-server4 /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=/home/$userName/etc/PetraServerConsole.config /logfile=/home/$userName/log/mono.log /loglevels=Standard >& /dev/null &"
-    # other options for loglevels: Debug Notice Warning Error Standard(=Notice Warning Error) All(=Debug Standard)
-    status=0
-    log_end_msg $status
+    echo "Starting OpenPetra server"
+    if [ "`whoami`" = "$userName" ]
+    then
+      fastcgi-mono-server4 /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=/home/$userName/etc/PetraServerConsole.config /logfile=/home/$userName/log/mono.log /loglevels=Standard >& /dev/null
+      # other options for loglevels: Debug Notice Warning Error Standard(=Notice Warning Error) All(=Debug Standard)
+    else
+      echo "Error: can only start the server as user $userName"
+      exit -1
+    fi
 }
 
 # stop the openpetra server
 stop() {
-    log_daemon_msg "Stopping OpenPetra server"
-
-    su - $userName -c "cd $OpenPetraPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop"
-    
-    status=0
-    log_end_msg $status
+    echo "Stopping OpenPetra server"
+    if [ "`whoami`" = "$userName" ]
+      cd $OpenPetraPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop
+    else
+      echo "Error: can only stop the server as user $userName"
+      exit -1
+    fi
 }
 
 # load a new database from a yml.gz file. this will overwrite the current database!
 loadYmlGz() {
     su - $userName -c "cd $OpenPetraPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:LoadYmlGz -YmlGzFile:$ymlgzfile"
-    status=0
-    log_end_msg $status
 }
 
 # display a menu to check for logged in users etc

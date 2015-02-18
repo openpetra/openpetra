@@ -4,8 +4,9 @@ After=postgresql.service
 Wants=postgresql.service
 
 [Service]
-ExecStart=/usr/local/openpetraorg/bin30/openpetra-server start
-ExecStop=/usr/local/openpetraorg/bin30/openpetra-server stop
+User=openpetra
+ExecStart=/usr/bin/openpetra-server start
+ExecStop=/usr/bin/openpetra-server stop
 RestartSec=5
 
 [Install]
