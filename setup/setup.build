@@ -340,6 +340,8 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <property name="HostedServer" value="localhost" overwrite="false"/>
   <property name="HostedPort" value="9000" overwrite="false"/>
   <property name="PublisherUrl" value="www.solidcharity.com" overwrite="false"/>
+  <property name="RemotePatchesURL" value="http://${PublisherUrl}/patches/${OrgNameWithoutSpace}/" overwrite="false"/>
+  <property name="HostedServerURL" value="http://${HostedServer}/openpetra${HostedPort}" overwrite="false"/>
   <call target="nanttasks"/>
   <call target="minimalGenerateSolution"/>
   <property name="solution" value="Client"/>
