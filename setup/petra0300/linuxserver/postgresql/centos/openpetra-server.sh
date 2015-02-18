@@ -47,6 +47,7 @@ start() {
 stop() {
     echo "Stopping OpenPetra server"
     if [ "`whoami`" = "$userName" ]
+    then
       cd $OpenPetraPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop
     else
       echo "Error: can only stop the server as user $userName"
