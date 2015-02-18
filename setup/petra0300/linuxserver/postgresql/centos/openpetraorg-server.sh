@@ -57,9 +57,8 @@ start() {
 # stop the openpetraorg server
 stop() {
     log_daemon_msg "Stopping OpenPetra.org server"
-    cd $OpenPetraOrgPath/bin30
-    
-    su - $userName -c "mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop"
+
+    su - $userName -c "cd $OpenPetraOrgPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop"
     
     status=0
     log_end_msg $status
@@ -67,16 +66,14 @@ stop() {
 
 # load a new database from a yml.gz file. this will overwrite the current database!
 loadYmlGz() {
-    cd $OpenPetraOrgPath/bin30
-    su - $userName -c "mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:LoadYmlGz -YmlGzFile:$ymlgzfile"
+    su - $userName -c "cd $OpenPetraOrgPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:LoadYmlGz -YmlGzFile:$ymlgzfile"
     status=0
     log_end_msg $status
 }
 
 # display a menu to check for logged in users etc
 menu() {
-    cd $OpenPetraOrgPath/bin30
-    su - $userName -c "mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
+    su - $userName -c "cd $OpenPetraOrgPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
 }
 
 # backup the postgresql database
