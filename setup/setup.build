@@ -229,6 +229,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <!-- for remote installer -->
     <if test="${property::exists('HostedServer')}">
         <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#ORGNAME}', OrgName)}"/>
+        <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#ORGNAMEWITHOUTSPACE}', OrgNameWithoutSpace)}"/>
         <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#PUBLISHERURL}', PublisherUrl)}"/>
         <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SERVERHOST}', HostedServer)}"/>
         <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SERVERPORT}', HostedPort)}"/>
@@ -306,7 +307,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <call target="createSQLStatements"/>
   <property name="BuildArchive" value="server" overwrite="true"/>
   <call target="prepareSetupDirForTarFile"/>
-  <move file="${setupDir}/centos/openpetraorg-server.sh" tofile="${setupDir}/openpetraorg-server.sh"/>
+  <move file="${setupDir}/centos/openpetra-server.sh" tofile="${setupDir}/openpetra-server.sh"/>
 
   <!-- result is in setupDir for building the rpm package -->
 </target>
@@ -325,7 +326,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <call target="createSQLStatements"/>
   <property name="BuildArchive" value="server" overwrite="true"/>
   <call target="prepareSetupDirForTarFile"/>
-  <move file="${setupDir}/debian/openpetraorg-server.sh" tofile="${setupDir}/openpetraorg-server.sh"/>
+  <move file="${setupDir}/debian/openpetra-server.sh" tofile="${setupDir}/openpetra-server.sh"/>
 
   <!-- result is in setupDir for building the rpm package -->
 </target>
@@ -558,8 +559,8 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <property name="LinuxTargetDistribution" value="${string::replace(LinuxTargetDistribution, '-' + DBMS.Type, '')}"/>
       <!-- ***************  create the linux config script for the server side ***************  -->
       <property name="RandomDBPassword" value="${script::GetPasswordSalt()}" overwrite="false"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/${DBMS.Type}/${LinuxTargetDistribution}/openpetraorg-server.sh"
-        tofile="${setupDir}/${LinuxTargetDistribution}/openpetraorg-server.sh" overwrite="true" outputencoding="latin1">
+      <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/${DBMS.Type}/${LinuxTargetDistribution}/openpetra-server.sh"
+        tofile="${setupDir}/${LinuxTargetDistribution}/openpetra-server.sh" overwrite="true" outputencoding="latin1">
         <filterchain>
             <replacetokens>
                 <token key="RandomDBPassword" value="${RandomDBPassword}" />

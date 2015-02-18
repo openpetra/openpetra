@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, peters
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -238,7 +238,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// <returns>void</returns>
         private void LaunchpadLinkClicked(object ASender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://translations.launchpad.net/openpetraorg/trunk/+pots/template1");
+            System.Diagnostics.Process.Start("http://translations.openpetra.org");
         }
     }
 }
