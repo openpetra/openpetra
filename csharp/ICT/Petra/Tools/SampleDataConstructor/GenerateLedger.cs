@@ -67,7 +67,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 throw new Exception("could not delete ledger");
             }
 
-            TGLSetupWebConnector.CreateNewLedger(FLedgerNumber, "SecondLedger", "GB", "EUR", "EUR", new DateTime(DateTime.Now.Year,
+            TGLSetupWebConnector.CreateNewLedger(FLedgerNumber, "SecondLedger", "GB", "EUR", "EUR", new DateTime(DateTime.Now.Year - 1,
                     4,
                     1), 12, 1, 8, false, true, 1, true, out VerificationResult);
         }
@@ -79,6 +79,11 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         public static void InitCalendar()
         {
             int YearDifference = (FNumberOfClosedPeriods / 12);
+
+            if (FNumberOfClosedPeriods % 12 >= DateTime.Today.Month)
+            {
+                YearDifference++;
+            }
 
             AAccountingPeriodTable periodTable = AAccountingPeriodAccess.LoadViaALedger(FLedgerNumber, null);
 
