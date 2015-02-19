@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -127,6 +127,34 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             {
                 ADailyExchangeRateAccess.SubmitChanges(dailyrates, null);
             }
+
+            ALedgerTable Ledger = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, null);
+
+            for (int periodCounter = 1; periodCounter <= Ledger[0].NumberOfAccountingPeriods + Ledger[0].NumberFwdPostingPeriods; periodCounter++)
+            {
+                AccountingPeriodInfo = new TAccountPeriodInfo(FLedgerNumber, periodCounter);
+
+                ACorporateExchangeRateTable corprates = new ACorporateExchangeRateTable();
+                ACorporateExchangeRateRow corprow = corprates.NewRowTyped(true);
+                corprow.DateEffectiveFrom = AccountingPeriodInfo.PeriodStartDate;
+                corprow.TimeEffectiveFrom = 100;
+                corprow.FromCurrencyCode = "USD";
+                corprow.ToCurrencyCode = "EUR";
+                corprow.RateOfExchange = 1.34m;
+                corprates.Rows.Add(corprow);
+                corprow = corprates.NewRowTyped(true);
+                corprow.DateEffectiveFrom = AccountingPeriodInfo.PeriodStartDate;
+                corprow.TimeEffectiveFrom = 100;
+                corprow.FromCurrencyCode = "USD";
+                corprow.ToCurrencyCode = "GBP";
+                corprow.RateOfExchange = 1.57m;
+                corprates.Rows.Add(corprow);
+
+                if (!ACorporateExchangeRateAccess.Exists(corprow.FromCurrencyCode, corprow.ToCurrencyCode, corprow.DateEffectiveFrom, null))
+                {
+                    ACorporateExchangeRateAccess.SubmitChanges(corprates, null);
+                }
+            }
         }
 
         /// <summary>
@@ -186,6 +214,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                         glmNewYearInit.VerificationResultCollection = verificationResult;
                         glmNewYearInit.IsInInfoMode = false;
                         glmNewYearInit.RunOperation();
+
+                        SampleDataLedger.InitExchangeRate();
 
                         YearAD++;
                         yearCounter++;
