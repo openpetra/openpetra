@@ -3,14 +3,15 @@
 # description: Starts and stops the OpenPetra server running with Mono
 #
 
-if [ -z "$OpenPetraPath" ]
-then
-  export OpenPetraPath=/usr/local/openpetra
-  export documentroot=/var/www/openpetra
-  export OPENPETRA_DBPORT=5432
-  export OPENPETRA_RDBMSType=postgresql
-  export OPENPETRA_DBHOST=localhost
+export OpenPetraPath=/usr/local/openpetra
+export documentroot=/var/www/openpetra
+export OPENPETRA_DBPORT=5432
+export OPENPETRA_RDBMSType=postgresql
+export OPENPETRA_DBHOST=localhost
 
+if [ -z "$NAME" ]
+then
+  export NAME=openpetra-server
   export userName=openpetra
   export OPENPETRA_DBPWD=@RandomDBPassword@
   export OPENPETRA_DBUSER=petraserver
