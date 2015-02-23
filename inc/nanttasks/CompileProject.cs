@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -335,7 +335,8 @@ namespace Ict.Tools.NAntTasks
             if (mainProperties.ContainsKey("ApplicationManifest") && (mainProperties["ApplicationManifest"].Length > 0))
             {
                 parameters.CompilerOptions =
-                    parameters.CompilerOptions.Replace("APPMANIFEST", mainProperties["ApplicationManifest"].Replace("\\", "/"));
+                    parameters.CompilerOptions.Replace("APPMANIFEST",
+                        Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" + mainProperties["ApplicationManifest"].Replace("\\", "/")));
             }
 
             String FrameworkDLLPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(System.Type)).Location);

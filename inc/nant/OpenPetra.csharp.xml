@@ -3,6 +3,8 @@
 
 <include buildfile="OpenPetra.default.targets.xml"/>
 
+<loadtasks assembly="${msbuildtask.file}" unless="${task::exists('msbuild')}"/>
+
 <target name="MsBuildTarget">
     <msbuild project="${solution.file}" verbosity="Minimal">
         <property name="Configuration" value="${Configuration}"/>
