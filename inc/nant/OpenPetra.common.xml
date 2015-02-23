@@ -246,6 +246,16 @@
 <!-- build tools -->
 <property name="msbuildtask.file" value="${nant::get-base-directory()}/extensions/common/neutral/NAntContrib/NAnt.Contrib.Tasks.dll"
           overwrite="false"/>
+<if test="${not file::exists(msbuildtask.file)}">
+    <!-- for Appveyor -->
+    <property name="msbuildtask.file" value="${path::get-full-path(nant::get-base-directory() + '/../../NAnt.Contrib.Portable.0.92/tools/NAnt.Contrib.Tasks.dll')}"
+          overwrite="true"/>
+    <if test="${not file::exists(msbuildtask.file)}">
+        <property name="msbuildtask.file" value="${path::get-full-path(nant::get-base-directory() + '/../NAnt.Contrib.Portable.0.92/tools/NAnt.Contrib.Tasks.dll')}"
+            overwrite="true"/>
+    </if>
+</if>
+
 <property name="Configuration" value="DEBUG" overwrite="false"/>
 <property name="compileForStandalone" value="false" overwrite="false"/>
           
