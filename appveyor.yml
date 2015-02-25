@@ -1,0 +1,16 @@
+# see http://www.appveyor.com/docs/appveyor-yml
+version: 1.0.{build}
+clone_depth: 1
+init: []
+install:
+- nuget install NAnt.Portable
+- nuget install NAnt.Contrib.Portable
+- nuget install NUnit.Runners -Version 2.6.1
+- NAnt.Portable.0.92\NAnt enable-config-for-appveyor
+platform: x86
+build_script:
+- NAnt.Portable.0.92\NAnt generateSolution
+test_script:
+- NAnt.Portable.0.92\NAnt recreateDatabase resetDatabase test
+before_deploy:
+- nant buildWindowsStandalone

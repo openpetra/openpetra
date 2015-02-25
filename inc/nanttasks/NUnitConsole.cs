@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -92,7 +92,7 @@ namespace Ict.Tools.NAntTasks
             {
                 string exeName = Project.Properties["external.NUnitConsole"];
 
-                if (!exeName.Contains("(x86)"))
+                if (!Environment.Is64BitOperatingSystem)
                 {
                     exeName = exeName.Replace("nunit-console-x86.exe", "nunit-console.exe");
                 }
