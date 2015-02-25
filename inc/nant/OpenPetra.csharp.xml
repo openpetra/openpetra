@@ -3,7 +3,9 @@
 
 <include buildfile="OpenPetra.default.targets.xml"/>
 
-<loadtasks assembly="${msbuildtask.file}" unless="${task::exists('msbuild')}"/>
+<if test="${file::exists(msbuildtask.file)}">
+    <loadtasks assembly="${msbuildtask.file}" unless="${task::exists('msbuild')}"/>
+</if>
 
 <target name="MsBuildTarget">
     <msbuild project="${solution.file}" verbosity="Minimal">
