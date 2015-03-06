@@ -74,18 +74,18 @@
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Data.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Shared.dll" />
 
+<!--
     <nunit2>
         <formatter type="Plain" />
         <test>
             <assemblies>
-<!--
                 <include name="${dir.bin}/Ict.Testing.lib.Common*dll" />
                 <exclude name="${dir.bin}/Ict.Testing.lib.Common.Controls.dll" />
--->
             </assemblies>
         </test>
     </nunit2>
-    
+-->
+
     <echo message="Target test-common finished at: ${datetime::now()}" /> 
 </target>
 
