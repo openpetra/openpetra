@@ -515,6 +515,21 @@ useful parameters
     <echo message="Target enable-sqlite-config-for-jenkins finished at: ${datetime::now()}" />
 </target>
 
+<target name="enable-config-for-appveyor">
+    <echo message="Target enable-config-for-appveyor started at: ${datetime::now()}" />
+  
+    <echo file="OpenPetra.build.config">&lt;?xml version="1.0"?>
+&lt;project name="OpenPetra-userconfig">
+    &lt;property name="DBMS.Type" value="sqlite"/>
+    &lt;property name="DBMS.Password" value=""/>
+    &lt;property name="Server.Port" value="${Server.Port}"/>
+    &lt;property name="external.NUnitConsole" value="c:\projects\openpetra\NUnit.Runners.2.6.1\tools\nunit-console-x86.exe" />
+&lt;/project>
+    </echo>
+    
+    <echo message="Target enable-config-for-appveyor finished at: ${datetime::now()}" />
+</target>
+
 <!-- need to set the server port here, since it is not passed when called the Unit tests, so they are not using the server port defined on the command line;
      only applies if no local OpenPetra.build.config file exists -->
 <target name="set-server-port-for-jenkins">
