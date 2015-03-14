@@ -1,2 +1,0 @@
--- updates for standalone SQLite database for OpenPetra
--- breaking changes: a_valid_ledger_number, a_freeform_analysis, a_processed_fee have changed the order of the primary key fields

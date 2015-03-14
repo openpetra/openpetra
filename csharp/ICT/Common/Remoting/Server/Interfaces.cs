@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,6 +61,17 @@ namespace Ict.Common.Remoting.Server
         /// RestoreDatabaseFromYmlGZ
         /// </summary>
         bool RestoreDatabaseFromYmlGZ(string AYmlGzData);
+    }
+
+    /// <summary>
+    /// for updating the database
+    /// </summary>
+    public interface IDBUpgrades
+    {
+        /// <summary>
+        /// UpgradeDatabase
+        /// </summary>
+        bool UpgradeDatabase();
     }
 
     /// <summary>

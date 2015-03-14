@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -125,19 +125,6 @@ namespace Ict.Tools.PatchTool.Library
                             return false;
                         }
                     }
-                }
-                else if (action.Equals("patchDatabase"))
-                {
-                    // this should only be called after patchFiles;
-                    // this will possibly change the database structure, and modify database content
-                    TPetraPatchTools patchTools = new TPetraPatchTools(TAppSettingsManager.GetValue("OpenPetra.Path"),
-                        TAppSettingsManager.GetValue("OpenPetra.Path") + Path.DirectorySeparatorChar + "bin" + TPatchTools.OPENPETRA_VERSIONPREFIX,
-                        TempPath,
-                        "",
-                        TAppSettingsManager.GetValue("DBPatches.Path"),
-                        "");
-
-                    patchTools.RunDBPatches();
                 }
                 else
                 {

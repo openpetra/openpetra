@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -144,6 +144,12 @@ namespace Ict.Common.Remoting.Shared
         /// <param name="ACantDisconnectReason"></param>
         /// <returns></returns>
         bool DisconnectClient(System.Int16 AClientID, out String ACantDisconnectReason);
+
+        /// <summary>
+        /// upgrade the database
+        /// </summary>
+        /// <returns>true if the database was upgraded</returns>
+        bool UpgradeDatabase();
 
         /// <summary>
         /// returns a string with yml.gz data

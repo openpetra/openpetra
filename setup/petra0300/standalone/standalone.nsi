@@ -138,7 +138,6 @@ Section "Main Section" SecInstallFiles
   SetOutPath "$INSTDIR\db30"
   ; actual db will be copied to the user's userappdata directory
   File ..\..\..\delivery\demo.db
-  File ..\..\..\db\patches\*.sql
   SetOutPath "$INSTDIR\sql30"
   File ..\..\..\csharp\ICT\Petra\Server\sql\*.sql
   File ..\..\..\csharp\ICT\Petra\Server\sql\*.yml
