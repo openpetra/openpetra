@@ -3,27 +3,14 @@
      this build file is included by the main OpenPetra.build file -->
 <project name="OpenPetra" default="help">
 
-    <property name="DBMS.DBName" value="openpetra" unless="${property::exists('DBMS.DBName')}"/>
-    <property name="psqlversion" value="9" unless="${property::exists('psqlversion')}"/>
+    <property name="DBMS.DBName" value="openpetra" overwrite="false"/>
+    <property name="psqlversion" value="9" overwrite="false"/>
     <!-- CreateDBForPublicInstaller Property gets set to true when the standalone Windows Installer is built! -->
     <property name="CreateDBForPublicInstaller" value="false"/>
     
-    <target name="patchDatabase" depends="init" description="Update the development database to the latest database version so that the latest OpenPetra server can connect to the db">
-
-        <if test="${DBMS.Type=='sqlite'}">
-            <fail message="patchDatabase does not support sqlite. please use postgresql or mysql. otherwise please run nant resetDatabase"/>
-        </if>
-
-        <copy file="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"
-              tofile="${ServerConfigFile}">
-          <filterchain>
-            <expandproperties />
-          </filterchain>
-        </copy>
-
-         <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.PatchTool.exe" 
-            commandline="-action:patchDatabase -C:${ServerConfigFile} -DBPatches.Path:${OpenPetraRoot.dir}/db/patches -Server.LogFile:${Tmp.dir}/dbpatch.log -OpenPetra.PathTemp:${Tmp.dir}"
-            failonerror="true"/>
+    <target name="patchDatabase" depends="init, startServer" description="Update the development database to the latest database version">
+        <property name="Command" value="UpgradeDatabase"/>
+        <call target="startAdmin"/>
     </target>
     
     <target name="createSQLStatements" depends="init" description="Create the SQL files.">

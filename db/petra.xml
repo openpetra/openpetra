@@ -2645,7 +2645,7 @@
                 columnlabel="Within The Organisation?"
                 initial="No"
                 notnull="yes"/>
-    <tablefield descr="Flag to indicate whether this Partner Attribute is specialised. For Partner Contact Details this flag is set for work-related Partner Attribute Types."
+    <tablefield descr="Flag to indicate whether this Partner Attribute is specialised. For Partner Contact Details this flag is set for work-related Partner Attribute Types. The label is set in p_partner_attribute_type.p_special_label_c, eg. Business"
                 format="Yes/No"
                 name="p_specialised_l"
                 type="bit"

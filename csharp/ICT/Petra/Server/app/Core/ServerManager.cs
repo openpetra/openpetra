@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -93,6 +93,14 @@ namespace Ict.Petra.Server.App.Core
             Assembly SysManAssembly = Assembly.Load("Ict.Petra.Server.lib.MSysMan");
             Type ImportExportType = SysManAssembly.GetType("Ict.Petra.Server.MSysMan.ImportExport.TImportExportManager");
             FImportExportManager = (IImportExportManager)Activator.CreateInstance(ImportExportType,
+                (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
+                null,
+                null,
+                null);
+
+            Assembly DBUpgradesAssembly = Assembly.Load("Ict.Petra.Server.lib.MSysMan.DBUpgrades");
+            Type DatabaseUpgradeType = DBUpgradesAssembly.GetType("Ict.Petra.Server.MSysMan.DBUpgrades.TDBUpgrades");
+            FDBUpgrades = (IDBUpgrades)Activator.CreateInstance(DatabaseUpgradeType,
                 (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
                 null,
                 null,
@@ -218,6 +226,24 @@ namespace Ict.Petra.Server.App.Core
         }
 
         private IImportExportManager FImportExportManager = null;
+        private IDBUpgrades FDBUpgrades = null;
+
+        /// <summary>
+        /// upgrade the database
+        /// </summary>
+        /// <returns>true if the database was upgraded</returns>
+        public override bool UpgradeDatabase()
+        {
+            if (FDBUpgrades != null)
+            {
+                return FDBUpgrades.UpgradeDatabase();
+            }
+            else
+            {
+                TLogging.Log("please initialize FDBUpgrades");
+                return false;
+            }
+        }
 
         /// <summary>
         /// BackupDatabaseToYmlGZ
