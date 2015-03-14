@@ -40,8 +40,16 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
     /// </summary>
     public static partial class TDBUpgrade
     {
-         /// <summary>Copied from Ict.Petra.Shared.MPartner.Calculations!</summary>
+        /// <summary>Copied from Ict.Petra.Shared.MPartner.Calculations!</summary>
         private const String PARTNERLOCATION_ICON_COLUMN = "Icon";
+
+        private static string ConcatPartnerAttributes(PPartnerAttributeRow row)
+        {
+            return row.PartnerKey.ToString() + ";" +
+                   row.AttributeType + ";" +
+                   row.Value + ";" +
+                   row.Current;
+        }
 
         /// Upgrade to version 2015-01
         public static bool UpgradeDatabase201412_201501()
@@ -50,184 +58,260 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
 
             TDBTransaction SubmitChangesTransaction = null;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+
             DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
                 ref SubmissionResult,
-            delegate
-            {
-                PPartnerAttributeTable partnerattributes = new PPartnerAttributeTable();
-                PPartnerLocationTable partnerlocations = PPartnerLocationAccess.LoadAll(SubmitChangesTransaction);
-                
-                // this update only works for very simple databases, only one partner location record per partner...
-                if (partnerlocations.Count > 1000)
+                delegate
                 {
-                    throw new Exception("the upgrade has not been optimized for huge databases");
-                }
+                    PPartnerAttributeTable partnerattributes = new PPartnerAttributeTable();
+                    PPartnerLocationTable partnerlocations = PPartnerLocationAccess.LoadAll(SubmitChangesTransaction);
 
-                List<Int64> PartnerKeys = new List<Int64>();
-                foreach (PPartnerLocationRow partnerlocation in partnerlocations.Rows)
-                {
-                    if (!PartnerKeys.Contains(partnerlocation.PartnerKey))
+                    // this update only works for very simple databases, only one partner location record per partner...
+                    if (partnerlocations.Count > 1000)
                     {
-                        PartnerKeys.Add(partnerlocation.PartnerKey);
-                    }
-                }
-
-                // Number for the p_sequence_i Column. Gets increased with every p_partner_attribute record that gets produced!
-                int SequenceNumber = 0;
-                
-                foreach (Int64 partnerkey in PartnerKeys)
-                {
-                    // Get that Partner's p_partner_location records from PPartnerLocationRecords
-                    DataRow[] CurrentRows = partnerlocations.Select(PPartnerLocationTable.GetPartnerKeyDBName() + " = " + partnerkey.ToString());
-
-                    if (CurrentRows.Length == 0)
-                    {
-                        continue;
+                        throw new Exception("the upgrade has not been optimized for huge databases");
                     }
 
-                    DataTable PPartnersLocationsDT = GetNewPPartnerLocationTableInstance();
+                    List <Int64>PartnerKeys = new List <Int64>();
 
-                    foreach (DataRow r in CurrentRows)
+                    foreach (PPartnerLocationRow partnerlocation in partnerlocations.Rows)
                     {
-                        PPartnersLocationsDT.Rows.Add(r.ItemArray);
-                    }
-                
-                    TLocationPK bestAddress = Calculations.DetermineBestAddress(PPartnersLocationsDT);
-
-                    int IndexPhone = 0;
-                    int IndexEmail = 0;
-                    int IndexFax = 0;
-                    int IndexUrl = 0;
-                    int IndexMobile = 0;
-
-                    foreach (PPartnerLocationRow partnerlocation in PPartnersLocationsDT.Rows)
-                    {
-                        bool primaryAddress = (bestAddress.LocationKey == partnerlocation.LocationKey && bestAddress.SiteKey == partnerlocation.SiteKey);
-                        bool currentAddress = (((int)partnerlocation[PARTNERLOCATION_ICON_COLUMN]) == 1);
-                        bool businessAddress = (partnerlocation.LocationType == "BUSINESS");
-                        // TODO: avoid duplicate entries of the same type
-                        
-                        if (!partnerlocation.IsEmailAddressNull())
+                        if (!PartnerKeys.Contains(partnerlocation.PartnerKey))
                         {
-                            PPartnerAttributeRow partnerattribute = partnerattributes.NewRowTyped();
-                            partnerattribute.Sequence = SequenceNumber++;
-                            partnerattribute.PartnerKey = partnerlocation.PartnerKey;
-                            partnerattribute.Value = partnerlocation.EmailAddress;
-                            partnerattribute.AttributeType = MPartnerConstants.ATTR_TYPE_EMAIL;
-                            partnerattribute.Current = currentAddress;
-                            partnerattribute.Primary = primaryAddress;
-                            partnerattribute.Index = IndexEmail++;
-                            partnerattribute.Specialised = businessAddress;
-                            partnerattribute.NoLongerCurrentFrom = partnerlocation.DateGoodUntil;
-                            partnerattributes.Rows.Add(partnerattribute);
-                            
-                            partnerlocation.SetEmailAddressNull();
+                            PartnerKeys.Add(partnerlocation.PartnerKey);
                         }
-                        
-                        if (!partnerlocation.IsTelephoneNumberNull())
+                        else
                         {
-                            if (!partnerlocation.IsExtensionNull())
+                            TLogging.Log("several locations for partner " + partnerlocation.PartnerKey.ToString());
+                        }
+                    }
+
+                    // Number for the p_sequence_i Column. Gets increased with every p_partner_attribute record that gets produced!
+                    int SequenceNumber = 0;
+
+                    foreach (Int64 partnerkey in PartnerKeys)
+                    {
+                        // Get that Partner's p_partner_location records from PPartnerLocationRecords
+                        DataRow[] CurrentRows = partnerlocations.Select(PPartnerLocationTable.GetPartnerKeyDBName() + " = " + partnerkey.ToString());
+
+                        if (CurrentRows.Length == 0)
+                        {
+                            continue;
+                        }
+
+                        DataTable PPartnersLocationsDT = GetNewPPartnerLocationTableInstance();
+
+                        foreach (DataRow r in CurrentRows)
+                        {
+                            PPartnersLocationsDT.Rows.Add(r.ItemArray);
+                        }
+
+                        TLocationPK bestAddress = Calculations.DetermineBestAddress(PPartnersLocationsDT);
+
+                        int IndexPhone = 0;
+                        int IndexEmail = 0;
+                        int IndexFax = 0;
+                        int IndexUrl = 0;
+                        int IndexMobile = 0;
+
+                        List <string>AvoidDuplicates = new List <string>();
+                        string AttributeConcatenated;
+
+                        foreach (PPartnerLocationRow partnerlocation in PPartnersLocationsDT.Rows)
+                        {
+                            bool primaryAddress =
+                                (bestAddress.LocationKey == partnerlocation.LocationKey && bestAddress.SiteKey == partnerlocation.SiteKey);
+                            bool currentAddress = (((int)partnerlocation[PARTNERLOCATION_ICON_COLUMN]) == 1);
+                            bool businessAddress = (partnerlocation.LocationType == "BUSINESS" || partnerlocation.LocationType == "FIELD");
+                            // TODO: avoid duplicate entries with the same type
+
+                            if (!partnerlocation.IsEmailAddressNull())
                             {
-                                partnerlocation.TelephoneNumber += "-" + partnerlocation.Extension;
+                                PPartnerAttributeRow partnerattribute = partnerattributes.NewRowTyped();
+                                partnerattribute.Sequence = SequenceNumber++;
+                                partnerattribute.PartnerKey = partnerlocation.PartnerKey;
+                                partnerattribute.Value = partnerlocation.EmailAddress;
+                                partnerattribute.AttributeType = MPartnerConstants.ATTR_TYPE_EMAIL;
+                                partnerattribute.Current = currentAddress;
+                                partnerattribute.Primary = primaryAddress;
+                                partnerattribute.Index = IndexEmail++;
+                                partnerattribute.Specialised = businessAddress;
+                                partnerattribute.NoLongerCurrentFrom = partnerlocation.DateGoodUntil;
+
+                                AttributeConcatenated = ConcatPartnerAttributes(partnerattribute);
+
+                                if (!AvoidDuplicates.Contains(AttributeConcatenated))
+                                {
+                                    partnerattributes.Rows.Add(partnerattribute);
+                                    AvoidDuplicates.Add(AttributeConcatenated);
+                                }
+                                else
+                                {
+                                    TLogging.Log("dropping duplicate " + AttributeConcatenated);
+                                }
+
+                                partnerlocation.SetEmailAddressNull();
                             }
-                            PPartnerAttributeRow partnerattribute = partnerattributes.NewRowTyped();
-                            partnerattribute.Sequence = SequenceNumber++;
-                            partnerattribute.PartnerKey = partnerlocation.PartnerKey;
-                            partnerattribute.Value = partnerlocation.TelephoneNumber;
-                            partnerattribute.AttributeType = MPartnerConstants.ATTR_TYPE_PHONE;
-                            partnerattribute.Current = currentAddress;
-                            partnerattribute.Primary = primaryAddress;
-                            partnerattribute.Index = IndexPhone++;
-                            partnerattribute.Specialised = businessAddress;
-                            partnerattribute.NoLongerCurrentFrom = partnerlocation.DateGoodUntil;
-                            partnerattributes.Rows.Add(partnerattribute);
-                            
-                            partnerlocation.SetTelephoneNumberNull();
-                        }
-                        
-                        if (!partnerlocation.IsFaxNumberNull())
-                        {
-                            if (!partnerlocation.IsFaxExtensionNull())
+
+                            if (!partnerlocation.IsTelephoneNumberNull())
                             {
-                                partnerlocation.FaxNumber += "-" + partnerlocation.FaxExtension;
+                                if (!partnerlocation.IsExtensionNull())
+                                {
+                                    partnerlocation.TelephoneNumber += "-" + partnerlocation.Extension;
+                                }
+
+                                PPartnerAttributeRow partnerattribute = partnerattributes.NewRowTyped();
+                                partnerattribute.Sequence = SequenceNumber++;
+                                partnerattribute.PartnerKey = partnerlocation.PartnerKey;
+                                partnerattribute.Value = partnerlocation.TelephoneNumber;
+                                partnerattribute.AttributeType = MPartnerConstants.ATTR_TYPE_PHONE;
+                                partnerattribute.Current = currentAddress;
+                                partnerattribute.Primary = primaryAddress;
+                                partnerattribute.Index = IndexPhone++;
+                                partnerattribute.Specialised = businessAddress;
+                                partnerattribute.NoLongerCurrentFrom = partnerlocation.DateGoodUntil;
+
+                                AttributeConcatenated = ConcatPartnerAttributes(partnerattribute);
+
+                                if (!AvoidDuplicates.Contains(AttributeConcatenated))
+                                {
+                                    partnerattributes.Rows.Add(partnerattribute);
+                                    AvoidDuplicates.Add(AttributeConcatenated);
+                                }
+                                else
+                                {
+                                    TLogging.Log("dropping duplicate " + AttributeConcatenated);
+                                }
+
+                                partnerlocation.SetTelephoneNumberNull();
                             }
-    
-                            PPartnerAttributeRow partnerattribute = partnerattributes.NewRowTyped();
-                            partnerattribute.Sequence = SequenceNumber++;
-                            partnerattribute.PartnerKey = partnerlocation.PartnerKey;
-                            partnerattribute.Value = partnerlocation.FaxNumber;
-                            partnerattribute.AttributeType = MPartnerConstants.ATTR_TYPE_FAX;
-                            partnerattribute.Current = currentAddress;
-                            partnerattribute.Primary = primaryAddress;
-                            partnerattribute.Index = IndexFax++;
-                            partnerattribute.Specialised = businessAddress;
-                            partnerattribute.NoLongerCurrentFrom = partnerlocation.DateGoodUntil;
-                            partnerattributes.Rows.Add(partnerattribute);
-                            
-                            partnerlocation.SetFaxNumberNull();
-                        }
 
-                        if (!partnerlocation.IsAlternateTelephoneNull())
-                        {
-                            PPartnerAttributeRow partnerattribute = partnerattributes.NewRowTyped();
-                            partnerattribute.Sequence = SequenceNumber++;
-                            partnerattribute.PartnerKey = partnerlocation.PartnerKey;
-                            partnerattribute.Value = partnerlocation.AlternateTelephone;
-                            partnerattribute.AttributeType = MPartnerConstants.ATTR_TYPE_PHONE;
-                            partnerattribute.Current = currentAddress;
-                            partnerattribute.Primary = primaryAddress;
-                            partnerattribute.Index = IndexPhone++;
-                            partnerattribute.Specialised = businessAddress;
-                            partnerattribute.NoLongerCurrentFrom = partnerlocation.DateGoodUntil;
-                            partnerattributes.Rows.Add(partnerattribute);
-                            
-                            partnerlocation.SetAlternateTelephoneNull();
-                        }
+                            if (!partnerlocation.IsFaxNumberNull())
+                            {
+                                if (!partnerlocation.IsFaxExtensionNull())
+                                {
+                                    partnerlocation.FaxNumber += "-" + partnerlocation.FaxExtension;
+                                }
 
-                        if (!partnerlocation.IsMobileNumberNull())
-                        {
-                            PPartnerAttributeRow partnerattribute = partnerattributes.NewRowTyped();
-                            partnerattribute.Sequence = SequenceNumber++;
-                            partnerattribute.PartnerKey = partnerlocation.PartnerKey;
-                            partnerattribute.Value = partnerlocation.MobileNumber;
-                            partnerattribute.AttributeType = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
-                            partnerattribute.Current = currentAddress;
-                            partnerattribute.Primary = primaryAddress;
-                            partnerattribute.Index = IndexMobile++;
-                            partnerattribute.Specialised = businessAddress;
-                            partnerattribute.NoLongerCurrentFrom = partnerlocation.DateGoodUntil;
-                            partnerattributes.Rows.Add(partnerattribute);
-                            
-                            partnerlocation.SetMobileNumberNull();
-                        }
+                                PPartnerAttributeRow partnerattribute = partnerattributes.NewRowTyped();
+                                partnerattribute.Sequence = SequenceNumber++;
+                                partnerattribute.PartnerKey = partnerlocation.PartnerKey;
+                                partnerattribute.Value = partnerlocation.FaxNumber;
+                                partnerattribute.AttributeType = MPartnerConstants.ATTR_TYPE_FAX;
+                                partnerattribute.Current = currentAddress;
+                                partnerattribute.Primary = primaryAddress;
+                                partnerattribute.Index = IndexFax++;
+                                partnerattribute.Specialised = businessAddress;
+                                partnerattribute.NoLongerCurrentFrom = partnerlocation.DateGoodUntil;
 
-                        if (!partnerlocation.IsUrlNull())
-                        {
-                            PPartnerAttributeRow partnerattribute = partnerattributes.NewRowTyped();
-                            partnerattribute.Sequence = SequenceNumber++;
-                            partnerattribute.PartnerKey = partnerlocation.PartnerKey;
-                            partnerattribute.Value = partnerlocation.Url;
-                            partnerattribute.AttributeType = MPartnerConstants.ATTR_TYPE_WEBSITE;
-                            partnerattribute.Current = currentAddress;
-                            partnerattribute.Primary = primaryAddress;
-                            partnerattribute.Index = IndexUrl++;
-                            partnerattribute.Specialised = businessAddress;
-                            partnerattribute.NoLongerCurrentFrom = partnerlocation.DateGoodUntil;
-                            partnerattributes.Rows.Add(partnerattribute);
-                            
-                            partnerlocation.SetUrlNull();
-                        }
+                                AttributeConcatenated = ConcatPartnerAttributes(partnerattribute);
 
+                                if (!AvoidDuplicates.Contains(AttributeConcatenated))
+                                {
+                                    partnerattributes.Rows.Add(partnerattribute);
+                                    AvoidDuplicates.Add(AttributeConcatenated);
+                                }
+                                else
+                                {
+                                    TLogging.Log("dropping duplicate " + AttributeConcatenated);
+                                }
+
+                                partnerlocation.SetFaxNumberNull();
+                            }
+
+                            if (!partnerlocation.IsAlternateTelephoneNull())
+                            {
+                                PPartnerAttributeRow partnerattribute = partnerattributes.NewRowTyped();
+                                partnerattribute.Sequence = SequenceNumber++;
+                                partnerattribute.PartnerKey = partnerlocation.PartnerKey;
+                                partnerattribute.Value = partnerlocation.AlternateTelephone;
+                                partnerattribute.AttributeType = MPartnerConstants.ATTR_TYPE_PHONE;
+                                partnerattribute.Current = currentAddress;
+                                partnerattribute.Primary = primaryAddress;
+                                partnerattribute.Index = IndexPhone++;
+                                partnerattribute.Specialised = businessAddress;
+                                partnerattribute.NoLongerCurrentFrom = partnerlocation.DateGoodUntil;
+
+                                AttributeConcatenated = ConcatPartnerAttributes(partnerattribute);
+
+                                if (!AvoidDuplicates.Contains(AttributeConcatenated))
+                                {
+                                    partnerattributes.Rows.Add(partnerattribute);
+                                    AvoidDuplicates.Add(AttributeConcatenated);
+                                }
+                                else
+                                {
+                                    TLogging.Log("dropping duplicate " + AttributeConcatenated);
+                                }
+
+                                partnerlocation.SetAlternateTelephoneNull();
+                            }
+
+                            if (!partnerlocation.IsMobileNumberNull())
+                            {
+                                PPartnerAttributeRow partnerattribute = partnerattributes.NewRowTyped();
+                                partnerattribute.Sequence = SequenceNumber++;
+                                partnerattribute.PartnerKey = partnerlocation.PartnerKey;
+                                partnerattribute.Value = partnerlocation.MobileNumber;
+                                partnerattribute.AttributeType = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
+                                partnerattribute.Current = currentAddress;
+                                partnerattribute.Primary = primaryAddress;
+                                partnerattribute.Index = IndexMobile++;
+                                partnerattribute.Specialised = businessAddress;
+                                partnerattribute.NoLongerCurrentFrom = partnerlocation.DateGoodUntil;
+
+                                AttributeConcatenated = ConcatPartnerAttributes(partnerattribute);
+
+                                if (!AvoidDuplicates.Contains(AttributeConcatenated))
+                                {
+                                    partnerattributes.Rows.Add(partnerattribute);
+                                    AvoidDuplicates.Add(AttributeConcatenated);
+                                }
+                                else
+                                {
+                                    TLogging.Log("dropping duplicate " + AttributeConcatenated);
+                                }
+
+                                partnerlocation.SetMobileNumberNull();
+                            }
+
+                            if (!partnerlocation.IsUrlNull())
+                            {
+                                PPartnerAttributeRow partnerattribute = partnerattributes.NewRowTyped();
+                                partnerattribute.Sequence = SequenceNumber++;
+                                partnerattribute.PartnerKey = partnerlocation.PartnerKey;
+                                partnerattribute.Value = partnerlocation.Url;
+                                partnerattribute.AttributeType = MPartnerConstants.ATTR_TYPE_WEBSITE;
+                                partnerattribute.Current = currentAddress;
+                                partnerattribute.Primary = primaryAddress;
+                                partnerattribute.Index = IndexUrl++;
+                                partnerattribute.Specialised = businessAddress;
+                                partnerattribute.NoLongerCurrentFrom = partnerlocation.DateGoodUntil;
+
+                                AttributeConcatenated = ConcatPartnerAttributes(partnerattribute);
+
+                                if (!AvoidDuplicates.Contains(AttributeConcatenated))
+                                {
+                                    partnerattributes.Rows.Add(partnerattribute);
+                                    AvoidDuplicates.Add(AttributeConcatenated);
+                                }
+                                else
+                                {
+                                    TLogging.Log("dropping duplicate " + AttributeConcatenated);
+                                }
+
+                                partnerlocation.SetUrlNull();
+                            }
+                        }
                     }
-                }
-    
-                PPartnerLocationAccess.SubmitChanges(partnerlocations, SubmitChangesTransaction);
-                PPartnerAttributeAccess.SubmitChanges(partnerattributes, SubmitChangesTransaction);
-                SubmissionResult = TSubmitChangesResult.scrOK;
-            });
+
+                    PPartnerLocationAccess.SubmitChanges(partnerlocations, SubmitChangesTransaction);
+                    PPartnerAttributeAccess.SubmitChanges(partnerattributes, SubmitChangesTransaction);
+                    SubmissionResult = TSubmitChangesResult.scrOK;
+                });
             return true;
         }
-        
+
         /// <summary>
         /// Creates an instance of a 'cut-down' PPartnerLocation Table that will be used for storing partial
         /// to-be-imported p_partner_location record information. It will also be used for the 'Best Address'
@@ -251,6 +335,5 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
 
             return ReturnValue;
         }
-        
     }
 }
