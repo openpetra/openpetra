@@ -76,6 +76,7 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
             {
                 TFileVersionInfo originalDBVersion = GetCurrentDBVersion();
                 TFileVersionInfo currentDBVersion = originalDBVersion;
+                TLogging.LogAtLevel(1, "current DB version: " + currentDBVersion.ToStringDotsHyphen());
 
                 System.Type t = typeof(TDBUpgrade);
 

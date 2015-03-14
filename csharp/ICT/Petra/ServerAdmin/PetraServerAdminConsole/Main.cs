@@ -210,7 +210,7 @@ public class TAdminConsole
     {
         if (TRemote.UpgradeDatabase())
         {
-            Console.WriteLine("Database is now upgraded");
+            Console.WriteLine("Database has been upgraded");
         }
         else
         {
