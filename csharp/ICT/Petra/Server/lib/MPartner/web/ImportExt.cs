@@ -2199,7 +2199,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     {
                         try
                         {
-
                             while (CheckForKeyword("PARTNER"))
                             {
                                 PPartnerRow PartnerRow = ImportPartner(Transaction);

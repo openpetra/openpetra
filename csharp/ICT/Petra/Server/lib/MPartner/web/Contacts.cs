@@ -256,7 +256,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             Counter++;
                         }
                     }
-
                 });
 
             return contacts;

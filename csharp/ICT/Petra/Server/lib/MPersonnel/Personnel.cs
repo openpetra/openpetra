@@ -118,7 +118,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                     PmStaffDataAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
                 });
 
-                return MainDS;
+            return MainDS;
         }
 
         /// <summary>
@@ -137,7 +137,6 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
                 delegate
                 {
-
                     StaffDataDT = PmStaffDataAccess.LoadByPrimaryKey(0, APartnerKey, Transaction);
 
                     foreach (PmStaffDataRow row in StaffDataDT.Rows)
@@ -150,7 +149,6 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                             Result = true;
                         }
                     }
-
                 });
 
             return Result;
@@ -221,7 +219,6 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                 ref Transaction,
                 delegate
                 {
-
                     QueryShortTermApplication =
                         "SELECT PUB_pm_short_term_application.*, PUB_pm_general_application.*, PUB_p_partner.p_partner_short_name_c " +
                         "FROM PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_partner ";
@@ -234,7 +231,8 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                     else if (AOutreachCode.Length > 0)
                     {
                         Parameter.Value = AOutreachCode.Substring(0, 5);
-                        Parameters.Add(Parameter);
+                        Parameters.Add(
+                            Parameter);
 
                         QueryShortTermApplication += "WHERE SUBSTRING(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) = ? ";
                     }
@@ -282,7 +280,6 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                 ref Transaction,
                 delegate
                 {
-
                     QueryLongTermApplication =
                         "SELECT PUB_pm_general_application.*, PUB_pm_year_program_application.*, PUB_p_partner.p_partner_short_name_c " +
                         "FROM PUB_pm_general_application, PUB_pm_year_program_application, PUB_p_partner WHERE ";
@@ -299,7 +296,8 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                     if (APlacementPersonKey != 0)
                     {
                         Parameter2.Value = APlacementPersonKey;
-                        Parameters.Add(Parameter2);
+                        Parameters.Add(
+                            Parameter2);
 
                         // load all appicants with given Placement Person
                         QueryLongTermApplication += "PUB_pm_general_application.pm_placement_partner_key_n = ? AND ";

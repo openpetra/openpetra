@@ -123,6 +123,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             // need to initialize the database session
             TSession.InitThread(ASessionID);
             IsolationLevel Level;
+
             if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "readuncommitted")
             {
                 // for long reports, that should not take out locks;

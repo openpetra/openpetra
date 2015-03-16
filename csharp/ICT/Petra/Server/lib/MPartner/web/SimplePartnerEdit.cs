@@ -71,6 +71,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
                 delegate
                 {
@@ -113,7 +114,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             PSubscriptionAccess.LoadViaPPartnerPartnerKey(MainDS, APartnerKey, Transaction);
                         }
                     }
-
                 });
 
             return MainDS;

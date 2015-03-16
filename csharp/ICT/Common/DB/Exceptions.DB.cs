@@ -563,7 +563,7 @@ namespace Ict.Common.DB.Exceptions
                 FNestedTransactionProblemDetails = value;
             }
         }
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class.
         /// </summary>
@@ -588,7 +588,7 @@ namespace Ict.Common.DB.Exceptions
         {
             FNestedTransactionProblemDetails = ANestedTransactionProblemDetails;
         }
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
@@ -629,13 +629,13 @@ namespace Ict.Common.DB.Exceptions
             }
 
             AInfo.AddValue("NestedTransactionProblemDetails", FNestedTransactionProblemDetails);
-            
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
 
         #endregion
-        
+
         /// <summary>
         /// Creates and returns a string representation of the current <see cref="EDBTransactionBusyException"/>.
         /// </summary>
@@ -646,29 +646,29 @@ namespace Ict.Common.DB.Exceptions
         {
             string ReturnValue;
             string StackTraceStr;
-            
+
             // Start the ToString() return value as .NET does for the System.Exception.ToString() Method...
-            ReturnValue = GetType().FullName + ": " + Message + Environment.NewLine;  
-            
+            ReturnValue = GetType().FullName + ": " + Message + Environment.NewLine;
+
             // ...then add our "special information"...
-            if (NestedTransactionProblemDetails != null) 
+            if (NestedTransactionProblemDetails != null)
             {
                 ReturnValue += "  --> " + NestedTransactionProblemDetails + Environment.NewLine;
-            }            
-            
-            // ...and end the ToString() return value as .NET does for the System.Exception.ToString() Method.
-            if (InnerException != null) 
-            {
-                ReturnValue += InnerException.ToString() + Environment.NewLine;    
             }
-            
+
+            // ...and end the ToString() return value as .NET does for the System.Exception.ToString() Method.
+            if (InnerException != null)
+            {
+                ReturnValue += InnerException.ToString() + Environment.NewLine;
+            }
+
             StackTraceStr = Environment.StackTrace;
-            
+
             if (!String.IsNullOrEmpty(StackTraceStr))
             {
-                ReturnValue += "Server stack trace:" + Environment.StackTrace + Environment.NewLine;    
-            }            
-                        
+                ReturnValue += "Server stack trace:" + Environment.StackTrace + Environment.NewLine;
+            }
+
             return ReturnValue;
         }
     }

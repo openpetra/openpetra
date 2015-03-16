@@ -254,9 +254,9 @@ namespace Ict.Common.DB
     /// </summary>
     public class TDataBase
     {
-        private const string StrNestedTransactionProblem = "Nested DB Transaction problem details:  *Previously* started " + 
-            "DB Transaction Properties: Valid: {0}, Reused: {1}; it got started on Thread {2}.  The attempt to begin a DB Transaction NOW occured on Thread {3}.   The StackTrace of the *previously* started DB Transaction is as follows:\r\n{4}";
-        
+        private const string StrNestedTransactionProblem = "Nested DB Transaction problem details:  *Previously* started " +
+                                                           "DB Transaction Properties: Valid: {0}, Reused: {1}; it got started on Thread {2}.  The attempt to begin a DB Transaction NOW occured on Thread {3}.   The StackTrace of the *previously* started DB Transaction is as follows:\r\n{4}";
+
         /// <summary>References the DBConnection instance</summary>
         private TDBConnection FDBConnectionInstance;
 
@@ -1243,13 +1243,13 @@ namespace Ict.Common.DB
             // Guard against running into a 'Nested' DB Transaction (which are not supported!)
             if (Transaction != null)
             {
-                NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid, 
+                NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid,
                     Transaction.Reused, FTransactionThreadId, Thread.CurrentThread.ManagedThreadId, TLogging.StackTraceToText(FTransactionStackTrace));
                 TLogging.Log(NestedTransactionProblemError);
-                
+
                 throw new EDBTransactionBusyException(
-                    "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " + 
-                    "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " + 
+                    "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " +
+                    "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " +
                     "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
             }
 
@@ -1264,7 +1264,7 @@ namespace Ict.Common.DB
 
                 FTransactionStackTrace = new StackTrace(true);
                 FTransactionThreadId = Thread.CurrentThread.ManagedThreadId;
-                
+
                 FTransaction = FSqlConnection.BeginTransaction();
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
@@ -1369,13 +1369,13 @@ namespace Ict.Common.DB
             // Guard against running into a 'Nested' DB Transaction (which are not supported!)
             if (Transaction != null)
             {
-                NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid, 
+                NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid,
                     Transaction.Reused, FTransactionThreadId, Thread.CurrentThread.ManagedThreadId, TLogging.StackTraceToText(FTransactionStackTrace));
                 TLogging.Log(NestedTransactionProblemError);
-                
+
                 throw new EDBTransactionBusyException(
-                    "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " + 
-                    "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " + 
+                    "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " +
+                    "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " +
                     "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
             }
 
@@ -1393,7 +1393,7 @@ namespace Ict.Common.DB
 
                 FTransactionStackTrace = new StackTrace(true);
                 FTransactionThreadId = Thread.CurrentThread.ManagedThreadId;
-                
+
                 FTransaction = FSqlConnection.BeginTransaction(AIsolationLevel);
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)

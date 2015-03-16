@@ -202,7 +202,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ref Transaction,
                 delegate
                 {
-
                     // check if the partner does exist in the database at all
                     if (!MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, Transaction))
                     {
@@ -331,7 +330,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ref Transaction,
                 delegate
                 {
-
                     if (MCommonMain.RetrievePartnerShortName(APartnerKey, out PartnerShortName, out PartnerClass, out PartnerStatusCode, Transaction))
                     {
                         DisplayMessage = String.Format(Catalog.GetString("Are you sure you want to delete {0} {1} ?"),
@@ -409,8 +407,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
-
-                    ResultValue = MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, Transaction);
+                    ResultValue =
+                        MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, Transaction);
 
                     /* s_user - delete not allowed by CanPartnerBeDeleted */
                     if (ResultValue)
@@ -495,9 +493,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     if (ResultValue)
                     {
                         TSearchCriteria[] PartnerAttributeAccessSC = new TSearchCriteria[] {
-                        new TSearchCriteria(PPartnerAttributeTable.GetPartnerKeyDBName(),
-                            APartnerKey)
-                    };
+                            new TSearchCriteria(PPartnerAttributeTable.GetPartnerKeyDBName(),
+                                APartnerKey)
+                        };
 
                         if (PPartnerAttributeAccess.CountUsingTemplate(PartnerAttributeAccessSC, Transaction) > 0)
                         {
@@ -537,7 +535,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     // If Banking Details were only used by this partner then also delete Banking Details record.
                     if (ResultValue)
                     {
-                        PPartnerBankingDetailsTable PartnerBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPPartner(APartnerKey, Transaction);
+                        PPartnerBankingDetailsTable PartnerBankingDetailsTable =
+                            PPartnerBankingDetailsAccess.LoadViaPPartner(APartnerKey, Transaction);
                         PPartnerBankingDetailsTable OtherPartnerBankingDetailsTable;
                         PPartnerBankingDetailsRow PartnerBankingDetailsRow;
                         PBankingDetailsRow BankingDetailsRow;
@@ -617,10 +616,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                     var partnerContacts = MPartner.Partner.WebConnectors.TContactsWebConnector.GetPartnerContacts(APartnerKey)
                                           .AsEnumerable().Select(r =>
-                                          {
-                                              var id = r.ItemArray[PPartnerContactTable.ColumnContactLogIdId];
-                                              return new { ContactLogId = id, deleteThis = !TContactsWebConnector.IsContactLogAssociatedWithMoreThanOnePartner((long)id) };
-                                          }); ;
+                        {
+                            var id = r.ItemArray[PPartnerContactTable.ColumnContactLogIdId];
+                            return new { ContactLogId = id, deleteThis = !TContactsWebConnector.IsContactLogAssociatedWithMoreThanOnePartner((long)id) };
+                        });;
 
                     // Delete contact attributes before deleting contacts
                     if (ResultValue)

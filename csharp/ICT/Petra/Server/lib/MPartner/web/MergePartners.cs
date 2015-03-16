@@ -128,7 +128,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ref SubmissionOK,
                 delegate
                 {
-
                     /* // TODO write original data to xml file
                      * string path = "../../log/OriginalRecordsBeforeMerge.xml";
                      * FileStream outStream = File.Create(Path.GetFullPath(path);

@@ -306,6 +306,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static bool GetSupplierCurrency(long APartnerKey, out string ACurrency)
         {
             Boolean Result = false;
+
             ACurrency = "";
             string Currency = "";
 
@@ -390,7 +391,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ref Transaction,
                 delegate
                 {
-
                     if (APartnerClass == TPartnerClass.FAMILY)
                     {
                         FromPersonTable = PPersonAccess.LoadViaPFamily(AFromPartnerKey, Transaction);
@@ -618,7 +618,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                     // check for clash with the 'To' partner
                     PPartnerGiftDestinationTable ToGiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AToPartnerKey, Transaction);
-                    CheckGiftDestinationClashes(ToGiftDestinations, ActiveRow, out FromGiftDestinationRowNeedsEnded, out ToGiftDestinationRowNeedsEnded);
+                    CheckGiftDestinationClashes(ToGiftDestinations, ActiveRow, out FromGiftDestinationRowNeedsEnded,
+                        out ToGiftDestinationRowNeedsEnded);
 
                     if (FromGiftDestinationRowNeedsEnded != null)
                     {

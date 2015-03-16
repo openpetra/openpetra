@@ -1597,7 +1597,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 ref SubmissionOK,
                 delegate
                 {
-
                     CanImport = CheckModificationId(MainDS, ref ReferenceResults, Transaction);
 
                     if (CanImport)

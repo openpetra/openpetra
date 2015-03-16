@@ -135,26 +135,26 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             // Use a direct sql statement rather than db access classes to improve performance as otherwise
             // we would need an extra query for each row of an extract to retrieve partner name and class
             SqlStmt = "SELECT * FROM " + MExtractMasterTable.GetTableDBName() +
-                        " WHERE pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractNameDBName() +
-                        " LIKE '" + AExtractNameFilter + "'";
+                      " WHERE pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractNameDBName() +
+                      " LIKE '" + AExtractNameFilter + "'";
 
             if (AExtractDescFilter.Length > 0)
             {
                 AExtractDescFilter = AExtractDescFilter.Replace('*', '%');
                 SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractDescDBName() +
-                            " LIKE '" + AExtractDescFilter + "'";
+                           " LIKE '" + AExtractDescFilter + "'";
             }
 
             if (AUserCreated.Length > 0)
             {
                 SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetCreatedByDBName() +
-                            " = '" + AUserCreated + "'";
+                           " = '" + AUserCreated + "'";
             }
 
             if (AUserModified.Length > 0)
             {
                 SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetModifiedByDBName() +
-                            " = '" + AUserModified + "'";
+                           " = '" + AUserModified + "'";
             }
 
             if (ADateCreatedFrom.HasValue)
@@ -165,7 +165,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     });
 
                 SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateCreatedDBName() +
-                            " >= ?";
+                           " >= ?";
             }
 
             if (ADateCreatedTo.HasValue)
@@ -179,7 +179,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     });
 
                 SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateCreatedDBName() +
-                            " < ?";
+                           " < ?";
             }
 
             if (ADateModifiedFrom.HasValue)
@@ -190,7 +190,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     });
 
                 SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateModifiedDBName() +
-                            " >= ?";
+                           " >= ?";
             }
 
             if (ADateModifiedTo.HasValue)
@@ -204,7 +204,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     });
 
                 SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateModifiedDBName() +
-                            " < ?";
+                           " < ?";
             }
 
             TDBTransaction Transaction = null;
@@ -214,9 +214,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 delegate
                 {
                     DBAccess.GDBAccessObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction,
-                    SqlParameterList.ToArray(), -1, -1);
-
-            });
+                        SqlParameterList.ToArray(), -1, -1);
+                });
 
             return ExtractMasterDT;
         }
@@ -395,7 +394,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                     // delete MExtractMasterTable
                     DeleteStmt = "DELETE FROM pub_" + MExtractMasterTable.GetTableDBName() +
-                                    " WHERE " + WhereStmtMaster;
+                                 " WHERE " + WhereStmtMaster;
                     DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                     // commit whole transaction if successful
@@ -601,7 +600,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ref SubmissionOK,
                 delegate
                 {
-
                     ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
 
                     // query all rows of given extract
@@ -778,8 +776,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     SubmissionOK = true;
                 });
 
-                APartnersWithoutSubscription = PartnersWithoutSubscription;
-                ASubscriptionsChanged = SubscriptionsChanged;
+            APartnersWithoutSubscription = PartnersWithoutSubscription;
+            ASubscriptionsChanged = SubscriptionsChanged;
         }
 
         /// <summary>
@@ -805,8 +803,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     // Use a direct sql statement rather than db access classes to improve performance as otherwise
                     // we would need an extra query for each row of an extract to update data
                     SqlStmt = "DELETE FROM pub_" + PSubscriptionTable.GetTableDBName() +
-                                " WHERE " + PSubscriptionTable.GetPublicationCodeDBName() + " = '" + APublicationCode + "'" +
-                                " AND " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString();
+                              " WHERE " + PSubscriptionTable.GetPublicationCodeDBName() + " = '" + APublicationCode + "'" +
+                              " AND " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString();
 
                     DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
 
@@ -1090,8 +1088,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             foreach (DataRow ExtractRow in ExtractTable.Rows)
                             {
                                 if (CombinedExtractTable.Rows.Find(new object[] { NewExtractId,
-                                                                              ((MExtractRow)ExtractRow).PartnerKey,
-                                                                              ((MExtractRow)ExtractRow).SiteKey }) == null)
+                                                                                  ((MExtractRow)ExtractRow).PartnerKey,
+                                                                                  ((MExtractRow)ExtractRow).SiteKey }) == null)
                                 {
                                     // create and add row to combined extract as it does not exist yet
                                     TemplateRow = (MExtractRow)CombinedExtractTable.NewRowTyped(true);

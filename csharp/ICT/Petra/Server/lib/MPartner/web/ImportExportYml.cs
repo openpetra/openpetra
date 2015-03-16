@@ -699,7 +699,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
                     {
                         TLogging.Log("All in all:");
-                        SortedList<string, int> sortedtables = new SortedList<string, int>();
+                        SortedList <string, int>sortedtables = new SortedList <string, int>();
                         sortedtables.Add("PLocation", MainDS.PLocation.Count);
                         sortedtables.Add("PPartnerLocation", MainDS.PPartnerLocation.Count);
                         sortedtables.Add("PPartnerAttribute", MainDS.PPartnerAttribute.Count);
@@ -708,7 +708,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         sortedtables.Add("PFamily", MainDS.PFamily.Count);
                         sortedtables.Add("POrganisation", MainDS.POrganisation.Count);
 
-                        foreach (KeyValuePair<string, int /*TTypedDataTable*/> pair in sortedtables)
+                        foreach (KeyValuePair <string, int /*TTypedDataTable*/>pair in sortedtables)
                         {
                             TLogging.Log(pair.Key + " : " + pair.Value.ToString());
                         }
