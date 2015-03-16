@@ -570,7 +570,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCurrentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
             }
 
-            FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref DS, ((TCmbAutoPopulated)sender).GetSelectedString(), TransactionNumber);
+            FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref DS, null,
+                ((TCmbAutoPopulated)sender).GetSelectedString(), TransactionNumber);
             RefreshAnalysisAttributesGrid((TCmbAutoPopulated)sender, DS);
         }
 

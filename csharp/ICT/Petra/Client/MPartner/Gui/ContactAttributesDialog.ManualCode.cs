@@ -235,11 +235,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private bool GridTableColumnChanged(ref DataRow AChangingRow)
         {
-            String TmpAttributeDetailCode;
             Boolean IsRemoval;
             Boolean ReturnValue = false;
-
-            TmpAttributeDetailCode = AChangingRow["AttributeDetailCode"].ToString();
 
             ReturnValue = PerformContactAttributeAddOrRemoval(AChangingRow, out IsRemoval);
 

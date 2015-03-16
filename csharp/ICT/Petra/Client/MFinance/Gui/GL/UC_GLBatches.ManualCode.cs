@@ -851,7 +851,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void ReloadBatches()
         {
+            FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
+
+            // Before we re-load make a note of the 'last' batch number so we can work out which batches have been imported.
+            DataView dv = new DataView(FMainDS.ABatch, String.Empty, String.Format("{0} DESC",
+                    ABatchTable.GetBatchNumberDBName()), DataViewRowState.CurrentRows);
+            int lastBatchNumber = ((ABatchRow)dv[0].Row).BatchNumber;
+
+            // Merge the new batches into our data set
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, FCurrentLedgerYear, 0));
+
+            // Go round each imported batch loading its journals
+            // Start with the highest batch number and continue until we reach the 'old' last batch
+            for (int i = 0;; i++)
+            {
+                int batchNumber = ((ABatchRow)dv[i].Row).BatchNumber;
+
+                if (batchNumber <= lastBatchNumber)
+                {
+                    break;
+                }
+
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(FLedgerNumber, batchNumber));
+            }
+
+            FPetraUtilsObject.GetForm().Cursor = Cursors.Default;
             EnsureNewBatchIsVisible();
         }
 

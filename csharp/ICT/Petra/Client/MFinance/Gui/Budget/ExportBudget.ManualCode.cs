@@ -30,6 +30,8 @@ using System.IO;
 using System.Windows.Forms;
 using System.Data;
 using System.Threading;
+using System.Globalization;
+
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
@@ -115,7 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private String ConvertNumberFormat(ComboBox ACmb)
         {
-            return ACmb.SelectedIndex == 0 ? "American" : "European";
+            return ACmb.SelectedIndex == 0 ? TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN : TDlgSelectCSVSeparator.NUMBERFORMAT_EUROPEAN;
         }
 
         private void LoadUserDefaults()
@@ -124,60 +126,72 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtFilename.Text = TUserDefaults.GetStringDefault("Exp Filename",
                 TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "BudgetExport.csv");
 
-            //String expOptions = TUserDefaults.GetStringDefault("Exp Options", "DTrans");
-            String expOptions = TUserDefaults.GetStringDefault("Exp Options", ";American");
+            CultureInfo myCulture = Thread.CurrentThread.CurrentCulture;
+            string defaultImpOptions = myCulture.TextInfo.ListSeparator + TDlgSelectCSVSeparator.NUMBERFORMAT_EUROPEAN;
 
-            if (expOptions.Length > 0)
+            if (myCulture.EnglishName.EndsWith("-US"))
             {
-                cmbDelimiter.SetSelectedString(ConvertDelimiter(expOptions.Substring(0, 1), true));
+                defaultImpOptions = myCulture.TextInfo.ListSeparator + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN;
             }
 
-            if (expOptions.Length > 1)
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", defaultImpOptions);
+
+            if (impOptions.Length > 0)
             {
-                cmbNumberFormat.SelectedIndex = expOptions.Substring(1) == "American" ? 0 : 1;
+                cmbDelimiter.SetSelectedString(ConvertDelimiter(impOptions.Substring(0, 1), true));
             }
 
-            cmbDateFormat.SetSelectedString(TUserDefaults.GetStringDefault("Exp Date", "DMY"));
+            if (impOptions.Length > 1)
+            {
+                cmbNumberFormat.SelectedIndex = impOptions.Substring(1) == TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN ? 0 : 1;
+            }
+
+            string DateFormat = TUserDefaults.GetStringDefault("Imp Date", "yyyy-MM-dd");
+
+            // mdy and dmy have been the old default settings in Petra 2.x
+            if (DateFormat.ToLower() == "mdy")
+            {
+                DateFormat = "MM/dd/yyyy";
+            }
+
+            if (DateFormat.ToLower() == "dmy")
+            {
+                DateFormat = "dd/MM/yyyy";
+            }
+
+            cmbDateFormat.SetSelectedString(DateFormat);
         }
 
         private void SaveUserDefaults()
         {
-            String expOptions = ConvertDelimiter((String)cmbDelimiter.SelectedItem, false);
-
-            expOptions += ConvertNumberFormat(cmbNumberFormat);
-            TUserDefaults.SetDefault("Exp Options", expOptions);
             TUserDefaults.SetDefault("Exp Filename", txtFilename.Text);
-            TUserDefaults.SetDefault("Exp Date", (String)cmbDateFormat.SelectedItem);
+
+            String impOptions = ConvertDelimiter((String)cmbDelimiter.SelectedItem, false);
+            impOptions += ConvertNumberFormat(cmbNumberFormat);
+            TUserDefaults.SetDefault("Imp Options", impOptions);
+
+            TUserDefaults.SetDefault("Imp Date", (String)cmbDateFormat.SelectedItem);
             TUserDefaults.SaveChangedUserDefaults();
-        }
-
-        private void ExportBudgetSelect(object sender, EventArgs e)
-        {
-            ExportBudget(null, null);
-
-            //Open file in explorer
-            if ((FExportFileName.Length > 0) && (Utilities.DetermineExecutingOS() != TExecutingOSEnum.oesUnsupportedPlatform))
-            {
-                if (Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosLinux)
-                {
-                    //TODO: add code to select a file in Linux
-                }
-                else
-                {
-                    Process.Start("explorer", "/e,/select," + FExportFileName);
-                }
-            }
         }
 
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
         /// </summary>
-        private void ExportBudget(object sender, EventArgs e)
+        private void BtnOK_Click(object sender, EventArgs e)
         {
             FExportFileName = txtFilename.Text;
             String fileContents = string.Empty;
             Int32 budgetCount = 0;
+
+            if (txtFilename.Text == String.Empty)
+            {
+                MessageBox.Show(Catalog.GetString("Please choose a location for the Export File."),
+                    Catalog.GetString("Error"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
 
             if (!Directory.Exists(Path.GetDirectoryName(FExportFileName)))
             {
@@ -199,14 +213,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
                     return;
                 }
+
+                try
+                {
+                    File.Delete(FExportFileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(String.Format(
+                            Catalog.GetString(
+                                "Failed to delete the file. Maybe it is already open in another application?  The system message was:{0}{1}"),
+                            Environment.NewLine, ex.Message),
+                        Catalog.GetString("Export Budget"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
             }
 
-            Hashtable requestParams = new Hashtable();
+            //Hashtable requestParams = new Hashtable();
 
-            requestParams.Add("ALedgerNumber", FLedgerNumber);
-            requestParams.Add("Delimiter", ConvertDelimiter(cmbDelimiter.GetSelectedString(), false));
-            requestParams.Add("DateFormatString", cmbDateFormat.GetSelectedString());
-            requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
+            //requestParams.Add("ALedgerNumber", FLedgerNumber);
+            //requestParams.Add("Delimiter", ConvertDelimiter(cmbDelimiter.GetSelectedString(), false));
+            //requestParams.Add("DateFormatString", cmbDateFormat.GetSelectedString());
+            //requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
 
             TVerificationResultCollection AMessages;
 
@@ -215,7 +245,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             try
             {
-                Cursor.Current = Cursors.WaitCursor;
+                this.Cursor = Cursors.WaitCursor;
 
                 budgetCount = TRemote.MFinance.Budget.WebConnectors.ExportBudgets(FLedgerNumber,
                     FExportFileName,
@@ -223,66 +253,79 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     ref fileContents,
                     ref FBudgetDS,
                     out AMessages);
-            }
-            finally
-            {
-                Cursor.Current = Cursors.Default;
-            }
 
-            if ((AMessages != null) && (AMessages.Count > 0))
-            {
-                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
+                this.Cursor = Cursors.Default;
+
+                if ((AMessages != null) && (AMessages.Count > 0))
                 {
-                    MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Error"),
+                    if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
+                    {
+                        MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Error"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+
+                        FExportFileName = string.Empty;
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Warnings"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                }
+
+                SaveUserDefaults();
+
+                if (budgetCount == 0)
+                {
+                    MessageBox.Show(Catalog.GetString("There are no Budgets matching your criteria"),
+                        Catalog.GetString("Error"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
 
                     FExportFileName = string.Empty;
                     return;
                 }
-                else
-                {
-                    MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Warnings"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-            }
 
-            if (budgetCount == 0)
+                StreamWriter sw1 = new StreamWriter(FExportFileName);
+                sw1.Write(fileContents);
+                sw1.Close();
+            }
+            catch (Exception ex)
             {
-                MessageBox.Show(Catalog.GetString("There are no Budgets matching your criteria"),
+                TLogging.Log("ExportBudget.ManualCode: " + ex.ToString());
+                MessageBox.Show(ex.Message,
                     Catalog.GetString("Error"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                FExportFileName = string.Empty;
                 return;
-            }
-
-            StreamWriter sw1 = null;
-
-            try
-            {
-                sw1 = new StreamWriter(FExportFileName);
-                sw1.Write(fileContents);
             }
             finally
             {
-                if (sw1 != null)
-                {
-                    sw1.Close();
-                }
+                this.Cursor = Cursors.Default;
             }
 
-            MessageBox.Show(Catalog.GetString(String.Format("Exported successfully! {0} Budget rows exported as file:{1}{1}{2}",
-                        budgetCount.ToString(),
-                        Environment.NewLine,
-                        FExportFileName.ToUpper())),
-                Catalog.GetString("Budget Export"),
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            // Offer the client the chance to open the file in Excel or whatever
+            if (MessageBox.Show(String.Format(Catalog.GetString(
+                            "{0} Budget rows were exported successfully! Would you like to open the file in your default application?"),
+                        budgetCount.ToString()),
+                    Catalog.GetString("Budget Export"),
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Information,
+                    MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
+            {
+                ProcessStartInfo si = new ProcessStartInfo(txtFilename.Text);
+                si.UseShellExecute = true;
+                si.Verb = "open";
 
-            SaveUserDefaults();
+                Process p = new Process();
+                p.StartInfo = si;
+                p.Start();
+            }
+
+            Close();
         }
 
         void BtnBrowseClick(object sender, EventArgs e)
@@ -297,16 +340,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             {
                 txtFilename.Text = saveFileDialog1.FileName;
             }
-        }
-
-        void BtnCloseClick(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        void BtnHelpClick(object sender, EventArgs e)
-        {
-            // TODO
         }
     }
 }

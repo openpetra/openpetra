@@ -134,12 +134,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 dialog = new OpenFileDialog();
 
-                dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
-                    TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
+                string exportPath = TClientSettings.GetExportPath();
+                string fullPath = TUserDefaults.GetStringDefault("Imp Filename",
+                    exportPath + Path.DirectorySeparatorChar + "import.csv");
+                TImportExportDialogs.SetOpenFileDialogFilePathAndName(dialog, fullPath, exportPath);
 
                 dialog.Title = Catalog.GetString("Import Batches from CSV File");
                 dialog.Filter = Catalog.GetString("Gift Batches files (*.csv)|*.csv");
                 impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
+
+                // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
+                TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(fullPath));
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
@@ -284,6 +289,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                     }
                 }
+
+                // We save the defaults even if ok is false - because the client will probably want to try and import
+                //   the same file again after correcting any errors
+                SaveUserDefaults(dialog, impOptions);
             }
 
             if (ok)
@@ -293,7 +302,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
-                SaveUserDefaults(dialog, impOptions);
                 FMyUserControl.LoadBatchesForCurrentYear();
                 FPetraUtilsObject.DisableSaveButton();
             }
@@ -369,12 +377,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 dialog = new OpenFileDialog();
 
-                dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
-                    TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
+                string exportPath = TClientSettings.GetExportPath();
+                string fullPath = TUserDefaults.GetStringDefault("Imp Filename",
+                    exportPath + Path.DirectorySeparatorChar + "import.csv");
+                TImportExportDialogs.SetOpenFileDialogFilePathAndName(dialog, fullPath, exportPath);
 
                 dialog.Title = Catalog.GetString("Import Transactions from CSV File");
                 dialog.Filter = Catalog.GetString("Gift Transactions files (*.csv)|*.csv");
                 impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
+
+                // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
+                TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(fullPath));
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
@@ -486,6 +499,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                     }
                 }
+
+                // We save the defaults even if ok is false - because the client will probably want to try and import
+                //   the same file again after correcting any errors
+                SaveUserDefaults(dialog, impOptions);
             }
 
             if (ok)
@@ -495,7 +512,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
-                SaveUserDefaults(dialog, impOptions);
                 //FMyUserControl.LoadBatchesForCurrentYear();
                 FPetraUtilsObject.DisableSaveButton();
             }

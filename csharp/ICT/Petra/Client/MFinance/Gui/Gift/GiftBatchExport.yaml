@@ -1,61 +1,63 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    BaseClass: ../../../CommonForms/PetraFormDialog.yaml
     FormTitle: Export Gift Batches
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
-    FormType: browse
+    FormType: dialog
     Template: window
-    WindowWidth: 480
-    WindowHeight: 660
+    WindowWidth: 550
+    WindowHeight: 600
     Actions:
         actExportBatches: {Label=&Start, ActionClick=ExportBatches}
         actClose: {Label=&Close, ActionClick=BtnCloseClick}
         actHelp: {Label=&Help, ActionClick=BtnHelpClick}
     Controls:
-        pnlContent:
-            Controls: [pnlTop, pnlButtons]
-            Dock: Fill
-        pnlTop:
-            Dock: Top
+        pnlDialogContent:
             Controls:
                 Row0: [rgrDetailSummary]
-                Row0b: [rgrCurrency]
-                Row0c: [EmptyRow1]
-                Row1: [pnlRecipient]
-                Row1b: [EmptyRows2]
-                Row2: [rgrDateOrBatchRange]
-                Row3: [chkIncludeUnposted]
-                Row4: [chkTransactionsOnly]
-                Row5: [chkExtraColumns]
-                Row5b: [EmptyRows3]
-                Row6: [pnlFilename]
-                Row7: [cmbDelimiter]
-                Row8: [cmbDateFormat]
-                Row9: [cmbNumberFormat]
-        EmptyRows1: {Label=.}
-        EmptyRows2:
-        EmptyRows3:
-        #EmptyRows4:
-        #EmptyRows5:
+                Row1: [rgrCurrency]
+                Row2: [grpRecipient]
+                Row3: [rgrDateOrBatchRange]
+                Row4: [grpExportOptions]
         rgrDetailSummary:
             Label: Detail or Summary
             Controls: [rbtDetail, rbtSummary]
+            Stretch: horizontally
+            Align: top
+            Width:600
         rbtDetail:
             Label: Detail
+            Width:200
         rbtSummary:
             Controls: [dtpDateSummary]
-        pnlRecipient:
-            #Label: Recipient
+            Width:200
+        dtpDateSummary:
+            Label: Summary For
+            Width: 120
+
+        grpRecipient:
+            Label: Recipient Details
+            Stretch: horizontally
+            Align: top
+            Width:600
             Controls:
-                Row0: [lblRecipient]
-                Row1: [txtDetailRecipientKey]
-                Row2: [txtDetailFieldKey]         
-        lblRecipient: {Label=Recipient Details}
+                #Row0: [lblRecipient]
+                Row0: [txtDetailRecipientKey]
+                Row1: [txtDetailFieldKey]         
         txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey}
         txtDetailFieldKey: {Label=Field, Type=PartnerKey}
+
         rgrCurrency:
             OptionalValues: [Base Currency, Original Transaction Currency]
+            Stretch: horizontally
+            Align: top
+            Width:600
+
         rgrDateOrBatchRange:
+            Label: Batch Selection
             Controls: [rbtDateRange, rbtBatchNumberSelection]
+            Stretch: horizontally
+            Align: top
+            Width:600
         rbtDateRange:
             NoLabel: true
             Controls: [dtpDateFrom, dtpDateTo]
@@ -64,30 +66,38 @@ RootNode:
             NoLabel: true
             Controls: [txtBatchNumberStart, txtBatchNumberEnd]
             ControlsOrientation: horizontal
-        dtpDateFrom: {Label=Date from}
-        dtpDateTo: {Label=To}
-        txtBatchNumberStart: {Label=Batch Number from, Format=Integer}
-        txtBatchNumberEnd: {Label=To, Format=Integer}
+        dtpDateFrom: {Label=Date from, Width=110, LabelWidth=90}
+        dtpDateTo: {Label=To, Width=110}
+        txtBatchNumberStart: {Label=Batch from, Format=Integer, Width=110, LabelWidth=90}
+        txtBatchNumberEnd: {Label=To, Format=Integer, Width=110}
+
+        grpExportOptions:
+            Stretch: horizontally
+            Align: top
+            Width:600
+            Controls:
+                Row0: [chkIncludeUnposted]
+                Row1: [chkTransactionsOnly]
+                Row2: [chkExtraColumns]
+                Row4: [pnlFilename]
+                Row5: [cmbDelimiter]
+                Row6: [cmbDateFormat]
+                Row7: [cmbNumberFormat]
         chkIncludeUnposted: {Label=Include Unposted Batches}
         chkTransactionsOnly:
         chkExtraColumns: {Label= With extra columns}
-        dtpDateSummary:
-            Label: Date for summary
         pnlFilename:
+            Stretch: horizontally
+            Align: top
             Controls:
                 Row0: [txtFilename, btnBrowseFilename]
-        pnlButtons:
-            Dock:Bottom
-            Controls:
-                Row0: [btnHelp, btnOK, btnClose]
-            ColWidths: [0=Fixed:320,1=Fixed:42,2=Fixed:45]
-        btnHelp: {Action=actHelp}
-        btnClose: {Action=actClose}
-        btnOK: {Action=actExportBatches}                
         txtFilename: 
-            Width:300
+            LabelWidth:160
+            Width:365
+            Stretch: horizontally
         btnBrowseFilename:
             Label: ...
+            Align: Right
             Height: 22
             ActionClick: BtnBrowseClick
         cmbDateFormat:
@@ -99,5 +109,3 @@ RootNode:
         cmbDelimiter:
             OptionalValues: [";", ",", ":", "[SPACE]"]
             Width: 80
-    Toolbar:
-        tbbExportBatches:

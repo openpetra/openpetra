@@ -38,6 +38,7 @@ namespace Ict.Petra.Server.App.Core
     public class TProgressTracker
     {
         private static SortedList <string, TProgressState>FProgressStates = new SortedList <string, TProgressState>();
+        private static Object ProgressLockObject = new Object();
 
         /// <summary>
         /// add or reuse a tracker for the given clientID
@@ -48,21 +49,24 @@ namespace Ict.Petra.Server.App.Core
         /// <returns></returns>
         static public TProgressState InitProgressTracker(string AClientID, string ACaption, decimal AAbsoluteOverallAmount = 100.0m)
         {
-            TProgressState state = new TProgressState();
-
-            state.AbsoluteOverallAmount = AAbsoluteOverallAmount;
-            state.Caption = ACaption;
-
-            if (FProgressStates.ContainsKey(AClientID))
+            lock (ProgressLockObject)
             {
-                FProgressStates[AClientID] = state;
-            }
-            else
-            {
-                FProgressStates.Add(AClientID, state);
-            }
+                TProgressState state = new TProgressState();
 
-            return state;
+                state.AbsoluteOverallAmount = AAbsoluteOverallAmount;
+                state.Caption = ACaption;
+
+                if (FProgressStates.ContainsKey(AClientID))
+                {
+                    FProgressStates[AClientID] = state;
+                }
+                else
+                {
+                    FProgressStates.Add(AClientID, state);
+                }
+
+                return state;
+            }
         }
 
         /// <summary>
@@ -72,18 +76,21 @@ namespace Ict.Petra.Server.App.Core
         /// <returns></returns>
         static public TProgressState GetCurrentState(string AClientID)
         {
-            if ((AClientID != null) && FProgressStates.ContainsKey(AClientID))
+            lock (ProgressLockObject)
             {
-                if (FProgressStates[AClientID].PercentageDone > 100)
+                if ((AClientID != null) && FProgressStates.ContainsKey(AClientID))
                 {
-                    TLogging.Log("invalid percentage: " + FProgressStates[AClientID].PercentageDone.ToString());
-                    FProgressStates[AClientID].PercentageDone = 99;
+                    if (FProgressStates[AClientID].PercentageDone > 100)
+                    {
+                        TLogging.Log("invalid percentage: " + FProgressStates[AClientID].PercentageDone.ToString());
+                        FProgressStates[AClientID].PercentageDone = 99;
+                    }
+
+                    return FProgressStates[AClientID];
                 }
 
-                return FProgressStates[AClientID];
+                return new TProgressState();
             }
-
-            return new TProgressState();
         }
 
         static private int DEBUG_PROGRESS = 1;
@@ -96,21 +103,24 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="ACurrentAbsoluteAmount"></param>
         static public void SetCurrentState(string AClientID, string AStatusMessage, Decimal ACurrentAbsoluteAmount)
         {
-            if (FProgressStates.ContainsKey(AClientID))
+            lock (ProgressLockObject)
             {
-                TProgressState state = FProgressStates[AClientID];
-
-                if (AStatusMessage.Length > 0)
+                if (FProgressStates.ContainsKey(AClientID))
                 {
-                    state.StatusMessage = AStatusMessage;
-                }
+                    TProgressState state = FProgressStates[AClientID];
 
-                state.PercentageDone = Convert.ToInt32((ACurrentAbsoluteAmount / state.AbsoluteOverallAmount) * 100.0m);
+                    if (AStatusMessage.Length > 0)
+                    {
+                        state.StatusMessage = AStatusMessage;
+                    }
 
-                if (TLogging.DebugLevel >= DEBUG_PROGRESS)
-                {
-                    // avoid recursive calls, especially during report calculation
-                    Console.WriteLine(state.PercentageDone.ToString() + "%: " + state.StatusMessage);
+                    state.PercentageDone = Convert.ToInt32((ACurrentAbsoluteAmount / state.AbsoluteOverallAmount) * 100.0m);
+
+                    if (TLogging.DebugLevel >= DEBUG_PROGRESS)
+                    {
+                        // avoid recursive calls, especially during report calculation
+                        Console.WriteLine(state.PercentageDone.ToString() + "%: " + state.StatusMessage);
+                    }
                 }
             }
         }
@@ -121,20 +131,34 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="AClientID"></param>
         static public bool CancelJob(string AClientID)
         {
-            if (FProgressStates.ContainsKey(AClientID))
+            lock (ProgressLockObject)
             {
-                TProgressState state = FProgressStates[AClientID];
-                state.CancelJob = true;
-
-                if (TLogging.DebugLevel >= DEBUG_PROGRESS)
+                if (FProgressStates.ContainsKey(AClientID))
                 {
-                    TLogging.Log("Cancelled the job for " + AClientID);
+                    TProgressState state = FProgressStates[AClientID];
+
+                    if (state.JobFinished == true)
+                    {
+                        if (TLogging.DebugLevel >= DEBUG_PROGRESS)
+                        {
+                            TLogging.Log("Cannot cancel the job for " + AClientID + " because the job has already finished");
+                        }
+                    }
+                    else
+                    {
+                        state.CancelJob = true;
+
+                        if (TLogging.DebugLevel >= DEBUG_PROGRESS)
+                        {
+                            TLogging.Log("Cancelled the job for " + AClientID);
+                        }
+
+                        return true;
+                    }
                 }
 
-                return true;
+                return false;
             }
-
-            return false;
         }
 
         /// <summary>
@@ -142,20 +166,23 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         static public bool FinishJob(string AClientID)
         {
-            if (FProgressStates.ContainsKey(AClientID))
+            lock (ProgressLockObject)
             {
-                TProgressState state = FProgressStates[AClientID];
-                state.JobFinished = true;
-
-                if (TLogging.DebugLevel >= DEBUG_PROGRESS)
+                if (FProgressStates.ContainsKey(AClientID))
                 {
-                    TLogging.Log("Finished the job for " + AClientID);
+                    TProgressState state = FProgressStates[AClientID];
+                    state.JobFinished = true;
+
+                    if (TLogging.DebugLevel >= DEBUG_PROGRESS)
+                    {
+                        TLogging.Log("Finished the job for " + AClientID);
+                    }
+
+                    return true;
                 }
 
-                return true;
+                return false;
             }
-
-            return false;
         }
     }
 }

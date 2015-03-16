@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -202,11 +203,15 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
+        /// <param name="AGLSetupDSRef">A GLSetupTDS reference with a populated ATransactionTypeTable.  A reference to this DataSet is REQUIRED when importing - optional otherwise</param>
+        /// <param name="ACurrencyTableRef">A reference to the Currency table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
         /// <param name="ACorporateExchangeTableRef">Corporate exchange rate table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
         /// <param name="ABaseCurrency">Ledger base currency.  Required when importing</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateGLJournalManual(object AContext, AJournalRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            GLSetupTDS AGLSetupDSRef = null,
+            ACurrencyTable ACurrencyTableRef = null,
             ACorporateExchangeRateTable ACorporateExchangeTableRef = null, string ABaseCurrency = null)
         {
             DataColumn ValidationColumn;
@@ -240,7 +245,33 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
-            if ((ACorporateExchangeTableRef != null) && (ABaseCurrency != null) && (ARow.TransactionCurrency != ABaseCurrency))
+            // Transaction currency must be valid
+            bool isValidTransactionCurrency = true;
+
+            if (isImporting && (ACurrencyTableRef != null))
+            {
+                ValidationColumn = ARow.Table.Columns[AJournalTable.ColumnTransactionCurrencyId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    ACurrencyRow foundRow = (ACurrencyRow)ACurrencyTableRef.Rows.Find(ARow.TransactionCurrency);
+                    isValidTransactionCurrency = (foundRow != null);
+
+                    if ((foundRow == null)
+                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                            AContext,
+                            new TVerificationResult(ValidationContext,
+                                String.Format(Catalog.GetString("'{0}' is not a valid currency."), ARow.TransactionCurrency),
+                                TResultSeverity.Resv_Critical),
+                            ValidationColumn))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
+            }
+
+            if ((ACorporateExchangeTableRef != null) && isValidTransactionCurrency && (ABaseCurrency != null)
+                && (ARow.TransactionCurrency != ABaseCurrency))
             {
                 // For gifts in non-base currency there must be a corporate exchange rate
                 ValidationColumn = ARow.Table.Columns[AJournalTable.ColumnTransactionCurrencyId];
@@ -262,6 +293,53 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             ValidationColumn))
                     {
                         VerifResultCollAddedCount++;
+                    }
+                }
+            }
+
+            // Sub-system code must exist in the transaction type table
+            if (isImporting && (AGLSetupDSRef.ATransactionType != null))
+            {
+                ValidationColumn = ARow.Table.Columns[AJournalTable.ColumnSubSystemCodeId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    ATransactionTypeRow foundRow = (ATransactionTypeRow)AGLSetupDSRef.ATransactionType.Rows.Find(
+                        new object[] { ARow.LedgerNumber, ARow.SubSystemCode, ARow.TransactionTypeCode });
+
+                    if ((foundRow == null)
+                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                            AContext,
+                            new TVerificationResult(ValidationContext,
+                                String.Format(Catalog.GetString(
+                                        "The combination of Transaction Type of '{0}' and Sub-system Code of '{1}' is not valid for journals in Ledger {2}."),
+                                    ARow.TransactionTypeCode, ARow.SubSystemCode, ARow.LedgerNumber),
+                                TResultSeverity.Resv_Critical),
+                            ValidationColumn))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
+            }
+
+            // Journal description must not be null
+            if (isImporting)
+            {
+                ValidationColumn = ARow.Table.Columns[AJournalTable.ColumnJournalDescriptionId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    if ((ARow.JournalDescription == null) || (ARow.JournalDescription.Length == 0))
+                    {
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                                AContext,
+                                new TVerificationResult(ValidationContext,
+                                    Catalog.GetString("The journal description must not be empty."),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
                     }
                 }
             }
