@@ -677,7 +677,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         LastGiftData.Merge(MainDS.AGiftDetail);
                     }
 
-                    if ((LastGiftData != null) && (LastGiftData.Rows.Count > 0))
+                    if (LastGiftData.Rows.Count > 0)
                     {
                         // get the name of each recipient
                         foreach (GiftBatchTDSAGiftDetailRow Row in LastGiftData.Rows)
@@ -688,7 +688,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 });
 
-            if (DonorExists && (LastGiftData != null))
+            if (DonorExists)
             {
                 LastGiftData.AcceptChanges();
             }
