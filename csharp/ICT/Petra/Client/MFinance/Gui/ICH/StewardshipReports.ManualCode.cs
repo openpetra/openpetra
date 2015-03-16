@@ -329,7 +329,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
         private Boolean LoadHosaReportData(TRptCalculator ACalc)
         {
-            Dictionary <String, TVariant>paramsDictionary = InitialiseDictionary(ACalc);
+            InitialiseDictionary(ACalc);
             ACalc.AddStringParameter("param_cost_centre_codes", "ALL");
             ACalc.AddStringParameter("param_filter_cost_centres", "");
             ACalc.AddStringParameter("param_linked_partner_cc", ""); // Used for auto-emailing HOSAs, this is usually blank.

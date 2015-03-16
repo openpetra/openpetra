@@ -88,10 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
 
-        private string FBatchDescription = string.Empty;
-
         //Date related
-        private DateTime FDateEffective;
         private DateTime FDefaultDate;
         private DateTime FStartDateCurrentPeriod;
         private DateTime FEndDateLastForwardingPeriod;
@@ -391,8 +388,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void LoadBatchesForCurrentYear()
         {
-            FDateEffective = FDefaultDate;
-
             TFrmGiftBatch myParentForm = (TFrmGiftBatch) this.ParentForm;
             bool performStandardLoad = true;
 

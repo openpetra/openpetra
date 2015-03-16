@@ -99,7 +99,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         private void AddSelected(Object Sender, EventArgs e)
         {
             ListBox.SelectedIndexCollection Selections = lstDontPrint.SelectedIndices;
-            String[] NewItems = { };
 
             foreach (Int32 SelNum in Selections)
             {

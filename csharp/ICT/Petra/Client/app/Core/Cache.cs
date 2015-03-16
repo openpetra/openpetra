@@ -83,6 +83,21 @@ namespace Ict.Petra.Client.App.Core
             IsolatedStorageScope.User | IsolatedStorageScope.Assembly |
             IsolatedStorageScope.Roaming, null, null);
 
+        private enum TCacheSource
+        {
+            csUndefined,
+
+            csCache,
+
+            csFile,
+
+            csServer,
+
+            csFilteredCacheView,
+
+            csFilteredFileView
+        };
+
 
         #region TDataCache.TMCommon
 
@@ -1284,19 +1299,26 @@ namespace Ict.Petra.Client.App.Core
         public static DataTable GetCacheableDataTableFromCache2(String ACacheableTableName, String AFilterCriteriaString, object AFilterCriteria,
             out Type ADataTableType, string ACustomTableName = "")
         {
-            DataTable ReturnValue;
-            DataTable CacheableDataTableFromCache;
+            // NOTE: AlanP reworked this method in Feb 2015.  Previously we used the Petra 2.x code.  Bizarrely, this code had bugs
+            // which meant that, although tables got stored in the memory and file caches, there was no code to actually successfully
+            // get a table out of the cache!  There was no attempt to calculate the Hash for the cached table, so the server always
+            // returned a full table.
+            // At the same time the code was reviewed and made easier to read and follow.
+
+            DataTable ReturnValue = null;
+            DataTable CacheableDataTableFromCache = null;
             DataTable CacheableDataTableFromServer = null;
             DataTable CacheableDataTableFromFile = null;
             DataView CacheableDataTableFilteredDV = null;
             String HashCode = "";
             Int32 TmpSize = 0;
             Boolean CacheableDataTableReloadNecessary = true;
+            TCacheSource CacheSource = TCacheSource.csUndefined;
 
             System.Type TmpType;
-            DataRow[] FilteredRows = null;
 
             ADataTableType = null;
+            DateTime dtStart = DateTime.UtcNow;
 
             /*
              * Check whether cacheable DataTable is available in the Client-side Cache
@@ -1319,9 +1341,7 @@ namespace Ict.Petra.Client.App.Core
                          * Check if any rows of the Cacheable DataTable in the Client-side
                          * Cache match the AFilterCriteriaString
                          */
-                        FilteredRows = CacheableDataTableFromCache.Select(AFilterCriteriaString);
-
-                        if (FilteredRows.Length != 0)
+                        if (CacheableDataTableFromCache.Select(AFilterCriteriaString).Length != 0)
                         {
                             // We have what we are looking for > no need to make a Server call
                             CacheableDataTableReloadNecessary = false;
@@ -1348,7 +1368,9 @@ namespace Ict.Petra.Client.App.Core
                         TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': needs reloading from OpenPetra Server!");
                     }
 
-                    CacheableDataTableReloadNecessary = true;
+                    // By setting these two values we force the server to give us a table, since the Hash code will be empty string
+                    CacheableDataTableReloadNecessary = false;
+                    CacheableDataTableFromCache = null;
                 }
                 catch (Exception)
                 {
@@ -1381,6 +1403,8 @@ namespace Ict.Petra.Client.App.Core
                         TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': loaded from file.");
                     }
 
+                    CacheSource = TCacheSource.csFile;
+
                     // Assign the correct TableName
                     CacheableDataTableFromFile.TableName = ACacheableTableName;
 
@@ -1400,6 +1424,36 @@ namespace Ict.Petra.Client.App.Core
                     }
                 }
             }
+            else if (CacheableDataTableFromCache != null)
+            {
+                // We have a cached table we can use
+                CacheSource = TCacheSource.csCache;
+
+                // Assign the correct TableName
+                CacheableDataTableFromCache.TableName = ACacheableTableName;
+
+                // Calculate HashCode for the DataTable (used to compare the DataTable
+                // with the DataTable in the Serverside Cache)
+                DateTime dtHashStart = DateTime.UtcNow;
+
+                if (AFilterCriteriaString != "")
+                {
+                    CacheableDataTableFilteredDV = new DataView(CacheableDataTableFromCache,
+                        AFilterCriteriaString,
+                        "",
+                        DataViewRowState.CurrentRows);
+                    DataUtilities.CalculateHashAndSize(CacheableDataTableFilteredDV, out HashCode, out TmpSize);
+                }
+                else
+                {
+                    DataUtilities.CalculateHashAndSize(CacheableDataTableFromCache, out HashCode, out TmpSize);
+                }
+
+                if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES - 1)
+                {
+                    TLogging.Log(String.Format(" -- Hashing: {0} ms", (DateTime.UtcNow - dtHashStart).TotalMilliseconds));
+                }
+            }
 
 //System.Windows.Forms.MessageBox.Show("From File: CacheableTableName Clientside:  HashCode: " + HashCode + "; Size: " + TmpSize.ToString());
             try
@@ -1410,9 +1464,12 @@ namespace Ict.Petra.Client.App.Core
                  * retrieve the Type of the DataTable (it's a Typed DataTable in most
                  * cases).
                  */
+                DateTime dtServerStart = DateTime.UtcNow;
+
                 if ((AFilterCriteriaString != "")
                     && (AFilterCriteria != null))
                 {
+                    // Typically used by Finance tables where AFilterCriteria is a ledger number ...
                     CacheableDataTableFromServer = GetCacheableDataTableFromPetraServer(ACacheableTableName,
                         HashCode,
                         AFilterCriteria,
@@ -1423,6 +1480,11 @@ namespace Ict.Petra.Client.App.Core
                     CacheableDataTableFromServer = GetCacheableDataTableFromPetraServer(ACacheableTableName,
                         HashCode,
                         out ADataTableType);
+                }
+
+                if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES - 1)
+                {
+                    TLogging.Log(String.Format(" -- Server call: {0} ms", (DateTime.UtcNow - dtServerStart).TotalMilliseconds));
                 }
 
                 /*
@@ -1438,22 +1500,12 @@ namespace Ict.Petra.Client.App.Core
                         TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': got returned from OpenPetra Server.");
                     }
 
-                    if (AFilterCriteriaString != "")
-                    {
-                        CacheableDataTableFilteredDV = new DataView(CacheableDataTableFromServer,
-                            AFilterCriteriaString,
-                            "",
-                            DataViewRowState.CurrentRows);
+                    CacheSource = TCacheSource.csServer;
 
-                        DataRowCollection FilteredRowsColl = CacheableDataTableFilteredDV.ToTable().Rows;
-
-                        FilteredRows = new DataRow[FilteredRowsColl.Count];
-
-                        for (int ServerRowsCounter = 0; ServerRowsCounter < FilteredRowsColl.Count; ServerRowsCounter++)
-                        {
-                            FilteredRows.SetValue(FilteredRowsColl[ServerRowsCounter], ServerRowsCounter);
-                        }
-                    }
+                    // If we have a value for CacheableDataTableFilteredDV because we supplied the server with a filtered table request
+                    // from the cache or a file, the server will already have applied the filter, so we no longer need it.  We won't need to apply
+                    // it at the end of the method.
+                    CacheableDataTableFilteredDV = null;
 
                     /*
                      * Add returned DataTable to the Cache - or Merge it if it already
@@ -1462,8 +1514,14 @@ namespace Ict.Petra.Client.App.Core
                      */
                     UCacheableTablesManager.AddOrMergeCachedTable(CacheableDataTableFromServer, -1);
 
-                    // Save the DataTable that's now in the Cache to a file
+                    // Save the (merged) DataTable that's now in the Cache to a file
                     SaveCacheableDataTableToFile(UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out TmpType));
+
+                    // Change the table from the server into a typed table
+                    if (!(ADataTableType == typeof(System.Data.DataTable)))
+                    {
+                        DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromServer, ADataTableType, "");
+                    }
                 }
                 else
                 {
@@ -1481,6 +1539,22 @@ namespace Ict.Petra.Client.App.Core
                             "Cacheable DataTable '" + ACacheableTableName + "': OpenPetra Server tells that the Client-side DataTable is up-to-date.");
                     }
 
+                    if (CacheSource == TCacheSource.csFile)
+                    {
+                        // Add DataTable to the Cache that got loaded from a file
+                        UCacheableTablesManager.AddOrRefreshCachedTable(ACacheableTableName, CacheableDataTableFromFile, -1);
+
+                        if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
+                        {
+                            TLogging.Log(
+                                "Cacheable DataTable '" + ACacheableTableName +
+                                "': DataTable that was loaded from file got added to Client-side  DataTable Type: " +
+                                UCacheableTablesManager.GetCachedDataTable(ACacheableTableName,
+                                    out TmpType).GetType().FullName + "; Rows: " + UCacheableTablesManager.GetCachedDataTable(ACacheableTableName,
+                                    out TmpType).Rows.Count.ToString());
+                        }
+                    }
+
                     if (!(ADataTableType == typeof(System.Data.DataTable)))
                     {
                         /*
@@ -1489,32 +1563,14 @@ namespace Ict.Petra.Client.App.Core
                          * PetraServer (so that a Typed DataTable is again a Typed a
                          * DataTable and not just a DataTable after loading it from a file).
                          */
-                        DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromFile, ADataTableType, "");
-                    }
-
-                    if (AFilterCriteriaString != "")
-                    {
-                        DataRowCollection FilteredRowsColl = CacheableDataTableFilteredDV.ToTable().Rows;
-
-                        FilteredRows = new DataRow[FilteredRowsColl.Count];
-
-                        for (int ServerRowsCounter = 0; ServerRowsCounter < FilteredRowsColl.Count; ServerRowsCounter++)
+                        if (CacheSource == TCacheSource.csFile)
                         {
-                            FilteredRows.SetValue(FilteredRowsColl[ServerRowsCounter], ServerRowsCounter);
+                            DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromFile, ADataTableType, "");
                         }
-                    }
-
-                    // Add DataTable to the Cache that got loaded from a file
-                    UCacheableTablesManager.AddOrRefreshCachedTable(ACacheableTableName, CacheableDataTableFromFile, -1);
-
-                    if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
-                    {
-                        TLogging.Log(
-                            "Cacheable DataTable '" + ACacheableTableName +
-                            "': DataTable that was loaded from file got added to Client-side  DataTable Type: " +
-                            UCacheableTablesManager.GetCachedDataTable(ACacheableTableName,
-                                out TmpType).GetType().FullName + "; Rows: " + UCacheableTablesManager.GetCachedDataTable(ACacheableTableName,
-                                out TmpType).Rows.Count.ToString());
+                        else if (CacheSource == TCacheSource.csCache)
+                        {
+                            DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromCache, ADataTableType, "");
+                        }
                     }
                 }
             }
@@ -1523,24 +1579,56 @@ namespace Ict.Petra.Client.App.Core
                 throw;
             }
 
-            ReturnValue = UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out TmpType);
-
-            // If a Filter is set, we must return only the DataRows that match the Filter, not all DataRows
-            if (FilteredRows != null)
+            if (CacheableDataTableFilteredDV != null)
             {
-                ReturnValue.Clear();
-
-                for (int FilteredRowsCounter = 0; FilteredRowsCounter < FilteredRows.Length; FilteredRowsCounter++)
+                // There was a filter string so we must return a sub-set of the cache or file copy
+                switch (CacheSource)
                 {
-                    ReturnValue.ImportRow(FilteredRows[FilteredRowsCounter]);
+                    case TCacheSource.csCache:
+                        CacheSource = TCacheSource.csFilteredCacheView;
+                        break;
+
+                    case TCacheSource.csFile:
+                        CacheSource = TCacheSource.csFilteredFileView;
+                        break;
                 }
 
-                ReturnValue.AcceptChanges();
+                if (ADataTableType == typeof(System.Data.DataTable))
+                {
+                    // Just turn the view into a standard data table
+                    ReturnValue = CacheableDataTableFilteredDV.ToTable();
+                }
+                else
+                {
+                    // This construct looks a little odd.  There is no need to convert the view to a new table instance
+                    //  because the conversion to a typed table will create a new instance - so we only need to pass the data
+                    //  as a reference param and can therefore use .Table rather than .ToTable()
+                    ReturnValue = CacheableDataTableFilteredDV.Table;
+                    DataUtilities.ChangeDataTableToTypedDataTable(ref ReturnValue, ADataTableType, "");
+                }
+            }
+            else if (CacheSource == TCacheSource.csCache)
+            {
+                ReturnValue = CacheableDataTableFromCache;
+            }
+            else if (CacheSource == TCacheSource.csFile)
+            {
+                ReturnValue = CacheableDataTableFromFile;
+            }
+            else if (CacheSource == TCacheSource.csServer)
+            {
+                ReturnValue = CacheableDataTableFromServer;
             }
 
             if (ACustomTableName != String.Empty)
             {
                 ReturnValue.TableName = ACustomTableName;
+            }
+
+            if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES - 1)
+            {
+                TLogging.Log(String.Format("{0} sourced from {1} took {2} milliseconds", ACacheableTableName, ((int)CacheSource).ToString(),
+                        (DateTime.UtcNow - dtStart).TotalMilliseconds.ToString()));
             }
 
             return ReturnValue;

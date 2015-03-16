@@ -179,7 +179,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static bool CheckGiftsNotPreviouslyReversed(GiftBatchTDS AGiftDS, out TVerificationResultCollection AMessages)
         {
             string Message = string.Empty;
-            string Message2 = string.Empty;
             int GiftCount = 0;
 
             AMessages = new TVerificationResultCollection();
