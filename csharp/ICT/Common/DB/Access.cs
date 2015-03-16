@@ -255,7 +255,7 @@ namespace Ict.Common.DB
     public class TDataBase
     {
         private const string StrNestedTransactionProblem = "Nested DB Transaction problem details:  *Previously* started " + 
-            "DB Transaction Properties: Valid: {0}, Reused: {1}.  The StackTrace of the *previously* started DB Transaction is as follows:\r\n{2}";
+            "DB Transaction Properties: Valid: {0}, Reused: {1}; it got started on Thread {2}.  The attempt to begin a DB Transaction NOW occured on Thread {3}.   The StackTrace of the *previously* started DB Transaction is as follows:\r\n{4}";
         
         /// <summary>References the DBConnection instance</summary>
         private TDBConnection FDBConnectionInstance;
@@ -295,6 +295,7 @@ namespace Ict.Common.DB
         /// <summary>References the current Transaction, if there is any.</summary>
         private DbTransaction FTransaction;
         private StackTrace FTransactionStackTrace;
+        private int FTransactionThreadId;
 
         /// <summary>Tells whether the next Command that is sent to the DB should be a 'prepared' Command.</summary>
         /// <remarks>Automatically reset to false once the Command has been executed against the DB!</remarks>
@@ -1243,7 +1244,7 @@ namespace Ict.Common.DB
             if (Transaction != null)
             {
                 NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid, 
-                    Transaction.Reused, TLogging.StackTraceToText(FTransactionStackTrace));
+                    Transaction.Reused, FTransactionThreadId, Thread.CurrentThread.ManagedThreadId, TLogging.StackTraceToText(FTransactionStackTrace));
                 TLogging.Log(NestedTransactionProblemError);
                 
                 throw new EDBTransactionBusyException(
@@ -1262,6 +1263,8 @@ namespace Ict.Common.DB
                 }
 
                 FTransactionStackTrace = new StackTrace(true);
+                FTransactionThreadId = Thread.CurrentThread.ManagedThreadId;
+                
                 FTransaction = FSqlConnection.BeginTransaction();
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
@@ -1367,7 +1370,7 @@ namespace Ict.Common.DB
             if (Transaction != null)
             {
                 NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid, 
-                    Transaction.Reused, TLogging.StackTraceToText(FTransactionStackTrace));
+                    Transaction.Reused, FTransactionThreadId, Thread.CurrentThread.ManagedThreadId, TLogging.StackTraceToText(FTransactionStackTrace));
                 TLogging.Log(NestedTransactionProblemError);
                 
                 throw new EDBTransactionBusyException(
@@ -1389,6 +1392,8 @@ namespace Ict.Common.DB
                 }
 
                 FTransactionStackTrace = new StackTrace(true);
+                FTransactionThreadId = Thread.CurrentThread.ManagedThreadId;
+                
                 FTransaction = FSqlConnection.BeginTransaction(AIsolationLevel);
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
