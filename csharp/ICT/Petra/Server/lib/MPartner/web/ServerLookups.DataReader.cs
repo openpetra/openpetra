@@ -65,9 +65,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static DataTable GetEventUnits(bool AIncludeConferenceUnits, bool AIncludeOutreachUnits,
             string AEventName, bool AIncludeLocationData, bool ACurrentAndFutureEventsOnly)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
-
             List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
             DataColumn[] Key = new DataColumn[1];
             DataTable Events = new DataTable();
@@ -86,131 +83,115 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 Console.WriteLine("GetEventUnits called!");
             }
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                string SqlStmt =
-                    "SELECT DISTINCT " +
-                    PPartnerTable.GetPartnerShortNameDBName() +
-                    ", " + PPartnerTable.GetPartnerClassDBName() +
-                    ", " + PUnitTable.GetOutreachCodeDBName();
-
-                if (AIncludeLocationData || ACurrentAndFutureEventsOnly)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    SqlStmt = SqlStmt +
-                              ", " + PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryNameDBName() +
-                              ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateEffectiveDBName() +
-                              ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateGoodUntilDBName();
-                }
+                    string SqlStmt =
+                        "SELECT DISTINCT " +
+                        PPartnerTable.GetPartnerShortNameDBName() +
+                        ", " + PPartnerTable.GetPartnerClassDBName() +
+                        ", " + PUnitTable.GetOutreachCodeDBName();
 
-                SqlStmt = SqlStmt +
-                          ", " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
-                          ", " + PUnitTable.GetUnitTypeCodeDBName() +
-
-                          " FROM pub_" + PPartnerTable.GetTableDBName() +
-                          ", pub_" + PUnitTable.GetTableDBName();
-
-                if (AIncludeLocationData || ACurrentAndFutureEventsOnly)
-                {
-                    SqlStmt = SqlStmt +
-                              ", pub_" + PLocationTable.GetTableDBName() +
-                              ", pub_" + PPartnerLocationTable.GetTableDBName() +
-                              ", pub_" + PCountryTable.GetTableDBName();
-                }
-
-                SqlStmt = SqlStmt +
-                          " WHERE " +
-                          PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
-                          PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() + " AND ";
-
-                if (AIncludeLocationData || ACurrentAndFutureEventsOnly)
-                {
-                    SqlStmt = SqlStmt +
-                              PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
-                              PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetPartnerKeyDBName() + " AND " +
-                              PLocationTable.GetTableDBName() + "." + PLocationTable.GetSiteKeyDBName() + " = " +
-                              PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetSiteKeyDBName() + " AND " +
-                              PLocationTable.GetTableDBName() + "." + PLocationTable.GetLocationKeyDBName() + " = " +
-                              PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetLocationKeyDBName() + " AND " +
-                              PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryCodeDBName() + " = " +
-                              PLocationTable.GetTableDBName() + "." + PLocationTable.GetCountryCodeDBName() + " AND ";
-                }
-
-                SqlStmt = SqlStmt +
-                          PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE' " + " AND " +
-                          PPartnerTable.GetPartnerClassDBName() + " = 'UNIT' ";
-
-                // add criteria for conference and/or outreach
-                String ConferenceWhereClause = "(" +
-                                               PUnitTable.GetUnitTypeCodeDBName() + " LIKE '%CONF%' OR " +
-                                               PUnitTable.GetUnitTypeCodeDBName() + " LIKE '%CONG%')";
-
-                String OutreachWhereClause = PUnitTable.GetOutreachCodeDBName() + " IS NOT NULL AND " +
-                                             PUnitTable.GetOutreachCodeDBName() + " <> '' AND (" +
-                                             PUnitTable.GetUnitTypeCodeDBName() + " NOT LIKE '%CONF%' AND " +
-                                             PUnitTable.GetUnitTypeCodeDBName() + " NOT LIKE '%CONG%')";
-
-                if (AIncludeConferenceUnits
-                    && AIncludeOutreachUnits)
-                {
-                    SqlStmt = SqlStmt + " AND ((" + ConferenceWhereClause + ") OR (" + OutreachWhereClause + "))";
-                }
-                else if (AIncludeConferenceUnits)
-                {
-                    SqlStmt = SqlStmt + " AND (" + ConferenceWhereClause + ")";
-                }
-                else if (AIncludeOutreachUnits)
-                {
-                    SqlStmt = SqlStmt + " AND (" + OutreachWhereClause + ")";
-                }
-
-                // add criteria for event name filter
-                if (AEventName.Length > 0)
-                {
-                    // in case there is a filter set for the event name
-                    AEventName = AEventName.Replace('*', '%') + "%";
-                    SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
-                              " LIKE '" + AEventName + "'";
-                }
-
-                if (ACurrentAndFutureEventsOnly)
-                {
-                    SqlStmt = SqlStmt + " AND " + PPartnerLocationTable.GetDateGoodUntilDBName() + " >= ?";
-
-                    SqlParameterList.Add(new OdbcParameter("param_date", OdbcType.Date)
-                        {
-                            Value = DateTime.Today.Date
-                        });
-                }
-
-                // sort rows according to name
-                SqlStmt = SqlStmt + " ORDER BY " + PPartnerTable.GetPartnerShortNameDBName();
-
-                Events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "events",
-                    ReadTransaction, SqlParameterList.ToArray());
-
-                Key[0] = Events.Columns[PPartnerTable.GetPartnerKeyDBName()];
-                Events.PrimaryKey = Key;
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-
-                    if (TLogging.DL >= 7)
+                    if (AIncludeLocationData || ACurrentAndFutureEventsOnly)
                     {
-                        Console.WriteLine("GetEventUnits: committed own transaction.");
+                        SqlStmt = SqlStmt +
+                                  ", " + PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryNameDBName() +
+                                  ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateEffectiveDBName() +
+                                  ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateGoodUntilDBName();
                     }
-                }
-            }
+
+                    SqlStmt = SqlStmt +
+                              ", " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
+                              ", " + PUnitTable.GetUnitTypeCodeDBName() +
+
+                              " FROM pub_" + PPartnerTable.GetTableDBName() +
+                              ", pub_" + PUnitTable.GetTableDBName();
+
+                    if (AIncludeLocationData || ACurrentAndFutureEventsOnly)
+                    {
+                        SqlStmt = SqlStmt +
+                                  ", pub_" + PLocationTable.GetTableDBName() +
+                                  ", pub_" + PPartnerLocationTable.GetTableDBName() +
+                                  ", pub_" + PCountryTable.GetTableDBName();
+                    }
+
+                    SqlStmt = SqlStmt +
+                              " WHERE " +
+                              PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
+                              PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() + " AND ";
+
+                    if (AIncludeLocationData || ACurrentAndFutureEventsOnly)
+                    {
+                        SqlStmt = SqlStmt +
+                                  PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
+                                  PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetPartnerKeyDBName() + " AND " +
+                                  PLocationTable.GetTableDBName() + "." + PLocationTable.GetSiteKeyDBName() + " = " +
+                                  PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetSiteKeyDBName() + " AND " +
+                                  PLocationTable.GetTableDBName() + "." + PLocationTable.GetLocationKeyDBName() + " = " +
+                                  PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetLocationKeyDBName() + " AND " +
+                                  PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryCodeDBName() + " = " +
+                                  PLocationTable.GetTableDBName() + "." + PLocationTable.GetCountryCodeDBName() + " AND ";
+                    }
+
+                    SqlStmt = SqlStmt +
+                              PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE' " + " AND " +
+                              PPartnerTable.GetPartnerClassDBName() + " = 'UNIT' ";
+
+                    // add criteria for conference and/or outreach
+                    String ConferenceWhereClause = "(" +
+                                                   PUnitTable.GetUnitTypeCodeDBName() + " LIKE '%CONF%' OR " +
+                                                   PUnitTable.GetUnitTypeCodeDBName() + " LIKE '%CONG%')";
+
+                    String OutreachWhereClause = PUnitTable.GetOutreachCodeDBName() + " IS NOT NULL AND " +
+                                                 PUnitTable.GetOutreachCodeDBName() + " <> '' AND (" +
+                                                 PUnitTable.GetUnitTypeCodeDBName() + " NOT LIKE '%CONF%' AND " +
+                                                 PUnitTable.GetUnitTypeCodeDBName() + " NOT LIKE '%CONG%')";
+
+                    if (AIncludeConferenceUnits
+                        && AIncludeOutreachUnits)
+                    {
+                        SqlStmt = SqlStmt + " AND ((" + ConferenceWhereClause + ") OR (" + OutreachWhereClause + "))";
+                    }
+                    else if (AIncludeConferenceUnits)
+                    {
+                        SqlStmt = SqlStmt + " AND (" + ConferenceWhereClause + ")";
+                    }
+                    else if (AIncludeOutreachUnits)
+                    {
+                        SqlStmt = SqlStmt + " AND (" + OutreachWhereClause + ")";
+                    }
+
+                    // add criteria for event name filter
+                    if (AEventName.Length > 0)
+                    {
+                        // in case there is a filter set for the event name
+                        AEventName = AEventName.Replace('*', '%') + "%";
+                        SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
+                                  " LIKE '" + AEventName + "'";
+                    }
+
+                    if (ACurrentAndFutureEventsOnly)
+                    {
+                        SqlStmt = SqlStmt + " AND " + PPartnerLocationTable.GetDateGoodUntilDBName() + " >= ?";
+
+                        SqlParameterList.Add(new OdbcParameter("param_date", OdbcType.Date)
+                            {
+                                Value = DateTime.Today.Date
+                            });
+                    }
+
+                    // sort rows according to name
+                    SqlStmt = SqlStmt + " ORDER BY " + PPartnerTable.GetPartnerShortNameDBName();
+
+                    Events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "events",
+                        Transaction, SqlParameterList.ToArray());
+
+                    Key[0] = Events.Columns[PPartnerTable.GetPartnerKeyDBName()];
+                    Events.PrimaryKey = Key;
+                });
 
             return Events;
         }
@@ -228,9 +209,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PUnitTable UnitTable = new PUnitTable();
             PUnitRow UnitRow;
 
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
-
             if (AFieldName == "*")
             {
                 AFieldName = "";
@@ -242,56 +220,44 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TLogging.LogAtLevel(9, "TPartnerDataReaderWebConnector.GetActiveFieldUnits called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                // Load data
-                string SqlStmt = "SELECT pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
-                                 ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetUnitNameDBName() +
-                                 " FROM " + PUnitTable.GetTableDBName() + ", " + PPartnerTable.GetTableDBName() +
-                                 " WHERE ((" + PUnitTable.GetOutreachCodeDBName() + " IS NULL)" +
-                                 "        OR(" + PUnitTable.GetOutreachCodeDBName() + " = ''))" +
-                                 " AND " + PUnitTable.GetUnitTypeCodeDBName() + " <> 'KEY-MIN'" +
-                                 " AND pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
-                                 " = pub_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
-                                 " AND " + PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE'";
-
-                if (AFieldName.Length > 0)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    // in case there is a filter set for the event name
-                    AFieldName = AFieldName.Replace('*', '%') + "%";
-                    SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
-                              " LIKE '" + AFieldName + "'";
-                }
+                    // Load data
+                    string SqlStmt = "SELECT pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
+                                     ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetUnitNameDBName() +
+                                     " FROM " + PUnitTable.GetTableDBName() + ", " + PPartnerTable.GetTableDBName() +
+                                     " WHERE ((" + PUnitTable.GetOutreachCodeDBName() + " IS NULL)" +
+                                     "        OR(" + PUnitTable.GetOutreachCodeDBName() + " = ''))" +
+                                     " AND " + PUnitTable.GetUnitTypeCodeDBName() + " <> 'KEY-MIN'" +
+                                     " AND pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
+                                     " = pub_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
+                                     " AND " + PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE'";
 
-                // sort rows according to name
-                SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
+                    if (AFieldName.Length > 0)
+                    {
+                        // in case there is a filter set for the event name
+                        AFieldName = AFieldName.Replace('*', '%') + "%";
+                        SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
+                                  " LIKE '" + AFieldName + "'";
+                    }
 
-                DataTable events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "fields", ReadTransaction);
+                    // sort rows according to name
+                    SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
 
-                foreach (DataRow eventRow in events.Rows)
-                {
-                    UnitRow = (PUnitRow)UnitTable.NewRow();
-                    UnitRow.PartnerKey = Convert.ToInt64(eventRow[0]);
-                    UnitRow.UnitName = Convert.ToString(eventRow[1]);
-                    UnitTable.Rows.Add(UnitRow);
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetActiveFieldUnits: committed own transaction.");
-                }
-            }
+                    DataTable events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "fields", Transaction);
+
+                    foreach (DataRow eventRow in events.Rows)
+                    {
+                        UnitRow = (PUnitRow)UnitTable.NewRow();
+                        UnitRow.PartnerKey = Convert.ToInt64(eventRow[0]);
+                        UnitRow.UnitName = Convert.ToString(eventRow[1]);
+                        UnitTable.Rows.Add(UnitRow);
+                    }
+                });
 
             return UnitTable;
         }
@@ -308,9 +274,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PUnitTable UnitTable = new PUnitTable();
             PUnitRow UnitRow;
 
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
-
             if (ALedgerName == "*")
             {
                 ALedgerName = "";
@@ -322,53 +285,41 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TLogging.LogAtLevel(9, "TPartnerDataReaderWebConnector.GetLedgerUnits called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                // Load data
-                string SqlStmt = "SELECT pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
-                                 ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetUnitNameDBName() +
-                                 " FROM " + PUnitTable.GetTableDBName() + ", " + PPartnerTypeTable.GetTableDBName() +
-                                 " WHERE pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
-                                 " = pub_" + PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetPartnerKeyDBName() +
-                                 " AND " + PPartnerTypeTable.GetTypeCodeDBName() + " = '" + MPartnerConstants.PARTNERTYPE_LEDGER + "'";
-
-                if (ALedgerName.Length > 0)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    // in case there is a filter set for the event name
-                    ALedgerName = ALedgerName.Replace('*', '%') + "%";
-                    SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
-                              " LIKE '" + ALedgerName + "'";
-                }
+                    // Load data
+                    string SqlStmt = "SELECT pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
+                                     ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetUnitNameDBName() +
+                                     " FROM " + PUnitTable.GetTableDBName() + ", " + PPartnerTypeTable.GetTableDBName() +
+                                     " WHERE pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
+                                     " = pub_" + PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetPartnerKeyDBName() +
+                                     " AND " + PPartnerTypeTable.GetTypeCodeDBName() + " = '" + MPartnerConstants.PARTNERTYPE_LEDGER + "'";
 
-                // sort rows according to name
-                SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
+                    if (ALedgerName.Length > 0)
+                    {
+                        // in case there is a filter set for the event name
+                        ALedgerName = ALedgerName.Replace('*', '%') + "%";
+                        SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
+                                  " LIKE '" + ALedgerName + "'";
+                    }
 
-                DataTable events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "ledgers", ReadTransaction);
+                    // sort rows according to name
+                    SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
 
-                foreach (DataRow eventRow in events.Rows)
-                {
-                    UnitRow = (PUnitRow)UnitTable.NewRow();
-                    UnitRow.PartnerKey = Convert.ToInt64(eventRow[0]);
-                    UnitRow.UnitName = Convert.ToString(eventRow[1]);
-                    UnitTable.Rows.Add(UnitRow);
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetLedgerUnits: committed own transaction.");
-                }
-            }
+                    DataTable events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "ledgers", Transaction);
+
+                    foreach (DataRow eventRow in events.Rows)
+                    {
+                        UnitRow = (PUnitRow)UnitTable.NewRow();
+                        UnitRow.PartnerKey = Convert.ToInt64(eventRow[0]);
+                        UnitRow.UnitName = Convert.ToString(eventRow[1]);
+                        UnitTable.Rows.Add(UnitRow);
+                    }
+                });
 
             return UnitTable;
         }
@@ -381,33 +332,26 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean IsPUnitAConference(Int64 APartnerKey)
         {
-            Boolean NewTransaction;
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            Boolean ReturnValue = false;
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                PcConferenceTable ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    PcConferenceTable ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, Transaction);
 
-                if (ConferenceTable.Count == 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.IsPUnitAConference: commit own transaction.");
-                }
-            }
+                    if (ConferenceTable.Count == 0)
+                    {
+                        ReturnValue = false;
+                    }
+                    else
+                    {
+                        ReturnValue = true;
+                    }
+                });
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -419,24 +363,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static PBankingDetailsTable GetBankingDetailsRow(int ABankingDetailsKey)
         {
             PBankingDetailsTable ReturnRow = null;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-            try
-            {
-                ReturnRow = PBankingDetailsAccess.LoadByPrimaryKey(ABankingDetailsKey, ReadTransaction);
-            }
-            finally
-            {
-                if (NewTransaction)
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetBankingDetailsRow: committed own transaction.");
-                }
-            }
+                    ReturnRow = PBankingDetailsAccess.LoadByPrimaryKey(ABankingDetailsKey, Transaction);
+                });
 
             return ReturnRow;
         }
@@ -450,40 +385,31 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PPartnerTable SharedBankAccountPartners(int ABankingDetailsKey, long APartnerKey)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
-
             PPartnerTable PartnerTable = new PPartnerTable();
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-            try
-            {
-                PPartnerBankingDetailsTable PartnerBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPBankingDetails(ABankingDetailsKey,
-                    ReadTransaction);
+            TDBTransaction Transaction = null;
 
-                foreach (PPartnerBankingDetailsRow Row in PartnerBankingDetailsTable.Rows)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    // if record exists with a different partner key then the Bank Account is shared
-                    if (Row.PartnerKey != APartnerKey)
+                    PPartnerBankingDetailsTable PartnerBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPBankingDetails(ABankingDetailsKey,
+                        Transaction);
+
+                    foreach (PPartnerBankingDetailsRow Row in PartnerBankingDetailsTable.Rows)
                     {
-                        PPartnerRow PartnerRow = (PPartnerRow)PPartnerAccess.LoadByPrimaryKey(Row.PartnerKey, ReadTransaction).Rows[0];
+                        // if record exists with a different partner key then the Bank Account is shared
+                        if (Row.PartnerKey != APartnerKey)
+                        {
+                            PPartnerRow PartnerRow = (PPartnerRow)PPartnerAccess.LoadByPrimaryKey(Row.PartnerKey, Transaction).Rows[0];
 
-                        PPartnerRow NewRow = PartnerTable.NewRowTyped(false);
-                        NewRow.PartnerKey = Row.PartnerKey;
-                        NewRow.PartnerShortName = PartnerRow.PartnerShortName;
-                        PartnerTable.Rows.Add(NewRow);
+                            PPartnerRow NewRow = PartnerTable.NewRowTyped(false);
+                            NewRow.PartnerKey = Row.PartnerKey;
+                            NewRow.PartnerShortName = PartnerRow.PartnerShortName;
+                            PartnerTable.Rows.Add(NewRow);
+                        }
                     }
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.IsBankingDetailsRowShared: committed own transaction.");
-                }
-            }
+                });
 
             return PartnerTable;
         }
@@ -495,44 +421,35 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static BankTDS GetPBankRecords()
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
-
             BankTDS ReturnValue = new BankTDS();
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-            try
-            {
-                string QueryBankRecords =
-                    "SELECT PUB_p_bank.*, PUB_p_partner.p_status_code_c, PUB_p_location.* " +
-                    "FROM PUB_p_bank JOIN PUB_p_partner ON PUB_p_partner.p_partner_key_n = PUB_p_bank.p_partner_key_n " +
-                    "LEFT OUTER JOIN PUB_p_partner_location ON PUB_p_bank.p_partner_key_n = PUB_p_partner_location.p_partner_key_n " +
-                    "AND (PUB_p_partner_location.p_date_good_until_d IS NULL OR PUB_p_partner_location.p_date_good_until_d >= DATE(NOW())) " +
-                    "JOIN PUB_p_location ON PUB_p_partner_location.p_site_key_n = PUB_p_location.p_site_key_n " +
-                    "AND PUB_p_partner_location.p_location_key_i = PUB_p_location.p_location_key_i";
+            TDBTransaction Transaction = null;
 
-                DBAccess.GDBAccessObj.Select(ReturnValue,
-                    QueryBankRecords,
-                    ReturnValue.PBank.TableName, ReadTransaction, null);
-
-                foreach (BankTDSPBankRow Row in ReturnValue.PBank.Rows)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    // mark inactive bank accounts
-                    if (Row.StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
+                    string QueryBankRecords =
+                        "SELECT PUB_p_bank.*, PUB_p_partner.p_status_code_c, PUB_p_location.* " +
+                        "FROM PUB_p_bank JOIN PUB_p_partner ON PUB_p_partner.p_partner_key_n = PUB_p_bank.p_partner_key_n " +
+                        "LEFT OUTER JOIN PUB_p_partner_location ON PUB_p_bank.p_partner_key_n = PUB_p_partner_location.p_partner_key_n " +
+                        "AND (PUB_p_partner_location.p_date_good_until_d IS NULL OR PUB_p_partner_location.p_date_good_until_d >= DATE(NOW())) " +
+                        "JOIN PUB_p_location ON PUB_p_partner_location.p_site_key_n = PUB_p_location.p_site_key_n " +
+                        "AND PUB_p_partner_location.p_location_key_i = PUB_p_location.p_location_key_i";
+
+                    DBAccess.GDBAccessObj.Select(ReturnValue,
+                        QueryBankRecords,
+                        ReturnValue.PBank.TableName, Transaction, null);
+
+                    foreach (BankTDSPBankRow Row in ReturnValue.PBank.Rows)
                     {
-                        Row.BranchCode = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " " + Row.BranchCode;
+                        // mark inactive bank accounts
+                        if (Row.StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
+                        {
+                            Row.BranchCode = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " " + Row.BranchCode;
+                        }
                     }
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetPBankRecords: committed own transaction.");
-                }
-            }
+                });
 
             return ReturnValue;
         }
@@ -544,32 +461,24 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static int GetNewKeyForPartnerGiftDestination()
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
             int ReturnValue = 0;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-            try
-            {
-                PPartnerGiftDestinationTable Table = PPartnerGiftDestinationAccess.LoadAll(ReadTransaction);
+            TDBTransaction Transaction = null;
 
-                foreach (PPartnerGiftDestinationRow Row in Table.Rows)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    if (Row.Key >= ReturnValue)
+                    PPartnerGiftDestinationTable Table = PPartnerGiftDestinationAccess.LoadAll(Transaction);
+
+                    foreach (PPartnerGiftDestinationRow Row in Table.Rows)
                     {
-                        ReturnValue = Row.Key + 1;
+                        if (Row.Key >= ReturnValue)
+                        {
+                            ReturnValue = Row.Key + 1;
+                        }
                     }
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination: committed own transaction.");
-                }
-            }
+                });
 
             return ReturnValue;
         }

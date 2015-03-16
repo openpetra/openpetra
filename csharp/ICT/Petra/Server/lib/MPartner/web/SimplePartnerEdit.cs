@@ -70,51 +70,51 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
 
-            PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                    if (MainDS.PPartner.Rows.Count > 0)
+                    {
+                        switch (MainDS.PPartner[0].PartnerClass)
+                        {
+                            case MPartnerConstants.PARTNERCLASS_FAMILY:
+                                PFamilyAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                                break;
 
-            if (MainDS.PPartner.Rows.Count == 0)
-            {
-                return null;
-            }
+                            case MPartnerConstants.PARTNERCLASS_PERSON:
+                                PPersonAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                                break;
 
-            switch (MainDS.PPartner[0].PartnerClass)
-            {
-                case MPartnerConstants.PARTNERCLASS_FAMILY:
-                    PFamilyAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
-                    break;
+                            case MPartnerConstants.PARTNERCLASS_CHURCH:
+                                PChurchAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                                break;
 
-                case MPartnerConstants.PARTNERCLASS_PERSON:
-                    PPersonAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
-                    break;
+                            case MPartnerConstants.PARTNERCLASS_ORGANISATION:
+                                POrganisationAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                                break;
+                        }
 
-                case MPartnerConstants.PARTNERCLASS_CHURCH:
-                    PChurchAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
-                    break;
+                        if (AWithAddressDetails)
+                        {
+                            PPartnerLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+                            PLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+                        }
 
-                case MPartnerConstants.PARTNERCLASS_ORGANISATION:
-                    POrganisationAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
-                    break;
-            }
+                        if (AWithRelationships)
+                        {
+                            PPartnerRelationshipAccess.LoadViaPPartnerPartnerKey(MainDS, APartnerKey, Transaction);
+                        }
 
-            if (AWithAddressDetails)
-            {
-                PPartnerLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
-                PLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
-            }
+                        if (AWithSubscriptions)
+                        {
+                            PSubscriptionAccess.LoadViaPPartnerPartnerKey(MainDS, APartnerKey, Transaction);
+                        }
+                    }
 
-            if (AWithRelationships)
-            {
-                PPartnerRelationshipAccess.LoadViaPPartnerPartnerKey(MainDS, APartnerKey, Transaction);
-            }
-
-            if (AWithSubscriptions)
-            {
-                PSubscriptionAccess.LoadViaPPartnerPartnerKey(MainDS, APartnerKey, Transaction);
-            }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                });
 
             return MainDS;
         }

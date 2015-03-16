@@ -43,30 +43,20 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         [RequireModulePermission("AND(PERSONNEL,PTNRUSER)")]
         public static string GetOutreachCode(Int64 APartnerKey)
         {
-            string ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            string ReturnValue = "";
+            TDBTransaction Transaction = null;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
 
-            PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-
-            if (UnitTable.Count > 0)
-            {
-                ReturnValue = ((PUnitRow)UnitTable.Rows[0]).OutreachCode;
-            }
-            else
-            {
-                ReturnValue = "";
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.LogAtLevel(7, "TIndividualDataWebConnector.GetOutreachCode: rollback own transaction.");
-            }
+                    if (UnitTable.Count > 0)
+                    {
+                        ReturnValue = ((PUnitRow)UnitTable.Rows[0]).OutreachCode;
+                    }
+                });
 
             return ReturnValue;
         }

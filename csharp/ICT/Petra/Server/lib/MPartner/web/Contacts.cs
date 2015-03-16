@@ -64,39 +64,26 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             List <int>attributeCode,
             List <int>attributeDetailCode)
         {
-            Boolean NewTransaction;
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            try
-            {
-                PPartnerContactAttributeTable attributes = new PPartnerContactAttributeTable();
-
-                for (int i = 0; i < APartnerKeys.Count; i++)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    PPartnerContactAttributeRow row = attributes.NewRowTyped();
-                    row.ContactId = contactId;
-                }
+                    PPartnerContactAttributeTable attributes = new PPartnerContactAttributeTable();
 
-                PPartnerContactAttributeAccess.SubmitChanges(attributes, WriteTransaction);
+                    for (int i = 0; i < APartnerKeys.Count; i++)
+                    {
+                        PPartnerContactAttributeRow row = attributes.NewRowTyped();
+                        row.ContactId = contactId;
+                    }
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured while associating a Contact with a ContactAttribute:" + Environment.NewLine + Exc.ToString());
+                    PPartnerContactAttributeAccess.SubmitChanges(attributes, Transaction);
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                throw;
-            }
+                    SubmissionOK = true;
+                });
         }
 
         /// <summary>
@@ -105,52 +92,37 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="ExtractId"></param>
         /// <param name="ContactLogTable"></param>
         [RequireModulePermission("PTNRUSER")]
-        public static void AddContactLog(int ExtractId, ref PContactLogTable ContactLogTable)
+        public static void AddContactLog(int ExtractId, PContactLogTable ContactLogTable)
         {
-            Boolean NewTransaction;
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            try
-            {
-                var extractTable = MExtractAccess.LoadViaMExtractMaster(ExtractId, WriteTransaction).AsEnumerable();
-                var partnerKeys = extractTable.Select(e => e.ItemArray[MExtractTable.ColumnPartnerKeyId]);
-
-                long ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", WriteTransaction);
-
-                ContactLogTable.Rows[0][PContactLogTable.ColumnContactLogIdId] = ContactLogId;
-
-                PPartnerContactTable partnerContacts = new PPartnerContactTable();
-                partnerKeys.ToList().ForEach(partnerKey =>
-                    {
-                        PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
-                        partnerContact.ContactLogId = ContactLogId;
-                        partnerContact.PartnerKey = (long)partnerKey;
-                        partnerContacts.Rows.Add(partnerContact);
-                    });
-
-                PContactLogAccess.SubmitChanges(ContactLogTable, WriteTransaction);
-                PPartnerContactAccess.SubmitChanges(partnerContacts, WriteTransaction);
-
-                if (NewTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(
-                    "An Exception occured during the adding of a Contact to Partners in an Extract:" +
-                    Environment.NewLine + e.ToString());
+                    var extractTable = MExtractAccess.LoadViaMExtractMaster(ExtractId, Transaction).AsEnumerable();
+                    var partnerKeys = extractTable.Select(e => e.ItemArray[MExtractTable.ColumnPartnerKeyId]);
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                    long ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", Transaction);
 
-                throw;
-            }
+                    ContactLogTable.Rows[0][PContactLogTable.ColumnContactLogIdId] = ContactLogId;
+
+                    PPartnerContactTable partnerContacts = new PPartnerContactTable();
+                    partnerKeys.ToList().ForEach(partnerKey =>
+                        {
+                            PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
+                            partnerContact.ContactLogId = ContactLogId;
+                            partnerContact.PartnerKey = (long)partnerKey;
+                            partnerContacts.Rows.Add(partnerContact);
+                        });
+
+                    PContactLogAccess.SubmitChanges(ContactLogTable, Transaction);
+                    PPartnerContactAccess.SubmitChanges(partnerContacts, Transaction);
+
+                    SubmissionOK = true;
+                });
         }
 
         /// <summary>
@@ -172,60 +144,47 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string AModuleID,
             string AMailingCode)
         {
-            Boolean NewTransaction;
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            try
-            {
-                PContactLogTable contacts = new PContactLogTable();
-                PContactLogRow contact = contacts.NewRowTyped();
-                contact.ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", WriteTransaction);
-                contact.ContactDate = new DateTime(AContactDate.Year, AContactDate.Month, AContactDate.Day);
-                //contact.ContactTime = AContactDate.Hour * 60 + AContactDate.Minute;
-                contact.ContactCode = AMethodOfContact;
-                contact.ContactComment = AComment;
-                contact.ModuleId = AModuleID;
-                contact.Contactor = AContactor;
-                contact.UserId = UserInfo.GUserInfo.UserID;
-                contacts.Rows.Add(contact);
-
-                if (AMailingCode.Length > 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    contact.MailingCode = AMailingCode;
-                }
+                    PContactLogTable contacts = new PContactLogTable();
+                    PContactLogRow contact = contacts.NewRowTyped();
+                    contact.ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", Transaction);
+                    contact.ContactDate = new DateTime(AContactDate.Year, AContactDate.Month, AContactDate.Day);
+                    //contact.ContactTime = AContactDate.Hour * 60 + AContactDate.Minute;
+                    contact.ContactCode = AMethodOfContact;
+                    contact.ContactComment = AComment;
+                    contact.ModuleId = AModuleID;
+                    contact.Contactor = AContactor;
+                    contact.UserId = UserInfo.GUserInfo.UserID;
+                    contacts.Rows.Add(contact);
 
-                // TODO: restrictions implemented via p_restricted_l or s_user_id_c
-
-                PPartnerContactTable partnerContacts = new PPartnerContactTable();
-                APartnerKeys.ForEach(partnerKey =>
+                    if (AMailingCode.Length > 0)
                     {
-                        PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
-                        partnerContact.ContactLogId = contact.ContactLogId;
-                        partnerContact.PartnerKey = partnerKey;
-                        partnerContacts.Rows.Add(partnerContact);
-                    });
+                        contact.MailingCode = AMailingCode;
+                    }
 
-                PContactLogAccess.SubmitChanges(contacts, WriteTransaction);
-                PPartnerContactAccess.SubmitChanges(partnerContacts, WriteTransaction);
+                    // TODO: restrictions implemented via p_restricted_l or s_user_id_c
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during the adding of a Contact:" + Environment.NewLine + Exc.ToString());
+                    PPartnerContactTable partnerContacts = new PPartnerContactTable();
+                    APartnerKeys.ForEach(partnerKey =>
+                        {
+                            PPartnerContactRow partnerContact = partnerContacts.NewRowTyped();
+                            partnerContact.ContactLogId = contact.ContactLogId;
+                            partnerContact.PartnerKey = partnerKey;
+                            partnerContacts.Rows.Add(partnerContact);
+                        });
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                    PContactLogAccess.SubmitChanges(contacts, Transaction);
+                    PPartnerContactAccess.SubmitChanges(partnerContacts, Transaction);
 
-                throw;
-            }
+                    SubmissionOK = true;
+                });
         }
 
         /// <summary>
@@ -246,68 +205,59 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string AModuleID,
             string AMailingCode)
         {
-            Boolean NewTransaction;
             PContactLogTable contacts = new PContactLogTable();
 
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                PContactLogTable TempTable = new PContactLogTable();
-                PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
-
-                if (AContactor.Length > 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    TemplateRow.Contactor = AContactor;
-                }
+                    PContactLogTable TempTable = new PContactLogTable();
+                    PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
 
-                if (AContactDate.HasValue)
-                {
-                    TemplateRow.ContactDate = new DateTime(AContactDate.Value.Year, AContactDate.Value.Month, AContactDate.Value.Day);
-                }
-
-                if (AMethodOfContact.Length > 0)
-                {
-                    TemplateRow.ContactCode = AMethodOfContact;
-                }
-
-                if (AModuleID.Length > 0)
-                {
-                    TemplateRow.ModuleId = AModuleID;
-                }
-
-                if (AMailingCode.Length > 0)
-                {
-                    TemplateRow.MailingCode = AMailingCode;
-                }
-
-                contacts = PContactLogAccess.LoadUsingTemplate(TemplateRow, WriteTransaction);
-
-                Int32 Counter = 0;
-
-                while (Counter < contacts.Rows.Count)
-                {
-                    if ((ACommentContains.Length > 0) && !StringHelper.ContainsI(contacts[Counter].ContactComment, ACommentContains))
+                    if (AContactor.Length > 0)
                     {
-                        contacts.Rows.RemoveAt(Counter);
+                        TemplateRow.Contactor = AContactor;
                     }
-                    else
-                    {
-                        Counter++;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.Message);
-                TLogging.Log(e.StackTrace);
-            }
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    if (AContactDate.HasValue)
+                    {
+                        TemplateRow.ContactDate = new DateTime(AContactDate.Value.Year, AContactDate.Value.Month, AContactDate.Value.Day);
+                    }
+
+                    if (AMethodOfContact.Length > 0)
+                    {
+                        TemplateRow.ContactCode = AMethodOfContact;
+                    }
+
+                    if (AModuleID.Length > 0)
+                    {
+                        TemplateRow.ModuleId = AModuleID;
+                    }
+
+                    if (AMailingCode.Length > 0)
+                    {
+                        TemplateRow.MailingCode = AMailingCode;
+                    }
+
+                    contacts = PContactLogAccess.LoadUsingTemplate(TemplateRow, Transaction);
+
+                    Int32 Counter = 0;
+
+                    while (Counter < contacts.Rows.Count)
+                    {
+                        if ((ACommentContains.Length > 0) && !StringHelper.ContainsI(contacts[Counter].ContactComment, ACommentContains))
+                        {
+                            contacts.Rows.RemoveAt(Counter);
+                        }
+                        else
+                        {
+                            Counter++;
+                        }
+                    }
+
+                });
 
             return contacts;
         }
@@ -320,26 +270,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PContactLogTable FindContactLogsForPartner(long partnerKey)
         {
-            Boolean NewTransaction;
             PContactLogTable contacts = new PContactLogTable();
 
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                contacts = PContactLogAccess.LoadViaPPartnerPPartnerContact(partnerKey, WriteTransaction);
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.Message);
-                TLogging.Log(e.StackTrace);
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    contacts = PContactLogAccess.LoadViaPPartnerPPartnerContact(partnerKey, Transaction);
+                });
 
             return contacts;
         }
@@ -352,26 +292,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PPartnerContactTable GetPartnerContacts(long partnerKey)
         {
-            Boolean NewTransaction;
             PPartnerContactTable partnerContacts = new PPartnerContactTable();
 
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                partnerContacts = PPartnerContactAccess.LoadViaPPartner(partnerKey, WriteTransaction);
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.Message);
-                TLogging.Log(e.StackTrace);
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    partnerContacts = PPartnerContactAccess.LoadViaPPartner(partnerKey, Transaction);
+                });
 
             return partnerContacts;
         }
@@ -384,16 +314,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool IsContactLogAssociatedWithMoreThanOnePartner(long contactLogId)
         {
-            Boolean NewTransaction;
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            bool returnValue = false;
+            TDBTransaction Transaction = null;
 
-            bool returnValue = PPartnerContactAccess.CountViaPContactLog(contactLogId, WriteTransaction) > 1;
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    returnValue = PPartnerContactAccess.CountViaPContactLog(contactLogId, Transaction) > 1;
+                });
 
             return returnValue;
         }
@@ -412,40 +341,32 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-            try
-            {
-                foreach (PContactLogRow contactLogRow in AContactLogs.Rows)
-                {
-                    var contactLogs = PPartnerContactAccess.LoadViaPContactLog((long)contactLogRow[PContactLogTable.ColumnContactLogIdId],
-                        WriteTransaction);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-                    foreach (PPartnerContactRow partnerContactRow in contactLogs.Rows)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
+                {
+                    foreach (PContactLogRow contactLogRow in AContactLogs.Rows)
                     {
-                        partnerContactRow.Delete();
+                        var contactLogs = PPartnerContactAccess.LoadViaPContactLog((long)contactLogRow[PContactLogTable.ColumnContactLogIdId],
+                            Transaction);
+
+                        foreach (PPartnerContactRow partnerContactRow in contactLogs.Rows)
+                        {
+                            partnerContactRow.Delete();
+                        }
+
+                        PPartnerContactAccess.SubmitChanges(contactLogs, Transaction);
+                        contactLogRow.Delete();
                     }
 
-                    PPartnerContactAccess.SubmitChanges(contactLogs, WriteTransaction);
-                    contactLogRow.Delete();
-                }
+                    PContactLogAccess.SubmitChanges(AContactLogs, Transaction);
 
-                PContactLogAccess.SubmitChanges(AContactLogs, WriteTransaction);
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during the deletion of Contact Logs:" + Environment.NewLine + Exc.ToString());
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                throw;
-            }
+                    SubmissionOK = true;
+                });
         }
     }
 }

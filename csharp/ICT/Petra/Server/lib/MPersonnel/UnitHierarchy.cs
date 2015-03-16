@@ -57,81 +57,79 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             ArrayList Ret = new ArrayList();
 
-            try
-            {
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-                PUnitTable UnitTbl = PUnitAccess.LoadAll(Transaction);
-                UUnitTypeTable UnitTypeTbl = UUnitTypeAccess.LoadAll(Transaction);
-                UnitTypeTbl.DefaultView.Sort = UUnitTypeTable.GetUnitTypeCodeDBName();
-
-                UmUnitStructureTable HierarchyTbl = UmUnitStructureAccess.LoadAll(Transaction);
-                HierarchyTbl.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
-
-                UnitTbl.DefaultView.Sort = PUnitTable.GetPartnerKeyDBName();
-                UnitHierarchyNode RootNode = new UnitHierarchyNode();
-
-                RootNode.MyUnitKey = THE_ORGANISATION;
-                RootNode.ParentUnitKey = THE_ORGANISATION;
-                RootNode.Description = "The Organisation";
-                RootNode.TypeCode = "Root";
-
-                Int32 RootUnitIdx = UnitTbl.DefaultView.Find(THE_ORGANISATION);
-
-                if (RootUnitIdx >= 0)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
                 {
-                    RootNode.Description = ((PUnitRow)UnitTbl.DefaultView[RootUnitIdx].Row).UnitName;
-                    UnitTbl.DefaultView.Delete(RootUnitIdx);
-                }
+                    PUnitTable UnitTbl = PUnitAccess.LoadAll(Transaction);
+                    UUnitTypeTable UnitTypeTbl = UUnitTypeAccess.LoadAll(Transaction);
+                    UnitTypeTbl.DefaultView.Sort = UUnitTypeTable.GetUnitTypeCodeDBName();
 
-                Ret.Add(RootNode);
+                    UmUnitStructureTable HierarchyTbl = UmUnitStructureAccess.LoadAll(Transaction);
+                    HierarchyTbl.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
 
-                foreach (DataRowView rv in UnitTbl.DefaultView)
-                {
-                    PUnitRow UnitRow = (PUnitRow)rv.Row;
-                    UnitHierarchyNode Node = new UnitHierarchyNode();
-                    Node.Description = UnitRow.UnitName + " " + UnitRow.Description;
+                    UnitTbl.DefaultView.Sort = PUnitTable.GetPartnerKeyDBName();
+                    UnitHierarchyNode RootNode = new UnitHierarchyNode();
 
-                    if (Node.Description == "")
+                    RootNode.MyUnitKey = THE_ORGANISATION;
+                    RootNode.ParentUnitKey = THE_ORGANISATION;
+                    RootNode.Description = "The Organisation";
+                    RootNode.TypeCode = "Root";
+
+                    Int32 RootUnitIdx = UnitTbl.DefaultView.Find(THE_ORGANISATION);
+
+                    if (RootUnitIdx >= 0)
                     {
-                        Node.Description = "[" + UnitRow.PartnerKey.ToString("D10") + "]";
+                        RootNode.Description = ((PUnitRow)UnitTbl.DefaultView[RootUnitIdx].Row).UnitName;
+                        UnitTbl.DefaultView.Delete(RootUnitIdx);
                     }
 
-                    Node.MyUnitKey = UnitRow.PartnerKey;
+                    Ret.Add(RootNode);
 
-                    //
-                    // Retrieve parent..
-                    Int32 HierarchyTblIdx = HierarchyTbl.DefaultView.Find(Node.MyUnitKey);
-
-                    if (HierarchyTblIdx >= 0)
+                    foreach (DataRowView rv in UnitTbl.DefaultView)
                     {
-                        Node.ParentUnitKey = ((UmUnitStructureRow)HierarchyTbl.DefaultView[HierarchyTblIdx].Row).ParentUnitKey;
-                    }
-                    else
-                    {
-                        Node.ParentUnitKey = THE_ORGANISATION;
-                    }
+                        PUnitRow UnitRow = (PUnitRow)rv.Row;
+                        UnitHierarchyNode Node = new UnitHierarchyNode();
+                        Node.Description = UnitRow.UnitName + " " + UnitRow.Description;
 
-                    //
-                    // Retrieve TypeCode..
-                    Int32 TypeTblIndex = UnitTypeTbl.DefaultView.Find(UnitRow.UnitTypeCode);
+                        if (Node.Description == "")
+                        {
+                            Node.Description = "[" + UnitRow.PartnerKey.ToString("D10") + "]";
+                        }
 
-                    if (TypeTblIndex >= 0)
-                    {
-                        Node.TypeCode = ((UUnitTypeRow)UnitTypeTbl.DefaultView[TypeTblIndex].Row).UnitTypeName;
-                    }
-                    else
-                    {
-                        Node.TypeCode = "Type: " + UnitRow.UnitTypeCode;
-                    }
+                        Node.MyUnitKey = UnitRow.PartnerKey;
 
-                    Ret.Add(Node);
-                }
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                        //
+                        // Retrieve parent..
+                        Int32 HierarchyTblIdx = HierarchyTbl.DefaultView.Find(Node.MyUnitKey);
+
+                        if (HierarchyTblIdx >= 0)
+                        {
+                            Node.ParentUnitKey = ((UmUnitStructureRow)HierarchyTbl.DefaultView[HierarchyTblIdx].Row).ParentUnitKey;
+                        }
+                        else
+                        {
+                            Node.ParentUnitKey = THE_ORGANISATION;
+                        }
+
+                        //
+                        // Retrieve TypeCode..
+                        Int32 TypeTblIndex = UnitTypeTbl.DefaultView.Find(UnitRow.UnitTypeCode);
+
+                        if (TypeTblIndex >= 0)
+                        {
+                            Node.TypeCode = ((UUnitTypeRow)UnitTypeTbl.DefaultView[TypeTblIndex].Row).UnitTypeName;
+                        }
+                        else
+                        {
+                            Node.TypeCode = "Type: " + UnitRow.UnitTypeCode;
+                        }
+
+                        Ret.Add(Node);
+                    }
+                });
+
             return Ret;
         }
 
@@ -154,25 +152,20 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             // the existing UmUnitStructure table.
             // I'll delete the whole content before calling SubmitChanges with my new data.
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            try
-            {
-                DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_um_unit_structure", Transaction);
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction,
+                ref SubmissionOK,
+                delegate
+                {
+                    DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_um_unit_structure", Transaction);
 
-                NewTable.ThrowAwayAfterSubmitChanges = true;  // I'm not interested in this table after this Submit:
-                UmUnitStructureAccess.SubmitChanges(NewTable, Transaction);
+                    NewTable.ThrowAwayAfterSubmitChanges = true;  // I'm not interested in this table after this Submit:
+                    UmUnitStructureAccess.SubmitChanges(NewTable, Transaction);
 
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during the saving of the Unit Hierarachy:" + Environment.NewLine + Exc.ToString());
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw;
-            }
+                    SubmissionOK = true;
+                });
         }
     }
 }

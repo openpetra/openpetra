@@ -87,59 +87,52 @@ namespace Ict.Petra.Server.MCommon.queries
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
                 delegate
                 {
-                    try
+                    // get the partner keys from the database
+                    if (FSpecialTreatment)
                     {
-                        // get the partner keys from the database
-                        if (FSpecialTreatment)
+                        ReturnValue = RunSpecialTreatment(AParameters, Transaction, out ExtractId);
+                    }
+                    else
+                    {
+                        // call to derived class to retrieve parameters specific for extract
+                        RetrieveParameters(AParameters, ref ASqlStmt, ref SqlParameterList);
+
+                        // add address filter information to sql statement and parameter list
+                        AddressFilterAdded = AddAddressFilter(AParameters, ref ASqlStmt, ref SqlParameterList);
+
+                        // now run the database query
+                        TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+                        DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(ASqlStmt, "partners", Transaction,
+                            SqlParameterList.ToArray());
+
+                        // filter data by postcode (if applicable)
+                        PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, Transaction);
+
+                        // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
+                        // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
+                        if (AParameters.Get("CancelReportCalculation").ToBool() == true)
                         {
-                            ReturnValue = RunSpecialTreatment(AParameters, Transaction, out ExtractId);
+                            ReturnValue = false;
                         }
                         else
                         {
-                            // call to derived class to retrieve parameters specific for extract
-                            RetrieveParameters(AParameters, ref ASqlStmt, ref SqlParameterList);
+                            TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
 
-                            // add address filter information to sql statement and parameter list
-                            AddressFilterAdded = AddAddressFilter(AParameters, ref ASqlStmt, ref SqlParameterList);
-
-                            // now run the database query
-                            TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-                            DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(ASqlStmt, "partners", Transaction,
-                                SqlParameterList.ToArray());
-
-                            // filter data by postcode (if applicable)
-                            PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, Transaction);
-
-                            // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
-                            // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
-                            if (AParameters.Get("CancelReportCalculation").ToBool() == true)
-                            {
-                                ReturnValue = false;
-                            }
-                            else
-                            {
-                                TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
-
-                                // create an extract with the given name in the parameters
-                                ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
-                                    AParameters.Get("param_extract_name").ToString(),
-                                    AParameters.Get("param_extract_description").ToString(),
-                                    out ExtractId,
-                                    partnerkeys,
-                                    0,
-                                    AddressFilterAdded,
-                                    true);
-                            }
-                        }
-
-                        if (ReturnValue)
-                        {
-                            SubmissionOK = true;
+                            // create an extract with the given name in the parameters
+                            ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
+                                AParameters.Get("param_extract_name").ToString(),
+                                AParameters.Get("param_extract_description").ToString(),
+                                out ExtractId,
+                                partnerkeys,
+                                0,
+                                AddressFilterAdded,
+                                true);
                         }
                     }
-                    catch (Exception Exc)
+
+                    if (ReturnValue)
                     {
-                        TLogging.Log("An Exception occured in CalculateExtractInternal:" + Environment.NewLine + Exc.ToString());
+                        SubmissionOK = true;
                     }
                 });
 

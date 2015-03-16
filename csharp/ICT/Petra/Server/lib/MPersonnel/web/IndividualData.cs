@@ -76,20 +76,15 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         [RequireModulePermission("AND(PERSONNEL,PTNRUSER)")]
         public static IndividualDataTDS GetData(Int64 APartnerKey, TIndividualDataItemEnum AIndivDataItem)
         {
-            IndividualDataTDS ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            IndividualDataTDS ReturnValue = new IndividualDataTDS();
+            TDBTransaction Transaction = null;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-            ReturnValue = GetData(APartnerKey, AIndivDataItem, ReadTransaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TIndividualDataWebConnector.GetData: committed own transaction.");
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ReturnValue = GetData(APartnerKey, AIndivDataItem, Transaction);
+                });
 
             return ReturnValue;
         }
@@ -271,25 +266,20 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         [RequireModulePermission("AND(PERSONNEL,PTNRUSER)")]
         public static bool GetSummaryData(Int64 APartnerKey, ref IndividualDataTDS AIndividualDataDS)
         {
-            Boolean NewTransaction;
+            TDBTransaction Transaction = null;
+            IndividualDataTDS IndividualDataDS = new IndividualDataTDS();
+            IndividualDataDS.Merge(AIndividualDataDS);
 
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL, 
                 TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            try
-            {
-                BuildSummaryData(APartnerKey, ref AIndividualDataDS, ReadTransaction);
-            }
-            finally
-            {
-                if (NewTransaction)
+                ref Transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TIndividualDataWebConnector.BuildSummaryData commited own transaction.");
-                }
-            }
+                    BuildSummaryData(APartnerKey, ref IndividualDataDS, Transaction);
+                });
+
+            AIndividualDataDS.Merge(IndividualDataDS);
 
             return true;
         }

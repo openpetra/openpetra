@@ -605,7 +605,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     ContactLogTable.Rows.Add(ContactLogRow);
                     // perform update of extract data on server side
                     TRemote.MPartner.Partner.WebConnectors.AddContactLog(
-                        GetSelectedDetailRow().ExtractId, ref ContactLogTable);
+                        GetSelectedDetailRow().ExtractId, ContactLogTable);
 
                     MessageText =
                         string.Format(Catalog.GetString(

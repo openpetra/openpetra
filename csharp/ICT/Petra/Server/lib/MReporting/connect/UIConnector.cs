@@ -122,47 +122,56 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         {
             // need to initialize the database session
             TSession.InitThread(ASessionID);
+            IsolationLevel Level;
+            if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "readuncommitted")
+            {
+                // for long reports, that should not take out locks;
+                // the data does not need to be consistent or will most likely not be changed during the generation of the report
+                Level = IsolationLevel.ReadUncommitted;
+            }
+            else if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "repeatableread")
+            {
+                // for financial reports: it is important to have consistent data; e.g. for totals
+                Level = IsolationLevel.RepeatableRead;
+            }
+            else if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "serializable")
+            {
+                // for creating extracts: we need to write to the database
+                Level = IsolationLevel.Serializable;
+            }
+            else
+            {
+                // default behaviour for normal reports
+                Level = IsolationLevel.ReadCommitted;
+            }
+
+            FSuccess = false;
+
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
+
             try
             {
-                if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "readuncommitted")
-                {
-                    // for long reports, that should not take out locks;
-                    // the data does not need to be consistent or will most likely not be changed during the generation of the report
-                    DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
-                }
-                else if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "repeatableread")
-                {
-                    // for financial reports: it is important to have consistent data; e.g. for totals
-                    DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead);
-                }
-                else if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "serializable")
-                {
-                    // for creating extracts: we need to write to the database
-                    DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                }
-                else
-                {
-                    // default behaviour for normal reports
-                    DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-                }
-
-                FSuccess = false;
-
-                if (FDatacalculator.GenerateResult(ref FParameterList, ref FResultList, ref FErrorMessage))
-                {
-                    FSuccess = true;
-                }
-                else
-                {
-                    TLogging.Log(FErrorMessage);
-                }
+                DBAccess.GDBAccessObj.BeginAutoTransaction(Level, ref Transaction,
+                    ref SubmissionOK,
+                    delegate
+                    {
+                        if (FDatacalculator.GenerateResult(ref FParameterList, ref FResultList, ref FErrorMessage))
+                        {
+                            FSuccess = true;
+                        }
+                        else
+                        {
+                            TLogging.Log(FErrorMessage);
+                        }
+                    });
             }
             catch (Exception e)
             {
                 TLogging.Log("problem calculating report: " + e.Message);
                 TLogging.Log(e.StackTrace, TLoggingType.ToLogfile);
             }
-            DBAccess.GDBAccessObj.RollbackTransaction();
+
             TProgressTracker.FinishJob(FProgressID);
         }
 
