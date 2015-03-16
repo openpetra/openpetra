@@ -546,6 +546,24 @@ namespace Ict.Common.DB.Exceptions
     [Serializable()]
     public class EDBTransactionBusyException : EOPDBException
     {
+        private String FNestedTransactionProblemDetails;
+
+        /// <summary>
+        /// Nested Transaction Problem Details.
+        /// </summary>
+        public String NestedTransactionProblemDetails
+        {
+            get
+            {
+                return FNestedTransactionProblemDetails;
+            }
+
+            set
+            {
+                FNestedTransactionProblemDetails = value;
+            }
+        }
+        
         /// <summary>
         /// Initializes a new instance of this Exception Class.
         /// </summary>
@@ -561,6 +579,16 @@ namespace Ict.Common.DB.Exceptions
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and <see cref="NestedTransactionProblemDetails" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="ANestedTransactionProblemDetails">Nested Transaction Problem Details.</param>
+        public EDBTransactionBusyException(String AMessage, String ANestedTransactionProblemDetails) : base(AMessage)
+        {
+            FNestedTransactionProblemDetails = ANestedTransactionProblemDetails;
+        }
+        
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
@@ -582,6 +610,7 @@ namespace Ict.Common.DB.Exceptions
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EDBTransactionBusyException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
+            FNestedTransactionProblemDetails = AInfo.GetString("NestedTransactionProblemDetails");
         }
 
         /// <summary>
@@ -599,11 +628,49 @@ namespace Ict.Common.DB.Exceptions
                 throw new ArgumentNullException("AInfo");
             }
 
+            AInfo.AddValue("NestedTransactionProblemDetails", FNestedTransactionProblemDetails);
+            
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
 
         #endregion
+        
+        /// <summary>
+        /// Creates and returns a string representation of the current <see cref="EDBTransactionBusyException"/>.
+        /// </summary>
+        /// <returns>A string representation of the current <see cref="EDBTransactionBusyException"/>.</returns>
+        /// <remarks>See https://msdn.microsoft.com/en-us/library/system.exception.tostring(v=vs.100).aspx for the standard
+        /// .NET implementation of the System.Exception.ToString() Method.</remarks>
+        public override string ToString()
+        {
+            string ReturnValue;
+            string StackTraceStr;
+            
+            // Start the ToString() return value as .NET does for the System.Exception.ToString() Method...
+            ReturnValue = GetType().FullName + ": " + Message + Environment.NewLine;  
+            
+            // ...then add our "special information"...
+            if (NestedTransactionProblemDetails != null) 
+            {
+                ReturnValue += "  --> " + NestedTransactionProblemDetails + Environment.NewLine;
+            }            
+            
+            // ...and end the ToString() return value as .NET does for the System.Exception.ToString() Method.
+            if (InnerException != null) 
+            {
+                ReturnValue += InnerException.ToString() + Environment.NewLine;    
+            }
+            
+            StackTraceStr = Environment.StackTrace;
+            
+            if (!String.IsNullOrEmpty(StackTraceStr))
+            {
+                ReturnValue += "Server stack trace:" + Environment.StackTrace + Environment.NewLine;    
+            }            
+                        
+            return ReturnValue;
+        }
     }
 
     #endregion

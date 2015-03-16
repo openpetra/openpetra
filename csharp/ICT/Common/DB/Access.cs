@@ -254,6 +254,9 @@ namespace Ict.Common.DB
     /// </summary>
     public class TDataBase
     {
+        private const string StrNestedTransactionProblem = "Nested DB Transaction problem details:  *Previously* started " + 
+            "DB Transaction Properties: Valid: {0}, Reused: {1}.  The StackTrace of the *previously* started DB Transaction is as follows:\r\n{2}";
+        
         /// <summary>References the DBConnection instance</summary>
         private TDBConnection FDBConnectionInstance;
 
@@ -1234,15 +1237,19 @@ namespace Ict.Common.DB
         public TDBTransaction BeginTransaction(Int16 ARetryAfterXSecWhenUnsuccessful = -1)
         {
             TDBTransaction ReturnValue;
+            string NestedTransactionProblemError;
 
-            if (this.Transaction != null)
+            // Guard against running into a 'Nested' DB Transaction (which are not supported!)
+            if (Transaction != null)
             {
-                TLogging.Log("Nested Transaction problem: The StackTrace of the previous transaction is as follows:");
-                TLogging.Log(TLogging.StackTraceToText(FTransactionStackTrace));
-                throw new EOPDBException(
-                    "BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction or GetNewOrExistingAutoTransaction "
-                    +
-                    "as concurrent transactions are not supported");
+                NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid, 
+                    Transaction.Reused, TLogging.StackTraceToText(FTransactionStackTrace));
+                TLogging.Log(NestedTransactionProblemError);
+                
+                throw new EDBTransactionBusyException(
+                    "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " + 
+                    "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " + 
+                    "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
             }
 
             try
@@ -1349,20 +1356,24 @@ namespace Ict.Common.DB
         public TDBTransaction BeginTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful = -1)
         {
             TDBTransaction ReturnValue;
+            string NestedTransactionProblemError;
 
             if (FDataBaseRDBMS == null)
             {
                 throw new EOPDBException("DBAccess BeginTransaction: FDataBaseRDBMS is null");
             }
 
-            if (this.Transaction != null)
+            // Guard against running into a 'Nested' DB Transaction (which are not supported!)
+            if (Transaction != null)
             {
-                TLogging.Log("Nested Transaction problem: The StackTrace of the previous transaction is as follows:");
-                TLogging.Log(TLogging.StackTraceToText(FTransactionStackTrace));
-                throw new EOPDBException(
-                    "BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction or GetNewOrExistingAutoTransaction "
-                    +
-                    "as concurrent transactions are not supported");
+                NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid, 
+                    Transaction.Reused, TLogging.StackTraceToText(FTransactionStackTrace));
+                TLogging.Log(NestedTransactionProblemError);
+                
+                throw new EDBTransactionBusyException(
+                    "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " + 
+                    "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " + 
+                    "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
             }
 
             FDataBaseRDBMS.AdjustIsolationLevel(ref AIsolationLevel);
