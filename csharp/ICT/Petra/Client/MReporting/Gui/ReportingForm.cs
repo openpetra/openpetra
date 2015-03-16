@@ -290,6 +290,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="e">EventArgs that allow cancelling of the closing</param>
         public override void TFrmPetra_Closing(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Cancel the report
+            if (FDelegateCancelReportOverride != null)
+            {
+                FDelegateCancelReportOverride(FCalculator);
+            }
+
             FStoredSettings.SaveWrapOption(FWrapColumn);
             base.TFrmPetra_Closing(sender, e);
         }

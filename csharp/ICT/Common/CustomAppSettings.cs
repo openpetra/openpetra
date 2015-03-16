@@ -359,23 +359,17 @@ namespace Ict.Common
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
         /// <returns>the value of the parameter, or the default value</returns>
-        public static System.Int16 GetInt16(String AKey, System.Int16 ADefaultValue = -1)
+        public static System.Int16 GetInt16(String AKey, Int16 ADefaultValue = -1)
         {
-            System.Int16 ReturnValue;
-            ReturnValue = ADefaultValue;
-            try
+            Int16 ReturnValue = ADefaultValue;
+            string str = GetValue(AKey, (ADefaultValue == -1));
+
+            if (!(Int16.TryParse(str, out ReturnValue)) && (ADefaultValue == -1))
             {
-                string str = GetValue(AKey, (ADefaultValue == -1));
-                ReturnValue = Convert.ToInt16(str);
+                // Caller wanted the Value and didn't specify a Default: log that
+                TLogging.Log("Problem reading int16 value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
             }
-            catch (Exception)
-            {
-                if (ADefaultValue == -1)
-                {
-                    // Caller wanted the Value and didn't specify a Default: log that
-                    TLogging.Log("Problem reading int16 value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
-                }
-            }
+
             return ReturnValue;
         }
 

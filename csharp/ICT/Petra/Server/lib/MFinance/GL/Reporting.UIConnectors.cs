@@ -120,36 +120,33 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static DataTable GetReceivingFields(int ALedgerNumber, out String ADisplayMember, out String AValueMember)
         {
-            DataTable ReturnTable = new DataTable();
-            String sql;
-
-            TDBTransaction ReadTransaction;
+            DataTable ReturnTable = null;
+            TDBTransaction ReadTransaction = null;
 
             ADisplayMember = "FieldName";
             AValueMember = "FieldKey";
 
-            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction();
-            try
-            {
-                sql = "SELECT DISTINCT to_char(" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
-                      ",'0000000000') AS " + AValueMember +
-                      ", " +
-                      PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + " AS " + ADisplayMember +
-                      " FROM " + PPartnerTable.GetTableDBName() + ", " +
-                      PPartnerTypeTable.GetTableDBName() +
-                      " WHERE " +
-                      PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetPartnerKeyDBName() + " = " + PPartnerTable.GetTableDBName() +
-                      "." + PPartnerTable.GetPartnerKeyDBName() +
-                      " AND (" + PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetTypeCodeDBName() + " = 'LEDGER' OR " +
-                      PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetTypeCodeDBName() + " = 'COSTCENTRE' " +
-                      ") ORDER BY " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName();
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
+                delegate
+                {
+                    String sql = "SELECT DISTINCT to_char(" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
+                                 ",'0000000000') AS FieldKey, " +
+                                 PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + " AS FieldName" +
+                                 " FROM " + PPartnerTable.GetTableDBName() + ", " +
+                                 PPartnerTypeTable.GetTableDBName() +
+                                 " WHERE " +
+                                 PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetPartnerKeyDBName() + " = " +
+                                 PPartnerTable.GetTableDBName() +
+                                 "." + PPartnerTable.GetPartnerKeyDBName() +
+                                 " AND (" + PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetTypeCodeDBName() + " = 'LEDGER' OR " +
+                                 PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetTypeCodeDBName() + " = 'COSTCENTRE' " +
+                                 ") ORDER BY " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName();
 
-                ReturnTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    ReturnTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
+                });
+
             return ReturnTable;
         }
 
@@ -331,139 +328,132 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Results.Columns.Add(new DataColumn("OpeningBalance", typeof(Decimal)));
             Results.Columns.Add(new DataColumn("ClosingBalance", typeof(Decimal)));
 
-            try
+            Boolean FromStartOfYear = (AStartPeriod == 1);
+            TReportingDbAdapter DbAdapter = new TReportingDbAdapter();
+
+            if (!FromStartOfYear)
             {
-                Boolean FromStartOfYear = (AStartPeriod == 1);
-                TReportingDbAdapter DbAdapter = new TReportingDbAdapter();
+                AStartPeriod -= 1; // I want the closing balance of the previous period.
+            }
 
-                if (!FromStartOfYear)
+            String BalanceField = (AInternational) ? "glmp.a_actual_intl_n" : "glmp.a_actual_base_n";
+            String StartBalanceField = (AInternational) ? "glm.a_start_balance_intl_n" : "glm.a_start_balance_base_n";
+            String GroupField = "";
+
+            if (ASortBy == "Account")
+            {
+                GroupField = " ORDER BY glm.a_account_code_c, glm.a_cost_centre_code_c";
+            }
+
+            if (ASortBy == "Cost Centre")
+            {
+                GroupField = " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c";
+            }
+
+            String Query = "SELECT glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i, " +
+                           "a_account.a_debit_credit_indicator_l AS Debit, " +
+                           StartBalanceField + " AS start_balance, " +
+                           BalanceField + " AS balance " +
+                           " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
+                           " WHERE glm." + ALedgerFilter +
+                           " AND a_account." + ALedgerFilter +
+                           " AND a_cost_centre." + ALedgerFilter +
+                           " AND a_account.a_posting_status_l = TRUE" +
+                           " AND a_cost_centre.a_posting_cost_centre_flag_l = TRUE" +
+                           " AND glm.a_year_i = " + AFinancialYear +
+                           " AND glm.a_account_code_c = a_account.a_account_code_c " +
+                           " AND glm.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c " +
+                           AAccountCodeFilter +
+                           ACostCentreFilter +
+                           " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
+                           " AND glmp.a_period_number_i BETWEEN " + AStartPeriod + " AND " + AEndPeriod +
+                           GroupField;
+
+
+            DataTable GlmTbl = null;
+            TDBTransaction ReadTrans = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTrans,
+                delegate
                 {
-                    AStartPeriod -= 1; // I want the closing balance of the previous period.
+                    GlmTbl = DbAdapter.RunQuery(Query, "balances", ReadTrans);
+                });
+
+            String CostCentre = "";
+            String AccountCode = "";
+            Int32 MaxPeriod = -1;
+            Int32 MinPeriod = 99;
+            DataRow NewRow = null;
+            Decimal MakeItDebit = 1;
+
+            // For each CostCentre / Account combination  I want just a single row, with the opening and closing balances,
+            // so I need to pre-process the stuff I've got in this table, and generate rows in the Results table.
+
+            foreach (DataRow row in GlmTbl.Rows)
+            {
+                if (DbAdapter.IsCancelled)
+                {
+                    return Results;
                 }
 
-                TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+                MakeItDebit = (Convert.ToBoolean(row["Debit"])) ? -1 : 1;
 
-                String BalanceField = (AInternational) ? "glmp.a_actual_intl_n" : "glmp.a_actual_base_n";
-                String StartBalanceField = (AInternational) ? "glm.a_start_balance_intl_n" : "glm.a_start_balance_base_n";
-                String GroupField = "";
-
-                if (ASortBy == "Account")
+                if ((row["a_cost_centre_code_c"].ToString() != CostCentre) || (row["a_account_code_c"].ToString() != AccountCode)) // a new CC/AC combination
                 {
-                    GroupField = " ORDER BY glm.a_account_code_c, glm.a_cost_centre_code_c";
-                }
+                    NewRow = Results.NewRow();
 
-                if (ASortBy == "Cost Centre")
-                {
-                    GroupField = " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c";
-                }
+                    CostCentre = row["a_cost_centre_code_c"].ToString();
+                    NewRow["a_cost_centre_code_c"] = CostCentre;
 
-                String Query = "SELECT glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i, " +
-                               "a_account.a_debit_credit_indicator_l AS Debit, " +
-                               StartBalanceField + " AS start_balance, " +
-                               BalanceField + " AS balance " +
-                               " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
-                               " WHERE glm." + ALedgerFilter +
-                               " AND a_account." + ALedgerFilter +
-                               " AND a_cost_centre." + ALedgerFilter +
-                               " AND a_account.a_posting_status_l = TRUE" +
-                               " AND a_cost_centre.a_posting_cost_centre_flag_l = TRUE" +
-                               " AND glm.a_year_i = " + AFinancialYear +
-                               " AND glm.a_account_code_c = a_account.a_account_code_c " +
-                               " AND glm.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c " +
-                               AAccountCodeFilter +
-                               ACostCentreFilter +
-                               " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
-                               " AND glmp.a_period_number_i BETWEEN " + AStartPeriod + " AND " + AEndPeriod +
-                               GroupField;
-
-
-                DataTable GlmTbl = DbAdapter.RunQuery(Query, "balances", ReadTrans);
-
-                String CostCentre = "";
-                String AccountCode = "";
-                Int32 MaxPeriod = -1;
-                Int32 MinPeriod = 99;
-                DataRow NewRow = null;
-                Decimal MakeItDebit = 1;
-
-                // For each CostCentre / Account combination  I want just a single row, with the opening and closing balances,
-                // so I need to pre-process the stuff I've got in this table, and generate rows in the Results table.
-
-                foreach (DataRow row in GlmTbl.Rows)
-                {
-                    if (DbAdapter.IsCancelled)
-                    {
-                        return Results;
-                    }
-
+                    AccountCode = row["a_account_code_c"].ToString();
                     MakeItDebit = (Convert.ToBoolean(row["Debit"])) ? -1 : 1;
+                    NewRow["a_account_code_c"] = AccountCode;
+                    Results.Rows.Add(NewRow);
 
-                    if ((row["a_cost_centre_code_c"].ToString() != CostCentre) || (row["a_account_code_c"].ToString() != AccountCode)) // a new CC/AC combination
-                    {
-                        NewRow = Results.NewRow();
-
-                        CostCentre = row["a_cost_centre_code_c"].ToString();
-                        NewRow["a_cost_centre_code_c"] = CostCentre;
-
-                        AccountCode = row["a_account_code_c"].ToString();
-                        MakeItDebit = (Convert.ToBoolean(row["Debit"])) ? -1 : 1;
-                        NewRow["a_account_code_c"] = AccountCode;
-                        Results.Rows.Add(NewRow);
-
-                        MaxPeriod = -1;
-                        MinPeriod = 99;
-                    }
-
-                    Int32 ThisPeriod = Convert.ToInt32(row["a_period_number_i"]);
-
-                    if (ThisPeriod < MinPeriod)
-                    {
-                        MinPeriod = ThisPeriod;
-                        Decimal OpeningBalance = (FromStartOfYear) ? Convert.ToDecimal(row["start_balance"]) : Convert.ToDecimal(row["balance"]);
-                        NewRow["OpeningBalance"] = MakeItDebit * OpeningBalance;
-                    }
-
-                    if (ThisPeriod > MaxPeriod)
-                    {
-                        MaxPeriod = ThisPeriod;
-                        Decimal ClosingBalance = Convert.ToDecimal(row["balance"]);
-                        NewRow["ClosingBalance"] = MakeItDebit * ClosingBalance;
-                    }
-                } // foreach
-
-                for (Int32 Idx = Results.Rows.Count - 1; Idx >= 0; Idx--)
-                {
-                    DataRow ResultsRow = Results.Rows[Idx];
-
-                    //
-                    // Since a revision in October 2014, this balances table can be the master table for the Account Detail report
-                    // (That is, "for each opening and closing balance, list any applicable transactions",
-                    // rather than, "for each Account/Cost Centre combination where we say transactions, show opening and closing balance".)
-                    // The effect of this is I need to remove opening and closing balances both are zero,
-                    // AND there were no transactions in the selected period.
-                    if ((Convert.ToDecimal(ResultsRow["OpeningBalance"]) == 0) && (Convert.ToDecimal(ResultsRow["ClosingBalance"]) == 0))
-                    {
-                        ATransactionsTbl.DefaultView.RowFilter = String.Format("AccountCode='{0}' AND CostCentreCode ='{1}'",
-                            ResultsRow["a_account_code_c"],
-                            ResultsRow["a_cost_centre_code_c"]);
-
-                        if (ATransactionsTbl.DefaultView.Count == 0)
-                        {
-                            ResultsRow.Delete();
-                        }
-                    }
+                    MaxPeriod = -1;
+                    MinPeriod = 99;
                 }
 
-                Results.AcceptChanges();
-            }  // try
-            catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
+                Int32 ThisPeriod = Convert.ToInt32(row["a_period_number_i"]);
+
+                if (ThisPeriod < MinPeriod)
+                {
+                    MinPeriod = ThisPeriod;
+                    Decimal OpeningBalance = (FromStartOfYear) ? Convert.ToDecimal(row["start_balance"]) : Convert.ToDecimal(row["balance"]);
+                    NewRow["OpeningBalance"] = MakeItDebit * OpeningBalance;
+                }
+
+                if (ThisPeriod > MaxPeriod)
+                {
+                    MaxPeriod = ThisPeriod;
+                    Decimal ClosingBalance = Convert.ToDecimal(row["balance"]);
+                    NewRow["ClosingBalance"] = MakeItDebit * ClosingBalance;
+                }
+            } // foreach
+
+            for (Int32 Idx = Results.Rows.Count - 1; Idx >= 0; Idx--)
             {
-                TLogging.Log(ex.Message);
+                DataRow ResultsRow = Results.Rows[Idx];
+
+                //
+                // Since a revision in October 2014, this balances table can be the master table for the Account Detail report
+                // (That is, "for each opening and closing balance, list any applicable transactions",
+                // rather than, "for each Account/Cost Centre combination where we say transactions, show opening and closing balance".)
+                // The effect of this is I need to remove opening and closing balances both are zero,
+                // AND there were no transactions in the selected period.
+                if ((Convert.ToDecimal(ResultsRow["OpeningBalance"]) == 0) && (Convert.ToDecimal(ResultsRow["ClosingBalance"]) == 0))
+                {
+                    ATransactionsTbl.DefaultView.RowFilter = String.Format("AccountCode='{0}' AND CostCentreCode ='{1}'",
+                        ResultsRow["a_account_code_c"],
+                        ResultsRow["a_cost_centre_code_c"]);
+
+                    if (ATransactionsTbl.DefaultView.Count == 0)
+                    {
+                        ResultsRow.Delete();
+                    }
+                }
             }
-            finally  // Whatever happens, I need to do this:
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+
+            Results.AcceptChanges();
             return Results;
         }
 
@@ -742,198 +732,192 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             String PlAccountCode = "PL"; // I could get this from the Ledger record, but in fact it's never set there!
 
-            TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            try
-            {
-                String Query = "SELECT DISTINCT" +
-                               " 1 AS AccountLevel," +
-                               " false AS HasChildren," +
-                               " false AS ParentFooter," +
-                               " glm.a_glm_sequence_i AS Seq," +
-                               " glm.a_year_i AS Year," +
-                               " glmp.a_period_number_i AS Period," +
-                               " a_account.a_account_type_c AS AccountType," +
-                               " 0 AS AccountTypeOrder," +
-                               " a_account.a_debit_credit_indicator_l AS DebitCredit," +
-                               " glm.a_account_code_c AS AccountCode," +
-                               " glm.a_cost_centre_code_c AS CostCentreCode," +
-                               " false AS AccountIsSummary," +
-                               " 'Path' AS AccountPath," +
-                               " a_account.a_account_code_short_desc_c AS AccountName," +
-                               " glm." + StartBalanceFieldName + " AS YearStart," +
-                               " 0.0 AS ActualYTD," +
-                               " glmp." + ActualFieldName + " AS Actual," +
-                               " 0.0 AS ActualLastYear" +
+            String Query = "SELECT DISTINCT" +
+                           " 1 AS AccountLevel," +
+                           " false AS HasChildren," +
+                           " false AS ParentFooter," +
+                           " glm.a_glm_sequence_i AS Seq," +
+                           " glm.a_year_i AS Year," +
+                           " glmp.a_period_number_i AS Period," +
+                           " a_account.a_account_type_c AS AccountType," +
+                           " 0 AS AccountTypeOrder," +
+                           " a_account.a_debit_credit_indicator_l AS DebitCredit," +
+                           " glm.a_account_code_c AS AccountCode," +
+                           " glm.a_cost_centre_code_c AS CostCentreCode," +
+                           " false AS AccountIsSummary," +
+                           " 'Path' AS AccountPath," +
+                           " a_account.a_account_code_short_desc_c AS AccountName," +
+                           " glm." + StartBalanceFieldName + " AS YearStart," +
+                           " 0.0 AS ActualYTD," +
+                           " glmp." + ActualFieldName + " AS Actual," +
+                           " 0.0 AS ActualLastYear" +
 
-                               " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
-                               " WHERE glm.a_ledger_number_i=" + LedgerNumber +
-                               " AND glm.a_cost_centre_code_c = '" + RootCostCentre + "' " +
-                               " AND glm.a_year_i IN (" + (AccountingYear - 1) + ", " + AccountingYear + ")" +
-                               " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
-                               " AND glmp.a_period_number_i=" + ReportPeriodEnd +
-                               " AND a_account.a_account_code_c = glm.a_account_code_c" +
-                               " AND (a_account.a_account_type_c IN ('Asset','Liability','Equity') OR a_account.a_account_code_c = '" +
-                               PlAccountCode + "')" +
-                               " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
-                               " AND (a_account.a_posting_status_l = true OR a_account.a_account_code_c = '" + PlAccountCode + "')" +
-                               " ORDER BY glm.a_account_code_c"
-                ;
+                           " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
+                           " WHERE glm.a_ledger_number_i=" + LedgerNumber +
+                           " AND glm.a_cost_centre_code_c = '" + RootCostCentre + "' " +
+                           " AND glm.a_year_i IN (" + (AccountingYear - 1) + ", " + AccountingYear + ")" +
+                           " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
+                           " AND glmp.a_period_number_i=" + ReportPeriodEnd +
+                           " AND a_account.a_account_code_c = glm.a_account_code_c" +
+                           " AND (a_account.a_account_type_c IN ('Asset','Liability','Equity') OR a_account.a_account_code_c = '" +
+                           PlAccountCode + "')" +
+                           " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
+                           " AND (a_account.a_posting_status_l = true OR a_account.a_account_code_c = '" + PlAccountCode + "')" +
+                           " ORDER BY glm.a_account_code_c"
+            ;
 
-                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
-                DataTable resultTable = DbAdapter.RunQuery(Query, "BalanceSheet", ReadTrans);
-
-
-                DataView OldPeriod = new DataView(resultTable);
-                DataView ThisMonth = new DataView(resultTable);
-                OldPeriod.Sort = "AccountCode";
-                OldPeriod.RowFilter = String.Format("Year={0}", AccountingYear - 1);
-                ThisMonth.RowFilter = String.Format("Year={0}", AccountingYear);
-
-                //
-                // Some of these rows are from a year ago. I'll copy those into the current period "LastYear" fields.
-
-                TLogging.Log(Catalog.GetString("Get last year data.."), TLoggingType.ToStatusBar);
-
-                foreach (DataRowView rv in ThisMonth)
+            TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+            DataTable resultTable = null;
+            TDBTransaction ReadTrans = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTrans,
+                delegate
                 {
-                    if (DbAdapter.IsCancelled)
+                    resultTable = DbAdapter.RunQuery(Query, "BalanceSheet", ReadTrans);
+
+                    DataView OldPeriod = new DataView(resultTable);
+                    DataView ThisMonth = new DataView(resultTable);
+                    OldPeriod.Sort = "AccountCode";
+                    OldPeriod.RowFilter = String.Format("Year={0}", AccountingYear - 1);
+                    ThisMonth.RowFilter = String.Format("Year={0}", AccountingYear);
+
+                    //
+                    // Some of these rows are from a year ago. I'll copy those into the current period "LastYear" fields.
+
+                    TLogging.Log(Catalog.GetString("Get last year data.."), TLoggingType.ToStatusBar);
+
+                    foreach (DataRowView rv in ThisMonth)
                     {
-                        return FilteredResults;
-                    }
-
-                    DataRow Row = rv.Row;
-                    Int32 RowIdx = OldPeriod.Find(
-                        new Object[] {
-                            Row["AccountCode"]
-                        }
-                        );
-
-                    if (RowIdx >= 0)
-                    {
-                        DataRow LastYearRow = OldPeriod[RowIdx].Row;
-                        Row["ActualLastYear"] = LastYearExchangeRate * Convert.ToDecimal(LastYearRow["Actual"]);
-                    }
-
-                    if (Row["AccountCode"].ToString() == PlAccountCode)     // Tweak the PL account and pretend it's an Equity.
-                    {                                                       // (It was probably previously an income account.)
-                        Row["AccountType"] = "Equity";
-                        Row["AccountTypeOrder"] = 3;
-                    }
-
-                    Row["YearStart"] = EffectiveExchangeRate * Convert.ToDecimal(Row["YearStart"]);
-                    Row["Actual"] = EffectiveExchangeRate * Convert.ToDecimal(Row["Actual"]);
-                }
-
-                //
-                // So now I don't have to look at last year's rows:
-                FilteredResults = ThisMonth.ToTable("BalanceSheet");
-
-                //
-                // I only have "posting accounts" - I need to add the summary accounts.
-                AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber,
-                    HierarchyName,
-                    ReadTrans);
-
-                HierarchyTbl.DefaultView.Sort = "a_reporting_account_code_c";  // These two sort orders
-                FilteredResults.DefaultView.Sort = "AccountCode";              // Are required by AddTotalsToParentAccountRow, below.
-
-                Int32 PostingAccountRecords = FilteredResults.Rows.Count;
-
-                TLogging.Log(Catalog.GetString("Summarise to parent accounts.."), TLoggingType.ToStatusBar);
-
-                for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
-                {
-                    if (DbAdapter.IsCancelled)
-                    {
-                        return FilteredResults;
-                    }
-
-                    DataRow Row = FilteredResults.Rows[Idx];
-                    String ParentAccountPath;
-                    Int32 ParentAccountTypeOrder;
-                    Int32 AccountLevel = AddTotalsToParentAccountRow(
-                        FilteredResults,
-                        HierarchyTbl,
-                        LedgerNumber,
-                        "", // No Cost Centres on Balance Sheet
-                        Row["AccountCode"].ToString(),
-                        Row,
-                        false,
-                        false,
-                        out ParentAccountPath,
-                        out ParentAccountTypeOrder,
-                        ReadTrans);
-                    Row["AccountLevel"] = AccountLevel;
-                    Row["AccountPath"] = ParentAccountPath + Row["AccountCode"];
-                }
-
-                //
-                // Now if I re-order the result by AccountPath, hide all the old data and empty rows, and rows that are too detailed, it should be what I need!
-
-                Int32 DetailLevel = AParameters["param_nesting_depth"].ToInt32();
-                String DepthFilter = " AND AccountLevel<=" + DetailLevel.ToString();
-                FilteredResults.DefaultView.Sort = "AccountTypeOrder, AccountPath";
-
-                FilteredResults.DefaultView.RowFilter = "(Actual <> 0 OR ActualLastYear <> 0 )" + // Only non-zero rows
-                                                        DepthFilter;    // Nothing too detailed
-
-                FilteredResults = FilteredResults.DefaultView.ToTable("BalanceSheet");
-
-                //
-                // Finally, to make the hierarchical report possible,
-                // I want to include a note to show whether a row has child rows,
-                // and if it does, I'll copy this row to a new row, below the children, marking the new row as "footer".
-                TLogging.Log(Catalog.GetString("Format data for reporting.."), TLoggingType.ToStatusBar);
-
-                for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
-                {
-                    if (DbAdapter.IsCancelled)
-                    {
-                        return FilteredResults;
-                    }
-
-                    Int32 ParentAccountLevel = Convert.ToInt32(FilteredResults.Rows[RowIdx]["AccountLevel"]);
-                    Boolean HasChildren = (Convert.ToInt32(FilteredResults.Rows[RowIdx + 1]["AccountLevel"]) > ParentAccountLevel);
-                    FilteredResults.Rows[RowIdx]["HasChildren"] = HasChildren;
-
-                    if (HasChildren)
-                    {
-                        Int32 NextSiblingPos = -1;
-
-                        for (Int32 ChildIdx = RowIdx + 2; ChildIdx < FilteredResults.Rows.Count; ChildIdx++)
+                        if (DbAdapter.IsCancelled)
                         {
-                            if (Convert.ToInt32(FilteredResults.Rows[ChildIdx]["AccountLevel"]) <= ParentAccountLevel)  // This row is not a child of mine
-                            {                                                                                           // so I insert my footer before here.
-                                NextSiblingPos = ChildIdx;
-                                break;
+                            return;
+                        }
+
+                        DataRow Row = rv.Row;
+                        Int32 RowIdx = OldPeriod.Find(
+                            new Object[] {
+                                Row["AccountCode"]
                             }
+                            );
+
+                        if (RowIdx >= 0)
+                        {
+                            DataRow LastYearRow = OldPeriod[RowIdx].Row;
+                            Row["ActualLastYear"] = LastYearExchangeRate * Convert.ToDecimal(LastYearRow["Actual"]);
                         }
 
-                        DataRow FooterRow = FilteredResults.NewRow();
-                        DataUtilities.CopyAllColumnValues(FilteredResults.Rows[RowIdx], FooterRow);
-                        FooterRow["ParentFooter"] = true;
-                        FooterRow["HasChildren"] = false;
-
-                        if (NextSiblingPos > 0)
-                        {
-                            FilteredResults.Rows.InsertAt(FooterRow, NextSiblingPos);
+                        if (Row["AccountCode"].ToString() == PlAccountCode)     // Tweak the PL account and pretend it's an Equity.
+                        {                                                       // (It was probably previously an income account.)
+                            Row["AccountType"] = "Equity";
+                            Row["AccountTypeOrder"] = 3;
                         }
-                        else
+
+                        Row["YearStart"] = EffectiveExchangeRate * Convert.ToDecimal(Row["YearStart"]);
+                        Row["Actual"] = EffectiveExchangeRate * Convert.ToDecimal(Row["Actual"]);
+                    }
+
+                    //
+                    // So now I don't have to look at last year's rows:
+                    FilteredResults = ThisMonth.ToTable("BalanceSheet");
+
+                    //
+                    // I only have "posting accounts" - I need to add the summary accounts.
+                    AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber,
+                        HierarchyName,
+                        ReadTrans);
+
+                    HierarchyTbl.DefaultView.Sort = "a_reporting_account_code_c";  // These two sort orders
+                    FilteredResults.DefaultView.Sort = "AccountCode";              // Are required by AddTotalsToParentAccountRow, below.
+
+                    Int32 PostingAccountRecords = FilteredResults.Rows.Count;
+
+                    TLogging.Log(Catalog.GetString("Summarise to parent accounts.."), TLoggingType.ToStatusBar);
+
+                    for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
+                    {
+                        if (DbAdapter.IsCancelled)
                         {
-                            FilteredResults.Rows.Add(FooterRow);
+                            return;
+                        }
+
+                        DataRow Row = FilteredResults.Rows[Idx];
+                        String ParentAccountPath;
+                        Int32 ParentAccountTypeOrder;
+                        Int32 AccountLevel = AddTotalsToParentAccountRow(
+                            FilteredResults,
+                            HierarchyTbl,
+                            LedgerNumber,
+                            "", // No Cost Centres on Balance Sheet
+                            Row["AccountCode"].ToString(),
+                            Row,
+                            false,
+                            false,
+                            out ParentAccountPath,
+                            out ParentAccountTypeOrder,
+                            ReadTrans);
+                        Row["AccountLevel"] = AccountLevel;
+                        Row["AccountPath"] = ParentAccountPath + Row["AccountCode"];
+                    }
+                }); // Get NewOrExisting AutoReadTransaction
+
+            //
+            // Now if I re-order the result by AccountPath, hide all the old data and empty rows, and rows that are too detailed, it should be what I need!
+
+            Int32 DetailLevel = AParameters["param_nesting_depth"].ToInt32();
+            String DepthFilter = " AND AccountLevel<=" + DetailLevel.ToString();
+            FilteredResults.DefaultView.Sort = "AccountTypeOrder, AccountPath";
+
+            FilteredResults.DefaultView.RowFilter = "(Actual <> 0 OR ActualLastYear <> 0 )" + // Only non-zero rows
+                                                    DepthFilter;    // Nothing too detailed
+
+            FilteredResults = FilteredResults.DefaultView.ToTable("BalanceSheet");
+
+            //
+            // Finally, to make the hierarchical report possible,
+            // I want to include a note to show whether a row has child rows,
+            // and if it does, I'll copy this row to a new row, below the children, marking the new row as "footer".
+            TLogging.Log(Catalog.GetString("Format data for reporting.."), TLoggingType.ToStatusBar);
+
+            for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
+            {
+                if (DbAdapter.IsCancelled)
+                {
+                    return FilteredResults;
+                }
+
+                Int32 ParentAccountLevel = Convert.ToInt32(FilteredResults.Rows[RowIdx]["AccountLevel"]);
+                Boolean HasChildren = (Convert.ToInt32(FilteredResults.Rows[RowIdx + 1]["AccountLevel"]) > ParentAccountLevel);
+                FilteredResults.Rows[RowIdx]["HasChildren"] = HasChildren;
+
+                if (HasChildren)
+                {
+                    Int32 NextSiblingPos = -1;
+
+                    for (Int32 ChildIdx = RowIdx + 2; ChildIdx < FilteredResults.Rows.Count; ChildIdx++)
+                    {
+                        if (Convert.ToInt32(FilteredResults.Rows[ChildIdx]["AccountLevel"]) <= ParentAccountLevel)  // This row is not a child of mine
+                        {                                                                                           // so I insert my footer before here.
+                            NextSiblingPos = ChildIdx;
+                            break;
                         }
                     }
-                } // for
-            }  // try
-            catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
-            {
-                TLogging.Log(ex.Message);
-            }
-            finally  // Whatever happens, I need to do this:
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+
+                    DataRow FooterRow = FilteredResults.NewRow();
+                    DataUtilities.CopyAllColumnValues(FilteredResults.Rows[RowIdx], FooterRow);
+                    FooterRow["ParentFooter"] = true;
+                    FooterRow["HasChildren"] = false;
+
+                    if (NextSiblingPos > 0)
+                    {
+                        FilteredResults.Rows.InsertAt(FooterRow, NextSiblingPos);
+                    }
+                    else
+                    {
+                        FilteredResults.Rows.Add(FooterRow);
+                    }
+                }
+            } // for
+
             TLogging.Log("", TLoggingType.ToStatusBar);
             return FilteredResults;
         } // Balance Sheet Table
@@ -1218,451 +1202,444 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 CostCentreFilter = " AND a_cost_centre.a_cost_centre_active_flag_l=true";
             }
 
-            TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             DataTable FilteredResults = null;
-            try
-            {
-                // To find the Budget YTD, I need to sum all the budget fields from the start of the year.
-
-                String BudgetQuery = (PeriodMonths == 1) ? " glmp." + BudgetFieldName +  // For one month, the Budget is read directly from the record;
-                                     " AS Budget," :
-                                     " (CASE WHEN glm.a_year_i=" + AccountingYear +      // for multiple months, I need to do a sum.
-                                     " AND a_period_number_i=" + ReportPeriodEnd +
-                                     " THEN (SELECT SUM(" + BudgetFieldName + ") FROM a_general_ledger_master_period" +
-                                     " WHERE a_glm_sequence_i= glm.a_glm_sequence_i " +
-                                     " AND a_period_number_i >= " + ReportPeriodStart +
-                                     " AND a_period_number_i <= " + ReportPeriodEnd +
-                                     " ) ELSE 0.0 END) AS Budget,";
-
-                String BudgetYtdQuery = " (CASE WHEN glm.a_year_i=" + AccountingYear +
-                                        " AND a_period_number_i=" + ReportPeriodEnd +
-                                        " THEN (SELECT SUM(" + BudgetFieldName + ") FROM a_general_ledger_master_period" +
-                                        " WHERE a_glm_sequence_i= glm.a_glm_sequence_i AND a_period_number_i <= " + ReportPeriodEnd +
-                                        " ) ELSE 0.0 END) AS BudgetYTD,";
-
-                String YearFilter =
-                    " AND glm.a_year_i>=" + (AccountingYear - 1) +
-                    " AND glm.a_year_i<=" + AccountingYear;
-
-                String PeriodFilter =
-                    " AND glmp.a_period_number_i>=" + (ReportPeriodStart - PeriodMonths) +
-                    " AND glmp.a_period_number_i<=" + ReportPeriodEnd;
-
-                String WholeYearBreakdownFields =
-                    ", 0.0 AS P1, 0.0 AS P2, 0.0 AS P3, 0.0 AS P4, 0.0 AS P5, 0.0 AS P6 " +
-                    ", 0.0 AS P7, 0.0 AS P8, 0.0 AS P9, 0.0 AS P10, 0.0 AS P11, 0.0 AS P12 ";
-
-                if (WholeYearPeriodsBreakdown)
+            TDBTransaction ReadTrans = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTrans,
+                delegate
                 {
-                    CostCentreBreakdown = false; // Hopefully the client will have ensured this is false anyway - I'm just asserting it!
-                    BudgetQuery = "0.0 AS Budget,";
-                    BudgetYtdQuery = "0.0 AS BudgetYTD,";
-                    YearFilter = " AND glm.a_year_i=" + AccountingYear;
-                    PeriodFilter = " AND glmp.a_period_number_i<=12";
-                    PeriodMonths = 12;
-                }
+                    // To find the Budget YTD, I need to sum all the budget fields from the start of the year.
 
-                String Query = "SELECT DISTINCT" +
-                               " 1 AS AccountLevel," +
-                               " false AS HasChildren," +
-                               " false AS ParentFooter," +
-                               " false AS AccountIsSummary," +
-                               " false AS Breakdown," +
-                               " glm.a_glm_sequence_i AS Seq," +
-                               " glm.a_year_i AS Year," +
-                               " glmp.a_period_number_i AS Period," +
-                               " glm.a_cost_centre_code_c AS CostCentreCode," +
-                               " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
-                               " a_account.a_account_type_c AS AccountType," +
-                               " CASE a_account.a_account_type_c WHEN 'Income' THEN 1 WHEN 'Expense' THEN 2 END AS AccountTypeOrder," +
-                               " a_account.a_debit_credit_indicator_l AS DebitCredit," +
-                               " glm.a_account_code_c AS AccountCode," +
-                               " 'Path' AS AccountPath," +
-                               " a_account.a_account_code_short_desc_c AS AccountName," +
-                               " glm." + StartBalanceFieldName + " AS YearStart," +
-                               " 0.0 AS Actual," +
-                               " glmp." + ActualFieldName + " AS ActualYTD," +
-                               " 0.0 AS ActualLastYear," +
-                               BudgetQuery +
-                               BudgetYtdQuery +
-                               " 0.0 AS BudgetLastYear," +
-                               " 0.0 AS WholeYearBudget" +
-                               WholeYearBreakdownFields +
+                    String BudgetQuery = (PeriodMonths == 1) ? " glmp." + BudgetFieldName + // For one month, the Budget is read directly from the record;
+                                         " AS Budget," :
+                                         " (CASE WHEN glm.a_year_i=" + AccountingYear +  // for multiple months, I need to do a sum.
+                                         " AND a_period_number_i=" + ReportPeriodEnd +
+                                         " THEN (SELECT SUM(" + BudgetFieldName + ") FROM a_general_ledger_master_period" +
+                                         " WHERE a_glm_sequence_i= glm.a_glm_sequence_i " +
+                                         " AND a_period_number_i >= " + ReportPeriodStart +
+                                         " AND a_period_number_i <= " + ReportPeriodEnd +
+                                         " ) ELSE 0.0 END) AS Budget,";
 
-                               " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
-                               " WHERE glm.a_ledger_number_i=" + LedgerNumber +
-                               YearFilter +
-                               " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
-                               PeriodFilter +
-                               " AND a_account.a_account_code_c = glm.a_account_code_c" +
-                               " AND (a_account.a_account_type_c = 'Income' OR a_account.a_account_type_c = 'Expense')" +
-                               " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
-                               " AND a_account.a_posting_status_l = true" +
-                               " AND a_cost_centre.a_ledger_number_i = glm.a_ledger_number_i" +
-                               " AND a_cost_centre.a_cost_centre_code_c = glm.a_cost_centre_code_c" +
-                               CostCentreFilter;
+                    String BudgetYtdQuery = " (CASE WHEN glm.a_year_i=" + AccountingYear +
+                                            " AND a_period_number_i=" + ReportPeriodEnd +
+                                            " THEN (SELECT SUM(" + BudgetFieldName + ") FROM a_general_ledger_master_period" +
+                                            " WHERE a_glm_sequence_i= glm.a_glm_sequence_i AND a_period_number_i <= " + ReportPeriodEnd +
+                                            " ) ELSE 0.0 END) AS BudgetYTD,";
 
-                if (CostCentreBreakdown)
-                {
-                    Query += " ORDER BY glm.a_account_code_c, glm.a_cost_centre_code_c";
-                }
-                else
-                {
-                    Query += " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c";
-                }
+                    String YearFilter =
+                        " AND glm.a_year_i>=" + (AccountingYear - 1) +
+                        " AND glm.a_year_i<=" + AccountingYear;
 
-                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
-                DataTable resultTable = DbAdapter.RunQuery(Query, "IncomeExpense", ReadTrans);
+                    String PeriodFilter =
+                        " AND glmp.a_period_number_i>=" + (ReportPeriodStart - PeriodMonths) +
+                        " AND glmp.a_period_number_i<=" + ReportPeriodEnd;
 
-                if (WholeYearPeriodsBreakdown)
-                {
-                    FilteredResults = resultTable;
-                }
-                else
-                {
-                    //
-                    // The table includes YTD balances, but I need the balance for the specified period.
-                    TLogging.Log(Catalog.GetString("Calculate period transactions.."), TLoggingType.ToStatusBar);
+                    String WholeYearBreakdownFields =
+                        ", 0.0 AS P1, 0.0 AS P2, 0.0 AS P3, 0.0 AS P4, 0.0 AS P5, 0.0 AS P6 " +
+                        ", 0.0 AS P7, 0.0 AS P8, 0.0 AS P9, 0.0 AS P10, 0.0 AS P11, 0.0 AS P12 ";
 
-                    DataView OldPeriod = new DataView(resultTable);
-                    DataView ThisMonth = new DataView(resultTable);
-                    ThisMonth.RowFilter = "Period=" + ReportPeriodEnd;
-                    OldPeriod.Sort = "Year,Period,CostCentreCode,AccountCode";
-
-                    //
-                    // If I have rows for the previous month too, I can subtract the previous month's YTD balance to get my "Actual".
-                    if (ReportPeriodEnd > PeriodMonths)
+                    if (WholeYearPeriodsBreakdown)
                     {
-                        Int32 PrevPeriod = ReportPeriodEnd - PeriodMonths;
+                        CostCentreBreakdown = false; // Hopefully the client will have ensured this is false anyway - I'm just asserting it!
+                        BudgetQuery = "0.0 AS Budget,";
+                        BudgetYtdQuery = "0.0 AS BudgetYTD,";
+                        YearFilter = " AND glm.a_year_i=" + AccountingYear;
+                        PeriodFilter = " AND glmp.a_period_number_i<=12";
+                        PeriodMonths = 12;
+                    }
+
+                    String Query = "SELECT DISTINCT" +
+                                   " 1 AS AccountLevel," +
+                                   " false AS HasChildren," +
+                                   " false AS ParentFooter," +
+                                   " false AS AccountIsSummary," +
+                                   " false AS Breakdown," +
+                                   " glm.a_glm_sequence_i AS Seq," +
+                                   " glm.a_year_i AS Year," +
+                                   " glmp.a_period_number_i AS Period," +
+                                   " glm.a_cost_centre_code_c AS CostCentreCode," +
+                                   " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
+                                   " a_account.a_account_type_c AS AccountType," +
+                                   " CASE a_account.a_account_type_c WHEN 'Income' THEN 1 WHEN 'Expense' THEN 2 END AS AccountTypeOrder," +
+                                   " a_account.a_debit_credit_indicator_l AS DebitCredit," +
+                                   " glm.a_account_code_c AS AccountCode," +
+                                   " 'Path' AS AccountPath," +
+                                   " a_account.a_account_code_short_desc_c AS AccountName," +
+                                   " glm." + StartBalanceFieldName + " AS YearStart," +
+                                   " 0.0 AS Actual," +
+                                   " glmp." + ActualFieldName + " AS ActualYTD," +
+                                   " 0.0 AS ActualLastYear," +
+                                   BudgetQuery +
+                                   BudgetYtdQuery +
+                                   " 0.0 AS BudgetLastYear," +
+                                   " 0.0 AS WholeYearBudget" +
+                                   WholeYearBreakdownFields +
+
+                                   " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
+                                   " WHERE glm.a_ledger_number_i=" + LedgerNumber +
+                                   YearFilter +
+                                   " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
+                                   PeriodFilter +
+                                   " AND a_account.a_account_code_c = glm.a_account_code_c" +
+                                   " AND (a_account.a_account_type_c = 'Income' OR a_account.a_account_type_c = 'Expense')" +
+                                   " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
+                                   " AND a_account.a_posting_status_l = true" +
+                                   " AND a_cost_centre.a_ledger_number_i = glm.a_ledger_number_i" +
+                                   " AND a_cost_centre.a_cost_centre_code_c = glm.a_cost_centre_code_c" +
+                                   CostCentreFilter;
+
+                    if (CostCentreBreakdown)
+                    {
+                        Query += " ORDER BY glm.a_account_code_c, glm.a_cost_centre_code_c";
+                    }
+                    else
+                    {
+                        Query += " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c";
+                    }
+
+                    TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                    DataTable resultTable = DbAdapter.RunQuery(Query, "IncomeExpense", ReadTrans);
+
+                    if (WholeYearPeriodsBreakdown)
+                    {
+                        FilteredResults = resultTable;
+                    }
+                    else
+                    {
+                        //
+                        // The table includes YTD balances, but I need the balance for the specified period.
+                        TLogging.Log(Catalog.GetString("Calculate period transactions.."), TLoggingType.ToStatusBar);
+
+                        DataView OldPeriod = new DataView(resultTable);
+                        DataView ThisMonth = new DataView(resultTable);
+                        ThisMonth.RowFilter = "Period=" + ReportPeriodEnd;
+                        OldPeriod.Sort = "Year,Period,CostCentreCode,AccountCode";
+
+                        //
+                        // If I have rows for the previous month too, I can subtract the previous month's YTD balance to get my "Actual".
+                        if (ReportPeriodEnd > PeriodMonths)
+                        {
+                            Int32 PrevPeriod = ReportPeriodEnd - PeriodMonths;
+
+                            foreach (DataRowView rv in ThisMonth)
+                            {
+                                if (DbAdapter.IsCancelled)
+                                {
+                                    return;
+                                }
+
+                                DataRow Row = rv.Row;
+                                Int32 RowIdx = OldPeriod.Find(
+                                    new Object[] {
+                                        Row["Year"],
+                                        PrevPeriod,
+                                        Row["CostCentreCode"],
+                                        Row["AccountCode"]
+                                    }
+                                    );
+                                DataRow PreviousPeriodRow = OldPeriod[RowIdx].Row;
+                                Row["Actual"] =
+                                    (Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(PreviousPeriodRow["ActualYTD"])) * EffectiveExchangeRate;
+                            }
+                        }
+                        else
+                        {
+                            //
+                            // For the first period of the year, I can just subtract the YearStart balance, which I already have just here...
+                            foreach (DataRowView rv in ThisMonth)
+                            {
+                                if (DbAdapter.IsCancelled)
+                                {
+                                    return;
+                                }
+
+                                DataRow Row = rv.Row;
+                                Row["Actual"] = (Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(Row["YearStart"])) * EffectiveExchangeRate;
+                            }
+                        }
+
+                        //
+                        // Some of these rows are from a year ago. I've updated their "Actual" values;
+                        // now I'll copy those into the current period "LastYear" fields.
+                        TLogging.Log(Catalog.GetString("Get Last year actuals.."), TLoggingType.ToStatusBar);
 
                         foreach (DataRowView rv in ThisMonth)
                         {
                             if (DbAdapter.IsCancelled)
                             {
-                                return FilteredResults;
+                                return;
                             }
 
                             DataRow Row = rv.Row;
                             Int32 RowIdx = OldPeriod.Find(
                                 new Object[] {
-                                    Row["Year"],
-                                    PrevPeriod,
+                                    AccountingYear - 1,
+                                    ReportPeriodEnd,
                                     Row["CostCentreCode"],
                                     Row["AccountCode"]
                                 }
                                 );
-                            DataRow PreviousPeriodRow = OldPeriod[RowIdx].Row;
-                            Row["Actual"] =
-                                (Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(PreviousPeriodRow["ActualYTD"])) * EffectiveExchangeRate;
+
+                            if (RowIdx >= 0)
+                            {
+                                DataRow LastYearRow = OldPeriod[RowIdx].Row;
+                                Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
+                                Row["BudgetLastYear"] = Convert.ToDecimal(LastYearRow["Budget"]) * EffectiveExchangeRate;
+                            }
+
+                            Row["Budget"] = Convert.ToDecimal(Row["Budget"]) * EffectiveExchangeRate;
                         }
-                    }
-                    else
-                    {
+
                         //
-                        // For the first period of the year, I can just subtract the YearStart balance, which I already have just here...
-                        foreach (DataRowView rv in ThisMonth)
+                        // So now I don't have to look at last year's rows or last month's rows:
+                        ThisMonth.RowFilter = "Year=" + AccountingYear + " AND Period=" + ReportPeriodEnd; // Only current period
+                        FilteredResults = ThisMonth.ToTable("IncomeExpense");
+
+                        //
+                        // I need to add in the "whole year budget" field:
+                        TLogging.Log(Catalog.GetString("Get Budgets.."), TLoggingType.ToStatusBar);
+
+                        foreach (DataRow Row in FilteredResults.Rows)
                         {
                             if (DbAdapter.IsCancelled)
                             {
-                                return FilteredResults;
+                                return;
+                            }
+
+                            Query = "SELECT SUM(" + BudgetFieldName +
+                                    ") AS WholeYearBudget FROM a_general_ledger_master_period WHERE a_glm_sequence_i=" +
+                                    Convert.ToInt32(Row["Seq"]);
+                            DataTable YearBudgetTbl = DbAdapter.RunQuery(Query, "YearBudget", ReadTrans);
+
+                            if (YearBudgetTbl.Rows.Count > 0)
+                            {
+                                Row["WholeYearBudget"] = Convert.ToDecimal(YearBudgetTbl.Rows[0]["WholeYearBudget"]) * EffectiveExchangeRate;
+                            }
+                        }
+                    } // If not Whole Year Periods Breakdown
+
+                    //
+                    // I only have "posting accounts" - I need to add the summary accounts.
+                    TLogging.Log(Catalog.GetString("Summarise to parent accounts.."), TLoggingType.ToStatusBar);
+                    AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber,
+                        HierarchyName,
+                        ReadTrans);
+
+                    HierarchyTbl.DefaultView.Sort = "a_reporting_account_code_c";   // These two sort orders
+
+                    if (CostCentreBreakdown)                                        // Are required by AddTotalsToParentAccountRow, below.
+                    {
+                        FilteredResults.DefaultView.Sort = "AccountCode";
+                    }
+                    else
+                    {
+                        FilteredResults.DefaultView.Sort = "CostCentreCode, AccountCode";
+                    }
+
+                    Int32 PostingAccountRecords = FilteredResults.Rows.Count;
+                    Decimal PreviousActualYTD = 0;
+                    String ActualAccountCode = "";
+
+                    for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
+                    {
+                        if (DbAdapter.IsCancelled)
+                        {
+                            return;
+                        }
+
+                        DataRow Row = FilteredResults.Rows[Idx];
+
+                        if (WholeYearPeriodsBreakdown) // Because I missed out a chunk of code above, these rows have no "Actual" - only "ActualYTD".
+                        {                           // I need to calculate those Actuals before I go further.
+                            if (Row["AccountCode"].ToString() != ActualAccountCode)
+                            {
+                                ActualAccountCode = Row["AccountCode"].ToString();
+                                PreviousActualYTD = 0;
+                            }
+
+                            Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - PreviousActualYTD;
+                            PreviousActualYTD = Convert.ToDecimal(Row["ActualYTD"]);
+                        }
+
+                        String CostCentreParam = (CostCentreBreakdown) ? "" : Row["CostCentreCode"].ToString();
+                        String ParentAccountPath;
+                        Int32 ParentAccountTypeOrder;
+
+                        Int32 AccountLevel = AddTotalsToParentAccountRow(
+                            FilteredResults,
+                            HierarchyTbl,
+                            LedgerNumber,
+                            CostCentreParam,
+                            Row["AccountCode"].ToString(),
+                            Row,
+                            CostCentreBreakdown,
+                            WholeYearPeriodsBreakdown,
+                            out ParentAccountPath,
+                            out ParentAccountTypeOrder,
+                            ReadTrans);
+                        Row["AccountLevel"] = AccountLevel;
+                        Row["AccountPath"] = ParentAccountPath + "~" + Row["AccountCode"];
+                    }
+
+                    //
+                    // Now if I re-order the result, and hide any rows that are empty or too detailed, it should be what I need!
+
+                    Int32 DetailLevel = AParameters["param_nesting_depth"].ToInt32();
+                    String DepthFilter = " AccountLevel<=" + DetailLevel.ToString();
+
+                    if (CostCentreBreakdown)
+                    {
+                        TLogging.Log(Catalog.GetString("Get Cost Centre Breakdown.."), TLoggingType.ToStatusBar);
+                        // I'm creating additional "breakdown" records for the per-CostCentre breakdown, and potentially removing
+                        // some records that were summed into those "breakdown" records.
+                        FilteredResults.DefaultView.Sort = "AccountType DESC, AccountPath ASC, CostCentreCode";
+                        FilteredResults.DefaultView.RowFilter = "Breakdown=false";
+                        // At this point I need to add together any transactions in more detailed levels, summarising them by Cost Centre,
+                        // and listing them under the account to which they relate:
+                        DataView SummaryView = new DataView(FilteredResults);
+                        SummaryView.Sort = "AccountTypeOrder, AccountPath ASC, CostCentreCode";
+                        SummaryView.RowFilter = "Breakdown=true";
+
+                        DataRow AccumulatingRow = FilteredResults.NewRow(); // This temporary row is not part of the result set - it's just a line of temporary vars.
+
+                        for (Int32 RowIdx = 0; RowIdx < FilteredResults.DefaultView.Count - 1; RowIdx++)
+                        {
+                            if (DbAdapter.IsCancelled)
+                            {
+                                return;
+                            }
+
+                            DataRow DetailRow = FilteredResults.DefaultView[RowIdx].Row;
+                            AddToCostCentreBreakdownSummary(SummaryView, DetailLevel, DetailRow);
+
+                            //
+                            // For posting accounts in "details" view, the cost centre breakdown rows will be presented after one or more rows with the same account.
+                            // The last account row will become a header, below, and any other rows with the same account will be removed.
+                            // So I need the values in those rows to accumulate into the last row.
+                            AccumulateTotalsPerCostCentre(DetailRow, AccumulatingRow);
+                        }
+
+                        FilteredResults.DefaultView.Sort = "AccountTypeOrder, AccountPath ASC, Breakdown, CostCentreCode";
+                    }
+                    else
+                    {
+                        FilteredResults.DefaultView.Sort = "CostCentreCode, AccountTypeOrder, AccountPath ASC";
+                    }
+
+                    if (WholeYearPeriodsBreakdown)
+                    {
+                        FilteredResults.DefaultView.RowFilter =
+                            DepthFilter;  // Nothing too detailed
+                    }
+                    else
+                    {
+                        FilteredResults.DefaultView.RowFilter =
+                            "(Actual <> 0 OR ActualYTD <> 0 OR Budget <> 0 OR BudgetYTD <> 0)" + // Only non-zero rows
+                            " AND " + DepthFilter;                                           // Nothing too detailed
+                    }
+
+                    FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
+
+                    if (WholeYearPeriodsBreakdown)
+                    {
+                        TLogging.Log(Catalog.GetString("Get whole year breakdown.."), TLoggingType.ToStatusBar);
+                        //
+                        // If there are any unsummarised rows left after applying the Depth Filter,
+                        // I need to summarise them into new "per period" rows (with 12 "Actual" fields), and throw the original rows away.
+                        FilteredResults.DefaultView.RowFilter = "AccountIsSummary=false AND Breakdown=false";
+                        DataView SummaryView = new DataView(FilteredResults);
+                        SummaryView.Sort = "CostCentreCode, AccountTypeOrder, AccountPath ASC";
+                        SummaryView.RowFilter = "Breakdown=true";
+
+                        foreach (DataRowView rv in FilteredResults.DefaultView)
+                        {
+                            if (DbAdapter.IsCancelled)
+                            {
+                                return;
                             }
 
                             DataRow Row = rv.Row;
-                            Row["Actual"] = (Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(Row["YearStart"])) * EffectiveExchangeRate;
+                            AddToPeriodBreakdownSummary(SummaryView, Row);
                         }
+
+                        FilteredResults.DefaultView.RowFilter = "(Breakdown=true OR AccountIsSummary=true) " + // Only the new rows with the calculated summaries
+                                                                "AND (P1<>0 OR P2<>0 OR P3<>0 OR P4<>0 OR P5<>0 OR P6<>0 " +
+                                                                "OR P7<>0 OR P8<>0 OR P9<>0 OR P10<>0 OR P11<>0 OR P12<>0) "; // No blank rows
+                        FilteredResults.DefaultView.Sort = "CostCentreCode, AccountType DESC, AccountPath ASC";
+                        FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
                     }
 
                     //
-                    // Some of these rows are from a year ago. I've updated their "Actual" values;
-                    // now I'll copy those into the current period "LastYear" fields.
-                    TLogging.Log(Catalog.GetString("Get Last year actuals.."), TLoggingType.ToStatusBar);
+                    // Finally, to make the hierarchical report possible,
+                    // I want to include a note to show whether a row has child rows,
+                    // and if it does, I'll copy this row to a new row, below the children, marking the new row as "footer".
+                    TLogging.Log(Catalog.GetString("Format data for reporting.."), TLoggingType.ToStatusBar);
 
-                    foreach (DataRowView rv in ThisMonth)
+                    for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
                     {
                         if (DbAdapter.IsCancelled)
                         {
-                            return FilteredResults;
+                            return;
                         }
 
-                        DataRow Row = rv.Row;
-                        Int32 RowIdx = OldPeriod.Find(
-                            new Object[] {
-                                AccountingYear - 1,
-                                ReportPeriodEnd,
-                                Row["CostCentreCode"],
-                                Row["AccountCode"]
+                        Int32 ParentAccountLevel = Convert.ToInt32(FilteredResults.Rows[RowIdx]["AccountLevel"]);
+                        Boolean HasChildren = (Convert.ToInt32(FilteredResults.Rows[RowIdx + 1]["AccountLevel"]) > ParentAccountLevel)
+                                              || (Convert.ToBoolean(FilteredResults.Rows[RowIdx]["Breakdown"]) == false
+                                                  && Convert.ToBoolean(FilteredResults.Rows[RowIdx + 1]["Breakdown"]) == true);
+                        FilteredResults.Rows[RowIdx]["HasChildren"] = HasChildren;
+
+                        if (HasChildren)
+                        {
+                            if (CostCentreBreakdown)
+                            {
+                                //
+                                // Header and footer rows do not have Cost Centres -
+                                // The Cost Centre fields were used for sorting, but they're misleading so I'll remove them here:
+                                FilteredResults.Rows[RowIdx]["CostCentreCode"] = "";
+                                FilteredResults.Rows[RowIdx]["CostCentreName"] = "";
                             }
-                            );
 
-                        if (RowIdx >= 0)
-                        {
-                            DataRow LastYearRow = OldPeriod[RowIdx].Row;
-                            Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
-                            Row["BudgetLastYear"] = Convert.ToDecimal(LastYearRow["Budget"]) * EffectiveExchangeRate;
-                        }
+                            Int32 NextSiblingPos = -1;
 
-                        Row["Budget"] = Convert.ToDecimal(Row["Budget"]) * EffectiveExchangeRate;
-                    }
+                            for (Int32 ChildIdx = RowIdx + 2; ChildIdx < FilteredResults.Rows.Count; ChildIdx++)
+                            {
+                                if ((Convert.ToInt32(FilteredResults.Rows[ChildIdx]["AccountLevel"]) <= ParentAccountLevel)
+                                    && (Convert.ToBoolean(FilteredResults.Rows[ChildIdx]["Breakdown"]) == false)) // This row is not a child of mine
+                                {                                                                              // so I insert my footer before here.
+                                    NextSiblingPos = ChildIdx;
+                                    break;
+                                }
+                            }
 
-                    //
-                    // So now I don't have to look at last year's rows or last month's rows:
-                    ThisMonth.RowFilter = "Year=" + AccountingYear + " AND Period=" + ReportPeriodEnd;  // Only current period
-                    FilteredResults = ThisMonth.ToTable("IncomeExpense");
+                            DataRow FooterRow = FilteredResults.NewRow();
+                            DataUtilities.CopyAllColumnValues(FilteredResults.Rows[RowIdx], FooterRow);
+                            FooterRow["ParentFooter"] = true;
+                            FooterRow["HasChildren"] = false;
 
-                    //
-                    // I need to add in the "whole year budget" field:
-                    TLogging.Log(Catalog.GetString("Get Budgets.."), TLoggingType.ToStatusBar);
-
-                    foreach (DataRow Row in FilteredResults.Rows)
-                    {
-                        if (DbAdapter.IsCancelled)
-                        {
-                            return FilteredResults;
-                        }
-
-                        Query = "SELECT SUM(" + BudgetFieldName +
-                                ") AS WholeYearBudget FROM a_general_ledger_master_period WHERE a_glm_sequence_i=" +
-                                Convert.ToInt32(Row["Seq"]);
-                        DataTable YearBudgetTbl = DbAdapter.RunQuery(Query, "YearBudget", ReadTrans);
-
-                        if (YearBudgetTbl.Rows.Count > 0)
-                        {
-                            Row["WholeYearBudget"] = Convert.ToDecimal(YearBudgetTbl.Rows[0]["WholeYearBudget"]) * EffectiveExchangeRate;
-                        }
-                    }
-                } // If not Whole Year Periods Breakdown
-
-                //
-                // I only have "posting accounts" - I need to add the summary accounts.
-                TLogging.Log(Catalog.GetString("Summarise to parent accounts.."), TLoggingType.ToStatusBar);
-                AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber,
-                    HierarchyName,
-                    ReadTrans);
-
-                HierarchyTbl.DefaultView.Sort = "a_reporting_account_code_c";       // These two sort orders
-
-                if (CostCentreBreakdown)                                            // Are required by AddTotalsToParentAccountRow, below.
-                {
-                    FilteredResults.DefaultView.Sort = "AccountCode";
-                }
-                else
-                {
-                    FilteredResults.DefaultView.Sort = "CostCentreCode, AccountCode";
-                }
-
-                Int32 PostingAccountRecords = FilteredResults.Rows.Count;
-                Decimal PreviousActualYTD = 0;
-                String ActualAccountCode = "";
-
-                for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
-                {
-                    if (DbAdapter.IsCancelled)
-                    {
-                        return FilteredResults;
-                    }
-
-                    DataRow Row = FilteredResults.Rows[Idx];
-
-                    if (WholeYearPeriodsBreakdown)  // Because I missed out a chunk of code above, these rows have no "Actual" - only "ActualYTD".
-                    {                               // I need to calculate those Actuals before I go further.
-                        if (Row["AccountCode"].ToString() != ActualAccountCode)
-                        {
-                            ActualAccountCode = Row["AccountCode"].ToString();
-                            PreviousActualYTD = 0;
-                        }
-
-                        Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - PreviousActualYTD;
-                        PreviousActualYTD = Convert.ToDecimal(Row["ActualYTD"]);
-                    }
-
-                    String CostCentreParam = (CostCentreBreakdown) ? "" : Row["CostCentreCode"].ToString();
-                    String ParentAccountPath;
-                    Int32 ParentAccountTypeOrder;
-
-                    Int32 AccountLevel = AddTotalsToParentAccountRow(
-                        FilteredResults,
-                        HierarchyTbl,
-                        LedgerNumber,
-                        CostCentreParam,
-                        Row["AccountCode"].ToString(),
-                        Row,
-                        CostCentreBreakdown,
-                        WholeYearPeriodsBreakdown,
-                        out ParentAccountPath,
-                        out ParentAccountTypeOrder,
-                        ReadTrans);
-                    Row["AccountLevel"] = AccountLevel;
-                    Row["AccountPath"] = ParentAccountPath + "~" + Row["AccountCode"];
-                }
-
-                //
-                // Now if I re-order the result, and hide any rows that are empty or too detailed, it should be what I need!
-
-                Int32 DetailLevel = AParameters["param_nesting_depth"].ToInt32();
-                String DepthFilter = " AccountLevel<=" + DetailLevel.ToString();
-
-                if (CostCentreBreakdown)
-                {
-                    TLogging.Log(Catalog.GetString("Get Cost Centre Breakdown.."), TLoggingType.ToStatusBar);
-                    // I'm creating additional "breakdown" records for the per-CostCentre breakdown, and potentially removing
-                    // some records that were summed into those "breakdown" records.
-                    FilteredResults.DefaultView.Sort = "AccountType DESC, AccountPath ASC, CostCentreCode";
-                    FilteredResults.DefaultView.RowFilter = "Breakdown=false";
-                    // At this point I need to add together any transactions in more detailed levels, summarising them by Cost Centre,
-                    // and listing them under the account to which they relate:
-                    DataView SummaryView = new DataView(FilteredResults);
-                    SummaryView.Sort = "AccountTypeOrder, AccountPath ASC, CostCentreCode";
-                    SummaryView.RowFilter = "Breakdown=true";
-
-                    DataRow AccumulatingRow = FilteredResults.NewRow();  // This temporary row is not part of the result set - it's just a line of temporary vars.
-
-                    for (Int32 RowIdx = 0; RowIdx < FilteredResults.DefaultView.Count - 1; RowIdx++)
-                    {
-                        if (DbAdapter.IsCancelled)
-                        {
-                            return FilteredResults;
-                        }
-
-                        DataRow DetailRow = FilteredResults.DefaultView[RowIdx].Row;
-                        AddToCostCentreBreakdownSummary(SummaryView, DetailLevel, DetailRow);
-
-                        //
-                        // For posting accounts in "details" view, the cost centre breakdown rows will be presented after one or more rows with the same account.
-                        // The last account row will become a header, below, and any other rows with the same account will be removed.
-                        // So I need the values in those rows to accumulate into the last row.
-                        AccumulateTotalsPerCostCentre(DetailRow, AccumulatingRow);
-                    }
-
-                    FilteredResults.DefaultView.Sort = "AccountTypeOrder, AccountPath ASC, Breakdown, CostCentreCode";
-                }
-                else
-                {
-                    FilteredResults.DefaultView.Sort = "CostCentreCode, AccountTypeOrder, AccountPath ASC";
-                }
-
-                if (WholeYearPeriodsBreakdown)
-                {
-                    FilteredResults.DefaultView.RowFilter =
-                        DepthFilter;      // Nothing too detailed
-                }
-                else
-                {
-                    FilteredResults.DefaultView.RowFilter =
-                        "(Actual <> 0 OR ActualYTD <> 0 OR Budget <> 0 OR BudgetYTD <> 0)" + // Only non-zero rows
-                        " AND " + DepthFilter;                                               // Nothing too detailed
-                }
-
-                FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
-
-                if (WholeYearPeriodsBreakdown)
-                {
-                    TLogging.Log(Catalog.GetString("Get whole year breakdown.."), TLoggingType.ToStatusBar);
-                    //
-                    // If there are any unsummarised rows left after applying the Depth Filter,
-                    // I need to summarise them into new "per period" rows (with 12 "Actual" fields), and throw the original rows away.
-                    FilteredResults.DefaultView.RowFilter = "AccountIsSummary=false AND Breakdown=false";
-                    DataView SummaryView = new DataView(FilteredResults);
-                    SummaryView.Sort = "CostCentreCode, AccountTypeOrder, AccountPath ASC";
-                    SummaryView.RowFilter = "Breakdown=true";
-
-                    foreach (DataRowView rv in FilteredResults.DefaultView)
-                    {
-                        if (DbAdapter.IsCancelled)
-                        {
-                            return FilteredResults;
-                        }
-
-                        DataRow Row = rv.Row;
-                        AddToPeriodBreakdownSummary(SummaryView, Row);
-                    }
-
-                    FilteredResults.DefaultView.RowFilter = "(Breakdown=true OR AccountIsSummary=true) " + // Only the new rows with the calculated summaries
-                                                            "AND (P1<>0 OR P2<>0 OR P3<>0 OR P4<>0 OR P5<>0 OR P6<>0 " +
-                                                            "OR P7<>0 OR P8<>0 OR P9<>0 OR P10<>0 OR P11<>0 OR P12<>0) "; // No blank rows
-                    FilteredResults.DefaultView.Sort = "CostCentreCode, AccountType DESC, AccountPath ASC";
-                    FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
-                }
-
-                //
-                // Finally, to make the hierarchical report possible,
-                // I want to include a note to show whether a row has child rows,
-                // and if it does, I'll copy this row to a new row, below the children, marking the new row as "footer".
-                TLogging.Log(Catalog.GetString("Format data for reporting.."), TLoggingType.ToStatusBar);
-
-                for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
-                {
-                    if (DbAdapter.IsCancelled)
-                    {
-                        return FilteredResults;
-                    }
-
-                    Int32 ParentAccountLevel = Convert.ToInt32(FilteredResults.Rows[RowIdx]["AccountLevel"]);
-                    Boolean HasChildren = (Convert.ToInt32(FilteredResults.Rows[RowIdx + 1]["AccountLevel"]) > ParentAccountLevel)
-                                          || (Convert.ToBoolean(FilteredResults.Rows[RowIdx]["Breakdown"]) == false
-                                              && Convert.ToBoolean(FilteredResults.Rows[RowIdx + 1]["Breakdown"]) == true);
-                    FilteredResults.Rows[RowIdx]["HasChildren"] = HasChildren;
-
-                    if (HasChildren)
-                    {
-                        if (CostCentreBreakdown)
-                        {
-                            //
-                            // Header and footer rows do not have Cost Centres -
-                            // The Cost Centre fields were used for sorting, but they're misleading so I'll remove them here:
-                            FilteredResults.Rows[RowIdx]["CostCentreCode"] = "";
-                            FilteredResults.Rows[RowIdx]["CostCentreName"] = "";
-                        }
-
-                        Int32 NextSiblingPos = -1;
-
-                        for (Int32 ChildIdx = RowIdx + 2; ChildIdx < FilteredResults.Rows.Count; ChildIdx++)
-                        {
-                            if ((Convert.ToInt32(FilteredResults.Rows[ChildIdx]["AccountLevel"]) <= ParentAccountLevel)
-                                && (Convert.ToBoolean(FilteredResults.Rows[ChildIdx]["Breakdown"]) == false))  // This row is not a child of mine
-                            {                                                                                  // so I insert my footer before here.
-                                NextSiblingPos = ChildIdx;
-                                break;
+                            if (NextSiblingPos > 0)
+                            {
+                                FilteredResults.Rows.InsertAt(FooterRow, NextSiblingPos);
+                            }
+                            else
+                            {
+                                FilteredResults.Rows.Add(FooterRow);
                             }
                         }
-
-                        DataRow FooterRow = FilteredResults.NewRow();
-                        DataUtilities.CopyAllColumnValues(FilteredResults.Rows[RowIdx], FooterRow);
-                        FooterRow["ParentFooter"] = true;
-                        FooterRow["HasChildren"] = false;
-
-                        if (NextSiblingPos > 0)
-                        {
-                            FilteredResults.Rows.InsertAt(FooterRow, NextSiblingPos);
-                        }
-                        else
-                        {
-                            FilteredResults.Rows.Add(FooterRow);
-                        }
                     }
-                }
 
-                // For "Cost Centre Breakdown", the only transactions I want to see are the "breakdown" rows I've added.
-                // Everything else is removed unless it's a header or footer:
+                    // For "Cost Centre Breakdown", the only transactions I want to see are the "breakdown" rows I've added.
+                    // Everything else is removed unless it's a header or footer:
 
-                if (CostCentreBreakdown)
-                {
-                    FilteredResults.DefaultView.RowFilter = "Breakdown=true OR HasChildren=true OR ParentFooter=true";
-                    FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
-                }
+                    if (CostCentreBreakdown)
+                    {
+                        FilteredResults.DefaultView.RowFilter = "Breakdown=true OR HasChildren=true OR ParentFooter=true";
+                        FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
+                    }
 
-                TLogging.Log("", TLoggingType.ToStatusBar);
-            }
-            catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
-            {
-                TLogging.Log(ex.Message);
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    TLogging.Log("", TLoggingType.ToStatusBar);
+                }); // Get NewOrExisting AutoReadTransaction
 
             return FilteredResults;
-        } // IncomeExpenseTable
+        } // Income Expense Table
 
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
@@ -1670,137 +1647,134 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable HosaGiftsTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            try
-            {
-                Boolean PersonalHosa = (AParameters["param_filter_cost_centres"].ToString() == "PersonalCostcentres");
-                Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
-                String CostCentreCodes = AParameters["param_cost_centre_codes"].ToString();
+            DataTable resultTable = null;
+            TDBTransaction Transaction = null;
 
-                String LinkedCC_CCFilter = "";
-                String GiftDetail_CCfilter = "";
-
-                if (CostCentreCodes != "ALL")
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    LinkedCC_CCFilter = " AND LinkedCostCentre.a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
-                    GiftDetail_CCfilter = " AND GiftDetail.a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
-                }
+                    Boolean PersonalHosa = (AParameters["param_filter_cost_centres"].ToString() == "PersonalCostcentres");
+                    Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+                    String CostCentreCodes = AParameters["param_cost_centre_codes"].ToString();
 
-                Int32 IchNumber = AParameters["param_ich_number"].ToInt32();
+                    String LinkedCC_CCFilter = "";
+                    String GiftDetail_CCfilter = "";
 
-                String DateFilter = "";
-
-                if (AParameters["param_period"].ToBool() == true)
-                {
-                    Int32 periodYear = AParameters["param_year_i"].ToInt32();
-                    Int32 periodStart = AParameters["param_start_period_i"].ToInt32();
-                    Int32 periodEnd = AParameters["param_end_period_i"].ToInt32();
-                    DateFilter = "AND GiftBatch.a_batch_year_i = " + periodYear;
-
-                    if (periodStart == periodEnd)
+                    if (CostCentreCodes != "ALL")
                     {
-                        DateFilter += (" AND GiftBatch.a_batch_period_i = " + periodStart + " ");
+                        LinkedCC_CCFilter = " AND LinkedCostCentre.a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
+                        GiftDetail_CCfilter = " AND GiftDetail.a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
+                    }
+
+                    Int32 IchNumber = AParameters["param_ich_number"].ToInt32();
+
+                    String DateFilter = "";
+
+                    if (AParameters["param_period"].ToBool() == true)
+                    {
+                        Int32 periodYear = AParameters["param_year_i"].ToInt32();
+                        Int32 periodStart = AParameters["param_start_period_i"].ToInt32();
+                        Int32 periodEnd = AParameters["param_end_period_i"].ToInt32();
+                        DateFilter = "AND GiftBatch.a_batch_year_i = " + periodYear;
+
+                        if (periodStart == periodEnd)
+                        {
+                            DateFilter += (" AND GiftBatch.a_batch_period_i = " + periodStart + " ");
+                        }
+                        else
+                        {
+                            DateFilter += (" AND GiftBatch.a_batch_period_i >= " + periodStart +
+                                           " AND GiftBatch.a_batch_period_i <= " + periodEnd + " ");
+                        }
                     }
                     else
                     {
-                        DateFilter += (" AND GiftBatch.a_batch_period_i >= " + periodStart +
-                                       " AND GiftBatch.a_batch_period_i <= " + periodEnd + " ");
+                        DateTime dateStart = AParameters["param_start_date"].ToDate();
+                        DateTime dateEnd = AParameters["param_end_date"].ToDate();
+                        DateFilter = "AND GiftBatch.a_gl_effective_date_d >= '" + dateStart.ToString("yyyy-MM-dd") + "'" +
+                                     " AND GiftBatch.a_gl_effective_date_d <= '" + dateEnd.ToString("yyyy-MM-dd") + "' ";
                     }
-                }
-                else
-                {
-                    DateTime dateStart = AParameters["param_start_date"].ToDate();
-                    DateTime dateEnd = AParameters["param_end_date"].ToDate();
-                    DateFilter = "AND GiftBatch.a_gl_effective_date_d >= '" + dateStart.ToString("yyyy-MM-dd") + "'" +
-                                 " AND GiftBatch.a_gl_effective_date_d <= '" + dateEnd.ToString("yyyy-MM-dd") + "' ";
-                }
 
-                String Query = "SELECT ";
+                    String Query = "SELECT ";
 
-                if (PersonalHosa)
-                {
-                    Query += "LinkedCostCentre.a_cost_centre_code_c AS CostCentre, ";
-                }
-                else
-                {
-                    Query += "GiftDetail.a_cost_centre_code_c AS CostCentre, ";
-                }
-
-                Query +=
-                    "MotivationDetail.a_account_code_c AS AccountCode, " +
-                    "SUM(GiftDetail.a_gift_amount_n) AS GiftBaseAmount, " +
-                    "SUM(GiftDetail.a_gift_amount_intl_n) AS GiftIntlAmount, " +
-                    "SUM(a_gift_transaction_amount_n) AS GiftTransactionAmount, " +
-                    "GiftDetail.p_recipient_key_n AS RecipientKey, " +
-                    "Partner.p_partner_short_name_c AS RecipientShortname, " +
-                    "Partner.p_partner_short_name_c AS Narrative " +
-
-                    "FROM a_gift_detail AS GiftDetail, a_gift_batch AS GiftBatch, " +
-                    "a_motivation_detail AS MotivationDetail, " +
-                    "p_partner AS Partner";
-
-                if (PersonalHosa)
-                {
-                    Query += ",PUB_a_valid_ledger_number AS LinkedCostCentre";
-                }
-
-                Query += " WHERE GiftDetail.a_ledger_number_i = GiftBatch.a_ledger_number_i " +
-                         "AND GiftDetail.a_batch_number_i = GiftBatch.a_batch_number_i " +
-                         "AND GiftDetail.a_ledger_number_i = MotivationDetail.a_ledger_number_i " +
-                         "AND GiftDetail.a_motivation_group_code_c = MotivationDetail.a_motivation_group_code_c " +
-                         "AND GiftDetail.a_motivation_detail_code_c = MotivationDetail.a_motivation_detail_code_c " +
-                         "AND Partner.p_partner_key_n = GiftDetail.p_recipient_key_n " +
-                         "AND GiftDetail.a_ledger_number_i = " + LedgerNumber + " " +
-                         "AND GiftBatch.a_batch_status_c = '" + MFinanceConstants.BATCH_POSTED + "' " +
-                         DateFilter;
-
-                if (PersonalHosa)
-                {
-                    Query += "AND LinkedCostCentre.a_ledger_number_i = GiftDetail.a_ledger_number_i " +
-                             LinkedCC_CCFilter +
-                             "AND GiftDetail.p_recipient_key_n = LinkedCostCentre.p_partner_key_n ";
-                }
-                else
-                {
-                    Query += GiftDetail_CCfilter;
-                }
-
-                if (IchNumber != 0)
-                {
-                    Query += "AND GiftDetail.a_ich_number_i = " + IchNumber + " ";
-                }
-
-                Query += "GROUP BY CostCentre, AccountCode, GiftDetail.p_recipient_key_n, Partner.p_partner_short_name_c " +
-                         "ORDER BY CostCentre, AccountCode, Partner.p_partner_short_name_c ASC";
-
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
-                DataTable resultTable = DbAdapter.RunQuery(Query, "Gifts", Transaction);
-
-                resultTable.Columns.Add("Reference", typeof(string));
-
-                foreach (DataRow r in resultTable.Rows)
-                {
-                    if (DbAdapter.IsCancelled)
+                    if (PersonalHosa)
                     {
-                        return resultTable;
+                        Query += "LinkedCostCentre.a_cost_centre_code_c AS CostCentre, ";
+                    }
+                    else
+                    {
+                        Query += "GiftDetail.a_cost_centre_code_c AS CostCentre, ";
                     }
 
-                    r["Reference"] = StringHelper.PartnerKeyToStr(Convert.ToInt64(r["RecipientKey"]));
-                }
+                    Query +=
+                        "MotivationDetail.a_account_code_c AS AccountCode, " +
+                        "SUM(GiftDetail.a_gift_amount_n) AS GiftBaseAmount, " +
+                        "SUM(GiftDetail.a_gift_amount_intl_n) AS GiftIntlAmount, " +
+                        "SUM(a_gift_transaction_amount_n) AS GiftTransactionAmount, " +
+                        "GiftDetail.p_recipient_key_n AS RecipientKey, " +
+                        "Partner.p_partner_short_name_c AS RecipientShortname, " +
+                        "Partner.p_partner_short_name_c AS Narrative " +
 
-                TLogging.Log("", TLoggingType.ToStatusBar);
-                return resultTable;
-            }   // try
-            catch (Exception e)
-            {
-                TLogging.Log("Problem gift rows for HOSA report: " + e.ToString());
-                return null;
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-        } // HosaGiftsTable
+                        "FROM a_gift_detail AS GiftDetail, a_gift_batch AS GiftBatch, " +
+                        "a_motivation_detail AS MotivationDetail, " +
+                        "p_partner AS Partner";
+
+                    if (PersonalHosa)
+                    {
+                        Query += ",PUB_a_valid_ledger_number AS LinkedCostCentre";
+                    }
+
+                    Query += " WHERE GiftDetail.a_ledger_number_i = GiftBatch.a_ledger_number_i " +
+                             "AND GiftDetail.a_batch_number_i = GiftBatch.a_batch_number_i " +
+                             "AND GiftDetail.a_ledger_number_i = MotivationDetail.a_ledger_number_i " +
+                             "AND GiftDetail.a_motivation_group_code_c = MotivationDetail.a_motivation_group_code_c " +
+                             "AND GiftDetail.a_motivation_detail_code_c = MotivationDetail.a_motivation_detail_code_c " +
+                             "AND Partner.p_partner_key_n = GiftDetail.p_recipient_key_n " +
+                             "AND GiftDetail.a_ledger_number_i = " + LedgerNumber + " " +
+                             "AND GiftBatch.a_batch_status_c = '" + MFinanceConstants.BATCH_POSTED + "' " +
+                             DateFilter;
+
+                    if (PersonalHosa)
+                    {
+                        Query += "AND LinkedCostCentre.a_ledger_number_i = GiftDetail.a_ledger_number_i " +
+                                 LinkedCC_CCFilter +
+                                 "AND GiftDetail.p_recipient_key_n = LinkedCostCentre.p_partner_key_n ";
+                    }
+                    else
+                    {
+                        Query += GiftDetail_CCfilter;
+                    }
+
+                    if (IchNumber != 0)
+                    {
+                        Query += "AND GiftDetail.a_ich_number_i = " + IchNumber + " ";
+                    }
+
+                    Query += "GROUP BY CostCentre, AccountCode, GiftDetail.p_recipient_key_n, Partner.p_partner_short_name_c " +
+                             "ORDER BY CostCentre, AccountCode, Partner.p_partner_short_name_c ASC";
+
+                    TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                    resultTable = DbAdapter.RunQuery(Query, "Gifts", Transaction);
+
+                    resultTable.Columns.Add("Reference", typeof(string));
+
+                    foreach (DataRow r in resultTable.Rows)
+                    {
+                        if (DbAdapter.IsCancelled)
+                        {
+                            return;
+                        }
+
+                        r["Reference"] = StringHelper.PartnerKeyToStr(Convert.ToInt64(r["RecipientKey"]));
+                    }
+
+                    TLogging.Log("", TLoggingType.ToStatusBar);
+                    return;
+                }); // Get NewOrExisting AutoReadTransaction
+            return resultTable;
+        } // Hosa Gifts Table
 
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
@@ -1808,113 +1782,112 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable KeyMinGiftsTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            try
-            {
-                Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
-                String CostCentreCodes = AParameters["param_cost_centre_codes"].ToString();
+            DataTable resultTable = null;
+            TDBTransaction Transaction = null;
 
-                String CCfilter = "";
-
-                if (CostCentreCodes == "ALL")
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    CCfilter = "AND CostCentre.a_cost_centre_code_c=GiftDetail.a_cost_centre_code_c " +
-                               "AND CostCentre.a_cost_centre_type_c='" + MFinanceConstants.FOREIGN_CC_TYPE + "' " +
-                               "AND CostCentre.a_ledger_number_i=" + LedgerNumber + " ";
-                }
-                else
-                {
-                    CCfilter = " AND GiftDetail.a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
-                }
+                    Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+                    String CostCentreCodes = AParameters["param_cost_centre_codes"].ToString();
 
-                Int32 IchNumber = AParameters["param_ich_number"].ToInt32();
+                    String CCfilter = "";
 
-                String DateFilter = "";
-
-                if (AParameters["param_period"].ToBool() == true)
-                {
-                    Int32 periodYear = AParameters["param_year_i"].ToInt32();
-                    Int32 periodStart = AParameters["param_start_period_i"].ToInt32();
-                    Int32 periodEnd = AParameters["param_end_period_i"].ToInt32();
-                    DateFilter = "AND GiftBatch.a_batch_year_i = " + periodYear;
-
-                    if (periodStart == periodEnd)
+                    if (CostCentreCodes == "ALL")
                     {
-                        DateFilter += (" AND GiftBatch.a_batch_period_i = " + periodStart + " ");
+                        CCfilter = "AND CostCentre.a_cost_centre_code_c=GiftDetail.a_cost_centre_code_c " +
+                                   "AND CostCentre.a_cost_centre_type_c='" + MFinanceConstants.FOREIGN_CC_TYPE + "' " +
+                                   "AND CostCentre.a_ledger_number_i=" + LedgerNumber + " ";
                     }
                     else
                     {
-                        DateFilter += (" AND GiftBatch.a_batch_period_i >= " + periodStart +
-                                       " AND GiftBatch.a_batch_period_i <= " + periodEnd + " ");
+                        CCfilter = " AND GiftDetail.a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
                     }
-                }
-                else
-                {
-                    DateTime dateStart = AParameters["param_start_date"].ToDate();
-                    DateTime dateEnd = AParameters["param_end_date"].ToDate();
-                    DateFilter = "AND GiftBatch.a_gl_effective_date_d >= '" + dateStart.ToString("yyyy-MM-dd") + "'" +
-                                 " AND GiftBatch.a_gl_effective_date_d <= '" + dateEnd.ToString("yyyy-MM-dd") + "' ";
-                }
 
-                String Query = "SELECT " +
-                               "GiftBatch.a_gl_effective_date_d AS date, " +
-                               "GiftDetail.a_cost_centre_code_c AS CostCentreCode, " +
-                               "GiftDetail.a_gift_amount_n AS GiftBaseAmount, " +
-                               "GiftDetail.a_gift_amount_intl_n AS GiftIntlAmount, " +
-                               "CASE WHEN GiftDetail.a_recipient_ledger_number_n=GiftDetail.p_recipient_key_n THEN 'FIELD' ELSE 'KEYMIN' END AS RecipientType, "
-                               +
-                               "GiftDetail.p_recipient_key_n AS RecipientKey, " +
-                               "Recipient.p_partner_short_name_c AS RecipientShortname, " +
-                               "Donor.p_partner_key_n AS DonorKey, " +
-                               "Donor.p_partner_short_name_c AS DonorShortname " +
+                    Int32 IchNumber = AParameters["param_ich_number"].ToInt32();
 
-                               "FROM a_gift_detail AS GiftDetail, a_gift AS Gift, a_gift_batch AS GiftBatch, ";
+                    String DateFilter = "";
 
-                if (CostCentreCodes == "ALL")
-                {
-                    Query += "a_cost_centre AS CostCentre, ";
-                }
+                    if (AParameters["param_period"].ToBool() == true)
+                    {
+                        Int32 periodYear = AParameters["param_year_i"].ToInt32();
+                        Int32 periodStart = AParameters["param_start_period_i"].ToInt32();
+                        Int32 periodEnd = AParameters["param_end_period_i"].ToInt32();
+                        DateFilter = "AND GiftBatch.a_batch_year_i = " + periodYear;
 
-                Query += "p_partner AS Donor, p_partner AS Recipient " +
+                        if (periodStart == periodEnd)
+                        {
+                            DateFilter += (" AND GiftBatch.a_batch_period_i = " + periodStart + " ");
+                        }
+                        else
+                        {
+                            DateFilter += (" AND GiftBatch.a_batch_period_i >= " + periodStart +
+                                           " AND GiftBatch.a_batch_period_i <= " + periodEnd + " ");
+                        }
+                    }
+                    else
+                    {
+                        DateTime dateStart = AParameters["param_start_date"].ToDate();
+                        DateTime dateEnd = AParameters["param_end_date"].ToDate();
+                        DateFilter = "AND GiftBatch.a_gl_effective_date_d >= '" + dateStart.ToString("yyyy-MM-dd") + "'" +
+                                     " AND GiftBatch.a_gl_effective_date_d <= '" + dateEnd.ToString(
+                            "yyyy-MM-dd") + "' ";
+                    }
 
-                         "WHERE GiftBatch.a_ledger_number_i = " + LedgerNumber + " " +
-                         "AND GiftDetail.a_batch_number_i = GiftBatch.a_batch_number_i " +
-                         "AND (GiftDetail.a_recipient_ledger_number_n = GiftDetail.p_recipient_key_n " + // Field Gifts
-                         "OR (SELECT COUNT(p_partner_key_n) FROM p_unit WHERE p_unit.p_partner_key_n=GiftDetail.p_recipient_key_n AND p_unit.u_unit_type_code_c='KEY-MIN') > 0) "
-                         +
-                         "AND Gift.a_ledger_number_i = " + LedgerNumber + " " +
-                         "AND Gift.a_batch_number_i = GiftDetail.a_batch_number_i " +
-                         "AND Gift.a_gift_transaction_number_i = GiftDetail.a_gift_transaction_number_i " +
-                         CCfilter +
-                         "AND Donor.p_partner_key_n = Gift.p_donor_key_n " +
-                         "AND Recipient.p_partner_key_n = GiftDetail.p_recipient_key_n " +
-                         "AND GiftDetail.a_ledger_number_i = " + LedgerNumber + " " +
-                         "AND GiftBatch.a_batch_status_c = '" + MFinanceConstants.BATCH_POSTED + "' " +
-                         DateFilter;
+                    String Query = "SELECT " +
+                                   "GiftBatch.a_gl_effective_date_d AS date, " +
+                                   "GiftDetail.a_cost_centre_code_c AS CostCentreCode, " +
+                                   "GiftDetail.a_gift_amount_n AS GiftBaseAmount, " +
+                                   "GiftDetail.a_gift_amount_intl_n AS GiftIntlAmount, " +
+                                   "CASE WHEN GiftDetail.a_recipient_ledger_number_n=GiftDetail.p_recipient_key_n THEN 'FIELD' ELSE 'KEYMIN' END AS RecipientType, "
+                                   +
+                                   "GiftDetail.p_recipient_key_n AS RecipientKey, " +
+                                   "Recipient.p_partner_short_name_c AS RecipientShortname, " +
+                                   "Donor.p_partner_key_n AS DonorKey, " +
+                                   "Donor.p_partner_short_name_c AS DonorShortname " +
 
-                if (IchNumber != 0)
-                {
-                    Query += "AND GiftDetail.a_ich_number_i = " + IchNumber + " ";
-                }
+                                   "FROM a_gift_detail AS GiftDetail, a_gift AS Gift, a_gift_batch AS GiftBatch, ";
 
-                Query += "ORDER BY CostCentreCode, RecipientType Desc, RecipientKey, DonorKey";
+                    if (CostCentreCodes == "ALL")
+                    {
+                        Query += "a_cost_centre AS CostCentre, ";
+                    }
+
+                    Query += "p_partner AS Donor, p_partner AS Recipient " +
+
+                             "WHERE GiftBatch.a_ledger_number_i = " + LedgerNumber + " " +
+                             "AND GiftDetail.a_batch_number_i = GiftBatch.a_batch_number_i " +
+                             "AND (GiftDetail.a_recipient_ledger_number_n = GiftDetail.p_recipient_key_n " + // Field Gifts
+                             "OR (SELECT COUNT(p_partner_key_n) FROM p_unit WHERE p_unit.p_partner_key_n=GiftDetail.p_recipient_key_n AND p_unit.u_unit_type_code_c='KEY-MIN') > 0) "
+                             +
+                             "AND Gift.a_ledger_number_i = " + LedgerNumber + " " +
+                             "AND Gift.a_batch_number_i = GiftDetail.a_batch_number_i " +
+                             "AND Gift.a_gift_transaction_number_i = GiftDetail.a_gift_transaction_number_i " +
+                             CCfilter +
+                             "AND Donor.p_partner_key_n = Gift.p_donor_key_n " +
+                             "AND Recipient.p_partner_key_n = GiftDetail.p_recipient_key_n " +
+                             "AND GiftDetail.a_ledger_number_i = " + LedgerNumber + " " +
+                             "AND GiftBatch.a_batch_status_c = '" + MFinanceConstants.BATCH_POSTED + "' " +
+                             DateFilter;
+
+                    if (IchNumber != 0)
+                    {
+                        Query += "AND GiftDetail.a_ich_number_i = " + IchNumber + " ";
+                    }
+
+                    Query += "ORDER BY CostCentreCode, RecipientType Desc, RecipientKey, DonorKey";
 
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
-                DataTable resultTable = DbAdapter.RunQuery(Query, "Recipient", Transaction);
-                TLogging.Log("", TLoggingType.ToStatusBar);
-                return resultTable;
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("Problem getting gift rows for KeyMinGifts report: " + e.ToString());
-                return null;
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-        }
+                    TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                    resultTable = DbAdapter.RunQuery(Query, "Recipient", Transaction);
+                    TLogging.Log("", TLoggingType.ToStatusBar);
+                    return;
+                }); // Get NewOrExisting AutoReadTransaction
+
+            return resultTable;
+        } // KeyMin Gifts Table
 
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
@@ -1922,47 +1895,49 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable StewardshipTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            try
-            {
-                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
-                Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
-                Int32 IchNumber = AParameters["param_cmbICHNumber"].ToInt32();
-                Int32 period = AParameters["param_cmbReportPeriod"].ToInt32();
+            DataTable resultsTable = null;
+            TDBTransaction Transaction = null;
 
-                String StewardshipFilter = "a_ich_stewardship.a_ledger_number_i = " + LedgerNumber;
-
-                if (IchNumber == 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    StewardshipFilter += " AND a_ich_stewardship.a_period_number_i = " + period;
-                }
-                else
-                {
-                    StewardshipFilter += " AND a_ich_stewardship.a_ich_number_i = " + IchNumber;
-                }
+                    TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                    Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+                    Int32 IchNumber = AParameters["param_cmbICHNumber"].ToInt32();
+                    Int32 period = AParameters["param_cmbReportPeriod"].ToInt32();
 
-                String Query = "SELECT" +
-                               " a_ich_stewardship.a_cost_centre_code_c AS CostCentreCode, " +
-                               " a_cost_centre.a_cost_centre_name_c AS CostCentreName, " +
-                               " sum(a_ich_stewardship.a_income_amount_n) AS Income, " +
-                               " sum(a_ich_stewardship.a_expense_amount_n) AS Expense, " +
-                               " sum(a_ich_stewardship.a_direct_xfer_amount_n) AS Xfer," +
-                               " sum(a_ich_stewardship.a_income_amount_intl_n) AS IncomeIntl, " +
-                               " sum(a_ich_stewardship.a_expense_amount_intl_n) AS ExpenseIntl, " +
-                               " sum(a_ich_stewardship.a_direct_xfer_amount_intl_n) AS XferIntl " +
-                               " FROM a_ich_stewardship, a_cost_centre WHERE " +
-                               StewardshipFilter +
-                               " AND a_cost_centre.a_ledger_number_i = a_ich_stewardship.a_ledger_number_i" +
-                               " AND a_cost_centre.a_cost_centre_code_c = a_ich_stewardship.a_cost_centre_code_c " +
-                               " GROUP BY CostCentreCode, CostCentreName " +
-                               " ORDER BY CostCentreCode";
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-                TLogging.Log(Catalog.GetString(""), TLoggingType.ToStatusBar);
-                return DbAdapter.RunQuery(Query, "Stewardship", Transaction);
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    String StewardshipFilter = "a_ich_stewardship.a_ledger_number_i = " + LedgerNumber;
+
+                    if (IchNumber == 0)
+                    {
+                        StewardshipFilter += " AND a_ich_stewardship.a_period_number_i = " + period;
+                    }
+                    else
+                    {
+                        StewardshipFilter += " AND a_ich_stewardship.a_ich_number_i = " + IchNumber;
+                    }
+
+                    String Query = "SELECT" +
+                                   " a_ich_stewardship.a_cost_centre_code_c AS CostCentreCode, " +
+                                   " a_cost_centre.a_cost_centre_name_c AS CostCentreName, " +
+                                   " sum(a_ich_stewardship.a_income_amount_n) AS Income, " +
+                                   " sum(a_ich_stewardship.a_expense_amount_n) AS Expense, " +
+                                   " sum(a_ich_stewardship.a_direct_xfer_amount_n) AS Xfer," +
+                                   " sum(a_ich_stewardship.a_income_amount_intl_n) AS IncomeIntl, " +
+                                   " sum(a_ich_stewardship.a_expense_amount_intl_n) AS ExpenseIntl, " +
+                                   " sum(a_ich_stewardship.a_direct_xfer_amount_intl_n) AS XferIntl " +
+                                   " FROM a_ich_stewardship, a_cost_centre WHERE " +
+                                   StewardshipFilter +
+                                   " AND a_cost_centre.a_ledger_number_i = a_ich_stewardship.a_ledger_number_i" +
+                                   " AND a_cost_centre.a_cost_centre_code_c = a_ich_stewardship.a_cost_centre_code_c " +
+                                   " GROUP BY CostCentreCode, CostCentreName " +
+                                   " ORDER BY CostCentreCode";
+                    TLogging.Log(Catalog.GetString(""), TLoggingType.ToStatusBar);
+                    resultsTable = DbAdapter.RunQuery(Query, "Stewardship", Transaction);
+                }); // Get NewOrExisting AutoReadTransaction
+            return resultsTable;
         } // StewardshipTable
 
         /// <summary>
@@ -1971,67 +1946,70 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable FeesTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            try
-            {
-                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
-                Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
-                Int32 period = AParameters["param_cmbReportPeriod"].ToInt32();
-                Int32 YearNumber = AParameters["param_cmbYearEnding"].ToInt32();
-                String[] SelectedFees = AParameters["param_fee_codes"].ToString().Split(',');
-                Int32 FeeCols = SelectedFees.Length;
+            DataTable resultsTable = null;
+            TDBTransaction Transaction = null;
 
-                //
-                // This constant is copied from the client - it represents a reasonable maximum
-                // number of columns in the report, and hopefully it is as many as any field needs.
-                Int32 MAX_FEE_COUNT = 11;
-
-                String Query =
-                    "Select feestbl.*, giftstbl.* FROM " +
-                    "(SELECT a_processed_fee.a_cost_centre_code_c AS CostCentreCode, " +
-                    "a_cost_centre.a_cost_centre_name_c AS CostCentreName";
-
-                for (Int32 Idx = 0; Idx < MAX_FEE_COUNT; Idx++)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    if (Idx < FeeCols)
+                    TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                    Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+                    Int32 period = AParameters["param_cmbReportPeriod"].ToInt32();
+                    Int32 YearNumber = AParameters["param_cmbYearEnding"].ToInt32();
+                    String[] SelectedFees = AParameters["param_fee_codes"].ToString().Split(',');
+                    Int32 FeeCols = SelectedFees.Length;
+
+                    //
+                    // This constant is copied from the client - it represents a reasonable maximum
+                    // number of columns in the report, and hopefully it is as many as any field needs.
+                    Int32 MAX_FEE_COUNT = 11;
+
+                    String Query =
+                        "Select feestbl.*, giftstbl.* FROM " +
+                        "(SELECT a_processed_fee.a_cost_centre_code_c AS CostCentreCode, " +
+                        "a_cost_centre.a_cost_centre_name_c AS CostCentreName";
+
+                    for (Int32 Idx = 0; Idx < MAX_FEE_COUNT; Idx++)
                     {
-                        Query += ", SUM( case when (a_fee_code_c  = '" + SelectedFees[Idx] + "') then a_periodic_amount_n else 0 end )as F" + Idx;
+                        if (Idx < FeeCols)
+                        {
+                            Query += ", SUM( case when (a_fee_code_c  = '" + SelectedFees[Idx] + "') then a_periodic_amount_n else 0 end )as F" + Idx;
+                        }
+                        else // I'm always providing {MAX_FEE_COUNT} columns - some may be blank at RHS.
+                        {
+                            Query += ", 0 as F" + Idx;
+                        }
                     }
-                    else  // I'm always providing {MAX_FEE_COUNT} columns - some may be blank at RHS.
-                    {
-                        Query += ", 0 as F" + Idx;
-                    }
-                }
 
-                Query += " FROM a_processed_fee, a_cost_centre " +
-                         "WHERE a_processed_fee.a_ledger_number_i=" + LedgerNumber + " AND a_period_number_i=" + period + " " +
-                         "AND a_cost_centre.a_ledger_number_i = a_processed_fee.a_ledger_number_i " +
-                         "AND a_cost_centre.a_cost_centre_type_c='Foreign' " +
-                         "AND a_cost_centre.a_cost_centre_code_c = a_processed_fee.a_cost_centre_code_c " +
-                         "GROUP BY a_processed_fee.a_cost_centre_code_c, a_cost_centre.a_cost_centre_name_c" +
-                         ") feestbl, " +
+                    Query += " FROM a_processed_fee, a_cost_centre " +
+                             "WHERE a_processed_fee.a_ledger_number_i=" + LedgerNumber + " AND a_period_number_i=" + period + " " +
+                             "AND a_cost_centre.a_ledger_number_i = a_processed_fee.a_ledger_number_i " +
+                             "AND a_cost_centre.a_cost_centre_type_c='Foreign' " +
+                             "AND a_cost_centre.a_cost_centre_code_c = a_processed_fee.a_cost_centre_code_c " +
+                             "GROUP BY a_processed_fee.a_cost_centre_code_c, a_cost_centre.a_cost_centre_name_c" +
+                             ") feestbl, " +
 
-                         "(SELECT a_gift_detail.a_cost_centre_code_c AS CostCentreCode, SUM(a_gift_detail.a_gift_amount_n) AS Gifts " +
-                         "FROM a_gift_batch, a_gift_detail " +
-                         "WHERE " +
-                         "a_gift_batch.a_ledger_number_i = " + LedgerNumber + " " +
-                         "AND a_gift_batch.a_batch_year_i = " + YearNumber + " AND a_gift_batch.a_batch_period_i = " + period + " " +
-                         "AND a_gift_detail.a_ledger_number_i = " + LedgerNumber + " " +
-                         "AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i " +
-                         "GROUP BY a_gift_detail.a_cost_centre_code_c" +
-                         ") giftstbl " +
+                             "(SELECT a_gift_detail.a_cost_centre_code_c AS CostCentreCode, SUM(a_gift_detail.a_gift_amount_n) AS Gifts " +
+                             "FROM a_gift_batch, a_gift_detail " +
+                             "WHERE " +
+                             "a_gift_batch.a_ledger_number_i = " + LedgerNumber + " " +
+                             "AND a_gift_batch.a_batch_year_i = " + YearNumber + " AND a_gift_batch.a_batch_period_i = " + period + " " +
+                             "AND a_gift_detail.a_ledger_number_i = " + LedgerNumber + " " +
+                             "AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i " +
+                             "GROUP BY a_gift_detail.a_cost_centre_code_c" +
+                             ") giftstbl " +
 
-                         "WHERE feestbl.CostCentreCode = giftstbl.CostCentreCode " +
-                         "ORDER BY giftstbl.CostCentreCode ";
+                             "WHERE feestbl.CostCentreCode = giftstbl.CostCentreCode " +
+                             "ORDER BY giftstbl.CostCentreCode ";
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-                TLogging.Log(Catalog.GetString(""), TLoggingType.ToStatusBar);
-                return DbAdapter.RunQuery(Query, "Fees", Transaction);
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-        }
+                    TLogging.Log(Catalog.GetString(""), TLoggingType.ToStatusBar);
+                    resultsTable = DbAdapter.RunQuery(Query, "Fees", Transaction);
+                }); // Get NewOrExisting AutoReadTransaction
+
+            return resultsTable;
+        } // Fees Table
 
         /// <summary>
         /// Returns a DataTable to the client for use in client-side reporting
@@ -2057,7 +2035,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Results.Columns.Add(new DataColumn("ActualDebitIntl", typeof(Decimal)));
             Results.Columns.Add(new DataColumn("ActualCreditIntl", typeof(Decimal)));
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
                 delegate
                 {
                     ALedgerRow LedgerRow = (ALedgerRow)ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction).Rows[0];
@@ -2138,10 +2117,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                         Results.Rows.Add(NewRow);
                     }
-                });
+                });  // Get NewOrExisting AutoReadTransaction
 
             return Results;
-        }
+        } // AFO Table
 
         /* We want to report on summary accounts at the highest level of the tree that */
         /* have posting accounts reporting to them.  Recursively descend the tree      */
@@ -2235,7 +2214,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             DataRow ResultRow = Results.NewRow();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
                 delegate
                 {
                     ALedgerRow LedgerRow = (ALedgerRow)ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction).Rows[0];
@@ -2480,180 +2460,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     }
 
                     ResultRow["PersonnelOtherFieldsPriorYTD"] = PersonnelCount;
-                });
+                }); // Get NewOrExisting AutoReadTransaction
 
             Results.Rows.Add(ResultRow);
 
             return Results;
         }
 
-/* This has been moved to GiftReports.UIConnectors
- *
- *      /// <summary>
- *      /// Returns a DataTable to the client for use in client-side reporting
- *      /// </summary>
- *      [NoRemoting]
- *      public static DataTable GiftBatchDetailTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
- *      {
- *          TDBTransaction Transaction = null;
- *
- *          int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
- *          int BatchNumber = AParameters["param_batch_number_i"].ToInt32();
- *
- *          // create new datatable
- *          DataTable Results = new DataTable();
- *
- *          DBAccess.GDBAccessObj.BeginAutoReadTransaction(
- *              ref Transaction,
- *              delegate
- *              {
- *                  DateTime CurrentDate = DateTime.Today;
- *
- *                  string Query =
- *                      "SELECT DISTINCT a_gift_batch.a_batch_description_c, a_gift_batch.a_batch_status_c, a_gift_batch.a_gift_type_c, a_gift_batch.a_gl_effective_date_d, "
- +
- +                      "a_gift_batch.a_bank_cost_centre_c, a_gift_batch.a_bank_account_code_c, a_gift_batch.a_currency_code_c, a_gift_batch.a_hash_total_n, a_gift_batch.a_batch_total_n, "
- +
- +
- +                      "a_gift_detail.a_gift_transaction_number_i, a_gift_detail.a_detail_number_i, a_gift_detail.a_confidential_gift_flag_l, "
- +
- +                      "a_gift_detail.p_recipient_key_n, a_gift_detail.a_gift_amount_n, a_gift_detail.a_gift_amount_intl_n, a_gift_detail.a_gift_transaction_amount_n, "
- +
- +                      "a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, a_gift_detail.a_recipient_ledger_number_n, "
- +
- +                      "a_gift_detail.a_gift_comment_one_c, a_gift_detail.a_gift_comment_two_c, a_gift_detail.a_gift_comment_three_c, a_gift_detail.a_tax_deductible_pct_n, "
- +
- +
- +                      "a_gift.p_donor_key_n, a_gift.a_reference_c, a_gift.a_method_of_giving_code_c, a_gift.a_method_of_payment_code_c, "
- +
- +                      "a_gift.a_receipt_letter_code_c, a_gift.a_date_entered_d, a_gift.a_first_time_gift_l, a_gift.a_receipt_number_i, "
- +
- + "substring(Donor.p_partner_class_c FROM 1 for 1) AS DonorClass, "
- + "Donor.p_partner_short_name_c, Donor.p_receipt_letter_frequency_c, Donor.p_receipt_each_gift_l, "
- + "substring(Recipient.p_partner_class_c FROM 1 for 1) AS RecipientClass, Recipient.p_partner_short_name_c, "
- + "a_gift_detail.p_mailing_code_c AS MailingCode, "
- + "a_gift_detail.a_charge_flag_l AS ChargeFlag, "
- +
- +                      // true if donor has a valid Ex-Worker special type
- +                      "CASE WHEN EXISTS (SELECT p_partner_type.* FROM p_partner_type WHERE " +
- +                      "p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
- +                      " AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
- +                      " AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
- +                      " AND p_partner_type.p_type_code_c LIKE '" +
- +                      TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
- +                      ") THEN True ELSE False END AS EXWORKER, " +
- +
- +                      // true if the gift is restricted for the user
- +                      "CASE WHEN EXISTS (SELECT s_user_group.* FROM s_user_group " +
- +                      "WHERE a_gift.a_restricted_l IS true" +
- +                      " AND NOT EXISTS (SELECT s_group_gift.s_read_access_l FROM s_group_gift, s_user_group " +
- +                      "WHERE s_group_gift.s_read_access_l" +
- +                      " AND s_group_gift.a_ledger_number_i = " + LedgerNumber +
- +                      " AND s_group_gift.a_batch_number_i = " + BatchNumber +
- +                      " AND s_group_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
- +                      " AND s_user_group.s_user_id_c = '" + UserInfo.GUserInfo.UserID + "'" +
- +                      " AND s_user_group.s_group_id_c = s_group_gift.s_group_id_c" +
- +                      " AND s_user_group.s_unit_key_n = s_group_gift.s_group_unit_key_n)" +
- +                      ") THEN False ELSE True END AS ReadAccess " +
- +
- +                      "FROM a_gift_batch, a_gift_detail, a_gift, p_partner AS Donor, p_partner AS Recipient " +
- +
- +                      "WHERE a_gift_batch.a_ledger_number_i = " + LedgerNumber + " AND a_gift_batch.a_batch_number_i = " + BatchNumber +
- +                      " AND a_gift.a_ledger_number_i = " + LedgerNumber + " AND a_gift.a_batch_number_i = " + BatchNumber +
- +                      " AND a_gift_detail.a_ledger_number_i = " + LedgerNumber + " AND a_gift_detail.a_batch_number_i = " +
- +                      BatchNumber +
- +                      " AND a_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i " +
- +                      " AND Donor.p_partner_key_n = a_gift.p_donor_key_n" +
- +                      " AND Recipient.p_partner_key_n = a_gift_detail.p_recipient_key_n";
- +
- +                  Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
- +              });
- +
- +          return Results;
- +      }
- +
- +      /// <summary>
- +      /// Returns a DataTable to the client for use in client-side reporting
- +      /// </summary>
- +      [NoRemoting]
- +      public static DataTable RecipientTaxDeductPctTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
- +      {
- +          TDBTransaction Transaction = null;
- +
- +          // create new datatable
- +          DataTable Results = new DataTable();
- +
- +          DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
- +              delegate
- +              {
- +                  DateTime CurrentDate = DateTime.Today;
- +
- +                  string RecipientSelection = AParameters["param_recipient_selection"].ToString();
- +
- +                  string Query =
- +                      "SELECT DISTINCT p_partner_tax_deductible_pct.p_partner_key_n, p_partner_tax_deductible_pct.p_date_valid_from_d, " +
- +                      "p_partner_tax_deductible_pct.p_percentage_tax_deductible_n, p_partner.p_partner_short_name_c, " +
- +                      "p_partner_gift_destination.p_field_key_n, um_unit_structure.um_parent_unit_key_n " +
- +
- +                      "FROM p_partner_tax_deductible_pct " +
- +
- +                      "LEFT JOIN p_partner " +
- +                      "ON p_partner.p_partner_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
- +
- +                      "LEFT JOIN p_partner_gift_destination " +
- +                      "ON CASE WHEN p_partner.p_partner_class_c = 'FAMILY' " +
- +                      "THEN p_partner.p_partner_key_n = p_partner_gift_destination.p_partner_key_n " +
- +                      "AND p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate + "' " +
- +                      "AND (p_partner_gift_destination.p_date_expires_d IS NULL " +
- +                      "OR (p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate + "' " +
- +                      "AND p_partner_gift_destination.p_date_effective_d <> p_partner_gift_destination.p_date_expires_d)) END " +
- +
- +                      "LEFT JOIN um_unit_structure " +
- +                      "ON CASE WHEN p_partner.p_partner_class_c = 'UNIT' " +
- +                      "THEN NOT EXISTS (SELECT * FROM p_partner_type " +
- +                      "WHERE p_partner_type.p_partner_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
- +                      "AND p_partner_type.p_type_code_c = 'LEDGER') " +
- +                      "AND um_unit_structure.um_child_unit_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
- +                      "AND um_unit_structure.um_child_unit_key_n <> um_unit_structure.um_parent_unit_key_n END";
- +
- +                  if (RecipientSelection == "one_partner")
- +                  {
- +                      Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = " + AParameters["param_recipient_key"].ToInt64();
- +                  }
- +                  else if (RecipientSelection == "Extract")
- +                  {
- +                      // recipient must be part of extract
- +                      Query += " WHERE EXISTS(SELECT * FROM m_extract, m_extract_master";
- +
- +                      if (!AParameters["param_chkPrintAllExtract"].ToBool())
- +                      {
- +                          Query += ", a_gift_detail, a_gift_batch";
- +                      }
- +
- +                      Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = m_extract.p_partner_key_n " +
- +                               "AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i " +
- +                               "AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"] + "'";
- +
- +                      if (!AParameters["param_chkPrintAllExtract"].ToBool())
- +                      {
- +                          // recipient must have a posted gift
- +                          Query += " AND a_gift_detail.a_ledger_number_i = " + AParameters["param_ledger_number_i"] +
- +                                   " AND a_gift_detail.p_recipient_key_n = m_extract.p_partner_key_n " +
- +                                   "AND a_gift_batch.a_ledger_number_i = " + AParameters["param_ledger_number_i"] +
- +                                   " AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i " +
- +                                   "AND a_gift_batch.a_batch_status_c = 'Posted'";
- +                      }
- +
- +                      Query += ")";
- +                  }
- +
- +                  Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
- +              });
- +
- +          return Results;
- +      }
- +
- */
         /// <summary>
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
@@ -2733,17 +2546,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ") AllData WHERE AmountPeriod > 0 ORDER BY FieldKey, RecipientName"
             ;
             DataTable resultTable = new DataTable();
-            try
-            {
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-                resultTable = DbAdapter.RunQuery(Query, "FieldLeaderGiftSummary", Transaction);
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    resultTable = DbAdapter.RunQuery(Query, "FieldLeaderGiftSummary", Transaction);
+                });
             return resultTable;
-        }
+        } // Field Leader Gift Summary
 
         /// <summary>
         /// Returns a DataTable to the client for use in client-side reporting
@@ -2802,16 +2614,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                          + " ORDER BY batch.a_gl_effective_date_d"
                          );
-            DataTable tempTbl;
-            try
-            {
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-                tempTbl = DbAdapter.RunQuery(SqlQuery, "AllGifts", Transaction);
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            DataTable tempTbl = null;
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    tempTbl = DbAdapter.RunQuery(SqlQuery, "AllGifts", Transaction);
+                });
 
             DataTable resultTable = new DataTable();
             resultTable.Columns.Add("Year", typeof(Int32));
@@ -2898,7 +2709,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             } // For Year
 
             return resultTable;
-        }
+        } // Total Gifts Through Field
 
         // get Actuals for this month, YTD and Prior YTD and Budget YTD
         private static Decimal[] GetActualsAndBudget(
@@ -2987,78 +2798,70 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create filters from parameters
             AccountAndCostCentreFilters(AParameters, out CostCentreFilter, out AccountCodeFilter);
 
-            TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction ReadTrans = null;
             DataTable resultTable = null;
-
-            String OrderBy = " ORDER BY a_cost_centre.a_cost_centre_type_c DESC, glm.a_cost_centre_code_c, glm.a_account_code_c";
-
-            if (AParameters["param_sortby"].ToString() == "Account")
-            {
-                OrderBy = " ORDER BY glm.a_account_code_c, a_cost_centre.a_cost_centre_type_c DESC, glm.a_cost_centre_code_c";
-            }
-
-            try
-            {
-                String Query = "SELECT DISTINCT" +
-                               " glm.a_year_i AS Year," +
-                               " glmp.a_period_number_i AS Period," +
-                               " glm.a_cost_centre_code_c AS CostCentreCode," +
-                               " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
-                               " a_cost_centre.a_cost_centre_type_c AS CostCentreType," +
-                               " a_account.a_debit_credit_indicator_l AS IsDebit," +
-                               " glmp." + ActualFieldName + " AS Balance," +
-                               " 0.0 as Debit, " +
-                               " 0.0 as Credit, " +
-                               " glm.a_account_code_c AS AccountCode," +
-                               " a_account.a_account_code_short_desc_c AS AccountName" +
-
-                               " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
-                               " WHERE glm.a_ledger_number_i=" + LedgerNumber +
-                               " AND glm.a_year_i=" + AccountingYear +
-                               " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
-                               " AND glmp.a_period_number_i=" + ReportPeriodEnd +
-                               " AND glmp." + ActualFieldName + " <> 0" +
-
-                               " AND a_account.a_account_code_c = glm.a_account_code_c" +
-                               " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
-                               " AND a_account.a_posting_status_l = true" +
-                               " AND a_cost_centre.a_ledger_number_i = glm.a_ledger_number_i" +
-                               " AND a_cost_centre.a_cost_centre_code_c = glm.a_cost_centre_code_c" +
-                               " AND a_cost_centre.a_posting_cost_centre_flag_l = true" +
-                               CostCentreFilter +
-                               AccountCodeFilter +
-                               OrderBy;
-                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
-                resultTable = DbAdapter.RunQuery(Query, "TrialBalance", ReadTrans);
-
-                foreach (DataRow Row in resultTable.Rows)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTrans,
+                delegate
                 {
-                    Decimal Amount = Convert.ToDecimal(Row["Balance"]);
-                    Boolean IsDebit = Convert.ToBoolean(Row["IsDebit"]);
+                    String OrderBy = " ORDER BY a_cost_centre.a_cost_centre_type_c DESC, glm.a_cost_centre_code_c, glm.a_account_code_c";
 
-                    if (Amount < 0)
+                    if (AParameters["param_sortby"].ToString() == "Account")
                     {
-                        IsDebit = !IsDebit;
-                        Amount = 0 - Amount;
+                        OrderBy = " ORDER BY glm.a_account_code_c, a_cost_centre.a_cost_centre_type_c DESC, glm.a_cost_centre_code_c";
                     }
 
-                    String ToField = IsDebit ? "Debit" : "Credit";
-                    Row[ToField] = Amount;
-                }
+                    String Query = "SELECT DISTINCT" +
+                                   " glm.a_year_i AS Year," +
+                                   " glmp.a_period_number_i AS Period," +
+                                   " glm.a_cost_centre_code_c AS CostCentreCode," +
+                                   " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
+                                   " a_cost_centre.a_cost_centre_type_c AS CostCentreType," +
+                                   " a_account.a_debit_credit_indicator_l AS IsDebit," +
+                                   " glmp." + ActualFieldName + " AS Balance," +
+                                   " 0.0 as Debit, " +
+                                   " 0.0 as Credit, " +
+                                   " glm.a_account_code_c AS AccountCode," +
+                                   " a_account.a_account_code_short_desc_c AS AccountName" +
 
-                TLogging.Log("", TLoggingType.ToStatusBar);
-            }
-            catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
-            {
-                TLogging.Log(ex.Message);
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                                   " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
+                                   " WHERE glm.a_ledger_number_i=" + LedgerNumber +
+                                   " AND glm.a_year_i=" + AccountingYear +
+                                   " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
+                                   " AND glmp.a_period_number_i=" + ReportPeriodEnd +
+                                   " AND glmp." + ActualFieldName + " <> 0" +
+
+                                   " AND a_account.a_account_code_c = glm.a_account_code_c" +
+                                   " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
+                                   " AND a_account.a_posting_status_l = true" +
+                                   " AND a_cost_centre.a_ledger_number_i = glm.a_ledger_number_i" +
+                                   " AND a_cost_centre.a_cost_centre_code_c = glm.a_cost_centre_code_c" +
+                                   " AND a_cost_centre.a_posting_cost_centre_flag_l = true" +
+                                   CostCentreFilter +
+                                   AccountCodeFilter +
+                                   OrderBy;
+                    TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                    resultTable = DbAdapter.RunQuery(Query, "TrialBalance", ReadTrans);
+
+                    foreach (DataRow Row in resultTable.Rows)
+                    {
+                        Decimal Amount = Convert.ToDecimal(Row["Balance"]);
+                        Boolean IsDebit = Convert.ToBoolean(Row["IsDebit"]);
+
+                        if (Amount < 0)
+                        {
+                            IsDebit = !IsDebit;
+                            Amount = 0 - Amount;
+                        }
+
+                        String ToField = IsDebit ? "Debit" : "Credit";
+                        Row[ToField] = Amount;
+                    }
+
+                    TLogging.Log("", TLoggingType.ToStatusBar);
+                }); // Get NewOrExisting AutoReadTransaction
 
             return resultTable;
-        } // TrialBalanceTable
+        } // Trial Balance Table
 
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
@@ -3079,73 +2882,64 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create filters from parameters
             AccountAndCostCentreFilters(AParameters, out CostCentreFilter, out AccountCodeFilter);
 
-            TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             DataTable resultTable = null;
+            TDBTransaction ReadTrans = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTrans,
+                delegate
+                {
+                    TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
 
-            TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
+                    decimal ExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
+                        LedgerNumber,
+                        AccountingYear,
+                        ReportPeriodEnd,
+                        -1);
 
-            decimal ExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
-                LedgerNumber,
-                AccountingYear,
-                ReportPeriodEnd,
-                -1);
+                    String OrderBy = " ORDER BY glm.a_cost_centre_code_c";
 
-            String OrderBy = " ORDER BY glm.a_cost_centre_code_c";
+                    String Query = "SELECT " +
+                                   " glm.a_year_i AS Year," +
+                                   " glmp.a_period_number_i AS Period," +
+                                   " glm.a_cost_centre_code_c AS CostCentreCode," +
+                                   " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
+                                   " a_cost_centre.a_cost_centre_type_c AS CostCentreType," +
 
-            try
-            {
-                String Query = "SELECT " +
-                               " glm.a_year_i AS Year," +
-                               " glmp.a_period_number_i AS Period," +
-                               " glm.a_cost_centre_code_c AS CostCentreCode," +
-                               " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
-                               " a_cost_centre.a_cost_centre_type_c AS CostCentreType," +
+                                   " SUM (CASE" +
+                                   " WHEN (a_account.a_debit_credit_indicator_l = false AND glmp.a_actual_base_n > 0)" +
+                                   " OR (a_account.a_debit_credit_indicator_l = true AND glmp.a_actual_base_n < 0)" +
+                                   " THEN ABS(glmp.a_actual_base_n) * " + ExchangeRate +
+                                   " ELSE 0 END) AS Credit," +
+                                   " SUM (CASE" +
+                                   " WHEN (a_account.a_debit_credit_indicator_l = true AND glmp.a_actual_base_n > 0)" +
+                                   " OR (a_account.a_debit_credit_indicator_l = false AND glmp.a_actual_base_n < 0)" +
+                                   " THEN ABS(glmp.a_actual_base_n) * " + ExchangeRate +
+                                   " ELSE 0 END) AS Debit" +
 
-                               " SUM (CASE" +
-                               " WHEN (a_account.a_debit_credit_indicator_l = false AND glmp.a_actual_base_n > 0)" +
-                               " OR (a_account.a_debit_credit_indicator_l = true AND glmp.a_actual_base_n < 0)" +
-                               " THEN ABS(glmp.a_actual_base_n) * " + ExchangeRate +
-                               " ELSE 0 END) AS Credit," +
-                               " SUM (CASE" +
-                               " WHEN (a_account.a_debit_credit_indicator_l = true AND glmp.a_actual_base_n > 0)" +
-                               " OR (a_account.a_debit_credit_indicator_l = false AND glmp.a_actual_base_n < 0)" +
-                               " THEN ABS(glmp.a_actual_base_n) * " + ExchangeRate +
-                               " ELSE 0 END) AS Debit" +
+                                   " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
+                                   " WHERE glm.a_ledger_number_i=" + LedgerNumber +
+                                   " AND glm.a_year_i=" + AccountingYear +
+                                   " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
+                                   " AND glmp.a_period_number_i=" + ReportPeriodEnd +
+                                   " AND glmp.a_actual_base_n <> 0" +
 
-                               " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
-                               " WHERE glm.a_ledger_number_i=" + LedgerNumber +
-                               " AND glm.a_year_i=" + AccountingYear +
-                               " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
-                               " AND glmp.a_period_number_i=" + ReportPeriodEnd +
-                               " AND glmp.a_actual_base_n <> 0" +
+                                   " AND a_account.a_account_code_c = glm.a_account_code_c" +
+                                   " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
+                                   " AND a_account.a_posting_status_l = true" +
+                                   " AND a_cost_centre.a_ledger_number_i = glm.a_ledger_number_i" +
+                                   " AND a_cost_centre.a_cost_centre_code_c = glm.a_cost_centre_code_c" +
+                                   " AND a_cost_centre.a_posting_cost_centre_flag_l = true" +
+                                   CostCentreFilter +
+                                   AccountCodeFilter +
+                                   " GROUP BY Year, Period, CostCentreCode, CostCentreName, CostCentreType " +
+                                   OrderBy;
 
-                               " AND a_account.a_account_code_c = glm.a_account_code_c" +
-                               " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
-                               " AND a_account.a_posting_status_l = true" +
-                               " AND a_cost_centre.a_ledger_number_i = glm.a_ledger_number_i" +
-                               " AND a_cost_centre.a_cost_centre_code_c = glm.a_cost_centre_code_c" +
-                               " AND a_cost_centre.a_posting_cost_centre_flag_l = true" +
-                               CostCentreFilter +
-                               AccountCodeFilter +
-                               " GROUP BY Year, Period, CostCentreCode, CostCentreName, CostCentreType " +
-                               OrderBy;
+                    TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                    resultTable = DbAdapter.RunQuery(Query, "SurplusDeficitTable", ReadTrans);
 
-                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
-                resultTable = DbAdapter.RunQuery(Query, "SurplusDeficitTable", ReadTrans);
-
-                TLogging.Log("", TLoggingType.ToStatusBar);
-            }
-            catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
-            {
-                TLogging.Log(ex.Message);
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
+                    TLogging.Log("", TLoggingType.ToStatusBar);
+                }); // Get NewOrExisting AutoReadTransaction
             return resultTable;
-        } // SurplusDeficitTable
+        } // Surplus Deficit Table
 
         private static void AccountAndCostCentreFilters(Dictionary <String, TVariant>AParameters,
             out string ACostCentreFilter,
@@ -3206,7 +3000,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             TDBTransaction Transaction = null;
             string ReturnValue = "";
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
                 delegate
                 {
                     AGiftBatchTable GiftBatchTable = AGiftBatchAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, Transaction);
@@ -3215,9 +3010,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     {
                         ReturnValue = GiftBatchTable[0].CurrencyCode;
                     }
-                });
+                }); // Get NewOrExisting AutoReadTransaction
 
             return ReturnValue;
-        }
+        } // Get Transaction Currency
     }
 }

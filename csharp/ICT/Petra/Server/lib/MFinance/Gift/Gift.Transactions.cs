@@ -3095,6 +3095,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 delegate
                 {
                     List <Int32>GLBatchNumbers = new List <int>();
+                    Dictionary <Int32, String>BatchCurrencyCode = new Dictionary <Int32, String>();
 
                     try
                     {
@@ -3117,6 +3118,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 return;
                             }
 
+                            BatchCurrencyCode[BatchNumber] = MainDS.AGiftBatch[0].CurrencyCode;
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Posting gift batches"),
                                 ABatchNumbers.IndexOf(BatchNumber) * 3 + 1);
@@ -3171,7 +3173,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 VerificationResult.AddCollection(SingleVerificationResultCollection);
                                 return;
                             }
-                        }
+                        } // foreach BatchNumber
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                             Catalog.GetString("Posting gift batches"),
@@ -3189,6 +3191,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         {
                             VerificationResult.AddCollection(SingleVerificationResultCollection);
                             SubmissionOK = true;
+
+                            String LedgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
+
+                            //
+                            // Print Gift Batch Detail report (on the client!)
+                            foreach (Int32 BatchNumber in ABatchNumbers)
+                            {
+                                String[] Params =
+                                {
+                                    "param_ledger_number_i=" + ALedgerNumber,
+                                    "param_batch_number_i=" + BatchNumber,
+                                    "param_ledger_name=\"" + LedgerName + "\"",
+                                    "param_currency_name=\"" + BatchCurrencyCode[BatchNumber] + "\""
+                                };
+                                String ParamStr = String.Join(",", Params);
+                                TGLPosting.PrintReportOnClientDelegate("Gift Batch Detail", ParamStr);
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -3204,7 +3223,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
                     }
-                });
+                }); // Begin AutoTransaction
 
             TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
@@ -3336,7 +3355,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static PBankingDetailsTable GetDonorBankingDetails(long APartnerKey, int ABankingDetailsKey = 0)
         {
-            PBankingDetailsTable DonorBankingDetails = null;
+            PBankingDetailsTable DonorBankingDetails = new PBankingDetailsTable();
 
             TDBTransaction Transaction = null;
 
@@ -3355,7 +3374,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         {
                             if (PBankingDetailsUsageAccess.Exists(APartnerKey, Row.BankingDetailsKey, "MAIN", Transaction))
                             {
-                                DonorBankingDetails = new PBankingDetailsTable();
                                 DonorBankingDetails.Rows.Add((object[])Row.ItemArray.Clone());
                                 break;
                             }

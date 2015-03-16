@@ -685,7 +685,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     strList += ", ";
                 }
 
-                strList += Row.BatchNumber;
+                strList += String.Format("{0}: {1}", Row.BatchNumber, Row.BatchDescription);
             }
 
             return "(" + strList + ")";

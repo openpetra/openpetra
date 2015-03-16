@@ -670,18 +670,15 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             out bool AEmailGiftStatement,
             out bool AAnonymousDonor)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = null;
+            PPartnerTable PartnerTbl = null;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-            PPartnerTable PartnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
+                {
+                    PartnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+                });
 
             if (PartnerTbl.Rows.Count > 0)
             {

@@ -295,6 +295,10 @@ namespace Ict.Common.DB
         /// <summary>References the current Transaction, if there is any.</summary>
         private DbTransaction FTransaction;
         private StackTrace FTransactionStackTrace;
+
+        private Object FTransactionLock = new Object();
+        private Object FNewOrExistingLock = new Object();
+
         private int FTransactionThreadId;
 
         /// <summary>Tells whether the next Command that is sent to the DB should be a 'prepared' Command.</summary>
@@ -1238,112 +1242,118 @@ namespace Ict.Common.DB
         public TDBTransaction BeginTransaction(Int16 ARetryAfterXSecWhenUnsuccessful = -1)
         {
             TDBTransaction ReturnValue;
-            string NestedTransactionProblemError;
 
-            // Guard against running into a 'Nested' DB Transaction (which are not supported!)
-            if (Transaction != null)
+            lock (FTransactionLock)
             {
-                NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid,
-                    Transaction.Reused, FTransactionThreadId, Thread.CurrentThread.ManagedThreadId, TLogging.StackTraceToText(FTransactionStackTrace));
-                TLogging.Log(NestedTransactionProblemError);
+                string NestedTransactionProblemError;
 
-                throw new EDBTransactionBusyException(
-                    "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " +
-                    "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " +
-                    "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
-            }
-
-            try
-            {
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                // Guard against running into a 'Nested' DB Transaction (which are not supported!)
+                if (Transaction != null)
                 {
-                    TLogging.Log(
-                        "Trying to start a DB Transaction... (in Appdomain " +
-                        AppDomain.CurrentDomain.ToString() + " ).");
+                    NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid,
+                        Transaction.Reused, FTransactionThreadId, Thread.CurrentThread.ManagedThreadId,
+                        TLogging.StackTraceToText(FTransactionStackTrace));
+                    TLogging.Log(NestedTransactionProblemError);
+
+                    throw new EDBTransactionBusyException(
+                        "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " +
+                        "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " +
+                        "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
                 }
 
-                FTransactionStackTrace = new StackTrace(true);
-                FTransactionThreadId = Thread.CurrentThread.ManagedThreadId;
-
-                FTransaction = FSqlConnection.BeginTransaction();
-
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                try
                 {
-                    TLogging.Log("DB Transaction started (in Appdomain " + AppDomain.CurrentDomain.ToString() + " ).");
-                    TLogging.Log("Start of stack trace.->");
-                    TLogging.LogStackTrace(TLoggingType.ToLogfile);
-                    TLogging.Log("<- End of stack trace");
-                }
-            }
-            catch (System.InvalidOperationException exp)
-            {
-                // System.InvalidOperationException is thrown when a transaction is currently active. Parallel/concurrent transactions are not supported!
-                // Retry again if programmer wants that
-                if (ARetryAfterXSecWhenUnsuccessful != -1)
-                {
-                    Thread.Sleep(ARetryAfterXSecWhenUnsuccessful * 1000);
-
-                    // Retry again to begin a transaction.
-                    // Note: If this fails again, an Exception is thrown as if there was
-                    // no ARetryAfterXSecWhenUnsuccessful specfied!
-                    ReturnValue = BeginTransaction(-1);
-
-                    return ReturnValue;
-                }
-                else
-                {
-                    throw new EDBTransactionBusyException("", exp);
-                }
-            }
-            catch (Exception exp)
-            {
-                if ((FSqlConnection == null) || (FSqlConnection.State == ConnectionState.Broken) || (FSqlConnection.State == ConnectionState.Closed))
-                {
-                    //
-                    // Reconnect to the database
-                    //
-                    TLogging.Log("BeginTransaction: Trying to reconnect to the Database because an Exception occured: " + exp.ToString());
-
-                    if (FSqlConnection == null)
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
                         TLogging.Log(
-                            "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't available! (FSqlConnection is null!)");
+                            "Trying to start a DB Transaction... (in Appdomain " +
+                            AppDomain.CurrentDomain.ToString() + " ).");
+                    }
+
+                    FTransactionStackTrace = new StackTrace(true);
+                    FTransactionThreadId = Thread.CurrentThread.ManagedThreadId;
+
+                    FTransaction = FSqlConnection.BeginTransaction();
+
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                    {
+                        TLogging.Log("DB Transaction started (in Appdomain " + AppDomain.CurrentDomain.ToString() + " ).");
+                        TLogging.Log("Start of stack trace.->");
+                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                        TLogging.Log("<- End of stack trace");
+                    }
+                }
+                catch (System.InvalidOperationException exp)
+                {
+                    // System.InvalidOperationException is thrown when a transaction is currently active. Parallel/concurrent transactions are not supported!
+                    // Retry again if programmer wants that
+                    if (ARetryAfterXSecWhenUnsuccessful != -1)
+                    {
+                        Thread.Sleep(ARetryAfterXSecWhenUnsuccessful * 1000);
+
+                        // Retry again to begin a transaction.
+                        // Note: If this fails again, an Exception is thrown as if there was
+                        // no ARetryAfterXSecWhenUnsuccessful specfied!
+                        ReturnValue = BeginTransaction(-1);
+
+                        return ReturnValue;
                     }
                     else
                     {
-                        TLogging.Log(
-                            "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't allowing the start of a DB Transaction! (Connection State: "
-                            +
-                            FSqlConnection.State.ToString("G") + ")");
+                        throw new EDBTransactionBusyException("", exp);
+                    }
+                }
+                catch (Exception exp)
+                {
+                    if ((FSqlConnection == null) || (FSqlConnection.State == ConnectionState.Broken)
+                        || (FSqlConnection.State == ConnectionState.Closed))
+                    {
+                        //
+                        // Reconnect to the database
+                        //
+                        TLogging.Log(exp.Message);
 
-                        if (FSqlConnection.State == ConnectionState.Broken)
+                        if (FSqlConnection == null)
                         {
-                            FSqlConnection.Close();
+                            TLogging.Log(
+                                "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't available! (FSqlConnection is null!)");
+                        }
+                        else
+                        {
+                            TLogging.Log(
+                                "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't allowing the start of a DB Transaction! (Connection State: "
+                                +
+                                FSqlConnection.State.ToString("G") + ")");
+
+                            if (FSqlConnection.State == ConnectionState.Broken)
+                            {
+                                FSqlConnection.Close();
+                            }
+
+                            FSqlConnection.Dispose();
+                            FSqlConnection = null;
                         }
 
-                        FSqlConnection.Dispose();
-                        FSqlConnection = null;
+                        try
+                        {
+                            EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword, FConnectionString);
+                        }
+                        catch (Exception e2)
+                        {
+                            LogExceptionAndThrow(e2,
+                                "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
+                        }
+
+                        return BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
                     }
 
-                    try
-                    {
-                        EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword, FConnectionString);
-                    }
-                    catch (Exception e2)
-                    {
-                        LogExceptionAndThrow(e2,
-                            "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
-                    }
-
-                    return BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
+                    LogExceptionAndThrow(exp, "BeginTransaction: Error creating Transaction - Server-side error.");
                 }
 
-                LogExceptionAndThrow(exp, "BeginTransaction: Error creating Transaction - Server-side error.");
-            }
+                FLastDBAction = DateTime.Now;
 
-            FLastDBAction = DateTime.Now;
-
-            return new TDBTransaction(FTransaction);
+                return new TDBTransaction(FTransaction);
+            } // Transaction Lock
         }
 
         /// <summary>
@@ -1366,115 +1376,120 @@ namespace Ict.Common.DB
                 throw new EOPDBException("DBAccess BeginTransaction: FDataBaseRDBMS is null");
             }
 
-            // Guard against running into a 'Nested' DB Transaction (which are not supported!)
-            if (Transaction != null)
+            lock (FTransactionLock)
             {
-                NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid,
-                    Transaction.Reused, FTransactionThreadId, Thread.CurrentThread.ManagedThreadId, TLogging.StackTraceToText(FTransactionStackTrace));
-                TLogging.Log(NestedTransactionProblemError);
-
-                throw new EDBTransactionBusyException(
-                    "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " +
-                    "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " +
-                    "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
-            }
-
-            FDataBaseRDBMS.AdjustIsolationLevel(ref AIsolationLevel);
-
-            try
-            {
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                // Guard against running into a 'Nested' DB Transaction (which are not supported!)
+                if (Transaction != null)
                 {
-                    TLogging.Log(
-                        "Trying to start a DB Transaction with IsolationLevel '" + AIsolationLevel.ToString() +
-                        "... (in Appdomain " +
-                        AppDomain.CurrentDomain.ToString() + " ).");
+                    NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid,
+                        Transaction.Reused, FTransactionThreadId, Thread.CurrentThread.ManagedThreadId,
+                        TLogging.StackTraceToText(FTransactionStackTrace));
+                    TLogging.Log(NestedTransactionProblemError);
+
+                    throw new EDBTransactionBusyException(
+                        "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " +
+                        "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " +
+                        "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
                 }
 
-                FTransactionStackTrace = new StackTrace(true);
-                FTransactionThreadId = Thread.CurrentThread.ManagedThreadId;
+                FDataBaseRDBMS.AdjustIsolationLevel(ref AIsolationLevel);
 
-                FTransaction = FSqlConnection.BeginTransaction(AIsolationLevel);
-
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                try
                 {
-                    TLogging.Log(
-                        "DB Transaction with IsolationLevel '" + AIsolationLevel.ToString() + "' started (in Appdomain " +
-                        AppDomain.CurrentDomain.ToString() + " ).");
-                    TLogging.Log("Start of stack trace.->");
-                    TLogging.LogStackTrace(TLoggingType.ToLogfile);
-                    TLogging.Log("<- End of stack trace");
-                }
-            }
-            catch (System.InvalidOperationException exp)
-            {
-                // System.InvalidOperationException is thrown when a transaction is currently active. Parallel transactions are not supported!
-                // Retry again if programmer wants that
-                if (ARetryAfterXSecWhenUnsuccessful != -1)
-                {
-                    Thread.Sleep(ARetryAfterXSecWhenUnsuccessful * 1000);
-
-                    // Retry again to begin a transaction.
-                    // Note: If this fails again, an Exception is thrown as if there was
-                    // no ARetryAfterXSecWhenUnsuccessful specfied!
-                    ReturnValue = BeginTransaction(AIsolationLevel, -1);
-
-                    return ReturnValue;
-                }
-                else
-                {
-                    throw new EDBTransactionBusyException("IsolationLevel: " + Enum.GetName(typeof(IsolationLevel), AIsolationLevel), exp);
-                }
-            }
-            catch (Exception exp)
-            {
-                if ((FSqlConnection == null) || (FSqlConnection.State == ConnectionState.Broken) || (FSqlConnection.State == ConnectionState.Closed))
-                {
-                    //
-                    // Reconnect to the database
-                    //
-                    TLogging.Log(exp.Message);
-
-                    if (FSqlConnection == null)
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
                         TLogging.Log(
-                            "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't available! (FSqlConnection is null!)");
+                            "Trying to start a DB Transaction with IsolationLevel '" + AIsolationLevel.ToString() +
+                            "... (in Appdomain " +
+                            AppDomain.CurrentDomain.ToString() + " ).");
+                    }
+
+                    FTransactionStackTrace = new StackTrace(true);
+                    FTransactionThreadId = Thread.CurrentThread.ManagedThreadId;
+
+                    FTransaction = FSqlConnection.BeginTransaction(AIsolationLevel);
+
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                    {
+                        TLogging.Log(
+                            "DB Transaction with IsolationLevel '" + AIsolationLevel.ToString() + "' started (in Appdomain " +
+                            AppDomain.CurrentDomain.ToString() + " ).");
+                        TLogging.Log("Start of stack trace.->");
+                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                        TLogging.Log("<- End of stack trace");
+                    }
+                }
+                catch (System.InvalidOperationException exp)
+                {
+                    // System.InvalidOperationException is thrown when a transaction is currently active. Parallel transactions are not supported!
+                    // Retry again if programmer wants that
+                    if (ARetryAfterXSecWhenUnsuccessful != -1)
+                    {
+                        Thread.Sleep(ARetryAfterXSecWhenUnsuccessful * 1000);
+
+                        // Retry again to begin a transaction.
+                        // Note: If this fails again, an Exception is thrown as if there was
+                        // no ARetryAfterXSecWhenUnsuccessful specfied!
+                        ReturnValue = BeginTransaction(AIsolationLevel, -1);
+
+                        return ReturnValue;
                     }
                     else
                     {
-                        TLogging.Log(
-                            "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't allowing the start of a DB Transaction! (Connection State: "
-                            +
-                            FSqlConnection.State.ToString("G") + ")");
+                        throw new EDBTransactionBusyException("IsolationLevel: " + Enum.GetName(typeof(IsolationLevel), AIsolationLevel), exp);
+                    }
+                }
+                catch (Exception exp)
+                {
+                    if ((FSqlConnection == null) || (FSqlConnection.State == ConnectionState.Broken)
+                        || (FSqlConnection.State == ConnectionState.Closed))
+                    {
+                        //
+                        // Reconnect to the database
+                        //
+                        TLogging.Log(exp.Message);
 
-                        if (FSqlConnection.State == ConnectionState.Broken)
+                        if (FSqlConnection == null)
                         {
-                            FSqlConnection.Close();
+                            TLogging.Log(
+                                "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't available! (FSqlConnection is null!)");
+                        }
+                        else
+                        {
+                            TLogging.Log(
+                                "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't allowing the start of a DB Transaction! (Connection State: "
+                                +
+                                FSqlConnection.State.ToString("G") + ")");
+
+                            if (FSqlConnection.State == ConnectionState.Broken)
+                            {
+                                FSqlConnection.Close();
+                            }
+
+                            FSqlConnection.Dispose();
+                            FSqlConnection = null;
                         }
 
-                        FSqlConnection.Dispose();
-                        FSqlConnection = null;
+                        try
+                        {
+                            EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword, FConnectionString);
+                        }
+                        catch (Exception e2)
+                        {
+                            LogExceptionAndThrow(e2,
+                                "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
+                        }
+
+                        return BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
                     }
 
-                    try
-                    {
-                        EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword, FConnectionString);
-                    }
-                    catch (Exception e2)
-                    {
-                        LogExceptionAndThrow(e2,
-                            "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
-                    }
-
-                    return BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
+                    LogExceptionAndThrow(exp, "BeginTransaction: Error creating Transaction - Server-side error.");
                 }
 
-                LogExceptionAndThrow(exp, "BeginTransaction: Error creating Transaction - Server-side error.");
-            }
+                FLastDBAction = DateTime.Now;
 
-            FLastDBAction = DateTime.Now;
-
-            return new TDBTransaction(FTransaction);
+                return new TDBTransaction(FTransaction);
+            } // Transaction Lock
         }
 
         /// <summary>
@@ -1485,27 +1500,30 @@ namespace Ict.Common.DB
         {
             String msg = "";
 
-            if (FTransaction != null)
+            lock (FTransactionLock)
             {
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                if (FTransaction != null)
                 {
-                    msg = "DB Transaction with IsolationLevel '" + FTransaction.IsolationLevel.ToString() + "' committed (in Appdomain " +
-                          AppDomain.CurrentDomain.ToString() + " ).";
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                    {
+                        msg = "DB Transaction with IsolationLevel '" + FTransaction.IsolationLevel.ToString() + "' committed (in Appdomain " +
+                              AppDomain.CurrentDomain.ToString() + " ).";
+                    }
+
+                    FTransaction.Commit();
+
+                    FTransaction.Dispose();
+
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                    {
+                        TLogging.Log(msg);
+                    }
+
+                    FLastDBAction = DateTime.Now;
                 }
 
-                FTransaction.Commit();
-
-                FTransaction.Dispose();
-
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
-                {
-                    TLogging.Log(msg);
-                }
-
-                FLastDBAction = DateTime.Now;
-            }
-
-            FTransaction = null;
+                FTransaction = null;
+            } // Transaction Lock
         }
 
         /// <summary>
@@ -1516,41 +1534,44 @@ namespace Ict.Common.DB
         {
             String msg = "";
 
-            if (FTransaction != null)
+            lock (FTransactionLock)
             {
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                if (FTransaction != null)
                 {
-                    msg = "DB Transaction with IsolationLevel '" + FTransaction.IsolationLevel.ToString() + "' rolled back (in Appdomain " +
-                          AppDomain.CurrentDomain.ToString() + " ).";
-                }
-
-                // Attempt to roll back the DB Transaction.
-                try
-                {
-                    FTransaction.Rollback();
-                    FTransaction.Dispose();
-
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
                     {
-                        TLogging.Log(msg);
+                        msg = "DB Transaction with IsolationLevel '" + FTransaction.IsolationLevel.ToString() + "' rolled back (in Appdomain " +
+                              AppDomain.CurrentDomain.ToString() + " ).";
                     }
 
-                    FLastDBAction = DateTime.Now;
+                    // Attempt to roll back the DB Transaction.
+                    try
+                    {
+                        FTransaction.Rollback();
+                        FTransaction.Dispose();
 
-                    FTransaction = null;
+                        if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                        {
+                            TLogging.Log(msg);
+                        }
+
+                        FLastDBAction = DateTime.Now;
+
+                        FTransaction = null;
+                    }
+                    catch (Exception Exc)
+                    {
+                        // This catch block will handle any errors that may have occurred
+                        // on the server that would cause the rollback to fail, such as
+                        // a closed connection.
+                        //
+                        // MSDN says: "Try/Catch exception handling should always be used when rolling back a
+                        // transaction. A Rollback generates an InvalidOperationException if the connection is
+                        // terminated or if the transaction has already been rolled back on the server."
+                        TLogging.Log("Exception while attempting Transaction rollback: " + Exc.ToString());
+                    }
                 }
-                catch (Exception Exc)
-                {
-                    // This catch block will handle any errors that may have occurred
-                    // on the server that would cause the rollback to fail, such as
-                    // a closed connection.
-                    //
-                    // MSDN says: "Try/Catch exception handling should always be used when rolling back a
-                    // transaction. A Rollback generates an InvalidOperationException if the connection is
-                    // terminated or if the transaction has already been rolled back on the server."
-                    TLogging.Log("Exception while attempting Transaction rollback: " + Exc.ToString());
-                }
-            }
+            }  // Transaction lock
         }
 
         /// <summary>
@@ -1618,58 +1639,61 @@ namespace Ict.Common.DB
         {
             TDBTransaction TheTransaction;
 
-            ANewTransaction = false;
-            TheTransaction = this.Transaction;
-
-            FDataBaseRDBMS.AdjustIsolationLevel(ref ADesiredIsolationLevel);
-
-            if (TheTransaction != null)
+            lock (FNewOrExistingLock)
             {
-                // Check if the IsolationLevel of the existing Transaction is acceptable
-                if ((ATryToEnforceIsolationLevel == TEnforceIsolationLevel.eilExact)
-                    && (TheTransaction.IsolationLevel != ADesiredIsolationLevel)
-                    || ((ATryToEnforceIsolationLevel == TEnforceIsolationLevel.eilMinimum)
-                        && (TheTransaction.IsolationLevel < ADesiredIsolationLevel)))
-                {
-                    switch (ATryToEnforceIsolationLevel)
-                    {
-                        case TEnforceIsolationLevel.eilExact:
-                            throw new EDBTransactionIsolationLevelWrongException("Expected IsolationLevel: " +
-                            ADesiredIsolationLevel.ToString("G") + " but is: " + TheTransaction.IsolationLevel.ToString("G"));
+                ANewTransaction = false;
+                TheTransaction = this.Transaction;
 
-                        case TEnforceIsolationLevel.eilMinimum:
-                            throw new EDBTransactionIsolationLevelTooLowException(
-                            "Expected IsolationLevel: at least " + ADesiredIsolationLevel.ToString("G") +
-                            " but is: " + TheTransaction.IsolationLevel.ToString("G"));
+                FDataBaseRDBMS.AdjustIsolationLevel(ref ADesiredIsolationLevel);
+
+                if (TheTransaction != null)
+                {
+                    // Check if the IsolationLevel of the existing Transaction is acceptable
+                    if ((ATryToEnforceIsolationLevel == TEnforceIsolationLevel.eilExact)
+                        && (TheTransaction.IsolationLevel != ADesiredIsolationLevel)
+                        || ((ATryToEnforceIsolationLevel == TEnforceIsolationLevel.eilMinimum)
+                            && (TheTransaction.IsolationLevel < ADesiredIsolationLevel)))
+                    {
+                        switch (ATryToEnforceIsolationLevel)
+                        {
+                            case TEnforceIsolationLevel.eilExact:
+                                throw new EDBTransactionIsolationLevelWrongException("Expected IsolationLevel: " +
+                                ADesiredIsolationLevel.ToString("G") + " but is: " + TheTransaction.IsolationLevel.ToString("G"));
+
+                            case TEnforceIsolationLevel.eilMinimum:
+                                throw new EDBTransactionIsolationLevelTooLowException(
+                                "Expected IsolationLevel: at least " + ADesiredIsolationLevel.ToString("G") +
+                                " but is: " + TheTransaction.IsolationLevel.ToString("G"));
+                        }
                     }
                 }
-            }
 
-            if (TheTransaction == null)
-            {
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                if (TheTransaction == null)
                 {
-                    Console.WriteLine("GetNewOrExistingTransaction: creating new transaction. IsolationLevel: " + ADesiredIsolationLevel.ToString());
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    {
+                        Console.WriteLine("GetNewOrExistingTransaction: creating new transaction. IsolationLevel: " + ADesiredIsolationLevel.ToString());
+                    }
+
+                    TheTransaction = BeginTransaction(ADesiredIsolationLevel);
+
+                    ANewTransaction = true;
+                }
+                else
+                {
+                    // Set Flag that indicates that the Transaction has been re-used instead of freshly created! This Flag can be
+                    // inquired using the readonly TDBTransaction.Reused Property!
+                    TheTransaction.SetTransactionToReused();
+
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    {
+                        Console.WriteLine(
+                            "GetNewOrExistingTransaction: using existing transaction. IsolationLevel: " + TheTransaction.IsolationLevel.ToString());
+                    }
                 }
 
-                TheTransaction = BeginTransaction(ADesiredIsolationLevel);
-
-                ANewTransaction = true;
-            }
-            else
-            {
-                // Set Flag that indicates that the Transaction has been re-used instead of freshly created! This Flag can be
-                // inquired using the readonly TDBTransaction.Reused Property!
-                TheTransaction.SetTransactionToReused();
-
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
-                {
-                    Console.WriteLine(
-                        "GetNewOrExistingTransaction: using existing transaction. IsolationLevel: " + TheTransaction.IsolationLevel.ToString());
-                }
-            }
-
-            return TheTransaction;
+                return TheTransaction;
+            } // NeworExisting Lock
         }
 
         #endregion

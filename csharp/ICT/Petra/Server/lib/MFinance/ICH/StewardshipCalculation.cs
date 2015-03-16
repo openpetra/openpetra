@@ -249,7 +249,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     0,
                     0);
 
-                if (BatchesInAPeriod != null)
+                if ((BatchesInAPeriod != null) && (BatchesInAPeriod.Rows.Count > 0))
                 {
                     int BatchNumber = 0;
 

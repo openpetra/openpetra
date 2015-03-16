@@ -503,40 +503,30 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 ADiffPeriod,
                 LedgerTable[0].NumberOfAccountingPeriods);
 
-            DataTable BatchYearTable = null;
-
-            TDBTransaction Transaction = null;
-
+            TDBTransaction ReadTransaction = null;
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                ref Transaction,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
                 delegate
                 {
-                    try
-                    {
-                        // add the years, which are retrieved by reading from the GL batch tables
-                        string sql =
-                            String.Format("SELECT DISTINCT {0} AS availYear " + " FROM PUB_{1} " + " WHERE {2} = " +
-                                ALedgerNumber.ToString() + " ORDER BY 1 DESC",
-                                ABatchTable.GetBatchYearDBName(),
-                                ABatchTable.GetTableDBName(),
-                                ABatchTable.GetLedgerNumberDBName());
+                    // add the years, which are retrieved by reading from the GL batch tables
+                    string sql =
+                        String.Format("SELECT DISTINCT {0} AS availYear " + " FROM PUB_{1} " + " WHERE {2} = " +
+                            ALedgerNumber.ToString() + " ORDER BY 1 DESC",
+                            ABatchTable.GetBatchYearDBName(),
+                            ABatchTable.GetTableDBName(),
+                            ABatchTable.GetLedgerNumberDBName());
 
-                        BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", Transaction);
+                    DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
 
-                        foreach (DataRow row in BatchYearTable.Rows)
-                        {
-                            DataRow resultRow = datTable.NewRow();
-                            DateTime SelectableYear = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0])));
-                            resultRow[0] = row[0];
-                            resultRow[1] = SelectableYear.ToString("yyyy");
-                            resultRow[2] = SelectableYear.ToString("dd-MMM-yyyy");
-                            datTable.Rows.Add(resultRow);
-                        }
-                    }
-                    catch (Exception ex)
+                    foreach (DataRow row in BatchYearTable.Rows)
                     {
-                        TLogging.Log("Error in GetAvailableGLYears: " + ex.Message);
-                        throw ex;
+                        DataRow resultRow = datTable.NewRow();
+                        DateTime SelectableYear = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0])));
+                        resultRow[0] = row[0];
+                        resultRow[1] = SelectableYear.ToString("yyyy");
+                        resultRow[2] = SelectableYear.ToString("dd-MMM-yyyy");
+                        datTable.Rows.Add(resultRow);
                     }
                 });
 

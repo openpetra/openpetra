@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,9 +55,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// This method is required for Windows Forms designer support.
-        /// Do not change the method contents inside the source code editor. The Forms designer might
-        /// not be able to load this method if it was changed manually.
         /// </summary>
         private void InitializeComponent()
         {
@@ -65,46 +62,48 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 resources = new System.ComponentModel.ComponentResourceManager(
                 typeof(TFrmGLBatch));
 
-            this.lblAccountText = new System.Windows.Forms.Label();
-            this.lblAccountValue = new System.Windows.Forms.Label();
+            lblAccountText = new Label();
+            lblAccountValue = new Label();
 
-            this.lblDateEnd = new System.Windows.Forms.Label();
-            this.lblDateEndValue = new System.Windows.Forms.Label();
+            lblDateEnd = new Label();
+            lblDateEndValue = new Label();
 
-            this.lblRevCur = new System.Windows.Forms.Label();
-            this.lblRevCurValue = new System.Windows.Forms.Label();
+            lblRevCur = new Label();
+            lblRevCurValue = new Label();
+
+            lblCostCentre = new Label();
+            cmbCostCentres = new TCmbAutoPopulated();
 
             grdDetails = new SourceGrid.DataGrid();
 
-            this.btnRevaluate = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.SuspendLayout();
+            btnRevaluate = new Button();
+            btnCancel = new Button();
+            SuspendLayout();
 
             int leftColStart = 32;
-            int leftColWidth = 240;
+            int leftColWidth = 180;
             int colSpace = 15;
             int rowY = 5;
             int rowHeight = 25;
-            int rightColWidth = 350;
+            int rightColWidth = 280;
 
             // int buttonTop = 210;
-            int buttonLeft = 140;
+            int buttonLeft = 120;
 
             //
             // lblAccountText
             //
-            this.lblAccountText.Location = new System.Drawing.Point(leftColStart, rowY);
-            this.lblAccountText.Name = "lblAccountText";
-            this.lblAccountText.Size = new System.Drawing.Size(leftColWidth, 21);
+            lblAccountText.Location = new System.Drawing.Point(leftColStart, rowY);
+            lblAccountText.Name = "lblAccountText";
+            lblAccountText.Size = new System.Drawing.Size(leftColWidth, 21);
             lblAccountText.TextAlign = ContentAlignment.MiddleRight;
 
             //
             // lblAccountValue
             //
-            this.lblAccountValue.Location = new System.Drawing.Point(
-                leftColStart + leftColWidth + colSpace, rowY);
-            this.lblAccountValue.Name = "lblAccountValue";
-            this.lblAccountValue.Size = new System.Drawing.Size(144, 21);
+            lblAccountValue.Location = new System.Drawing.Point(leftColStart + leftColWidth + colSpace, rowY);
+            lblAccountValue.Name = "lblAccountValue";
+            lblAccountValue.Size = new System.Drawing.Size(144, 21);
             lblAccountValue.TextAlign = ContentAlignment.MiddleLeft;
 
             rowY = rowY + rowHeight;
@@ -112,18 +111,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             // lblDateEnd
             //
-            this.lblDateEnd.Location = new System.Drawing.Point(leftColStart, rowY);
-            this.lblDateEnd.Name = "lblDateEnd";
-            this.lblDateEnd.Size = new System.Drawing.Size(leftColWidth, 21);
+            lblDateEnd.Location = new System.Drawing.Point(leftColStart, rowY);
+            lblDateEnd.Name = "lblDateEnd";
+            lblDateEnd.Size = new System.Drawing.Size(leftColWidth, 21);
             lblDateEnd.TextAlign = ContentAlignment.MiddleRight;
 
             //
             // lblDateEndValue
             //
-            this.lblDateEndValue.Location = new System.Drawing.Point(
-                leftColStart + leftColWidth + colSpace, rowY);
-            this.lblDateEndValue.Name = "lblDateEndValue";
-            this.lblDateEndValue.Size = new System.Drawing.Size(rightColWidth, 21);
+            lblDateEndValue.Location = new System.Drawing.Point(leftColStart + leftColWidth + colSpace, rowY);
+            lblDateEndValue.Name = "lblDateEndValue";
+            lblDateEndValue.Size = new System.Drawing.Size(rightColWidth, 21);
             lblDateEndValue.TextAlign = ContentAlignment.MiddleLeft;
 
             rowY = rowY + rowHeight;
@@ -131,84 +129,102 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             // lblRevCur
             //
-            this.lblRevCur.Location = new System.Drawing.Point(leftColStart, rowY);
-            this.lblRevCur.Name = "lblRevCur";
-            this.lblRevCur.Size = new System.Drawing.Size(leftColWidth, 21);
+            lblRevCur.Location = new System.Drawing.Point(leftColStart, rowY);
+            lblRevCur.Name = "lblRevCur";
+            lblRevCur.Size = new System.Drawing.Size(leftColWidth, 21);
             lblRevCur.TextAlign = ContentAlignment.MiddleRight;
 
             //
             // lblRevCurValue
             //
-            this.lblRevCurValue.Location = new System.Drawing.Point(
-                leftColStart + leftColWidth + colSpace, rowY);
-            this.lblRevCurValue.Name = "lblRevCurValue";
-            this.lblRevCurValue.Size = new System.Drawing.Size(rightColWidth, 21);
+            lblRevCurValue.Location = new System.Drawing.Point(leftColStart + leftColWidth + colSpace, rowY);
+            lblRevCurValue.Name = "lblRevCurValue";
+            lblRevCurValue.Size = new System.Drawing.Size(rightColWidth, 21);
             lblRevCurValue.TextAlign = ContentAlignment.MiddleLeft;
-
 
             rowY = rowY + rowHeight;
 
-            this.grdDetails.Location = new System.Drawing.Point(leftColStart, rowY);
-            this.grdDetails.Size = new System.Drawing.Size(550, 200);
+            //
+            // Cost Centre
+            //
+
+            lblCostCentre.Location = new System.Drawing.Point(leftColStart, rowY);
+            lblCostCentre.Name = "lblCostCentre";
+            lblCostCentre.Size = new System.Drawing.Size(leftColWidth, 21);
+            lblCostCentre.TextAlign = ContentAlignment.MiddleRight;
+
+            cmbCostCentres.Location = new System.Drawing.Point(leftColStart + leftColWidth + colSpace, rowY);
+            cmbCostCentres.Name = "clbCostCentres";
+            cmbCostCentres.Size = new System.Drawing.Size(rightColWidth, 22);
+            cmbCostCentres.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
+
+            rowY = rowY + rowHeight + 20;
+
+            grdDetails.Location = new System.Drawing.Point(leftColStart, rowY);
+            grdDetails.Size = new System.Drawing.Size(430, 200);
             grdDetails.BorderStyle = BorderStyle.FixedSingle;
-            //grdDetails.FixedRows = 3;
-            //grdDetails.a
 
             rowY = rowY + 230;
 
             //
             // btnRevaluate
             //
-            this.btnRevaluate.Location = new System.Drawing.Point(buttonLeft, rowY);
-            this.btnRevaluate.Name = "btnRevaluate";
-            this.btnRevaluate.Size = new System.Drawing.Size(144, 23);
-            this.btnRevaluate.TabIndex = 2;
-            this.btnRevaluate.Text = "Revaluate";
-            this.btnRevaluate.UseVisualStyleBackColor = true;
+            btnRevaluate.Location = new System.Drawing.Point(buttonLeft, rowY);
+            btnRevaluate.Name = "btnRevaluate";
+            btnRevaluate.Size = new System.Drawing.Size(120, 23);
+            btnRevaluate.TabIndex = 2;
+            btnRevaluate.Text = "Revalue";
+            btnRevaluate.UseVisualStyleBackColor = true;
             //
             // btnCancel
             //
-            this.btnCancel.Location = new System.Drawing.Point(200 + buttonLeft, rowY);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(137, 23);
-            this.btnCancel.TabIndex = 3;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Location = new System.Drawing.Point(150 + buttonLeft, rowY);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new System.Drawing.Size(120, 23);
+            btnCancel.TabIndex = 3;
+            btnCancel.Text = "Cancel";
+            btnCancel.UseVisualStyleBackColor = true;
             //
             // GLRevaluation
             //
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Font = new System.Drawing.Font("Verdana", 8.25f);
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Font = new System.Drawing.Font("Verdana", 8.25f);
 
 
-            this.ClientSize = new System.Drawing.Size(600, rowY + 50);
-            this.CancelButton = btnCancel;
-            this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnRevaluate);
-            this.Controls.Add(this.lblAccountText);
-            this.Controls.Add(this.lblAccountValue);
-            this.Controls.Add(this.lblDateEnd);
-            this.Controls.Add(this.lblDateEndValue);
-            this.Controls.Add(this.lblRevCur);
-            this.Controls.Add(this.lblRevCurValue);
-            this.Controls.Add(this.grdDetails);
+            ClientSize = new System.Drawing.Size(500, rowY + 50);
+            CancelButton = btnCancel;
+            Controls.AddRange(new Control[] {
+                    btnCancel,
+                    btnRevaluate,
+                    lblAccountText,
+                    lblAccountValue,
+                    lblDateEnd,
+                    lblDateEndValue,
+                    lblRevCur,
+                    lblRevCurValue,
+                    lblCostCentre,
+                    cmbCostCentres,
+                    this.grdDetails
+                });
 
-            this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "GLRevaluation";
-            this.Text = "Revaluation ...";
-            this.ResumeLayout(false);
+            Name = "GLRevaluation";
+            Text = "Revaluation ...";
+            ResumeLayout(false);
         }
 
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button btnRevaluate;
-        private System.Windows.Forms.Label lblAccountText;
-        private System.Windows.Forms.Label lblAccountValue;
-        private System.Windows.Forms.Label lblDateEnd;
-        private System.Windows.Forms.Label lblDateEndValue;
-        private System.Windows.Forms.Label lblRevCur;
-        private System.Windows.Forms.Label lblRevCurValue;
+        private Button btnCancel;
+        private Button btnRevaluate;
+        private Label lblAccountText;
+        private Label lblAccountValue;
+        private Label lblDateEnd;
+        private Label lblDateEndValue;
+        private Label lblRevCur;
+        private Label lblRevCurValue;
+        private Label lblCostCentre;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbCostCentres;
 
         private SourceGrid.DataGrid grdDetails;
     }

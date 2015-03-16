@@ -41,6 +41,8 @@ using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -266,6 +268,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ReportingEngine.RegisterData(BatchTDS.ABatch, "ABatch");
             ReportingEngine.RegisterData(BatchTDS.AJournal, "AJournal");
             ReportingEngine.RegisterData(BatchTDS.ATransaction, "ATransaction");
+            ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
+                    ALedgerNumber), "AAccount");
+            ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                    ALedgerNumber), "ACostCentre");
 
             Calc.AddParameter("param_batch_number_i", ABatchNumber);
             Calc.AddParameter("param_ledger_number_i", ALedgerNumber);

@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,9 +57,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public partial class TGLRevaluation
     {
-        private const string REVALUATIONCOSTCENTRE = "REVALUATIONCOSTCENTRE";
-
-
         private Int32 FLedgerNumber;
 
         private DateTime FperiodStart;
@@ -96,6 +93,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 lblRevCur.Text = Catalog.GetString("Revaluation Currencies:");
                 lblRevCurValue.Text = currencyList;
+
+                lblCostCentre.Text = Catalog.GetString("Revaluation Cost Centre:");
+                TFinanceControls.InitialiseCostCentreList(ref cmbCostCentres, FLedgerNumber, true, false, true, true);
+                cmbCostCentres.SetSelectedString(
+                    TRemote.MFinance.GL.WebConnectors.GetStandardCostCentre(FLedgerNumber)
+                    );
             }
         }
 
@@ -116,6 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 bool blnAccountActive = (bool)row["a_account_active_flag_l"];
                 bool blnAccountForeign = (bool)row["a_foreign_currency_flag_l"];
                 bool blnAccountHasPostings = (bool)row["a_posting_status_l"];
+                String AccountCode = (String)row["a_account_code_c"];
 
                 if (blnIsLedger && blnAccountActive
                     && blnAccountForeign && blnAccountHasPostings)
@@ -134,7 +138,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     string strCurrencyCode = (string)row["a_foreign_currency_code_c"];
                     decimal decExchangeRate = frmExchangeRate.GetLastExchangeValueOfInterval(FLedgerNumber,
                         FperiodStart, FperiodEnd, strCurrencyCode);
-                    AddADataRow(ic, strCurrencyCode, decExchangeRate);
+                    AddADataRow(ic, AccountCode, strCurrencyCode, decExchangeRate);
                     ++ic;
                 }
             }
@@ -153,12 +157,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.Columns.Add("DoRevaluation", "...",
                 typeof(bool)).Width = 30;
+            grdDetails.Columns.Add("AccountCode", "Account",
+                typeof(string)).Width = 60;
             grdDetails.Columns.Add("Currency", "[CUR]",
                 typeof(string)).Width = 50;
             grdDetails.Columns.Add("ExchangeRate", Catalog.GetString("Exchange Rate"),
-                typeof(decimal)).Width = 200;
+                typeof(decimal)).Width = 110;
             grdDetails.Columns.Add("Status", Catalog.GetString("Status"),
-                typeof(string)).Width = 200;
+                typeof(string)).Width = 110;
 
             grdDetails.SelectionMode = SourceGrid.GridSelectionMode.Row;
             grdDetails.CancelEditingWithEscapeKey = false;
@@ -172,9 +178,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             gridColumn.DataCell.AddController(linkClickDelete);
         }
 
-        private void AddADataRow(int AIndex, string ACurrencyValue, decimal AExchangeRate)
+        private void AddADataRow(int AIndex, String AAccountCode, string ACurrencyValue, decimal AExchangeRate)
         {
-            CurrencyExchange ce = new CurrencyExchange(ACurrencyValue, AExchangeRate);
+            CurrencyExchange ce = new CurrencyExchange(AAccountCode, ACurrencyValue, AExchangeRate);
 
             FcurrencyExchangeList.Add(ce);
             FBoundList = new DevAge.ComponentModel.BoundList <CurrencyExchange>
@@ -198,23 +204,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                      TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
             String strBaseCurrency = ledger.BaseCurrency;
-            String strCountryCode = ledger.CountryCode;
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
 
-            PCountryTable DataCacheCountryDT =
-                (PCountryTable)TDataCache.TMCommon.GetCacheableCommonTable(
-                    TCacheableCommonTablesEnum.CountryList);
-            PCountryRow CountryDR =
-                (PCountryRow)DataCacheCountryDT.Rows.Find(strCountryCode);
-
-            String strLedgerName = FLedgerNumber.ToString();
-
-            if (CountryDR != null)
-            {
-                strLedgerName += (" - " + CountryDR.CountryName);
-            }
-
-            strLedgerName += (" [" + strBaseCurrency + "]");
-            return strLedgerName;
+            LedgerName = String.Format("{0} - {1} [{2}]", FLedgerNumber, LedgerName, strBaseCurrency);
+            return LedgerName;
         }
 
         private void CancelRevaluation(object btn, EventArgs e)
@@ -224,8 +217,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunRevaluation(object btn, EventArgs e)
         {
-            this.Cursor = Cursors.WaitCursor;
-
             int intUsedEntries = 0;
 
             for (int i = 0; i < FcurrencyExchangeList.Count; ++i)
@@ -234,6 +225,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     ++intUsedEntries;
                 }
+            }
+
+            String ToCostCentre = cmbCostCentres.GetSelectedString();
+
+            if (ToCostCentre == "")
+            {
+                MessageBox.Show(Catalog.GetString("You must select a revaluation Cost Centre."));
+                return;
+            }
+
+            if (intUsedEntries == 0)
+            {
+                MessageBox.Show(Catalog.GetString("No Revaluation operation required."));
+                this.Close();
             }
 
             string[] currencies = new string[intUsedEntries];
@@ -250,11 +255,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            this.Cursor = Cursors.WaitCursor;
+            this.Refresh();
             TVerificationResultCollection verificationResult;
             bool blnRevalutationState =
-                TRemote.MFinance.GL.WebConnectors.Revaluate(FLedgerNumber, 1, // TODO: Period shouldn't be 1!
-                    currencies, rates, out verificationResult);
-
+                TRemote.MFinance.GL.WebConnectors.Revaluate(FLedgerNumber,
+                    currencies, rates, ToCostCentre, out verificationResult);
             this.Cursor = Cursors.Default;
 
             if (blnRevalutationState)
@@ -298,6 +304,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             private bool mDoRevaluation = true;
             private string mCurrency = "?";
+            private String FAccountCode = "";
             private decimal mExchangeRate = 1.0m;
             private string mStatus = "?";
             private int intStatus;
@@ -346,13 +353,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             /// <summary>
-            /// The only one custructor ...
+            /// The only one constructor ...
             /// </summary>
+            /// <param name="AAccountCode">Foreign currency Account</param>
             /// <param name="ACurrency">Defines the foreign currency</param>
             /// <param name="AExchangeRate">Defines the exchange rate and 0 is the
             /// value to define a invalid rate.</param>
-            public CurrencyExchange(string ACurrency, decimal AExchangeRate)
+            public CurrencyExchange(String AAccountCode, string ACurrency, decimal AExchangeRate)
             {
+                FAccountCode = AAccountCode;
                 mCurrency = ACurrency;
                 SetRateAndStatus(AExchangeRate);
             }
@@ -374,6 +383,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         mDoRevaluation = value;
                         SetRateAndStatus(0.0m);
                     }
+                }
+            }
+
+
+            /// <summary>
+            /// For AccountCode only the get part is defined. So the user cannot change the
+            /// value by using the grid.
+            /// </summary>
+            public string AccountCode
+            {
+                get
+                {
+                    return FAccountCode;
                 }
             }
 

@@ -40,7 +40,7 @@
         </fielddetail>
         <fielddetail condition="eq({param_recipient_selection}, one_partner)">
           <value text="One Recipient: "/>
-          <value variable="{param_recipientkey}"/>
+          <value variable="param_recipient_key"/>
         </fielddetail>
         <fielddetail condition="eq({param_recipient_selection}, Extract)">
           <value text="Recipients from Extract: "/>
@@ -1029,7 +1029,9 @@
         <header>
           <field whichfield="header 1" pos="0cm" width="9cm">
             <value text="Field: "/>
-            <value function="GetFieldOfPartner({{RecipientKey}})"/>
+              <value function="GetFieldKeyOfPartner({{RecipientKey}})" format="partnerKey"/>
+              <value text=" "/>
+              <value function="GetFieldOfPartner({{RecipientKey}})"/>
           </field>
         </header>
         <detail>

@@ -426,8 +426,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     // check that transactions on foreign currency accounts are using the correct currency
                     // (fx reval transactions are an exception because they are posted in base currency)
-                    if (!((transaction.Reference == CommonAccountingTransactionTypesEnum.REVAL.ToString())
-                          && (journal.TransactionTypeCode == CommonAccountingTransactionTypesEnum.REVAL.ToString())))
+                    if (journal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
                     {
                         // get the account that this transaction is writing to
                         AAccountRow Account = (AAccountRow)APostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, transaction.AccountCode });
@@ -1277,6 +1276,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
         /// <summary>
         /// post several GL Batches at once
+        /// Returns true if it seems to be OK.
         /// </summary>
         public static bool PostGLBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
         {

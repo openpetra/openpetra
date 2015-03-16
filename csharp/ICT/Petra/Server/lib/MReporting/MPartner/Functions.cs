@@ -147,6 +147,12 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return true;
             }
 
+            if (StringHelper.IsSame(f, "GetFieldKeyOfPartner"))
+            {
+                value = new TVariant(GetFieldKeyOfPartner(ops[1].ToInt64()));
+                return true;
+            }
+
             if (StringHelper.IsSame(f, "CheckAccountNumber"))
             {
                 value = new TVariant(CheckAccountNumber(ops[1].ToString(), ops[2].ToString(), ops[3].ToString()));
@@ -773,14 +779,12 @@ namespace Ict.Petra.Server.MReporting.MPartner
         }
 
         /// <summary>
-        /// Get the field name of one partner
+        /// Get the field Key of one partner
         /// </summary>
         /// <param name="APartnerKey">partnerkey</param>
-        /// <returns>The field name if it was found. Otherwise empty string</returns>
-        private String GetFieldOfPartner(Int64 APartnerKey)
+        /// <returns>The field key if it was found. Otherwise 0</returns>
+        private Int64 GetFieldKeyOfPartner(Int64 APartnerKey)
         {
-            string FieldName = "";
-
             PPartnerGiftDestinationTable ResultTable = PPartnerGiftDestinationAccess.LoadViaPPartner(APartnerKey,
                 situation.GetDatabaseConnection().Transaction);
 
@@ -788,30 +792,72 @@ namespace Ict.Petra.Server.MReporting.MPartner
             {
                 if (Row.DateEffective != Row.DateExpires)
                 {
-                    FieldName = GetPartnerShortName(Row.FieldKey);
-                    break;
+                    return Row.FieldKey;
                 }
             }
 
-            //
-            // If there was no result and the partner given is a family, I can see about the field for the family member with id=0.
-            if (FieldName == "")
-            {
-                PPartnerTable tbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
+            String PartnerClass = "";
 
-                if ((tbl.Rows.Count > 0) && (tbl[0].PartnerClass == TPartnerClass.FAMILY.ToString()))
+            //
+            // If the partner given is a family, I can see about the field for the family member with id=0.
+            PPartnerTable tbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            if (tbl.Rows.Count > 0)
+            {
+                PartnerClass = tbl[0].PartnerClass;
+
+                if (PartnerClass == TPartnerClass.FAMILY.ToString())
                 {
                     PPersonTable familyMembers = PPersonAccess.LoadViaPFamily(APartnerKey, situation.GetDatabaseConnection().Transaction);
                     familyMembers.DefaultView.RowFilter = "p_family_id_i = 0";
 
                     if (familyMembers.DefaultView.Count > 0)
                     {
-                        FieldName = GetFieldOfPartner(((PPersonRow)familyMembers.DefaultView[0].Row).PartnerKey);
+                        return GetFieldKeyOfPartner(((PPersonRow)familyMembers.DefaultView[0].Row).PartnerKey);
                     }
                 }
             }
 
-            return FieldName;
+            //
+            // If the partner given is a keymin, I need to find the parent field:
+            if (PartnerClass == TPartnerClass.UNIT.ToString())
+            {
+                PPartnerTypeTable TypeTbl = PPartnerTypeAccess.LoadViaPPartner(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+                if (TypeTbl.Rows.Count > 0)
+                {
+                    String PartnerType = TypeTbl[0].TypeCode;
+
+                    if ((PartnerType == "FIELD") || (PartnerType == "LEDGER")) // I've been given a field already (perhaps by recursion)
+                    {
+                        return APartnerKey;
+                    }
+                    else
+                    {
+                        UmUnitStructureTable UnitTbl = UmUnitStructureAccess.LoadViaPUnitChildUnitKey(APartnerKey,
+                            situation.GetDatabaseConnection().Transaction);
+
+                        if (UnitTbl.Rows.Count > 0)
+                        {
+                            return GetFieldKeyOfPartner(UnitTbl[0].ParentUnitKey);
+                        }
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Get the field name of one partner
+        /// </summary>
+        /// <param name="APartnerKey">partnerkey</param>
+        /// <returns>The field name if it was found. Otherwise empty string</returns>
+        private String GetFieldOfPartner(Int64 APartnerKey)
+        {
+            Int64 FieldKey = GetFieldKeyOfPartner(APartnerKey);
+
+            return (FieldKey == 0) ? "" : GetPartnerShortName(FieldKey);
         }
 
         /// <summary>

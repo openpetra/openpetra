@@ -251,7 +251,12 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             }
 
             DataView View = new DataView(Donors);
-            DataTable DistinctDonors = View.ToTable(true, "DonorKey");
+            DataTable DistinctDonors = new DataTable();
+
+            if (View.Count > 0)
+            {
+                DistinctDonors = View.ToTable(true, "DonorKey");
+            }
 
             DataTable DonorAddresses = new DataTable("DonorAddresses");
 
@@ -277,9 +282,19 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             // We only want distinct donors for this report (i.e. no more than one per recipient)
             if (ReportType == "Donors Only")
             {
-                DistinctDonors = View.ToTable(true, "DonorKey", "DonorName", "RecipientKey");
-                Donors.Clear();
-                Donors.Merge(DistinctDonors);
+                if (View.Count > 0)
+                {
+                    DistinctDonors = View.ToTable(true, "DonorKey", "DonorName", "RecipientKey");
+                    Donors.Clear();
+                    Donors.Merge(DistinctDonors);
+                }
+                else // I should return an empty table with just columns, to keep the client happy:
+                {
+                    DistinctDonors = new DataTable();
+                    DistinctDonors.Columns.Add("DonorKey", typeof(Int64));
+                    DistinctDonors.Columns.Add("DonorName", typeof(String));
+                    DistinctDonors.Columns.Add("RecipientKey", typeof(Int64));
+                }
             }
 
             ReturnDataSet.Tables.Add(Recipients);

@@ -71,17 +71,19 @@ namespace Ict.Common.Remoting.Client
         public void QueueClientTasks()
         {
             TClientTaskInstanceBase ClientTaskInstance;
-            Thread ClientTaskThread;
 
             // TODO 2 ochristiank cClient Tasks : Work the queue of Client Tasks according to their Priority
             foreach (DataRow NewEntryRow in FClientTasksDataTable.Rows)
             {
                 ClientTaskInstance = (TClientTaskInstanceBase)Activator.CreateInstance(ClientTasksInstanceType);
                 ClientTaskInstance.ClientTask = NewEntryRow;
-                ClientTaskThread = new Thread(new ThreadStart(ClientTaskInstance.Execute));
-                ClientTaskThread.SetApartmentState(ApartmentState.STA);
-                ClientTaskThread.Name = "ClientTasks" + Guid.NewGuid().ToString();
-                ClientTaskThread.Start();
+                ClientTaskInstance.Execute();
+
+                /*
+                 * Thread ClientTaskThread = new Thread(new ThreadStart(ClientTaskInstance.Execute));
+                 * ClientTaskThread.SetApartmentState(ApartmentState.STA);
+                 * ClientTaskThread.Start();
+                 */
             }
         }
     }

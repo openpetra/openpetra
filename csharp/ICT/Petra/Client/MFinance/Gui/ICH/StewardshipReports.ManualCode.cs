@@ -462,7 +462,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
             String[] SelectedFees = paramsDictionary["param_fee_codes"].ToString().Split(',');
             Int32 FeeCols = SelectedFees.Length;
-            paramsDictionary.Add("param_fee_columns", new TVariant(FeeCols));
+            ACalc.AddParameter("param_fee_columns", FeeCols);
 
             DataTable FeeNames = new DataTable();
 
@@ -487,7 +487,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         /*
          *      private Boolean LoadRecipientReportData(TRptCalculator ACalc)
          *      {
-         *          Dictionary<String, TVariant> paramsDictionary = InitialiseDictionary(ACalc);
+         *          InitialiseDictionary(ACalc);
          *          return false;
          *      }  // Load Recipient Report Data
          */

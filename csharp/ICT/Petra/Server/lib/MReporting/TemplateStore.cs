@@ -4,7 +4,7 @@
 // @Authors:
 //       Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,8 +41,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         private static String TemplateBackupFilename(String AType, String ATemplateId)
         {
             return TAppSettingsManager.GetValue("Reporting.PathStandardReports") + "/Backup_" +
-                   AType + "_" +
-                   ATemplateId + ".sql";
+                   ATemplateId + "_" + AType + ".sql";
         }
 
         /// <summary>
@@ -55,14 +54,20 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             String[] BackupFiles = Directory.GetFiles(Path.GetDirectoryName(BackupFilename), Path.GetFileName(BackupFilename));
 
-            foreach (String fname in BackupFiles)
-            {
-                if (File.Exists(fname))
+            TDBTransaction Transaction = null;
+            Boolean submissionOk = true;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref submissionOk,
+                delegate
                 {
-                    String Query = File.ReadAllText(fname);
-                    DBAccess.GDBAccessObj.ExecuteScalar(Query, IsolationLevel.Serializable); // This shouts if there's no return value, so a useless SELECT was added to the end of the SQL.
-                }
-            }
+                    foreach (String fname in BackupFiles)
+                    {
+                        if (File.Exists(fname))
+                        {
+                            String Query = File.ReadAllText(fname);
+                            DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+                        }
+                    }
+                }); // Get NewOrExisting AutoReadTransaction
         }
 
         //
@@ -86,7 +91,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// </summary>
         private static void SaveTemplatesToBackupFile(SReportTemplateRow Row)
         {
-            String BackupFilename = TemplateBackupFilename(Row.ReportType, Row.TemplateId.ToString());
+            String BackupFilename = TemplateBackupFilename(Row.ReportType, Row.TemplateId.ToString("D2"));
 
             if (File.Exists(Path.GetDirectoryName(BackupFilename) + "\\FastReportsBackup.sql"))
             {
@@ -132,9 +137,14 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             SReportTemplateTable Tbl = new SReportTemplateTable();
             SReportTemplateRow TemplateRow = Tbl.NewRowTyped(false);
             TemplateRow.ReportType = AReportType;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            Tbl = SReportTemplateAccess.LoadUsingTemplate(TemplateRow, Transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    Tbl = SReportTemplateAccess.LoadUsingTemplate(TemplateRow, Transaction);
+                });
 
             String filter = String.Format("(s_author_c ='{0}' OR s_private_l=false)", AAuthor);
 

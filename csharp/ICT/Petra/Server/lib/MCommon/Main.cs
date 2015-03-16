@@ -1053,7 +1053,27 @@ namespace Ict.Petra.Server.MCommon
     public class TReportingDbAdapter
     {
         private Boolean FCancelFlag = false;
-        private DbDataAdapter FDataAdapter;
+        private static DbDataAdapter FDataAdapter;
+        private static Boolean FinQuery = false;
+
+        /// <summary>
+        /// Creating a new TReportingDbAdapter causes cancellation of any previous query.
+        /// </summary>
+        public TReportingDbAdapter()
+        {
+            if (FinQuery)
+            {
+                try
+                {
+                    FDataAdapter.SelectCommand.Cancel();
+                    TLogging.Log("TReportingDbAdapter: Creation of new adapter cancels running query.");
+                }
+                catch (Exception ex)
+                {
+                    TLogging.Log("TReportingDbAdapter unable to cancel running query: " + ex.Message);
+                }
+            }
+        }
 
         /// <summary>
         /// Cancels any reporting query that's running right now,
@@ -1073,6 +1093,8 @@ namespace Ict.Petra.Server.MCommon
                     TLogging.Log("Exception occured in ReportingQueryCancel: " + ex.Message);
                 }
             }
+
+            FinQuery = false;
         }
 
         /// <summary>Check this before assuming that the query returned a good result!</summary>
@@ -1098,6 +1120,7 @@ namespace Ict.Petra.Server.MCommon
             {
                 try
                 {
+                    FinQuery = true;
                     FDataAdapter = DBAccess.GDBAccessObj.SelectDA(Query, Trans, null);
                     FDataAdapter.Fill(resultTable);
                 }
@@ -1117,6 +1140,10 @@ namespace Ict.Petra.Server.MCommon
                      * --> WOULD BRING DOWN THE WHOLE PETRASERVER PROCESS AS A CONSEQUENCE. <--
                      *
                      */
+                }
+                finally
+                {
+                    FinQuery = false;
                 }
             }
 

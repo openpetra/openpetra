@@ -423,6 +423,11 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                         // Now look ahead even further than the 'next' row and modify those times too, adding 1 more minute to each
                         for (int k = i + 1;; k++)
                         {
+                            if (k >= dv.Count)
+                            {
+                                break;
+                            }
+
                             ExchangeRateTDSADailyExchangeRateRow drLookAhead = (ExchangeRateTDSADailyExchangeRateRow)dv[k].Row;
 
                             if (!drThis.FromCurrencyCode.Equals(drLookAhead.FromCurrencyCode)

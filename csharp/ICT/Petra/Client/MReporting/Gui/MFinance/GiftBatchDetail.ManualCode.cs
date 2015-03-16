@@ -123,11 +123,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
-
-            ACalc.AddParameter("param_tax_deductible_pct", TaxDeductiblePercentageEnabled);
-
             if (ACalc.GetParameters().Exists("param_currency")
                 && (ACalc.GetParameters().Get("param_currency").ToString() == Catalog.GetString("Transaction")))
             {
