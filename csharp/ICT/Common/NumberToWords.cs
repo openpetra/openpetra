@@ -61,11 +61,11 @@ namespace Ict.Common
 
             if (IntValue < 10)
             {
-                Result = SingleDigitsDE[IntValue];
+                Result += SingleDigitsDE[IntValue];
             }
             else if (IntValue < 20)
             {
-                Result = TenTo19DE[IntValue - 10];
+                Result += TenTo19DE[IntValue - 10];
             }
             else
             {

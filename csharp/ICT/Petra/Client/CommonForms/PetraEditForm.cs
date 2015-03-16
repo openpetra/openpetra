@@ -739,6 +739,22 @@ namespace Ict.Petra.Client.CommonForms
                 return;
             }
 
+            // return if control has not actually been changed (i.e. CTRL+A will unneccessarily fire this event)
+            if (ctrl.GetType() == typeof(TextBox))
+            {
+                if ((((TextBox)ctrl).SelectedText == ctrl.Text) && (ctrl.Text != ""))
+                {
+                    return;
+                }
+            }
+            else if (ctrl.GetType() == typeof(TtxtPetraDate))
+            {
+                if ((((TtxtPetraDate)ctrl).SelectedText == ctrl.Text) && (ctrl.Text != ""))
+                {
+                    return;
+                }
+            }
+
             if ((this.SuppressChangeDetection == false)
                 && ((ctrl.Tag == null) || (ctrl.Tag.GetType() != typeof(string))
                     || !((string)ctrl.Tag).Contains(MCommonResourcestrings.StrCtrlSuppressChangeDetection))

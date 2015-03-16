@@ -49,6 +49,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
+        private string FPreselectContactLogID = string.Empty;
+
         #region Public Methods
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
@@ -62,6 +64,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FPartnerEditUIConnector = value;
+            }
+        }
+
+        /// <summary>
+        /// Selects the given contact log.
+        /// </summary>
+        /// <param name="AContactLogID">Contact Log identifier.</param>
+        public void SelectContactLogID(string AContactLogID)
+        {
+            foreach (DataRowView RowView in FMainDS.PContactLog.DefaultView)
+            {
+                if (RowView[PContactLogTable.GetContactLogIdDBName()].ToString() == AContactLogID)
+                {
+                    grdDetails.SelectRowInGrid(grdDetails.Rows.DataSourceRowToIndex(RowView) + 1);
+                    return;
+                }
             }
         }
 
@@ -94,8 +112,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (!FMainDS.Tables.Contains(PContactLogTable.GetTableName()))
             {
-                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContactLogsForPartner(FMainDS.PPartner[0].PartnerKey));
-                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetPartnerContacts(FMainDS.PPartner[0].PartnerKey));
+                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetPartnerContactLogData(FMainDS.PPartner[0].PartnerKey));
                 FMainDS.PContactLog.DefaultView.AllowNew = false;
             }
 

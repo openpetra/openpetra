@@ -131,6 +131,18 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         }
 
         /// <summary>
+        /// Gets the page number containing given partner key.
+        /// </summary>
+        /// <param name="APartnerKey">Partner key to search for</param>
+        /// <param name="AStartPage">Page to start searching</param>
+        /// <param name="APageSize">Size of a page.</param>
+        /// <returns></returns>
+        public Int16 GetPageNumberContainingPartnerKey(Int64 APartnerKey, System.Int16 AStartPage, System.Int16 APageSize)
+        {
+            return FPartnerFind.GetPageNumberContainingPartnerKey(APartnerKey, AStartPage, APageSize);
+        }
+
+        /// <summary>
         /// Stops the query execution.
         ///
         /// @comment It might take some time until the executing query is cancelled by

@@ -537,10 +537,12 @@ namespace Ict.Common.Controls
                     for (Int32 Counter = 0; Counter < PagedTable.Rows.Count; Counter++)
                     {
                         DataRow TargetRow;
+                        bool NewRow = false;
 
                         if (FPagedDataTable.Rows.Count <= IdxBase + Counter) // I need to create a new row?
                         {
                             TargetRow = FPagedDataTable.NewRow();
+                            NewRow = true;
                         }
                         else
                         {
@@ -548,6 +550,11 @@ namespace Ict.Common.Controls
                         }
 
                         TargetRow.ItemArray = PagedTable.Rows[Counter].ItemArray;
+
+                        if (NewRow)
+                        {
+                            FPagedDataTable.Rows.Add(TargetRow);
+                        }
                     }
                 }
 

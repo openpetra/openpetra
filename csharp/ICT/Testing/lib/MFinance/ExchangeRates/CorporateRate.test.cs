@@ -675,18 +675,18 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.DeleteAllRows();
             RunTestImport("corporate-csv/BadDateImport.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(CommonErrorCodes.ERR_INVALIDDATE, firstResultCode);
+            Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             FMainDS.DeleteAllRows();
             RunTestImport("corporate-csv/BadRateImport.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(CommonErrorCodes.ERR_INVALIDNUMBER, firstResultCode);
+            Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             // Test for a missing column
             FMainDS.DeleteAllRows();
             RunTestImport("corporate-csv/MissingColumn.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(CommonErrorCodes.ERR_INFORMATIONMISSING, firstResultCode);
+            Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             // Run the test(s) that have duplicates
             FMainDS.DeleteAllRows();

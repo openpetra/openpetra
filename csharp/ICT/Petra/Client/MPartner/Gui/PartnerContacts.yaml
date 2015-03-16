@@ -5,33 +5,76 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui
     FormType: browse
     Template: windowFind
-    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
-    MasterTable: PContactLog
+    WindowWidth: 850
+    WindowHeight: 500
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.Interfaces.MPartner,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+
     Actions:
+        actSelectAttributes: {ActionClick=SelectAttributes}
         actSearch: {ActionClick=Search}
-        actDeleteContacts: {ActionClick=DeleteContacts}
+        actClear: {ActionClick=Clear}
+        actView: {ActionClick=ViewPartner}
+        actDelete: {ActionClick=DeleteSelectedContacts}
+        actDeleteAll: {ActionClick=DeleteAllContacts}
+
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlParameters, grdDetails]
-        pnlParameters:
+            Controls: [grpFindCriteria, pnlGrid]
+        grpFindCriteria:
             Dock: Top
             Controls:
-                Row0: [dtpContactDate]
-                Row1: [txtContactor]
+                Row0: [dtpContactDate, btnSelectAttributes]
+                Row1: [txtContactor, grdSelectedAttributes]
                 Row2: [txtCommentContains]
                 Row3: [cmbContactCode]
                 Row4: [cmbMailingCode]
+                Row5: [btnSearch, btnClear]
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdDetails]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnView, btnDelete, btnDeleteAll]
+            ControlsOrientation: horizontal
+
+        grdSelectedAttributes:
+            Stretch: Fully
+            RowSpan: 4
+        grdDetails:
+            Dock: Fill
+
         dtpContactDate:
         txtContactor:
         txtCommentContains:
+            Width: 300
         cmbContactCode:{Label=Contact Code, List=ContactCode, AllowDbNull=true}
+            OnChange: OnCmomboChange
         cmbMailingCode:{Label=Mailing List, List=MailingList, AllowDbNull=true}
-        grdDetails:
-            Dock: Fill
-            TableName: PContactLog
-            Columns: [ContactDate, ContactCode, Contactor, ContactComment, ModuleId, MailingCode]
-    Toolbar:
-        tbbSearch:
-        tbbDeleteContacts:
+            OnChange: OnCmomboChange
+        
+        btnSelectAttributes:
+            Label: Choose Attributes
+            Action: actSelectAttributes
+            Height: 23
+        btnSearch:
+            Action: actSearch
+            Width: 80
+            Height: 23
+        btnClear:
+            Action: actClear
+            Width: 80
+            Height: 23
+            Align: right
+        btnView:
+            Action: actView
+            Width: 80
+            Enabled: false
+        btnDelete:
+            Action: actDelete
+            Width: 80
+            Enabled: false
+        btnDeleteAll:
+            Action: actDeleteAll
+            Width: 80
+            Enabled: false

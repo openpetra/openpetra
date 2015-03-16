@@ -190,15 +190,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 tInverseItem item = lstInverses[i];
 
                 // Does the item exist already?
-                dv.RowFilter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' AND {2}='{3}' AND {4}=#{5}# AND {6}={7}",
+                dv.RowFilter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' AND {2}='{3}' AND {4}=#{5}#",
                     ACorporateExchangeRateTable.GetFromCurrencyCodeDBName(),
                     item.FromCurrencyCode,
                     ACorporateExchangeRateTable.GetToCurrencyCodeDBName(),
                     item.ToCurrencyCode,
                     ACorporateExchangeRateTable.GetDateEffectiveFromDBName(),
-                    item.DateEffective.ToString("d", CultureInfo.InvariantCulture),
-                    ACorporateExchangeRateTable.GetRateOfExchangeDBName(),
-                    item.RateOfExchange);
+                    item.DateEffective.ToString("d", CultureInfo.InvariantCulture));
 
                 if (dv.Count == 0)
                 {
@@ -495,13 +493,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
 
                     formatter += "{0}{0}{1}{0}{0}{3}{0}{0}{4}";
-                    MessageBox.Show(String.Format(formatter,
-                            Environment.NewLine,
-                            results[0].ResultText,
-                            nRowsImported,
-                            MCommonResourcestrings.StrExchRateImportTryAgain,
-                            results[0].ResultCode),
-                        MCommonResourcestrings.StrExchRateImportTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    foreach (TVerificationResult Result in results)
+                    {
+                        MessageBox.Show(String.Format(formatter,
+                                Environment.NewLine,
+                                Result.ResultText,
+                                nRowsImported,
+                                MCommonResourcestrings.StrExchRateImportTryAgain,
+                                Result.ResultCode),
+                            MCommonResourcestrings.StrExchRateImportTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
 
                     results.Clear();
                 }

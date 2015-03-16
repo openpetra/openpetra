@@ -94,43 +94,34 @@ namespace Ict.Petra.Server.MPartner.queries
                     Value = AParameters.Get("param_mailing_code").ToString()
                 });
 
-            List <String>param_contact_attributes = new List <String>();
-
-            foreach (TVariant choice in AParameters.Get("param_contact_attributes").ToComposite())
-            {
-                if (choice.ToString().Length > 0)
-                {
-                    param_contact_attributes.Add(choice.ToString());
-                }
-            }
-
             ASQLParameterList.Add(new OdbcParameter("param_has_contact_attributes", OdbcType.Bit)
                 {
-                    Value = param_contact_attributes.Any()
+                    Value = !string.IsNullOrEmpty(AParameters.Get("param_contact_attributes").ToString())
                 });
 
-            ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_explicit_publication",
-                    OdbcType.VarChar,
-                    param_contact_attributes));
+            ICollection <String>param_contact_attributes;
+
+            param_contact_attributes = AParameters.Get("param_contact_attributes").ToString().Split(new Char[] { ',', });
+            ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_contact_attributes", OdbcType.VarChar, param_contact_attributes));
 
             ASQLParameterList.Add(new OdbcParameter("param_has_date_from", OdbcType.Bit)
                 {
-                    Value = AParameters.Get("param_date_from") != null && AParameters.Get("param_date_from").ToDate() > DateTime.MinValue
+                    Value = AParameters.Get("param_dtpDateFrom") != null && AParameters.Get("param_dtpDateFrom").ToDate() > DateTime.MinValue
                 });
 
-            ASQLParameterList.Add(new OdbcParameter("param_date_from", OdbcType.Date)
+            ASQLParameterList.Add(new OdbcParameter("param_dtpDateFrom", OdbcType.Date)
                 {
-                    Value = AParameters.Get("param_date_from").ToDate()
+                    Value = AParameters.Get("param_dtpDateFrom").ToDate()
                 });
 
             ASQLParameterList.Add(new OdbcParameter("param_has_date_to", OdbcType.Bit)
                 {
-                    Value = AParameters.Get("param_date_to") != null && AParameters.Get("param_date_to").ToDate() > DateTime.MinValue
+                    Value = AParameters.Get("param_dtpDateTo") != null && AParameters.Get("param_dtpDateTo").ToDate() > DateTime.MinValue
                 });
 
-            ASQLParameterList.Add(new OdbcParameter("param_date_to", OdbcType.Date)
+            ASQLParameterList.Add(new OdbcParameter("param_dtpDateTo", OdbcType.Date)
                 {
-                    Value = AParameters.Get("param_date_to").ToDate()
+                    Value = AParameters.Get("param_dtpDateTo").ToDate()
                 });
 
 

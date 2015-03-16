@@ -160,7 +160,26 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " PUB_a_gift as gift, " +
                                    " PUB_a_gift_detail AS detail," +
                                    " PUB_a_gift_batch," +
-                                   " PUB_p_partner AS Recipient";
+                                   " PUB_p_partner AS Recipient" +
+
+                                   " LEFT JOIN PUB_p_partner_gift_destination" +
+                                   " ON Recipient.p_partner_class_c = 'FAMILY'" +
+                                   " AND PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n" +
+                                   " AND PUB_p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate + "'" +
+                                   " AND (PUB_p_partner_gift_destination.p_date_expires_d IS NULL" +
+                                   " OR (PUB_p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate + "'" +
+                                   " AND PUB_p_partner_gift_destination.p_date_effective_d <> PUB_p_partner_gift_destination.p_date_expires_d))" +
+
+                                   " LEFT JOIN um_unit_structure" +
+                                   " ON Recipient.p_partner_class_c = 'UNIT'" +
+                                   " AND um_unit_structure.um_child_unit_key_n = Recipient.p_partner_key_n" +
+
+                                   " LEFT JOIN PUB_p_partner" +
+                                   " ON (PUB_p_partner.p_partner_key_n = PUB_p_partner_gift_destination.p_field_key_n" +
+                                   " AND EXISTS (SELECT * FROM PUB_p_partner_gift_destination WHERE PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n))"
+                                   +
+                                   " OR (PUB_p_partner.p_partner_key_n = um_unit_structure.um_parent_unit_key_n" +
+                                   " AND EXISTS (SELECT * FROM um_unit_structure WHERE um_unit_structure.um_child_unit_key_n = Recipient.p_partner_key_n))";
 
                     if (RecipientSelection == "Extract")
                     {
@@ -168,33 +187,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                  " PUB_m_extract_master";
                     }
 
-                    Query += " LEFT JOIN PUB_p_partner_gift_destination" +
-                             " ON Recipient.p_partner_class_c = 'FAMILY'" +
-                             " AND PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n" +
-                             " AND PUB_p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate + "'" +
-                             " AND (PUB_p_partner_gift_destination.p_date_expires_d IS NULL" +
-                             " OR (PUB_p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate + "'" +
-                             " AND PUB_p_partner_gift_destination.p_date_effective_d <> PUB_p_partner_gift_destination.p_date_expires_d))" +
-
-                             " LEFT JOIN um_unit_structure" +
-                             " ON Recipient.p_partner_class_c = 'UNIT'" +
-                             " AND um_unit_structure.um_child_unit_key_n = Recipient.p_partner_key_n" +
-
-                             " LEFT JOIN PUB_p_partner" +
-                             " ON (PUB_p_partner.p_partner_key_n = PUB_p_partner_gift_destination.p_field_key_n" +
-                             " AND EXISTS (SELECT * FROM PUB_p_partner_gift_destination WHERE PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n))"
-                             +
-                             " OR (PUB_p_partner.p_partner_key_n = um_unit_structure.um_parent_unit_key_n" +
-                             " AND EXISTS (SELECT * FROM um_unit_structure WHERE um_unit_structure.um_child_unit_key_n = Recipient.p_partner_key_n))"
-                             +
-
-                             " WHERE";
+                    Query += " WHERE";
 
                     if (RecipientSelection == "Extract")
                     {
                         Query += " detail.p_recipient_key_n =  PUB_m_extract.p_partner_key_n" +
                                  " AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
-                                 " AND PUB_m_extract_master.m_extract_name_c = " + AParameters["param_extract_name"].ToString() +
+                                 " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
                                  " AND";
                     }
 
@@ -257,7 +256,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
@@ -334,7 +335,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {

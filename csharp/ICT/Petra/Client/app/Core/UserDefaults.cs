@@ -257,6 +257,12 @@ namespace Ict.Petra.Client.App.Core
         public const String PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT = "findopt_criteriafieldsright";
 
         /// <summary>todoComment</summary>
+        public const String PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSLEFT = "findoptbank_criteriafieldsleft";
+
+        /// <summary>todoComment</summary>
+        public const String PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSRIGHT = "findoptbank_criteriafieldsright";
+
+        /// <summary>todoComment</summary>
         public const String PARTNER_FINDOPTIONS_NUMBEROFRESULTROWS = "findopt_numberofresultrows";
 
         /// <summary>todoComment</summary>

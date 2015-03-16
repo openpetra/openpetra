@@ -22,46 +22,20 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Drawing;
-using System.Collections;
-using System.Collections.Specialized;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Data;
-using System.Linq;
-using GNU.Gettext;
-using Ict.Petra.Shared;
+
 using Ict.Petra.Shared.MReporting;
-using Ict.Petra.Shared.MPersonnel;
-using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-using Ict.Common;
-using Ict.Common.Data;
-using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.MPartner;
+using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MReporting.Logic;
-using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPartner
 {
     public partial class TFrmPartnerByContactLog
     {
-        private void InitializeManualCode()
-        {
-        }
-
-        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
-        {
-            //if (true)
-            //{
-            //    TVerificationResult VerificationResult = new TVerificationResult(
-            //        Catalog.GetString("Please enter some criteria."),
-            //        Catalog.GetString("No criteria added!"),
-            //        TResultSeverity.Resv_Critical);
-            //    FPetraUtilsObject.AddVerificationResult(VerificationResult);
-            //}
-        }
+        PPartnerContactAttributeTable FAttributeTable = new PPartnerContactAttributeTable();
 
         private void RunOnceOnActivationManual()
         {
@@ -76,6 +50,63 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             addressSettings.Add("param_families_only", false);
             addressSettings.Add("param_exclude_no_solicitations", true);
             ucoChkFilter.SetControls(addressSettings);
+        }
+
+        /// <summary>
+        /// Open a dialog to select Contact Attributes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void SelectAttributes(object sender, EventArgs e)
+        {
+            // open the contact attributes dialog
+            TFrmContactAttributesDialog ContactAttributesDialog = new TFrmContactAttributesDialog(FPetraUtilsObject.GetForm());
+
+            ContactAttributesDialog.ContactID = -1;
+            ContactAttributesDialog.SelectedContactAttributeTable = FAttributeTable;
+
+            if (ContactAttributesDialog.ShowDialog() == DialogResult.OK)
+            {
+                PPartnerContactAttributeTable Changes = ContactAttributesDialog.SelectedContactAttributeTable.GetChangesTyped();
+
+                // if changes were made
+                if (Changes != null)
+                {
+                    FAttributeTable = ContactAttributesDialog.SelectedContactAttributeTable;
+
+                    // we do not need the deleted rows
+                    FAttributeTable.AcceptChanges();
+
+                    ContactAttributesLogic.SetupContactAttributesGrid(ref grdSelectedAttributes, FAttributeTable, false);
+                }
+            }
+        }
+
+        // get selected Contact Attributes from the grid
+        private void grdSelectedAttributes_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+            String param_contact_attributes = string.Empty;
+
+            if ((FAttributeTable != null) && (FAttributeTable.Rows.Count > 0))
+            {
+                // join Attribute Code and Attribute Detail Code
+                foreach (PPartnerContactAttributeRow Row in FAttributeTable.Rows)
+                {
+                    param_contact_attributes += Row.ContactAttributeCode + ";" + Row.ContactAttrDetailCode + ",";
+                }
+
+                param_contact_attributes = param_contact_attributes.Substring(0, param_contact_attributes.Length - 1);
+            }
+
+            ACalc.AddParameter("param_contact_attributes", param_contact_attributes);
+        }
+
+        private void grdSelectedAttributes_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
+        {
+        }
+
+        private void grdSelectedAttributes_SetControls(TParameterList AParameters)
+        {
         }
     }
 }

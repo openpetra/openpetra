@@ -185,7 +185,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             parameters[3] = new OdbcParameter("DonorKey", OdbcType.BigInt);
                             parameters[3].Value = donorKey;
 
-                            // TODO: should we print each gift detail, or just one row per gift?
                             DataTable donations = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Donations", Transaction, parameters);
 
                             if (donations.Rows.Count > 0)
@@ -276,6 +275,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             msg = msg.Replace("#CITY", GetStringOrEmpty(Location[0].City));
             msg = msg.Replace("#POSTALCODE", GetStringOrEmpty(Location[0].PostalCode));
             msg = msg.Replace("#DATE", DateTime.Now.ToString("d. MMMM yyyy"));
+            msg = msg.Replace("#DONORKEY", ADonorKey.ToString("0000000000"));
 
             // according to German Post, there is no country code in front of the post code
             // if country code is same for the address of the recipient and this office, then COUNTRYNAME is cleared
@@ -301,9 +301,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             decimal prevAmountTaxDeduct = 0.0M;
             decimal prevAmountNonDeduct = 0.0M;
             string prevCurrency = String.Empty;
-            string prevCommentOne = String.Empty;
-            string prevAccountDesc = String.Empty;
-            string prevCostCentreDesc = String.Empty;
             string prevgifttype = string.Empty;
             DateTime prevDateEntered = DateTime.MaxValue;
 
@@ -315,8 +312,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 decimal nonDeductibleAmount = 0;
                 string currency = rowGifts["Currency"].ToString();
                 string commentOne = rowGifts["CommentOne"].ToString();
+                string commentTwo = rowGifts["CommentTwo"].ToString();
+                string commentThree = rowGifts["CommentThree"].ToString();
                 string accountDesc = rowGifts["AccountDesc"].ToString();
                 string costcentreDesc = rowGifts["CostCentreDesc"].ToString();
+                string fieldName = rowGifts["FieldName"].ToString();
+                string recipientName = rowGifts["RecipientName"].ToString();
                 string gifttype = rowGifts["GiftType"].ToString();
                 RowTemplate = OrigRowTemplate;
 
@@ -330,8 +331,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     sumNonDeduct += Convert.ToDecimal(rowGifts["NonDeductibleAmountBase"]);
                 }
 
-                // can we sum up donations on the same date, or do we need to print each detail with the account description?
-                if (RowTemplate.Contains("#COMMENTONE") || RowTemplate.Contains("#ACCOUNTDESC") || RowTemplate.Contains("#COSTCENTREDESC"))
+                /* can we sum up donations on the same date, or do we need to print each detail with the account description? */
+
+                // if we are printing every single gift detail
+                if (RowTemplate.Contains("#ACCOUNTDESC") || RowTemplate.Contains("#COSTCENTREDESC")
+                    || RowTemplate.Contains("#FIELDNAME") || RowTemplate.Contains("#RECIPIENTNAME")
+                    || RowTemplate.Contains("#COMMENTONE") || RowTemplate.Contains("#COMMENTTWO") || RowTemplate.Contains("#COMMENTTHREE"))
                 {
                     if (gifttype == MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND)
                     {
@@ -357,9 +362,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         NumberToWords.AmountToWords(nonDeductibleAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
                                 Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(nonDeductibleAmount, currency)).
                                 Replace("#COMMENTONE", commentOne).
+                                Replace("#COMMENTTWO", commentTwo).
+                                Replace("#COMMENTTHREE", commentThree).
                                 Replace("#ACCOUNTDESC", accountDesc).
-                                Replace("#COSTCENTREDESC", costcentreDesc);
+                                Replace("#COSTCENTREDESC", costcentreDesc).
+                                Replace("#FIELDNAME", fieldName).
+                                Replace("#RECIPIENTNAME", recipientName);
                 }
+                // if we are summing up donations on the same date
                 else
                 {
                     if ((dateEntered != prevDateEntered) && (prevDateEntered != DateTime.MaxValue))
@@ -388,10 +398,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     Replace("#TAXNONDEDUCTAMNTINWORDS",
                             NumberToWords.AmountToWords(prevAmountNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular,
                                 MinorUnitPlural)).
-                                    Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency)).
-                                    Replace("#COMMENTONE", prevCommentOne).
-                                    Replace("#ACCOUNTDESC", prevAccountDesc).
-                                    Replace("#COSTCENTREDESC", prevCostCentreDesc);
+                                    Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency));
                         prevAmount = amount;
 
                         if (TaxDeductiblePercentageEnabled)
@@ -413,13 +420,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     prevCurrency = currency;
                     prevDateEntered = dateEntered;
-                    prevCommentOne = commentOne;
-                    prevAccountDesc = accountDesc;
-                    prevCostCentreDesc = costcentreDesc;
                     prevgifttype = gifttype;
                 }
             }
 
+            // only used when we are summing up donations on the same date
             if (prevDateEntered != DateTime.MaxValue)
             {
                 RowTemplate = OrigRowTemplate;
@@ -446,10 +451,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountTaxDeduct, prevCurrency)).
                             Replace("#TAXNONDEDUCTAMNTINWORDS",
                     NumberToWords.AmountToWords(prevAmountNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
-                            Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency)).
-                            Replace("#COMMENTONE", prevCommentOne).
-                            Replace("#ACCOUNTDESC", prevAccountDesc).
-                            Replace("#COSTCENTREDESC", prevCostCentreDesc);
+                            Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency));
                 prevAmount = 0.0M;
 
                 if (TaxDeductiblePercentageEnabled)

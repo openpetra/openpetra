@@ -614,12 +614,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             APartnerKey, Transaction);
                     }
 
-                    var partnerContacts = MPartner.Partner.WebConnectors.TContactsWebConnector.GetPartnerContacts(APartnerKey)
+                    var partnerContacts = MPartner.Partner.WebConnectors.TContactsWebConnector.GetPartnerContactLogData(APartnerKey).PPartnerContact
                                           .AsEnumerable().Select(r =>
                         {
                             var id = r.ItemArray[PPartnerContactTable.ColumnContactLogIdId];
                             return new { ContactLogId = id, deleteThis = !TContactsWebConnector.IsContactLogAssociatedWithMoreThanOnePartner((long)id) };
-                        });;
+                        });
 
                     // Delete contact attributes before deleting contacts
                     if (ResultValue)
@@ -825,10 +825,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         ResultValue = DeleteEntries(PPartnerTable.GetTableDBName(),
                             PPartnerTable.GetPartnerKeyDBName(),
                             APartnerKey, Transaction);
-                    }
 
-                    if (ResultValue)
-                    {
                         SubmissionOK = true;
                     }
                 });

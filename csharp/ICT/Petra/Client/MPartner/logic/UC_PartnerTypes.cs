@@ -525,22 +525,27 @@ namespace Ict.Petra.Client.MPartner
             // second add the rest of the Special Types in db
             for (RowCounter = 0; RowCounter <= UnselectedPartnerTypeTableDV.Count - 1; RowCounter += 1)
             {
-                #region Determine Type Description
-                TypeDescription = UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeDescriptionDBName()].ToString();
-
-                // If this Type is inactive, show it.
-                if (!Convert.ToBoolean(UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetValidTypeDBName()]))
+                // only add row if it has not already been added as a checked row
+                if (SelectedPartnerTypeTableDV.Find(
+                        new object[] { UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeCodeDBName()] }) == -1)
                 {
-                    TypeDescription = TypeDescription + MCommonResourcestrings.StrGenericInactiveCode;
+                    #region Determine Type Description
+                    TypeDescription = UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeDescriptionDBName()].ToString();
+
+                    // If this Type is inactive, show it.
+                    if (!Convert.ToBoolean(UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetValidTypeDBName()]))
+                    {
+                        TypeDescription = TypeDescription + MCommonResourcestrings.StrGenericInactiveCode;
+                    }
+
+                    #endregion
+
+                    TheNewRow = FPartnerTypesGridTable.NewRow();
+                    TheNewRow["Checked"] = (System.Object)false;
+                    TheNewRow["TypeCode"] = UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeCodeDBName()];
+                    TheNewRow["TypeDescription"] = TypeDescription;
+                    FPartnerTypesGridTable.Rows.Add(TheNewRow);
                 }
-
-                #endregion
-
-                TheNewRow = FPartnerTypesGridTable.NewRow();
-                TheNewRow["Checked"] = (System.Object)false;
-                TheNewRow["TypeCode"] = UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeCodeDBName()];
-                TheNewRow["TypeDescription"] = TypeDescription;
-                FPartnerTypesGridTable.Rows.Add(TheNewRow);
             }
         }
 

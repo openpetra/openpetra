@@ -796,6 +796,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Selects the given contact log.
+        /// </summary>
+        /// <param name="AContactLogID">Contact Log identifier.</param>
+        public void SelectContactLog(string AContactLogID)
+        {
+            ucoLowerPart.SelectContactLog(AContactLogID);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the TFrmPartnerEdit class (constructor)
         /// </summary>
         public void InitializeManualCode()
@@ -1740,7 +1749,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                             {
                                 // update unposted gifts
-                                TRemote.MFinance.Gift.WebConnectors.UpdateUnpostedGiftsTaxDeductiblePct(FPartnerKey, NewPct);
+                                TRemote.MFinance.Gift.WebConnectors.UpdateUnpostedGiftsTaxDeductiblePct(FPartnerKey, NewPct, NewValidFrom);
                             }
                         }
                         else
@@ -3048,6 +3057,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
 #else
                 case TPartnerEditTabPageEnum.petpContacts:
+                    FInitiallySelectedTabPage = FShowTabPage;
+
+                    break;
+
                 case TPartnerEditTabPageEnum.petpReminders:
                     FShowTabPage = TPartnerEditTabPageEnum.petpAddresses;
                     FInitiallySelectedTabPage = FShowTabPage;

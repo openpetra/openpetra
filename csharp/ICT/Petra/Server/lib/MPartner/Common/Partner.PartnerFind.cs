@@ -402,6 +402,37 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         }
 
         /// <summary>
+        /// Gets the page number containing given partner key.
+        /// </summary>
+        /// <param name="APartnerKey">Partner key to search for</param>
+        /// <param name="AStartPage">Page to start searching</param>
+        /// <param name="APageSize">Size of a page.</param>
+        /// <returns></returns>
+        public Int16 GetPageNumberContainingPartnerKey(Int64 APartnerKey, System.Int16 AStartPage, System.Int16 APageSize)
+        {
+            Int16 ReturnValue = 1;
+
+            TLogging.LogAtLevel(7, "TPartnerFind.GetDataPagedResult called.");
+
+            for (Int16 i = AStartPage; i <= FPagedDataSetObject.TotalPages; i++)
+            {
+                // load a page
+                DataTable Table = FPagedDataSetObject.GetData(i, APageSize);
+
+                // look for partner key on this page
+                foreach (DataRow Row in Table.Rows)
+                {
+                    if (Convert.ToInt64(Row["p_partner_key_n"]) == APartnerKey)
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Used internally to build a SQL WHERE criteria from the AFindCriteria HashTable.
         ///
         /// </summary>

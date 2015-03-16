@@ -832,6 +832,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             FUcoAddresses.ProcessServerResponseAddressAddedOrChanged(AAddedOrChangedPromotionDT, AParameterDT);
         }
 
+        /// <summary>
+        /// Selects the given contact log.
+        /// </summary>
+        /// <param name="AContactLogID">Contact Log identifier.</param>
+        public void SelectContactLog(string AContactLogID)
+        {
+            tabPartners.SelectedTab = tpgContacts;
+            TabSelectionChanged(this, null);
+            FUcoContacts.SelectContactLogID(AContactLogID);
+        }
+
         #endregion
 
         #region Private Methods

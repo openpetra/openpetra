@@ -73,6 +73,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             ucoContactLog.MainDS = FMainDS;
             ucoContactLog.SpecialInitUserControl();
+            ucoContactLog.ShowDetails(ContactLogRow);
             FPetraUtilsObject.HasChanges = false;
         }
 
@@ -91,12 +92,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// on the screen.
         /// </summary>
         /// <param name="ARow"></param>
+        /// <param name="ATable"></param>
         /// <returns>Boolean</returns>
-        public bool GetReturnedParameters(ref PContactLogRow ARow)
+        public bool GetReturnedParameters(ref PContactLogRow ARow, ref PPartnerContactAttributeTable ATable)
         {
             bool ReturnValue = true;
 
             DataUtilities.CopyAllColumnValues(FMainDS.PContactLog.Rows[0], ARow);
+            ATable.Merge(FMainDS.PPartnerContactAttribute);
 
             return ReturnValue;
         }

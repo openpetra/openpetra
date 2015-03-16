@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, andreww
+//       timop, andreww, peters
 //
 // Copyright 2004-2014 by OM International
 //
@@ -89,25 +89,27 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <summary>
         /// Adds a Contact Log record to each Partner in the given Extract
         /// </summary>
-        /// <param name="ExtractId"></param>
-        /// <param name="ContactLogTable"></param>
+        /// <param name="AExtractId"></param>
+        /// <param name="AContactLogTable"></param>
+        /// <param name="APartnerContactAttributeTable"></param>
         [RequireModulePermission("PTNRUSER")]
-        public static void AddContactLog(int ExtractId, PContactLogTable ContactLogTable)
+        public static void AddContactLog(int AExtractId,
+            PContactLogTable AContactLogTable,
+            PPartnerContactAttributeTable APartnerContactAttributeTable)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction WriteTransaction = null;
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                ref Transaction,
-                ref SubmissionOK,
+                TEnforceIsolationLevel.eilMinimum, ref WriteTransaction, ref SubmissionOK,
                 delegate
                 {
-                    var extractTable = MExtractAccess.LoadViaMExtractMaster(ExtractId, Transaction).AsEnumerable();
+                    var extractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, WriteTransaction).AsEnumerable();
                     var partnerKeys = extractTable.Select(e => e.ItemArray[MExtractTable.ColumnPartnerKeyId]);
 
-                    long ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", Transaction);
+                    long ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", WriteTransaction);
 
-                    ContactLogTable.Rows[0][PContactLogTable.ColumnContactLogIdId] = ContactLogId;
+                    AContactLogTable.Rows[0][PContactLogTable.ColumnContactLogIdId] = ContactLogId;
 
                     PPartnerContactTable partnerContacts = new PPartnerContactTable();
                     partnerKeys.ToList().ForEach(partnerKey =>
@@ -118,8 +120,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             partnerContacts.Rows.Add(partnerContact);
                         });
 
-                    PContactLogAccess.SubmitChanges(ContactLogTable, Transaction);
-                    PPartnerContactAccess.SubmitChanges(partnerContacts, Transaction);
+                    foreach (PPartnerContactAttributeRow Row in APartnerContactAttributeTable.Rows)
+                    {
+                        Row.ContactId = ContactLogId;
+                    }
+
+                    PContactLogAccess.SubmitChanges(AContactLogTable, WriteTransaction);
+                    PPartnerContactAccess.SubmitChanges(partnerContacts, WriteTransaction);
+                    PPartnerContactAttributeAccess.SubmitChanges(APartnerContactAttributeTable, WriteTransaction);
 
                     SubmissionOK = true;
                 });
@@ -196,113 +204,130 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AMethodOfContact"></param>
         /// <param name="AModuleID"></param>
         /// <param name="AMailingCode">can be an empty string</param>
+        /// <param name="AContactAttributes">can be an empty table</param>
         /// <returns>the contacts table with all contacts that match</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static PContactLogTable FindContacts(string AContactor,
+        public static DataTable FindContacts(string AContactor,
             DateTime? AContactDate,
             string ACommentContains,
             string AMethodOfContact,
             string AModuleID,
-            string AMailingCode)
+            string AMailingCode,
+            PPartnerContactAttributeTable AContactAttributes)
         {
-            PContactLogTable contacts = new PContactLogTable();
+            Boolean NewTransaction;
+            DataTable Contacts = new DataTable();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
+            try
+            {
+                string Query = "SELECT p_contact_log.*, p_partner_contact.p_partner_key_n, p_partner.p_partner_short_name_c" +
+
+                               " FROM p_contact_log, p_partner_contact, p_partner" +
+
+                               " WHERE" +
+                               " p_partner_contact.p_contact_log_id_i = p_contact_log.p_contact_log_id_i" +
+                               " AND p_partner.p_partner_key_n = p_partner_contact.p_partner_key_n";
+
+                if (AContactor.Length > 0)
                 {
-                    PContactLogTable TempTable = new PContactLogTable();
-                    PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
+                    Query += " AND p_contact_log.p_contactor_c = '" + AContactor + "'";
+                }
 
-                    if (AContactor.Length > 0)
+                if (AContactDate.HasValue)
+                {
+                    Query += " AND p_contact_log.s_contact_date_d = '" + AContactDate + "'";
+                }
+
+                if (AMethodOfContact.Length > 0)
+                {
+                    Query += " AND p_contact_log.p_contact_code_c = '" + AMethodOfContact + "'";
+                }
+
+                if (AModuleID.Length > 0)
+                {
+                    Query += " AND p_contact_log.s_module_id_c = '" + AModuleID + "'";
+                }
+
+                if (AMailingCode.Length > 0)
+                {
+                    Query += " AND p_contact_log.p_mailing_code_c = '" + AMailingCode + "'";
+                }
+
+                if (ACommentContains.Length > 0)
+                {
+                    Query += " AND p_contact_log.p_contact_comment_c LIKE '%" + ACommentContains + "%'";
+                }
+
+                if ((AContactAttributes != null) && (AContactAttributes.Rows.Count > 0))
+                {
+                    Query += " AND EXISTS (SELECT * " +
+                             " FROM p_partner_contact_attribute" +
+                             " WHERE" +
+                             " p_partner_contact_attribute.p_contact_id_i = p_contact_log.p_contact_log_id_i" +
+                             " AND (";
+
+                    foreach (PPartnerContactAttributeRow Row in AContactAttributes.Rows)
                     {
-                        TemplateRow.Contactor = AContactor;
+                        Query += " (p_partner_contact_attribute.p_contact_attribute_code_c = '" + Row.ContactAttributeCode + "'" +
+                                 " AND p_partner_contact_attribute.p_contact_attr_detail_code_c = '" + Row.ContactAttrDetailCode + "') OR";
                     }
 
-                    if (AContactDate.HasValue)
-                    {
-                        TemplateRow.ContactDate = new DateTime(AContactDate.Value.Year, AContactDate.Value.Month, AContactDate.Value.Day);
-                    }
+                    // remove the final " OR"
+                    Query = Query.Substring(0, Query.Length - 3) + "))";
+                }
 
-                    if (AMethodOfContact.Length > 0)
-                    {
-                        TemplateRow.ContactCode = AMethodOfContact;
-                    }
+                DBAccess.GDBAccessObj.SelectDT(Contacts, Query, WriteTransaction);
 
-                    if (AModuleID.Length > 0)
-                    {
-                        TemplateRow.ModuleId = AModuleID;
-                    }
+                Contacts.PrimaryKey = new DataColumn[] {
+                    Contacts.Columns["p_partner_key_n"], Contacts.Columns["p_contact_log_id_i"]
+                };
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+            }
 
-                    if (AMailingCode.Length > 0)
-                    {
-                        TemplateRow.MailingCode = AMailingCode;
-                    }
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
-                    contacts = PContactLogAccess.LoadUsingTemplate(TemplateRow, Transaction);
-
-                    Int32 Counter = 0;
-
-                    while (Counter < contacts.Rows.Count)
-                    {
-                        if ((ACommentContains.Length > 0) && !StringHelper.ContainsI(contacts[Counter].ContactComment, ACommentContains))
-                        {
-                            contacts.Rows.RemoveAt(Counter);
-                        }
-                        else
-                        {
-                            Counter++;
-                        }
-                    }
-                });
-
-            return contacts;
+            return Contacts;
         }
 
         /// <summary>
-        /// This returns all Contact Logs associated with a particular partner.
+        /// This returns all the data needed for the Patner Edit Contact Log tab
         /// </summary>
-        /// <param name="partnerKey"></param>
+        /// <param name="APartnerKey"></param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static PContactLogTable FindContactLogsForPartner(long partnerKey)
+        public static PartnerEditTDS GetPartnerContactLogData(long APartnerKey)
         {
-            PContactLogTable contacts = new PContactLogTable();
+            PartnerEditTDS ReturnDS = new PartnerEditTDS();
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref Transaction,
                 delegate
                 {
-                    contacts = PContactLogAccess.LoadViaPPartnerPPartnerContact(partnerKey, Transaction);
+                    ReturnDS.Merge(PContactLogAccess.LoadViaPPartnerPPartnerContact(APartnerKey, Transaction));
+                    ReturnDS.Merge(PPartnerContactAccess.LoadViaPPartner(APartnerKey, Transaction));
+
+                    if ((ReturnDS.PContactLog != null) && (ReturnDS.PContactLog.Count > 0))
+                    {
+                        foreach (PContactLogRow Row in ReturnDS.PContactLog.Rows)
+                        {
+                            ReturnDS.Merge(PPartnerContactAttributeAccess.LoadViaPContactLog(Row.ContactLogId, Transaction));
+                        }
+                    }
                 });
 
-            return contacts;
-        }
-
-        /// <summary>
-        /// This returns the PartnerContact records
-        /// </summary>
-        /// <param name="partnerKey"></param>
-        /// <returns></returns>
-        [RequireModulePermission("PTNRUSER")]
-        public static PPartnerContactTable GetPartnerContacts(long partnerKey)
-        {
-            PPartnerContactTable partnerContacts = new PPartnerContactTable();
-
-            TDBTransaction Transaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    partnerContacts = PPartnerContactAccess.LoadViaPPartner(partnerKey, Transaction);
-                });
-
-            return partnerContacts;
+            return ReturnDS;
         }
 
         /// <summary>
@@ -333,13 +358,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AContactLogs">table with deleted rows. edited or untouched rows will not be deleted.</param>
         [RequireModulePermission("PTNRUSER")]
         public static void DeleteContacts(
-            PContactLogTable AContactLogs)
+            DataTable AContactLogs)
         {
-            Boolean NewTransaction;
-
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
 
@@ -348,23 +368,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ref SubmissionOK,
                 delegate
                 {
-                    foreach (PContactLogRow contactLogRow in AContactLogs.Rows)
+                    foreach (DataRow contactLogRow in AContactLogs.Rows)
                     {
-                        var contactLogs = PPartnerContactAccess.LoadViaPContactLog((long)contactLogRow[PContactLogTable.ColumnContactLogIdId],
-                            Transaction);
+                        PPartnerContactTable contactLogs = PPartnerContactAccess.LoadByPrimaryKey(
+                            Convert.ToInt64(contactLogRow["p_partner_key_n"]), Convert.ToInt64(contactLogRow["p_contact_log_id_i"]), Transaction);
 
-                        foreach (PPartnerContactRow partnerContactRow in contactLogs.Rows)
-                        {
-                            partnerContactRow.Delete();
-                        }
+                        contactLogs[0].Delete();
 
                         PPartnerContactAccess.SubmitChanges(contactLogs, Transaction);
-                        contactLogRow.Delete();
+
+                        SubmissionOK = true;
                     }
-
-                    PContactLogAccess.SubmitChanges(AContactLogs, Transaction);
-
-                    SubmissionOK = true;
                 });
         }
     }

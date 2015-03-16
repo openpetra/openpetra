@@ -256,6 +256,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ARecipientChanged)
             {
+                FMainDS.PPartnerTaxDeductiblePct.Clear();
                 FMainDS.PPartnerTaxDeductiblePct.Merge(TRemote.MFinance.Gift.WebConnectors.LoadPartnerTaxDeductiblePct(APartnerKey));
             }
 

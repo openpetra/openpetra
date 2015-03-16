@@ -511,6 +511,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoPartnerTabSet.RefreshUnitHierarchy(AUnitHierarchyChange);
         }
 
+        /// <summary>
+        /// Selects the given contact log.
+        /// </summary>
+        /// <param name="AContactLogID">Contact Log identifier.</param>
+        public void SelectContactLog(string AContactLogID)
+        {
+            ucoPartnerTabSet.SelectContactLog(AContactLogID);
+        }
+
         #endregion
 
         #region Menu and command key handlers for our user controls
