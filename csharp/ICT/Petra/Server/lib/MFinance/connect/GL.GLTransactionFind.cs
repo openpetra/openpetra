@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 
+using Ict.Common;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MFinance.GL;
@@ -54,7 +55,7 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     /// </summary>
-    public class TGLTransactionFindUIConnector : TConfigurableMBRObject, IFinanceUIConnectorsGLTransactionFind
+    public class TGLTransactionFindUIConnector : IFinanceUIConnectorsGLTransactionFind
     {
         private TGLTransactionFind FGLTransactionFind = new TGLTransactionFind();
 
@@ -65,14 +66,12 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
         {
         }
 
-        /// <summary>Returns reference to the Asynchronous execution control object to the caller</summary>
-        public IAsynchronousExecutionProgress AsyncExecProgress
+        /// <summary>Get the current state of progress</summary>
+        public TProgressState Progress
         {
             get
             {
-                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
-                    typeof(TAsynchronousExecutionProgressRemote),
-                    FGLTransactionFind.AsyncExecProgress);
+                return FGLTransactionFind.Progress;
             }
         }
 
@@ -113,11 +112,9 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
         /// stopping - this leads to ADO.NET errors that state that a ADO.NET command is still executing!).
         /// </remarks>
         /// </summary>
-        /// <param name="ASender">Object that requested the stopping (not evaluated).</param>
-        /// <param name="AArgs">(not evaluated).</param>
-        public void StopSearch(object ASender, EventArgs AArgs)
+        public void StopSearch()
         {
-            FGLTransactionFind.StopSearch(ASender, AArgs);
+            FGLTransactionFind.StopSearch();
         }
     }
 }
