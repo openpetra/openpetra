@@ -236,10 +236,6 @@ namespace Ict.Common.DB
         /// restart a sequence with the given value
         /// </summary>
         void RestartSequence(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, Int64 ARestartValue);
-
-        /// update a database when starting the OpenPetra server. otherwise throw an exception
-        void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
-            string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword);
     }
 
     /// <summary>
@@ -659,19 +655,6 @@ namespace Ict.Common.DB
             if (Tbl.Rows.Count == 0)
             {
                 return;
-            }
-
-            string DBPatchVersion = Convert.ToString(Tbl.Rows[0]["s_default_value_c"]);
-
-            TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
-            TFileVersionInfo serverExeInfo = new TFileVersionInfo(TFileVersionInfo.GetApplicationVersion());
-
-            if (dbversion.CompareWithoutPrivatePart(serverExeInfo) < 0)
-            {
-                // for a proper server, the patchtool should have already updated the database
-
-                // for standalone versions, we update the database on the fly when starting the server
-                FDataBaseRDBMS.UpdateDatabase(dbversion, serverExeInfo, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword);
             }
         }
 
