@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
@@ -241,7 +242,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (ATaxDeductiblePercentageEnabledFlag)
                     {
-                        if (string.IsNullOrEmpty(motivationDetail.TaxDeductibleAccount))
+                        if (string.IsNullOrEmpty(motivationDetail.TaxDeductibleAccountCode))
                         {
                             MessageBox.Show(Catalog.GetString("This Motivation Detail does not have an associated Tax Deductible Account. " +
                                     "This can be added in Finance / Setup / Motivation Details.\n\n" +
@@ -342,6 +343,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            Int64 RecipientLedgerNumber = 0;
+
+            // get the recipient ledger number
+            if (APartnerKey > 0)
+            {
+                RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey,
+                    ACurrentDetailRow.DateEntered);
+            }
+
+            TVerificationResultCollection VerificationResults;
+
+            // if recipient ledger number belongs to a different ledger then check that it is set up for inter-ledger transfers
+            if ((RecipientLedgerNumber != 0) && ((int)RecipientLedgerNumber / 1000000 != ALedgerNumber)
+                && !TRemote.MFinance.Gift.WebConnectors.IsRecipientLedgerNumberSetupForILT(
+                    ALedgerNumber, APartnerKey, RecipientLedgerNumber, out VerificationResults))
+            {
+                MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Invalid Data Entered"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                //ATxtDetailRecipientKey.Text = "0";
+                //return;
+
+                RecipientLedgerNumber = 0;
+            }
+
             ARecipientKeyChangingFlag = true;
             ATxtDetailRecipientKeyMinistry.Text = string.Empty;
 
@@ -353,15 +379,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 APetraUtilsObject.SuppressChangeDetection = true;
 
                 //Set RecipientLedgerNumber
-                if (APartnerKey > 0)
-                {
-                    ACurrentDetailRow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey,
-                        ACurrentDetailRow.DateEntered);
-                }
-                else
-                {
-                    ACurrentDetailRow.RecipientLedgerNumber = 0;
-                }
+                ACurrentDetailRow.RecipientLedgerNumber = RecipientLedgerNumber;
 
                 if (!AInKeyMinistryChangingFlag)
                 {
@@ -853,7 +871,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (ATaxDeductiblePercentageEnabledFlag)
                     {
-                        TaxDeductibleAcctCode = motivationDetail.TaxDeductibleAccount;
+                        TaxDeductibleAcctCode = motivationDetail.TaxDeductibleAccountCode;
                     }
                 }
             }
@@ -882,9 +900,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ATxtDetailAccountCode.Text = AMotivationDetail.AccountCode;
                 }
 
-                if (ATaxDeductiblePercentageEnabledFlag && (ATxtDeductibleAccount.Text != AMotivationDetail.TaxDeductibleAccount))
+                if (ATaxDeductiblePercentageEnabledFlag && (ATxtDeductibleAccount.Text != AMotivationDetail.TaxDeductibleAccountCode))
                 {
-                    ATxtDeductibleAccount.Text = AMotivationDetail.TaxDeductibleAccount;
+                    ATxtDeductibleAccount.Text = AMotivationDetail.TaxDeductibleAccountCode;
                 }
             }
         }

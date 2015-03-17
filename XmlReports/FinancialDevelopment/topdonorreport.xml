@@ -42,7 +42,7 @@
 				</fielddetail>
 				<fielddetail condition="eq({param_donor_type}, bottom)">
 					<value text="Bottom "/>
-					<value variable="param_percentage"/>
+					<value variable="param_bottom_percentage"/>
 					<value text="%"/>
 				</fielddetail>
 			</field>
@@ -243,14 +243,6 @@
 				<detail>
 					<field whichfield="columns" calculation="MakeTopDonor"/>
 				</detail>
-				<footer space="above">
-					<field whichfield="column 3" >
-						<value variable="TotalAmount"/>
-					</field>
-					<field whichfield="column 2" line="above">
-						<value text="Grand Total for selection:"/>
-					</field>
-				</footer>
 			</level>
 		</levels>
 		

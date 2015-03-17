@@ -281,13 +281,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
             if (FTaxDeductiblePercentageEnabled)
             {
-                if (ARow.IsTaxDeductibleAccountNull())
+                if (ARow.IsTaxDeductibleAccountCodeNull())
                 {
                     cmbDeductibleAccountCode.SelectedIndex = 0;
                 }
                 else
                 {
-                    cmbDeductibleAccountCode.SetSelectedString(ARow.TaxDeductibleAccount);
+                    cmbDeductibleAccountCode.SetSelectedString(ARow.TaxDeductibleAccountCode);
                 }
             }
         }
@@ -340,7 +340,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
             if (FTaxDeductiblePercentageEnabled)
             {
-                ARow.TaxDeductibleAccount = cmbDeductibleAccountCode.GetSelectedString();
+                ARow.TaxDeductibleAccountCode = cmbDeductibleAccountCode.GetSelectedString();
             }
         }
 
@@ -466,7 +466,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             if (FMainDS.AMotivationDetail != null)
             {
                 FPetraUtilsObject.ValidationControlsDict.Add(FMainDS.AMotivationDetail.Columns[(short)FMainDS.AMotivationDetail.GetType().GetField(
-                                                                                                   "ColumnTaxDeductibleAccountId",
+                                                                                                   "ColumnTaxDeductibleAccountCodeId",
                                                                                                    BindingFlags.Public | BindingFlags.Static |
                                                                                                    BindingFlags.FlattenHierarchy).GetValue(FMainDS.
                                                                                                    AMotivationDetail.GetType())],
@@ -479,7 +479,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             grdDetails.AddTextColumn(Catalog.GetString("Motivation Detail"), FMainDS.AMotivationDetail.ColumnMotivationDetailCode);
             grdDetails.AddTextColumn(Catalog.GetString("Description"), FMainDS.AMotivationDetail.ColumnMotivationDetailDesc);
             grdDetails.AddTextColumn(Catalog.GetString("Non-Deductible Account"), FMainDS.AMotivationDetail.ColumnAccountCode);
-            grdDetails.AddTextColumn(Catalog.GetString("Tax-Deductible Account"), FMainDS.AMotivationDetail.ColumnTaxDeductibleAccount);
+            grdDetails.AddTextColumn(Catalog.GetString("Tax-Deductible Account"), FMainDS.AMotivationDetail.ColumnTaxDeductibleAccountCode);
             grdDetails.AddTextColumn(Catalog.GetString("Cost Centre Code"), FMainDS.AMotivationDetail.ColumnCostCentreCode);
             grdDetails.AddCheckBoxColumn(Catalog.GetString("Active"), FMainDS.AMotivationDetail.ColumnMotivationStatus);
             grdDetails.AddCheckBoxColumn(Catalog.GetString("Print Receipt"), FMainDS.AMotivationDetail.ColumnReceipt);

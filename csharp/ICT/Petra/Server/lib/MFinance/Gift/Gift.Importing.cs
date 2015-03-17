@@ -472,6 +472,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                         ValidationControlsDictGift,
                                         ValidationControlsDictGiftDetail,
                                         CostCentreTable,
+                                        AccountTable,
                                         MotivationGroupTable,
                                         MotivationDetailTable,
                                         MethodOfGivingTable,
@@ -818,6 +819,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         // Load supplementary tables that we are going to need for validation
                         ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction);
                         ACostCentreTable CostCentreTable = ACostCentreAccess.LoadViaALedger(FLedgerNumber, Transaction);
+                        AAccountTable AccountTable = AAccountAccess.LoadViaALedger(FLedgerNumber, Transaction);
                         AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadViaALedger(FLedgerNumber, Transaction);
                         AMotivationDetailTable MotivationDetailTable = AMotivationDetailAccess.LoadViaALedger(FLedgerNumber, Transaction);
                         AMethodOfGivingTable MethodOfGivingTable = AMethodOfGivingAccess.LoadAll(Transaction);
@@ -885,6 +887,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     ValidationControlsDictGift,
                                     ValidationControlsDictGiftDetail,
                                     CostCentreTable,
+                                    AccountTable,
                                     MotivationGroupTable,
                                     MotivationDetailTable,
                                     MethodOfGivingTable,
@@ -1205,7 +1208,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         private void ParseTransactionLine(AGiftRow AGift, AGiftBatchRow AGiftBatch, ref AGiftRow APreviousGift, int ANumberOfColumns,
             ref decimal ATotalBatchAmount, ref string AImportMessage, int ARowNumber, TVerificationResultCollection AMessages,
             TValidationControlsDict AValidationControlsDictGift, TValidationControlsDict AValidationControlsDictGiftDetail,
-            ACostCentreTable AValidationCostCentreTable, AMotivationGroupTable AValidationMotivationGroupTable,
+            ACostCentreTable AValidationCostCentreTable, AAccountTable AValidationAccountTable, AMotivationGroupTable AValidationMotivationGroupTable,
             AMotivationDetailTable AValidationMotivationDetailTable, AMethodOfGivingTable AValidationMethodOfGivingTable,
             AMethodOfPaymentTable AValidationMethodOfPaymentTable,
             ref GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber, out AGiftDetailRow AGiftDetails)
@@ -1380,11 +1383,25 @@ namespace Ict.Petra.Server.MFinance.Gift
             AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)AValidationMotivationDetailTable.Rows.Find(
                 new object[] { FLedgerNumber, AGiftDetails.MotivationGroupCode, AGiftDetails.MotivationDetailCode });
             string defaultTaxDeductible =
-                ((motivationDetailRow != null) && !motivationDetailRow.IsTaxDeductibleAccountNull()
+                ((motivationDetailRow != null) && !motivationDetailRow.IsTaxDeductibleAccountCodeNull()
                  && motivationDetailRow.TaxDeductible) ? "yes" : "no";
 
             AGiftDetails.TaxDeductible = TCommonImport.ImportBoolean(ref FImportLine, FDelimiter, Catalog.GetString("Tax deductible"),
                 FMainDS.AGiftDetail.ColumnTaxDeductible, ARowNumber, AMessages, AValidationControlsDictGiftDetail, defaultTaxDeductible);
+
+            // Account Codes are always inferred from the motivation detail and so is not needed in the import.
+            string NewAccountCode = null;
+            string NewTaxDeductibleAccountCode = null;
+
+            // get up-to-date account codes
+            if (motivationDetailRow != null)
+            {
+                NewAccountCode = motivationDetailRow.AccountCode;
+                NewTaxDeductibleAccountCode = motivationDetailRow.TaxDeductibleAccountCode;
+            }
+
+            AGiftDetails.AccountCode = NewAccountCode;
+            AGiftDetails.TaxDeductibleAccountCode = NewTaxDeductibleAccountCode;
 
             // Date entered cannot be imported although it can be modified in the GUI.
             // This is because it would have to be the last column in the import for compatibility
@@ -1429,8 +1446,8 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 AGiftDetailValidation.Validate(this, AGiftDetails, ref AMessages, AValidationControlsDictGiftDetail);
                 TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, (GiftBatchTDSAGiftDetailRow)AGiftDetails,
-                    ref AMessages, AValidationControlsDictGiftDetail, RecipientClass, AValidationCostCentreTable, AValidationMotivationGroupTable,
-                    AValidationMotivationDetailTable, AGiftDetails.RecipientKey);
+                    ref AMessages, AValidationControlsDictGiftDetail, RecipientClass, AValidationCostCentreTable, AValidationAccountTable,
+                    AValidationMotivationGroupTable, AValidationMotivationDetailTable, AGiftDetails.RecipientKey);
 
                 // Fix up the messages
                 for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)

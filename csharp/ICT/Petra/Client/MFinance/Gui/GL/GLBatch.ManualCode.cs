@@ -69,6 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         // Variables that are used to select a specific batch on startup
         private Int32 FInitialBatchYear = -1;
+        private Int32 FInitialBatchPeriod = -1;
         private Int32 FInitialBatchNumber = -1;
         private Int32 FInitialJournalNumber = -1;
         private Boolean FInitialBatchFound = false;
@@ -102,6 +103,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             get
             {
                 return FInitialBatchYear;
+            }
+        }
+
+        /// <summary>
+        /// Set this property if you want to load the screen with an initial Year/Batch/Journal
+        /// </summary>
+        public Int32 InitialBatchPeriod
+        {
+            set
+            {
+                FInitialBatchPeriod = value;
+            }
+            get
+            {
+                return FInitialBatchPeriod;
             }
         }
 
@@ -423,6 +439,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Set up the screen to highlight this batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="ABatchYear"></param>
+        /// <param name="ABatchPeriod"></param>
+        public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, int ABatchYear, int ABatchPeriod)
+        {
+            FLedgerNumber = ALedgerNumber;
+            InitialBatchNumber = ABatchNumber;
+            InitialJournalNumber = AJournalNumber;
+
+            // filter will show this year and period
+            FInitialBatchYear = ABatchYear;
+            FInitialBatchPeriod = ABatchPeriod;
+
+            Show();
+        }
+
+        /// <summary>
         /// directly access the batches control
         /// </summary>
         public TUC_GLBatches GetBatchControl()
@@ -660,6 +697,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
                 TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
             }
+        }
+
+        /// <summary>
+        /// find a special gift detail
+        /// </summary>
+        public void FindGLTransaction(int ABatchNumber, int AJournalNumber, int ATransactionNumber)
+        {
+            ucoTransactions.SelectTransactionNumber(ATransactionNumber);
+            FStandardTabIndex = 2;     // later we switch to the transaction tab
         }
 
         #region Menu and command key handlers for our user controls

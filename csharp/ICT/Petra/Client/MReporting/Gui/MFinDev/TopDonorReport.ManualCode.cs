@@ -96,9 +96,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 if (To > From)
                 {
                     // From must be biggern than to
-                    String TmpString = txtPercentage.Text;
-                    txtPercentage.Text = txtToPercentage.Text;
-                    txtToPercentage.Text = TmpString;
+                    int TmpNumber = Convert.ToInt32(txtPercentage.Text);
+                    txtPercentage.NumberValueInt = Convert.ToInt32(txtToPercentage.Text);
+                    txtToPercentage.NumberValueInt = TmpNumber;
                 }
             }
         }
@@ -143,6 +143,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
                 ACalc.AddParameter("param_percentage", 100);
                 ACalc.AddParameter("param_to_percentage", 100 - Percent);
+                ACalc.AddParameter("param_bottom_percentage", Percent);
                 ACalc.AddParameter("param_donor_type", "bottom");
             }
             else if (rbtMiddleDonor.Checked)

@@ -96,8 +96,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 InitialiseLogicObjects();
                 InitialiseLedgerControls();
-
-                LoadBatchesForCurrentYear();
             }
         }
 
@@ -153,7 +151,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (yearIndex >= 0)
                 {
                     FLoadAndFilterLogicObject.YearIndex = yearIndex;
-                    FLoadAndFilterLogicObject.PeriodIndex = (myParentForm.InitialBatchYear == FCurrentLedgerYear) ? 1 : 0;
+
+                    if (myParentForm.InitialBatchPeriod >= 0)
+                    {
+                        FLoadAndFilterLogicObject.PeriodIndex = FLoadAndFilterLogicObject.FindPeriodAsIndex(myParentForm.InitialBatchPeriod);
+                    }
+                    else
+                    {
+                        FLoadAndFilterLogicObject.PeriodIndex = (myParentForm.InitialBatchYear == FMainDS.ALedger[0].CurrentFinancialYear) ? 1 : 0;
+                    }
+
                     performStandardLoad = false;
                 }
 
@@ -755,6 +762,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+
+            LoadBatchesForCurrentYear();
 
             SetInitialFocus();
 

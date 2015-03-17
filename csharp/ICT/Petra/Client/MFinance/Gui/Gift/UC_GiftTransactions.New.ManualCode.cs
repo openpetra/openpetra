@@ -42,12 +42,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             AGiftRow CurrentGiftRow = null;
             bool IsEmptyGrid = (grdDetails.Rows.Count == 1);
+            bool HasChanges = FPetraUtilsObject.HasChanges && FMainDS.GetChangesTyped(true) != null;
+
+            bool AutoSaveSuccessful = FAutoSave && HasChanges && ((TFrmGiftBatch)ParentForm).SaveChangesManual();
 
             FCreatingNewGift = true;
 
             try
             {
-                if (ValidateAllData(true, true))
+                if (AutoSaveSuccessful || ((!FAutoSave || !HasChanges) && ValidateAllData(true, true)))
                 {
                     if (!ACompletelyNewGift)      //i.e. a gift detail
                     {
@@ -161,6 +164,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 FCreatingNewGift = false;
+
+                if (AutoSaveSuccessful)
+                {
+                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
+                }
             }
         }
 

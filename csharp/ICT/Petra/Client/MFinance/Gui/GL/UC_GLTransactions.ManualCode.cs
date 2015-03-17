@@ -155,6 +155,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 FLoadCompleted = true;
+
+                return false;
             }
             else
             {
@@ -1615,6 +1617,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 cmbDetailKeyMinistryKey.SetSelectedString("", -1);
                 cmbDetailKeyMinistryKey.Enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Select a special transaction number from outside
+        /// </summary>
+        /// <param name="ATransactionNumber"></param>
+        /// <returns>True if the record is displayed in the grid, False otherwise</returns>
+        public void SelectTransactionNumber(Int32 ATransactionNumber)
+        {
+            DataView myView = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView;
+
+            for (int counter = 0; (counter < myView.Count); counter++)
+            {
+                int myViewTransactionNumber = (int)myView[counter]["a_transaction_number_i"];
+
+                if (myViewTransactionNumber == ATransactionNumber)
+                {
+                    SelectRowInGrid(counter + 1);
+                    break;
+                }
             }
         }
 

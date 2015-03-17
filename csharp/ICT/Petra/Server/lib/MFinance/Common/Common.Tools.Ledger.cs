@@ -74,26 +74,18 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void GetDataRow()
         {
-            bool NewTransaction = false;
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadUncommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
-                FLedgerTbl = ALedgerAccess.LoadAll(transaction); // FLedgerTbl is static - this refreshes *any and all* TLedgerInfo objects.
-                MyView = new DataView(FLedgerTbl);
-                MyView.RowFilter = "a_ledger_number_i = " + ledgerNumber;
-                FLedgerRow = (ALedgerRow)MyView[0].Row; // More than one TLedgerInfo object may point to this same row.
-            }
-            finally
-            {
-                if (NewTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+                    FLedgerTbl = ALedgerAccess.LoadAll(Transaction); // FLedgerTbl is static - this refreshes *any and all* TLedgerInfo objects.
+                    MyView = new DataView(FLedgerTbl);
+                    MyView.RowFilter = "a_ledger_number_i = " + ledgerNumber;
+                    FLedgerRow = (ALedgerRow)MyView[0].Row; // More than one TLedgerInfo object may point to this same row.
+                });
         }
 
         private void CommitLedgerChange()

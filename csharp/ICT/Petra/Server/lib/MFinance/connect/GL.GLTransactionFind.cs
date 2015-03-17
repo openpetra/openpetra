@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,11 +24,9 @@
 using System;
 using System.Data;
 
-using Ict.Common;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
-using Ict.Petra.Server.MCommon;
-using Ict.Petra.Server.MFinance.Gift;
+using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MCommon;
 
@@ -56,23 +54,25 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     /// </summary>
-    public class TGiftDetailFindUIConnector : IFinanceUIConnectorsGiftDetailFind
+    public class TGLTransactionFindUIConnector : TConfigurableMBRObject, IFinanceUIConnectorsGLTransactionFind
     {
-        private TGiftDetailFind FGiftDetailFind = new TGiftDetailFind();
+        private TGLTransactionFind FGLTransactionFind = new TGLTransactionFind();
 
         /// <summary>
         /// constructor
         /// </summary>
-        public TGiftDetailFindUIConnector() : base()
+        public TGLTransactionFindUIConnector() : base()
         {
         }
 
-        /// <summary>Get the current state of progress</summary>
-        public TProgressState Progress
+        /// <summary>Returns reference to the Asynchronous execution control object to the caller</summary>
+        public IAsynchronousExecutionProgress AsyncExecProgress
         {
             get
             {
-                return FGiftDetailFind.Progress;
+                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
+                    typeof(TAsynchronousExecutionProgressRemote),
+                    FGLTransactionFind.AsyncExecProgress);
             }
         }
 
@@ -86,7 +86,7 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
         /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters</param>
         public void PerformSearch(DataTable ACriteriaData)
         {
-            FGiftDetailFind.PerformSearch(ACriteriaData);
+            FGLTransactionFind.PerformSearch(ACriteriaData);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
         /// </returns>
         public DataTable GetDataPagedResult(System.Int16 APage, System.Int16 APageSize, out System.Int32 ATotalRecords, out System.Int16 ATotalPages)
         {
-            return FGiftDetailFind.GetDataPagedResult(APage, APageSize, out ATotalRecords, out ATotalPages);
+            return FGLTransactionFind.GetDataPagedResult(APage, APageSize, out ATotalRecords, out ATotalPages);
         }
 
         /// <summary>
@@ -120,9 +120,13 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
         /// errors that state that a ADO.NET command is still executing!).
         ///
         /// </summary>
-        public void StopSearch()
+        /// <param name="ASender">Object that requested the stopping (not evaluated)</param>
+        /// <param name="AArgs">(not evaluated)
+        /// </param>
+        /// <returns>void</returns>
+        public void StopSearch(object ASender, EventArgs AArgs)
         {
-            FGiftDetailFind.StopSearch();
+            FGLTransactionFind.StopSearch(ASender, AArgs);
         }
     }
 }

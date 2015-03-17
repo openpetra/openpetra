@@ -24,6 +24,7 @@
 
 using System;
 using System.Data;
+using System.Threading;
 using System.Windows.Forms;
 using GNU.Gettext;
 
@@ -63,12 +64,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((APartnerKey > 0) && AValidSelection)
             {
                 // get recipeint's current Gift Destination
-                txtCurrentField.Text = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey, DateTime.Today).ToString();
+                Int64 RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey, DateTime.Today);
+
+                TVerificationResultCollection VerificationResults;
+
+                // if recipient ledger number belongs to a different ledger then check that it is set up for inter-ledger transfers
+                if (((int)RecipientLedgerNumber / 1000000 != FLedgerNumber)
+                    && !TRemote.MFinance.Gift.WebConnectors.IsRecipientLedgerNumberSetupForILT(
+                        FLedgerNumber, APartnerKey, RecipientLedgerNumber, out VerificationResults))
+                {
+                    MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Invalid Data Entered"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    // use a thread because the textbox text has not actually been set yet if using the partner find screen
+                    Thread NewThread = new Thread(() => ResetReceipientKey(APartnerKey));
+                    NewThread.Start();
+
+                    return;
+                }
+
+                txtCurrentField.Text = RecipientLedgerNumber.ToString();
             }
             else
             {
                 txtCurrentField.Text = "0";
             }
+        }
+
+        private void ResetReceipientKey(Int64 APartnerKey)
+        {
+            while (Convert.ToInt64(txtRecipientKey.Text) != APartnerKey)
+            {
+                Thread.Sleep(50);
+            }
+
+            txtRecipientKey.Text = "0";
         }
 
         // carry out the field adjustment
@@ -87,7 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            // show the list of gift to be adjusted and ask the user for confirmation
+            // show the list of gifts to be adjusted and ask the user for confirmation
             TFrmGiftFieldAdjustmentConfirmation ConfirmationForm = new TFrmGiftFieldAdjustmentConfirmation(this);
             ConfirmationForm.MainDS = GiftBatchDS;
 

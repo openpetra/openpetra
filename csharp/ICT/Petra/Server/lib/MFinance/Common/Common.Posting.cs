@@ -1329,6 +1329,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                 return;
                             }
 
+                            MainDS.ThrowAwayAfterSubmitChanges = true;
                             GLBatchTDSAccess.SubmitChanges(MainDS);
 
                             SummarizeInternal(ALedgerNumber, PostingDS, PostingLevel, BatchPeriod, true);

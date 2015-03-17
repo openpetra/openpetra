@@ -19,8 +19,6 @@
             <CustomField name="ReceiptPrinted" type="Boolean"/>
             <CustomField name="MethodOfGivingCode" type="String"/>
             <CustomField name="MethodOfPaymentCode" type="String"/>
-            <CustomField name="AccountCode" type="String"/>
-            <CustomField name="TaxDeductibleAccountCode" type="String"/>
             <CustomField name="Reference" type="String"/>
         </Table>
 

@@ -432,7 +432,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             get_GLM_Info.Sequence,
                             FledgerInfo.CurrentPeriod);
 
-                        if (get_GLMp_Info.RowExists)
+                        if (get_GLMp_Info.RowExists && (get_GLMp_Info.ActualBase != 0))
                         {
                             TVerificationResult tvr = new TVerificationResult(
                                 Catalog.GetString("Non Zero Suspense Account found"),

@@ -1697,63 +1697,57 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                      " AND GiftBatch.a_gl_effective_date_d <= '" + dateEnd.ToString("yyyy-MM-dd") + "' ";
                     }
 
-                    String Query = "SELECT ";
+                    bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                        TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
 
-                    if (PersonalHosa)
+                    String Query = string.Empty;
+
+                    // If tax deductibility % is enabled then we need to use two querys - one for tax deduct and one for non-tax deduct.
+                    // The results from these queries are then merged together.
+                    if (TaxDeductiblePercentageEnabled)
                     {
-                        Query += "LinkedCostCentre.a_cost_centre_code_c AS CostCentre, ";
+                        Query = "SELECT ";
+
+                        if (PersonalHosa)
+                        {
+                            Query += "UnionTable.CostCentre AS CostCentre, ";
+                        }
+                        else
+                        {
+                            Query += "UnionTable.CostCentre AS CostCentre, ";
+                        }
+
+                        Query +=
+                            "UnionTable.AccountCode AS AccountCode, " +
+                            "SUM(UnionTable.GiftBaseAmount) AS GiftBaseAmount, " +
+                            "SUM(UnionTable.GiftIntlAmount) AS GiftIntlAmount, " +
+                            "SUM(UnionTable.GiftTransactionAmount) AS GiftTransactionAmount, " +
+                            "UnionTable.RecipientKey AS RecipientKey, " +
+                            "UnionTable.RecipientShortname AS RecipientShortname, " +
+                            "UnionTable.Narrative AS Narrative " +
+
+                            "FROM (" +
+                            GetHOSASQLQuery(true, false, PersonalHosa, LedgerNumber, DateFilter, IchNumber, LinkedCC_CCFilter, GiftDetail_CCfilter) +
+                            " UNION ALL " +
+                            GetHOSASQLQuery(true,
+                                true,
+                                PersonalHosa,
+                                LedgerNumber,
+                                DateFilter,
+                                IchNumber,
+                                LinkedCC_CCFilter,
+                                GiftDetail_CCfilter) +
+                            ") AS UnionTable " +
+
+                            "GROUP BY Uniontable.Narrative, UnionTable.CostCentre, UnionTable.AccountCode, UnionTable.RecipientKey, UnionTable.RecipientShortname ";
                     }
                     else
                     {
-                        Query += "GiftDetail.a_cost_centre_code_c AS CostCentre, ";
+                        Query =
+                            GetHOSASQLQuery(false, false, PersonalHosa, LedgerNumber, DateFilter, IchNumber, LinkedCC_CCFilter, GiftDetail_CCfilter);
                     }
 
-                    Query +=
-                        "MotivationDetail.a_account_code_c AS AccountCode, " +
-                        "SUM(GiftDetail.a_gift_amount_n) AS GiftBaseAmount, " +
-                        "SUM(GiftDetail.a_gift_amount_intl_n) AS GiftIntlAmount, " +
-                        "SUM(a_gift_transaction_amount_n) AS GiftTransactionAmount, " +
-                        "GiftDetail.p_recipient_key_n AS RecipientKey, " +
-                        "Partner.p_partner_short_name_c AS RecipientShortname, " +
-                        "Partner.p_partner_short_name_c AS Narrative " +
-
-                        "FROM a_gift_detail AS GiftDetail, a_gift_batch AS GiftBatch, " +
-                        "a_motivation_detail AS MotivationDetail, " +
-                        "p_partner AS Partner";
-
-                    if (PersonalHosa)
-                    {
-                        Query += ",PUB_a_valid_ledger_number AS LinkedCostCentre";
-                    }
-
-                    Query += " WHERE GiftDetail.a_ledger_number_i = GiftBatch.a_ledger_number_i " +
-                             "AND GiftDetail.a_batch_number_i = GiftBatch.a_batch_number_i " +
-                             "AND GiftDetail.a_ledger_number_i = MotivationDetail.a_ledger_number_i " +
-                             "AND GiftDetail.a_motivation_group_code_c = MotivationDetail.a_motivation_group_code_c " +
-                             "AND GiftDetail.a_motivation_detail_code_c = MotivationDetail.a_motivation_detail_code_c " +
-                             "AND Partner.p_partner_key_n = GiftDetail.p_recipient_key_n " +
-                             "AND GiftDetail.a_ledger_number_i = " + LedgerNumber + " " +
-                             "AND GiftBatch.a_batch_status_c = '" + MFinanceConstants.BATCH_POSTED + "' " +
-                             DateFilter;
-
-                    if (PersonalHosa)
-                    {
-                        Query += "AND LinkedCostCentre.a_ledger_number_i = GiftDetail.a_ledger_number_i " +
-                                 LinkedCC_CCFilter +
-                                 "AND GiftDetail.p_recipient_key_n = LinkedCostCentre.p_partner_key_n ";
-                    }
-                    else
-                    {
-                        Query += GiftDetail_CCfilter;
-                    }
-
-                    if (IchNumber != 0)
-                    {
-                        Query += "AND GiftDetail.a_ich_number_i = " + IchNumber + " ";
-                    }
-
-                    Query += "GROUP BY CostCentre, AccountCode, GiftDetail.p_recipient_key_n, Partner.p_partner_short_name_c " +
-                             "ORDER BY CostCentre, AccountCode, Partner.p_partner_short_name_c ASC";
+                    Query += "ORDER BY CostCentre, AccountCode, RecipientShortname ASC";
 
                     TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
                     resultTable = DbAdapter.RunQuery(Query, "Gifts", Transaction);
@@ -1775,6 +1769,135 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 }); // Get NewOrExisting AutoReadTransaction
             return resultTable;
         } // Hosa Gifts Table
+
+        /// <summary>
+        /// Gets single HOSA query.
+        /// </summary>
+        /// <param name="ATaxDeductEnabled">True if tax deductible % is enabled</param>
+        /// <param name="ATaxDeductCycle">True if we are looking for tax deductible amount / false if looking for non-tax deductible amount</param>
+        /// <param name="APersonalHosa"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADateFilter"></param>
+        /// <param name="AIchNumber"></param>
+        /// <param name="ALinkedCC_CCFilter"></param>
+        /// <param name="AGiftDetail_CCfilter"></param>
+        /// <returns></returns>
+        private static string GetHOSASQLQuery(bool ATaxDeductEnabled,
+            bool ATaxDeductCycle,
+            bool APersonalHosa,
+            Int32 ALedgerNumber,
+            string ADateFilter,
+            Int32 AIchNumber,
+            string ALinkedCC_CCFilter,
+            string AGiftDetail_CCfilter)
+        {
+            String Query = "SELECT ";
+
+            if (APersonalHosa)
+            {
+                Query += "LinkedCostCentre.a_cost_centre_code_c AS CostCentre, ";
+            }
+            else
+            {
+                Query += "GiftDetail.a_cost_centre_code_c AS CostCentre, ";
+            }
+
+            if (ATaxDeductEnabled)
+            {
+                if (ATaxDeductCycle)
+                {
+                    Query += "GiftDetail.a_tax_deductible_account_code_c AS AccountCode, " +
+                             "SUM(GiftDetail.a_tax_deductible_amount_base_n) AS GiftBaseAmount, " +
+                             "SUM(GiftDetail.a_tax_deductible_amount_intl_n) AS GiftIntlAmount, " +
+                             "SUM(GiftDetail.a_tax_deductible_amount_n) AS GiftTransactionAmount, ";
+                }
+                else
+                {
+                    // If % is 0 then tax deduct field might not actually be filled in for this gift (i.e. old gifts).
+                    // Even if the fields are filled in they will be same as the standard fields anyway. So use them.
+                    Query += "GiftDetail.a_account_code_c AS AccountCode, " +
+                             "CASE WHEN GiftDetail.a_tax_deductible_pct_n = 0  " +
+                             "THEN SUM(GiftDetail.a_gift_amount_n) " +
+                             "ELSE SUM(GiftDetail.a_non_deductible_amount_base_n) END AS GiftBaseAmount, " +
+                             "CASE WHEN GiftDetail.a_tax_deductible_pct_n = 0  " +
+                             "THEN SUM(GiftDetail.a_gift_amount_intl_n) " +
+                             "ELSE SUM(GiftDetail.a_non_deductible_amount_intl_n) END AS GiftIntlAmount, " +
+                             "CASE WHEN GiftDetail.a_tax_deductible_pct_n = 0  " +
+                             "THEN SUM(GiftDetail.a_gift_transaction_amount_n) " +
+                             "ELSE SUM(GiftDetail.a_non_deductible_amount_n) END AS GiftTransactionAmount, ";
+                }
+            }
+            else
+            {
+                Query += "GiftDetail.a_account_code_c AS AccountCode, " +
+                         "SUM(GiftDetail.a_gift_amount_n) AS GiftBaseAmount, " +
+                         "SUM(GiftDetail.a_gift_amount_intl_n) AS GiftIntlAmount, " +
+                         "SUM(GiftDetail.a_gift_transaction_amount_n) AS GiftTransactionAmount, ";
+            }
+
+            Query +=
+                "GiftDetail.p_recipient_key_n AS RecipientKey, " +
+                "Partner.p_partner_short_name_c AS RecipientShortname, " +
+                "Partner.p_partner_short_name_c AS Narrative " +
+
+                "FROM a_gift_detail AS GiftDetail, a_gift_batch AS GiftBatch, " +
+                "a_motivation_detail AS MotivationDetail, " +
+                "p_partner AS Partner";
+
+            if (APersonalHosa)
+            {
+                Query += ",PUB_a_valid_ledger_number AS LinkedCostCentre";
+            }
+
+            Query += " WHERE GiftDetail.a_ledger_number_i = GiftBatch.a_ledger_number_i " +
+                     "AND GiftDetail.a_batch_number_i = GiftBatch.a_batch_number_i " +
+                     "AND GiftDetail.a_ledger_number_i = MotivationDetail.a_ledger_number_i " +
+                     "AND GiftDetail.a_motivation_group_code_c = MotivationDetail.a_motivation_group_code_c " +
+                     "AND GiftDetail.a_motivation_detail_code_c = MotivationDetail.a_motivation_detail_code_c " +
+                     "AND Partner.p_partner_key_n = GiftDetail.p_recipient_key_n " +
+                     "AND GiftDetail.a_ledger_number_i = " + ALedgerNumber + " " +
+                     "AND GiftBatch.a_batch_status_c = '" + MFinanceConstants.BATCH_POSTED + "' " +
+                     ADateFilter;
+
+            if (APersonalHosa)
+            {
+                Query += "AND LinkedCostCentre.a_ledger_number_i = GiftDetail.a_ledger_number_i " +
+                         ALinkedCC_CCFilter +
+                         "AND GiftDetail.p_recipient_key_n = LinkedCostCentre.p_partner_key_n ";
+            }
+            else
+            {
+                Query += AGiftDetail_CCfilter;
+            }
+
+            if (AIchNumber != 0)
+            {
+                Query += "AND GiftDetail.a_ich_number_i = " + AIchNumber + " ";
+            }
+
+            // if looking for tax deductible gifts then the percentage must be over 0
+            // (otherwise we could get accounts with 0 amount)
+            if (ATaxDeductEnabled && ATaxDeductCycle)
+            {
+                Query += "AND GiftDetail.a_tax_deductible_pct_n > 0 ";
+            }
+
+            // if looking for non-tax deductible gifts then the percentage must be less than 100
+            // (otherwise we could get accounts with 0 amount)
+            if (ATaxDeductEnabled && !ATaxDeductCycle)
+            {
+                Query += "AND GiftDetail.a_tax_deductible_pct_n <> 100 ";
+            }
+
+            Query += "GROUP BY CostCentre, AccountCode, GiftDetail.p_recipient_key_n, Partner.p_partner_short_name_c";
+
+            if (ATaxDeductEnabled && !ATaxDeductCycle)
+            {
+                Query += ", GiftDetail.a_tax_deductible_pct_n";
+            }
+
+            return Query;
+        }
 
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting

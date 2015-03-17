@@ -347,6 +347,9 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>Whether or not the user should be alerted when a new gift is from a new donor</summary>
         public const String FINANCE_NEW_DONOR_WARNING = "NewDonorWarning";
 
+        /// <summary>Whether or not the Gift Batch screen should be auto saved when creating a new gifts or adding a gift detail</summary>
+        public const String FINANCE_AUTO_SAVE_GIFT_SCREEN = "AutoSaveGiftScreen";
+
         /*------------------------------------------------------------------------------
          *  Conference Default Constants
          * -------------------------------------------------------------------------------*/

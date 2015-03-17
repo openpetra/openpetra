@@ -63,6 +63,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FInEditMode = false;
         private bool FShowingDetails = false;
         private bool FTaxDeductiblePercentageEnabled = false;
+        private bool FAutoSave = false;
         private ToolTip FDonorInfoToolTip = new ToolTip();
 
         private AGiftRow FGift = null;
@@ -143,6 +144,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // should Tax Deductibility Percentage be enabled? (specifically for OM Switzerland)
             FTaxDeductiblePercentageEnabled = Convert.ToBoolean(
                 TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
+            // user default to determine if screen should be auto saved when creating a new gift or adding a gift detail
+            // (default false)
+            FAutoSave = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_AUTO_SAVE_GIFT_SCREEN, false);
         }
 
         private void InitialiseControls()

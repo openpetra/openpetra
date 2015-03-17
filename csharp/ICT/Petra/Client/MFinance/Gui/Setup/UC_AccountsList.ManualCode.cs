@@ -172,6 +172,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdAccounts.AddTextColumn(Catalog.GetString("Descr"), MainDS.AAccount.ColumnAccountCodeShortDesc);
             grdAccounts.AddCurrencyColumn(Catalog.GetString("YTD Actual"), MainDS.AAccount.ColumnYtdActualBase);
             grdAccounts.AddCurrencyColumn(Catalog.GetString("Foreign"), MainDS.AAccount.ColumnYtdActualForeign);
+
+            if (FSelectedAccount != null)
+            {
+                this.SelectedAccount = FSelectedAccount;
+            }
+            else
+            {
+                grdAccounts.SelectRowInGrid(0);
+            }
         }
 
         /// <summary>

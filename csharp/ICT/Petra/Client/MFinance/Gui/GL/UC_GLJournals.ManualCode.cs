@@ -177,12 +177,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (myParentForm.InitialBatchFound)
             {
-                string filter = String.Format("{0}={1}", AJournalTable.GetJournalNumberDBName(), myParentForm.InitialJournalNumber);
-                DataView dv = new DataView(FMainDS.AJournal, filter, "", DataViewRowState.CurrentRows);
+                DataView myView = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView;
 
-                if (dv.Count > 0)
+                for (int counter = 0; (counter < myView.Count); counter++)
                 {
-                    nRowToSelect = grdDetails.DataSourceRowToIndex2(dv[0].Row) + 1;
+                    int myViewJournalNumber = (int)myView[counter]["a_journal_number_i"];
+
+                    if (myViewJournalNumber == myParentForm.InitialJournalNumber)
+                    {
+                        nRowToSelect = counter + 1;
+                        break;
+                    }
                 }
             }
             else

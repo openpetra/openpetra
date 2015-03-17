@@ -45,7 +45,7 @@ using Ict.Petra.Server.MConference.Applications;
 namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 {
     /// <summary>
-    /// Performs server-side lookups for the Client in the MCommon DataReader sub-namespace.
+    /// Performs server-side lookups for the Client in the MConference DataReader sub-namespace.
     ///
     /// </summary>
     public class TConferenceDataReaderWebConnector
@@ -255,100 +255,6 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 });
 
             return Table;
-        }
-
-        /// <summary>
-        /// Create a new Conference
-        /// </summary>
-        /// <param name="APartnerKey">match long for conference key</param>
-        /// <returns></returns>
-        [RequireModulePermission("PTNRUSER")]
-        public static void CreateNewConference(long APartnerKey)
-        {
-            TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
-
-            PcConferenceTable ConferenceTable;
-            PUnitTable UnitTable;
-            PPartnerLocationTable PartnerLocationTable;
-
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
-                delegate
-                {
-                    try
-                    {
-                        ConferenceTable = PcConferenceAccess.LoadAll(Transaction);
-                        UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
-                        PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, Transaction);
-
-                        DateTime Start = new DateTime();
-                        DateTime End = new DateTime();
-
-                        foreach (PPartnerLocationRow PartnerLocationRow in PartnerLocationTable.Rows)
-                        {
-                            if ((PartnerLocationRow.DateEffective != null) || (PartnerLocationRow.DateGoodUntil != null))
-                            {
-                                if (PartnerLocationRow.DateEffective != null)
-                                {
-                                    Start = (DateTime)PartnerLocationRow.DateEffective;
-                                }
-
-                                if (PartnerLocationRow.DateGoodUntil != null)
-                                {
-                                    End = (DateTime)PartnerLocationRow.DateGoodUntil;
-                                }
-
-                                break;
-                            }
-                        }
-
-                        // set column values
-                        PcConferenceRow AddRow = ConferenceTable.NewRowTyped();
-                        AddRow.ConferenceKey = APartnerKey;
-
-                        string OutreachPrefix = ((PUnitRow)UnitTable.Rows[0]).OutreachCode;
-
-                        if (OutreachPrefix.Length > 4)
-                        {
-                            AddRow.OutreachPrefix = OutreachPrefix.Substring(0, 5);
-                        }
-                        else
-                        {
-                            AddRow.OutreachPrefix = OutreachPrefix;
-                        }
-
-                        if (Start != DateTime.MinValue)
-                        {
-                            AddRow.Start = Start;
-                        }
-
-                        if (End != DateTime.MinValue)
-                        {
-                            AddRow.End = End;
-                        }
-
-                        string CurrencyCode = ((PUnitRow)UnitTable.Rows[0]).OutreachCostCurrencyCode;
-
-                        if (!string.IsNullOrEmpty(CurrencyCode))
-                        {
-                            AddRow.CurrencyCode = CurrencyCode;
-                        }
-                        else
-                        {
-                            AddRow.CurrencyCode = "USD";
-                        }
-
-                        // add new row to database table
-                        ConferenceTable.Rows.Add(AddRow);
-                        PcConferenceAccess.SubmitChanges(ConferenceTable, Transaction);
-
-                        SubmissionOK = true;
-                    }
-                    catch (Exception Exc)
-                    {
-                        TLogging.Log("An Exception occured during the creation of a new Conference:" + Environment.NewLine + Exc.ToString());
-                    }
-                });
         }
 
         /// <summary>

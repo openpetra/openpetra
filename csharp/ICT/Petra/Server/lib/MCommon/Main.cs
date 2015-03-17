@@ -918,7 +918,6 @@ namespace Ict.Petra.Server.MCommon
             String criteriavalue;
             object outcome;
             String matchvalue;
-            double DoubleValue = -1;
 
             outcome = "";
             try
@@ -957,20 +956,8 @@ namespace Ict.Petra.Server.MCommon
 
                 if (matchvalue == "EXACT")
                 {
-                    // Check if criteria value is a valid number
                     criteriavalue = FDataRow[FCriteriaField].ToString();
-                    Double.TryParse(criteriavalue, out DoubleValue);
-
-                    if (DoubleValue == 0)
-                    {
-                        // Criteria value isn't a valid number, so convert it to lowercase to make
-                        // for case-insensitive searches
-                        outcome = (object)(criteriavalue.ToLower());
-                    }
-                    else
-                    {
-                        outcome = (object)DoubleValue;
-                    }
+                    outcome = (object)(criteriavalue.ToLower());
                 }
             }
 

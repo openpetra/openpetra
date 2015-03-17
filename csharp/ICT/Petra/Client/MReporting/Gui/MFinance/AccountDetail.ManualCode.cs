@@ -260,6 +260,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     " AND a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i " +
                     " AND a_transaction.a_batch_number_i = a_journal.a_batch_number_i " +
                     " AND a_transaction.a_journal_number_i = a_journal.a_journal_number_i " +
+                    " AND a_transaction.a_reference_c <> '" + Catalog.GetString("YEAR-END") + "'" +
                     TransAccountCodeFilter +
                     TransCostCentreFilter + " AND " +
                     TranctDateFilter + ReferenceFilter +

@@ -550,7 +550,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                     AGiftDetail.LedgerNumber, AGiftDetail.MotivationGroupCode, AGiftDetail.MotivationDetailCode, ATransaction)[0];
 
                 // if the gift's motivation detail has a tax-deductible account
-                if (!string.IsNullOrEmpty(MotivationDetailRow.TaxDeductibleAccount))
+                if (!string.IsNullOrEmpty(MotivationDetailRow.TaxDeductibleAccountCode))
                 {
                     // default pct is 100
                     AGiftDetail.TaxDeductiblePct = 100;

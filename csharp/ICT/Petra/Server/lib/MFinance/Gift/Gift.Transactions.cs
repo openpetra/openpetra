@@ -47,6 +47,7 @@ using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 
 using Ict.Petra.Shared;
@@ -990,6 +991,50 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             return CostCentreCode;
+        }
+
+        /// <summary>
+        /// Check that the chosen recipient ledger is set up for ILT - or that the recipient has a separate cost centre
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ARecipientPartnerKey"></param>
+        /// <param name="ARecipientLedgerNumber"></param>
+        /// <param name="AVerificationResults"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool IsRecipientLedgerNumberSetupForILT(Int32 ALedgerNumber,
+            Int64 ARecipientPartnerKey,
+            Int64 ARecipientLedgerNumber,
+            out TVerificationResultCollection AVerificationResults)
+        {
+            string CostCentreCode = string.Empty;
+            string ARecipientLedgerNumberName = string.Empty;
+
+            AVerificationResults = new TVerificationResultCollection();
+
+            Int32 RecipientLedger = (int)ARecipientLedgerNumber / 1000000;
+
+            if ((RecipientLedger != ALedgerNumber) && (ARecipientPartnerKey > 0))
+            {
+                //Valid ledger number table
+                if (!CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientLedgerNumber, out CostCentreCode)
+                    && !CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientPartnerKey, out CostCentreCode))
+                {
+                    TPartnerClass Class;
+                    TPartnerServerLookups.GetPartnerShortName(ARecipientLedgerNumber, out ARecipientLedgerNumberName, out Class);
+
+                    AVerificationResults.Add(
+                        new TVerificationResult(
+                            null,
+                            string.Format(ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_RECIPIENTFIELD_NOT_ILT).ErrorMessageText,
+                                ARecipientLedgerNumberName, ARecipientLedgerNumber),
+                            TResultSeverity.Resv_Critical));
+
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -2350,7 +2395,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     //do the same for the Recipient
                     if (giftDetail.RecipientKey > 0)
                     {
-                        // if true then this gift is protected and data cannot be changed
+                        // if false then this gift is protected and data cannot be changed
                         // (note: here this includes all negative gifts and not just reversals)
                         if (allowUpdates && (giftDetail.GiftTransactionAmount > 0))
                         {
@@ -2364,6 +2409,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 AChangesToCommit = true;
                             }
 
+                            // update cost centre code if it needs updated
                             try
                             {
                                 string newCostCentreCode =
@@ -2384,6 +2430,29 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             catch (Exception ex)
                             {
                                 TLogging.Log("Error in: LoadAGiftBatchAndRelatedData - " + ex.Message);
+                            }
+
+                            string NewAccountCode = null;
+                            string NewTaxDeductibleAccountCode = null;
+
+                            // get up-to-date account code
+                            if (motivationDetailRow != null)
+                            {
+                                NewAccountCode = motivationDetailRow.AccountCode;
+                                NewTaxDeductibleAccountCode = motivationDetailRow.TaxDeductibleAccountCode;
+                            }
+
+                            // update account codes if they need updated
+                            if (giftDetail.AccountCode != NewAccountCode)
+                            {
+                                giftDetail.AccountCode = NewAccountCode;
+                                AChangesToCommit = true;
+                            }
+
+                            if (giftDetail.TaxDeductibleAccountCode != NewTaxDeductibleAccountCode)
+                            {
+                                giftDetail.TaxDeductibleAccountCode = NewTaxDeductibleAccountCode;
+                                AChangesToCommit = true;
                             }
                         }
                         else
@@ -2424,18 +2493,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         giftDetail.RecipientDescription = "INVALID";
                         giftDetail.SetRecipientFieldNull();
                         giftDetail.SetRecipientKeyMinistryNull();
-                    }
-
-                    //And account code
-                    if (motivationDetailRow != null)
-                    {
-                        giftDetail.AccountCode = motivationDetailRow.AccountCode;
-                        giftDetail.TaxDeductibleAccountCode = motivationDetailRow.TaxDeductibleAccount;
-                    }
-                    else
-                    {
-                        giftDetail.SetAccountCodeNull();
-                        giftDetail.SetTaxDeductibleAccountCodeNull();
                     }
                 }
             }

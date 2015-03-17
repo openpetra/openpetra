@@ -338,52 +338,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        ///
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="ABatchYear"></param>
-        /// <param name="ABatchPeriod"></param>
-        public void LoadOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber, int ABatchYear, int ABatchPeriod)
-        {
-            FLedgerNumber = ALedgerNumber;
-            InitialiseLogicObjects();
-
-            FMainDS.Merge(ViewModeTDS);
-            FPetraUtilsObject.SuppressChangeDetection = true;
-
-            if (FLoadAndFilterLogicObject.BatchYear != ABatchYear)
-            {
-                FLoadAndFilterLogicObject.BatchYear = ABatchYear;
-                FLoadAndFilterLogicObject.RefreshPeriods(ABatchYear);
-            }
-
-            FLoadAndFilterLogicObject.BatchPeriod = ABatchPeriod;
-            FLoadAndFilterLogicObject.DisableYearAndPeriod(false);
-
-            FMainDS.AGiftBatch.DefaultView.RowFilter =
-                String.Format("{0}={1}", AGiftBatchTable.GetBatchNumberDBName(), ABatchNumber);
-            Int32 RowToSelect = GetDataTableRowIndexByPrimaryKeys(ALedgerNumber, ABatchNumber);
-
-            FAccountAndCostCentreLogicObject.RefreshBankAccountAndCostCentreData(FLoadAndFilterLogicObject);
-            SetupExtraGridFunctionality();
-
-            // if this form is readonly, then we need all codes, because old codes might have been used
-            bool ActiveOnly = this.Enabled;
-            SetupAccountAndCostCentreCombos(ActiveOnly);
-
-            cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
-            TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
-
-            SelectRowInGrid(RowToSelect);
-
-            UpdateChangeableStatus();
-            FPetraUtilsObject.HasChanges = false;
-            FPetraUtilsObject.SuppressChangeDetection = false;
-            FBatchLoaded = true;
-        }
-
-        /// <summary>
         /// load the batches into the grid
         /// </summary>
         public void LoadBatchesForCurrentYear()
@@ -400,7 +354,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (yearIndex >= 0)
                 {
                     FLoadAndFilterLogicObject.YearIndex = yearIndex;
-                    FLoadAndFilterLogicObject.PeriodIndex = (myParentForm.InitialBatchYear == FMainDS.ALedger[0].CurrentFinancialYear) ? 1 : 0;
+
+                    if (myParentForm.InitialBatchPeriod >= 0)
+                    {
+                        FLoadAndFilterLogicObject.PeriodIndex = FLoadAndFilterLogicObject.FindPeriodAsIndex(myParentForm.InitialBatchPeriod);
+                    }
+                    else
+                    {
+                        FLoadAndFilterLogicObject.PeriodIndex = (myParentForm.InitialBatchYear == FMainDS.ALedger[0].CurrentFinancialYear) ? 1 : 0;
+                    }
+
                     performStandardLoad = false;
                 }
 

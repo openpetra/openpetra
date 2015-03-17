@@ -155,6 +155,7 @@ OpenPetra:
                         RecurringGLBatches: {Label=Recurring GL Batches, Description:Enter and submit recurring General Ledger batches, ActionOpenScreen=TFrmRecurringGLBatch}
                         ImportBatches: {Description: Import batch data from CSV file, Namespace=Ict.Petra.Client.MFinance.Gui, ActionClick=TFinanceMain.LoadGLBatchesFormForImport}
                         ExportBatches: {Description:Export to CSV file for use with Excel, ActionOpenScreen=TFrmGLBatchExport}
+                        GLTransactionFind: {Description:Search for GL Transactions across all batches and journals, ActionOpenScreen=TFrmGLTransactionFindScreen}
                     General:
                         LedgerInfo: {Description: View general information about this ledger, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmGLInfo}
                         ForeignCurrencyAccountBalances: {Description:Display Foreign Currency Account Balances, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmForeignCurrencyAccountBalance}
