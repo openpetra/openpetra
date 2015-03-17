@@ -985,6 +985,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FPartnerInfoUC == null)
             {
                 FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));
+                FPartnerInfoUC.PetraUtilsObject = FPetraUtilsObject;
                 FPartnerInfoUC.InitUserControl();
             }
 
@@ -1458,9 +1459,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.Cursor = Cursors.WaitCursor;
 
-            // Set Partner to be the "Last Used Partner"
-            TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(APartnerKey, TLastPartnerUse.lpuMailroomPartner);
-
             try
             {
                 TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
@@ -1476,6 +1474,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 frm.Show();
+
+                // Set Partner to be the "Last Used Partner"
+                TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(APartnerKey, TLastPartnerUse.lpuMailroomPartner, frm.PartnerClass);
             }
             finally
             {

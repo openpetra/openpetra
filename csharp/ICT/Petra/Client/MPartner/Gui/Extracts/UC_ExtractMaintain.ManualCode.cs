@@ -28,6 +28,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Data.Exceptions;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
@@ -286,17 +287,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public void SetPartnerLastWorkedWith(System.Object sender, EventArgs e)
         {
             ExtractTDSMExtractRow SelectedRow = GetSelectedDetailRow();
+            TPartnerClass SelectedPartnersPartnerClass = SharedTypes.PartnerClassStringToEnum(SelectedRow.PartnerClass);
 
             if (SelectedRow != null)
             {
                 TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(SelectedRow.PartnerKey,
-                    TLastPartnerUse.lpuMailroomPartner);
+                    TLastPartnerUse.lpuMailroomPartner, SelectedPartnersPartnerClass);
 
                 TRemote.MPartner.Partner.WebConnectors.AddRecentlyUsedPartner
-                    (SelectedRow.PartnerKey,
-                    SharedTypes.PartnerClassStringToEnum(SelectedRow.PartnerClass),
-                    false,
-                    TLastPartnerUse.lpuMailroomPartner);
+                    (SelectedRow.PartnerKey, SelectedPartnersPartnerClass, false, TLastPartnerUse.lpuMailroomPartner);
             }
         }
 
@@ -344,6 +343,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // in pnlDetails that allow changes to the MExtract record
             txtCreatedBy.Visible = false;
             lblCreatedBy.Visible = false;
+            ucoPartnerInfo.Dock = DockStyle.Fill;
 
             // set this property to false as otherwise save button will get enabled whenever values
             // in the partner info control change
@@ -414,6 +414,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void EditPartner(System.Object sender, EventArgs e)
         {
+            bool ServerCallSuccessful = false;
+            bool VerifyPartnerAtLocationResult = false;
+
             if (CountSelectedRows() > 1)
             {
                 MessageBox.Show(Catalog.GetString("Please select only one partner record that you want to edit"),
@@ -439,12 +442,31 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                 try
                 {
+                    Ict.Common.DB.TServerBusyHelper.CoordinatedAutoRetryCall("Extract Maintenance/Edit Partner", ref ServerCallSuccessful,
+                        delegate
+                        {
+                            VerifyPartnerAtLocationResult = TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartnerAtLocation(
+                                SelectedRow.PartnerKey,
+                                new TLocationPK(SelectedRow.SiteKey, SelectedRow.LocationKey),
+                                out CurrentOrMailingAddress);
+
+                            ServerCallSuccessful = true;
+                        });
+
+                    if (!ServerCallSuccessful)
+                    {
+                        // ServerCallRetries must be equal to MAX_RETRIES when we get here!
+                        if (TServerBusyHelperGui.ShowServerBusyDialogWhenOpeningForm(Catalog.GetString("Partner Edit")) == DialogResult.Retry)
+                        {
+                            EditPartner(null, null);
+                        }
+
+                        return;
+                    }
+
                     TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
-                    if (!TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartnerAtLocation(
-                            SelectedRow.PartnerKey,
-                            new TLocationPK(SelectedRow.SiteKey, SelectedRow.LocationKey),
-                            out CurrentOrMailingAddress))
+                    if (!VerifyPartnerAtLocationResult)
                     {
                         MessageBox.Show(Catalog.GetString("Cannot find the location that was stored for this partner." +
                                 "\r\n" + "Will use any known location for this partner." +

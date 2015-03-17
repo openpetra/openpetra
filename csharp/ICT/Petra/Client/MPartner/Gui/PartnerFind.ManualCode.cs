@@ -196,15 +196,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void SetUserDefaultLastPartnerWorkedWith()
-        {
-            /*
-             * Store the fact that this Partner is the 'Last Partner' that was worked with
-             */
-
-            TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(FCurrentlySelectedTab.PartnerKey, TLastPartnerUse.lpuMailroomPartner);
-        }
-
         private void MniFile_DropDownOpening(System.Object sender, System.EventArgs e)
         {
             DataRowView[] GridRows;

@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +29,7 @@ using System.Threading;
 
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MCommon;
@@ -38,7 +39,8 @@ namespace Ict.Petra.Server.MFinance.GL
 {
     /// <summary>
     /// Base for the GL Transaction Find Screen.
-    /// (Based on Partner.PartnerFind)
+    /// (Based on Partner.PartnerFind).
+    /// Utilised by the 'TGLTransactionFindUIConnector' Class.
     /// </summary>
     public class TGLTransactionFind
     {
@@ -61,14 +63,11 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Procedure to execute a Find query. Although the full
-        /// query results are retrieved from the DB and stored internally in an object,
-        /// data will be returned in 'pages' of data, each page holding a defined number
+        /// Procedure to execute a Find query. Although the full query results are retrieved from the DB and stored
+        /// internally in an object, data will be returned in 'pages' of data, each page holding a defined number
         /// of records.
-        ///
         /// </summary>
-        /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters</param>
-        /// <returns>void</returns>
+        /// <param name="ACriteriaData">HashTable containing non-empty Find parameters.</param>
         public void PerformSearch(DataTable ACriteriaData)
         {
             String CustomWhereCriteria;
@@ -79,7 +78,7 @@ namespace Ict.Petra.Server.MFinance.GL
             String FromClause;
             String WhereClause;
             System.Text.StringBuilder sb;
-            TLogging.LogAtLevel(7, "TGiftDetailFind.PerformSearch called.");
+            TLogging.LogAtLevel(7, "TGLTransactionFind.PerformSearch called.");
 
             FAsyncExecProgress = new TAsynchronousExecutionProgress();
             FPagedDataSetObject = new TPagedDataSet(new ATransactionTable());
@@ -151,6 +150,7 @@ namespace Ict.Petra.Server.MFinance.GL
             try
             {
                 FFindThread = new Thread(new ThreadStart(FPagedDataSetObject.ExecuteQuery));
+                FFindThread.Name = UserInfo.GUserInfo.UserID + "__GLTransactionFind_Thread";
                 FFindThread.Start();
             }
             catch (Exception)
@@ -362,22 +362,15 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Stops the query execution.
-        ///
-        /// Is intended to be called as an Event from FAsyncExecProgress.Cancel.
-        ///
-        /// @comment It might take some time until the executing query is cancelled by
-        /// the DB, but this procedure returns immediately. The reason for this is that
-        /// we consider the query cancellation as done since the application can
-        /// 'forget' about the result of the cancellation process (but beware of
-        /// executing another query while the other is stopping - this leads to ADO.NET
-        /// errors that state that a ADO.NET command is still executing!).
-        ///
+        /// Stops the query execution. This is intended to be called as an Event from FAsyncExecProgress.Cancel.
+        /// <remarks>It might take some time until the executing query is cancelled by the DB, but this procedure returns
+        /// immediately. The reason for this is that we consider the query cancellation as done since the application can
+        /// 'forget' about the result of the cancellation process (but beware of executing another query while the other is
+        /// stopping - this leads to ADO.NET errors that state that a ADO.NET command is still executing!).
+        /// </remarks>
         /// </summary>
-        /// <param name="ASender">Object that requested the stopping (not evaluated)</param>
-        /// <param name="AArgs">(not evaluated)
-        /// </param>
-        /// <returns>void</returns>
+        /// <param name="ASender">Object that requested the stopping (not evaluated).</param>
+        /// <param name="AArgs">(not evaluated).</param>
         public void StopSearch(object ASender, EventArgs AArgs)
         {
             Thread StopQueryThread;
@@ -387,8 +380,8 @@ namespace Ict.Petra.Server.MFinance.GL
              */
             TLogging.LogAtLevel(7, "TGLTransactionFindUIConnector.StopSearch: Starting StopQuery thread...");
 
-            ThreadStart ThreadStartDelegate = new ThreadStart(FPagedDataSetObject.StopQuery);
-            StopQueryThread = new Thread(ThreadStartDelegate);
+            StopQueryThread = new Thread(new ThreadStart(FPagedDataSetObject.StopQuery));
+            StopQueryThread.Name = UserInfo.GUserInfo.UserID + "__GLTransactionFind_StopSearch_Thread";
             StopQueryThread.Start();
 
             /* It might take some time until the executing query is cancelled by the DB,

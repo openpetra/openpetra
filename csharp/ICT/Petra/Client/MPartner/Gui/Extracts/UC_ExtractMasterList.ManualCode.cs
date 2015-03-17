@@ -837,6 +837,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.MaintainExtract);
             grdDetails.EnterKeyPressed += new TKeyPressedEventHandler(this.MaintainExtract);
+
+            FPetraUtilsObject.SetToolTip(btnRefreshGrid, Catalog.GetString("Refresh Extract List"));
         }
 
         /// <summary>

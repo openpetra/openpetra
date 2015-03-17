@@ -29,6 +29,7 @@ using System.Data.Odbc;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Data;
 using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Server;
@@ -471,9 +472,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         private void LoadData(Boolean ADelayedDataLoading, TPartnerEditTabPageEnum ATabPage)
         {
+            TDBTransaction ReadAndWriteTransaction = null;
+            bool SubmissionOK = false;
             PartnerEditTDSMiscellaneousDataTable MiscellaneousDataDT;
             PartnerEditTDSMiscellaneousDataRow MiscellaneousDataDR;
-            TDBTransaction ReadTransaction;
             DateTime LastGiftDate;
             DateTime LastContactDate;
             String LastGiftInfo;
@@ -502,470 +504,472 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // create the FPartnerEditScreenDS DataSet that will later be passed to the Client
             FPartnerEditScreenDS = new PartnerEditTDS(DATASETNAME);
 
-            try
-            {
-                ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead, 5);
-                try
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
+                IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadAndWriteTransaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    #region Load data using the DataStore
-
-                    // Partner
-                    PPartnerAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
-
-                    if (FPartnerEditScreenDS.PPartner.Rows.Count != 0)
+                    try
                     {
-                        FPartnerClass = SharedTypes.PartnerClassStringToEnum(FPartnerEditScreenDS.PPartner[0].PartnerClass);
-                    }
-                    else
-                    {
-                        throw new EPartnerNotExistantException();
-                    }
+                        #region Load data using the DataStore
 
-                    /*
-                     * For Partners that aren't ORGANISATIONs we can check access to the Partner here.
-                     * For Partners that *are* ORGANISATIONS we need to do a more elaborate check
-                     * further down the code of this Method!
-                     */
-                    if (FPartnerClass != TPartnerClass.ORGANISATION)
-                    {
+                        // Partner
+                        PPartnerAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadAndWriteTransaction);
+
+                        if (FPartnerEditScreenDS.PPartner.Rows.Count != 0)
+                        {
+                            FPartnerClass = SharedTypes.PartnerClassStringToEnum(FPartnerEditScreenDS.PPartner[0].PartnerClass);
+                        }
+                        else
+                        {
+                            throw new EPartnerNotExistantException();
+                        }
+
                         /*
-                         * Check if access to Partner is granted; if not, an
-                         * ESecurityPartnerAccessDeniedException will be thrown by the called Method!
+                         * For Partners that aren't ORGANISATIONs we can check access to the Partner here.
+                         * For Partners that *are* ORGANISATIONS we need to do a more elaborate check
+                         * further down the code of this Method!
                          */
-                        Ict.Petra.Shared.MPartner.TSecurity.CanAccessPartnerExc(FPartnerEditScreenDS.PPartner[0], false, null);
-                    }
-
-                    // Partner Types
-                    FPartnerEditScreenDS.Merge(GetPartnerTypesInternal(out ItemsCountPartnerTypes, false));
-
-                    if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpPartnerTypes))
-                    {
-                        // Empty Tables again, we don't want to transfer the data contained in them
-                        FPartnerEditScreenDS.PPartnerType.Rows.Clear();
-                    }
-
-                    // Subscriptions
-                    FPartnerEditScreenDS.Merge(GetSubscriptionsInternal(out ItemsCountSubscriptions, false));
-
-                    if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpSubscriptions))
-                    {
-                        // Only count Subscriptions
-                        Calculations.CalculateTabCountsSubscriptions(FPartnerEditScreenDS.PSubscription,
-                            out ItemsCountSubscriptions,
-                            out ItemsCountSubscriptionsActive);
-
-                        // Empty Tables again, we don't want to transfer the data contained in them
-                        FPartnerEditScreenDS.PSubscription.Rows.Clear();
-                    }
-
-                    // Partner Attributes - those always need to get loaded!
-                    FPartnerEditScreenDS.Merge(PPartnerAttributeAccess.LoadViaPPartner(FPartnerKey, ReadTransaction));
-
-                    // Contact Details
-                    GetPartnerContactDetailsInternal(out ItemsCountContactDetails);
-
-                    if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpContactDetails))
-                    {
-                        // Count Contact Details
-                        Calculations.CalculateTabCountsPartnerContactDetails(FPartnerEditScreenDS.PPartnerAttribute,
-                            out ItemsCountContactDetails, out ItemsCountContactDetailsActive);
-                    }
-
-                    // Partner Relationships
-                    FPartnerEditScreenDS.Merge(GetPartnerRelationshipsInternal(out ItemsCountPartnerRelationships, false));
-
-                    if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpPartnerRelationships))
-                    {
-                        // Only count Relationships
-                        Calculations.CalculateTabCountsPartnerRelationships(FPartnerEditScreenDS.PPartnerRelationship,
-                            out ItemsCountPartnerRelationships);
-
-                        // Empty Tables again, we don't want to transfer the data contained in them
-                        FPartnerEditScreenDS.PPartnerRelationship.Rows.Clear();
-                    }
-
-                    // Locations and PartnerLocations
-                    TLogging.LogAtLevel(9, "TPartnerEditUIConnector.LoadData: Before TPPartnerAddressAggregate.LoadAll");
-                    TPPartnerAddressAggregate.LoadAll(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
-
-                    if (FKeyForSelectingPartnerLocation.LocationKey > 0)
-                    {
-                        if (FPartnerEditScreenDS.PPartnerLocation.Rows.Find(new Object[] { FPartnerKey, FKeyForSelectingPartnerLocation.SiteKey,
-                                                                                           FKeyForSelectingPartnerLocation.LocationKey }) == null)
+                        if (FPartnerClass != TPartnerClass.ORGANISATION)
                         {
-                            throw new EPartnerLocationNotExistantException(
-                                "PartnerLocation SiteKey " + FKeyForSelectingPartnerLocation.SiteKey.ToString() + " and LocationKey " +
-                                FKeyForSelectingPartnerLocation.LocationKey.ToString());
+                            /*
+                             * Check if access to Partner is granted; if not, an
+                             * ESecurityPartnerAccessDeniedException will be thrown by the called Method!
+                             */
+                            Ict.Petra.Shared.MPartner.TSecurity.CanAccessPartnerExc(FPartnerEditScreenDS.PPartner[0], false, null);
                         }
-                    }
 
-                    if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpAddresses))
-                    {
-                        // Determination of the address list icons and the 'best' address (these calls change certain columns in some rows!)
-                        Calculations.DeterminePartnerLocationsDateStatus((DataSet)FPartnerEditScreenDS);
-                        LocationPK = Calculations.DetermineBestAddress((DataSet)FPartnerEditScreenDS);
-                    }
-                    else
-                    {
-                        // Only count
-                        Calculations.CalculateTabCountsAddresses(FPartnerEditScreenDS.PPartnerLocation,
-                            out ItemsCountAddresses,
-                            out ItemsCountAddressesActive);
+                        // Partner Types
+                        FPartnerEditScreenDS.Merge(GetPartnerTypesInternal(out ItemsCountPartnerTypes, false));
 
-                        // Empty Tables again, we don't want to transfer the data contained in them
-                        FPartnerEditScreenDS.PLocation.Rows.Clear();
-                        FPartnerEditScreenDS.PPartnerLocation.Rows.Clear();
-
-                        // location will be determined correctly on the Client side...
-                        LocationPK = new TLocationPK(0, 0);
-                    }
-
-                    // PartnerInterests
-                    if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpInterests))
-                    {
-                        DataRow InterestRow;
-
-                        // Load data for Interests
-                        FPartnerEditScreenDS.Merge(GetPartnerInterestsInternal(out ItemsCountPartnerInterests, false));
-                        FPartnerEditScreenDS.Merge(GetInterestsInternal(out ItemsCountInterests, false));
-
-                        // fill field for interest category in PartnerInterest table in dataset
-                        foreach (PartnerEditTDSPPartnerInterestRow row in FPartnerEditScreenDS.PPartnerInterest.Rows)
+                        if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpPartnerTypes))
                         {
-                            InterestRow = FPartnerEditScreenDS.PInterest.Rows.Find(new object[] { row.Interest });
+                            // Empty Tables again, we don't want to transfer the data contained in them
+                            FPartnerEditScreenDS.PPartnerType.Rows.Clear();
+                        }
 
-                            if (InterestRow != null)
+                        // Subscriptions
+                        FPartnerEditScreenDS.Merge(GetSubscriptionsInternal(out ItemsCountSubscriptions, false));
+
+                        if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpSubscriptions))
+                        {
+                            // Only count Subscriptions
+                            Calculations.CalculateTabCountsSubscriptions(FPartnerEditScreenDS.PSubscription,
+                                out ItemsCountSubscriptions,
+                                out ItemsCountSubscriptionsActive);
+
+                            // Empty Tables again, we don't want to transfer the data contained in them
+                            FPartnerEditScreenDS.PSubscription.Rows.Clear();
+                        }
+
+                        // Partner Attributes - those always need to get loaded!
+                        FPartnerEditScreenDS.Merge(PPartnerAttributeAccess.LoadViaPPartner(FPartnerKey, ReadAndWriteTransaction));
+
+                        // Contact Details
+                        GetPartnerContactDetailsInternal(out ItemsCountContactDetails);
+
+                        if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpContactDetails))
+                        {
+                            // Count Contact Details
+                            Calculations.CalculateTabCountsPartnerContactDetails(FPartnerEditScreenDS.PPartnerAttribute,
+                                out ItemsCountContactDetails, out ItemsCountContactDetailsActive);
+                        }
+
+                        // Partner Relationships
+                        FPartnerEditScreenDS.Merge(GetPartnerRelationshipsInternal(out ItemsCountPartnerRelationships, false));
+
+                        if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpPartnerRelationships))
+                        {
+                            // Only count Relationships
+                            Calculations.CalculateTabCountsPartnerRelationships(FPartnerEditScreenDS.PPartnerRelationship,
+                                out ItemsCountPartnerRelationships);
+
+                            // Empty Tables again, we don't want to transfer the data contained in them
+                            FPartnerEditScreenDS.PPartnerRelationship.Rows.Clear();
+                        }
+
+                        // Locations and PartnerLocations
+                        TLogging.LogAtLevel(9, "TPartnerEditUIConnector.LoadData: Before TPPartnerAddressAggregate.LoadAll");
+                        TPPartnerAddressAggregate.LoadAll(FPartnerEditScreenDS, FPartnerKey, ReadAndWriteTransaction);
+
+                        if (FKeyForSelectingPartnerLocation.LocationKey > 0)
+                        {
+                            if (FPartnerEditScreenDS.PPartnerLocation.Rows.Find(new Object[] { FPartnerKey, FKeyForSelectingPartnerLocation.SiteKey,
+                                                                                               FKeyForSelectingPartnerLocation.LocationKey }) == null)
                             {
-                                row.InterestCategory = ((PInterestRow)InterestRow).Category;
+                                throw new EPartnerLocationNotExistantException(
+                                    "PartnerLocation SiteKey " + FKeyForSelectingPartnerLocation.SiteKey.ToString() + " and LocationKey " +
+                                    FKeyForSelectingPartnerLocation.LocationKey.ToString());
                             }
                         }
-                    }
-                    else
-                    {
-                        // Only count Interests
-                        GetPartnerInterestsInternal(out ItemsCountPartnerInterests, true);
-                    }
 
-                    #region Partner Details data according to PartnerClass
+                        if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpAddresses))
+                        {
+                            // Determination of the address list icons and the 'best' address (these calls change certain columns in some rows!)
+                            Calculations.DeterminePartnerLocationsDateStatus((DataSet)FPartnerEditScreenDS);
+                            LocationPK = Calculations.DetermineBestAddress((DataSet)FPartnerEditScreenDS);
+                        }
+                        else
+                        {
+                            // Only count
+                            Calculations.CalculateTabCountsAddresses(FPartnerEditScreenDS.PPartnerLocation,
+                                out ItemsCountAddresses,
+                                out ItemsCountAddressesActive);
 
-                    switch (FPartnerClass)
-                    {
-                        case TPartnerClass.PERSON:
+                            // Empty Tables again, we don't want to transfer the data contained in them
+                            FPartnerEditScreenDS.PLocation.Rows.Clear();
+                            FPartnerEditScreenDS.PPartnerLocation.Rows.Clear();
 
-                            // Disable some constraints that relate to other tables in the DataSet that are not filled with data.
-                            // This applies for the DataTables that exist for a certain Partner Class, eg. Person, where all other
-                            // DataTables that represent certain Partner Classes are not filled.
-                            FPartnerEditScreenDS.DisableConstraint("FKPerson2");
+                            // location will be determined correctly on the Client side...
+                            LocationPK = new TLocationPK(0, 0);
+                        }
 
-                            // points to PFamily
-                            FPartnerEditScreenDS.DisableConstraint("FKPerson4");
+                        // PartnerInterests
+                        if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpInterests))
+                        {
+                            DataRow InterestRow;
 
-                            // points to PUnit
-                            TLogging.LogAtLevel(9, "Disabled Constraints in Typed DataSet PartnerEditTDS.");
-                            PPersonAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
+                            // Load data for Interests
+                            FPartnerEditScreenDS.Merge(GetPartnerInterestsInternal(out ItemsCountPartnerInterests, false));
+                            FPartnerEditScreenDS.Merge(GetInterestsInternal(out ItemsCountInterests, false));
 
-                            // Gift Destination
-                            PPartnerGiftDestinationAccess.LoadViaPPartner(FPartnerEditScreenDS,
-                            FPartnerEditScreenDS.PPerson[0].FamilyKey,
-                            ReadTransaction);
-
-                            // Determine whether the Partner has a 'EX-WORKER*' Partner Type
-                            HasEXWORKERPartnerType = Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
-
-                            if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
+                            // fill field for interest category in PartnerInterest table in dataset
+                            foreach (PartnerEditTDSPPartnerInterestRow row in FPartnerEditScreenDS.PPartnerInterest.Rows)
                             {
-                                // Load data for Family Members
-                                FPartnerEditScreenDS.Merge(GetFamilyMembersInternal(FPartnerEditScreenDS.PPerson[0].FamilyKey, "",
-                                        out ItemsCountFamilyMembers, false));
-                            }
-                            else
-                            {
-                                // Only count Family Members
-                                GetFamilyMembersInternal(FPartnerEditScreenDS.PPerson[0].FamilyKey, "", out ItemsCountFamilyMembers, true);
-                            }
+                                InterestRow = FPartnerEditScreenDS.PInterest.Rows.Find(new object[] { row.Interest });
 
-                            break;
-
-                        case TPartnerClass.FAMILY:
-                            PFamilyAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
-
-                            // Gift Destination
-                            PPartnerGiftDestinationAccess.LoadViaPPartner(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
-
-                            // Determine whether the Partner has a 'EX-WORKER*' Partner Type
-                            HasEXWORKERPartnerType = Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
-
-                            if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
-                            {
-                                // Load data for Family Members
-                                FPartnerEditScreenDS.Merge(GetFamilyMembersInternal(FPartnerEditScreenDS.PFamily[0].PartnerKey, "",
-                                        out ItemsCountFamilyMembers, false));
-                            }
-                            else
-                            {
-                                // Only count Family Members
-                                GetFamilyMembersInternal(FPartnerEditScreenDS.PFamily[0].PartnerKey, "", out ItemsCountFamilyMembers, true);
-                            }
-
-                            break;
-
-                        case TPartnerClass.CHURCH:
-                            PChurchAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
-                            break;
-
-                        case TPartnerClass.ORGANISATION:
-                            POrganisationAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
-
-                            if (FPartnerEditScreenDS.POrganisation[0].Foundation)
-                            {
-                                if (!((UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVUSER))
-                                      || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVADMIN))))
+                                if (InterestRow != null)
                                 {
-                                    throw new ESecurityScreenAccessDeniedException(
-                                        // Some users won't have access to edit partners that are foundations. Foundations are a special type of organisation.
-                                        // They usually are important donors, and they should not be approached by any user in the
-                                        // office, but only by the person that has been assigned to do that job
-                                        Catalog.GetString(
-                                            "You do not have access to Partners of Partner Class 'ORGANISATION' that are 'Foundations'!"));
+                                    row.InterestCategory = ((PInterestRow)InterestRow).Category;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Only count Interests
+                            GetPartnerInterestsInternal(out ItemsCountPartnerInterests, true);
+                        }
+
+                        #region Partner Details data according to PartnerClass
+
+                        switch (FPartnerClass)
+                        {
+                            case TPartnerClass.PERSON:
+
+                                // Disable some constraints that relate to other tables in the DataSet that are not filled with data.
+                                // This applies for the DataTables that exist for a certain Partner Class, eg. Person, where all other
+                                // DataTables that represent certain Partner Classes are not filled.
+                                FPartnerEditScreenDS.DisableConstraint("FKPerson2");
+
+                                // points to PFamily
+                                FPartnerEditScreenDS.DisableConstraint("FKPerson4");
+
+                                // points to PUnit
+                                TLogging.LogAtLevel(9, "Disabled Constraints in Typed DataSet PartnerEditTDS.");
+                                PPersonAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadAndWriteTransaction);
+
+                                // Gift Destination
+                                PPartnerGiftDestinationAccess.LoadViaPPartner(FPartnerEditScreenDS,
+                                FPartnerEditScreenDS.PPerson[0].FamilyKey,
+                                ReadAndWriteTransaction);
+
+                                // Determine whether the Partner has a 'EX-WORKER*' Partner Type
+                                HasEXWORKERPartnerType =
+                                    Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
+
+                                if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
+                                {
+                                    // Load data for Family Members
+                                    FPartnerEditScreenDS.Merge(GetFamilyMembersInternal(FPartnerEditScreenDS.PPerson[0].FamilyKey, "",
+                                            out ItemsCountFamilyMembers, false));
                                 }
                                 else
                                 {
-                                    // User has access to open the screen, based on Module Security
-                                    if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFoundationDetails))
+                                    // Only count Family Members
+                                    GetFamilyMembersInternal(FPartnerEditScreenDS.PPerson[0].FamilyKey, "", out ItemsCountFamilyMembers, true);
+                                }
+
+                                break;
+
+                            case TPartnerClass.FAMILY:
+                                PFamilyAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadAndWriteTransaction);
+
+                                // Gift Destination
+                                PPartnerGiftDestinationAccess.LoadViaPPartner(FPartnerEditScreenDS, FPartnerKey, ReadAndWriteTransaction);
+
+                                // Determine whether the Partner has a 'EX-WORKER*' Partner Type
+                                HasEXWORKERPartnerType =
+                                    Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
+
+                                if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
+                                {
+                                    // Load data for Family Members
+                                    FPartnerEditScreenDS.Merge(GetFamilyMembersInternal(FPartnerEditScreenDS.PFamily[0].PartnerKey, "",
+                                            out ItemsCountFamilyMembers, false));
+                                }
+                                else
+                                {
+                                    // Only count Family Members
+                                    GetFamilyMembersInternal(FPartnerEditScreenDS.PFamily[0].PartnerKey, "", out ItemsCountFamilyMembers, true);
+                                }
+
+                                break;
+
+                            case TPartnerClass.CHURCH:
+                                PChurchAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadAndWriteTransaction);
+                                break;
+
+                            case TPartnerClass.ORGANISATION:
+                                POrganisationAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadAndWriteTransaction);
+
+                                if (FPartnerEditScreenDS.POrganisation[0].Foundation)
+                                {
+                                    if (!((UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVUSER))
+                                          || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVADMIN))))
                                     {
-                                        // Load all data that there is for a Foundation (across several DataTables)
-                                        FPartnerEditScreenDS.Merge(GetDataFoundation(false));
+                                        throw new ESecurityScreenAccessDeniedException(
+                                            // Some users won't have access to edit partners that are foundations. Foundations are a special type of organisation.
+                                            // They usually are important donors, and they should not be approached by any user in the
+                                            // office, but only by the person that has been assigned to do that job
+                                            Catalog.GetString(
+                                                "You do not have access to Partners of Partner Class 'ORGANISATION' that are 'Foundations'!"));
                                     }
                                     else
                                     {
-                                        // Load just p_foundation record (needed for security, see below)
-                                        FPartnerEditScreenDS.Merge(GetDataFoundation(true));
-                                    }
-
-                                    if (FPartnerEditScreenDS.PFoundation.Rows.Count != 0)
-                                    {
-                                        // Store Foundation Owner1 and Foundation Owner2 from the
-                                        // p_foundation record. This information will be evaluated in the
-                                        // Partner Edit screen to allow/disallow access to the Foundation
-                                        // Details Tab.
-                                        if (FPartnerEditScreenDS.PFoundation[0].IsOwner1KeyNull())
+                                        // User has access to open the screen, based on Module Security
+                                        if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFoundationDetails))
                                         {
-                                            FoundationOwner1Key = 0;
+                                            // Load all data that there is for a Foundation (across several DataTables)
+                                            FPartnerEditScreenDS.Merge(GetDataFoundation(false));
                                         }
                                         else
                                         {
-                                            FoundationOwner1Key = FPartnerEditScreenDS.PFoundation[0].Owner1Key;
+                                            // Load just p_foundation record (needed for security, see below)
+                                            FPartnerEditScreenDS.Merge(GetDataFoundation(true));
                                         }
 
-                                        if (FPartnerEditScreenDS.PFoundation[0].IsOwner2KeyNull())
+                                        if (FPartnerEditScreenDS.PFoundation.Rows.Count != 0)
                                         {
-                                            FoundationOwner2Key = 0;
+                                            // Store Foundation Owner1 and Foundation Owner2 from the
+                                            // p_foundation record. This information will be evaluated in the
+                                            // Partner Edit screen to allow/disallow access to the Foundation
+                                            // Details Tab.
+                                            if (FPartnerEditScreenDS.PFoundation[0].IsOwner1KeyNull())
+                                            {
+                                                FoundationOwner1Key = 0;
+                                            }
+                                            else
+                                            {
+                                                FoundationOwner1Key = FPartnerEditScreenDS.PFoundation[0].Owner1Key;
+                                            }
+
+                                            if (FPartnerEditScreenDS.PFoundation[0].IsOwner2KeyNull())
+                                            {
+                                                FoundationOwner2Key = 0;
+                                            }
+                                            else
+                                            {
+                                                FoundationOwner2Key = FPartnerEditScreenDS.PFoundation[0].Owner2Key;
+                                            }
+
+                                            if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpFoundationDetails))
+                                            {
+                                                // We don't want to transfer the data of the table until it is
+                                                // needed on the Client side (also for security reasons).
+                                                FPartnerEditScreenDS.Tables.Remove(FPartnerEditScreenDS.PFoundation);
+                                            }
+
+                                            /*
+                                             * Check if access to Partner is granted; if not, an
+                                             * ESecurityPartnerAccessDeniedException will be thrown by the called Method!
+                                             */
+                                            Ict.Petra.Shared.MPartner.TSecurity.CanAccessPartnerExc(
+                                                FPartnerEditScreenDS.PPartner[0], true,
+                                                FPartnerEditScreenDS.PFoundation[0]);
                                         }
                                         else
                                         {
-                                            FoundationOwner2Key = FPartnerEditScreenDS.PFoundation[0].Owner2Key;
+                                            // Althought the Organisation is marked to be a Foundation, no
+                                            // p_foundation record exists. This should of course not happen,
+                                            // but in case it does: mark the Organisation to be NO Foundation.
+                                            FPartnerEditScreenDS.POrganisation[0].Foundation = false;
+
+                                            /*
+                                             * Check if access to Partner is granted; if not, an
+                                             * ESecurityPartnerAccessDeniedException will be thrown by the called Method!
+                                             */
+                                            Ict.Petra.Shared.MPartner.TSecurity.CanAccessPartnerExc(
+                                                FPartnerEditScreenDS.PPartner[0], false, null);
                                         }
-
-                                        if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpFoundationDetails))
-                                        {
-                                            // We don't want to transfer the data of the table until it is
-                                            // needed on the Client side (also for security reasons).
-                                            FPartnerEditScreenDS.Tables.Remove(FPartnerEditScreenDS.PFoundation);
-                                        }
-
-                                        /*
-                                         * Check if access to Partner is granted; if not, an
-                                         * ESecurityPartnerAccessDeniedException will be thrown by the called Method!
-                                         */
-                                        Ict.Petra.Shared.MPartner.TSecurity.CanAccessPartnerExc(
-                                            FPartnerEditScreenDS.PPartner[0], true,
-                                            FPartnerEditScreenDS.PFoundation[0]);
-                                    }
-                                    else
-                                    {
-                                        // Althought the Organisation is marked to be a Foundation, no
-                                        // p_foundation record exists. This should of course not happen,
-                                        // but in case it does: mark the Organisation to be NO Foundation.
-                                        FPartnerEditScreenDS.POrganisation[0].Foundation = false;
-
-                                        /*
-                                         * Check if access to Partner is granted; if not, an
-                                         * ESecurityPartnerAccessDeniedException will be thrown by the called Method!
-                                         */
-                                        Ict.Petra.Shared.MPartner.TSecurity.CanAccessPartnerExc(
-                                            FPartnerEditScreenDS.PPartner[0], false, null);
                                     }
                                 }
-                            }
-                            else
-                            {
-                                /*
-                                 * Check if access to Partner is granted; if not, an
-                                 * ESecurityPartnerAccessDeniedException will be thrown by the called Method!
-                                 */
-                                Ict.Petra.Shared.MPartner.TSecurity.CanAccessPartnerExc(FPartnerEditScreenDS.PPartner[0], false, null);
-                            }
+                                else
+                                {
+                                    /*
+                                     * Check if access to Partner is granted; if not, an
+                                     * ESecurityPartnerAccessDeniedException will be thrown by the called Method!
+                                     */
+                                    Ict.Petra.Shared.MPartner.TSecurity.CanAccessPartnerExc(FPartnerEditScreenDS.PPartner[0], false, null);
+                                }
 
-                            break;
+                                break;
 
-                        case TPartnerClass.BANK:
+                            case TPartnerClass.BANK:
 
-                            // Get the main information about a BANK partner
-                            PBankAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
+                                // Get the main information about a BANK partner
+                                PBankAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadAndWriteTransaction);
 
-                            // Gain information about the BANK partner's banking details
-                            // When dealing with this grid one has to consider that the Netherland do not
-                            // know bank branches and that Credit Cards do not have branches as well.
-                            // Last time I checked how many accounts one bank in the Netherlands had
-                            // I ended up with some 9756. I was also puzzled what use this grid may have.
-                            // It is very tedious to find the right bank account from some 9000 bank
-                            // accounts. Therefore the paged grid would be needed. But Rob decided that
-                            // we currently do not build this grid into this screen, since this sreen
-                            // was hardly used anyway. We are happy to wait for the first complaints.
-                            //
-                            // FPartnerEditScreenDS := GetBankingDetailsInternal(ReadTransaction, FPartnerKey);
-                            break;
+                                // Gain information about the BANK partner's banking details
+                                // When dealing with this grid one has to consider that the Netherland do not
+                                // know bank branches and that Credit Cards do not have branches as well.
+                                // Last time I checked how many accounts one bank in the Netherlands had
+                                // I ended up with some 9756. I was also puzzled what use this grid may have.
+                                // It is very tedious to find the right bank account from some 9000 bank
+                                // accounts. Therefore the paged grid would be needed. But Rob decided that
+                                // we currently do not build this grid into this screen, since this sreen
+                                // was hardly used anyway. We are happy to wait for the first complaints.
+                                //
+                                // FPartnerEditScreenDS := GetBankingDetailsInternal(ReadTransaction, FPartnerKey);
+                                break;
 
-                        case TPartnerClass.UNIT:
-                            PUnitAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
-                            UmUnitStructureAccess.LoadViaPUnitChildUnitKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
-                            break;
+                            case TPartnerClass.UNIT:
+                                PUnitAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadAndWriteTransaction);
+                                UmUnitStructureAccess.LoadViaPUnitChildUnitKey(FPartnerEditScreenDS, FPartnerKey, ReadAndWriteTransaction);
+                                break;
 
-                        case TPartnerClass.VENUE:
-                            PVenueAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
-                            break;
-                    }
+                            case TPartnerClass.VENUE:
+                                PVenueAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadAndWriteTransaction);
+                                break;
+                        }
 
-                    #endregion
+                        #endregion
 
-                    // financial details
-                    if ((!ADelayedDataLoading) || (ATabPage == TPartnerEditTabPageEnum.petpFinanceDetails))
-                    {
-                        FPartnerEditScreenDS.Merge(GetBankingDetails());
-                    }
+                        // financial details
+                        if ((!ADelayedDataLoading) || (ATabPage == TPartnerEditTabPageEnum.petpFinanceDetails))
+                        {
+                            FPartnerEditScreenDS.Merge(GetBankingDetails());
+                        }
 
-                    ItemsCountPartnerBankingDetails = PPartnerBankingDetailsAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
+                        ItemsCountPartnerBankingDetails = PPartnerBankingDetailsAccess.CountViaPPartner(FPartnerKey, ReadAndWriteTransaction);
 
-                    // Office Specific Data
-                    if ((!ADelayedDataLoading) || (ATabPage == TPartnerEditTabPageEnum.petpOfficeSpecific))
-                    {
-                        FPartnerEditScreenDS.Merge(GetDataLocalPartnerDataValuesInternal(out OfficeSpecificDataLabelsAvailable, false));
-                    }
-                    else
-                    {
-                        FPartnerEditScreenDS.Merge(GetDataLocalPartnerDataValuesInternal(out OfficeSpecificDataLabelsAvailable, true));
-                    }
+                        // Office Specific Data
+                        if ((!ADelayedDataLoading) || (ATabPage == TPartnerEditTabPageEnum.petpOfficeSpecific))
+                        {
+                            FPartnerEditScreenDS.Merge(GetDataLocalPartnerDataValuesInternal(out OfficeSpecificDataLabelsAvailable, false));
+                        }
+                        else
+                        {
+                            FPartnerEditScreenDS.Merge(GetDataLocalPartnerDataValuesInternal(out OfficeSpecificDataLabelsAvailable, true));
+                        }
 
-                    // Console.WriteLine('FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count: ' + FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count.ToString);
+                        // Console.WriteLine('FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count: ' + FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count.ToString);
 
-                    #region Individual Data (Personnel Tab)
+                        #region Individual Data (Personnel Tab)
 
-                    if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpPersonnelIndividualData))
-                    {
-                        FPartnerEditScreenDS.Merge(TIndividualDataWebConnector.GetData(FPartnerKey, TIndividualDataItemEnum.idiSummary));
+                        if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpPersonnelIndividualData))
+                        {
+                            FPartnerEditScreenDS.Merge(TIndividualDataWebConnector.GetData(FPartnerKey, TIndividualDataItemEnum.idiSummary));
 //                      Console.WriteLine("FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count: " + FPartnerEditScreenDS.Tables["SummaryData"].Rows.Count.ToString());
-                    }
+                        }
 
-                    #endregion
+                        #endregion
 
-                    #endregion
+                        #endregion
 
-                    #region Process data
+                        #region Process data
 
-                    // Determination of Last Gift information
-                    TGift.GetLastGiftDetails(FPartnerKey, out LastGiftDate, out LastGiftInfo);
+                        // Determination of Last Gift information
+                        TGift.GetLastGiftDetails(FPartnerKey, out LastGiftDate, out LastGiftInfo);
 
-                    // Determination of Last Contact Date
-                    TMailroom.GetLastContactDate(FPartnerKey, out LastContactDate);
-                    GetContactsInternal(out ItemsCountContacts, out LastContactDate);
+                        // Determination of Last Contact Date
+                        TMailroom.GetLastContactDate(FPartnerKey, out LastContactDate);
+                        GetContactsInternal(out ItemsCountContacts, out LastContactDate);
 
-                    // Create 'miscellaneous' DataRow
-                    MiscellaneousDataDT = FPartnerEditScreenDS.MiscellaneousData;
-                    MiscellaneousDataDR = MiscellaneousDataDT.NewRowTyped(false);
-                    MiscellaneousDataDR.PartnerKey = FPartnerKey;
+                        // Create 'miscellaneous' DataRow
+                        MiscellaneousDataDT = FPartnerEditScreenDS.MiscellaneousData;
+                        MiscellaneousDataDR = MiscellaneousDataDT.NewRowTyped(false);
+                        MiscellaneousDataDR.PartnerKey = FPartnerKey;
 
-                    if (FKeyForSelectingPartnerLocation.LocationKey == 0)
-                    {
-                        MiscellaneousDataDR.SelectedSiteKey = LocationPK.SiteKey;
-                        MiscellaneousDataDR.SelectedLocationKey = LocationPK.LocationKey;
-                    }
-                    else
-                    {
+                        if (FKeyForSelectingPartnerLocation.LocationKey == 0)
+                        {
+                            MiscellaneousDataDR.SelectedSiteKey = LocationPK.SiteKey;
+                            MiscellaneousDataDR.SelectedLocationKey = LocationPK.LocationKey;
+                        }
+                        else
+                        {
 //                      TLogging.LogAtLevel(6, "Passed in FKeyForSelectingPartnerLocation.SiteKey and FKeyForSelectingPartnerLocation.LocationKey: " +
 //                          FKeyForSelectingPartnerLocation.SiteKey.ToString() + "/" + FKeyForSelectingPartnerLocation.LocationKey.ToString());
 
-                        MiscellaneousDataDR.SelectedSiteKey = FKeyForSelectingPartnerLocation.SiteKey;
-                        MiscellaneousDataDR.SelectedLocationKey = FKeyForSelectingPartnerLocation.LocationKey;
-                    }
+                            MiscellaneousDataDR.SelectedSiteKey = FKeyForSelectingPartnerLocation.SiteKey;
+                            MiscellaneousDataDR.SelectedLocationKey = FKeyForSelectingPartnerLocation.LocationKey;
+                        }
 
-                    if (LastGiftDate != DateTime.MinValue)
-                    {
-                        MiscellaneousDataDR.LastGiftDate = LastGiftDate;
-                    }
-                    else
-                    {
-                        MiscellaneousDataDR.SetLastGiftDateNull();
-                    }
+                        if (LastGiftDate != DateTime.MinValue)
+                        {
+                            MiscellaneousDataDR.LastGiftDate = LastGiftDate;
+                        }
+                        else
+                        {
+                            MiscellaneousDataDR.SetLastGiftDateNull();
+                        }
 
-                    if (LastContactDate != DateTime.MinValue)
-                    {
-                        MiscellaneousDataDR.LastContactDate = LastContactDate;
-                    }
-                    else
-                    {
-                        MiscellaneousDataDR.SetLastContactDateNull();
-                    }
+                        if (LastContactDate != DateTime.MinValue)
+                        {
+                            MiscellaneousDataDR.LastContactDate = LastContactDate;
+                        }
+                        else
+                        {
+                            MiscellaneousDataDR.SetLastContactDateNull();
+                        }
 
-                    MiscellaneousDataDR.LastGiftInfo = LastGiftInfo;
-                    MiscellaneousDataDR.ItemsCountAddresses = ItemsCountAddresses;
-                    MiscellaneousDataDR.ItemsCountAddressesActive = ItemsCountAddressesActive;
-                    MiscellaneousDataDR.ItemsCountContactDetails = ItemsCountContactDetails;
-                    MiscellaneousDataDR.ItemsCountContactDetailsActive = ItemsCountContactDetailsActive;
-                    MiscellaneousDataDR.ItemsCountSubscriptions = ItemsCountSubscriptions;
-                    MiscellaneousDataDR.ItemsCountSubscriptionsActive = ItemsCountSubscriptionsActive;
-                    MiscellaneousDataDR.ItemsCountContacts = ItemsCountContacts;
-                    MiscellaneousDataDR.ItemsCountPartnerTypes = ItemsCountPartnerTypes;
-                    MiscellaneousDataDR.ItemsCountPartnerRelationships = ItemsCountPartnerRelationships;
-                    MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
-                    MiscellaneousDataDR.ItemsCountInterests = ItemsCountPartnerInterests;
-                    MiscellaneousDataDR.ItemsCountPartnerBankingDetails = ItemsCountPartnerBankingDetails;
-                    MiscellaneousDataDR.OfficeSpecificDataLabelsAvailable = OfficeSpecificDataLabelsAvailable;
-                    MiscellaneousDataDR.FoundationOwner1Key = FoundationOwner1Key;
-                    MiscellaneousDataDR.FoundationOwner2Key = FoundationOwner2Key;
-                    MiscellaneousDataDR.HasEXWORKERPartnerType = HasEXWORKERPartnerType;
-                    MiscellaneousDataDT.Rows.Add(MiscellaneousDataDR);
-                    #endregion
+                        MiscellaneousDataDR.LastGiftInfo = LastGiftInfo;
+                        MiscellaneousDataDR.ItemsCountAddresses = ItemsCountAddresses;
+                        MiscellaneousDataDR.ItemsCountAddressesActive = ItemsCountAddressesActive;
+                        MiscellaneousDataDR.ItemsCountContactDetails = ItemsCountContactDetails;
+                        MiscellaneousDataDR.ItemsCountContactDetailsActive = ItemsCountContactDetailsActive;
+                        MiscellaneousDataDR.ItemsCountSubscriptions = ItemsCountSubscriptions;
+                        MiscellaneousDataDR.ItemsCountSubscriptionsActive = ItemsCountSubscriptionsActive;
+                        MiscellaneousDataDR.ItemsCountContacts = ItemsCountContacts;
+                        MiscellaneousDataDR.ItemsCountPartnerTypes = ItemsCountPartnerTypes;
+                        MiscellaneousDataDR.ItemsCountPartnerRelationships = ItemsCountPartnerRelationships;
+                        MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
+                        MiscellaneousDataDR.ItemsCountInterests = ItemsCountPartnerInterests;
+                        MiscellaneousDataDR.ItemsCountPartnerBankingDetails = ItemsCountPartnerBankingDetails;
+                        MiscellaneousDataDR.OfficeSpecificDataLabelsAvailable = OfficeSpecificDataLabelsAvailable;
+                        MiscellaneousDataDR.FoundationOwner1Key = FoundationOwner1Key;
+                        MiscellaneousDataDR.FoundationOwner2Key = FoundationOwner2Key;
+                        MiscellaneousDataDR.HasEXWORKERPartnerType = HasEXWORKERPartnerType;
+                        MiscellaneousDataDT.Rows.Add(MiscellaneousDataDR);
+                        #endregion
 
-                    // Add this partner key to the list of recently used partners.
-                    TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, false, TLastPartnerUse.lpuMailroomPartner);
-                }
-                catch (EPartnerLocationNotExistantException)
-                {
-                    // don't log this exception  this is thrown on purpose here and the Client deals with it.
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw;
-                }
-                catch (ESecurityPartnerAccessDeniedException)
-                {
-                    // don't log this exception  this is thrown on purpose here and the Client deals with it.
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw;
-                }
-                catch (Exception Exp)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.Log("TPartnerEditUIConnector.LoadData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
-                    TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
-                    throw;
-                }
-            }
-            finally
-            {
-                if (DBAccess.GDBAccessObj.Transaction != null)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
+                        // Add this partner key to the list of recently used partners.
+                        TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, false, TLastPartnerUse.lpuMailroomPartner);
+
+                        SubmissionOK = true;
+                    }
+                    catch (EPartnerLocationNotExistantException)
+                    {
+                        // don't log this exception - this is thrown on purpose here and the Client knows how to deal with it.
+                        throw;
+                    }
+                    catch (ESecurityPartnerAccessDeniedException)
+                    {
+                        // don't log this exception - this is thrown on purpose here and the Client knows how to deal with it.
+                        throw;
+                    }
+                    catch (EDBAccessLackingCoordinationException)
+                    {
+                        // don't log this Exception - the Client knows how to deal with it.
+                        throw;
+                    }
+                    catch (Exception Exp)
+                    {
+                        TLogging.Log("TPartnerEditUIConnector.LoadData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
+                        TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
+
+                        throw;
+                    }
+                });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             FPartnerEditScreenDS.AcceptChanges();
@@ -1076,7 +1080,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             FPartnerKey = FNewPartnerPartnerKey;
             FPartnerClass = FNewPartnerPartnerClass;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.RepeatableRead, ref ReadTransaction,
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
                 delegate
                 {
                     //
@@ -1512,7 +1516,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PartnerTypesDT = new PPartnerTypeTable();
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
@@ -1662,7 +1666,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
                 ParametersArray = new OdbcParameter[1];
@@ -1814,7 +1818,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PartnerInterestDT = new PartnerEditTDSPPartnerInterestTable();
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
@@ -1875,7 +1879,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
@@ -2885,7 +2889,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             SubscriptionDT = new PSubscriptionTable();
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
@@ -2928,7 +2932,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             ContactDT = new PContactLogTable();
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
@@ -2968,7 +2972,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // PPartnerAttribute data for this Partner is loaded already (this will be the case when called from LoadData).
             if (FPartnerEditScreenDS.PPartnerAttribute == null)
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead,
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
                     delegate
                     {
@@ -2996,7 +3000,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             RelationshipDT = new PartnerEditTDSPPartnerRelationshipTable();
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
@@ -3063,7 +3067,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
@@ -3144,7 +3148,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 

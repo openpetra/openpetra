@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,8 +38,8 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    /// Gift Detail Find screen
-    /// This screen is based on Partner Find
+    /// GL Transaction Detail Find screen.
+    /// This screen is based on Partner Find.
     public partial class TFrmGLTransactionFindScreen
     {
         /// <summary>

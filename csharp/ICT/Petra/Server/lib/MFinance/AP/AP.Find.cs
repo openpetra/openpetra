@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -148,13 +148,11 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         }
 
         /// <summary>
-        /// Procedure to execute a Find query. Although the full
-        /// query results are retrieved from the DB and stored internally in an object,
-        /// data will be returned in 'pages' of data, each page holding a defined number
+        /// Procedure to execute a Find query. Although the full query results are retrieved from the DB and stored
+        /// internally in an object, data will be returned in 'pages' of data, each page holding a defined number
         /// of records.
-        ///
         /// </summary>
-        /// <param name="ACriteriaData">HashTable containing non-empty Find parameters</param>
+        /// <param name="ACriteriaData">HashTable containing non-empty Find parameters.</param>
         public void PerformSearch(DataTable ACriteriaData)
         {
             string PaymentNumberSQLPart;
@@ -295,14 +293,11 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
         /// <summary>
         /// Stops the query execution.
-        ///
-        /// @comment It might take some time until the executing query is cancelled by
-        /// the DB, but this procedure returns immediately. The reason for this is that
-        /// we consider the query cancellation as done since the application can
-        /// 'forget' about the result of the cancellation process (but beware of
-        /// executing another query while the other is stopping - this leads to ADO.NET
-        /// errors that state that a ADO.NET command is still executing!).
-        ///
+        /// <remarks>It might take some time until the executing query is cancelled by the DB, but this procedure returns
+        /// immediately. The reason for this is that we consider the query cancellation as done since the application can
+        /// 'forget' about the result of the cancellation process (but beware of executing another query while the other is
+        /// stopping - this leads to ADO.NET errors that state that a ADO.NET command is still executing!).
+        /// </remarks>
         /// </summary>
         public void StopSearch()
         {
@@ -310,9 +305,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
             /* Start a separate Thread that should cancel the executing query
              * (Microsoft recommends doing it this way!) */
-            ThreadStart ThreadStartDelegate = new ThreadStart(FPagedDataSetObject.StopQuery);
-
-            StopQueryThread = new Thread(ThreadStartDelegate);
+            StopQueryThread = new Thread(new ThreadStart(FPagedDataSetObject.StopQuery));
             StopQueryThread.Name = "APFindStopQuery" + Guid.NewGuid().ToString();
             StopQueryThread.Start();
 

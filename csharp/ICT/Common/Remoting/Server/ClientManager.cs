@@ -872,6 +872,8 @@ namespace Ict.Common.Remoting.Server
             {
                 // TODORemoting if (Monitor.TryEnter(UConnectClientMonitor, TSrvSetting.ClientConnectionTimeoutAfterXSeconds * 1000))
                 {
+                    Thread.CurrentThread.Name = "Client_" + AUserName + "__CLIENTCONNECTION_THREAD";
+
                     #region Logging
 
                     if (TLogging.DL >= 4)

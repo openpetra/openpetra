@@ -74,22 +74,38 @@ namespace PetraClientShutdown
         /// </summary>
         public static void SaveUserDefaultsAndDisconnectAndStop()
         {
-            SaveUserDefaultsAndDisconnect();
-            StopPetraClient();
+            StopPetraClient(true);
         }
 
         /// <summary>
         /// todoComment
         /// </summary>
-        public static void StopPetraClient()
+        public static void StopPetraClient(bool ASaveUserDefaultsAndDisconnect, bool ARestart = false,
+            bool AShowRestartMessageToUser = false, string ARestartReason = "")
         {
+            if (ARestart
+                && AShowRestartMessageToUser)
+            {
+                MessageBox.Show(String.Format(AppCoreResourcestrings.StrOpenPetraClientNeedsToBeRestarted, ARestartReason),
+                    AppCoreResourcestrings.StrOpenPetraClientNeedsToBeRestartedTitle, MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+
             if (TClientSettings.RunAsStandalone == true)
             {
                 StopServers();
             }
 
-            // APPLICATION STOPS HERE !!!
-            Environment.Exit(0);
+            if (ARestart)
+            {
+                // APPLICATION STOPS AND IMMEDIATELY RE-STARTS HERE !!!
+                Application.Restart();
+            }
+            else
+            {
+                // APPLICATION STOPS HERE !!!
+                Environment.Exit(0);
+            }
         }
 
         /// <summary>

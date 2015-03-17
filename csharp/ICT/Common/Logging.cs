@@ -70,6 +70,35 @@ namespace Ict.Common
         public const int DEBUGLEVEL_REPORTING = 5;
 
         /// <summary>
+        /// the debuglevel that is required for saving some detailed log files for the co-ordinated DB Access.
+        /// </summary>
+        public const int DEBUGLEVEL_COORDINATED_DB_ACCESS = 3;
+
+        /// <summary>
+        /// Prefix that can be used for logging messages that are purely informational.
+        /// </summary>
+        /// <remarks>
+        /// You can prefix any string that you want to be written to the log with this. (The prefix is not translatable.)
+        /// </remarks>
+        public const string LOG_PREFIX_INFO = "INFO: ";
+
+        /// <summary>
+        /// Prefix that can be used for logging messages that are warnings.
+        /// </summary>
+        /// <remarks>
+        /// You can prefix any string that you want to be written to the log with this. (The prefix is not translatable.)
+        /// </remarks>
+        public const string LOG_PREFIX_WARNING = "WARNING: ";
+
+        /// <summary>
+        /// Prefix that can be used for logging messages that are errors.
+        /// </summary>
+        /// <remarks>
+        /// You can prefix any string that you want to be written to the log with this. (The prefix is not translatable.)
+        /// </remarks>
+        public const string LOG_PREFIX_ERROR = "ERROR: ";
+
+        /// <summary>
         /// some log messages will be only displayed at a certain DebugLevel
         /// </summary>
         public static int DebugLevel = 0;

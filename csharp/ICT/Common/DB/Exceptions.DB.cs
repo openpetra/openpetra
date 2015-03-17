@@ -401,7 +401,7 @@ namespace Ict.Common.DB.Exceptions
     /// but the Transaction it is using has a different <see cref="IsolationLevel" /> than it expects.
     /// </summary>
     [Serializable()]
-    public class EDBTransactionIsolationLevelWrongException : EOPDBException
+    public class EDBTransactionIsolationLevelWrongException : EDBAccessLackingCoordinationException
     {
         /// <summary>
         /// Initializes a new instance of this Exception Class.
@@ -534,6 +534,78 @@ namespace Ict.Common.DB.Exceptions
 
         #endregion
     }
+
+    #endregion
+
+    #region EDBAccessLackingCoordinationException
+
+    /// <summary>
+    /// Thrown in case a caller wants to run an action against the DB, but that isn't possible as another action that was
+    /// started earlier prevents that - this means that the DB access isn't co-ordinated (but it would need to be!).
+    /// </summary>
+    [Serializable()]
+    public class EDBAccessLackingCoordinationException : EOPDBException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBAccessLackingCoordinationException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBAccessLackingCoordinationException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBAccessLackingCoordinationException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBAccessLackingCoordinationException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
     #endregion
 
     #region EDBTransactionBusyException
@@ -544,7 +616,7 @@ namespace Ict.Common.DB.Exceptions
     /// Transactions are not supported by ADO.NET!).
     /// </summary>
     [Serializable()]
-    public class EDBTransactionBusyException : EOPDBException
+    public class EDBTransactionBusyException : EDBAccessLackingCoordinationException
     {
         private String FNestedTransactionProblemDetails;
 
@@ -671,6 +743,150 @@ namespace Ict.Common.DB.Exceptions
 
             return ReturnValue;
         }
+    }
+
+    #endregion
+
+    #region EDBCoordinatedDBAccessWaitingTimeExceededException
+
+    /// <summary>
+    /// Thrown when co-ordinated (=Thread-safe) DB Access was requested, but the DB Abstraction layer was busy executing
+    /// another request, and the waiting time for the request for which this Exception got thrown was exceeded.
+    /// The request for which this Exception got thrown didn't get executed because of this.
+    /// </summary>
+    [Serializable()]
+    public class EDBCoordinatedDBAccessWaitingTimeExceededException : EDBAccessLackingCoordinationException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBCoordinatedDBAccessWaitingTimeExceededException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBCoordinatedDBAccessWaitingTimeExceededException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBCoordinatedDBAccessWaitingTimeExceededException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBCoordinatedDBAccessWaitingTimeExceededException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EDBAutoServerCallRetriesExceededException
+
+    /// <summary>
+    /// Thrown when co-ordinated (=Thread-safe) DB Access was requested, but the DB Abstraction layer was busy executing
+    /// another request, and the waiting time for the request for which this Exception got thrown was exceeded.
+    /// The request for which this Exception got thrown didn't get executed because of this.
+    /// </summary>
+    [Serializable()]
+    public class EDBAutoServerCallRetriesExceededException : EDBAccessLackingCoordinationException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBAutoServerCallRetriesExceededException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBAutoServerCallRetriesExceededException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBAutoServerCallRetriesExceededException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBAutoServerCallRetriesExceededException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
     }
 
     #endregion

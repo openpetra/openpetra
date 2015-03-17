@@ -55,7 +55,7 @@ namespace Ict.Common.DB
     {
         /// <summary>
         /// <see cref="IsolationLevel" /> of current Transaction must match the
-        /// specified <see cref="IsolationLevel" />  <em>exactly</em>.
+        /// specified <see cref="IsolationLevel" /> <em>exactly</em>.
         /// </summary>
         eilExact,
 
@@ -80,8 +80,11 @@ namespace Ict.Common.DB
         /// <summary>DebugLevel for logging results from DB queries: is 6 (was 4 before)</summary>
         public const Int32 DB_DEBUGLEVEL_RESULT = 6;
 
-        /// <summary>DebugLevel for tracing (most verbose log output): is 10 (was 4 before)</summary>
+        /// <summary>DebugLevel for tracing (very verbose log output): is 10 (was 4 before)</summary>
         public const Int32 DB_DEBUGLEVEL_TRACE = 10;
+
+        /// <summary>DebugLevel for dumping stacktraces when Thread-safe access to the TDataBase Class is requested/released (extremely verbose log output): is 11</summary>
+        public const Int32 DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES = 11;
 
         /// <summary>Global Object in which the Application can store a reference to an Instance of
         /// <see cref="TDataBase" /></summary>
@@ -233,6 +236,10 @@ namespace Ict.Common.DB
         /// restart a sequence with the given value
         /// </summary>
         void RestartSequence(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, Int64 ARestartValue);
+
+        /// update a database when starting the OpenPetra server. otherwise throw an exception
+        void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
+            string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword);
     }
 
     /// <summary>
@@ -255,13 +262,26 @@ namespace Ict.Common.DB
     public class TDataBase
     {
         private const string StrNestedTransactionProblem = "Nested DB Transaction problem details:  *Previously* started " +
-                                                           "DB Transaction Properties: Valid: {0}, Reused: {1}; it got started on Thread {2}.  The attempt to begin a DB Transaction NOW occured on Thread {3}.   The StackTrace of the *previously* started DB Transaction is as follows:\r\n{4}";
+                                                           "DB Transaction Properties: Valid: {0}, IsolationLevel: {1}, Reused: {2}; it got started on Thread {3} in AppDomain '{4}'.  "
+                                                           +
+                                                           "The attempt to begin a DB Transaction NOW occured on Thread {5} in AppDomain '{6}.'   " +
+                                                           "The StackTrace of the *previously* started DB Transaction is as follows:\r\n  PREVIOUS Stracktrace: {7}\r\n  CURRENT Stracktrace: {8}";
 
-        /// <summary>References the DBConnection instance</summary>
+        /// <summary>References the DBConnection instance.</summary>
         private TDBConnection FDBConnectionInstance;
 
         /// <summary>References an (open) DB connection.</summary>
         private DbConnection FSqlConnection;
+
+        /// <summary>Waiting time for 'Coordinated' (=Thread-safe) DB Access (in milliseconds).</summary>
+        private int FWaitingTimeForCoordinatedDBAccess;
+
+        /// <summary>
+        /// Ensures that no concurrent requests are sent to the RDBMS (which could otherwise happen through client- and/or
+        /// server-side multi-threading)! (Semaphores allow one to limit the number of Threads that can access a resource
+        /// concurrently.)
+        /// </summary>
+        private SemaphoreSlim FCoordinatedDBAccess = new SemaphoreSlim(1, 1);
 
         /// <summary>
         /// Tells whether the DB connection is ready to accept commands or whether it is busy.
@@ -270,7 +290,7 @@ namespace Ict.Common.DB
         /// calling ConnectionReady()! (See remarks for <see cref="OnStateChangedHandler" />.)</remarks>
         private bool FConnectionReady = false;
 
-        /// <summary>References the type of RDBMS that we are currently connected to</summary>
+        /// <summary>References the type of RDBMS that we are currently connected to.</summary>
         private TDBType FDbType;
 
         /// store credentials to be able to login again after closed db connection
@@ -286,20 +306,19 @@ namespace Ict.Common.DB
         /// store credentials to be able to login again after closed db connection
         private string FConnectionString;
 
-        /// <summary> this is a reference to the specific database functions which can be different for each RDBMS</summary>
+        /// <summary>Reference to the specific database functions which can be different for each RDBMS.</summary>
         private IDataBaseRDBMS FDataBaseRDBMS;
 
-        /// <summary>Tracks the last DB action; is updated with every creation of a Command.</summary>
+        /// <summary>Tracks the last DB action. Gets updated with every creation of a Command and through various other
+        /// DB actions.</summary>
         private DateTime FLastDBAction;
 
         /// <summary>References the current Transaction, if there is any.</summary>
         private DbTransaction FTransaction;
         private StackTrace FTransactionStackTrace;
-
-        private Object FTransactionLock = new Object();
-        private Object FNewOrExistingLock = new Object();
-
-        private int FTransactionThreadId;
+        private string FTransactionAppDomain;
+        private Thread FTransactionThread;
+        private bool FTransactionReused;
 
         /// <summary>Tells whether the next Command that is sent to the DB should be a 'prepared' Command.</summary>
         /// <remarks>Automatically reset to false once the Command has been executed against the DB!</remarks>
@@ -317,6 +336,8 @@ namespace Ict.Common.DB
         /// </summary>
         private string FUserID = string.Empty;
 
+        private static bool FCheckedDatabaseVersion = false;
+
         #region Constructors
 
         /// <summary>
@@ -326,6 +347,14 @@ namespace Ict.Common.DB
         /// </summary>
         public TDataBase() : base()
         {
+            FWaitingTimeForCoordinatedDBAccess = System.Convert.ToInt32(
+                TAppSettingsManager.GetValue("Server.DBWaitingTimeForCoordinatedDBAccess", "3000"));
+
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES)
+            {
+                TLogging.Log(String.Format("Server.DBWaitingTimeForCoordinatedDBAccess (in milliseconds): {0}",
+                        FWaitingTimeForCoordinatedDBAccess));
+            }
         }
 
         /// <summary>
@@ -358,7 +387,7 @@ namespace Ict.Common.DB
         {
             get
             {
-                return ConnectionReady();
+                return ConnectionReady(true);
             }
         }
 
@@ -367,7 +396,27 @@ namespace Ict.Common.DB
         {
             get
             {
-                return FLastDBAction;
+                WaitForCoordinatedDBAccess();
+
+                try
+                {
+                    return FLastDBAction;
+                }
+                finally
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
+        }
+
+        /// <summary>Waiting time for 'Co-ordinated' (=Thread-safe) DB Access (in milliseconds).</summary>
+        /// <remarks>Gets set from server.config file setting 'Server.DBWaitingTimeForCoordinatedDBAccess'. If that isn't
+        /// present, then '3000' is the default (=3 seconds).</remarks>
+        public int WaitingTimeForCoordinatedDBAccess
+        {
+            get
+            {
+                return FWaitingTimeForCoordinatedDBAccess;
             }
         }
 
@@ -378,13 +427,15 @@ namespace Ict.Common.DB
         {
             get
             {
-                if (FTransaction == null)
+                WaitForCoordinatedDBAccess();
+
+                try
                 {
-                    return null;
+                    return FTransaction == null ? null : new TDBTransaction(FTransaction, FTransactionReused);
                 }
-                else
+                finally
                 {
-                    return new TDBTransaction(FTransaction);
+                    ReleaseCoordinatedDBAccess();
                 }
             }
         }
@@ -397,18 +448,34 @@ namespace Ict.Common.DB
         {
             get
             {
-                return FUserID;
+                WaitForCoordinatedDBAccess();
+
+                try
+                {
+                    return FUserID;
+                }
+                finally
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
             }
 
             set
             {
-                FUserID = value;
+                WaitForCoordinatedDBAccess();
+
+                try
+                {
+                    FUserID = value;
+                }
+                finally
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
             }
         }
 
         #endregion
-
-        private static bool FCheckedDatabaseVersion = false;
 
         /// <summary>
         /// Establishes (opens) a DB connection to a specified RDBMS.
@@ -430,96 +497,138 @@ namespace Ict.Common.DB
             String APassword,
             String AConnectionString)
         {
-            FDbType = ADataBaseType;
-            FDsnOrServer = ADsnOrServer;
-            FDBPort = ADBPort;
-            FDatabaseName = ADatabaseName;
-            FUsername = AUsername;
-            FPassword = APassword;
-            FConnectionString = AConnectionString;
+            EstablishDBConnection(ADataBaseType, ADsnOrServer, ADBPort, ADatabaseName, AUsername, APassword,
+                AConnectionString, true);
+        }
 
-            if (FDbType == TDBType.PostgreSQL)
+        /// <summary>
+        /// Establishes (opens) a DB connection to a specified RDBMS.
+        /// </summary>
+        /// <param name="ADataBaseType">Type of the RDBMS to connect to. At the moment only PostgreSQL is officially supported.</param>
+        /// <param name="ADsnOrServer">In case of an ODBC Connection: DSN (Data Source Name). In case of a PostgreSQL connection: Server.</param>
+        /// <param name="ADBPort">In case of a PostgreSQL connection: port that the db server is running on.</param>
+        /// <param name="ADatabaseName">the database to connect to</param>
+        /// <param name="AUsername">User which should be used for connecting to the DB server</param>
+        /// <param name="APassword">Password of the User which should be used for connecting to the DB server</param>
+        /// <param name="AConnectionString">If this is not empty, it is prefered over the Dsn and Username and Password</param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <returns>void</returns>
+        /// <exception cref="EDBConnectionNotEstablishedException">Thrown when a connection cannot be established</exception>
+        private void EstablishDBConnection(TDBType ADataBaseType,
+            String ADsnOrServer,
+            String ADBPort,
+            String ADatabaseName,
+            String AUsername,
+            String APassword,
+            String AConnectionString,
+            bool AMustCoordinateDBAccess)
+        {
+            if (AMustCoordinateDBAccess)
             {
-                FDataBaseRDBMS = (IDataBaseRDBMS) new TPostgreSQL();
-            }
-            else if (FDbType == TDBType.MySQL)
-            {
-                FDataBaseRDBMS = (IDataBaseRDBMS) new TMySQL();
-            }
-            else if (FDbType == TDBType.SQLite)
-            {
-                FDataBaseRDBMS = (IDataBaseRDBMS) new TSQLite();
-            }
-            else if (FDbType == TDBType.ProgressODBC)
-            {
-                FDataBaseRDBMS = (IDataBaseRDBMS) new TProgressODBC();
-            }
-
-            if (ConnectionReady())
-            {
-                TLogging.Log("Error establishing connection to Database Server: connection is already open!");
-                throw new EDBConnectionNotAvailableException(
-                    FSqlConnection != null ? FSqlConnection.State.ToString("G") : "FSqlConnection is null");
-            }
-
-            TDBConnection CurrentConnectionInstance;
-
-            if (FSqlConnection == null)
-            {
-                FDBConnectionInstance = TDBConnection.GetInstance();
-                CurrentConnectionInstance = FDBConnectionInstance;
-
-                FSqlConnection = CurrentConnectionInstance.GetConnection(
-                    FDataBaseRDBMS,
-                    FDsnOrServer,
-                    FDBPort,
-                    FDatabaseName,
-                    FUsername,
-                    ref FPassword,
-                    FConnectionString,
-                    new StateChangeEventHandler(this.OnStateChangedHandler));
-
-                if (FSqlConnection == null)
-                {
-                    throw new EDBConnectionNotAvailableException();
-                }
-            }
-            else
-            {
-                CurrentConnectionInstance = FDBConnectionInstance;
+                WaitForCoordinatedDBAccess();
             }
 
             try
             {
-                // always log to console and log file, which database we are connecting to.
-                // see https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=156
-                TLogging.Log("    Connecting to database " + FDbType + ": " + CurrentConnectionInstance.GetConnectionString());
+                FDbType = ADataBaseType;
+                FDsnOrServer = ADsnOrServer;
+                FDBPort = ADBPort;
+                FDatabaseName = ADatabaseName;
+                FUsername = AUsername;
+                FPassword = APassword;
+                FConnectionString = AConnectionString;
 
-                FSqlConnection.Open();
-                FDataBaseRDBMS.InitConnection(FSqlConnection);
-
-                FLastDBAction = DateTime.Now;
-            }
-            catch (Exception exp)
-            {
-                if (FSqlConnection != null)
+                if (FDbType == TDBType.PostgreSQL)
                 {
-                    FSqlConnection.Dispose();
+                    FDataBaseRDBMS = (IDataBaseRDBMS) new TPostgreSQL();
+                }
+                else if (FDbType == TDBType.MySQL)
+                {
+                    FDataBaseRDBMS = (IDataBaseRDBMS) new TMySQL();
+                }
+                else if (FDbType == TDBType.SQLite)
+                {
+                    FDataBaseRDBMS = (IDataBaseRDBMS) new TSQLite();
+                }
+                else if (FDbType == TDBType.ProgressODBC)
+                {
+                    FDataBaseRDBMS = (IDataBaseRDBMS) new TProgressODBC();
                 }
 
-                FSqlConnection = null;
+                if (ConnectionReady(false))
+                {
+                    TLogging.Log("Error establishing connection to Database Server: connection is already open!");
+                    throw new EDBConnectionNotAvailableException(
+                        FSqlConnection != null ? FSqlConnection.State.ToString("G") : "FSqlConnection is null");
+                }
 
-                LogException(exp,
-                    String.Format("Exception occured while establishing a connection to Database Server. DB Type: {0}", FDbType));
+                TDBConnection CurrentConnectionInstance;
 
-                throw new EDBConnectionNotAvailableException(CurrentConnectionInstance.GetConnectionString() + ' ' + exp.ToString());
+                if (FSqlConnection == null)
+                {
+                    FDBConnectionInstance = TDBConnection.GetInstance();
+                    CurrentConnectionInstance = FDBConnectionInstance;
+
+                    FSqlConnection = CurrentConnectionInstance.GetConnection(
+                        FDataBaseRDBMS,
+                        FDsnOrServer,
+                        FDBPort,
+                        FDatabaseName,
+                        FUsername,
+                        ref FPassword,
+                        FConnectionString,
+                        new StateChangeEventHandler(this.OnStateChangedHandler));
+
+                    if (FSqlConnection == null)
+                    {
+                        throw new EDBConnectionNotAvailableException();
+                    }
+                }
+                else
+                {
+                    CurrentConnectionInstance = FDBConnectionInstance;
+                }
+
+                try
+                {
+                    // always log to console and log file, which database we are connecting to.
+                    // see https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=156
+                    TLogging.Log("    Connecting to database " + FDbType + ": " + CurrentConnectionInstance.GetConnectionString());
+
+                    FSqlConnection.Open();
+                    FDataBaseRDBMS.InitConnection(FSqlConnection);
+
+                    FLastDBAction = DateTime.Now;
+                }
+                catch (Exception exp)
+                {
+                    if (FSqlConnection != null)
+                    {
+                        FSqlConnection.Dispose();
+                    }
+
+                    FSqlConnection = null;
+
+                    LogException(exp,
+                        String.Format("Exception occured while establishing a connection to Database Server. DB Type: {0}", FDbType));
+
+                    throw new EDBConnectionNotAvailableException(CurrentConnectionInstance.GetConnectionString() + ' ' + exp.ToString());
+                }
+
+                // only check database version once when working with multiple connections
+                if (!FCheckedDatabaseVersion)
+                {
+                    CheckDatabaseVersion();
+                    FCheckedDatabaseVersion = true;
+                }
             }
-
-            // only check database version once when working with multiple connections
-            if (!FCheckedDatabaseVersion)
+            finally
             {
-                CheckDatabaseVersion();
-                FCheckedDatabaseVersion = true;
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
             }
         }
 
@@ -538,18 +647,31 @@ namespace Ict.Common.DB
                 return;
             }
 
-            BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            BeginAutoReadTransaction(IsolationLevel.ReadCommitted, -1, ref ReadTransaction, false,
                 delegate
                 {
                     // now check if the database is 'up to date'; otherwise run db patch against it
-                    Tbl = DBAccess.GDBAccessObj.SelectDT(
+                    Tbl = DBAccess.GDBAccessObj.SelectDTInternal(
                         "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                        "Temp", ReadTransaction);
+                        "Temp", ReadTransaction, new OdbcParameter[0], false);
                 });
 
             if (Tbl.Rows.Count == 0)
             {
                 return;
+            }
+
+            string DBPatchVersion = Convert.ToString(Tbl.Rows[0]["s_default_value_c"]);
+
+            TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
+            TFileVersionInfo serverExeInfo = new TFileVersionInfo(TFileVersionInfo.GetApplicationVersion());
+
+            if (dbversion.CompareWithoutPrivatePart(serverExeInfo) < 0)
+            {
+                // for a proper server, the patchtool should have already updated the database
+
+                // for standalone versions, we update the database on the fly when starting the server
+                FDataBaseRDBMS.UpdateDatabase(dbversion, serverExeInfo, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword);
             }
         }
 
@@ -561,9 +683,18 @@ namespace Ict.Common.DB
         /// already/still closed connection.</exception>
         public void CloseDBConnection()
         {
-            if ((FSqlConnection != null) && (FSqlConnection.State != ConnectionState.Closed))
+            WaitForCoordinatedDBAccess();
+
+            try
             {
-                CloseDBConnectionInternal();
+                if ((FSqlConnection != null) && (FSqlConnection.State != ConnectionState.Closed))
+                {
+                    CloseDBConnectionInternal();
+                }
+            }
+            finally
+            {
+                ReleaseCoordinatedDBAccess();
             }
         }
 
@@ -575,7 +706,7 @@ namespace Ict.Common.DB
         /// already/still closed connection.</exception>
         private void CloseDBConnectionInternal()
         {
-            if (ConnectionReady())
+            if (ConnectionReady(false))
             {
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
@@ -602,9 +733,9 @@ namespace Ict.Common.DB
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(
-                        "TDataBase.CloseDBConnectionInternal: before calling FDBConnectionInstance.CloseODBCConnection(FConnection) in AppDomain: "
+                        "TDataBase.CloseDBConnectionInternal: before calling FDBConnectionInstance.CloseODBCConnection(FConnection) in AppDomain '"
                         +
-                        AppDomain.CurrentDomain.ToString(),
+                        AppDomain.CurrentDomain.FriendlyName + "'",
                         TLoggingType.ToConsole | TLoggingType.ToLogfile);
                 }
 
@@ -620,9 +751,9 @@ namespace Ict.Common.DB
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(
-                        "TDataBase.CloseDBConnectionInternal: after calling FDBConnectionInstance.CloseODBCConnection(FConnection) in AppDomain: "
+                        "TDataBase.CloseDBConnectionInternal: after calling FDBConnectionInstance.CloseODBCConnection(FConnection) in AppDomain '"
                         +
-                        AppDomain.CurrentDomain.ToString(),
+                        AppDomain.CurrentDomain.FriendlyName + "'",
                         TLoggingType.ToConsole | TLoggingType.ToLogfile);
                 }
 
@@ -635,16 +766,25 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// Call this Method to make the next Command that is sent to the DB
-        /// a 'Prepared' command.
+        /// Call this Method to make the next Command that is sent to the DB a 'Prepared' command.
         /// </summary>
-        /// <remarks><see cref="PrepareNextCommand" /> lets you optimise the performance of
+        /// <remarks>
+        /// <para><see cref="PrepareNextCommand" /> lets you optimise the performance of
         /// frequently used queries. What a RDBMS basically does with a 'Prepared' SQL Command is
         /// that it 'caches' the query plan so that it's used in subsequent calls.
         /// Not supported by all RDBMS, but should just silently fail in case a RDBMS doesn't
-        /// support it. PostgreSQL definitely supports it.</remarks>
+        /// support it. PostgreSQL definitely supports it.
+        /// </para>
+        /// <para><em>IMPORTANT:</em> In the light of co-ordinated DB Access and the possibility of multiple Threads trying to
+        /// access the DB at the same time this Method <em>MUST</em> only be called in an area of code that is protected by a
+        /// WaitForCoordinatedDBAccess() ... ReleaseCoordinatedDBAccess() 'pair' and that 'protection' needs to include the
+        /// execution of the Command (ie. by calling DbDataAdapter.Fill) - otherwise the 'preparation' might well be issued
+        /// for the wrong Command! An example where this is done correctly can be seen in the
+        /// <see cref="SelectUsingDataAdapter"/> Method.
+        /// </para>
+        /// </remarks>
         /// <returns>void</returns>
-        public void PrepareNextCommand()
+        private void PrepareNextCommand()
         {
             FPrepareNextCommand = true;
         }
@@ -654,8 +794,18 @@ namespace Ict.Common.DB
         /// DB that is different from the default timeout for a Command (eg. 20s for a
         /// NpgsqlCommand).
         /// </summary>
+        /// <remarks>
+        /// <para><em>IMPORTANT:</em> In the light of co-ordinated DB Access and the possibility of multiple Threads trying to
+        /// access the DB at the same time this Method <em>MUST</em> only be called in an area of code that is protected by a
+        /// WaitForCoordinatedDBAccess() ... ReleaseCoordinatedDBAccess() 'pair' and that 'protection' needs to include the
+        /// execution of the Command (ie. by calling DbDataAdapter.Fill) - otherwise the Timeout might well be issued
+        /// for the wrong Command! An example where this is done correctly can be seen in the
+        /// <see cref="SelectUsingDataAdapter"/> Method.
+        /// </para>
+        /// </remarks>
+        /// <param name="ATimeoutInSec">Timeout (in seconds) for the next Command that is sent to the DB.</param>
         /// <returns>void</returns>
-        public void SetTimeoutForNextCommand(int ATimeoutInSec)
+        private void SetTimeoutForNextCommand(int ATimeoutInSec)
         {
             FTimeoutForNextCommand = ATimeoutInSec;
         }
@@ -690,6 +840,31 @@ namespace Ict.Common.DB
         /// on the RDBMS that we are connected to at runtime!</returns>
         public DbCommand Command(String ACommandText, TDBTransaction ATransaction, DbParameter[] AParametersArray)
         {
+            return Command(ACommandText, ATransaction, true, AParametersArray);
+        }
+
+        /// <summary>
+        /// Returns a DbCommand for a given command text in the context of a
+        /// DB transaction. Suitable for parameterised SQL statements.
+        /// Allows the passing in of Parameters for the SQL statement
+        /// </summary>
+        /// <remarks>
+        /// <b>Important:</b> Since an object that derives from <see cref="DbCommand" /> is returned you ought to
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (<see cref="DbCommand" /> inherits
+        /// from <see cref="System.ComponentModel.Component" />, which implements <see cref="IDisposable" />!)
+        /// </remarks>
+        /// <param name="ACommandText">Command Text</param>
+        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />, or null if the command
+        /// should not be enlisted in a transaction.</param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <param name="AParametersArray">An array holding 1..n instantiated DbParameter
+        /// (including Parameter Value)</param>
+        /// <returns>Instantiated object (derived from DbCommand) - its actual Type depends
+        /// on the RDBMS that we are connected to at runtime!</returns>
+        private DbCommand Command(String ACommandText, TDBTransaction ATransaction, bool AMustCoordinateDBAccess,
+            DbParameter[] AParametersArray)
+        {
             DbCommand ObjReturn = null;
 
             if (AParametersArray == null)
@@ -697,73 +872,88 @@ namespace Ict.Common.DB
                 AParametersArray = new OdbcParameter[0];
             }
 
+            if (AMustCoordinateDBAccess)
+            {
+                WaitForCoordinatedDBAccess();
+            }
+
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log("Entering " + this.GetType().FullName + ".Command()...");
             }
 
-            if (!HasAccess(ACommandText))
-            {
-                throw new EAccessDeniedException("Security Violation: Access Permission failed");
-            }
-
             try
             {
-                /* Preprocess ACommandText for `IN (?)' syntax */
-                PreProcessCommand(ref ACommandText, ref AParametersArray);
-
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                if (!HasAccess(ACommandText))
                 {
-                    TLogging.Log(this.GetType().FullName + ".Command: now getting DbCommand(" + ACommandText + ")...");
+                    throw new EAccessDeniedException("Security Violation: Access Permission failed");
                 }
 
-                ObjReturn = FDataBaseRDBMS.NewCommand(ref ACommandText, FSqlConnection, AParametersArray, ATransaction);
-
-                // enlist this command in a DB transaction (does not happen if ATransaction is null)
-                if (ATransaction != null)
+                try
                 {
-                    ObjReturn.Transaction = ATransaction.WrappedTransaction;
-                }
-
-                // if this is a call to Stored Procedure: set command type accordingly
-                if (ACommandText.StartsWith("CALL", true, null))
-                {
-                    ObjReturn.CommandType = CommandType.StoredProcedure;
-                }
-
-                if (FPrepareNextCommand)
-                {
-                    ObjReturn.Prepare();
-                    FPrepareNextCommand = false;
+                    /* Preprocess ACommandText for `IN (?)' syntax */
+                    PreProcessCommand(ref ACommandText, ref AParametersArray);
 
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
-                        TLogging.Log(this.GetType().FullName + ".Command: will 'Prepare' this Command.");
+                        TLogging.Log(this.GetType().FullName + ".Command: now getting DbCommand(" + ACommandText + ")...");
                     }
-                }
 
-                if (FTimeoutForNextCommand != -1)
-                {
-                    /*
-                     * Tricky bit: we need to create a new Object (of Type String) that is disassociated
-                     * with FTimeoutForNextCommand, because FTimeoutForNextCommand is reset in the next statement!
-                     */
-                    ObjReturn.CommandTimeout = Convert.ToInt32(FTimeoutForNextCommand.ToString());
-                    FTimeoutForNextCommand = -1;
+                    ObjReturn = FDataBaseRDBMS.NewCommand(ref ACommandText, FSqlConnection, AParametersArray, ATransaction);
 
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    // enlist this command in a DB transaction (does not happen if ATransaction is null)
+                    if (ATransaction != null)
                     {
-                        TLogging.Log(
-                            this.GetType().FullName + ".Command: set Timeout for this Command to " + ObjReturn.CommandTimeout.ToString() + ".");
+                        ObjReturn.Transaction = ATransaction.WrappedTransaction;
+                    }
+
+                    // if this is a call to Stored Procedure: set command type accordingly
+                    if (ACommandText.StartsWith("CALL", true, null))
+                    {
+                        ObjReturn.CommandType = CommandType.StoredProcedure;
+                    }
+
+                    if (FPrepareNextCommand)
+                    {
+                        ObjReturn.Prepare();
+                        FPrepareNextCommand = false;
+
+                        if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                        {
+                            TLogging.Log(this.GetType().FullName + ".Command: will 'Prepare' this Command.");
+                        }
+                    }
+
+                    if (FTimeoutForNextCommand != -1)
+                    {
+                        /*
+                         * Tricky bit: we need to create a new Object (of Type String) that is disassociated
+                         * with FTimeoutForNextCommand, because FTimeoutForNextCommand is reset in the next statement!
+                         */
+                        ObjReturn.CommandTimeout = Convert.ToInt32(FTimeoutForNextCommand.ToString());
+                        FTimeoutForNextCommand = -1;
+
+                        if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                        {
+                            TLogging.Log(
+                                this.GetType().FullName + ".Command: set Timeout for this Command to " + ObjReturn.CommandTimeout.ToString() + ".");
+                        }
                     }
                 }
+                catch (Exception exp)
+                {
+                    LogExceptionAndThrow(exp, ACommandText, AParametersArray, "Error creating Command. The command was: ");
+                }
+
+                FLastDBAction = DateTime.Now;
             }
-            catch (Exception exp)
+            finally
             {
-                LogExceptionAndThrow(exp, ACommandText, AParametersArray, "Error creating Command. The command was: ");
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
             }
-
-            FLastDBAction = DateTime.Now;
 
             return ObjReturn;
         }
@@ -865,9 +1055,11 @@ namespace Ict.Common.DB
                 LogSqlStatement(this.GetType().FullName + ".Select()", ASqlStatement, AParametersArray);
             }
 
+            WaitForCoordinatedDBAccess();
+
             try
             {
-                using (DbDataAdapter TheAdapter = SelectDA(ASqlStatement, AReadTransaction, AParametersArray))
+                using (DbDataAdapter TheAdapter = SelectDA(ASqlStatement, AReadTransaction, false, AParametersArray))
                 {
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
@@ -909,6 +1101,10 @@ namespace Ict.Common.DB
                 }
 
                 LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
+            }
+            finally
+            {
+                ReleaseCoordinatedDBAccess();
             }
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
@@ -963,9 +1159,11 @@ namespace Ict.Common.DB
                 LogSqlStatement(this.GetType().FullName + ".SelectToTempTable()", ASqlStatement, AParametersArray);
             }
 
+            WaitForCoordinatedDBAccess();
+
             try
             {
-                using (DbDataAdapter TheAdapter = SelectDA(ASqlStatement, AReadTransaction, AParametersArray))
+                using (DbDataAdapter TheAdapter = SelectDA(ASqlStatement, AReadTransaction, false, AParametersArray))
                 {
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
@@ -1001,6 +1199,10 @@ namespace Ict.Common.DB
             {
                 LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
             }
+            finally
+            {
+                ReleaseCoordinatedDBAccess();
+            }
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
             {
@@ -1016,6 +1218,104 @@ namespace Ict.Common.DB
         #endregion
 
         #region SelectDA
+
+        /// <summary>
+        /// Delegate for optional Column Mappings for use with <see cref="SelectUsingDataAdapter"/>.
+        /// </summary>
+        /// <param name="AColumNameMappingEnumerator">Enumerator for the Column Mappings.</param>
+        /// <returns>Column Mappings string.</returns>
+        public delegate string TOptionalColumnMappingDelegate(ref IDictionaryEnumerator AColumNameMappingEnumerator);
+
+        /// <summary>
+        /// Executes a SQL Select Statement using a <see cref="DbDataAdapter"/>.
+        /// <para><em>Speciality:</em> The execution of the query can be cancelled at any time using the
+        /// <see cref="TDataAdapterCanceller.CancelFillOperation"/> Method of the
+        /// <see cref="TDataAdapterCanceller"/> instance that gets returned in Argument
+        /// <paramref name="ADataAdapterCanceller"/>!
+        /// </para>
+        /// </summary>
+        /// <param name="ASqlStatement">SQL statement.</param>
+        /// <param name="AReadTransaction">Instantiated <see cref="TDBTransaction" /> with the desired
+        /// <see cref="IsolationLevel"/>.</param>
+        /// <param name="AFillDataTable">Instance of a DataTable. Can be null; in that case a DataTable by the name of
+        /// "SelectUsingDataAdapter_DataTable" is created on-the-fly.</param>
+        /// <param name="ADataAdapterCanceller">An instance of the <see cref="TDataAdapterCanceller"/> Class. Call the
+        /// <see cref="TDataAdapterCanceller.CancelFillOperation"/> Method to cancel the execution of the query.</param>
+        /// <param name="AOptionalColumnNameMapping">Supply a Delegate to create a mapping between the names of the fields
+        /// in the DB and how they should be named in the resulting DataTable. (Optional - pass null for this Argument to not
+        /// do that).</param>
+        /// <param name="APrepareSelectCommand">Set to true to 'Prepare' the Select Command in the RDBMS (if it supports
+        /// that) (Optional, Default=false.).</param>
+        /// <param name="ASelectCommandTimeout">Set a timeout (in seconds) for the Select Command that is different
+        /// from the default timeout for a Command (eg. 20s for a NpgsqlCommand). (Optional.)</param>
+        /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
+        /// (including parameter Value) (Optional.)</param>
+        /// <returns>The number of Rows successfully added or refreshed in the DataTable passed in using
+        /// <paramref name="AFillDataTable"/> (=return value of calling DbDataAdapter.Fill) - or -1 in case
+        /// the creation of the internally used DataAdapter failed (should not happen).</returns>
+        public int SelectUsingDataAdapter(String ASqlStatement, TDBTransaction AReadTransaction,
+            ref DataTable AFillDataTable, out TDataAdapterCanceller ADataAdapterCanceller,
+            TOptionalColumnMappingDelegate AOptionalColumnNameMapping = null,
+            bool APrepareSelectCommand = false, int ASelectCommandTimeout = -1, DbParameter[] AParametersArray = null)
+        {
+            DbDataAdapter SelectDataAdapter;
+            IDictionaryEnumerator ColumNameMappingEnumerator = null;
+            string MappingsString;
+
+            AFillDataTable = AFillDataTable ?? new DataTable("SelectUsingDataAdapter_DataTable");
+            ADataAdapterCanceller = null;
+
+            WaitForCoordinatedDBAccess();
+
+            try
+            {
+                if (APrepareSelectCommand)
+                {
+                    PrepareNextCommand();
+                }
+
+                if (ASelectCommandTimeout != -1)
+                {
+                    SetTimeoutForNextCommand(ASelectCommandTimeout);
+                }
+
+                SelectDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(ASqlStatement, AReadTransaction,
+                    false, AParametersArray);
+
+                if (SelectDataAdapter != null)
+                {
+                    if (AOptionalColumnNameMapping != null)
+                    {
+                        MappingsString = AOptionalColumnNameMapping(ref ColumNameMappingEnumerator);
+
+                        if (ColumNameMappingEnumerator != null)
+                        {
+                            DataTableMapping AliasNames;
+
+                            AliasNames = SelectDataAdapter.TableMappings.Add(MappingsString, MappingsString);
+
+                            while (ColumNameMappingEnumerator.MoveNext())
+                            {
+                                AliasNames.ColumnMappings.Add(ColumNameMappingEnumerator.Key.ToString(), ColumNameMappingEnumerator.Value.ToString());
+                            }
+                        }
+                    }
+
+                    ADataAdapterCanceller = new TDataAdapterCanceller(SelectDataAdapter);
+
+                    return SelectDataAdapter.Fill(AFillDataTable);
+                }
+                else
+                {
+                    // Should not happen, but if it does then let the caller know that!
+                    return -1;
+                }
+            }
+            finally
+            {
+                ReleaseCoordinatedDBAccess();
+            }
+        }
 
         /// <summary>
         /// Returns a <see cref="DbDataAdapter" /> (eg. <see cref="OdbcDataAdapter" />, NpgsqlDataAdapter) for a given SQL statement.
@@ -1034,6 +1334,8 @@ namespace Ict.Common.DB
         /// <param name="ASqlStatement">SQL statement</param>
         /// <param name="AReadTransaction">Instantiated <see cref="TDBTransaction" /> with the desired
         /// <see cref="IsolationLevel" /></param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
         /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
         /// (including parameter Value)</param>
         /// <returns>
@@ -1041,24 +1343,42 @@ namespace Ict.Common.DB
         /// <see cref="DbCommand" /> in its SelectCommand Property, too! The Type of both the instantiated object and the object
         /// held in the SelectCommand Property depend on the RDBMS that we are connected to at runtime!
         /// </returns>
-        public DbDataAdapter SelectDA(String ASqlStatement, TDBTransaction AReadTransaction, DbParameter[] AParametersArray = null)
+        private DbDataAdapter SelectDA(String ASqlStatement, TDBTransaction AReadTransaction, bool AMustCoordinateDBAccess,
+            DbParameter[] AParametersArray = null)
         {
             DbCommand TheCommand;
+            DbDataAdapter TheAdapter;
+
+            if (AMustCoordinateDBAccess)
+            {
+                WaitForCoordinatedDBAccess();
+            }
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log("Entering " + this.GetType().FullName + ".SelectDA()...");
             }
 
-            TheCommand = Command(ASqlStatement, AReadTransaction, AParametersArray);
-
-            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            try
             {
-                TLogging.Log(this.GetType().FullName + ".SelectDA: now creating DbDataAdapter(" + ASqlStatement + ")...");
-            }
+                TheCommand = Command(ASqlStatement, AReadTransaction, false, AParametersArray);
 
-            DbDataAdapter TheAdapter = FDataBaseRDBMS.NewAdapter();
-            TheAdapter.SelectCommand = TheCommand;
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                {
+                    TLogging.Log(this.GetType().FullName + ".SelectDA: now creating DbDataAdapter(" + ASqlStatement + ")...");
+                }
+
+                TheAdapter = FDataBaseRDBMS.NewAdapter();
+
+                TheAdapter.SelectCommand = TheCommand;
+            }
+            finally
+            {
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
 
             return TheAdapter;
         }
@@ -1080,7 +1400,7 @@ namespace Ict.Common.DB
         /// <returns>Instantiated DataTable</returns>
         public DataTable SelectDT(String ASqlStatement, String ADataTableName, TDBTransaction AReadTransaction)
         {
-            return SelectDTInternal(ASqlStatement, ADataTableName, AReadTransaction, new OdbcParameter[0]);
+            return SelectDTInternal(ASqlStatement, ADataTableName, AReadTransaction, new OdbcParameter[0], true);
         }
 
         /// <summary>
@@ -1102,7 +1422,7 @@ namespace Ict.Common.DB
             DbParameter[] AParametersArray)
         {
             return SelectDTInternal(ASqlStatement, ADataTableName,
-                AReadTransaction, AParametersArray);
+                AReadTransaction, AParametersArray, true);
         }
 
         /// <summary>
@@ -1116,17 +1436,25 @@ namespace Ict.Common.DB
         /// <see cref="IsolationLevel" /></param>
         /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
         /// (including parameter Value)</param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
         /// <returns>Instantiated <see cref="DataTable" /></returns>
         private DataTable SelectDTInternal(String ASqlStatement,
             String ADataTableName,
             TDBTransaction AReadTransaction,
-            DbParameter[] AParametersArray)
+            DbParameter[] AParametersArray,
+            bool AMustCoordinateDBAccess)
         {
             DataTable ObjReturn;
 
             if (ADataTableName == String.Empty)
             {
                 throw new ArgumentException("ADataTableName", "A name for the DataTable must be submitted!");
+            }
+
+            if (AMustCoordinateDBAccess)
+            {
+                WaitForCoordinatedDBAccess();
             }
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
@@ -1138,7 +1466,8 @@ namespace Ict.Common.DB
 
             try
             {
-                using (DbDataAdapter TheAdapter = SelectDA(ASqlStatement, AReadTransaction, AParametersArray))
+                using (DbDataAdapter TheAdapter = SelectDA(ASqlStatement, AReadTransaction, false,
+                           AParametersArray))
                 {
                     using (TheAdapter.SelectCommand)
                     {
@@ -1155,6 +1484,13 @@ namespace Ict.Common.DB
             catch (Exception exp)
             {
                 LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
+            }
+            finally
+            {
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
             }
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
@@ -1190,9 +1526,11 @@ namespace Ict.Common.DB
                 LogSqlStatement(this.GetType().FullName + ".SelectDT()", ASqlStatement, AParametersArray);
             }
 
+            WaitForCoordinatedDBAccess();
+
             try
             {
-                using (DbDataAdapter TheAdapter = SelectDA(ASqlStatement, AReadTransaction, AParametersArray))
+                using (DbDataAdapter TheAdapter = SelectDA(ASqlStatement, AReadTransaction, false, AParametersArray))
                 {
                     using (TheAdapter.SelectCommand)
                     {
@@ -1213,6 +1551,10 @@ namespace Ict.Common.DB
             {
                 LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
             }
+            finally
+            {
+                ReleaseCoordinatedDBAccess();
+            }
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
             {
@@ -1227,7 +1569,6 @@ namespace Ict.Common.DB
 
         #endregion
 
-
         #region Transactions
 
         /// <summary>
@@ -1241,51 +1582,35 @@ namespace Ict.Common.DB
         /// <returns>Started Transaction (null if an error occured).</returns>
         public TDBTransaction BeginTransaction(Int16 ARetryAfterXSecWhenUnsuccessful = -1)
         {
-            TDBTransaction ReturnValue;
+            return BeginTransaction(true, ARetryAfterXSecWhenUnsuccessful);
+        }
 
-            lock (FTransactionLock)
+        /// <summary>
+        /// Starts a Transaction on the current DB connection.
+        /// Allows a retry timeout to be specified.
+        /// </summary>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).
+        /// This is to be able to mitigate the problem of wanting to start a DB
+        /// Transaction while another one is still running (gives time for the
+        /// currently running DB Transaction to be finished).</param>
+        /// <returns>Started Transaction (null if an error occured).</returns>
+        private TDBTransaction BeginTransaction(bool AMustCoordinateDBAccess,
+            Int16 ARetryAfterXSecWhenUnsuccessful = -1)
+        {
+            string NestedTransactionProblemError;
+
+            if (AMustCoordinateDBAccess)
             {
-                string NestedTransactionProblemError;
+                WaitForCoordinatedDBAccess();
+            }
 
+            try
+            {
                 // Guard against running into a 'Nested' DB Transaction (which are not supported!)
-                if (Transaction != null)
+                if (FTransaction != null)
                 {
-                    NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid,
-                        Transaction.Reused, FTransactionThreadId, Thread.CurrentThread.ManagedThreadId,
-                        TLogging.StackTraceToText(FTransactionStackTrace));
-                    TLogging.Log(NestedTransactionProblemError);
-
-                    throw new EDBTransactionBusyException(
-                        "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " +
-                        "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " +
-                        "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
-                }
-
-                try
-                {
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
-                    {
-                        TLogging.Log(
-                            "Trying to start a DB Transaction... (in Appdomain " +
-                            AppDomain.CurrentDomain.ToString() + " ).");
-                    }
-
-                    FTransactionStackTrace = new StackTrace(true);
-                    FTransactionThreadId = Thread.CurrentThread.ManagedThreadId;
-
-                    FTransaction = FSqlConnection.BeginTransaction();
-
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
-                    {
-                        TLogging.Log("DB Transaction started (in Appdomain " + AppDomain.CurrentDomain.ToString() + " ).");
-                        TLogging.Log("Start of stack trace.->");
-                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
-                        TLogging.Log("<- End of stack trace");
-                    }
-                }
-                catch (System.InvalidOperationException exp)
-                {
-                    // System.InvalidOperationException is thrown when a transaction is currently active. Parallel/concurrent transactions are not supported!
                     // Retry again if programmer wants that
                     if (ARetryAfterXSecWhenUnsuccessful != -1)
                     {
@@ -1294,13 +1619,46 @@ namespace Ict.Common.DB
                         // Retry again to begin a transaction.
                         // Note: If this fails again, an Exception is thrown as if there was
                         // no ARetryAfterXSecWhenUnsuccessful specfied!
-                        ReturnValue = BeginTransaction(-1);
-
-                        return ReturnValue;
+                        return BeginTransaction(false, -1);
                     }
                     else
                     {
-                        throw new EDBTransactionBusyException("", exp);
+                        NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, FTransaction.Connection != null,
+                            FTransaction.IsolationLevel, FTransactionReused, GetThreadIdentifier(FTransactionThread),
+                            FTransactionAppDomain, GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName,
+                            TLogging.StackTraceToText(FTransactionStackTrace), TLogging.StackTraceToText(new StackTrace(true)));
+                        TLogging.Log(NestedTransactionProblemError);
+
+                        throw new EDBTransactionBusyException(
+                            "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " +
+                            "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " +
+                            "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
+                    }
+                }
+
+                try
+                {
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    {
+                        TLogging.Log(String.Format(
+                                "Trying to start a DB Transaction... (on Thread {0} in AppDomain '{1}').",
+                                GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName));
+                    }
+
+                    FTransactionStackTrace = new StackTrace(true);
+                    FTransactionAppDomain = AppDomain.CurrentDomain.FriendlyName;
+                    FTransactionThread = Thread.CurrentThread;
+                    FTransactionReused = false;
+
+                    FTransaction = FSqlConnection.BeginTransaction();
+
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                    {
+                        TLogging.Log(String.Format("DB Transaction started (on Thread {0} in AppDomain '{1}').", GetCurrentThreadIdentifier(),
+                                AppDomain.CurrentDomain.FriendlyName));
+                        TLogging.Log("Start of stack trace ->");
+                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                        TLogging.Log("<- End of stack trace");
                     }
                 }
                 catch (Exception exp)
@@ -1311,7 +1669,7 @@ namespace Ict.Common.DB
                         //
                         // Reconnect to the database
                         //
-                        TLogging.Log(exp.Message);
+                        TLogging.Log("BeginTransaction: Trying to reconnect to the Database because an Exception occured: " + exp.ToString());
 
                         if (FSqlConnection == null)
                         {
@@ -1336,7 +1694,8 @@ namespace Ict.Common.DB
 
                         try
                         {
-                            EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword, FConnectionString);
+                            EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword,
+                                FConnectionString, false);
                         }
                         catch (Exception e2)
                         {
@@ -1344,7 +1703,7 @@ namespace Ict.Common.DB
                                 "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
                         }
 
-                        return BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
+                        return BeginTransaction(false, ARetryAfterXSecWhenUnsuccessful);
                     }
 
                     LogExceptionAndThrow(exp, "BeginTransaction: Error creating Transaction - Server-side error.");
@@ -1352,8 +1711,16 @@ namespace Ict.Common.DB
 
                 FLastDBAction = DateTime.Now;
 
+
                 return new TDBTransaction(FTransaction);
-            } // Transaction Lock
+            }
+            finally
+            {
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
         }
 
         /// <summary>
@@ -1368,60 +1735,41 @@ namespace Ict.Common.DB
         /// <returns>Started Transaction (null if an error occured).</returns>
         public TDBTransaction BeginTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful = -1)
         {
-            TDBTransaction ReturnValue;
+            return BeginTransaction(AIsolationLevel, true, ARetryAfterXSecWhenUnsuccessful);
+        }
+
+        /// <summary>
+        /// Starts a Transaction with a defined <see cref="IsolationLevel" /> on the current DB
+        /// connection. Allows a retry timeout to be specified.
+        /// </summary>
+        /// <param name="AIsolationLevel">Desired <see cref="IsolationLevel" />.</param>
+        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).
+        /// This is to be able to mitigate the problem of wanting to start a DB
+        /// Transaction while another one is still running (gives time for the
+        /// currently running DB Transaction to be finished).</param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <returns>Started Transaction (null if an error occured).</returns>
+        private TDBTransaction BeginTransaction(IsolationLevel AIsolationLevel, bool AMustCoordinateDBAccess,
+            Int16 ARetryAfterXSecWhenUnsuccessful = -1)
+        {
             string NestedTransactionProblemError;
 
-            if (FDataBaseRDBMS == null)
+            if (AMustCoordinateDBAccess)
             {
-                throw new EOPDBException("DBAccess BeginTransaction: FDataBaseRDBMS is null");
+                WaitForCoordinatedDBAccess();
             }
 
-            lock (FTransactionLock)
+            try
             {
+                if (FDataBaseRDBMS == null)
+                {
+                    throw new EOPDBException("DBAccess BeginTransaction: FDataBaseRDBMS is null");
+                }
+
                 // Guard against running into a 'Nested' DB Transaction (which are not supported!)
-                if (Transaction != null)
+                if (FTransaction != null)
                 {
-                    NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, Transaction.Valid,
-                        Transaction.Reused, FTransactionThreadId, Thread.CurrentThread.ManagedThreadId,
-                        TLogging.StackTraceToText(FTransactionStackTrace));
-                    TLogging.Log(NestedTransactionProblemError);
-
-                    throw new EDBTransactionBusyException(
-                        "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " +
-                        "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " +
-                        "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
-                }
-
-                FDataBaseRDBMS.AdjustIsolationLevel(ref AIsolationLevel);
-
-                try
-                {
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
-                    {
-                        TLogging.Log(
-                            "Trying to start a DB Transaction with IsolationLevel '" + AIsolationLevel.ToString() +
-                            "... (in Appdomain " +
-                            AppDomain.CurrentDomain.ToString() + " ).");
-                    }
-
-                    FTransactionStackTrace = new StackTrace(true);
-                    FTransactionThreadId = Thread.CurrentThread.ManagedThreadId;
-
-                    FTransaction = FSqlConnection.BeginTransaction(AIsolationLevel);
-
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
-                    {
-                        TLogging.Log(
-                            "DB Transaction with IsolationLevel '" + AIsolationLevel.ToString() + "' started (in Appdomain " +
-                            AppDomain.CurrentDomain.ToString() + " ).");
-                        TLogging.Log("Start of stack trace.->");
-                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
-                        TLogging.Log("<- End of stack trace");
-                    }
-                }
-                catch (System.InvalidOperationException exp)
-                {
-                    // System.InvalidOperationException is thrown when a transaction is currently active. Parallel transactions are not supported!
                     // Retry again if programmer wants that
                     if (ARetryAfterXSecWhenUnsuccessful != -1)
                     {
@@ -1430,13 +1778,49 @@ namespace Ict.Common.DB
                         // Retry again to begin a transaction.
                         // Note: If this fails again, an Exception is thrown as if there was
                         // no ARetryAfterXSecWhenUnsuccessful specfied!
-                        ReturnValue = BeginTransaction(AIsolationLevel, -1);
-
-                        return ReturnValue;
+                        return BeginTransaction(AIsolationLevel, false, -1);
                     }
                     else
                     {
-                        throw new EDBTransactionBusyException("IsolationLevel: " + Enum.GetName(typeof(IsolationLevel), AIsolationLevel), exp);
+                        NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, FTransaction.Connection != null,
+                            FTransaction.IsolationLevel, FTransactionReused, GetThreadIdentifier(FTransactionThread),
+                            FTransactionAppDomain, GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName,
+                            TLogging.StackTraceToText(FTransactionStackTrace), TLogging.StackTraceToText(new StackTrace(true)));
+                        TLogging.Log(NestedTransactionProblemError);
+
+                        throw new EDBTransactionBusyException(
+                            "Concurrent DB Transactions are not supported (requested IsolationLevel: " +
+                            Enum.GetName(typeof(IsolationLevel), AIsolationLevel) + "): BeginTransaction would overwrite " +
+                            "existing DB Transaction - You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " +
+                            "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
+                    }
+                }
+
+                FDataBaseRDBMS.AdjustIsolationLevel(ref AIsolationLevel);
+
+                try
+                {
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    {
+                        TLogging.Log(String.Format(
+                                "Trying to start a DB Transaction with IsolationLevel '{0}'... (on Thread {1} in AppDomain '{2}').",
+                                AIsolationLevel, GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName));
+                    }
+
+                    FTransactionStackTrace = new StackTrace(true);
+                    FTransactionAppDomain = AppDomain.CurrentDomain.FriendlyName;
+                    FTransactionThread = Thread.CurrentThread;
+                    FTransactionReused = false;
+
+                    FTransaction = FSqlConnection.BeginTransaction(AIsolationLevel);
+
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                    {
+                        TLogging.Log(String.Format("DB Transaction with IsolationLevel '{0}' started (on Thread {1} in AppDomain '{2}').",
+                                AIsolationLevel, GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName));
+                        TLogging.Log("Start of stack trace ->");
+                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                        TLogging.Log("<- End of stack trace");
                     }
                 }
                 catch (Exception exp)
@@ -1472,7 +1856,8 @@ namespace Ict.Common.DB
 
                         try
                         {
-                            EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword, FConnectionString);
+                            EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword,
+                                FConnectionString, false);
                         }
                         catch (Exception e2)
                         {
@@ -1480,7 +1865,7 @@ namespace Ict.Common.DB
                                 "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
                         }
 
-                        return BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
+                        return BeginTransaction(AIsolationLevel, false, ARetryAfterXSecWhenUnsuccessful);
                     }
 
                     LogExceptionAndThrow(exp, "BeginTransaction: Error creating Transaction - Server-side error.");
@@ -1489,7 +1874,14 @@ namespace Ict.Common.DB
                 FLastDBAction = DateTime.Now;
 
                 return new TDBTransaction(FTransaction);
-            } // Transaction Lock
+            }
+            finally
+            {
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
         }
 
         /// <summary>
@@ -1498,16 +1890,35 @@ namespace Ict.Common.DB
         /// <returns>void</returns>
         public void CommitTransaction()
         {
+            CommitTransaction(true);
+        }
+
+        /// <summary>
+        /// Commits a running Transaction on the current DB connection.
+        /// </summary>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <returns>void</returns>
+        private void CommitTransaction(bool AMustCoordinateDBAccess)
+        {
             String msg = "";
 
-            lock (FTransactionLock)
+            if (AMustCoordinateDBAccess)
+            {
+                WaitForCoordinatedDBAccess();
+            }
+
+            try
             {
                 if (FTransaction != null)
                 {
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
                     {
-                        msg = "DB Transaction with IsolationLevel '" + FTransaction.IsolationLevel.ToString() + "' committed (in Appdomain " +
-                              AppDomain.CurrentDomain.ToString() + " ).";
+                        msg = String.Format("DB Transaction gets committed (on Thread {0} in AppDomain '{1}').   " +
+                            "DB Transaction Properties: Valid: {2}, IsolationLevel: {3}, Reused: {4}; it got started on " +
+                            "Thread {5} in AppDomain '{6}').", GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName,
+                            FTransaction.Connection != null, FTransaction.IsolationLevel,
+                            FTransactionReused, GetThreadIdentifier(FTransactionThread), FTransactionAppDomain);
                     }
 
                     FTransaction.Commit();
@@ -1520,10 +1931,21 @@ namespace Ict.Common.DB
                     }
 
                     FLastDBAction = DateTime.Now;
-                }
 
-                FTransaction = null;
-            } // Transaction Lock
+                    FTransaction = null;
+                }
+            }
+            catch (Exception Exc)
+            {
+                LogExceptionAndThrow(Exc, "While Committing Transaction");
+            }
+            finally
+            {
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
         }
 
         /// <summary>
@@ -1532,16 +1954,35 @@ namespace Ict.Common.DB
         /// <returns>void</returns>
         public void RollbackTransaction()
         {
+            RollbackTransaction(true);
+        }
+
+        /// <summary>
+        /// Rolls back a running Transaction on the current DB connection.
+        /// </summary>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <returns>void</returns>
+        private void RollbackTransaction(bool AMustCoordinateDBAccess)
+        {
             String msg = "";
 
-            lock (FTransactionLock)
+            if (AMustCoordinateDBAccess)
+            {
+                WaitForCoordinatedDBAccess();
+            }
+
+            try
             {
                 if (FTransaction != null)
                 {
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
                     {
-                        msg = "DB Transaction with IsolationLevel '" + FTransaction.IsolationLevel.ToString() + "' rolled back (in Appdomain " +
-                              AppDomain.CurrentDomain.ToString() + " ).";
+                        msg = String.Format("DB Transaction rolled back (on Thread {0} in AppDomain '{1}').   " +
+                            "DB Transaction Properties: Valid: {2}, IsolationLevel: {3}, Reused: {4}; it got started on " +
+                            "Thread {5} in AppDomain '{6}').", GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName,
+                            FTransaction.Connection != null, FTransaction.IsolationLevel,
+                            FTransactionReused, GetThreadIdentifier(FTransactionThread), FTransactionAppDomain);
                     }
 
                     // Attempt to roll back the DB Transaction.
@@ -1571,7 +2012,14 @@ namespace Ict.Common.DB
                         TLogging.Log("Exception while attempting Transaction rollback: " + Exc.ToString());
                     }
                 }
-            }  // Transaction lock
+            }
+            finally
+            {
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
         }
 
         /// <summary>
@@ -1580,9 +2028,18 @@ namespace Ict.Common.DB
         /// <returns>Isolation.Undefined if no transaction is open</returns>
         public IsolationLevel GetIsolationLevel()
         {
-            if (this.Transaction != null)
+            WaitForCoordinatedDBAccess();
+
+            try
             {
-                return this.Transaction.IsolationLevel;
+                if (FTransaction != null)
+                {
+                    return FTransaction.IsolationLevel;
+                }
+            }
+            finally
+            {
+                ReleaseCoordinatedDBAccess();
             }
 
             return IsolationLevel.Unspecified;
@@ -1639,10 +2096,13 @@ namespace Ict.Common.DB
         {
             TDBTransaction TheTransaction;
 
-            lock (FNewOrExistingLock)
+            ANewTransaction = false;
+
+            WaitForCoordinatedDBAccess();
+
+            try
             {
-                ANewTransaction = false;
-                TheTransaction = this.Transaction;
+                TheTransaction = FTransaction == null ? null : new TDBTransaction(FTransaction);
 
                 FDataBaseRDBMS.AdjustIsolationLevel(ref ADesiredIsolationLevel);
 
@@ -1658,7 +2118,8 @@ namespace Ict.Common.DB
                         {
                             case TEnforceIsolationLevel.eilExact:
                                 throw new EDBTransactionIsolationLevelWrongException("Expected IsolationLevel: " +
-                                ADesiredIsolationLevel.ToString("G") + " but is: " + TheTransaction.IsolationLevel.ToString("G"));
+                                ADesiredIsolationLevel.ToString("G") + " but is: " +
+                                TheTransaction.IsolationLevel.ToString("G"));
 
                             case TEnforceIsolationLevel.eilMinimum:
                                 throw new EDBTransactionIsolationLevelTooLowException(
@@ -1675,7 +2136,7 @@ namespace Ict.Common.DB
                         Console.WriteLine("GetNewOrExistingTransaction: creating new transaction. IsolationLevel: " + ADesiredIsolationLevel.ToString());
                     }
 
-                    TheTransaction = BeginTransaction(ADesiredIsolationLevel);
+                    TheTransaction = BeginTransaction(ADesiredIsolationLevel, false);
 
                     ANewTransaction = true;
                 }
@@ -1684,6 +2145,7 @@ namespace Ict.Common.DB
                     // Set Flag that indicates that the Transaction has been re-used instead of freshly created! This Flag can be
                     // inquired using the readonly TDBTransaction.Reused Property!
                     TheTransaction.SetTransactionToReused();
+                    FTransactionReused = true;
 
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
@@ -1691,9 +2153,13 @@ namespace Ict.Common.DB
                             "GetNewOrExistingTransaction: using existing transaction. IsolationLevel: " + TheTransaction.IsolationLevel.ToString());
                     }
                 }
+            }
+            finally
+            {
+                ReleaseCoordinatedDBAccess();
+            }
 
-                return TheTransaction;
-            } // NeworExisting Lock
+            return TheTransaction;
         }
 
         #endregion
@@ -1709,7 +2175,29 @@ namespace Ict.Common.DB
         /// <returns>Sequence Value.</returns>
         public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction)
         {
-            return FDataBaseRDBMS.GetNextSequenceValue(ASequenceName, ATransaction, this);
+            // For SQLite and MySQL we directly run commands against the DB (not using Methods of the TDataBase Class), hence
+            // we need to co-ordinate the DB access manually. For PostgreSQL and Progress we use Methods of the TDataBase
+            // Class that take care of the co-ordination themselves, hence we must not co-ordinate the DB access manually as
+            // that would cause a 'deadlock'!
+            if ((FDbType == TDBType.SQLite)
+                || (FDbType == TDBType.MySQL))
+            {
+                WaitForCoordinatedDBAccess();
+            }
+
+            try
+            {
+                return FDataBaseRDBMS.GetNextSequenceValue(ASequenceName, ATransaction, this);
+            }
+            finally
+            {
+                // (See comment above)
+                if ((FDbType == TDBType.SQLite)
+                    || (FDbType == TDBType.MySQL))
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
         }
 
         /// <summary>
@@ -1721,7 +2209,29 @@ namespace Ict.Common.DB
         /// <returns>Sequence Value.</returns>
         public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction)
         {
-            return FDataBaseRDBMS.GetCurrentSequenceValue(ASequenceName, ATransaction, this);
+            // For SQLite and MySQL we directly run commands against the DB (not using Methods of the TDataBase Class), hence
+            // we need to co-ordinate the DB access manually. For PostgreSQL and Progress we use Methods of the TDataBase
+            // Class that take care of the co-ordination themselves, hence we must not co-ordinate the DB access manually as
+            // that would cause a 'deadlock'!
+            if ((FDbType == TDBType.SQLite)
+                || (FDbType == TDBType.MySQL))
+            {
+                WaitForCoordinatedDBAccess();
+            }
+
+            try
+            {
+                return FDataBaseRDBMS.GetCurrentSequenceValue(ASequenceName, ATransaction, this);
+            }
+            finally
+            {
+                // (See comment above)
+                if ((FDbType == TDBType.SQLite)
+                    || (FDbType == TDBType.MySQL))
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
         }
 
         /// <summary>
@@ -1729,6 +2239,8 @@ namespace Ict.Common.DB
         /// </summary>
         public void RestartSequence(String ASequenceName, TDBTransaction ATransaction, Int64 ARestartValue)
         {
+            // No co-ordination of DB access manually using FCoordinatedDBAccess required as all RDBMS's use Methods of the
+            // TDataBase Class that take care of the co-ordination themselves...
             FDataBaseRDBMS.RestartSequence(ASequenceName, ATransaction, this, ARestartValue);
         }
 
@@ -1740,25 +2252,56 @@ namespace Ict.Common.DB
         /// Executes a SQL statement that does not give back any results (eg. an UPDATE
         /// SQL command). The statement is executed in a transaction. Suitable for
         /// parameterised SQL statements.
-        ///
         /// </summary>
         /// <param name="ASqlStatement">SQL statement.</param>
         /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />.</param>
-        /// <param name="ACommitTransaction">The transaction is committed if set to true,
-        /// otherwise the transaction is not committed (useful when the caller wants to
-        /// do further things in the same transaction).</param>
         /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
         /// (including parameter Value).
         /// </param>
+        /// <param name="ACommitTransaction">The transaction is committed if set to true,
+        /// otherwise the transaction is not committed (useful when the caller wants to
+        /// do further things in the same transaction).</param>
         /// <returns>Number of Rows affected.</returns>
         public int ExecuteNonQuery(String ASqlStatement,
             TDBTransaction ATransaction,
             DbParameter[] AParametersArray = null,
             bool ACommitTransaction = false)
         {
+            return ExecuteNonQuery(ASqlStatement, ATransaction, true, AParametersArray, ACommitTransaction);
+        }
+
+        /// <summary>
+        /// Executes a SQL statement that does not give back any results (eg. an UPDATE
+        /// SQL command). The statement is executed in a transaction. Suitable for
+        /// parameterised SQL statements.
+        /// </summary>
+        /// <param name="ASqlStatement">SQL statement.</param>
+        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />.</param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
+        /// (including parameter Value).
+        /// </param>
+        /// <param name="ACommitTransaction">The transaction is committed if set to true,
+        /// otherwise the transaction is not committed (useful when the caller wants to
+        /// do further things in the same transaction).</param>
+        /// <returns>Number of Rows affected.</returns>
+        private int ExecuteNonQuery(String ASqlStatement,
+            TDBTransaction ATransaction,
+            bool AMustCoordinateDBAccess,
+            DbParameter[] AParametersArray = null,
+            bool ACommitTransaction = false)
+        {
+            int NumberOfRowsAffected = 0;
+
             if ((ATransaction == null) && (ACommitTransaction == true))
             {
                 throw new ArgumentNullException("ACommitTransaction", "ACommitTransaction cannot be set to true when ATransaction is null!");
+            }
+
+            if (AMustCoordinateDBAccess)
+            {
+                WaitForCoordinatedDBAccess();
             }
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
@@ -1766,44 +2309,50 @@ namespace Ict.Common.DB
                 LogSqlStatement(this.GetType().FullName + ".ExecuteNonQuery()", ASqlStatement, AParametersArray);
             }
 
-            if (ConnectionReady())
+            try
             {
-                using (DbCommand TransactionCommand = Command(ASqlStatement, ATransaction, AParametersArray))
+                if (!ConnectionReady(false))
+                {
+                    throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
+                }
+
+                using (DbCommand TransactionCommand = Command(ASqlStatement, ATransaction, false, AParametersArray))
                 {
                     if (TransactionCommand == null)
                     {
                         // should never get here
-                        return 0;
+                        throw new EOPDBException("Failed to create Command object!");
                     }
 
                     try
                     {
-                        int NumberOfRowsAffected = TransactionCommand.ExecuteNonQuery();
+                        NumberOfRowsAffected = TransactionCommand.ExecuteNonQuery();
 
                         if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
                         {
                             TLogging.Log("Number of rows affected: " + NumberOfRowsAffected.ToString());
                         }
-
-                        if (ACommitTransaction)
-                        {
-                            CommitTransaction();
-                        }
-
-                        return NumberOfRowsAffected;
                     }
                     catch (Exception exp)
                     {
                         LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error executing non-query SQL statement.");
                     }
+
+                    if (ACommitTransaction)
+                    {
+                        CommitTransaction(false);
+                    }
+
+                    return NumberOfRowsAffected;
                 }
             }
-            else
+            finally
             {
-                throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
             }
-
-            return 0;
         }
 
         /// <summary>
@@ -1819,16 +2368,25 @@ namespace Ict.Common.DB
         /// <returns>void</returns>
         public void ExecuteNonQueryBatch(Hashtable AStatementHashTable)
         {
-            if (ConnectionReady())
+            WaitForCoordinatedDBAccess();
+
+            try
             {
-                using (TDBTransaction EnclosingTransaction = BeginTransaction(IsolationLevel.ReadCommitted))
+                if (ConnectionReady(false))
                 {
-                    ExecuteNonQueryBatch(AStatementHashTable, EnclosingTransaction, true);
+                    using (TDBTransaction EnclosingTransaction = BeginTransaction(IsolationLevel.ReadCommitted, false))
+                    {
+                        ExecuteNonQueryBatch(AStatementHashTable, EnclosingTransaction, false, true);
+                    }
+                }
+                else
+                {
+                    throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
                 }
             }
-            else
+            finally
             {
-                throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
+                ReleaseCoordinatedDBAccess();
             }
         }
 
@@ -1846,16 +2404,25 @@ namespace Ict.Common.DB
         /// <returns>void</returns>
         public void ExecuteNonQueryBatch(Hashtable AStatementHashTable, IsolationLevel AIsolationLevel)
         {
-            if (ConnectionReady())
+            WaitForCoordinatedDBAccess();
+
+            try
             {
-                using (TDBTransaction EnclosingTransaction = BeginTransaction(AIsolationLevel))
+                if (ConnectionReady(false))
                 {
-                    ExecuteNonQueryBatch(AStatementHashTable, EnclosingTransaction, true);
+                    using (TDBTransaction EnclosingTransaction = BeginTransaction(AIsolationLevel, false))
+                    {
+                        ExecuteNonQueryBatch(AStatementHashTable, EnclosingTransaction, false, true);
+                    }
+                }
+                else
+                {
+                    throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
                 }
             }
-            else
+            finally
             {
-                throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
+                ReleaseCoordinatedDBAccess();
             }
         }
 
@@ -1876,6 +2443,29 @@ namespace Ict.Common.DB
         /// <returns>void</returns>
         public void ExecuteNonQueryBatch(Hashtable AStatementHashTable, TDBTransaction ATransaction, bool ACommitTransaction = false)
         {
+            ExecuteNonQueryBatch(AStatementHashTable, ATransaction, true, ACommitTransaction);
+        }
+
+        /// <summary>
+        /// Executes 1..n SQL statements in a batch (in one go). The statements are
+        /// executed in a transaction - if one statement results in an Exception, all
+        /// statements executed so far are rolled back. Suitable for parameterised SQL
+        /// statements.
+        /// </summary>
+        /// <param name="AStatementHashTable">A HashTable. Key: a unique identifier;
+        /// Value: an instantiated <see cref="TSQLBatchStatementEntry" /> object.</param>
+        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />.</param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <param name="ACommitTransaction">On successful execution of all statements the
+        /// transaction is committed if set to true, otherwise the transaction is not
+        /// committed (useful when the caller wants to do further things in the same
+        /// transaction).
+        /// </param>
+        /// <returns>void</returns>
+        private void ExecuteNonQueryBatch(Hashtable AStatementHashTable, TDBTransaction ATransaction,
+            bool AMustCoordinateDBAccess, bool ACommitTransaction)
+        {
             int SqlCommandNumber;
             String CurrentBatchEntryKey = "";
             String CurrentBatchEntrySQLStatement = "";
@@ -1889,7 +2479,7 @@ namespace Ict.Common.DB
 
             if (AStatementHashTable.Count == 0)
             {
-                throw new ArgumentException("AStatementHashTable", "ArrayList containing TSQLBatchStatementEntry objects must not be empty!");
+                throw new ArgumentException("ArrayList containing TSQLBatchStatementEntry objects must not be empty!", "AStatementHashTable");
             }
 
             if (ATransaction == null)
@@ -1897,8 +2487,18 @@ namespace Ict.Common.DB
                 throw new ArgumentNullException("ATransaction", "This method must be called with an initialized transaction!");
             }
 
-            if (ConnectionReady())
+            if (AMustCoordinateDBAccess)
             {
+                WaitForCoordinatedDBAccess();
+            }
+
+            try
+            {
+                if (!ConnectionReady(false))
+                {
+                    throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
+                }
+
                 SqlCommandNumber = 0;
 
                 try
@@ -1912,14 +2512,14 @@ namespace Ict.Common.DB
                         CurrentBatchEntrySQLStatement = BatchStatementEntryValue.SQLStatement;
 
                         ExecuteNonQuery(CurrentBatchEntrySQLStatement, ATransaction,
-                            BatchStatementEntryValue.Parameters);
+                            false, BatchStatementEntryValue.Parameters);
 
                         SqlCommandNumber = SqlCommandNumber + 1;
                     }
 
                     if (ACommitTransaction)
                     {
-                        CommitTransaction();
+                        CommitTransaction(false);
                     }
                 }
                 catch (Exception exp)
@@ -1939,9 +2539,12 @@ namespace Ict.Common.DB
                         exp);
                 }
             }
-            else
+            finally
             {
-                throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
             }
         }
 
@@ -1966,23 +2569,32 @@ namespace Ict.Common.DB
         {
             object ReturnValue = null;
 
-            if (ConnectionReady())
+            WaitForCoordinatedDBAccess();
+
+            try
             {
-                using (TDBTransaction EnclosingTransaction = BeginTransaction(AIsolationLevel))
+                if (ConnectionReady(false))
                 {
-                    try
+                    using (TDBTransaction EnclosingTransaction = BeginTransaction(AIsolationLevel, false))
                     {
-                        ReturnValue = ExecuteScalar(ASqlStatement, EnclosingTransaction, AParametersArray);
-                    }
-                    finally
-                    {
-                        CommitTransaction();
+                        try
+                        {
+                            ReturnValue = ExecuteScalar(ASqlStatement, EnclosingTransaction, false, AParametersArray);
+                        }
+                        finally
+                        {
+                            CommitTransaction(false);
+                        }
                     }
                 }
+                else
+                {
+                    throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
+                }
             }
-            else
+            finally
             {
-                throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
+                ReleaseCoordinatedDBAccess();
             }
 
             return ReturnValue;
@@ -2007,6 +2619,31 @@ namespace Ict.Common.DB
             DbParameter[] AParametersArray = null,
             bool ACommitTransaction = false)
         {
+            return ExecuteScalar(ASqlStatement, ATransaction, true, AParametersArray, ACommitTransaction);
+        }
+
+        /// <summary>
+        /// Executes a SQL statement that returns a single result (eg. an SELECT COUNT(*)
+        /// SQL command or a call to a Stored Procedure that inserts data and returns
+        /// the value of a auto-numbered field). The statement is executed in a
+        /// transaction. Suitable for parameterised SQL statements.
+        /// </summary>
+        /// <param name="ASqlStatement">SQL statement.</param>
+        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />.</param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <param name="ACommitTransaction">The transaction is committed if set to true,
+        /// otherwise the transaction is not committed (useful when the caller wants to
+        /// do further things in the same transaction).</param>
+        /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
+        /// (including parameter Value).</param>
+        /// <returns>Single result as object.</returns>
+        private object ExecuteScalar(String ASqlStatement,
+            TDBTransaction ATransaction,
+            bool AMustCoordinateDBAccess,
+            DbParameter[] AParametersArray = null,
+            bool ACommitTransaction = false)
+        {
             object ReturnValue = null;
 
             if ((ATransaction == null) && (ACommitTransaction == true))
@@ -2014,24 +2651,34 @@ namespace Ict.Common.DB
                 throw new ArgumentNullException("ACommitTransaction", "ACommitTransaction cannot be set to true when ATransaction is null!");
             }
 
+            if (AMustCoordinateDBAccess)
+            {
+                WaitForCoordinatedDBAccess();
+            }
+
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
                 LogSqlStatement(this.GetType().FullName + ".ExecuteScalar()", ASqlStatement, AParametersArray);
             }
 
-            if (ConnectionReady())
+            try
             {
+                if (!ConnectionReady(false))
+                {
+                    throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
+                }
+
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(this.GetType().FullName + ".ExecuteScalar: now creating Command(" + ASqlStatement + ")...");
                 }
 
-                using (DbCommand TransactionCommand = Command(ASqlStatement, ATransaction, AParametersArray))
+                using (DbCommand TransactionCommand = Command(ASqlStatement, ATransaction, false, AParametersArray))
                 {
                     if (TransactionCommand == null)
                     {
                         // should never get here
-                        return null;
+                        throw new EOPDBException("Failed to create Command object!");
                     }
 
                     try
@@ -2052,11 +2699,6 @@ namespace Ict.Common.DB
                         {
                             TLogging.Log(this.GetType().FullName + ".ExecuteScalar: finished calling Command.ExecuteScalar");
                         }
-
-                        if (ACommitTransaction)
-                        {
-                            CommitTransaction();
-                        }
                     }
                     catch (EOPDBException exp)
                     {
@@ -2066,6 +2708,11 @@ namespace Ict.Common.DB
                     {
                         LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error executing scalar SQL statement.");
                     }
+
+                    if (ACommitTransaction)
+                    {
+                        CommitTransaction(false);
+                    }
                 }
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
@@ -2073,9 +2720,12 @@ namespace Ict.Common.DB
                     TLogging.Log("Result from ExecuteScalar is " + ReturnValue.ToString() + " " + ReturnValue.GetType().ToString());
                 }
             }
-            else
+            finally
             {
-                throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
             }
 
             return ReturnValue;
@@ -2191,11 +2841,14 @@ namespace Ict.Common.DB
 
                         OdbcParameter param = ParametersEnumerator.Current;
 
-                        if (param.Value is TDbListParameterValue)
+                        // Check if param.Value is of Type TDbListParameterValue; ParamValue will be null in case it isn't
+                        var ParamValue = param.Value as TDbListParameterValue;
+
+                        if (ParamValue != null)
                         {
                             Boolean first = true;
 
-                            foreach (OdbcParameter subparam in (TDbListParameterValue)param.Value)
+                            foreach (OdbcParameter subparam in ParamValue)
                             {
                                 if (first)
                                 {
@@ -2250,17 +2903,34 @@ namespace Ict.Common.DB
         /// Tells whether the DB connection is ready to accept commands
         /// or whether it is busy.
         /// </summary>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
         /// <returns>True if DB connection can accept commands, false if
         /// it is busy</returns>
-        private bool ConnectionReady()
+        private bool ConnectionReady(bool AMustCoordinateDBAccess)
         {
-            if (FDbType == TDBType.PostgreSQL)
+            if (AMustCoordinateDBAccess)
             {
-                // TODO: change when OnStateChangedHandler works for postgresql
-                return FSqlConnection != null && FSqlConnection.State == ConnectionState.Open;
+                WaitForCoordinatedDBAccess();
             }
 
-            return FConnectionReady;
+            try
+            {
+                if (FDbType == TDBType.PostgreSQL)
+                {
+                    // TODO: change when OnStateChangedHandler works for postgresql
+                    return FSqlConnection != null && FSqlConnection.State == ConnectionState.Open;
+                }
+
+                return FConnectionReady;
+            }
+            finally
+            {
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
         }
 
         /// <summary>
@@ -2276,6 +2946,7 @@ namespace Ict.Common.DB
         /// <param name="AArgs">StateChange EventArgs.</param>
         private void OnStateChangedHandler(object ASender, StateChangeEventArgs AArgs)
         {
+            // Important: In this Method we must NOT co-ordinate the DB access manually as that would cause a 'deadlock'!
             switch (AArgs.CurrentState)
             {
                 case ConnectionState.Open:
@@ -2548,7 +3219,12 @@ namespace Ict.Common.DB
 
             if ((AException.GetType() == typeof(NpgsqlException)) && (((NpgsqlException)AException).Code == "25P02"))
             {
-                TLogging.Log("Npgsq Exception raised: The transaction was cancelled by user command.");
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                {
+                    TLogging.Log(
+                        TLogging.LOG_PREFIX_INFO + "NpgsqlException with code '25P02' raised: The transaction was cancelled by user command.");
+                }
+
                 return;
             }
 
@@ -2590,7 +3266,8 @@ namespace Ict.Common.DB
             FDataBaseRDBMS.LogException(AException, ref ErrorMessage);
 
             TLogging.Log(AContext + Environment.NewLine +
-                FormattedSqlStatement +
+                String.Format("on Thread {0} in AppDomain '{1}'", GetCurrentThreadIdentifier(),
+                    AppDomain.CurrentDomain.FriendlyName) + Environment.NewLine + FormattedSqlStatement +
                 "Possible cause: " + AException.ToString() + Environment.NewLine + ErrorMessage);
 
             TLogging.LogStackTrace(TLoggingType.ToLogfile);
@@ -2607,6 +3284,105 @@ namespace Ict.Common.DB
                 }
             }
         }
+
+        #region CoordinatedDBAccess
+
+        private void WaitForCoordinatedDBAccess()
+        {
+            const string StrWaitingMessage =
+                "Waiting to obtain Thread-safe access to the Database Abstraction Layer... (Call performed in Thread {0})";
+            const string StrWaitingSuccessful = "Obtained Thread-safe access to the Database Abstraction Layer... (Call performed in Thread {0})";
+
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES)
+            {
+                TLogging.Log(String.Format(StrWaitingMessage, GetCurrentThreadIdentifier()) + Environment.NewLine +
+                    "  StackTrace: " + new StackTrace(true).ToString());
+            }
+            else if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log(String.Format(StrWaitingMessage, GetCurrentThreadIdentifier()));
+            }
+
+            if (!FCoordinatedDBAccess.Wait(FWaitingTimeForCoordinatedDBAccess))
+            {
+                throw new EDBCoordinatedDBAccessWaitingTimeExceededException(
+                    String.Format("Failed to obtain co-ordinated " +
+                        "(=Thread-safe) access to the Database Abstraction Layer (waiting time [{0} ms] exceeded). " +
+                        "(Call performed in Thread {1})!", FWaitingTimeForCoordinatedDBAccess,
+                        GetCurrentThreadIdentifier()));
+            }
+
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES)
+            {
+                TLogging.Log(String.Format(StrWaitingSuccessful, GetCurrentThreadIdentifier()) + Environment.NewLine +
+                    "  StackTrace: " + new StackTrace(true).ToString());
+            }
+            else if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log(String.Format(StrWaitingSuccessful, GetCurrentThreadIdentifier()));
+            }
+        }
+
+        private void ReleaseCoordinatedDBAccess()
+        {
+            const string StrReleasedCoordinatedDBAccess =
+                "Released Thread-safe access to the Database Abstraction Layer. (Call performed in Thread {0})...";
+
+            FCoordinatedDBAccess.Release();
+
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES)
+            {
+                TLogging.Log(String.Format(
+                        StrReleasedCoordinatedDBAccess, GetCurrentThreadIdentifier()) + Environment.NewLine +
+                    "  StackTrace: " + new StackTrace(true).ToString());
+            }
+            else if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log(String.Format(StrReleasedCoordinatedDBAccess, GetCurrentThreadIdentifier()));
+            }
+        }
+
+        #endregion
+
+        #region Thread Helper
+
+        private string GetCurrentThreadIdentifier()
+        {
+            return GetThreadIdentifier(Thread.CurrentThread);
+        }
+
+        private string GetThreadIdentifier(Thread ATheThread)
+        {
+            string ReturnValue = ATheThread.Name ?? String.Empty;
+
+            if (ReturnValue.Length > 0)
+            {
+                // Ensure Thread Name starts with apostrophy ( ' ).
+                if (!ReturnValue.StartsWith("'", StringComparison.InvariantCulture))
+                {
+                    ReturnValue = "'" + ReturnValue;
+                }
+
+                if (!ReturnValue.EndsWith("]", StringComparison.InvariantCulture))
+                {
+                    // Ensure Thread Name ends with apostrophy ( ' ).
+                    if (!ReturnValue.EndsWith("'", StringComparison.InvariantCulture))
+                    {
+                        ReturnValue += "'";
+                    }
+
+                    ReturnValue += " [ThreadID: " + ATheThread.ManagedThreadId.ToString() + "]";
+                }
+            }
+            else
+            {
+                ReturnValue += ATheThread.ManagedThreadId.ToString();
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
 
         #region AutoTransactions
 
@@ -3343,9 +4119,35 @@ namespace Ict.Common.DB
         public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
             ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
         {
+            BeginAutoReadTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ref ATransaction, true,
+                AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
+        /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
+        /// and returns the DB Transaction that
+        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
+        /// whether an Exception occured, or not!
+        /// </summary>
+        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        private void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
+            ref TDBTransaction ATransaction, bool AMustCoordinateDBAccess, Action AEncapsulatedDBAccessCode)
+        {
             // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
             // regarding Exception Handling.)
-            ATransaction = BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
+            ATransaction = BeginTransaction(AIsolationLevel, AMustCoordinateDBAccess, ARetryAfterXSecWhenUnsuccessful);
 
             try
             {
@@ -3364,7 +4166,7 @@ namespace Ict.Common.DB
                 // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written
                 // to the DB using that DB Transaction then that data will get Committed here although we are only reading here,
                 // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
-                RollbackTransaction();
+                RollbackTransaction(AMustCoordinateDBAccess);
             }
         }
 
@@ -3523,6 +4325,32 @@ namespace Ict.Common.DB
         #endregion
     }
 
+    #region TDataAdapterCanceller
+
+    /// <summary>
+    /// Provides a safe means to cancel the Fill operation of an associated <see cref="DbDataAdapter"/>.
+    /// </summary>
+    public sealed class TDataAdapterCanceller
+    {
+        readonly DbDataAdapter FDataAdapter;
+
+        internal TDataAdapterCanceller(DbDataAdapter ADataAdapter)
+        {
+            FDataAdapter = ADataAdapter;
+        }
+
+        /// <summary>
+        /// Call this Method to cancel the Fill operation of the associated <see cref="DbDataAdapter"/>.
+        /// </summary>
+        /// <remarks><em>IMPORTANT:</em> This Method <em>MUST</em> be called on a separate Thread as otherwise the cancellation
+        /// will not work correctly (this is an implementation detail of ADO.NET!).</remarks>
+        public void CancelFillOperation()
+        {
+            FDataAdapter.SelectCommand.Cancel();
+        }
+    }
+
+    #endregion
 
     #region TSQLBatchStatementEntry
 
@@ -3671,9 +4499,12 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="ATransaction">The concrete DbTransaction Object that <see cref="TDBTransaction" />
         /// should represent.</param>
-        public TDBTransaction(DbTransaction ATransaction)
+        /// <param name="AReused">Set to true to make the new instance return 'true' right away when its
+        /// <see cref="Reused"/> Property gets inquired. (Default=false).</param>
+        public TDBTransaction(DbTransaction ATransaction, bool AReused = false)
         {
             FWrappedTransaction = ATransaction;
+            FReused = AReused;
         }
 
         /// <summary>

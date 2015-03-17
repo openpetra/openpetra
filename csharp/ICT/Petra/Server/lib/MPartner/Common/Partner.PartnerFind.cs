@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -65,16 +65,12 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         }
 
         /// <summary>
-        /// Procedure to execute a Find query. Although the full
-        /// query results are retrieved from the DB and stored internally in an object,
-        /// data will be returned in 'pages' of data, each page holding a defined number
+        /// Procedure to execute a Find query. Although the full query results are retrieved from the DB and stored
+        /// internally in an object, data will be returned in 'pages' of data, each page holding a defined number
         /// of records.
-        ///
         /// </summary>
-        /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters</param>
-        /// <param name="ADetailedResults">Returns more (when true) or less (when false) columns
-        /// </param>
-        /// <returns>void</returns>
+        /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters.</param>
+        /// <param name="ADetailedResults">Returns more (when true) or less (when false) columns.</param>
         public void PerformSearch(DataTable ACriteriaData, bool ADetailedResults)
         {
             String CustomWhereCriteria;
@@ -254,10 +250,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         /// query results are retrieved from the DB and stored internally in an object,
         /// data will be returned in 'pages' of data, each page holding a defined number
         /// of records.
-        ///
         /// </summary>
-        /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters</param>
-        /// <returns>void</returns>
+        /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters.</param>
         public void PerformSearchByBankDetails(DataTable ACriteriaData)
         {
             String CustomWhereCriteria;
@@ -391,7 +385,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             ATotalPages = FPagedDataSetObject.TotalPages;
             ATotalRecords = FPagedDataSetObject.TotalRecords;
 
-            // Thread.Sleep(500);    enable only for simulation of slow (modem) connection!
+            // Thread.Sleep(500);    enable only for simulation of slow (Internet) connection!
 
             if (ReturnValue != null)
             {
@@ -1000,14 +994,11 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
         /// <summary>
         /// Stops the query execution.
-        ///
-        /// @comment It might take some time until the executing query is cancelled by
-        /// the DB, but this procedure returns immediately. The reason for this is that
-        /// we consider the query cancellation as done since the application can
-        /// 'forget' about the result of the cancellation process (but beware of
-        /// executing another query while the other is stopping - this leads to ADO.NET
-        /// errors that state that a ADO.NET command is still executing!).
-        ///
+        /// <remarks>It might take some time until the executing query is cancelled by the DB, but this procedure returns
+        /// immediately. The reason for this is that we consider the query cancellation as done since the application can
+        /// 'forget' about the result of the cancellation process (but beware of executing another query while the other is
+        /// stopping - this leads to ADO.NET errors that state that a ADO.NET command is still executing!).
+        /// </remarks>
         /// </summary>
         public void StopSearch()
         {
@@ -1018,8 +1009,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
              */
             TLogging.LogAtLevel(7, "TPartnerFindUIConnector.StopSearch: Starting StopQuery thread...");
 
-            ThreadStart ThreadStartDelegate = new ThreadStart(FPagedDataSetObject.StopQuery);
-            StopQueryThread = new Thread(ThreadStartDelegate);
+            StopQueryThread = new Thread(new ThreadStart(FPagedDataSetObject.StopQuery));
             StopQueryThread.Name = "PartnerFindStopQuery" + Guid.NewGuid().ToString();
             StopQueryThread.Start();
 

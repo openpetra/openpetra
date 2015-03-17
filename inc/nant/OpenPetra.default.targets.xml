@@ -55,20 +55,28 @@
 
 <target name="initConfigFiles-server">
   <property name="templateFile" value="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"/>
-
+  
+  <choose>
+    <when test="${property::exists('DBMS.DBWaitingTimeForCoordinatedDBAccess')}">
+    </when>
+    <otherwise>
+      <property name="DBMS.DBWaitingTimeForCoordinatedDBAccess" value="3000" />
+    </otherwise>
+  </choose>    
+  
   <if test="${DBMS.Type == 'sqlite'}">
     <property name="DBMS.DBHostOrFile" value="${SQLitedbWork.file}"/>
   </if>
 
-  <property name="configFile" value="${dir.delivery}/web.config"/>
+  <property name="configFile" value="${dir.delivery}/web.config"/> 
   <call target="initConfigFiles-internal"/>
 
   <property name="templateFile" value="${dir.incdir.template.etc}/TestServer.config"/>
   <property name="configFile" value="${path::combine(dir.etc, 'TestServer.config')}"/>
   <call target="initConfigFiles-internal"/>
-
+  
 <!-- MGR: TODO: Remove copy. Should be during database work! -->
-  <copy file="${path::combine(dir.db, 'version.txt')}"
+  <copy file="${path::combine(dir.db.patches, 'version.txt')}"
       tofile="${path::combine(dir.bin, 'version.txt')}" 
       overwrite="true"/>
 
@@ -271,7 +279,6 @@
 </target>
 
 <target name="startAdmin" depends="initConfigFiles-admin" description="start the OpenPetra Server Admin Console"> 
-  <property name="Command" value="Menu" overwrite="false"/>
   <if test="${platform::is-windows()}" >
       <exec program="cmd.exe" 
             workingdir="${dir.bin}"
@@ -281,14 +288,14 @@
        <arg value="cmd" /> <!-- This window stays open after the process finishes -->
        <arg value="/k" />
        <arg value="PetraServerAdminConsole.exe" />
-       <arg value="-Command:${Command}" />
+       <arg value="-Command:Menu" />
        <arg value="-C:${ServerAdminConfigFile}" />
      </exec>
   </if>
   <if test="${not platform::is-windows()}">
       <exec program="${MonoExecutable.file}" 
               workingdir="${dir.bin}"
-              commandline="PetraServerAdminConsole.exe -Command:${Command} -C:${ServerAdminConfigFile}"
+              commandline="PetraServerAdminConsole.exe -Command:Menu -C:${ServerAdminConfigFile}"
               spawn="true">
          <environment>
             <variable name="LANGUAGE" value="${SelectedLanguage}"/>

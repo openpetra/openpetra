@@ -1299,6 +1299,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
                     DataTable resultTable = DbAdapter.RunQuery(Query, "IncomeExpense", ReadTrans);
 
+                    if (DbAdapter.IsCancelled)
+                    {
+                        return;
+                    }
+
                     if (WholeYearPeriodsBreakdown)
                     {
                         FilteredResults = resultTable;
@@ -1409,6 +1414,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                     ") AS WholeYearBudget FROM a_general_ledger_master_period WHERE a_glm_sequence_i=" +
                                     Convert.ToInt32(Row["Seq"]);
                             DataTable YearBudgetTbl = DbAdapter.RunQuery(Query, "YearBudget", ReadTrans);
+
+                            if (DbAdapter.IsCancelled)
+                            {
+                                return;
+                            }
 
                             if (YearBudgetTbl.Rows.Count > 0)
                             {

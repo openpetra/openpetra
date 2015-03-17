@@ -28,7 +28,9 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
 
@@ -787,6 +789,7 @@ namespace Ict.Petra.Client.CommonForms
                     FucoFilterAndFind == null || FucoFilterAndFind.IsCollapsed,
                     (FucoFilterAndFind == null) ? TUcoFilterAndFind.FilterContext.None : FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed,
                     FFilterAndFindParameters.ShowFilterIsAlwaysOnLabelContext);
+
                 FCallerFormOrControl.ApplyFilterString(ref FCurrentActiveFilter);
 
                 if (FGrid.DataSource != null)
@@ -794,9 +797,18 @@ namespace Ict.Petra.Client.CommonForms
                     ((DevAge.ComponentModel.BoundDataView)FGrid.DataSource).DataView.RowFilter = FCurrentActiveFilter;
                 }
             }
-            catch (Exception)
+            catch (EDBAccessLackingCoordinationException)
             {
-                MessageBox.Show(MCommonResourcestrings.StrErrorInFilterCriterion, MCommonResourcestrings.StrFilterTitle,
+                throw;
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log(String.Format(MCommonResourcestrings.StrErrorInFilterCriterion, Exc.ToString()));
+
+                MessageBox.Show(String.Format(MCommonResourcestrings.StrErrorInFilterCriterion,
+                        Exc.Message) + Environment.NewLine + Environment.NewLine +
+                    AppCoreResourcestrings.StrSystemAdministratorLogFileHint,
+                    MCommonResourcestrings.StrErrorInFilterCriterionTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 FCurrentActiveFilter = previousFilter;

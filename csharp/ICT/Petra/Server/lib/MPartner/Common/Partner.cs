@@ -899,7 +899,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 
-                    TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: committed own transaction.");
+                    TLogging.LogAtLevel(4, "TRecentPartnersHandling.AddRecentlyUsedPartner: committed own transaction.");
                 }
             }
 

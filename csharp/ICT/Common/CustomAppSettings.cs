@@ -288,10 +288,6 @@ namespace Ict.Common
                         {
                             // ignore this Exception; it is thrown if TLogging was not initialised yet, which means no Log file is specified.
                         }
-                        catch (Exception)
-                        {
-                            throw;
-                        }
                     }
                 }
             }
@@ -361,13 +357,17 @@ namespace Ict.Common
         /// <returns>the value of the parameter, or the default value</returns>
         public static System.Int16 GetInt16(String AKey, Int16 ADefaultValue = -1)
         {
-            Int16 ReturnValue = ADefaultValue;
-            string str = GetValue(AKey, (ADefaultValue == -1));
+            Int16 ReturnValue;
 
-            if (!(Int16.TryParse(str, out ReturnValue)) && (ADefaultValue == -1))
+            if (!(Int16.TryParse(GetValue(AKey, (ADefaultValue == -1)), out ReturnValue)))
             {
-                // Caller wanted the Value and didn't specify a Default: log that
-                TLogging.Log("Problem reading int16 value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
+                ReturnValue = ADefaultValue;
+
+                if (ADefaultValue == -1)
+                {
+                    // Caller wanted the Value and didn't specify a Default: log that
+                    TLogging.Log("Problem reading Int16 value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
+                }
             }
 
             return ReturnValue;

@@ -28,6 +28,7 @@ using System.Data.Odbc;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
@@ -141,7 +142,7 @@ namespace Ict.Petra.Server.MPartner.Common
             PLocationTable LocationDT;
             PPartnerLocationTable PartnerLocationDT;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
@@ -268,7 +269,7 @@ namespace Ict.Petra.Server.MPartner.Common
             PPartnerLocationTable PartnerLocationDT;
 
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -315,7 +316,12 @@ namespace Ict.Petra.Server.MPartner.Common
             }
             catch (ESecurityPartnerAccessDeniedException)
             {
-                // don't log this exception  this is thrown on purpose here and the Client needs to deal with it.
+                // don't log this Exception - this is thrown on purpose here and the Client knows how to deal with it.
+                throw;
+            }
+            catch (EDBAccessLackingCoordinationException)
+            {
+                // don't log this Exception - the Client knows how to deal with it.
                 throw;
             }
             catch (Exception Exp)
@@ -354,7 +360,7 @@ namespace Ict.Petra.Server.MPartner.Common
             Boolean NewTransaction = false;
             PPartnerRow PartnerDR;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -388,7 +394,12 @@ namespace Ict.Petra.Server.MPartner.Common
             }
             catch (ESecurityPartnerAccessDeniedException)
             {
-                // don't log this exception - this is thrown on purpose here and the Client needs to deal with it.
+                // don't log this exception - this is thrown on purpose here and the Client knows how to deal with it.
+                throw;
+            }
+            catch (EDBAccessLackingCoordinationException)
+            {
+                // don't log this Exception - the Client knows how to deal with it.
                 throw;
             }
             catch (Exception Exp)
@@ -424,7 +435,7 @@ namespace Ict.Petra.Server.MPartner.Common
             Boolean NewTransaction = false;
             PPartnerRow PartnerDR;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -458,7 +469,12 @@ namespace Ict.Petra.Server.MPartner.Common
             }
             catch (ESecurityPartnerAccessDeniedException)
             {
-                // don't log this exception - this is thrown on purpose here and the Client needs to deal with it.
+                // don't log this exception - this is thrown on purpose here and the Client knows how to deal with it.
+                throw;
+            }
+            catch (EDBAccessLackingCoordinationException)
+            {
+                // don't log this Exception - the Client knows how to deal with it.
                 throw;
             }
             catch (Exception Exp)
