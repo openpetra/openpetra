@@ -172,7 +172,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (pm.Get("param_period").ToBool() == true)
             {
-                Int32 LedgerNumber = pm.Get("param_ledger_number_i").ToInt32();
                 Int32 PeriodStart = pm.Get("param_start_period_i").ToInt32();
                 Int32 PeriodEnd = pm.Get("param_end_period_i").ToInt32();
 
