@@ -590,15 +590,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (APartnerKey != FLastDonor)
                     {
-                        PPartnerTable PartnerDT = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
+                        PPartnerTable partnerDT = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
 
-                        if (PartnerDT.Rows.Count > 0)
+                        if ((partnerDT != null) && (partnerDT.Rows.Count > 0))
                         {
-                            PPartnerRow pr = PartnerDT[0];
+                            PPartnerRow pr = partnerDT[0];
                             chkDetailConfidentialGiftFlag.Checked = pr.AnonymousDonor;
 
                             // add row to dataset to access receipt frequency info for donors
-                            FMainDS.DonorPartners.Merge(PartnerDT);
+                            FMainDS.DonorPartners.Merge(partnerDT);
                         }
 
                         foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)

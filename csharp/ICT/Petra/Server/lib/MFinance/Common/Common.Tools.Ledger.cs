@@ -167,7 +167,7 @@ namespace Ict.Petra.Server.MFinance.Common
             if (ALedgerNumber <= 0)
             {
                 throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
-                            "Method:{0} - The Ledger number must be greater than 0!"),
+                            "Function:{0} - The Ledger number must be greater than 0!"),
                         Utilities.GetMethodName(true)), ALedgerNumber);
             }
 

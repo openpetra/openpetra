@@ -1484,7 +1484,7 @@ namespace Ict.Common.Exceptions
     #region EFinanceSystemUnexpectedStateException
 
     /// <summary>
-    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// Base Class for OpenPetra-finance-system-specific application-level Exceptions.
     /// </summary>
     [Serializable()]
     public class EFinanceSystemUnexpectedStateException : EOPException
@@ -1558,7 +1558,7 @@ namespace Ict.Common.Exceptions
     #region EFinanceSystemInvalidLedgerNumberException
 
     /// <summary>
-    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// Thrown if a Ledger number is invalid.
     /// </summary>
     [Serializable()]
     public class EFinanceSystemInvalidLedgerNumberException : EFinanceSystemUnexpectedStateException
@@ -1631,6 +1631,12 @@ namespace Ict.Common.Exceptions
         public EFinanceSystemInvalidLedgerNumberException(SerializationInfo AInfo, StreamingContext AContext)
             : base(AInfo, AContext)
         {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            FLedgerNumber = Int32.Parse(AInfo.GetString("LedgerNumber"));
         }
 
         /// <summary>
@@ -1662,7 +1668,7 @@ namespace Ict.Common.Exceptions
     #region EFinanceSystemInvalidBatchNumberException
 
     /// <summary>
-    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// Thrown if a Batch number in a given Ledger number is invalid.
     /// </summary>
     [Serializable()]
     public class EFinanceSystemInvalidBatchNumberException : EFinanceSystemUnexpectedStateException
@@ -1754,6 +1760,13 @@ namespace Ict.Common.Exceptions
         public EFinanceSystemInvalidBatchNumberException(SerializationInfo AInfo, StreamingContext AContext)
             : base(AInfo, AContext)
         {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            FLedgerNumber = Int32.Parse(AInfo.GetString("LedgerNumber"));
+            FBatchNumber = Int32.Parse(AInfo.GetString("BatchNumber"));
         }
 
         /// <summary>
@@ -1786,7 +1799,7 @@ namespace Ict.Common.Exceptions
     #region EFinanceSystemDBTransactionNullException
 
     /// <summary>
-    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// Thrown if a given DB Transaction is null
     /// </summary>
     [Serializable()]
     public class EFinanceSystemDBTransactionNullException : EFinanceSystemUnexpectedStateException
@@ -1860,7 +1873,7 @@ namespace Ict.Common.Exceptions
     #region EFinanceSystemDataObjectNullException
 
     /// <summary>
-    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// Thrown if a given data object is null
     /// </summary>
     [Serializable()]
     public class EFinanceSystemDataObjectNullOrEmptyException : EFinanceSystemUnexpectedStateException
@@ -1934,7 +1947,7 @@ namespace Ict.Common.Exceptions
     #region EFinanceSystemDataTableReturnedNoDataException
 
     /// <summary>
-    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// Thrown if a given data table object is null or empty
     /// </summary>
     [Serializable()]
     public class EFinanceSystemDataTableReturnedNoDataException : EFinanceSystemUnexpectedStateException
@@ -2008,7 +2021,7 @@ namespace Ict.Common.Exceptions
     #region EFinanceSystemCacheableTableReturnedNoDataException
 
     /// <summary>
-    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// Thrown if a given cacheable data table object is null or empty
     /// </summary>
     [Serializable()]
     public class EFinanceSystemCacheableTableReturnedNoDataException : EFinanceSystemUnexpectedStateException
@@ -2082,7 +2095,7 @@ namespace Ict.Common.Exceptions
     #region EFinanceSystemDataTableAccessFailedException
 
     /// <summary>
-    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// Thrown if a given data table object is unable to access (and load the contents of) a specified DB table
     /// </summary>
     [Serializable()]
     public class EFinanceSystemDataTableAccessFailedException : EFinanceSystemUnexpectedStateException

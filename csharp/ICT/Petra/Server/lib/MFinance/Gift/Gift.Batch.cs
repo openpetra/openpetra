@@ -83,19 +83,19 @@ namespace Ict.Petra.Server.MFinance.Gift
             else if (ATransaction == null)
             {
                 throw new EFinanceSystemDBTransactionNullException(String.Format(Catalog.GetString(
-                            "Method:{0} - Database Transaction must not be NULL!"),
+                            "Function:{0} - Database Transaction must not be NULL!"),
                         Utilities.GetMethodName(true)));
             }
             else if ((ALedgerTbl == null) || (ALedgerTbl.Count == 0))
             {
                 throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
-                            "Method:{0} - The Ledger table is NULL or is empty!"),
+                            "Function:{0} - The Ledger table is NULL or is empty!"),
                         Utilities.GetMethodName(true)));
             }
             else if (ALedgerNumber <= 0)
             {
                 throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
-                            "Method:{0} - The Ledger number must be greater than 0!"),
+                            "Function:{0} - The Ledger number must be greater than 0!"),
                         Utilities.GetMethodName(true)), ALedgerNumber);
             }
 

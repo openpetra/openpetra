@@ -111,11 +111,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ref SubmissionOK,
                     delegate
                     {
-                        ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                        ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
                         #region Validate Data
 
-                        if ((LedgerTable == null) || (LedgerTable.Count == 0))
+                        if ((ledgerTable == null) || (ledgerTable.Count == 0))
                         {
                             throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
                                         "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
@@ -125,14 +125,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         #endregion Validate Data
 
-                        TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
+                        TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref ledgerTable, ALedgerNumber, ADateEffective);
 
                         if (ABatchDescription.Length > 0)
                         {
                             MainDS.AGiftBatch[0].BatchDescription = ABatchDescription;
                         }
 
-                        ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+                        ALedgerAccess.SubmitChanges(ledgerTable, Transaction);
                         AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction);
                         MainDS.AGiftBatch.AcceptChanges();
 
@@ -190,7 +190,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         if ((ledgerTable == null) || (ledgerTable.Count == 0))
                         {
                             throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Details for Ledger {0} could not be accessed!"), ALedgerNumber));
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
                         }
 
                         #endregion Validate Data
@@ -302,7 +304,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         if ((ledgerTable == null) || (ledgerTable.Count == 0))
                         {
                             throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Method:{0} - Details for Ledger {1} could not be accessed!"), Utilities.GetMethodSignature(), ALedgerNumber));
+                                        "Function:{0} - Details for Ledger {1} could not be accessed!"), Utilities.GetMethodSignature(),
+                                    ALedgerNumber));
                         }
 
                         #endregion Validate Data
@@ -550,9 +553,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 (AAccountingPeriodRow)AccountingPeriods.Rows.Find(new object[] { ALedgerNumber, LedgerTable[0].NumberOfAccountingPeriods });
             DateTime CurrentYearEnd = CurrentYearEndPeriod.PeriodEndDate;
 
+            TDBTransaction ReadTransaction = null;
+
             try
             {
-                TDBTransaction ReadTransaction = null;
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                     ref ReadTransaction,
                     delegate
@@ -634,7 +638,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
                         {
                             throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Method:{0} - Details for Ledger {1} could not be accessed!"), Utilities.GetMethodSignature(), ALedgerNumber));
+                                        "Function:{0} - Details for Ledger {1} could not be accessed!"), Utilities.GetMethodSignature(),
+                                    ALedgerNumber));
                         }
 
                         #endregion Validate Data
@@ -702,7 +707,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
                         {
                             throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Method:{0} - Details for Ledger {1} could not be accessed!"), Utilities.GetMethodSignature(), ALedgerNumber));
+                                        "Function:{0} - Details for Ledger {1} could not be accessed!"), Utilities.GetMethodSignature(),
+                                    ALedgerNumber));
                         }
 
                         #endregion Validate Data
@@ -783,23 +789,47 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
-                    string SelectClause = String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2} AND PUB_{0}.{3} = {4}",
-                        AGiftBatchTable.GetTableDBName(),
-                        AGiftBatchTable.GetLedgerNumberDBName(),
-                        ALedgerNumber,
-                        AGiftBatchTable.GetBatchYearDBName(),
-                        MainDS.ALedger[0].CurrentFinancialYear);
+                        #region Validate Data
 
-                    DBAccess.GDBAccessObj.Select(MainDS, SelectClause, MainDS.AGiftBatch.TableName, Transaction);
-                });
+                        if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
 
-            MainDS.AcceptChanges();
+                        #endregion Validate Data
+
+                        string SelectClause = String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2} AND PUB_{0}.{3} = {4}",
+                            AGiftBatchTable.GetTableDBName(),
+                            AGiftBatchTable.GetLedgerNumberDBName(),
+                            ALedgerNumber,
+                            AGiftBatchTable.GetBatchYearDBName(),
+                            MainDS.ALedger[0].CurrentFinancialYear);
+
+                        DBAccess.GDBAccessObj.Select(MainDS, SelectClause, MainDS.AGiftBatch.TableName, Transaction);
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
             return MainDS;
         }
 
@@ -826,30 +856,54 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
-                    string SelectClause = String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2} AND PUB_{0}.{3} = {4} AND PUB_{0}.{5} >= {6}",
-                        AGiftBatchTable.GetTableDBName(),
-                        AGiftBatchTable.GetLedgerNumberDBName(),
-                        ALedgerNumber,
-                        AGiftBatchTable.GetBatchYearDBName(),
-                        MainDS.ALedger[0].CurrentFinancialYear,
-                        AGiftBatchTable.GetBatchPeriodDBName(),
-                        MainDS.ALedger[0].CurrentPeriod);
+                        #region Validate Data
 
-                    DBAccess.GDBAccessObj.Select(MainDS, SelectClause, MainDS.AGiftBatch.TableName, Transaction);
-                });
+                        if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
 
-            MainDS.AcceptChanges();
+                        #endregion Validate Data
+
+                        string SelectClause = String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2} AND PUB_{0}.{3} = {4} AND PUB_{0}.{5} >= {6}",
+                            AGiftBatchTable.GetTableDBName(),
+                            AGiftBatchTable.GetLedgerNumberDBName(),
+                            ALedgerNumber,
+                            AGiftBatchTable.GetBatchYearDBName(),
+                            MainDS.ALedger[0].CurrentFinancialYear,
+                            AGiftBatchTable.GetBatchPeriodDBName(),
+                            MainDS.ALedger[0].CurrentPeriod);
+
+                        DBAccess.GDBAccessObj.Select(MainDS, SelectClause, MainDS.AGiftBatch.TableName, Transaction);
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
             return MainDS;
         }
 
         /// <summary>
-        /// loads a GiftBatchTDS for a whole transaction (i.e. all details in the transaction)
+        /// loads a GiftBatchTDS for a whole transaction (i.e. all details in the specified gift)
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
@@ -885,17 +939,67 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                    AGiftDetailAccess.LoadViaAGift(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
-                    AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
-                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-                });
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                        AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                        AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
+                        AGiftDetailAccess.LoadViaAGift(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
 
-            MainDS.AcceptChanges();
+                        #region Validate Data
+
+                        if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
+                        else if ((MainDS.AGiftBatch == null) || (MainDS.AGiftBatch.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Batch data for Gift Batch number {1} in Ledger number {2} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ABatchNumber,
+                                    ALedgerNumber));
+                        }
+                        else if ((MainDS.AGift == null) || (MainDS.AGift.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Gift data for Gift {1} in Batch number {2} in Ledger number {3} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    AGiftTransactionNumber,
+                                    ABatchNumber,
+                                    ALedgerNumber));
+                        }
+                        else if ((MainDS.AGiftDetail == null) || (MainDS.AGiftDetail.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Gift Details for Gift {1} in Batch number {2} in Ledger number {3} do not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    AGiftTransactionNumber,
+                                    ABatchNumber,
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
             return MainDS;
         }
 
@@ -912,7 +1016,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if (ADonorPartnerKey < 0)
             {
                 throw new ArgumentException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Donor Partnerkey must be a positive number!"),
+                            "Function:{0} - The Donor Partnerkey cannot be a negative number!"),
                         Utilities.GetMethodName(true)));
             }
 
@@ -1017,6 +1121,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 });
 
             MainDS.AcceptChanges();
+
             return MainDS;
         }
 
@@ -1068,16 +1173,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
                                 "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
-                            Utilities.GetMethodSignature(),
+                            Utilities.GetMethodName(true),
                             ALedgerNumber));
                 }
                 else if ((MainDS.AGiftBatch == null) || (MainDS.AGiftBatch.Count == 0))
                 {
                     throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                "Function:{0} - Gift Batch data for Ledger number {1}, Batch {2} does not exist or could not be accessed!"),
-                            Utilities.GetMethodSignature(),
-                            ALedgerNumber,
-                            ABatchNumber));
+                                "Function:{0} - Gift Batch data for Batch {1} in Ledger number {2} does not exist or could not be accessed!"),
+                            Utilities.GetMethodName(true),
+                            ABatchNumber,
+                            ALedgerNumber));
                 }
 
                 #endregion Validate Data
@@ -1121,15 +1226,39 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                    ARecurringGiftBatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                });
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                        ARecurringGiftBatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
-            MainDS.AcceptChanges();
+                        #region Validate Data
+
+                        if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
             return MainDS;
         }
 
@@ -1165,15 +1294,47 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                    ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-                });
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                        ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 
-            MainDS.AcceptChanges();
+                        #region Validate Data
+
+                        if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
+                        else if ((MainDS.ARecurringGiftBatch == null) || (MainDS.ARecurringGiftBatch.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Batch data for Recurring Gift Batch {1} in Ledger number {2} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ABatchNumber,
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
             return MainDS;
         }
 
@@ -1207,27 +1368,49 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    try
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
                     {
                         // find PPartnerRows for all donors (needed for receipt frequency info)
-                        foreach (AGiftRow Row in MainDS.AGift.Rows)
+                        foreach (AGiftRow giftRow in MainDS.AGift.Rows)
                         {
-                            MainDS.DonorPartners.Merge(PPartnerAccess.LoadByPrimaryKey(Row.DonorKey, Transaction));
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        TLogging.Log("Error in LoadTransactions: " + e.Message);
-                        throw e;
-                    }
-                });
+                            PPartnerTable partnerTable = null;
+                            partnerTable = PPartnerAccess.LoadByPrimaryKey(giftRow.DonorKey, Transaction);
 
-            MainDS.AcceptChanges();
+                            #region Validate Data
+
+                            if ((partnerTable == null) || (partnerTable.Count == 0))
+                            {
+                                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                            "Function:{0} - Partner data for Donor number {1} (as used in Ledger {2}, Batch {3} and Gift {4}) does not exist or could not be accessed!"),
+                                        Utilities.GetMethodName(true),
+                                        giftRow.DonorKey,
+                                        ALedgerNumber,
+                                        ABatchNumber,
+                                        giftRow.GiftTransactionNumber));
+                            }
+
+                            #endregion Validate Data
+
+                            MainDS.DonorPartners.Merge(partnerTable);
+                        }
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
             return MainDS;
         }
 
@@ -1247,39 +1430,68 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             "Function:{0} - The Ledger number must be greater than 0!"),
                         Utilities.GetMethodName(true)), ALedgerNumber);
             }
+            else if (AModifiedDetailKeys.Count == 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Function:{0} - The list of modified detail keys is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
 
             #endregion Validate Arguments
 
             TDBTransaction Transaction = null;
-            bool SubmissionOK = true;
+            bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                ref Transaction,
-                ref SubmissionOK,
-                delegate
-                {
-                    try
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    ref Transaction,
+                    ref SubmissionOK,
+                    delegate
                     {
                         // find PPartnerRows for all donors (needed for receipt frequency info)
                         foreach (string ModifiedDetailKey in AModifiedDetailKeys)
                         {
                             string[] GiftDetailFields = ModifiedDetailKey.Split('|');
 
-                            AGiftDetailTable GiftDetailTable = AGiftDetailAccess.LoadByPrimaryKey(
-                                ALedgerNumber, Convert.ToInt32(GiftDetailFields[1]),
-                                Convert.ToInt32(GiftDetailFields[2]), Convert.ToInt32(GiftDetailFields[3]), Transaction);
+                            int giftBatchNumber = Convert.ToInt32(GiftDetailFields[1]);
+                            int giftNumber = Convert.ToInt32(GiftDetailFields[2]);
+                            int giftDetailNumber = Convert.ToInt32(GiftDetailFields[3]);
+
+                            AGiftDetailTable GiftDetailTable =
+                                AGiftDetailAccess.LoadByPrimaryKey(ALedgerNumber, giftBatchNumber, giftNumber, giftDetailNumber, Transaction);
+
+                            #region Validate Data
+
+                            if ((GiftDetailTable == null) || (GiftDetailTable.Count == 0))
+                            {
+                                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                            "Function:{0} - Data for Gift Detail {1}, from Gift {2} in Batch {3} and Ledger {4}, does not exist or could not be accessed!"),
+                                        Utilities.GetMethodName(true),
+                                        giftDetailNumber,
+                                        giftNumber,
+                                        giftBatchNumber,
+                                        ALedgerNumber));
+                            }
+
+                            #endregion Validate Data
 
                             GiftDetailTable[0].ModifiedDetail = false;
 
                             AGiftDetailAccess.SubmitChanges(GiftDetailTable, Transaction);
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        TLogging.Log("Error in LoadTransactions: " + e.Message);
-                        throw e;
-                    }
-                });
+
+                        SubmissionOK = true;
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -1496,6 +1708,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int64 ARecipientLedgerNumber,
             out TVerificationResultCollection AVerificationResults)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ARecipientPartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Recipient Partner Key is less than 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ARecipientLedgerNumber < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Recipient Ledger Number is less than 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             string CostCentreCode = string.Empty;
             string ARecipientLedgerNumberName = string.Empty;
 
@@ -1503,24 +1736,35 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             Int32 RecipientLedger = (int)ARecipientLedgerNumber / 1000000;
 
-            if ((RecipientLedger != ALedgerNumber) && (ARecipientPartnerKey > 0))
+            try
             {
-                //Valid ledger number table
-                if (!CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientLedgerNumber, out CostCentreCode)
-                    && !CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientPartnerKey, out CostCentreCode))
+                if ((RecipientLedger != ALedgerNumber) && (ARecipientPartnerKey > 0))
                 {
-                    TPartnerClass Class;
-                    TPartnerServerLookups.GetPartnerShortName(ARecipientLedgerNumber, out ARecipientLedgerNumberName, out Class);
+                    //Valid ledger number table
+                    if (!CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientLedgerNumber, out CostCentreCode)
+                        && !CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientPartnerKey, out CostCentreCode))
+                    {
+                        TPartnerClass Class;
+                        TPartnerServerLookups.GetPartnerShortName(ARecipientLedgerNumber, out ARecipientLedgerNumberName, out Class);
 
-                    AVerificationResults.Add(
-                        new TVerificationResult(
-                            null,
-                            string.Format(ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_RECIPIENTFIELD_NOT_ILT).ErrorMessageText,
-                                ARecipientLedgerNumberName, ARecipientLedgerNumber),
-                            TResultSeverity.Resv_Critical));
+                        AVerificationResults.Add(
+                            new TVerificationResult(
+                                null,
+                                string.Format(ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_RECIPIENTFIELD_NOT_ILT).ErrorMessageText,
+                                    ARecipientLedgerNumberName, ARecipientLedgerNumber),
+                                TResultSeverity.Resv_Critical));
 
-                    return false;
+                        return false;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
             return true;
@@ -1552,18 +1796,44 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Arguments
 
-            GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, true);
+            GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            // drop all tables apart from AGift and AGiftDetail
-            foreach (DataTable table in MainDS.Tables)
+            try
             {
-                if ((table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName))
+                MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, true);
+
+                #region Validate Data
+
+                if ((MainDS == null) || (MainDS.Tables.Count == 0))
                 {
-                    table.Clear();
+                    throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                                "Function:{0} - Dataset MainDS is NULL or has no tables!"),
+                            Utilities.GetMethodName(true),
+                            ALedgerNumber));
                 }
+
+                #endregion Validate Data
+
+                // drop all tables apart from AGift and AGiftDetail
+                foreach (DataTable table in MainDS.Tables)
+                {
+                    if ((table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName))
+                    {
+                        table.Clear();
+                    }
+                }
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
-            MainDS.AcceptChanges();
             return MainDS;
         }
 
@@ -1593,30 +1863,43 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Arguments
 
-            GiftBatchTDS MainDS = LoadARecurringGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
+            GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            #region Validate Data
-
-            if ((MainDS == null) || (MainDS.Tables.Count == 0))
+            try
             {
-                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
-                            "Method:{0} - Dataset MainDS is NULL or has no tables!"),
-                        Utilities.GetMethodSignature(),
-                        ALedgerNumber));
-            }
+                MainDS = LoadARecurringGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
 
-            #endregion Validate Data
+                #region Validate Data
 
-            // drop all tables apart from ARecurringGift and ARecurringGiftDetail
-            foreach (DataTable table in MainDS.Tables)
-            {
-                if ((table.TableName != MainDS.ARecurringGift.TableName) && (table.TableName != MainDS.ARecurringGiftDetail.TableName))
+                if ((MainDS == null) || (MainDS.Tables.Count == 0))
                 {
-                    table.Clear();
+                    throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                                "Function:{0} - Dataset MainDS is NULL or has no tables!"),
+                            Utilities.GetMethodName(true),
+                            ALedgerNumber));
                 }
-            }
 
-            MainDS.AcceptChanges();
+                #endregion Validate Data
+
+                // drop all tables apart from ARecurringGift and ARecurringGiftDetail
+                foreach (DataTable table in MainDS.Tables)
+                {
+                    if ((table.TableName != MainDS.ARecurringGift.TableName) && (table.TableName != MainDS.ARecurringGiftDetail.TableName))
+                    {
+                        table.Clear();
+                    }
+                }
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             return MainDS;
         }
@@ -1799,7 +2082,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 if (GiftBatchTableInDataSet || GiftTableInDataSet || GiftDetailTableInDataSet)
                 {
-                    throw new Exception(String.Format("Method:{0} - Recurring and normal gift data found in same batch!",
+                    throw new Exception(String.Format("Function:{0} - Recurring and normal gift data found in same batch!",
                             Utilities.GetMethodName(true)));
                 }
 
@@ -1810,7 +2093,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 if (!(GiftBatchTableInDataSet || GiftTableInDataSet || GiftDetailTableInDataSet))
                 {
-                    throw new Exception(String.Format("Method:{0} - No gift data changes to save!", Utilities.GetMethodName(true)));
+                    throw new Exception(String.Format("Function:{0} - No gift data changes to save!", Utilities.GetMethodName(true)));
                 }
             }
 
@@ -3301,14 +3584,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
             {
                 throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                            "Method:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                            "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
                         Utilities.GetMethodSignature(),
                         ALedgerNumber));
             }
             else if ((MainDS.AMotivationDetail == null) || (MainDS.AMotivationDetail.Count == 0))
             {
                 throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                            "Method:{0} - Motivation Detail data for Ledger number {1} does not exist or could not be accessed!"),
+                            "Function:{0} - Motivation Detail data for Ledger number {1} does not exist or could not be accessed!"),
                         Utilities.GetMethodSignature(),
                         ALedgerNumber));
             }
@@ -3317,7 +3600,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             //else if ((MainDS.ARecurringGiftBatch == null) || (MainDS.ARecurringGiftBatch.Count == 0))
             //{
             //    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-            //                "Method:{0} - Recurring Gift Batch data for Ledger number {1} Batch {2} does not exist or could not be accessed!"),
+            //                "Function:{0} - Recurring Gift Batch data for Ledger number {1} Batch {2} does not exist or could not be accessed!"),
             //            Utilities.GetMethodSignature(),
             //            ALedgerNumber,
             //            ABatchNumber));
@@ -3372,7 +3655,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         if (motivationDetailRow == null)
                         {
                             throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Method:{0} - Motivation Detail data for Ledger number {1}, Motivation Group {2} and Detail {3} does not exist or could not be accessed!"),
+                                        "Function:{0} - Motivation Detail data for Ledger number {1}, Motivation Group {2} and Detail {3} does not exist or could not be accessed!"),
                                     Utilities.GetMethodSignature(),
                                     ALedgerNumber,
                                     giftDetail.MotivationGroupCode,
@@ -3445,20 +3728,42 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// calculate the admin fee for a given amount.
         /// public so that it can be tested by NUnit tests.
         /// </summary>
-        /// <param name="MainDS"></param>
+        /// <param name="AMainDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AFeeCode"></param>
         /// <param name="AGiftAmount"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
-        public static decimal CalculateAdminFee(GiftBatchTDS MainDS,
+        public static decimal CalculateAdminFee(GiftBatchTDS AMainDS,
             Int32 ALedgerNumber,
             string AFeeCode,
             decimal AGiftAmount,
             out TVerificationResultCollection AVerificationResult
             )
         {
+            #region Validate Arguments
+
+            if (AMainDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Gift Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (AFeeCode.Length == 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Fee code is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             //Amount to return
             decimal FeeAmount = 0;
 
@@ -3470,34 +3775,35 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string ErrorContext = String.Empty;
             string ErrorMessage = String.Empty;
             //Set default type as non-critical
-            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+            //TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
 
             AVerificationResult = new TVerificationResultCollection();
 
             try
             {
-                AFeesPayableRow feePayableRow = (AFeesPayableRow)MainDS.AFeesPayable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
+                AFeesPayableRow feePayableRow = (AFeesPayableRow)AMainDS.AFeesPayable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
 
                 if (feePayableRow == null)
                 {
-                    AFeesReceivableRow feeReceivableRow = (AFeesReceivableRow)MainDS.AFeesReceivable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
+                    AFeesReceivableRow feeReceivableRow = (AFeesReceivableRow)AMainDS.AFeesReceivable.Rows.Find(new object[] { ALedgerNumber,
+                                                                                                                               AFeeCode });
+
+                    #region Validate Data 1
 
                     if (feeReceivableRow == null)
                     {
-                        ErrorContext = "Calculate Admin Fee";
-                        ErrorMessage = String.Format(Catalog.GetString("The Ledger no.: {0} or Fee Code: {1} does not exist."),
-                            ALedgerNumber,
-                            AFeeCode
-                            );
-                        ErrorType = TResultSeverity.Resv_Noncritical;
-                        throw new System.ArgumentException(ErrorMessage);
+                        throw new ArgumentException(String.Format(Catalog.GetString(
+                                    "Function:{0} - Fee Code {1} could not be found in Ledger {2}"),
+                                Utilities.GetMethodName(true),
+                                AFeeCode,
+                                ALedgerNumber));
                     }
-                    else
-                    {
-                        GiftPercentageAmount = feeReceivableRow.ChargePercentage * AGiftAmount / 100;
-                        ChargeOption = feeReceivableRow.ChargeOption.ToUpper();
-                        ChargeAmount = feeReceivableRow.ChargeAmount;
-                    }
+
+                    #endregion Validate Data 1
+
+                    GiftPercentageAmount = feeReceivableRow.ChargePercentage * AGiftAmount / 100;
+                    ChargeOption = feeReceivableRow.ChargeOption.ToUpper();
+                    ChargeAmount = feeReceivableRow.ChargeAmount;
                 }
                 else
                 {
@@ -3580,34 +3886,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         break;
 
                     default:
-                        ErrorContext = "Calculate Admin Fee";
-                        ErrorMessage =
-                            String.Format(Catalog.GetString("Unexpected Fee Payable/Receivable Charge Option in Ledger: {0} and Fee Code: '{1}'."),
-                                ALedgerNumber,
-                                AFeeCode
-                                );
-                        ErrorType = TResultSeverity.Resv_Noncritical;
-                        throw new System.InvalidOperationException(ErrorMessage);
+                        throw new Exception(String.Format(Catalog.GetString(
+                                "Function:{0} - Unexpected Fee Payable/Receivable Charge Option: '{1}' in Ledger: {2} and Fee Code: '{3}'!"),
+                            Utilities.GetMethodName(true),
+                            ChargeOption,
+                            ALedgerNumber,
+                            AFeeCode));
                 }
-            }
-            catch (ArgumentException ex)
-            {
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
-            }
-            catch (InvalidOperationException ex)
-            {
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
             }
             catch (Exception ex)
             {
-                ErrorContext = "Calculate Admin Fee";
-                ErrorMessage = String.Format(Catalog.GetString("Unknown error while calculating admin fee for Ledger: {0} and Fee Code: {1}" +
-                        Environment.NewLine + Environment.NewLine + ex.ToString()),
-                    ALedgerNumber,
-                    AFeeCode
-                    );
-                ErrorType = TResultSeverity.Resv_Critical;
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
             // calculate the admin fee for the specific amount and admin fee. see gl4391.p
@@ -3621,6 +3914,28 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             decimal AFeeAmount,
             int APostingPeriod)
         {
+            #region Validate Arguments
+
+            if (AMainDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Gift Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            if (AGiftDetailRow == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The Gift Detail row is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AFeeCode.Length == 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Fee code is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             // TODO CT
             // see Add_To_Fee_Totals in gr1210.p
 
@@ -3654,9 +3969,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 /* Add the amount to the existing total. */
                 ProcessedFeeRow.PeriodicAmount += AFeeAmount;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
         }
 
@@ -3914,6 +4233,32 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AFeesPayableAccess.LoadViaALedger(AMainDS, ALedgerNumber, ATransaction);
             AFeesReceivableAccess.LoadViaALedger(AMainDS, ALedgerNumber, ATransaction);
             AProcessedFeeAccess.LoadViaAGiftBatch(AMainDS, ALedgerNumber, ABatchNumber, ATransaction);
+
+            #region Validate Data
+
+            if ((AMainDS.AMotivationDetailFee == null) || (AMainDS.AMotivationDetailFee.Count == 0))
+            {
+                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                            "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                        Utilities.GetMethodSignature(),
+                        ALedgerNumber));
+            }
+            else if ((AMainDS.AFeesPayable == null) || (AMainDS.AFeesPayable.Count == 0))
+            {
+                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                            "Function:{0} - Account data for Ledger number {1} does not exist or could not be accessed!"),
+                        Utilities.GetMethodSignature(),
+                        ALedgerNumber));
+            }
+            else if ((AMainDS.AFeesReceivable == null) || (AMainDS.AFeesReceivable.Count == 0))
+            {
+                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                            "Function:{0} - Cost Centre data for Ledger number {1} does not exist or could not be accessed!"),
+                        Utilities.GetMethodSignature(),
+                        ALedgerNumber));
+            }
+
+            #endregion Validate Data
         }
 
         /// <summary>
@@ -3925,6 +4270,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-2")]
         public static bool PostGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodSignature()), ALedgerNumber, ABatchNumber);
+            }
+
+            #endregion Validate Arguments
+
             List <Int32>GiftBatches = new List <int>();
             GiftBatches.Add(ABatchNumber);
 
@@ -3947,7 +4309,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (ABatchNumbers.Count == 0)
             {
-                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The list of Batch numbers is empty!"),
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The list of Batch numbers to post is empty!"),
                         Utilities.GetMethodName(true)));
             }
 
@@ -4024,6 +4386,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             // it is possible that gl transactions are not actually needed for a gift posting.
                             // E.g. it is only a donor name adjustment -- there is no change in the general ledger account.
                             bool GLBatchNotRequired = GLDataset.ATransaction.Count == 0;
+                            bool GLBatchIsRequired = !GLBatchNotRequired;
 
                             if (GLBatchNotRequired)
                             {
@@ -4035,7 +4398,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (GLBatchNotRequired || (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
                                                            out SingleVerificationResultCollection) == TSubmitChangesResult.scrOK))
                             {
-                                if (!GLBatchNotRequired)
+                                if (GLBatchIsRequired)  // i.e. GL batch is required and saved OK
                                 {
                                     VerificationResult.AddCollection(SingleVerificationResultCollection);
                                     GLBatchNumbers.Add(batch.BatchNumber);
@@ -4045,6 +4408,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 // Assign ReceiptNumbers to Gifts
                                 //
                                 ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                                #region Validate Data
+
+                                if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
+                                {
+                                    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                                "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                            Utilities.GetMethodName(true),
+                                            ALedgerNumber));
+                                }
+
+                                #endregion Validate Data
+
                                 Int32 LastReceiptNumber = MainDS.ALedger[0].LastHeaderRNumber;
 
                                 foreach (AGiftRow GiftRow in MainDS.AGift.Rows)
@@ -4085,7 +4461,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             VerificationResult.AddCollection(SingleVerificationResultCollection);
                             SubmissionOK = true;
 
-                            String LedgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
+                            string ledgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
 
                             //
                             // Print Gift Batch Detail report (on the client!)
@@ -4095,7 +4471,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 {
                                     "param_ledger_number_i=" + ALedgerNumber,
                                     "param_batch_number_i=" + BatchNumber,
-                                    "param_ledger_name=\"" + LedgerName + "\"",
+                                    "param_ledger_name=\"" + ledgerName + "\"",
                                     "param_currency_name=\"" + BatchCurrencyCode[BatchNumber] + "\""
                                 };
                                 String ParamStr = String.Join(",", Params);
@@ -4209,6 +4585,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool VerifyPartnerKey(Int64 APartnerKey)
         {
+            #region Validate Arguments
+
+            if (APartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Partner Key cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             PPartnerTable PartnerTable = null;
 
             TDBTransaction Transaction = null;
@@ -4227,11 +4613,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// Load Partner Data
         /// </summary>
-        /// <param name="PartnerKey">Partner Key </param>
+        /// <param name="APartnerKey">Partner Key </param>
         /// <returns>Partnertable for the partner Key</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static PPartnerTable LoadPartnerData(long PartnerKey)
+        public static PPartnerTable LoadPartnerData(long APartnerKey)
         {
+            #region Validate Arguments
+
+            if (APartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Partner Key cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             PPartnerTable PartnerTbl = null;
 
             TDBTransaction Transaction = null;
@@ -4241,10 +4637,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    PartnerTbl = PPartnerAccess.LoadByPrimaryKey(PartnerKey, Transaction);
+                    PartnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
                 });
 
             PartnerTbl.AcceptChanges();
+
             return PartnerTbl;
         }
 
@@ -4257,6 +4654,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static PBankingDetailsTable GetDonorBankingDetails(long APartnerKey, int ABankingDetailsKey = 0)
         {
+            #region Validate Arguments
+
+            if (APartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Partner Key cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             PBankingDetailsTable DonorBankingDetails = new PBankingDetailsTable();
 
             TDBTransaction Transaction = null;
@@ -4298,11 +4705,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// Load Partner Tax Deductible Pct
         /// </summary>
-        /// <param name="PartnerKey">Partner Key </param>
+        /// <param name="APartnerKey">Partner Key </param>
         /// <returns>PPartnerTaxDeductiblePctTable for the partner Key</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static PPartnerTaxDeductiblePctTable LoadPartnerTaxDeductiblePct(long PartnerKey)
+        public static PPartnerTaxDeductiblePctTable LoadPartnerTaxDeductiblePct(long APartnerKey)
         {
+            #region Validate Arguments
+
+            if (APartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Partner Key cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             PPartnerTaxDeductiblePctTable PartnerTaxDeductiblePct = null;
 
             TDBTransaction Transaction = null;
@@ -4311,10 +4728,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    PartnerTaxDeductiblePct = PPartnerTaxDeductiblePctAccess.LoadViaPPartner(PartnerKey, Transaction);
+                    PartnerTaxDeductiblePct = PPartnerTaxDeductiblePctAccess.LoadViaPPartner(APartnerKey, Transaction);
                 });
 
             PartnerTaxDeductiblePct.AcceptChanges();
+
             return PartnerTaxDeductiblePct;
         }
 
@@ -4325,16 +4743,37 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static string IdentifyPartnerCostCentre(Int32 ALedgerNumber, Int64 AFieldNumber)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (AFieldNumber < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Field number cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             TCacheable CachePopulator = new TCacheable();
             Type typeOfTable;
+
             AValidLedgerNumberTable ValidLedgerNumbers = (AValidLedgerNumberTable)
                                                          CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.ValidLedgerNumberList,
                 "",
                 false,
                 out typeOfTable);
 
-            AValidLedgerNumberRow ValidLedgerNumberRow = (AValidLedgerNumberRow)
-                                                         ValidLedgerNumbers.Rows.Find(new object[] { ALedgerNumber, AFieldNumber });
+            AValidLedgerNumberRow ValidLedgerNumberRow = null;
+
+            if (ValidLedgerNumbers != null)
+            {
+                ValidLedgerNumberRow = (AValidLedgerNumberRow)ValidLedgerNumbers.Rows.Find(new object[] { ALedgerNumber, AFieldNumber });
+            }
 
             if (ValidLedgerNumberRow != null)
             {
@@ -4355,32 +4794,64 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static Int64 GetRecipientFundNumber(Int64 APartnerKey, DateTime? AGiftDate = null)
         {
+            #region Validate Arguments
+
+            if (APartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Partner Key cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             bool DataLoaded = false;
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    try
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
                     {
                         MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, Transaction));
                         MainDS.RecipientPartners.Merge(PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction));
                         MainDS.RecipientFamily.Merge(PFamilyAccess.LoadByPrimaryKey(APartnerKey, Transaction));
                         MainDS.RecipientPerson.Merge(PPersonAccess.LoadByPrimaryKey(APartnerKey, Transaction));
                         MainDS.RecipientUnit.Merge(PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+
+                        #region Validate Data
+
+                        if ((MainDS.LedgerPartnerTypes == null) || (MainDS.LedgerPartnerTypes.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger Partner Types data does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true)));
+                        }
+                        else if ((MainDS.RecipientPartners == null) || (MainDS.RecipientPartners.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Recipient data for Partner Key {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    APartnerKey));
+                        }
+
+                        #endregion Validate Data
+
                         DataLoaded = true;
-                    }
-                    catch (Exception)
-                    {
-                        TLogging.Log(String.Format(Catalog.GetString("Error in getting recipient fund number for PartnerKey {0}"), APartnerKey));
-                        throw;
-                    }
-                });
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             if (DataLoaded)
             {
@@ -4418,19 +4889,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             //Look in RecipientFamily table
-            PFamilyRow familyRow = (PFamilyRow)AMainDS.RecipientFamily.Rows.Find(APartnerKey);
+            PFamilyRow FamilyRow = (PFamilyRow)AMainDS.RecipientFamily.Rows.Find(APartnerKey);
 
-            if (familyRow != null)
+            if (FamilyRow != null)
             {
                 return GetGiftDestinationForRecipient(APartnerKey, AGiftDate);
             }
 
             //Look in RecipientPerson table
-            PPersonRow personRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(APartnerKey);
+            PPersonRow PersonRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(APartnerKey);
 
-            if (personRow != null)
+            if (PersonRow != null)
             {
-                return GetGiftDestinationForRecipient(personRow.FamilyKey, AGiftDate);
+                return GetGiftDestinationForRecipient(PersonRow.FamilyKey, AGiftDate);
             }
 
             //Check that LedgerPartnertypes are already loaded
@@ -4444,6 +4915,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     delegate
                     {
                         PPTTable = PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, Transaction);
+
+                        #region Validate Data
+
+                        if ((PPTTable == null) || (PPTTable.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger Partner Types data does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true)));
+                        }
+
+                        #endregion Validate Data
                     });
 
                 AMainDS.LedgerPartnerTypes.Merge(PPTTable);
@@ -4495,37 +4977,71 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static Boolean KeyMinistryExists(Int64 APartnerKey, out Boolean AIsActive)
         {
+            #region Validate Arguments
+
+            if (APartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Partner Key cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             Boolean KeyMinistryExists = false;
             bool IsActive = false;
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
-
-                    if (UnitTable.Rows.Count == 1)
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
                     {
-                        // this partner is indeed a unit
-                        PUnitRow UnitRow = UnitTable[0];
+                        PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
 
-                        if (UnitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+                        if ((UnitTable != null) && (UnitTable.Rows.Count == 1))
                         {
-                            KeyMinistryExists = true;
+                            // this partner is indeed a unit
+                            PUnitRow UnitRow = UnitTable[0];
 
-                            PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
-                            PPartnerRow PartnerRow = PartnerTable[0];
-
-                            if (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE)
+                            if (UnitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
                             {
-                                IsActive = true;
+                                KeyMinistryExists = true;
+
+                                PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+
+                                #region Validate Data
+
+                                if ((PartnerTable == null) || (PartnerTable.Count == 0))
+                                {
+                                    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                                "Function:{0} - Partner data for Partner Key {1} does not exist or could not be accessed!"),
+                                            Utilities.GetMethodName(true),
+                                            APartnerKey));
+                                }
+
+                                #endregion Validate Data
+
+                                PPartnerRow PartnerRow = PartnerTable[0];
+
+                                if (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE)
+                                {
+                                    IsActive = true;
+                                }
                             }
                         }
-                    }
-                });
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             AIsActive = IsActive;
 
@@ -4540,28 +5056,54 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static Boolean KeyMinistryIsActive(Int64 AKeyMinPartnerKey)
         {
+            #region Validate Arguments
+
+            if (AKeyMinPartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Key Ministry Partner Key cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             Boolean KeyMinistryIsActive = false;
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                ref Transaction,
-                delegate
-                {
-                    try
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    ref Transaction,
+                    delegate
                     {
                         PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(AKeyMinPartnerKey, Transaction);
+
+                        #region Validate Data
+
+                        if ((PartnerTable == null) || (PartnerTable.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Partner data for Partner Key {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    AKeyMinPartnerKey));
+                        }
+
+                        #endregion Validate Data
+
                         PPartnerRow PartnerRow = PartnerTable[0];
 
                         KeyMinistryIsActive =
                             (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE);
-                    }
-                    catch (Exception e)
-                    {
-                        TLogging.Log("An Exception occured during KeyMinistryIsActive for KeyMinPartnerKey:" + AKeyMinPartnerKey.ToString());
-                        throw e;
-                    }
-                });
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             return KeyMinistryIsActive;
         }
@@ -4575,24 +5117,44 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static PUnitTable LoadKeyMinistry(Int64 APartnerKey, out Int64 AFieldNumber)
         {
+            #region Validate Arguments
+
+            if (APartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Partner Key cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             AFieldNumber = 0;
             Int64 FieldNumber = AFieldNumber;
 
             PUnitTable UnitTable = null;
-
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    UnitTable = LoadKeyMinistries(APartnerKey, Transaction);
-                    FieldNumber = GetRecipientFundNumber(APartnerKey);
-                });
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        UnitTable = LoadKeyMinistries(APartnerKey, Transaction);
+                        FieldNumber = GetRecipientFundNumber(APartnerKey);
+                    });
+
+                UnitTable.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             AFieldNumber = FieldNumber;
-
-            UnitTable.AcceptChanges();
 
             return UnitTable;
         }
@@ -4603,11 +5165,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         private static PUnitTable LoadKeyMinistries(Int64 ARecipientPartnerKey, TDBTransaction ATransaction)
         {
+            #region Validate Arguments
+
+            if (ARecipientPartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Recipient Partner Key cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ATransaction == null)
+            {
+                throw new EFinanceSystemDBTransactionNullException(String.Format(Catalog.GetString(
+                            "Function:{0} - Database Transaction must not be NULL!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(ARecipientPartnerKey, ATransaction);
 
-            if (UnitTable.Rows.Count == 1)
+            if ((UnitTable != null) && (UnitTable.Rows.Count == 1))
             {
-                // this partner is indeed a unit
+                // this partner is a unit
                 PUnitRow unitRow = UnitTable[0];
 
                 switch (unitRow.UnitTypeCode)
@@ -4626,11 +5204,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return UnitTable;
         }
 
-        private static PUnitTable LoadKeyMinistriesOfField(Int64 partnerKey, TDBTransaction ATransaction)
+        private static PUnitTable LoadKeyMinistriesOfField(Int64 APartnerKey, TDBTransaction ATransaction)
         {
+            #region Validate Arguments
+
+            if (APartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Partner Key cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ATransaction == null)
+            {
+                throw new EFinanceSystemDBTransactionNullException(String.Format(Catalog.GetString(
+                            "Function:{0} - Database Transaction must not be NULL!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             string sqlLoadKeyMinistriesOfField =
                 "SELECT unit.* FROM PUB_um_unit_structure us, PUB_p_unit unit, PUB_p_partner partner " +
-                "WHERE us.um_parent_unit_key_n = " + partnerKey.ToString() + " " +
+                "WHERE us.um_parent_unit_key_n = " + APartnerKey.ToString() + " " +
                 "AND unit.p_partner_key_n = us.um_child_unit_key_n " +
                 "AND unit.u_unit_type_code_c = '" + MPartnerConstants.UNIT_TYPE_KEYMIN + "' " +
                 "AND partner.p_partner_key_n = unit.p_partner_key_n " +
@@ -4653,6 +5247,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool InactiveKeyMinistriesFoundInBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out DataTable AInactiveKMsTable)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+
+            #endregion Validate Arguments
+
             string SQLLoadInactiveKeyMinistriesInBatch = string.Empty;
 
             AInactiveKMsTable = new DataTable();
@@ -4664,25 +5275,36 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    SQLLoadInactiveKeyMinistriesInBatch =
-                        "SELECT gd.a_gift_transaction_number_i, a_detail_number_i, p_recipient_key_n, unit.p_unit_name_c" +
-                        " FROM a_gift_detail gd, um_unit_structure us, p_unit unit, p_partner partner" +
-                        " WHERE gd.p_recipient_key_n = partner.p_partner_key_n" +
-                        "   AND gd.a_ledger_number_i = " + ALedgerNumber.ToString() +
-                        "   AND gd.a_batch_number_i = " + ABatchNumber.ToString() +
-                        "   AND gd.a_gift_transaction_amount_n > 0" +
-                        "   AND partner.p_partner_key_n = unit.p_partner_key_n" +
-                        "   AND partner.p_status_code_c = '" + MPartnerConstants.PARTNERSTATUS_INACTIVE + "'" +
-                        "   AND unit.p_partner_key_n = us.um_child_unit_key_n" +
-                        "   AND unit.u_unit_type_code_c = '" + MPartnerConstants.UNIT_TYPE_KEYMIN + "';";
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        SQLLoadInactiveKeyMinistriesInBatch =
+                            "SELECT gd.a_gift_transaction_number_i, a_detail_number_i, p_recipient_key_n, unit.p_unit_name_c" +
+                            " FROM a_gift_detail gd, um_unit_structure us, p_unit unit, p_partner partner" +
+                            " WHERE gd.p_recipient_key_n = partner.p_partner_key_n" +
+                            "   AND gd.a_ledger_number_i = " + ALedgerNumber.ToString() +
+                            "   AND gd.a_batch_number_i = " + ABatchNumber.ToString() +
+                            "   AND gd.a_gift_transaction_amount_n > 0" +
+                            "   AND partner.p_partner_key_n = unit.p_partner_key_n" +
+                            "   AND partner.p_status_code_c = '" + MPartnerConstants.PARTNERSTATUS_INACTIVE + "'" +
+                            "   AND unit.p_partner_key_n = us.um_child_unit_key_n" +
+                            "   AND unit.u_unit_type_code_c = '" + MPartnerConstants.UNIT_TYPE_KEYMIN + "';";
 
-                    DBAccess.GDBAccessObj.SelectDT(InactiveKMsTable, SQLLoadInactiveKeyMinistriesInBatch, Transaction, new OdbcParameter[0], 0, 0);
-                });
+                        DBAccess.GDBAccessObj.SelectDT(InactiveKMsTable, SQLLoadInactiveKeyMinistriesInBatch, Transaction, new OdbcParameter[0], 0, 0);
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             return AInactiveKMsTable.Rows.Count > 0;
         }
