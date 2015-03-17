@@ -1,10 +1,10 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2096,9 +2096,10 @@ namespace Ict.Common
             // For export to CSV/Excel, the date should not be formatted as text, but formatted by the export/print program...
 
             // Mono and .Net return different strings for month of March in German culture
+            // and Excel seems to want MÄR
             if ((CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de") && (ADateTime.Month == 3))
             {
-                ReturnValue = ReturnValue.Replace("MRZ", "M�R");
+                ReturnValue = ReturnValue.Replace("MRZ", "MÄR");
             }
 
             // todo use short month names from local array, similar to GetLongMonthName
