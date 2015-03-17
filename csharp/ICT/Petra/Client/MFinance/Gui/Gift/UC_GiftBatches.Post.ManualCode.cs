@@ -135,11 +135,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         // saving failed, therefore do not try to post
                         MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
-                            Catalog.GetString("Please first save the batch, and then post it!"));
+                            Catalog.GetString("Please first correct and save the batch, and then post it!"));
                     }
 
                     return false;
                 }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
             finally
             {
@@ -225,9 +229,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                //Do nothing
+                throw ex;
             }
             finally
             {

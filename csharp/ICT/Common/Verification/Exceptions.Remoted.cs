@@ -99,7 +99,7 @@ namespace Ict.Common.Verification.Exceptions
         }
 
         /// <summary>
-        /// Initializes a new instance of this Exception Class with a specified error message, access richt and Database Table.
+        /// Initializes a new instance of this Exception Class with a specified error message, access right and Database Table.
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         /// <param name="AVerificationResults"><see cref ="TVerificationResultCollection" /> that holds one or more severe TVerificationResult item(s).</param>

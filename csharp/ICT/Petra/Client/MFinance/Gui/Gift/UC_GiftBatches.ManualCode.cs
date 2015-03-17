@@ -929,27 +929,54 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void PostBatch(System.Object sender, EventArgs e)
         {
+            bool Success = false;
+
             if (GetSelectedRowIndex() < 0)
             {
                 return; // Oops - there's no selected row.
             }
 
-            if (FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow))
+            try
             {
-                // Posting succeeded so now deal with gift receipting ...
-                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber,
-                    FSelectedBatchNumber,
-                    false);
+                Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow);
 
-                FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
-
-                // Now we need to get the data back from the server to pick up all the changes
-                RefreshAllData();
-
-                if (FPetraUtilsObject.HasChanges)
+                if (Success)
                 {
-                    ((TFrmGiftBatch)ParentForm).SaveChangesManual();
+                    // Posting succeeded so now deal with gift receipting ...
+                    GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber,
+                        FSelectedBatchNumber,
+                        false);
+
+                    FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
+
+                    // Now we need to get the data back from the server to pick up all the changes
+                    RefreshAllData();
+
+                    if (FPetraUtilsObject.HasChanges)
+                    {
+                        ((TFrmGiftBatch)ParentForm).SaveChangesManual();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                string errMsg;
+
+                if (!Success)
+                {
+                    errMsg = Catalog.GetString("Error trying to post batch");
+                }
+                else
+                {
+                    errMsg = Catalog.GetString("Error trying to print gift receipts for batch");
+                }
+
+                errMsg += String.Format(" {0}:{1}{1}{2}",
+                    FPreviouslySelectedDetailRow.BatchNumber,
+                    Environment.NewLine,
+                    ex.Message);
+
+                MessageBox.Show(errMsg, Catalog.GetString("Post Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 

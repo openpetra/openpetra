@@ -1096,7 +1096,7 @@ namespace Ict.Common.Exceptions
         }
 
         /// <summary>
-        /// Initializes a new instance of this Exception Class with a specified error message, access richt and Database Table.
+        /// Initializes a new instance of this Exception Class with a specified error message, access right and Database Table.
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         /// <param name="AAccessRight">Access right.</param>
@@ -1454,6 +1454,678 @@ namespace Ict.Common.Exceptions
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EProblemConstructingHyperlinkException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EFinanceSystemUnexpectedStateException
+
+    /// <summary>
+    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// </summary>
+    [Serializable()]
+    public class EFinanceSystemUnexpectedStateException : EOPException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EFinanceSystemUnexpectedStateException()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EFinanceSystemUnexpectedStateException(String AMessage)
+            : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EFinanceSystemUnexpectedStateException(string AMessage, Exception AInnerException)
+            : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EFinanceSystemUnexpectedStateException(SerializationInfo AInfo, StreamingContext AContext)
+            : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EFinanceSystemInvalidLedgerNumberException
+
+    /// <summary>
+    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// </summary>
+    [Serializable()]
+    public class EFinanceSystemInvalidLedgerNumberException : EFinanceSystemUnexpectedStateException
+    {
+        /// <summary>Ledger number</summary>
+        private int FLedgerNumber;
+
+        /// <summary>Ledger number</summary>
+        public int LedgerNumber
+        {
+            get
+            {
+                return FLedgerNumber;
+            }
+
+            set
+            {
+                FLedgerNumber = value;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EFinanceSystemInvalidLedgerNumberException()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EFinanceSystemInvalidLedgerNumberException(String AMessage)
+            : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EFinanceSystemInvalidLedgerNumberException(string AMessage, Exception AInnerException)
+            : base(AMessage, AInnerException)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and ledger number.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="ALedgerNumber">Ledger number.</param>
+        public EFinanceSystemInvalidLedgerNumberException(String AMessage, int ALedgerNumber)
+            : base(AMessage)
+        {
+            FLedgerNumber = ALedgerNumber;
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EFinanceSystemInvalidLedgerNumberException(SerializationInfo AInfo, StreamingContext AContext)
+            : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            AInfo.AddValue("LedgerNumber", FLedgerNumber);
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EFinanceSystemInvalidBatchNumberException
+
+    /// <summary>
+    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// </summary>
+    [Serializable()]
+    public class EFinanceSystemInvalidBatchNumberException : EFinanceSystemUnexpectedStateException
+    {
+        /// <summary>Ledger number</summary>
+        private int FLedgerNumber;
+
+        /// <summary>Batch number</summary>
+        private int FBatchNumber;
+
+        /// <summary>Ledger number</summary>
+        public int LedgerNumber
+        {
+            get
+            {
+                return FLedgerNumber;
+            }
+
+            set
+            {
+                FLedgerNumber = value;
+            }
+        }
+
+        /// <summary>Ledger number</summary>
+        public int BatchNumber
+        {
+            get
+            {
+                return FBatchNumber;
+            }
+
+            set
+            {
+                FBatchNumber = value;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EFinanceSystemInvalidBatchNumberException()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EFinanceSystemInvalidBatchNumberException(String AMessage)
+            : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EFinanceSystemInvalidBatchNumberException(string AMessage, Exception AInnerException)
+            : base(AMessage, AInnerException)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and ledger number.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="ALedgerNumber">Ledger number.</param>
+        /// <param name="ABatchNumber">Batch number.</param>
+        public EFinanceSystemInvalidBatchNumberException(String AMessage, int ALedgerNumber, int ABatchNumber)
+            : base(AMessage)
+        {
+            FLedgerNumber = ALedgerNumber;
+            FBatchNumber = ABatchNumber;
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EFinanceSystemInvalidBatchNumberException(SerializationInfo AInfo, StreamingContext AContext)
+            : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            AInfo.AddValue("LedgerNumber", FLedgerNumber);
+            AInfo.AddValue("BatchNumber", FBatchNumber);
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EFinanceSystemDBTransactionNullException
+
+    /// <summary>
+    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// </summary>
+    [Serializable()]
+    public class EFinanceSystemDBTransactionNullException : EFinanceSystemUnexpectedStateException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EFinanceSystemDBTransactionNullException()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EFinanceSystemDBTransactionNullException(String AMessage)
+            : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EFinanceSystemDBTransactionNullException(string AMessage, Exception AInnerException)
+            : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EFinanceSystemDBTransactionNullException(SerializationInfo AInfo, StreamingContext AContext)
+            : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EFinanceSystemDataObjectNullException
+
+    /// <summary>
+    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// </summary>
+    [Serializable()]
+    public class EFinanceSystemDataObjectNullOrEmptyException : EFinanceSystemUnexpectedStateException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EFinanceSystemDataObjectNullOrEmptyException()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EFinanceSystemDataObjectNullOrEmptyException(String AMessage)
+            : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EFinanceSystemDataObjectNullOrEmptyException(string AMessage, Exception AInnerException)
+            : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EFinanceSystemDataObjectNullOrEmptyException(SerializationInfo AInfo, StreamingContext AContext)
+            : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EFinanceSystemDataTableReturnedNoDataException
+
+    /// <summary>
+    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// </summary>
+    [Serializable()]
+    public class EFinanceSystemDataTableReturnedNoDataException : EFinanceSystemUnexpectedStateException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EFinanceSystemDataTableReturnedNoDataException()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EFinanceSystemDataTableReturnedNoDataException(String AMessage)
+            : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EFinanceSystemDataTableReturnedNoDataException(string AMessage, Exception AInnerException)
+            : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EFinanceSystemDataTableReturnedNoDataException(SerializationInfo AInfo, StreamingContext AContext)
+            : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EFinanceSystemCacheableTableReturnedNoDataException
+
+    /// <summary>
+    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// </summary>
+    [Serializable()]
+    public class EFinanceSystemCacheableTableReturnedNoDataException : EFinanceSystemUnexpectedStateException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EFinanceSystemCacheableTableReturnedNoDataException()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EFinanceSystemCacheableTableReturnedNoDataException(String AMessage)
+            : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EFinanceSystemCacheableTableReturnedNoDataException(string AMessage, Exception AInnerException)
+            : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EFinanceSystemCacheableTableReturnedNoDataException(SerializationInfo AInfo, StreamingContext AContext)
+            : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EFinanceSystemDataTableAccessFailedException
+
+    /// <summary>
+    /// Base Class for OpenPetra-specific application-level Exceptions.
+    /// </summary>
+    [Serializable()]
+    public class EFinanceSystemDataTableAccessFailedException : EFinanceSystemUnexpectedStateException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EFinanceSystemDataTableAccessFailedException()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EFinanceSystemDataTableAccessFailedException(String AMessage)
+            : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EFinanceSystemDataTableAccessFailedException(string AMessage, Exception AInnerException)
+            : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EFinanceSystemDataTableAccessFailedException(SerializationInfo AInfo, StreamingContext AContext)
+            : base(AInfo, AContext)
         {
         }
 

@@ -795,11 +795,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
-                ref Transaction,
-                delegate
-                {
-                    try
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    ref Transaction,
+                    delegate
                     {
                         string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
                         HtmlDoc = FormatHtmlReceipt(
@@ -811,13 +811,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             GiftsThisDonor,
                             AHTMLTemplateFilename,
                             Transaction);
-                    }
-                    catch (Exception e)
-                    {
-                        TLogging.Log("Error in PrintGiftReceipt: " + e.Message);
-                        throw e;
-                    }
-                });
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             return HtmlDoc;
         }

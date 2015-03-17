@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -56,34 +57,65 @@ namespace Ict.Petra.Server.MFinance.Common
             TDBTransaction ATransaction,
             bool ADoFixDate)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ATransaction == null)
+            {
+                throw new EFinanceSystemDBTransactionNullException(String.Format(Catalog.GetString(
+                            "Function:{0} - Database Transaction must not be NULL!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             bool RetVal = false;
 
             AFinancialPeriod = -1;
             AFinancialYear = -1;
             AAccountingPeriodRow currentPeriodRow = null;
             AAccountingPeriodRow lastAllowedPeriodRow = null;
-            AAccountingPeriodTable table = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, ATransaction);
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ATransaction);
+            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, ATransaction);
+
+            #region Validate Data
+
+            if ((LedgerTable == null) || (LedgerTable.Count == 0))
+            {
+                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                            "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                        Utilities.GetMethodName(true),
+                        ALedgerNumber));
+            }
+            else if ((AccountingPeriodTable == null) || (AccountingPeriodTable.Count == 0))
+            {
+                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                            "Function:{0} - Accounting Period data for Ledger number {1} does not exist or could not be accessed!"),
+                        Utilities.GetMethodName(true),
+                        ALedgerNumber));
+            }
+
+            #endregion Validate Data
 
             try
             {
-                if (LedgerTable.Count < 1)
-                {
-                    throw new Exception("Ledger " + ALedgerNumber + " not found");
-                }
+                int aCurrentPeriod = LedgerTable[0].CurrentPeriod;
+                int anAllowedForwardPeriod = aCurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods;
 
-                int ACurrentPeriod = LedgerTable[0].CurrentPeriod;
-                int AAllowedForwardPeriod = ACurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods;
-
-                foreach (AAccountingPeriodRow row in table.Rows)
+                foreach (AAccountingPeriodRow row in AccountingPeriodTable.Rows)
                 {
-                    if (row.AccountingPeriodNumber == ACurrentPeriod)
+                    if (row.AccountingPeriodNumber == aCurrentPeriod)
                     {
                         currentPeriodRow = row;
                     }
 
-                    if (row.AccountingPeriodNumber == AAllowedForwardPeriod)
+                    if (row.AccountingPeriodNumber == anAllowedForwardPeriod)
                     {
                         lastAllowedPeriodRow = row;
                     }
@@ -101,7 +133,7 @@ namespace Ict.Petra.Server.MFinance.Common
                             //   =>  FIX Date to be the first day of the current period
                             // 2.) greater oder eqal  currentperiod but within AllowedForwardperiod = no FIX required
                             // 3.) after the allowed Forward period or even in a future financial year: = FIX Date to be the last day of the last allowed forward period
-                            if ((AFinancialPeriod >= ACurrentPeriod) && (AFinancialPeriod <= AAllowedForwardPeriod))
+                            if ((AFinancialPeriod >= aCurrentPeriod) && (AFinancialPeriod <= anAllowedForwardPeriod))
                             {
                                 AFinancialYear = LedgerTable[0].CurrentFinancialYear;
                                 RetVal = true;
@@ -123,7 +155,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     {
                         if (lastAllowedPeriodRow == null)
                         {
-                            lastAllowedPeriodRow = table[table.Rows.Count - 1];
+                            lastAllowedPeriodRow = AccountingPeriodTable[AccountingPeriodTable.Rows.Count - 1];
                         }
 
                         if (ADateToTest > lastAllowedPeriodRow.PeriodEndDate)
@@ -135,10 +167,13 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
                 }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                TLogging.Log("Error in GetLedgerDatePostingPeriod: " + Ex.Message);
-                throw;
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
             return RetVal;

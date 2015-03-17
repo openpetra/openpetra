@@ -22,9 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Common;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Ict.Common;
 
 namespace Ict.Common
 {
@@ -121,6 +126,101 @@ namespace Ict.Common
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Return the name of the calling method
+        /// </summary>
+        /// <param name="ASplitPascalName"></param>
+        /// <returns></returns>
+        public static string GetMethodName(bool ASplitPascalName = false)
+        {
+            string RetVal = string.Empty;
+
+            try
+            {
+                StackTrace stackTrace = new StackTrace();
+                MethodBase methodBase = stackTrace.GetFrame(1).GetMethod();
+
+                RetVal = "[" + methodBase.Name + "]";
+            }
+            catch
+            {
+                //Do nothing as this may not always work at run time
+            }
+
+            if (ASplitPascalName && (RetVal.Length > 0))
+            {
+                SplitPascalName(ref RetVal);
+            }
+
+            return RetVal;
+        }
+
+        private static void SplitPascalName(ref string APascalCaseString)
+        {
+            //APascalCaseString = Regex.Replace(APascalCaseString, "[a-z][A-Z]", m => m.Value[0] + " " + char.ToLower(m.Value[1]));
+            var arr = Regex.Matches(APascalCaseString, @"[A-Z]+(?=[A-Z][a-z]+)|\d|[A-Z][a-z]+").Cast <Match>().Select(m => m.Value).ToArray();
+
+            APascalCaseString = String.Join(" ", arr);
+        }
+
+        /// <summary>
+        /// Return the name and signature of the calling method
+        /// </summary>
+        /// <returns></returns>
+        public static string GetMethodSignature()
+        {
+            string RetVal = string.Empty;
+
+            try
+            {
+                StackTrace stackTrace = new StackTrace();
+                MethodBase methodBase = stackTrace.GetFrame(1).GetMethod();
+                ParameterInfo[] arguments = methodBase.GetParameters();
+
+                string argumentList = string.Empty;
+
+                if (arguments.Length > 0)
+                {
+                    argumentList = string.Format("{0}({1})",
+                        methodBase.Name,
+                        string.Join(", ", (arguments.Select(x => (!x.ParameterType.IsByRef ? (x.Attributes + " ") : (x.IsOut ? "out " : "ref ")) +
+                                               x.ParameterType.ToString().Substring(x.ParameterType.ToString().LastIndexOf(".") + 1) + " " + x.Name))));
+
+                    argumentList = argumentList.Replace("(None ", "(").Replace(", None ", ", ").Replace("& ", " ");
+
+                    MethodInfo methodInfo = (MethodInfo)methodBase;
+
+                    if (methodInfo != null)
+                    {
+                        RetVal = (methodInfo.ReturnType.IsPublic ? "public " : "private ") + (methodBase.IsStatic ? "static " : string.Empty) +
+                                 methodInfo.ReturnType.Name.Replace("Void", "void") + " " + argumentList;
+                    }
+                    else
+                    {
+                        RetVal = argumentList;
+                    }
+                }
+                else
+                {
+                    RetVal = methodBase.ToString();
+
+                    //Don't do a String.Replace just in case the method name contains the word Void, e.g. VoidTransaction
+                    if (RetVal.StartsWith("Void "))
+                    {
+                        RetVal = "void " + RetVal.Substring(5);
+                    }
+                }
+            }
+            catch
+            {
+                RetVal = "**Unable to indentify**";
+            }
+
+            RetVal = "[" + RetVal + "]";
+
+            return RetVal;
         }
 
         /// <summary>
