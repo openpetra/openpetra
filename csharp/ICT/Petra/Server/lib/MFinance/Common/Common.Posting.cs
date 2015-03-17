@@ -931,6 +931,9 @@ namespace Ict.Petra.Server.MFinance.Common
             /// amount in the base currency of the ledger
             public decimal baseAmount = 0.0M;
 
+            /// amount in the intl currency of the ledger
+            public decimal intlAmount = 0.0M;
+
             /// amount in transaction currency; only for foreign currency accounts
             public decimal transAmount = 0.0M;
 
@@ -1028,11 +1031,13 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     // Set the sign of the amounts according to the debit/credit indicator
                     decimal SignBaseAmount = transaction.AmountInBaseCurrency;
+                    decimal SignIntlAmount = transaction.AmountInIntlCurrency;
                     decimal SignTransAmount = transaction.TransactionAmount;
 
                     if (Account.DebitCreditIndicator != transaction.DebitCreditIndicator)
                     {
                         SignBaseAmount *= -1.0M;
+                        SignIntlAmount *= -1.0M;
                         SignTransAmount *= -1.0M;
                     }
 
@@ -1047,6 +1052,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
 
                     APostingLevel[key].baseAmount += SignBaseAmount;
+                    APostingLevel[key].intlAmount += SignIntlAmount;
 
                     // Only foreign currency accounts store a value in the transaction currency,
                     // if the transaction was actually in the foreign currency.
@@ -1197,12 +1203,14 @@ namespace Ict.Petra.Server.MFinance.Common
                             {
                                 string CostCentreCodeToReportTo = CostCentreKey.Split(':')[1];
                                 decimal SignBaseAmount = PostingLevelElement.baseAmount;
+                                decimal SignIntlAmount = PostingLevelElement.intlAmount;
                                 decimal SignTransAmount = PostingLevelElement.transAmount;
 
                                 // Set the sign of the amounts according to the debit/credit indicator
                                 if (AccountTreeElement.Invert)
                                 {
                                     SignBaseAmount *= -1;
+                                    SignIntlAmount *= -1;
                                     SignTransAmount *= -1;
                                 }
 
@@ -1223,6 +1231,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                 AGeneralLedgerMasterRow GlmRow = (AGeneralLedgerMasterRow)GLMMasterView[GLMMasterIndex].Row;
 
                                 GlmRow.YtdActualBase += SignBaseAmount;
+                                GlmRow.YtdActualIntl += SignIntlAmount;
 
                                 if (AccountTreeElement.Foreign)
                                 {
@@ -1239,6 +1248,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                 if (APostingDS.ALedger[0].ProvisionalYearEndFlag)
                                 {
                                     GlmRow.ClosingPeriodActualBase += SignBaseAmount;
+                                    GlmRow.ClosingPeriodActualIntl += SignIntlAmount;
                                 }
 
                                 // Add the period data from the posting level to the summary levels
@@ -1262,6 +1272,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                     }
 
                                     GlmPeriodRow.ActualBase += SignBaseAmount;
+                                    GlmPeriodRow.ActualIntl += SignIntlAmount;
 
                                     if (AccountTreeElement.Foreign)
                                     {
@@ -1337,6 +1348,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 GlmRow = (AGeneralLedgerMasterRow)GLMMasterView[GLMMasterIndex].Row;
 
                 GlmRow.YtdActualBase += PostingLevelElement.baseAmount;
+                GlmRow.YtdActualIntl += PostingLevelElement.intlAmount;
 
                 AAccountRow account = (AAccountRow)AMainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, AccountCode });
 
@@ -1355,6 +1367,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
                 {
                     GlmRow.ClosingPeriodActualBase += PostingLevelElement.baseAmount;
+                    GlmRow.ClosingPeriodActualIntl += PostingLevelElement.intlAmount;
                 } // Last use of GlmRow in this routine ...
 
                 // propagate the data through the following periods
@@ -1377,6 +1390,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
 
                     GlmPeriodRow.ActualBase += PostingLevelElement.baseAmount;
+                    GlmPeriodRow.ActualIntl += PostingLevelElement.intlAmount;
 
                     if (account.ForeignCurrencyFlag)
                     {
@@ -1803,6 +1817,9 @@ namespace Ict.Petra.Server.MFinance.Common
             // get the data from the database into the MainDS
             AMainDS = LoadGLBatchData(ALedgerNumber, ABatchNumber, ref ATransaction, ref AVerifications);
 
+            string LedgerBaseCurrency = AMainDS.ALedger[0].BaseCurrency;
+            string LedgerIntlCurrency = AMainDS.ALedger[0].IntlCurrency;
+
             //TODO: do A NULL CHECK and use verfication results and stop in tracks.
 
             if ((AMainDS.ABatch == null) || (AMainDS.ABatch.Rows.Count < 1))
@@ -1849,10 +1866,50 @@ namespace Ict.Petra.Server.MFinance.Common
                 return null;
             }
 
+            DateTime EffectiveDate = BatchToPost.DateEffective;
+            DateTime StartOfMonth = new DateTime(EffectiveDate.Year, EffectiveDate.Month, 1);
+
+            // used for setting AmountInIntlCurrency
+            decimal IntlToBaseExchRate = TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency,
+                LedgerIntlCurrency,
+                StartOfMonth,
+                EffectiveDate);
+
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
             if (!ValidateGLBatchAndTransactions(ref AMainDS, PostingDS, ALedgerNumber, BatchToPost, out AVerifications))
             {
                 return null;
+            }
+            else if (IntlToBaseExchRate == 0)
+            {
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting GL Batch",
+                        String.Format(Catalog.GetString("No Corporate Exchange rate exists for the month: {0:MMMM yyyy}!"),
+                            EffectiveDate),
+                        TResultSeverity.Resv_Critical));
+                return null;
+            }
+
+            // set the amount in intl currency for each transaction
+            foreach (AJournalRow Journal in AMainDS.AJournal.Rows)
+            {
+                string BatchTransactionCurrency = Journal.TransactionCurrency;
+
+                foreach (ATransactionRow Transaction in AMainDS.ATransaction.Rows)
+                {
+                    if (Transaction.JournalNumber == Journal.JournalNumber)
+                    {
+                        if (BatchTransactionCurrency != LedgerIntlCurrency)
+                        {
+                            Transaction.AmountInIntlCurrency = Transaction.AmountInBaseCurrency / IntlToBaseExchRate;
+                        }
+                        else
+                        {
+                            Transaction.AmountInIntlCurrency = Transaction.TransactionAmount;
+                        }
+                    }
+                }
             }
 
             if (!PostingDS.ALedger[0].ProvisionalYearEndFlag) // During YearEnd Processing, I don't require all the attributes correctly fulfiled.

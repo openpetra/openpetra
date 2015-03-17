@@ -69,6 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private AGiftRow FGift = null;
         private string FMotivationGroup = string.Empty;
         private string FMotivationDetail = string.Empty;
+        private string FAutoPopComment = string.Empty;
         string FFilterAllDetailsOfGift = string.Empty;
         private DataView FGiftDetailView = null;
         private Int64 FRecipientKey = 0;
@@ -274,7 +275,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FInEditMode,
                 FBatchUnposted,
                 FTaxDeductiblePercentageEnabled,
-                out DoTaxUpdate);
+                out DoTaxUpdate,
+                ref FAutoPopComment);
 
             if (DoTaxUpdate)
             {
@@ -588,6 +590,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     Cursor = Cursors.WaitCursor;
 
+                    // this is a new donor
                     if (APartnerKey != FLastDonor)
                     {
                         PPartnerTable partnerDT = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
@@ -748,7 +751,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FInEditMode,
                 FBatchUnposted,
                 FTaxDeductiblePercentageEnabled,
-                out DoTaxUpdate);
+                out DoTaxUpdate,
+                ref FAutoPopComment);
 
             if (DoTaxUpdate)
             {
@@ -765,7 +769,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void MotivationDetailChanged(object sender, EventArgs e)
         {
             bool DoTaxUpdate;
-            string AutoPopComment;
+            string PrevAutoPopComment = FAutoPopComment;
 
             TUC_GiftTransactions_Recipient.OnMotivationDetailChanged(FPreviouslySelectedDetailRow,
                 FMainDS,
@@ -791,7 +795,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FTaxDeductiblePercentageEnabled,
                 FAutoPopulatingGift,
                 out DoTaxUpdate,
-                out AutoPopComment);
+                ref FAutoPopComment);
 
             if (DoTaxUpdate)
             {
@@ -805,11 +809,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
+            // if the previous motivation detail had a AutoPopDesc set to true then remove this comment for this detail
+            if (!txtDetailRecipientKeyMinistry.Visible && !string.IsNullOrEmpty(PrevAutoPopComment))
+            {
+                UndoAutoPopulateCommentOne(PrevAutoPopComment);
+            }
+
             // if motivation detail has AutoPopDesc set to true and has not already been autopoulated for this detail
-            if (!string.IsNullOrEmpty(AutoPopComment) && (txtDetailGiftCommentOne.Text != AutoPopComment))
+            if (!txtDetailRecipientKeyMinistry.Visible
+                && !string.IsNullOrEmpty(FAutoPopComment) && (txtDetailGiftCommentOne.Text != FAutoPopComment))
             {
                 // autopopulate comment one with the motivation detail description
-                AutoPopulateCommentOne(AutoPopComment);
+                AutoPopulateCommentOne(FAutoPopComment);
+            }
+        }
+
+        private void UndoAutoPopulateCommentOne(string AAutoPopComment)
+        {
+            if (txtDetailGiftCommentOne.Text == AAutoPopComment)
+            {
+                txtDetailGiftCommentOne.Text = string.Empty;
+            }
+
+            // move any custom comments to fill Comment One
+            if (!string.IsNullOrEmpty(txtDetailGiftCommentTwo.Text))
+            {
+                txtDetailGiftCommentOne.Text = txtDetailGiftCommentTwo.Text;
+                cmbDetailCommentOneType.SetSelectedString(cmbDetailCommentTwoType.GetSelectedString(-1));
+                txtDetailGiftCommentTwo.Text = "";
+                cmbDetailCommentTwoType.SetSelectedString("Both");
+            }
+
+            if (!string.IsNullOrEmpty(txtDetailGiftCommentThree.Text))
+            {
+                txtDetailGiftCommentTwo.Text = txtDetailGiftCommentThree.Text;
+                cmbDetailCommentTwoType.SetSelectedString(cmbDetailCommentThreeType.GetSelectedString(-1));
+                txtDetailGiftCommentThree.Text = "";
+                cmbDetailCommentThreeType.SetSelectedString("Both");
             }
         }
 
@@ -1212,6 +1248,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         txtDetailRecipientLedgerNumber,
                         txtDetailCostCentreCode,
                         txtDetailAccountCode,
+                        cmbDetailCommentOneType,
+                        cmbDetailCommentTwoType,
+                        cmbDetailCommentThreeType,
                         ref FMotivationGroup,
                         ref FMotivationDetail,
                         out DoEnableRecipientGiftDestination);
@@ -1219,6 +1258,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (DoEnableRecipientGiftDestination.HasValue)
                     {
                         mniRecipientGiftDestination.Enabled = DoEnableRecipientGiftDestination.Value;
+                    }
+
+                    // set FAutoPopComment if needed
+                    AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                        new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
+
+                    if (motivationDetail != null)
+                    {
+                        // if motivation detail autopopulation is set to true
+                        if (motivationDetail.Autopopdesc)
+                        {
+                            FAutoPopComment = motivationDetail.MotivationDetailDesc;
+                        }
+                        else
+                        {
+                            FAutoPopComment = null;
+                        }
                     }
 
                     //Show gift table values
@@ -1645,6 +1701,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 ARow.RecipientLedgerNumber = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
                 ARow.RecipientField = ARow.RecipientLedgerNumber;
+            }
+
+            if (string.IsNullOrEmpty(ARow.GiftCommentOne))
+            {
+                ARow.CommentOneType = null;
+            }
+
+            if (string.IsNullOrEmpty(ARow.GiftCommentTwo))
+            {
+                ARow.CommentTwoType = null;
+            }
+
+            if (string.IsNullOrEmpty(ARow.GiftCommentThree))
+            {
+                ARow.CommentThreeType = null;
             }
 
             if (FTaxDeductiblePercentageEnabled)
@@ -2247,12 +2318,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         txtDetailRecipientKey.Text = String.Format("{0:0000000000}", Row.RecipientKey);
                         cmbDetailMotivationGroupCode.SetSelectedString(Row.MotivationGroupCode);
                         cmbDetailMotivationDetailCode.SetSelectedString(Row.MotivationDetailCode);
-                        txtDetailGiftCommentOne.Text = Row.GiftCommentOne;
-                        cmbDetailCommentOneType.SetSelectedString(Row.CommentOneType, -1);
-                        txtDetailGiftCommentTwo.Text = Row.GiftCommentTwo;
-                        cmbDetailCommentTwoType.SetSelectedString(Row.CommentTwoType, -1);
-                        txtDetailGiftCommentThree.Text = Row.GiftCommentThree;
-                        cmbDetailCommentThreeType.SetSelectedString(Row.CommentThreeType, -1);
                         chkDetailConfidentialGiftFlag.Checked = Row.ConfidentialGiftFlag;
                         chkDetailChargeFlag.Checked = Row.ChargeFlag;
                         chkDetailTaxDeductible.Checked = Row.TaxDeductible;
@@ -2393,6 +2458,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (DetailRow.RecipientKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
                 {
+                    // only make changes if gift is unposted.
+                    if (((AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(
+                             new object[] { DetailRow.LedgerNumber, DetailRow.BatchNumber })).BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                    {
+                        continue;
+                    }
+
                     DetailRow.RecipientLedgerNumber = 0;
                     DateTime GiftDate = ((AGiftRow)FMainDS.AGift.Rows.Find(
                                              new object[] { DetailRow.LedgerNumber, DetailRow.BatchNumber,

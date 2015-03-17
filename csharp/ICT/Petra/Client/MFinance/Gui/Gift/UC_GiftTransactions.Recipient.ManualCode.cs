@@ -89,8 +89,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Call from ShowDetailsManual
         /// </summary>
         public static bool OnStartShowDetailsManual(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, TCmbAutoPopulated ACmbKeyMinistries,
-            TCmbAutoPopulated ACmbMotivationDetailCode, TextBox ATxtDetailRecipientKeyMinistry, ref string AMotivationDetail, bool AActiveOnly,
-            bool ATransactionsLoadedFlag, bool AInEditModeFlag, bool ABatchUnpostedFlag)
+            TCmbAutoPopulated ACmbMotivationDetailCode, TextBox ATxtDetailRecipientKeyMinistry,
+            ref string AMotivationDetail, bool AActiveOnly, bool ATransactionsLoadedFlag, bool AInEditModeFlag, bool ABatchUnpostedFlag)
         {
             if (!ATxtDetailRecipientKeyMinistry.Visible)
             {
@@ -116,8 +116,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public static void FinishShowDetailsManual(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, TCmbAutoPopulated ACmbMotivationDetailCode,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey, TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
-            TextBox ATxtDetailCostCentreCode, TextBox ATxtDetailAccountCode, ref string AMotivationGroup, ref string AMotivationDetail,
-            out bool ? AEnableRecipientGiftDestination)
+            TextBox ATxtDetailCostCentreCode, TextBox ATxtDetailAccountCode, Ict.Common.Controls.TCmbAutoComplete ACmbDetailCommentOneType,
+            Ict.Common.Controls.TCmbAutoComplete ACmbDetailCommentTwoType, Ict.Common.Controls.TCmbAutoComplete ACmbDetailCommentThreeType,
+            ref string AMotivationGroup, ref string AMotivationDetail, out bool ? AEnableRecipientGiftDestination)
         {
             AEnableRecipientGiftDestination = null;
 
@@ -166,6 +167,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AtxtDetailRecipientLedgerNumber,
                     out AEnableRecipientGiftDestination);
             }
+
+            if (ACurrentDetailRow.IsCommentOneTypeNull())
+            {
+                ACmbDetailCommentOneType.SetSelectedString("Both");
+            }
+
+            if (ACurrentDetailRow.IsCommentTwoTypeNull())
+            {
+                ACmbDetailCommentTwoType.SetSelectedString("Both");
+            }
+
+            if (ACurrentDetailRow.IsCommentThreeTypeNull())
+            {
+                ACmbDetailCommentThreeType.SetSelectedString("Both");
+            }
         }
 
         #endregion
@@ -199,10 +215,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool ATaxDeductiblePercentageEnabledFlag,
             bool AAutoPopulatingGift,
             out bool ADoTaxUpdate,
-            out string AAutoPopComment)
+            ref string AAutoPopComment)
         {
             ADoTaxUpdate = false;
-            AAutoPopComment = null;
 
             if (!ABatchUnpostedFlag || !AInEditModeFlag || ATxtDetailRecipientKeyMinistry.Visible)
             {
@@ -232,6 +247,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (motivationDetail.Autopopdesc)
                     {
                         AAutoPopComment = motivationDetail.MotivationDetailDesc;
+                    }
+                    else
+                    {
+                        AAutoPopComment = null;
                     }
 
                     // set tax deductible checkbox if motivation detail has been changed by the user (i.e. not a row change)
@@ -529,7 +548,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AInEditModeFlag,
             bool ABatchUnpostedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
-            out bool ADoTaxUpdate)
+            out bool ADoTaxUpdate,
+            ref string AAutoPopComment)
         {
             if (!ABatchUnpostedFlag || APetraUtilsObject.SuppressChangeDetection || !AInEditModeFlag || ATxtDetailRecipientKeyMinistry.Visible)
             {
@@ -567,7 +587,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AInEditModeFlag,
                 ABatchUnpostedFlag,
                 ATaxDeductiblePercentageEnabledFlag,
-                out ADoTaxUpdate);
+                out ADoTaxUpdate,
+                ref AAutoPopComment);
         }
 
         /// <summary>
@@ -672,7 +693,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AInEditModeFlag,
             bool ABatchUnpostedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
-            out bool ADoTaxUpdate)
+            out bool ADoTaxUpdate,
+            ref string AAutoPopComment)
         {
             if (ATxtDetailRecipientKeyMinistry.Visible)
             {
@@ -699,7 +721,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AInEditModeFlag,
                     ABatchUnpostedFlag,
                     ATaxDeductiblePercentageEnabledFlag,
-                    out ADoTaxUpdate);
+                    out ADoTaxUpdate,
+                    ref AAutoPopComment);
 
                 PopulateKeyMinistry(ACurrentDetailRow, ACmbKeyMinistries, ATxtDetailRecipientKey, AtxtDetailRecipientLedgerNumber, false);
 
@@ -1043,12 +1066,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AInEditModeFlag,
             bool ABatchUnpostedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
-            out bool ADoTaxUpdate)
+            out bool ADoTaxUpdate,
+            ref string AAutoPopComment)
         {
             //FMotivationbDetail will change by next process
             string motivationDetail = AMotivationDetail;
-
-            string AutoPopComment;
 
             TFinanceControls.ChangeFilterMotivationDetailList(ref ACmbMotivationDetailCode, AMotivationGroup);
             AMotivationDetail = motivationDetail;
@@ -1088,7 +1110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ATaxDeductiblePercentageEnabledFlag,
                     false,
                     out ADoTaxUpdate,
-                    out AutoPopComment);
+                    ref AAutoPopComment);
             }
             else
             {
@@ -1118,7 +1140,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ATaxDeductiblePercentageEnabledFlag,
                     false,
                     out ADoTaxUpdate,
-                    out AutoPopComment);
+                    ref AAutoPopComment);
             }
 
             RetrieveMotivationDetailAccountCode(AMainDS, ALedgerNumber, ATxtDetailAccountCode, ATxtDeductibleAccount,

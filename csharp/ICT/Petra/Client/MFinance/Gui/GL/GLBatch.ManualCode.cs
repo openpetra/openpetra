@@ -92,6 +92,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// warn the user that corporate exchange rate is missing
+        /// </summary>
+        public Boolean WarnAboutMissingIntlExchangeRate
+        {
+            set
+            {
+                FWarnAboutMissingIntlExchangeRate = value;
+            }
+        }
+
+        /// <summary>
         /// Set this property if you want to load the screen with an initial Year/Batch/Journal
         /// </summary>
         public Int32 InitialBatchYear

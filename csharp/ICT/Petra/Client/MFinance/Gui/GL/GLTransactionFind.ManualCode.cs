@@ -644,6 +644,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // Clear result table
             try
             {
+                // If the scroll bar is scrolled to the bottom of the results table, we will get empty rows in the grid after the next search.
+                // I've no idea why this is but automatically scrolling to the the top of the grid prevents it happening.
+                grdResult.ShowCell(0);
+
                 if (FPagedDataTable != null)
                 {
                     FPagedDataTable.Clear();

@@ -54,6 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private TSgrdDataGridPaged grdDetails = null;
         private int FPrevRowChangedRow = -1;
         private DataRow FPreviouslySelectedDetailRow = null;
+        private bool FSelectionMadeInList = false;
 
         // The CostCentre selected in the parent form
         CostCentreNodeDetails FSelectedCostCentre;
@@ -74,13 +75,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FSelectedCostCentre = value;
 
-                if (FDataView != null)
+                // FSelectionMadeInList will be tree if the change was made in the list view.
+                // We only need to run this code if selection was made in tree view
+                if ((FDataView != null) && !FSelectionMadeInList)
                 {
                     Int32 RowIdx = -1;
 
                     if (FSelectedCostCentre != null)
                     {
-                        RowIdx = FDataView.Find(FSelectedCostCentre.CostCentreRow.CostCentreCode) + 1;
+                        // The grid could be sorted by any column. We need to make sure that the grid is sorted 1st or 2nd by a_account_code_c.
+                        // Otherwise we may not be able to find the account and retrieve the accurate row ID.
+                        if (FDataView.Sort.Contains("a_cost_centre_name_c"))
+                        {
+                            if (FDataView.Sort.Contains("DESC"))
+                            {
+                                FDataView.Sort = "a_cost_centre_name_c DESC, a_cost_centre_code_c";
+                            }
+                            else
+                            {
+                                FDataView.Sort = "a_cost_centre_name_c, a_cost_centre_code_c";
+                            }
+
+                            RowIdx = FDataView.Find(new object[] { FSelectedCostCentre.CostCentreRow.CostCentreName,
+                                                                   FSelectedCostCentre.CostCentreRow.CostCentreCode }) + 1;
+                        }
+                        else
+                        {
+                            RowIdx = FDataView.Find(FSelectedCostCentre.CostCentreRow.CostCentreCode) + 1;
+                        }
                     }
 
                     FParentForm.FIAmUpdating++;
@@ -135,7 +157,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     FPreviouslySelectedDetailRow = rowView.Row;
                     String SelectedCostCentreCode = ((ACostCentreRow)rowView.Row).CostCentreCode;
+
+                    FSelectionMadeInList = true;
                     FParentForm.SetSelectedCostCentreCode(SelectedCostCentreCode);
+                    FSelectionMadeInList = false;
 
                     if (previousRowId == -1)
                     {

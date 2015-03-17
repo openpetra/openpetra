@@ -3012,11 +3012,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 {
                     TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
 
-                    decimal ExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
-                        LedgerNumber,
-                        AccountingYear,
-                        ReportPeriodEnd,
-                        -1);
+                    decimal ExchangeRate = 1;
+
+                    if (AParameters["param_currency"].ToString().StartsWith("Int"))
+                    {
+                        ExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DBAccess.GDBAccessObj,
+                            LedgerNumber,
+                            AccountingYear,
+                            ReportPeriodEnd,
+                            -1);
+                    }
 
                     String OrderBy = " ORDER BY glm.a_cost_centre_code_c";
 

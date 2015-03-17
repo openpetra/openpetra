@@ -331,7 +331,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>
         /// Add this new account as child of the currently selected node
         /// </summary>
-        public void AddNewAccount(AAccountRow AccountRow, AAccountHierarchyDetailRow HierarchyDetailRow)
+        public void AddNewAccount(GLSetupTDSAAccountRow AccountRow, AAccountHierarchyDetailRow HierarchyDetailRow)
         {
             trvAccounts.BeginUpdate();
             TreeNode newNode = trvAccounts.SelectedNode.Nodes.Add(AccountRow.AccountCode);
@@ -390,7 +390,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             DataView view,
             AAccountHierarchyDetailRow ADetailRow)
         {
-            AAccountRow AccountRow = (AAccountRow)MainDS.AAccount.Rows.Find(
+            GLSetupTDSAAccountRow AccountRow = (GLSetupTDSAAccountRow)MainDS.AAccount.Rows.Find(
                 new object[] { LedgerNumber, ADetailRow.ReportingAccountCode });
 
             TreeNode Child = new TreeNode();

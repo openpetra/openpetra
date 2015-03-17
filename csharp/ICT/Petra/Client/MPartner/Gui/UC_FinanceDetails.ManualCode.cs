@@ -461,9 +461,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         {
                             if (Row.RowState != DataRowState.Deleted)
                             {
-                                if (Row.DateValidFrom == Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text))
+                                if (Row.DateValidFrom == dtpTaxDeductibleValidFrom.Date.Value)
                                 {
-                                    Row.DateValidFrom = Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text);
+                                    Row.DateValidFrom = dtpTaxDeductibleValidFrom.Date.Value;
                                     Row.PercentageTaxDeductible = (decimal)txtTaxDeductiblePercentage.NumberValueDecimal;
                                     CreateNewRow = false;
                                 }
@@ -478,7 +478,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         {
                             PPartnerTaxDeductiblePctRow NewRow = FMainDS.PPartnerTaxDeductiblePct.NewRowTyped(true);
                             NewRow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
-                            NewRow.DateValidFrom = Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text);
+                            NewRow.DateValidFrom = dtpTaxDeductibleValidFrom.Date.Value;
                             NewRow.PercentageTaxDeductible = (decimal)txtTaxDeductiblePercentage.NumberValueDecimal;
                             FMainDS.PPartnerTaxDeductiblePct.Rows.Add(NewRow);
                         }

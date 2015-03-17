@@ -77,7 +77,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AEffectiveDate">The effective date for the batch</param>
         /// <param name="AStartDateCurrentPeriod">The earliest postable date</param>
         /// <param name="AEndDateLastForwardingPeriod">The latest postable date</param>
-        /// <returns>True if the batch was successfully posted</returns>
+        /// <returns>
+        /// True if the batch was successfully posted
+        /// </returns>
         public bool PostBatch(ABatchRow ACurrentBatchRow,
             DateTime AEffectiveDate,
             DateTime AStartDateCurrentPeriod,
@@ -103,6 +105,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         AEndDateLastForwardingPeriod));
 
                 return RetVal;
+            }
+
+            // check that a corportate exchange rate exists
+            FMyForm.WarnAboutMissingIntlExchangeRate = true;
+
+            if (FMyForm.GetInternationalCurrencyExchangeRate() == 0)
+            {
+                return false;
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post batch {0}?"),

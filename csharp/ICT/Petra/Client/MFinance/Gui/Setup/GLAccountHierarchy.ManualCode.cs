@@ -73,7 +73,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         public String Msg;
 
         /// <summary>The actual data:</summary>
-        public AAccountRow AccountRow;
+        public GLSetupTDSAAccountRow AccountRow;
 
         /// <summary>The actual data:</summary>
         public AAccountHierarchyDetailRow DetailRow;
@@ -114,7 +114,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>
         /// Create an AccountNodeDetails object for this account
         /// </summary>
-        public static AccountNodeDetails AddNewAccount(TreeNode NewTreeNode, AAccountRow AccountRow, AAccountHierarchyDetailRow HierarchyDetailRow)
+        public static AccountNodeDetails AddNewAccount(TreeNode NewTreeNode,
+            GLSetupTDSAAccountRow AccountRow,
+            AAccountHierarchyDetailRow HierarchyDetailRow)
         {
             AccountNodeDetails NodeDetails = new AccountNodeDetails();
 

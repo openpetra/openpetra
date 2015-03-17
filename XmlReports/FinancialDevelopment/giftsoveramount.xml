@@ -17,7 +17,7 @@
 		
 		<reportheader/>
 		<pageheader>
-			<field whichfield="title1"><value text ="Donor Report" /></field>
+			<field whichfield="title1"><value text ="Gifts Over Minimum Amount Report" /></field>
 			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
 			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
 				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/></field>
@@ -33,6 +33,11 @@
 			<field whichfield="period2">
 				<value text="Minimum Amount: "/>
 				<value variable="param_minimum_amount"/>
+			</field>
+			<field whichfield="period3">
+				<fielddetail condition="eq({param_exclude_support_gifts}, true)">
+					<value text="SUPPORT and PERSONAL Gifts excluded"/>
+				</fielddetail>
 			</field>
 			<field whichfield="descr1">
 				<value text="Sorted by: "></value>
@@ -88,6 +93,38 @@
 							AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
 							AND PUB_a_motivation_detail.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_a_motivation_detail.a_receipt_l = 1
+							
+							AND (SELECT
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+								SUM(gd.a_gift_amount_n)
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+								SUM(gd.a_gift_amount_intl_n)
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+								FROM PUB_a_gift_detail AS gd
+								WHERE gd.a_ledger_number_i =  {{param_ledger_number_i}}
+								AND gd.a_batch_number_i = gift.a_batch_number_i
+								AND gd.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_exclude_support_gifts}, true)">
+						<value>
+								AND ((UPPER(gd.a_motivation_group_code_c) = 'GIFT'
+								AND UPPER(gd.a_motivation_detail_code_c) != 'SUPPORT')
+								OR UPPER(gd.a_motivation_group_code_c) != 'GIFT')
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+								GROUP BY gd.a_gift_transaction_number_i) &gt; {{param_minimum_amount}}
 						</value>
 					</queryDetail>
 					<queryDetail condition="eq({param_exclude_anonymous_donors}, true)">
@@ -110,16 +147,6 @@
 					AND (NOT ((a_ledger.a_ledger_number_i = 27 OR a_ledger.a_ledger_number_i = 90 OR a_ledger.a_ledger_number_i = 99) 
 					AND (a_gift.p_donor_key_n = 99000000 OR a_gift.p_donor_key_n = 27002909)))
 					-->
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							HAVING SUM(detail.a_gift_amount_n) &gt;= {{param_minimum_amount}}
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							HAVING SUM(detail.a_gift_amount_intl_n) &gt;= {{param_minimum_amount}}
-						 </value>
-					</queryDetail>
 					<queryDetail condition="eq({param_sort_by},Donor Key)">
 						<value>
 							ORDER BY gift.p_donor_key_n
@@ -189,6 +216,38 @@
 							AND PUB_a_motivation_group.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_a_gift_detail.a_ledger_number_i =  {{param_ledger_number_i}}
 							AND PUB_a_gift.a_ledger_number_i =  {{param_ledger_number_i}}
+							
+							AND (SELECT
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							SUM(gd.a_gift_amount_n)
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							SUM(gd.a_gift_amount_intl_n)
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+							FROM PUB_a_gift_detail as gd
+								WHERE gd.a_ledger_number_i =  {{param_ledger_number_i}}
+								AND gd.a_batch_number_i = PUB_a_gift.a_batch_number_i
+								AND gd.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_exclude_support_gifts}, true)">
+						<value>
+								AND ((UPPER(gd.a_motivation_group_code_c) = 'GIFT'
+								AND UPPER(gd.a_motivation_detail_code_c) != 'SUPPORT')
+								OR UPPER(gd.a_motivation_group_code_c) != 'GIFT')
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+								GROUP BY gd.a_gift_transaction_number_i) &gt; {{param_minimum_amount}}
 						</value>
 					</queryDetail>
 				</query>

@@ -2395,6 +2395,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FPartnerClass == TPartnerClass.FAMILY.ToString())
             {
+                // this will be 0 for a new and unsaved family partner
+                // (new person partners can have gift destination added straight away as they are added to the person's family partner)
+                if (FPartnerKey == 0)
+                {
+                    MessageBox.Show(Catalog.GetString("This new partner must be saved before a Gift Destination can be added."),
+                        Catalog.GetString("Gift Destination"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
                 TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), FPartnerKey);
 
                 GiftDestinationForm.Show();
