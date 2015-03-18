@@ -82,9 +82,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FGLTransactionFindObject = TRemote.MFinance.Finance.UIConnectors.GLTransactionFind();
 
-            // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
-            TEnsureKeepAlive.Register(FGLTransactionFindObject);
-
             // remove from the combobox all ledger numbers which the user does not have permission to access
             DataView cmbLedgerDataView = (DataView)cmbLedger.cmbCombobox.DataSource;
 
@@ -332,13 +329,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         /// <summary>
         /// Thread for the search operation. Monitor's the Server System.Object's
-        /// AsyncExecProgress.ProgressState and invokes UI updates from that.
+        /// Progress.ProgressState and invokes UI updates from that.
         ///
         /// </summary>
         /// <returns>void</returns>
         private void SearchFinishedCheckThread()
         {
-            TAsyncExecProgressState ProgressState;
+            TProgressState ProgressState;
 
             /* Check whether this Thread should still execute */
             while (FKeepUpSearchFinishedCheck)
@@ -347,7 +344,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     /* The next line of code calls a function on the PetraServer
                      * > causes a bit of data traffic everytime! */
-                    ProgressState = FGLTransactionFindObject.AsyncExecProgress.ProgressState;
+                    ProgressState = FGLTransactionFindObject.Progress;
                 }
                 catch (System.NullReferenceException)
                 {
@@ -362,29 +359,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     throw;
                 }
 
-                switch (ProgressState)
+                if (ProgressState.JobFinished)
                 {
-                    case TAsyncExecProgressState.Aeps_Finished:
-                        FKeepUpSearchFinishedCheck = false;
+                    FKeepUpSearchFinishedCheck = false;
 
-                        // Fetch the first page of data
-                        try
-                        {
-                            // For speed reasons we must add the necessary amount of emtpy Rows only *after* .AutoSizeCells()
-                            // has already been run! See XML Comment on the called Method
-                            // TSgrdDataGridPaged.LoadFirstDataPage for details!
-                            FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult, false);
-                        }
-                        catch (Exception E)
-                        {
-                            MessageBox.Show(E.ToString());
-                        }
-                        break;
-
-                    case TAsyncExecProgressState.Aeps_Stopped:
-                        FKeepUpSearchFinishedCheck = false;
-                        EnableDisableUI(true);
-                        return;
+                    // Fetch the first page of data
+                    try
+                    {
+                        // For speed reasons we must add the necessary amount of emtpy Rows only *after* .AutoSizeCells()
+                        // has already been run! See XML Comment on the called Method
+                        // TSgrdDataGridPaged.LoadFirstDataPage for details!
+                        FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult, false);
+                    }
+                    catch (Exception E)
+                    {
+                        MessageBox.Show(E.ToString());
+                    }
+                }
+                else if (ProgressState.CancelJob)
+                {
+                    FKeepUpSearchFinishedCheck = false;
+                    EnableDisableUI(true);
+                    return;
                 }
 
                 // Sleep for some time. After that, this function is called again automatically.
@@ -426,7 +422,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // Enable/disable according to how the search operation ended
                 if (Convert.ToBoolean(AEnable))
                 {
-                    if (FGLTransactionFindObject.AsyncExecProgress.ProgressState != TAsyncExecProgressState.Aeps_Stopped)
+                    TProgressState ThreadStatus = FGLTransactionFindObject.Progress;
+
+                    if (ThreadStatus.JobFinished)
                     {
                         // Search operation ended without interruption
                         if (FPagedDataTable.Rows.Count > 0)
@@ -557,13 +555,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void TFrmGLTransactionFindScreen_Closed(object sender, EventArgs e)
         {
-            // ReleaseServerObject
-            if (FGLTransactionFindObject != null)
-            {
-                // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
-                TEnsureKeepAlive.UnRegister(FGLTransactionFindObject);
-                FGLTransactionFindObject = null;
-            }
+            FGLTransactionFindObject = null;
         }
 
         private DataRow GetCurrentDataRow()

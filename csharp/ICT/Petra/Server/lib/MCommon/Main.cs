@@ -639,14 +639,14 @@ namespace Ict.Petra.Server.MCommon
             // TODO this cannot work, since FDataAdapter is always null
             // and even if FDataAdapter was implemented, we would have a different thread, and I am not sure how to access the Database object from the other thread?
 
-            if (FDataAdapter == null)
+            if (FDataAdapterCanceller == null)
             {
                 return;
             }
 
             try
             {
-		// TODORemoting
+                // TODORemoting
                 if (true /* FAsyncExecProgress.ProgressState == TAsyncExecProgressState.Aeps_Stopping */ )
                 {
                     if (FDataAdapterCanceller != null)
