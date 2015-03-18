@@ -385,7 +385,7 @@
   <property name="external.Poedit.gettext" value="${OP::GetFileInProgramDirectory('/Poedit/bin/xgettext.exe')}" overwrite="false"/>
   <property name="external.Poedit.msgfmt" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgfmt.exe')}" overwrite="false"/>
   <property name="external.Poedit.msgcat" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgcat.exe')}" overwrite="false"/> 
-  <property name="NUnitVersion" value="NUnit 2.6" overwrite="false"/> 
+  <property name="NUnitVersion" value="NUnit 2.6.1" overwrite="false"/> 
   <property name="external.NUnitConsole" value="${OP::GetFileInProgramDirectory('/' + NUnitVersion + '/bin/nunit-console-x86.exe')}" overwrite="false"/>
 </if>
 <if test="${'win32'!=platform::get-name()}">
