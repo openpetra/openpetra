@@ -76,7 +76,7 @@
   <call target="initConfigFiles-internal"/>
   
 <!-- MGR: TODO: Remove copy. Should be during database work! -->
-  <copy file="${path::combine(dir.db.patches, 'version.txt')}"
+  <copy file="${path::combine(dir.db, 'version.txt')}"
       tofile="${path::combine(dir.bin, 'version.txt')}" 
       overwrite="true"/>
 
