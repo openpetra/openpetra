@@ -207,6 +207,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                 0);
 
             TVerificationResultCollection Messages = new TVerificationResultCollection();
+
+            // fix for Mono issue with out parameter: https://bugzilla.xamarin.com/show_bug.cgi?id=28196
+            AMessages = Messages;
+
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
 
             FMainDS = new GiftBatchTDS();
@@ -769,6 +773,9 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
             TVerificationResultCollection Messages = new TVerificationResultCollection();
+
+            // fix for Mono issue with out parameter: https://bugzilla.xamarin.com/show_bug.cgi?id=28196
+            AMessages = Messages;
 
             FMainDS = new GiftBatchTDS();
             StringReader sr = new StringReader(AImportString);

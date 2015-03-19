@@ -137,6 +137,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 5);
 
             TVerificationResultCollection Messages = new TVerificationResultCollection();
+
+            // fix for Mono issue with out parameter: https://bugzilla.xamarin.com/show_bug.cgi?id=28196
+            AMessages = Messages;
+
             GLBatchTDS MainDS = new GLBatchTDS();
             GLSetupTDS SetupDS = new GLSetupTDS();
             SetupDS.CaseSensitive = true;
@@ -841,6 +845,9 @@ namespace Ict.Petra.Server.MFinance.GL
                 5);
 
             TVerificationResultCollection Messages = new TVerificationResultCollection();
+
+            // fix for Mono issue with out parameter: https://bugzilla.xamarin.com/show_bug.cgi?id=28196
+            AMessages = Messages;
 
             GLSetupTDS SetupDS = new GLSetupTDS();
             SetupDS.CaseSensitive = true;
