@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -125,9 +125,25 @@ namespace Ict.Testing.ClientServerRemoting
             Assert.AreEqual(eLoginEnum.eLoginVersionMismatch, TPetraConnector.Connect(
                     "../../etc/TestClient.config", false), "client is too new, only change in private part");
 
+            int FileMajorPart = ServerVersion.FileMajorPart;
+            int FileMinorPart = ServerVersion.FileMinorPart;
+            int FileBuildPart = ServerVersion.FileBuildPart - 1;
+            int FilePrivatePart = ServerVersion.FilePrivatePart;
+
+            if (FileBuildPart < 0)
+            {
+                FileMinorPart -= 1;
+                FileBuildPart = 0;
+            }
+            else if (FileMinorPart < 0)
+            {
+                FileMajorPart -= 1;
+                FileMinorPart = 0;
+            }
+
             TFileVersionInfo.FManualApplicationVersion =
-                new TFileVersionInfo(new Version(ServerVersion.FileMajorPart, ServerVersion.FileMinorPart, ServerVersion.FileBuildPart - 1,
-                        ServerVersion.FilePrivatePart));
+                new TFileVersionInfo(new Version(FileMajorPart, FileMinorPart, FileBuildPart,
+                        FilePrivatePart));
             Assert.AreEqual(eLoginEnum.eLoginVersionMismatch, TPetraConnector.Connect("../../etc/TestClient.config", false), "client is too old");
 
             TFileVersionInfo.FManualApplicationVersion =
