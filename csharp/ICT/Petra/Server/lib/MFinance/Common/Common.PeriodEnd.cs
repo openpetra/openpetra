@@ -23,11 +23,14 @@
 using System;
 using System.Data;
 using System.Data.Odbc;
+
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.DB;
+
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 
@@ -96,34 +99,38 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (FInfoMode)
             {
-                if (AOperation.GetJobSize() == 0)
-                {
-                    // Non Critical Problem but the user shall be informed ...
-                    String strTitle = Catalog.GetString("Period end status");
-                    String strMessage = String.Format(Catalog.GetString("Nothing to be done for \"{0}\""), AOperationName);
-                    TVerificationResult tvt =
-                        new TVerificationResult(strTitle, strMessage, "",
-                            TPeriodEndErrorAndStatusCodes.PEEC_01.ToString(),
-                            TResultSeverity.Resv_Info);
-                    FverificationResults.Add(tvt);
-                }
+                // non-critical messages to be omitted - 3829
+
+                /*if (AOperation.GetJobSize() == 0)
+                 * {
+                 *  // Non Critical Problem but the user shall be informed ...
+                 *  String strTitle = Catalog.GetString("Period end status");
+                 *  String strMessage = String.Format(Catalog.GetString("Nothing to be done for \"{0}\""), AOperationName);
+                 *  TVerificationResult tvt =
+                 *      new TVerificationResult(strTitle, strMessage, "",
+                 *          TPeriodEndErrorAndStatusCodes.PEEC_01.ToString(),
+                 *          TResultSeverity.Resv_Info);
+                 *  FverificationResults.Add(tvt);
+                 * }*/
             }
             else
             {
                 // now we actually run the operation
                 Int32 OperationsDone = AOperation.RunOperation();
 
-                if (OperationsDone == 0)
-                {
-                    // Non Critical Problem but the user shall be informed ...
-                    String strTitle = Catalog.GetString("Period end status");
-                    String strMessage = String.Format(Catalog.GetString("Nothing done for \"{0}\""), AOperationName);
-                    TVerificationResult tvt =
-                        new TVerificationResult(strTitle, strMessage, "",
-                            TPeriodEndErrorAndStatusCodes.PEEC_01.ToString(),
-                            TResultSeverity.Resv_Info);
-                    FverificationResults.Add(tvt);
-                }
+                // non-critical messages to be omitted - 3829
+
+                /*if (OperationsDone == 0)
+                 * {
+                 *  // Non Critical Problem but the user shall be informed ...
+                 *  String strTitle = Catalog.GetString("Period end status");
+                 *  String strMessage = String.Format(Catalog.GetString("Nothing done for \"{0}\""), AOperationName);
+                 *  TVerificationResult tvt =
+                 *      new TVerificationResult(strTitle, strMessage, "",
+                 *          TPeriodEndErrorAndStatusCodes.PEEC_01.ToString(),
+                 *          TResultSeverity.Resv_Info);
+                 *  FverificationResults.Add(tvt);
+                 * }*/
 
                 //
                 // Now I want to verify whether the job has been finished correctly...
@@ -139,8 +146,8 @@ namespace Ict.Petra.Server.MFinance.Common
                     TVerificationResult tvt =
                         new TVerificationResult(
                             String.Format(Catalog.GetString("Problem in \"{0}\""), AOperationName),
-                            String.Format(Catalog.GetString("The operation has {0} elements remaining!"),
-                                RemainingItems),
+                            String.Format(Catalog.GetString("{0} out of the {1} elements in this operation were not processed correctly!"),
+                                RemainingItems, OperationsDone),
                             "",
                             TPeriodEndErrorAndStatusCodes.PEEC_02.ToString(),
                             TResultSeverity.Resv_Critical);

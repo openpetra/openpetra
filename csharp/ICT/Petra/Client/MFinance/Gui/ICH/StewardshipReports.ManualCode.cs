@@ -329,7 +329,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
         private Boolean LoadHosaReportData(TRptCalculator ACalc)
         {
-            Dictionary <String, TVariant>paramsDictionary = InitialiseDictionary(ACalc);
+            InitialiseDictionary(ACalc);
             ACalc.AddStringParameter("param_cost_centre_codes", "ALL");
             ACalc.AddStringParameter("param_filter_cost_centres", "");
             ACalc.AddStringParameter("param_linked_partner_cc", ""); // Used for auto-emailing HOSAs, this is usually blank.
@@ -462,7 +462,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
             String[] SelectedFees = paramsDictionary["param_fee_codes"].ToString().Split(',');
             Int32 FeeCols = SelectedFees.Length;
-            paramsDictionary.Add("param_fee_columns", new TVariant(FeeCols));
+            ACalc.AddParameter("param_fee_columns", FeeCols);
 
             DataTable FeeNames = new DataTable();
 
@@ -487,7 +487,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         /*
          *      private Boolean LoadRecipientReportData(TRptCalculator ACalc)
          *      {
-         *          Dictionary<String, TVariant> paramsDictionary = InitialiseDictionary(ACalc);
+         *          InitialiseDictionary(ACalc);
          *          return false;
          *      }  // Load Recipient Report Data
          */

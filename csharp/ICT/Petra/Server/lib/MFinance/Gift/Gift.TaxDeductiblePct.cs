@@ -30,6 +30,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
@@ -61,12 +62,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     string Query = "SELECT" +
                                    " a_gift_detail.a_ledger_number_i AS LedgerNumber," +
-                                   " SUM(CASE WHEN a_gift_batch.a_batch_status_c = 'Unposted' THEN 1 ELSE 0 END) AS Unposted," +
+                                   " SUM(CASE WHEN a_gift_batch.a_batch_status_c = 'Unposted' " +
+                                   " AND a_gift.a_date_entered_d >= '" + ADateFrom.ToString("yyyy-MM-dd") + "'" +
+                                   " THEN 1 ELSE 0 END) AS Unposted," +
                                    " SUM(CASE WHEN a_gift_batch.a_batch_status_c = 'Posted' " +
                                    " AND a_gift_batch.a_gl_effective_date_d >= '" + ADateFrom.ToString("yyyy-MM-dd") + "'" +
                                    " THEN 1 ELSE 0 END) AS Posted" +
 
-                                   " FROM a_gift_detail, a_gift_batch" +
+                                   " FROM a_gift_detail, a_gift_batch, a_gift" +
 
                                    " WHERE a_gift_detail.p_recipient_key_n = " + APartnerKey +
                                    " AND a_gift_detail.a_tax_deductible_pct_n <> " + APct +
@@ -75,6 +78,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                    " AND a_gift_batch.a_ledger_number_i = a_gift_detail.a_ledger_number_i" +
                                    " AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i" +
                                    " AND a_gift_batch.a_ledger_number_i = a_gift_detail.a_ledger_number_i" +
+                                   " AND a_gift.a_ledger_number_i = a_gift_detail.a_ledger_number_i" +
+                                   " AND a_gift.a_batch_number_i = a_gift_detail.a_batch_number_i" +
+                                   " AND a_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
 
                                    " GROUP BY a_gift_detail.a_ledger_number_i";
 
@@ -91,8 +97,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="ARecipientKey"></param>
         /// <param name="ANewPct"></param>
+        /// <param name="ADateFrom"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static void UpdateUnpostedGiftsTaxDeductiblePct(Int64 ARecipientKey, decimal ANewPct)
+        public static void UpdateUnpostedGiftsTaxDeductiblePct(Int64 ARecipientKey, decimal ANewPct, DateTime ADateFrom)
         {
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
@@ -102,11 +109,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref SubmissionOK,
                 delegate
                 {
-                    string Query = "UPDATE a_gift_detail" +
+                    string Query = "SELECT a_gift_detail.*" +
 
-                                   " SET a_tax_deductible_pct_n = " + ANewPct +
-
-                                   " FROM a_gift_batch" +
+                                   " FROM a_gift_detail, a_gift_batch, a_gift" +
 
                                    " WHERE a_gift_detail.p_recipient_key_n = " + ARecipientKey +
                                    " AND a_gift_detail.a_tax_deductible_pct_n <> " + ANewPct +
@@ -114,10 +119,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                    " AND a_gift_detail.a_tax_deductible_l = true" +
                                    " AND a_gift_batch.a_ledger_number_i = a_gift_detail.a_ledger_number_i" +
                                    " AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i" +
-                                   " AND a_gift_batch.a_ledger_number_i = a_gift_detail.a_ledger_number_i" +
-                                   " AND a_gift_batch.a_batch_status_c = 'Unposted'";
+                                   " AND a_gift_batch.a_batch_status_c = 'Unposted'" +
+                                   " AND a_gift.a_ledger_number_i = a_gift_detail.a_ledger_number_i" +
+                                   " AND a_gift.a_batch_number_i = a_gift_detail.a_batch_number_i" +
+                                   " AND a_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
+                                   " AND a_gift.a_date_entered_d >= '" + ADateFrom.ToString("yyyy-MM-dd") + "'";
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+                    AGiftDetailTable Table = new AGiftDetailTable();
+
+                    DBAccess.GDBAccessObj.SelectDT(Table, Query, Transaction);
+
+                    // update fields for each row
+                    for (int i = 0; i < Table.Rows.Count; i++)
+                    {
+                        AGiftDetailRow Row = Table[i];
+
+                        Row.TaxDeductiblePct = ANewPct;
+                        TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref Row);
+                    }
+
+                    AGiftDetailAccess.SubmitChanges(Table, Transaction);
 
                     SubmissionOK = true;
                 });

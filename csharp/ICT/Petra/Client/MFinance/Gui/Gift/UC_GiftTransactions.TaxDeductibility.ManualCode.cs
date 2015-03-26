@@ -256,6 +256,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ARecipientChanged)
             {
+                FMainDS.PPartnerTaxDeductiblePct.Clear();
                 FMainDS.PPartnerTaxDeductiblePct.Merge(TRemote.MFinance.Gift.WebConnectors.LoadPartnerTaxDeductiblePct(APartnerKey));
             }
 
@@ -265,7 +266,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 foreach (PPartnerTaxDeductiblePctRow Row in FMainDS.PPartnerTaxDeductiblePct.Rows)
                 {
                     // if no valid records exist then the recipient has not limited tax deductible by default
-                    if ((Row.PartnerKey == APartnerKey) && (Row.DateValidFrom <= DateTime.Today))
+                    if ((Row.PartnerKey == APartnerKey) && (Row.DateValidFrom <= dtpDateEntered.Date))
                     {
                         TaxDeductiblePct = Row.PercentageTaxDeductible;
                     }

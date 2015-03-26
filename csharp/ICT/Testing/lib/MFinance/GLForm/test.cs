@@ -315,8 +315,6 @@ namespace Tests.MFinance.GLBatches
 
             TextBoxTester txtFilename = new TextBoxTester("txtFilename");
 
-            ToolStripButtonTester tbbExportBatches = new ToolStripButtonTester("tbbExportBatches");
-
             TTxtNumericTextBoxTester txtBatchNumberStart = new TTxtNumericTextBoxTester("txtBatchNumberStart");
             txtBatchNumberStart.Properties.NumberValueInt = ImportedBatchNumber;
             TTxtNumericTextBoxTester txtBatchNumberEnd = new TTxtNumericTextBoxTester("txtBatchNumberEnd");
@@ -335,7 +333,7 @@ namespace Tests.MFinance.GLBatches
                 tester2.SendCommand(MessageBoxTester.Command.OK);
             };
 
-            tbbExportBatches.Click();
+            frmBatchExport.ExportBatches();
 
             Assert.AreEqual(true, TTextFile.SameContent(TestFile,
                     TestFile + ".new"), "the files should be the same: " + TestFile);
@@ -355,7 +353,7 @@ namespace Tests.MFinance.GLBatches
                 tester2.SendCommand(MessageBoxTester.Command.OK);
             };
 
-            tbbExportBatches.Click();
+            frmBatchExport.ExportBatches();
 
             Assert.AreEqual(true, TTextFile.SameContent(TestFile,
                     TestFile + ".new"), "the files should be the same: " + TestFile);

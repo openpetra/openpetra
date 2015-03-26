@@ -227,6 +227,13 @@ namespace Ict.Petra.Shared
         ]
         public const String ERR_EXCH_RATE_IS_DUPLICATE = "FIN.000012N";
 
+        /// <summary>Warning message that two exchange rates differ by more than 10%.</summary>
+        [ErrCodeAttribute("Invalid Data Entered",
+             ErrorMessageText =
+                 "The recipient's field,  {0} ({1}), is not set up for inter-ledger transfers. Please set it up as an ILT ledger first.")
+        ]
+        public const String ERR_RECIPIENTFIELD_NOT_ILT = "FIN.000013V";
+
         #endregion
 
         #region Partner Module-specific error codes

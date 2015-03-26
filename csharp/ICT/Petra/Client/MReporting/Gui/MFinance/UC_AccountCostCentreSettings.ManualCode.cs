@@ -149,8 +149,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 String SelectedAccountCodes = clbAccountCodes.GetCheckedStringList();
 
-                if ((SelectedAccountCodes.Length == 0)
-                    && (AReportAction == TReportActionEnum.raGenerate))
+                if (SelectedAccountCodes.Length == 0)
                 {
                     VerificationResult = new TVerificationResult(Catalog.GetString("Select Account Codes"),
                         Catalog.GetString("No Account Code was selected!"),
@@ -205,8 +204,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 if (VerificationResult != null)
                 {
-                    VerificationResult = new TVerificationResult(Catalog.GetString("Select CostCentre Codes from list"),
-                        Catalog.GetString("No cost centre was selected!"),
+                    VerificationResult = new TVerificationResult(Catalog.GetString("Select Cost Centre Codes from list"),
+                        Catalog.GetString("No Cost Centre was selected!"),
                         TResultSeverity.Resv_Critical);
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }

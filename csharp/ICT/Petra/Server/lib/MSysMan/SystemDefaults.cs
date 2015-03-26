@@ -26,6 +26,7 @@
 using System;
 using System.Data;
 using Ict.Common;
+using Ict.Common.DB.Exceptions;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core;
@@ -76,12 +77,15 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
             String ReturnValue = SharedConstants.SYSDEFAULT_NOT_FOUND;
             SSystemDefaultsTable SystemDefaultsTable = GetSystemDefaults();
 
-            // Look up the System Default
-            SSystemDefaultsRow FoundSystemDefaultsRow = (SSystemDefaultsRow)SystemDefaultsTable.Rows.Find(ASystemDefaultName);
-
-            if (FoundSystemDefaultsRow != null)
+            if (SystemDefaultsTable != null)
             {
-                ReturnValue = FoundSystemDefaultsRow.DefaultValue;
+                // Look up the System Default
+                SSystemDefaultsRow FoundSystemDefaultsRow = (SSystemDefaultsRow)SystemDefaultsTable.Rows.Find(ASystemDefaultName);
+
+                if (FoundSystemDefaultsRow != null)
+                {
+                    ReturnValue = FoundSystemDefaultsRow.DefaultValue;
+                }
             }
 
             return ReturnValue;
@@ -89,24 +93,35 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
 
         /// <summary>
         /// Returns the System Defaults as a DataTable.
-        ///
         /// </summary>
         /// <returns>System Defaults Typed DataTable.
         /// </returns>
         [RequireModulePermission("NONE")]
         public static SSystemDefaultsTable GetSystemDefaults()
         {
-            SSystemDefaultsTable Ret = null;
+            SSystemDefaultsTable ReturnValue = null;
             TDBTransaction ReadTransaction = null;
+            bool DBAccessCallSuccessful = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
                 delegate
                 {
-                    Ret = SSystemDefaultsAccess.LoadAll(ReadTransaction);
+                    TServerBusyHelper.CoordinatedAutoRetryCall("Loading all SystemDefaults", ref DBAccessCallSuccessful,
+                        delegate
+                        {
+                            ReturnValue = SSystemDefaultsAccess.LoadAll(ReadTransaction);
+
+                            DBAccessCallSuccessful = true;
+                        });
                 });
 
-            return Ret;
+            if (!DBAccessCallSuccessful)
+            {
+                throw new EDBAccessLackingCoordinationException("Loading of System Default failed: server was too busy!");
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>

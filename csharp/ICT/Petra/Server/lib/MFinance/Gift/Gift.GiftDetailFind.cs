@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using System.Threading;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Session;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MCommon;
@@ -39,7 +40,8 @@ namespace Ict.Petra.Server.MFinance.Gift
 {
     /// <summary>
     /// Base for the Gift Detail Find Screen.
-    /// (Based on Partner.PartnerFind)
+    /// (Based on Partner.PartnerFind).
+    /// Utilised by the 'TGiftDetailFindUIConnector' Class.
     /// </summary>
     public class TGiftDetailFind
     {
@@ -59,14 +61,11 @@ namespace Ict.Petra.Server.MFinance.Gift
         }
 
         /// <summary>
-        /// Procedure to execute a Find query. Although the full
-        /// query results are retrieved from the DB and stored internally in an object,
-        /// data will be returned in 'pages' of data, each page holding a defined number
+        /// Procedure to execute a Find query. Although the full query results are retrieved from the DB and stored
+        /// internally in an object, data will be returned in 'pages' of data, each page holding a defined number
         /// of records.
-        ///
         /// </summary>
-        /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters</param>
-        /// <returns>void</returns>
+        /// <param name="ACriteriaData">HashTable containing non-empty Find parameters.</param>
         public void PerformSearch(DataTable ACriteriaData)
         {
             String CustomWhereCriteria;
@@ -106,7 +105,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             sb.AppendFormat("{0},{1}", "PUB.a_gift_detail.a_gift_comment_one_c", Environment.NewLine);
             sb.AppendFormat("{0},{1}", "PUB.a_gift_detail.a_gift_comment_two_c", Environment.NewLine);
             sb.AppendFormat("{0},{1}", "PUB.a_gift_detail.a_gift_comment_three_c", Environment.NewLine);
-            sb.AppendFormat("{0}{1}", "PUB.a_gift_batch.a_batch_status_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.a_gift_batch.a_batch_status_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.a_gift_batch.a_batch_period_i", Environment.NewLine);
+            sb.AppendFormat("{0}{1}", "PUB.a_gift_batch.a_batch_year_i", Environment.NewLine);
 
             // short
             FieldList = sb.ToString();
@@ -400,14 +401,11 @@ namespace Ict.Petra.Server.MFinance.Gift
 
         /// <summary>
         /// Stops the query execution.
-        ///
-        /// @comment It might take some time until the executing query is cancelled by
-        /// the DB, but this procedure returns immediately. The reason for this is that
-        /// we consider the query cancellation as done since the application can
-        /// 'forget' about the result of the cancellation process (but beware of
-        /// executing another query while the other is stopping - this leads to ADO.NET
-        /// errors that state that a ADO.NET command is still executing!).
-        ///
+        /// <remarks>It might take some time until the executing query is cancelled by the DB, but this procedure returns
+        /// immediately. The reason for this is that we consider the query cancellation as done since the application can
+        /// 'forget' about the result of the cancellation process (but beware of executing another query while the other is
+        /// stopping - this leads to ADO.NET errors that state that a ADO.NET command is still executing!).
+        /// </remarks>
         /// </summary>
         public void StopSearch()
         {
@@ -418,8 +416,7 @@ namespace Ict.Petra.Server.MFinance.Gift
              */
             TLogging.LogAtLevel(7, "TGiftDetailFindUIConnector.StopSearch: Starting StopQuery thread...");
 
-            ThreadStart ThreadStartDelegate = new ThreadStart(FPagedDataSetObject.StopQuery);
-            StopQueryThread = new Thread(ThreadStartDelegate);
+            StopQueryThread = new Thread(new ThreadStart(FPagedDataSetObject.StopQuery));
             StopQueryThread.Name = "GiftDetailFindStopQuery" + Guid.NewGuid().ToString();
             StopQueryThread.Start();
 

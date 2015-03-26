@@ -1823,6 +1823,10 @@ namespace SourceGrid
                         CellContext newFocusCell = new CellContext(this, position);
                         newFocusCell.StartEdit();
                     }
+                    else if (cellMouseDown.View is SourceGrid.Cells.Views.Button)
+                    {
+                        // The position is ok.  This is used in GL Revaluation where there is a button in column 5
+                    }
                     else if (position.Row >= this.FixedRows)
                     {
                         // AlanP: Jan 2014.  Added this test that we are doing full row selection because on some grids we do column selection

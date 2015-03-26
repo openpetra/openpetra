@@ -1,0 +1,16 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Select Contact Attributes
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 750
+    WindowHeight: 500
+
+    Controls:
+        pnlDialogContent:
+            Controls: [grdContactAttributes]
+            Dock: Fill
+
+        grdContactAttributes:
+            Dock: Fill

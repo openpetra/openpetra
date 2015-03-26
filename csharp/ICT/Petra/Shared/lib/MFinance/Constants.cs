@@ -340,6 +340,9 @@ namespace Ict.Petra.Shared.MFinance
         /// standard account
         public const string CASH_ACCT = "CASH";
 
+        /// transaction type
+        public const string TRANS_TYPE_GIFT_PROCESSING = "Gift Processing";
+
         /// Allocation Journal values
         public const int MAX_AC_CC_SPLIT_INTO = 10;
 

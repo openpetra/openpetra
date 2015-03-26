@@ -973,17 +973,17 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.DeleteAllRows();
             RunTestImport("daily-csv/BadDateImport.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(CommonErrorCodes.ERR_INVALIDDATE, firstResultCode);
+            Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             FMainDS.DeleteAllRows();
             RunTestImport("daily-csv/BadRateImport.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(CommonErrorCodes.ERR_INVALIDNUMBER, firstResultCode);
+            Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             FMainDS.DeleteAllRows();
             RunTestImport("daily-csv/BadTimeImport.csv", "\t", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(CommonErrorCodes.ERR_INVALIDINTEGERTIME, firstResultCode);
+            Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             // Run the test(s) that have duplicates
             FMainDS.DeleteAllRows();

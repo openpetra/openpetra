@@ -166,12 +166,16 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         public static string GetLedgerBaseCurrency(Int32 ALedgerNumber)
         {
             string ReturnValue = "";
-            TDBTransaction Transaction = null;
+            TDBTransaction ReadTransaction = null;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            // Need to use 'GetNewOrExistingAutoReadTransaction' rather than 'BeginAutoReadTransaction' to allow
+            // opening of the 'GL Transaction Find' screen while a Report is calculating (Bug #3879).
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
                 delegate
                 {
-                    ReturnValue = ((ALedgerRow)ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction).Rows[0]).BaseCurrency;
+                    ReturnValue = ((ALedgerRow)ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadTransaction).Rows[0]).BaseCurrency;
                 });
 
             return ReturnValue;

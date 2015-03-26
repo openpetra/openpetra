@@ -26,6 +26,9 @@ using System.Data;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Threading;
+using System.Windows.Forms;
+using Ict.Common.DB.Exceptions;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MConference;
@@ -82,6 +85,21 @@ namespace Ict.Petra.Client.App.Core
         public static IsolatedStorageFile UIsolatedStorageFile = IsolatedStorageFile.GetStore(
             IsolatedStorageScope.User | IsolatedStorageScope.Assembly |
             IsolatedStorageScope.Roaming, null, null);
+
+        private enum TCacheSource
+        {
+            csUndefined,
+
+            csCache,
+
+            csFile,
+
+            csServer,
+
+            csFilteredCacheView,
+
+            csFilteredFileView
+        };
 
 
         #region TDataCache.TMCommon
@@ -993,112 +1011,157 @@ namespace Ict.Petra.Client.App.Core
             String AHashCode,
             out System.Type ACacheableTableSystemType)
         {
-            ACacheableTableSystemType = null;
             DataTable ReturnValue = null;
+            bool ServerCallSuccessful = false;
 
-            if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableCommonTablesEnum)), ACacheableTableName) != -1)
+            System.Type CacheableTableSystemType = null;
+
+            Ict.Common.DB.TServerBusyHelper.CoordinatedAutoRetryCall("TDataCache", ref ServerCallSuccessful,
+                delegate
+                {
+                    if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableCommonTablesEnum)), ACacheableTableName) != -1)
+                    {
+                        // MCommon Namespace
+                        TCacheableCommonTablesEnum CacheableMCommonTable = (TCacheableCommonTablesEnum)Enum.Parse(typeof(TCacheableCommonTablesEnum),
+                            ACacheableTableName);
+
+                        // PetraServer method call
+                        ReturnValue = TRemote.MCommon.Cacheable.WebConnectors.GetCacheableTable(CacheableMCommonTable,
+                            AHashCode,
+                            out CacheableTableSystemType);
+
+                        ServerCallSuccessful = true;
+                    }
+                    else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableConferenceTablesEnum)), ACacheableTableName) != -1)
+                    {
+                        // MConference Namespace
+                        TCacheableConferenceTablesEnum CacheableMConferenceTable =
+                            (TCacheableConferenceTablesEnum)Enum.Parse(typeof(TCacheableConferenceTablesEnum),
+                                ACacheableTableName);
+
+                        // PetraServer method call
+                        ReturnValue = TRemote.MConference.Cacheable.WebConnectors.GetCacheableTable(CacheableMConferenceTable,
+                            AHashCode,
+                            out CacheableTableSystemType);
+
+                        ServerCallSuccessful = true;
+                    }
+                    else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePartnerTablesEnum)), ACacheableTableName) != -1)
+                    {
+                        // MPartner.Partner Namespace
+                        TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable =
+                            (TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTableName);
+
+                        // PetraServer method call
+                        ReturnValue = TRemote.MPartner.Partner.Cacheable.WebConnectors.GetCacheableTable(CacheableMPartnerPartnerTable,
+                            AHashCode,
+                            out CacheableTableSystemType);
+
+                        ServerCallSuccessful = true;
+                    }
+                    else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSubscriptionsTablesEnum)), ACacheableTableName) != -1)
+                    {
+                        // MPartner.Subscriptions Namespace
+                        TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable =
+                            (TCacheableSubscriptionsTablesEnum)Enum.Parse(typeof(TCacheableSubscriptionsTablesEnum),
+                                ACacheableTableName);
+
+                        // PetraServer method call
+                        ReturnValue = TRemote.MPartner.Subscriptions.Cacheable.WebConnectors.GetCacheableTable(CacheableMPartnerSubscriptionsTable,
+                            AHashCode,
+                            out CacheableTableSystemType);
+
+                        ServerCallSuccessful = true;
+                    }
+                    else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableMailingTablesEnum)), ACacheableTableName) != -1)
+                    {
+                        // MPartner.Mailing Namespace
+                        TCacheableMailingTablesEnum CacheableMPartnerMailingTable =
+                            (TCacheableMailingTablesEnum)Enum.Parse(typeof(TCacheableMailingTablesEnum), ACacheableTableName);
+
+                        // PetraServer method call
+                        ReturnValue = TRemote.MPartner.Mailing.Cacheable.WebConnectors.GetCacheableTable(CacheableMPartnerMailingTable,
+                            AHashCode,
+                            out CacheableTableSystemType);
+
+                        ServerCallSuccessful = true;
+                    }
+                    else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableFinanceTablesEnum)), ACacheableTableName) != -1)
+                    {
+                        // MFinance Namespace
+                        TCacheableFinanceTablesEnum CacheableMFinanceTable =
+                            (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum),
+                                ACacheableTableName);
+
+                        // PetraServer method call
+                        ReturnValue = TRemote.MFinance.Cacheable.WebConnectors.GetCacheableTable(CacheableMFinanceTable,
+                            AHashCode,
+                            out CacheableTableSystemType);
+
+                        ServerCallSuccessful = true;
+                    }
+                    else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSysManTablesEnum)), ACacheableTableName) != -1)
+                    {
+                        // MSysMan Namespace
+                        TCacheableSysManTablesEnum CacheableMSysManTable = (TCacheableSysManTablesEnum)Enum.Parse(typeof(TCacheableSysManTablesEnum),
+                            ACacheableTableName);
+
+                        // PetraServer method call
+                        ReturnValue = TRemote.MSysMan.Cacheable.WebConnectors.GetCacheableTable(CacheableMSysManTable,
+                            AHashCode,
+                            out CacheableTableSystemType);
+
+                        ServerCallSuccessful = true;
+                    }
+                    else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePersonTablesEnum)), ACacheableTableName) != -1)
+                    {
+                        // MSysMan Namespace
+                        TCacheablePersonTablesEnum CacheableMPersonnelPersonTable =
+                            (TCacheablePersonTablesEnum)Enum.Parse(typeof(TCacheablePersonTablesEnum),
+                                ACacheableTableName);
+
+                        // PetraServer method call
+                        ReturnValue = TRemote.MPersonnel.Person.Cacheable.WebConnectors.GetCacheableTable(CacheableMPersonnelPersonTable,
+                            AHashCode,
+                            out CacheableTableSystemType);
+
+                        ServerCallSuccessful = true;
+                    }
+                    else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableUnitTablesEnum)), ACacheableTableName) != -1)
+                    {
+                        // MSysMan Namespace
+                        TCacheableUnitTablesEnum CacheableMPersonnelUnitsTable = (TCacheableUnitTablesEnum)Enum.Parse(typeof(TCacheableUnitTablesEnum),
+                            ACacheableTableName);
+
+                        // PetraServer method call
+                        ReturnValue = TRemote.MPersonnel.Unit.Cacheable.WebConnectors.GetCacheableTable(CacheableMPersonnelUnitsTable,
+                            AHashCode,
+                            out CacheableTableSystemType);
+
+                        ServerCallSuccessful = true;
+                    }
+                });
+
+            if (ServerCallSuccessful)
             {
-                // MCommon Namespace
-                TCacheableCommonTablesEnum CacheableMCommonTable = (TCacheableCommonTablesEnum)Enum.Parse(typeof(TCacheableCommonTablesEnum),
-                    ACacheableTableName);
+                ACacheableTableSystemType = CacheableTableSystemType;
 
-                // PetraServer method call
-                ReturnValue = TRemote.MCommon.Cacheable.WebConnectors.GetCacheableTable(CacheableMCommonTable,
-                    AHashCode,
-                    out ACacheableTableSystemType);
+                return ReturnValue;
             }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableConferenceTablesEnum)), ACacheableTableName) != -1)
+            else
             {
-                // MConference Namespace
-                TCacheableConferenceTablesEnum CacheableMConferenceTable =
-                    (TCacheableConferenceTablesEnum)Enum.Parse(typeof(TCacheableConferenceTablesEnum),
-                        ACacheableTableName);
-
-                // PetraServer method call
-                ReturnValue = TRemote.MConference.Cacheable.WebConnectors.GetCacheableTable(CacheableMConferenceTable,
-                    AHashCode,
-                    out ACacheableTableSystemType);
+                // ServerCallRetries must be equal to MAX_RETRIES when we get here!
+                if (TServerBusyHelperGui.ShowServerBusyDialog(Catalog.GetString("process the request.")) == DialogResult.Retry)
+                {
+                    // Recursively call myself!
+                    return GetCacheableDataTableFromPetraServer(ACacheableTableName, AHashCode, out ACacheableTableSystemType);
+                }
+                else
+                {
+                    // The following Exception will get caught *and handled* by our 'UnhandledExceptionHandler' and 'OnThreadException' handlers!
+                    throw new ECachedDataTableLoadingRetryGotCancelledException();
+                }
             }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePartnerTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MPartner.Partner Namespace
-                TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable =
-                    (TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTableName);
-
-                // PetraServer method call
-                ReturnValue = TRemote.MPartner.Partner.Cacheable.WebConnectors.GetCacheableTable(CacheableMPartnerPartnerTable,
-                    AHashCode,
-                    out ACacheableTableSystemType);
-            }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSubscriptionsTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MPartner.Subscriptions Namespace
-                TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable =
-                    (TCacheableSubscriptionsTablesEnum)Enum.Parse(typeof(TCacheableSubscriptionsTablesEnum),
-                        ACacheableTableName);
-
-                // PetraServer method call
-                ReturnValue = TRemote.MPartner.Subscriptions.Cacheable.WebConnectors.GetCacheableTable(CacheableMPartnerSubscriptionsTable,
-                    AHashCode,
-                    out ACacheableTableSystemType);
-            }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableMailingTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MPartner.Mailing Namespace
-                TCacheableMailingTablesEnum CacheableMPartnerMailingTable =
-                    (TCacheableMailingTablesEnum)Enum.Parse(typeof(TCacheableMailingTablesEnum), ACacheableTableName);
-
-                // PetraServer method call
-                ReturnValue = TRemote.MPartner.Mailing.Cacheable.WebConnectors.GetCacheableTable(CacheableMPartnerMailingTable,
-                    AHashCode,
-                    out ACacheableTableSystemType);
-            }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableFinanceTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MFinance Namespace
-                TCacheableFinanceTablesEnum CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum),
-                    ACacheableTableName);
-
-                // PetraServer method call
-                ReturnValue = TRemote.MFinance.Cacheable.WebConnectors.GetCacheableTable(CacheableMFinanceTable,
-                    AHashCode,
-                    out ACacheableTableSystemType);
-            }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSysManTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MSysMan Namespace
-                TCacheableSysManTablesEnum CacheableMSysManTable = (TCacheableSysManTablesEnum)Enum.Parse(typeof(TCacheableSysManTablesEnum),
-                    ACacheableTableName);
-
-                // PetraServer method call
-                ReturnValue = TRemote.MSysMan.Cacheable.WebConnectors.GetCacheableTable(CacheableMSysManTable,
-                    AHashCode,
-                    out ACacheableTableSystemType);
-            }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePersonTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MSysMan Namespace
-                TCacheablePersonTablesEnum CacheableMPersonnelPersonTable = (TCacheablePersonTablesEnum)Enum.Parse(typeof(TCacheablePersonTablesEnum),
-                    ACacheableTableName);
-
-                // PetraServer method call
-                ReturnValue = TRemote.MPersonnel.Person.Cacheable.WebConnectors.GetCacheableTable(CacheableMPersonnelPersonTable,
-                    AHashCode,
-                    out ACacheableTableSystemType);
-            }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableUnitTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MSysMan Namespace
-                TCacheableUnitTablesEnum CacheableMPersonnelUnitsTable = (TCacheableUnitTablesEnum)Enum.Parse(typeof(TCacheableUnitTablesEnum),
-                    ACacheableTableName);
-
-                // PetraServer method call
-                ReturnValue = TRemote.MPersonnel.Unit.Cacheable.WebConnectors.GetCacheableTable(CacheableMPersonnelUnitsTable,
-                    AHashCode,
-                    out ACacheableTableSystemType);
-            }
-
-            return ReturnValue;
         }
 
         /// <summary>
@@ -1124,23 +1187,50 @@ namespace Ict.Petra.Client.App.Core
             object AFilterCriteria,
             out System.Type ACacheableTableSystemType)
         {
-            DataTable ReturnValue;
+            DataTable ReturnValue = null;
+            bool ServerCallSuccessful = false;
             TCacheableFinanceTablesEnum CacheableMFinanceTable;
 
-            ReturnValue = null;
+            System.Type CacheableTableSystemType = null;
+
             ACacheableTableSystemType = null;
 
-            if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableFinanceTablesEnum)), ACacheableTableName) != -1)
+            Ict.Common.DB.TServerBusyHelper.CoordinatedAutoRetryCall("TDataCache", ref ServerCallSuccessful,
+                delegate
+                {
+                    if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableFinanceTablesEnum)), ACacheableTableName) != -1)
+                    {
+                        // MFinance Namespace
+                        CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
+
+                        // PetraServer method call
+                        ReturnValue = TRemote.MFinance.Cacheable.WebConnectors.GetCacheableTable(CacheableMFinanceTable, AHashCode, Convert.ToInt32(
+                                AFilterCriteria), out CacheableTableSystemType);
+
+                        ServerCallSuccessful = true;
+                    }
+                });
+
+            if (ServerCallSuccessful)
             {
-                // MFinance Namespace
-                CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
+                ACacheableTableSystemType = CacheableTableSystemType;
 
-                // PetraServer method call
-                ReturnValue = TRemote.MFinance.Cacheable.WebConnectors.GetCacheableTable(CacheableMFinanceTable, AHashCode, Convert.ToInt32(
-                        AFilterCriteria), out ACacheableTableSystemType);
+                return ReturnValue;
             }
-
-            return ReturnValue;
+            else
+            {
+                // ServerCallRetries must be equal to MAX_RETRIES when we get here!
+                if (TServerBusyHelperGui.ShowServerBusyDialog(Catalog.GetString("process the request.")) == DialogResult.Retry)
+                {
+                    // Recursively call myself!
+                    return GetCacheableDataTableFromPetraServer(ACacheableTableName, AHashCode, AFilterCriteria, out ACacheableTableSystemType);
+                }
+                else
+                {
+                    // The following Exception will get caught *and handled* by our 'UnhandledExceptionHandler' and 'OnThreadException' handlers!
+                    throw new ECachedDataTableLoadingRetryGotCancelledException();
+                }
+            }
         }
 
         /// <summary>
@@ -1284,19 +1374,26 @@ namespace Ict.Petra.Client.App.Core
         public static DataTable GetCacheableDataTableFromCache2(String ACacheableTableName, String AFilterCriteriaString, object AFilterCriteria,
             out Type ADataTableType, string ACustomTableName = "")
         {
-            DataTable ReturnValue;
-            DataTable CacheableDataTableFromCache;
+            // NOTE: AlanP reworked this method in Feb 2015.  Previously we used the Petra 2.x code.  Bizarrely, this code had bugs
+            // which meant that, although tables got stored in the memory and file caches, there was no code to actually successfully
+            // get a table out of the cache!  There was no attempt to calculate the Hash for the cached table, so the server always
+            // returned a full table.
+            // At the same time the code was reviewed and made easier to read and follow.
+
+            DataTable ReturnValue = null;
+            DataTable CacheableDataTableFromCache = null;
             DataTable CacheableDataTableFromServer = null;
             DataTable CacheableDataTableFromFile = null;
             DataView CacheableDataTableFilteredDV = null;
             String HashCode = "";
             Int32 TmpSize = 0;
             Boolean CacheableDataTableReloadNecessary = true;
+            TCacheSource CacheSource = TCacheSource.csUndefined;
 
             System.Type TmpType;
-            DataRow[] FilteredRows = null;
 
             ADataTableType = null;
+            DateTime dtStart = DateTime.UtcNow;
 
             /*
              * Check whether cacheable DataTable is available in the Client-side Cache
@@ -1319,9 +1416,7 @@ namespace Ict.Petra.Client.App.Core
                          * Check if any rows of the Cacheable DataTable in the Client-side
                          * Cache match the AFilterCriteriaString
                          */
-                        FilteredRows = CacheableDataTableFromCache.Select(AFilterCriteriaString);
-
-                        if (FilteredRows.Length != 0)
+                        if (CacheableDataTableFromCache.Select(AFilterCriteriaString).Length != 0)
                         {
                             // We have what we are looking for > no need to make a Server call
                             CacheableDataTableReloadNecessary = false;
@@ -1348,7 +1443,9 @@ namespace Ict.Petra.Client.App.Core
                         TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': needs reloading from OpenPetra Server!");
                     }
 
-                    CacheableDataTableReloadNecessary = true;
+                    // By setting these two values we force the server to give us a table, since the Hash code will be empty string
+                    CacheableDataTableReloadNecessary = false;
+                    CacheableDataTableFromCache = null;
                 }
                 catch (Exception)
                 {
@@ -1381,6 +1478,8 @@ namespace Ict.Petra.Client.App.Core
                         TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': loaded from file.");
                     }
 
+                    CacheSource = TCacheSource.csFile;
+
                     // Assign the correct TableName
                     CacheableDataTableFromFile.TableName = ACacheableTableName;
 
@@ -1400,6 +1499,36 @@ namespace Ict.Petra.Client.App.Core
                     }
                 }
             }
+            else if (CacheableDataTableFromCache != null)
+            {
+                // We have a cached table we can use
+                CacheSource = TCacheSource.csCache;
+
+                // Assign the correct TableName
+                CacheableDataTableFromCache.TableName = ACacheableTableName;
+
+                // Calculate HashCode for the DataTable (used to compare the DataTable
+                // with the DataTable in the Serverside Cache)
+                DateTime dtHashStart = DateTime.UtcNow;
+
+                if (AFilterCriteriaString != "")
+                {
+                    CacheableDataTableFilteredDV = new DataView(CacheableDataTableFromCache,
+                        AFilterCriteriaString,
+                        "",
+                        DataViewRowState.CurrentRows);
+                    DataUtilities.CalculateHashAndSize(CacheableDataTableFilteredDV, out HashCode, out TmpSize);
+                }
+                else
+                {
+                    DataUtilities.CalculateHashAndSize(CacheableDataTableFromCache, out HashCode, out TmpSize);
+                }
+
+                if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES - 1)
+                {
+                    TLogging.Log(String.Format(" -- Hashing: {0} ms", (DateTime.UtcNow - dtHashStart).TotalMilliseconds));
+                }
+            }
 
 //System.Windows.Forms.MessageBox.Show("From File: CacheableTableName Clientside:  HashCode: " + HashCode + "; Size: " + TmpSize.ToString());
             try
@@ -1410,9 +1539,12 @@ namespace Ict.Petra.Client.App.Core
                  * retrieve the Type of the DataTable (it's a Typed DataTable in most
                  * cases).
                  */
+                DateTime dtServerStart = DateTime.UtcNow;
+
                 if ((AFilterCriteriaString != "")
                     && (AFilterCriteria != null))
                 {
+                    // Typically used by Finance tables where AFilterCriteria is a ledger number ...
                     CacheableDataTableFromServer = GetCacheableDataTableFromPetraServer(ACacheableTableName,
                         HashCode,
                         AFilterCriteria,
@@ -1423,6 +1555,11 @@ namespace Ict.Petra.Client.App.Core
                     CacheableDataTableFromServer = GetCacheableDataTableFromPetraServer(ACacheableTableName,
                         HashCode,
                         out ADataTableType);
+                }
+
+                if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES - 1)
+                {
+                    TLogging.Log(String.Format(" -- Server call: {0} ms", (DateTime.UtcNow - dtServerStart).TotalMilliseconds));
                 }
 
                 /*
@@ -1438,22 +1575,12 @@ namespace Ict.Petra.Client.App.Core
                         TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': got returned from OpenPetra Server.");
                     }
 
-                    if (AFilterCriteriaString != "")
-                    {
-                        CacheableDataTableFilteredDV = new DataView(CacheableDataTableFromServer,
-                            AFilterCriteriaString,
-                            "",
-                            DataViewRowState.CurrentRows);
+                    CacheSource = TCacheSource.csServer;
 
-                        DataRowCollection FilteredRowsColl = CacheableDataTableFilteredDV.ToTable().Rows;
-
-                        FilteredRows = new DataRow[FilteredRowsColl.Count];
-
-                        for (int ServerRowsCounter = 0; ServerRowsCounter < FilteredRowsColl.Count; ServerRowsCounter++)
-                        {
-                            FilteredRows.SetValue(FilteredRowsColl[ServerRowsCounter], ServerRowsCounter);
-                        }
-                    }
+                    // If we have a value for CacheableDataTableFilteredDV because we supplied the server with a filtered table request
+                    // from the cache or a file, the server will already have applied the filter, so we no longer need it.  We won't need to apply
+                    // it at the end of the method.
+                    CacheableDataTableFilteredDV = null;
 
                     /*
                      * Add returned DataTable to the Cache - or Merge it if it already
@@ -1462,8 +1589,14 @@ namespace Ict.Petra.Client.App.Core
                      */
                     UCacheableTablesManager.AddOrMergeCachedTable(CacheableDataTableFromServer, -1);
 
-                    // Save the DataTable that's now in the Cache to a file
+                    // Save the (merged) DataTable that's now in the Cache to a file
                     SaveCacheableDataTableToFile(UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out TmpType));
+
+                    // Change the table from the server into a typed table
+                    if (!(ADataTableType == typeof(System.Data.DataTable)))
+                    {
+                        DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromServer, ADataTableType, "");
+                    }
                 }
                 else
                 {
@@ -1481,6 +1614,22 @@ namespace Ict.Petra.Client.App.Core
                             "Cacheable DataTable '" + ACacheableTableName + "': OpenPetra Server tells that the Client-side DataTable is up-to-date.");
                     }
 
+                    if (CacheSource == TCacheSource.csFile)
+                    {
+                        // Add DataTable to the Cache that got loaded from a file
+                        UCacheableTablesManager.AddOrRefreshCachedTable(ACacheableTableName, CacheableDataTableFromFile, -1);
+
+                        if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
+                        {
+                            TLogging.Log(
+                                "Cacheable DataTable '" + ACacheableTableName +
+                                "': DataTable that was loaded from file got added to Client-side  DataTable Type: " +
+                                UCacheableTablesManager.GetCachedDataTable(ACacheableTableName,
+                                    out TmpType).GetType().FullName + "; Rows: " + UCacheableTablesManager.GetCachedDataTable(ACacheableTableName,
+                                    out TmpType).Rows.Count.ToString());
+                        }
+                    }
+
                     if (!(ADataTableType == typeof(System.Data.DataTable)))
                     {
                         /*
@@ -1489,32 +1638,14 @@ namespace Ict.Petra.Client.App.Core
                          * PetraServer (so that a Typed DataTable is again a Typed a
                          * DataTable and not just a DataTable after loading it from a file).
                          */
-                        DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromFile, ADataTableType, "");
-                    }
-
-                    if (AFilterCriteriaString != "")
-                    {
-                        DataRowCollection FilteredRowsColl = CacheableDataTableFilteredDV.ToTable().Rows;
-
-                        FilteredRows = new DataRow[FilteredRowsColl.Count];
-
-                        for (int ServerRowsCounter = 0; ServerRowsCounter < FilteredRowsColl.Count; ServerRowsCounter++)
+                        if (CacheSource == TCacheSource.csFile)
                         {
-                            FilteredRows.SetValue(FilteredRowsColl[ServerRowsCounter], ServerRowsCounter);
+                            DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromFile, ADataTableType, "");
                         }
-                    }
-
-                    // Add DataTable to the Cache that got loaded from a file
-                    UCacheableTablesManager.AddOrRefreshCachedTable(ACacheableTableName, CacheableDataTableFromFile, -1);
-
-                    if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
-                    {
-                        TLogging.Log(
-                            "Cacheable DataTable '" + ACacheableTableName +
-                            "': DataTable that was loaded from file got added to Client-side  DataTable Type: " +
-                            UCacheableTablesManager.GetCachedDataTable(ACacheableTableName,
-                                out TmpType).GetType().FullName + "; Rows: " + UCacheableTablesManager.GetCachedDataTable(ACacheableTableName,
-                                out TmpType).Rows.Count.ToString());
+                        else if (CacheSource == TCacheSource.csCache)
+                        {
+                            DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromCache, ADataTableType, "");
+                        }
                     }
                 }
             }
@@ -1523,24 +1654,56 @@ namespace Ict.Petra.Client.App.Core
                 throw;
             }
 
-            ReturnValue = UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out TmpType);
-
-            // If a Filter is set, we must return only the DataRows that match the Filter, not all DataRows
-            if (FilteredRows != null)
+            if (CacheableDataTableFilteredDV != null)
             {
-                ReturnValue.Clear();
-
-                for (int FilteredRowsCounter = 0; FilteredRowsCounter < FilteredRows.Length; FilteredRowsCounter++)
+                // There was a filter string so we must return a sub-set of the cache or file copy
+                switch (CacheSource)
                 {
-                    ReturnValue.ImportRow(FilteredRows[FilteredRowsCounter]);
+                    case TCacheSource.csCache:
+                        CacheSource = TCacheSource.csFilteredCacheView;
+                        break;
+
+                    case TCacheSource.csFile:
+                        CacheSource = TCacheSource.csFilteredFileView;
+                        break;
                 }
 
-                ReturnValue.AcceptChanges();
+                if (ADataTableType == typeof(System.Data.DataTable))
+                {
+                    // Just turn the view into a standard data table
+                    ReturnValue = CacheableDataTableFilteredDV.ToTable();
+                }
+                else
+                {
+                    // This construct looks a little odd.  There is no need to convert the view to a new table instance
+                    //  because the conversion to a typed table will create a new instance - so we only need to pass the data
+                    //  as a reference param and can therefore use .Table rather than .ToTable()
+                    ReturnValue = CacheableDataTableFilteredDV.Table;
+                    DataUtilities.ChangeDataTableToTypedDataTable(ref ReturnValue, ADataTableType, "");
+                }
+            }
+            else if (CacheSource == TCacheSource.csCache)
+            {
+                ReturnValue = CacheableDataTableFromCache;
+            }
+            else if (CacheSource == TCacheSource.csFile)
+            {
+                ReturnValue = CacheableDataTableFromFile;
+            }
+            else if (CacheSource == TCacheSource.csServer)
+            {
+                ReturnValue = CacheableDataTableFromServer;
             }
 
             if (ACustomTableName != String.Empty)
             {
                 ReturnValue.TableName = ACustomTableName;
+            }
+
+            if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES - 1)
+            {
+                TLogging.Log(String.Format("{0} sourced from {1} took {2} milliseconds", ACacheableTableName, ((int)CacheSource).ToString(),
+                        (DateTime.UtcNow - dtStart).TotalMilliseconds.ToString()));
             }
 
             return ReturnValue;

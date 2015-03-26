@@ -60,21 +60,21 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// for each account number - cost center combination which holds a foreign currency value
         /// </summary>
         /// <param name="ALedgerNum">Number of the Ledger to be revaluated</param>
-        /// <param name="AAccoutingPeriod">Number of the accounting period (other form of the date)</param>
         /// <param name="AForeignCurrency">Types (Array) of the foreign currency account</param>
         /// <param name="ANewExchangeRate">Array of the exchange rates</param>
+        /// <param name="ACostCentre">Which Cost Centre should win / lose money in this process</param>
         /// <param name="AVerificationResult">A TVerificationResultCollection for possible error messages</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool Revaluate(
             int ALedgerNum,
-            int AAccoutingPeriod,
             string[] AForeignCurrency,
             decimal[] ANewExchangeRate,
+            String ACostCentre,
             out TVerificationResultCollection AVerificationResult)
         {
-            CLSRevaluation revaluation = new CLSRevaluation(ALedgerNum, AAccoutingPeriod,
-                AForeignCurrency, ANewExchangeRate);
+            CLSRevaluation revaluation = new CLSRevaluation(ALedgerNum,
+                AForeignCurrency, ANewExchangeRate, ACostCentre);
 
             bool blnReturn = revaluation.RunRevaluation();
 
@@ -95,6 +95,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private int F_AccountingPeriod;
         private string[] F_CurrencyCode;
         private decimal[] F_ExchangeRate;
+        String F_CostCentre;
 
         private string F_BaseCurrency;
         private int F_BaseCurrencyDigits;
@@ -107,26 +108,24 @@ namespace Ict.Petra.Server.MFinance.GL
 
         string strStatusContent = Catalog.GetString("Revaluation ...");
 
-        TVerificationResultCollection FVerificationCollection = new TVerificationResultCollection();
-        TResultSeverity F_resultSeverity = TResultSeverity.Resv_Noncritical;
+        private TVerificationResultCollection FVerificationCollection;
+        private TResultSeverity F_resultSeverity;
 
 
         /// <summary>
         /// Constructor to initialize a variable set.
         /// </summary>
-        /// <param name="ALedgerNum"></param>
-        /// <param name="AAccoutingPeriod"></param>
-        /// <param name="AForeignCurrency"></param>
-        /// <param name="ANewExchangeRate"></param>
         public CLSRevaluation(int ALedgerNum,
-            int AAccoutingPeriod,
             string[] AForeignCurrency,
-            decimal[] ANewExchangeRate)
+            decimal[] ANewExchangeRate,
+            String ACostCentre)
         {
             F_LedgerNum = ALedgerNum;
-//            F_AccountingPeriod = AAccoutingPeriod; // Ignoring what the client asked for, I'm going to revaluate the current period!
             F_CurrencyCode = AForeignCurrency;
             F_ExchangeRate = ANewExchangeRate;
+            F_CostCentre = ACostCentre;
+            FVerificationCollection = new TVerificationResultCollection();
+            F_resultSeverity = TResultSeverity.Resv_Noncritical;
         }
 
         /// <summary>
@@ -143,7 +142,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         /// Run the revaluation and set the flag for the ledger
         /// </summary>
-        public bool RunRevaluation()
+        public Boolean RunRevaluation()
         {
             try
             {
@@ -153,7 +152,11 @@ namespace Ict.Petra.Server.MFinance.GL
                 F_RevaluationAccCode = gli.RevaluationAccount;
                 F_FinancialYear = gli.CurrentFinancialYear;
                 F_AccountingPeriod = gli.CurrentPeriod;
-                RunRevaluationIntern();
+
+                if (!RunRevaluationIntern())
+                {
+                    return false;
+                }
 
                 if (F_resultSeverity != TResultSeverity.Resv_Critical)
                 {
@@ -168,7 +171,7 @@ namespace Ict.Petra.Server.MFinance.GL
             return F_resultSeverity == TResultSeverity.Resv_Critical;
         }
 
-        private void RunRevaluationIntern()
+        private Boolean RunRevaluationIntern()
         {
             AAccountTable AccountTable = new AAccountTable();
             AGeneralLedgerMasterTable GlmTable = new AGeneralLedgerMasterTable();
@@ -194,7 +197,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (AccountTable.Rows.Count == 0) // not using any foreign accounts?
             {
-                return;
+                return true;
             }
 
             for (int iCnt = 0; iCnt < AccountTable.Rows.Count; ++iCnt)
@@ -217,7 +220,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            CloseRevaluationAccountingBatch();
+            return CloseRevaluationAccountingBatch();
         }
 
         private void RevaluateAccount(DataView GLMView, decimal AExchangeRate)
@@ -294,16 +297,22 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     FVerificationCollection = terminate.ResultCollection();
                 }
-                catch (DivideByZeroException)
-                {
-                    FVerificationCollection.Add(new TVerificationResult(
-                            strStatusContent, Catalog.GetString("DivideByZeroException"), TResultSeverity.Resv_Noncritical));
-                }
-                catch (OverflowException)
-                {
-                    FVerificationCollection.Add(new TVerificationResult(
-                            strStatusContent, Catalog.GetString("OverflowException"), TResultSeverity.Resv_Noncritical));
-                }
+
+/*
+ * I think that neither of these critical problems can be ignored or downgraded in this way!
+ * (Tim Ingham, Feb 15)
+ *
+ *              catch (DivideByZeroException)
+ *              {
+ *                  FVerificationCollection.Add(new TVerificationResult(
+ *                          strStatusContent, Catalog.GetString("DivideByZeroException"), TResultSeverity.Resv_Noncritical));
+ *              }
+ *              catch (OverflowException)
+ *              {
+ *                  FVerificationCollection.Add(new TVerificationResult(
+ *                          strStatusContent, Catalog.GetString("OverflowException"), TResultSeverity.Resv_Noncritical));
+ *              }
+ */
             }
         }
 
@@ -333,10 +342,10 @@ namespace Ict.Petra.Server.MFinance.GL
 
             strMessage = String.Format(strMessage, ARelevantAccount, ACostCentre);
 
-            CreateTransaction(strMessage, F_RevaluationAccCode, !blnDebitFlag, ACostCentre, Adelta);
+            CreateTransaction(strMessage, F_RevaluationAccCode, !blnDebitFlag, F_CostCentre, Adelta);
             CreateTransaction(strMessage, ARelevantAccount, blnDebitFlag, ACostCentre, Adelta);
-            F_journal.JournalDebitTotal = F_journal.JournalDebitTotal + Adelta;
-            F_journal.JournalCreditTotal = F_journal.JournalCreditTotal + Adelta;
+            F_journal.JournalDebitTotal += Adelta;
+            F_journal.JournalCreditTotal += Adelta;
         }
 
         private void InitBatchAndJournal()
@@ -368,7 +377,7 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         private void CreateTransaction(string AMessage, string AAccount,
-            bool ADebitFlag, string ACostCenter, decimal Aamount)
+            bool ADebitFlag, string ACostCentre, decimal Aamount)
         {
             ATransactionRow TransactionRow = null;
 
@@ -378,9 +387,9 @@ namespace Ict.Petra.Server.MFinance.GL
             TransactionRow.JournalNumber = F_journal.JournalNumber;
             TransactionRow.TransactionNumber = ++F_journal.LastTransactionNumber;
             TransactionRow.AccountCode = AAccount;
-            TransactionRow.CostCentreCode = ACostCenter;
+            TransactionRow.CostCentreCode = ACostCentre;
             TransactionRow.Narrative = AMessage;
-            TransactionRow.Reference = CommonAccountingTransactionTypesEnum.REVAL.ToString();
+            TransactionRow.Reference = "FX REVAL";
             TransactionRow.DebitCreditIndicator = ADebitFlag;
             TransactionRow.AmountInBaseCurrency = Aamount;
             TransactionRow.TransactionAmount = Aamount;
@@ -389,25 +398,30 @@ namespace Ict.Petra.Server.MFinance.GL
             F_GLDataset.ATransaction.Rows.Add(TransactionRow);
         }
 
-        private void CloseRevaluationAccountingBatch()
+        private Boolean CloseRevaluationAccountingBatch()
         {
+            Boolean blnReturnValue = false;
+
             if (F_GLDataset != null)
             {
                 F_batch.BatchCreditTotal = F_journal.JournalCreditTotal;
                 F_batch.BatchDebitTotal = F_journal.JournalDebitTotal;
                 TVerificationResultCollection AVerifications;
-                bool blnReturnValue = (TGLTransactionWebConnector.SaveGLBatchTDS(
-                                           ref F_GLDataset, out AVerifications) == TSubmitChangesResult.scrOK);
-                F_GLDataset.AcceptChanges();
+                blnReturnValue = (TGLTransactionWebConnector.SaveGLBatchTDS(
+                                      ref F_GLDataset, out AVerifications) == TSubmitChangesResult.scrOK);
 
-                if (blnReturnValue)
+                if (!blnReturnValue)
                 {
-                    //blnVerificationCollectionContainsData = true;
+                    return false;
                 }
+
+                F_GLDataset.AcceptChanges();
 
                 blnReturnValue = (TGLTransactionWebConnector.PostGLBatch(
                                       F_batch.LedgerNumber, F_batch.BatchNumber, out AVerifications));
             }
+
+            return blnReturnValue;
         }
 
         private void AddVerificationResultMessage(
@@ -427,8 +441,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="AAmountInBaseCurency">Available account value in base currency units</param>
         /// <param name="AAmountInForeignCurrency">Available account value in foreign currency units</param>
-        /// <param name="AExchangeRate">The exchange rate which shall be realized after the
-        /// accounting has been done</param>
+        /// <param name="AExchangeRate">The exchange rate which shall be realized after the accounting has been done</param>
         /// <param name="ACurrencyDigits">Number of rounding digits</param>
         /// <returns></returns>
         public static decimal AccountDelta(decimal AAmountInBaseCurency,

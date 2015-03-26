@@ -17,11 +17,13 @@ RootNode:
                 Row0: [grpContact]
                 Row1: [grpAttributes]
             Dock: Fill
-        grpContact: {Label=Contact, Stretch=horizontally}
+        grpContact: {Label=Contact}
             Controls: [txtContactor, cmbContactCode, cmbMailingCode, dtpContactDate, txtContactComment]
+            Dock: Top
         grpAttributes: {Label=Contact Attributes, ControlsOrientation = horizontal} 
             Controls:
-                Row0:[btnSelectAttributes, txtSelectedAttributes]
+                Row0:[btnSelectAttributes, grdSelectedAttributes]
+            Dock: Fill
         txtContactor:
             Label: Contactor
             Type: Contactor
@@ -34,14 +36,11 @@ RootNode:
             Label: Notes
             Type: ContactComment
             Multiline: true
-            Width: 400
-            Height: 50
-        btnSelectAttributes:
-            Label: Select Attributes
-            Action: actSelectAttributes
-        txtSelectedAttributes:
-            Label:Selected Attributes
-            Multiline: true
-            Width: 275
-            Height: 50
             ScrollBars: Vertical
+            Height: 45
+            Stretch: horizontally
+        btnSelectAttributes:
+            Label: Choose Attributes
+            Action: actSelectAttributes
+        grdSelectedAttributes:
+            Stretch: fully

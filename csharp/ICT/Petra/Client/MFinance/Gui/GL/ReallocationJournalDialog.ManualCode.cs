@@ -693,7 +693,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCurrentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
             }
 
-            FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref DS, AccountCode, TransactionNumber);
+            FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref DS, null, AccountCode, TransactionNumber);
             RefreshAnalysisAttributesGrid(sender, DS);
         }
 

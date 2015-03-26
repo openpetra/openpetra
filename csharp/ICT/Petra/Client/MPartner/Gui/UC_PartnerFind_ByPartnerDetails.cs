@@ -26,9 +26,9 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
-using System.Windows.Forms;
 using System.Data;
 using System.Threading;
+using System.Windows.Forms;
 using SourceGrid;
 using SourceGrid.Selection;
 using GNU.Gettext;
@@ -83,6 +83,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>Search is called as the result of a broadcast message.</summary>
         private Boolean FBroadcastMessageSearch = false;
+
+        // partner to be selected when search is rerun
+        private Int64? FSelectPartnerAfterSearch = null;
 
         // <summary>If the Form should set the Focus to the LocationKey field, set the LocationKey to this value</summary>
 // TODO        private Int32 FPassedLocationKey;
@@ -982,6 +985,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FPartnerInfoUC == null)
             {
                 FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));
+                FPartnerInfoUC.PetraUtilsObject = FPetraUtilsObject;
                 FPartnerInfoUC.InitUserControl();
             }
 
@@ -1248,10 +1252,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (FBankDetailsTab)
             {
                 ucoPartnerFindCriteria.CriteriaFieldsLeft =
-                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSLEFT,
+                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSLEFT,
                             TFindOptionsForm.PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSLEFT_DEFAULT).Split(new Char[] { (';') }));
                 ucoPartnerFindCriteria.CriteriaFieldsRight =
-                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT,
+                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSRIGHT,
                             TFindOptionsForm.PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSRIGHT_DEFAULT).Split(new Char[] { (';') }));
             }
 
@@ -1455,9 +1459,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.Cursor = Cursors.WaitCursor;
 
-            // Set Partner to be the "Last Used Partner"
-            TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(APartnerKey, TLastPartnerUse.lpuMailroomPartner);
-
             try
             {
                 TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
@@ -1473,6 +1474,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 frm.Show();
+
+                // Set Partner to be the "Last Used Partner"
+                TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(APartnerKey, TLastPartnerUse.lpuMailroomPartner, frm.PartnerClass);
             }
             finally
             {
@@ -1819,11 +1823,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                             SetupResultDataGrid();
 //                            TLogging.Log("After SetupResultDataGrid()");
 
-                            // For speed reasons we must add the necessary amount of emtpy Rows only here (after .AutoSizeCells() has already
-                            // been run! See XML Comment on the called Method TSgrdDataGridPaged.AddEmptyRows() for details!
-                            grdResult.AddEmptyRows();
-//                            TLogging.Log("After AddEmptyRows()");
-
                             grdResult.BringToFront();
 //                            TLogging.Log("After BringToFront()");
 
@@ -2150,6 +2149,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FBroadcastMessageSearch = true;
                 this.Cursor = Cursors.WaitCursor;
 
+                FSelectPartnerAfterSearch = PartnerKey;
+
                 if (grdResult != null)
                 {
                     grdResult = null;
@@ -2162,8 +2163,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Application.DoEvents();
 
                 this.Cursor = Cursors.Default;
-
-                //FBroadcastMessageSearch = false;
             }
         }
 
@@ -2237,11 +2236,56 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Setup the DataGrid's visual appearance
                     SetupDataGridVisualAppearance();
 //TLogging.Log("SetupResultDataGrid: Before calling SelectRow()...");
-                    // Select (highlight) first Row
-                    grdResult.Selection.SelectRow(1, true);
-//TLogging.Log("SetupResultDataGrid: Before calling ShowCell()...");
+
+                    // For speed reasons we must add the necessary amount of emtpy Rows only here (after .AutoSizeCells() has already
+                    // been run! See XML Comment on the called Method TSgrdDataGridPaged.AddEmptyRows() for details!
+                    grdResult.AddEmptyRows();
+//TLogging.Log("After AddEmptyRows()");
+
+                    int RowNum = 1;
+
+                    if (FSelectPartnerAfterSearch == null)
+                    {
+                        // Select (highlight) first Row
+                        grdResult.Selection.SelectRow(RowNum, true);
+                    }
+                    else
+                    {
+                        // used when results are auto updated after there is a change in Partner Edit
+                        for (RowNum = 1; RowNum <= grdResult.TotalRecords; RowNum++)
+                        {
+                            DataRowView rowView = (DataRowView)grdResult.Rows.IndexToDataSourceRow(RowNum);
+
+                            if ((rowView == null) || (rowView.Row["p_partner_key_n"].GetType() == typeof(DBNull)))
+                            {
+                                // The partner is not on the first (already loaded) page.
+                                // Find which the page which the partner is on.
+                                Int16 PageNumber = FPartnerFindObject.GetPageNumberContainingPartnerKey((Int64)FSelectPartnerAfterSearch,
+                                    1,
+                                    Convert.ToInt16(grdResult.PageSize));
+                                RowNum = (PageNumber * grdResult.PageSize) + 1;
+
+                                // move to the first row on the new page
+                                grdResult.ShowCell(RowNum);
+                                rowView = (DataRowView)grdResult.Rows.IndexToDataSourceRow(RowNum);
+                            }
+
+                            if ((rowView != null) && (Convert.ToInt64(rowView.Row["p_partner_key_n"]) == FSelectPartnerAfterSearch))
+                            {
+                                grdResult.Selection.SelectRow(RowNum, true);
+
+                                FSelectPartnerAfterSearch = null;
+                                break;
+                            }
+                        }
+
+                        grdResult.Selection.SelectRow(RowNum, true);
+
+                        FSelectPartnerAfterSearch = null;
+                    }
+
                     // Scroll grid to first line (the grid might have been scrolled before to another position)
-                    grdResult.ShowCell(new Position(1, 1), true);
+                    grdResult.ShowCell(new Position(RowNum, 1), true);
 //TLogging.Log("SetupResultDataGrid: Before calling OnEnableAcceptButton()...");
                     OnEnableAcceptButton();
                 }

@@ -139,12 +139,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 dialog = new OpenFileDialog();
 
-                dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
-                    TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
+                string exportPath = TClientSettings.GetExportPath();
+                string fullPath = TUserDefaults.GetStringDefault("Imp Filename",
+                    exportPath + Path.DirectorySeparatorChar + "import.csv");
+                TImportExportDialogs.SetOpenFileDialogFilePathAndName(dialog, fullPath, exportPath);
 
                 dialog.Title = Catalog.GetString("Import Batches from CSV File");
                 dialog.Filter = Catalog.GetString("GL Batches files (*.csv)|*.csv");
-                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
+
+                // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
+                TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(fullPath));
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
@@ -207,6 +212,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ImportDialog.ShowDialog();
                 }
 
+                // We save the defaults even if ok is false - because the client will probably want to try and import
+                //   the same file again after correcting any errors
+                SaveUserDefaults(dialog, impOptions);
                 ShowMessages(AMessages);
             }
 
@@ -217,7 +225,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
-                SaveUserDefaults(dialog, impOptions);
                 FMyUserControl.ReloadBatches();
                 FPetraUtilsObject.DisableSaveButton();
             }
@@ -293,12 +300,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 dialog = new OpenFileDialog();
 
-                dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
-                    TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
+                string exportPath = TClientSettings.GetExportPath();
+                string fullPath = TUserDefaults.GetStringDefault("Imp Filename",
+                    exportPath + Path.DirectorySeparatorChar + "import.csv");
+                TImportExportDialogs.SetOpenFileDialogFilePathAndName(dialog, fullPath, exportPath);
 
                 dialog.Title = Catalog.GetString("Import Transactions from CSV File");
                 dialog.Filter = Catalog.GetString("GL Transactions files (*.csv)|*.csv");
-                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
+
+                // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
+                TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(fullPath));
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
@@ -361,6 +373,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ImportDialog.ShowDialog();
                 }
 
+                // It is important to save user defaults here, even if there were errors
+                //   because in that case the user will want to import the same file again after fixing it.
+                SaveUserDefaults(dialog, impOptions);
                 ShowMessages(AMessages);
             }
 
@@ -370,8 +385,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     Catalog.GetString("Transactions Import"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
-
-                SaveUserDefaults(dialog, impOptions);
 
                 // Update the client side with new information from the server
                 FMyForm.Cursor = Cursors.WaitCursor;

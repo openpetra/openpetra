@@ -73,6 +73,7 @@
     <!-- <Table sqltable="p_relation"/> -->
     <Table sqltable="p_contact_log"/>
     <Table sqltable="p_partner_contact"/>
+    <Table sqltable="p_partner_contact_attribute"/>
     
     <!-- not in use yet! -->
     <Table sqltable="p_data_label_value_application"/>

@@ -33,6 +33,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
+using System.Diagnostics;
 
 namespace Ict.Petra.Server.MFinance.Common
 {
@@ -194,8 +195,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 if (FGLMTbl.Rows.Count == 0)
                 {
-                    TLogging.Log(String.Format("\nERROR: No TGet_GLM_Info row found for ({0}, {1}).\n",
-                            AAccountCode, ACostCentreCode));
+                    String msg = TLogging.StackTraceToText(new StackTrace(true));
+
+                    TLogging.Log(String.Format("\nERROR: No TGet_GLM_Info row found for ({0}, {1}).\n{2}",
+                            AAccountCode, ACostCentreCode, msg));
                 }
             }
             finally

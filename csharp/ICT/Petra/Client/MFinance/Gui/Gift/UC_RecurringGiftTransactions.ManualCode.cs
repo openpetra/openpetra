@@ -1361,13 +1361,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private bool DeleteRowManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
-            bool deletionSuccessful = false;
+            bool DeletionSuccessful = false;
 
             ACompletionMessage = string.Empty;
 
             if (ARowToDelete == null)
             {
-                return deletionSuccessful;
+                return DeletionSuccessful;
             }
 
             // temporarily disable  New Donor Warning
@@ -1376,7 +1376,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual())
             {
                 MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
-                return deletionSuccessful;
+                return DeletionSuccessful;
             }
 
             ((TFrmRecurringGiftBatch) this.ParentForm).NewDonorWarning = true;
@@ -1520,7 +1520,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 ACompletionMessage = Catalog.GetString("Recurring gift row deleted successfully!");
 
-                deletionSuccessful = true;
+                DeletionSuccessful = true;
             }
             catch (Exception ex)
             {
@@ -1542,7 +1542,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateRecordNumberDisplay();
 
-            return deletionSuccessful;
+            return DeletionSuccessful;
         }
 
         private void PostDeleteManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete,

@@ -29,9 +29,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml;
 using System.Windows.Forms;
-using GNU.Gettext;
+
 using Ict.Common;
-using Ict.Common.Data; // Implicit reference
+using Ict.Common.Data;
+using Ict.Common.Exceptions; // Implicit reference
+using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
@@ -44,6 +46,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.MFinance.Gui.Setup;
+using GNU.Gettext;
 
 namespace Ict.Petra.Client.App.PetraClient
 {
@@ -56,6 +59,8 @@ namespace Ict.Petra.Client.App.PetraClient
         private readonly string StrCannotClosePetraChangeInfoLine = Catalog.GetString(
             "Note: Windows with unsaved changes are marked with '(*)' in this list.");
         private readonly string StrCannotClosePetraTitle = Catalog.GetString("Open Windows Must Be Closed");
+        private readonly string StrDataLoadingErrorMessage = Catalog.GetString(
+            "\r\n\r\nReason: The Main Menu can no longer be used due to a data loading failure!");
 
         #endregion
 
@@ -219,7 +224,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             if (System.Windows.Forms.Form.ModifierKeys != Keys.Control)
             {
-                string testAction = TAppSettingsManager.GetValue("TestAction");
+                string testAction = TAppSettingsManager.GetValue("TestAction", false);
 
                 if (testAction != TAppSettingsManager.UNDEFINEDVALUE)
                 {
@@ -731,9 +736,7 @@ namespace Ict.Petra.Client.App.PetraClient
             // make sure the application exits; also important for alternate navigation style main window
             this.Hide();
 
-            PetraClientShutdown.Shutdown.SaveUserDefaultsAndDisconnect();
-
-            PetraClientShutdown.Shutdown.StopPetraClient();
+            PetraClientShutdown.Shutdown.StopPetraClient(true);
         }
 
         /// the main navigation form
@@ -1004,31 +1007,67 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private void UpdateSubsystemLinkStatus(int ALedgerNumber, TTaskList ATaskList, XmlNode ATaskListNode)
         {
+            bool ServerCallSuccessful;
+            ALedgerRow LedgerDR = null;
+
             if ((ATaskListNode != null) && (ATaskListNode.ParentNode != null)
                 && (ATaskListNode.ParentNode.Name == "Finance"))
             {
-                ALedgerRow ledger =
-                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
-                         TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+                try
+                {
+                    LedgerDR =
+                        ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                             TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+                }
+                catch (ECachedDataTableLoadingRetryGotCancelledException Exc)
+                {
+                    TLogging.Log("Loading of Cacheable DataTable 'LedgerDetails' failed; the CLIENT NEEDS TO BE RESTARTED!  " +
+                        "Details: " + Exc.ToString());
+
+                    // RESTART CLIENT!
+                    PetraClientShutdown.Shutdown.StopPetraClient(true, true, true, StrDataLoadingErrorMessage);
+                }
+
                 XmlNode TempNode = ATaskListNode.ParentNode.FirstChild;
 
                 while (TempNode != null)
                 {
-                    if (TempNode.Name == "GiftProcessing")
+                    ServerCallSuccessful = false;
+
+                    Ict.Common.DB.TServerBusyHelper.CoordinatedAutoRetryCall("Finance Sub-system Activated inquiry", ref ServerCallSuccessful,
+                        delegate
+                        {
+                            if (TempNode.Name == "GiftProcessing")
+                            {
+                                ATaskList.EnableDisableTaskItem(TempNode,
+                                    TRemote.MFinance.Setup.WebConnectors.IsGiftProcessingSubsystemActivated(ALedgerNumber));
+                            }
+                            else if (TempNode.Name == "AccountsPayable")
+                            {
+                                ATaskList.EnableDisableTaskItem(TempNode,
+                                    TRemote.MFinance.Setup.WebConnectors.IsAccountsPayableSubsystemActivated(ALedgerNumber));
+                            }
+
+                            ServerCallSuccessful = true;
+                        });
+
+                    if (!ServerCallSuccessful)
                     {
-                        ATaskList.EnableDisableTaskItem(TempNode,
-                            TRemote.MFinance.Setup.WebConnectors.IsGiftProcessingSubsystemActivated(ALedgerNumber));
-                    }
-                    else if (TempNode.Name == "AccountsPayable")
-                    {
-                        ATaskList.EnableDisableTaskItem(TempNode,
-                            TRemote.MFinance.Setup.WebConnectors.IsAccountsPayableSubsystemActivated(ALedgerNumber));
+                        TLogging.Log("Inquiring of Finance Subsystems' Activated States failed; the CLIENT NEEDS TO BE RESTARTED!");
+                        TServerBusyHelperGui.ShowLoadingOfDataGotCancelledDialog();
+
+                        // RESTART CLIENT!
+                        PetraClientShutdown.Shutdown.StopPetraClient(true, true, true, StrDataLoadingErrorMessage);
+
+                        // ALL-IMPORTANT EXIT statement: without this, a number of OpenPetra Clients might get
+                        // started from within this while loop!!!
+                        Environment.Exit(0);
                     }
 
                     TempNode = TempNode.NextSibling;
                 } // while
 
-                EnableDisableChildOption(ATaskList, "SuspenseAccounts", ledger.SuspenseAccountFlag, ATaskListNode.ParentNode);
+                EnableDisableChildOption(ATaskList, "SuspenseAccounts", LedgerDR.SuspenseAccountFlag, ATaskListNode.ParentNode);
             } // if
         }
 

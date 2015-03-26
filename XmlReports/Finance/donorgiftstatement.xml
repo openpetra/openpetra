@@ -40,7 +40,7 @@
 				</fielddetail>
 				<fielddetail condition="eq({param_donor}, One Donor)">
 					<value text="One Donor: "/>
-					<value variable="{param_donorkey}"/>
+					<value variable="param_donorkey"/>
 				</fielddetail>
 				<fielddetail condition="eq({param_donor}, Extract)">
 					<value text="Donors from Extract: "/>
@@ -339,6 +339,7 @@
 							AND batch.a_ledger_number_i = {{param_ledger_number_i}}
 							AND gift.a_date_entered_d BETWEEN {#param_start_date_previous_year#} AND {#param_end_date_previous_year#}
 							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
+							AND gift.p_donor_key_n = {{DonorKey}}
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 						</value>
@@ -371,6 +372,7 @@
 							AND batch.a_ledger_number_i = {{param_ledger_number_i}}
 							AND gift.a_date_entered_d BETWEEN {#param_start_date_this_year#} AND {#param_end_date_this_year#}
 							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
+							AND gift.p_donor_key_n = {{DonorKey}}
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 						</value>
@@ -981,7 +983,7 @@
 			
 			<level name="DonorLevel">
 				<header>
-					<field whichfield="header 0" pos="0cm" width="19.0cm"  calculation="MakeDonorAddress">
+					<field whichfield="header 0" pos="0cm" width="19.0cm" calculation="MakeDonorAddress">
 						<value text="Donor: "/>
 						<value variable="DonorName"/>
 						<value text="  Partner Key: "/>

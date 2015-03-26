@@ -9819,7 +9819,7 @@
                 label="Reporting Column (Worker or Field)"
                 columnlabel="Reporting Column"
                 help="Any gifts for personnel should be assigned to Worker, otherwise Field."/>
-    <tablefield name="a_tax_deductible_account_c"
+    <tablefield name="a_tax_deductible_account_code_c"
                 type="varchar"
                 descr="Account Code to be used for the Tax deductible portion of this Gift"
                 format="X(8)"
@@ -9849,6 +9849,11 @@
                 thisFields="p_recipient_key_n"
                 otherTable="p_partner"
                 otherFields="p_partner_key_n"/>
+    <foreignkey name="a_motivation_detail_fk5"
+                descr=""
+                thisFields="a_ledger_number_i, a_tax_deductible_account_code_c"
+                otherTable="a_account"
+                otherFields="a_ledger_number_i, a_account_code_c"/>
     <!-- Explicit Indexes on table a_motivation_detail  -->
   </table>
   <table name="a_motivation_detail_fee"
@@ -11647,6 +11652,12 @@
                 format="X(12)"
                 label="Cost Centre Code"
                 help="Enter a cost centre code"/>
+    <tablefield name="a_account_code_c"
+                type="varchar"
+                descr="This identifies the account the financial transaction must be stored against"
+                format="X(8)"
+                label="Account Code"
+                help="Enter an account code"/>
     <tablefield name="a_gift_amount_intl_n"
                 type="number"
                 length="24"
@@ -11717,6 +11728,12 @@
                 format="X(80)"
                 label="Comment Three"
                 help="Enter a comment"/>
+    <tablefield name="a_tax_deductible_account_code_c"
+                type="varchar"
+                descr="Account Code to be used for the Tax deductible portion of this Gift"
+                format="X(8)"
+                label="Tax Deductible Account Code"
+                help="The Account Code to be used for the Tax Deductible portion of this Gift"/>
     <tablefield name="a_tax_deductible_pct_n"
                 type="number"
                 length="5"
@@ -11812,6 +11829,16 @@
                 thisFields="a_ledger_number_i, a_batch_number_i"
                 otherTable="a_gift_batch"
                 otherFields="a_ledger_number_i, a_batch_number_i"/>
+    <foreignkey name="a_gift_detail_fk8"
+                descr=""
+                thisFields="a_ledger_number_i, a_account_code_c"
+                otherTable="a_account"
+                otherFields="a_ledger_number_i, a_account_code_c"/>
+    <foreignkey name="a_gift_detail_fk9"
+                descr=""
+                thisFields="a_ledger_number_i, a_tax_deductible_account_code_c"
+                otherTable="a_account"
+                otherFields="a_ledger_number_i, a_account_code_c"/>
     <!-- Explicit Indexes on table a_gift_detail  -->
     <index name="a_recipient_ledger_number_i"
            descr="Ordered by recipient ledger number for report production."

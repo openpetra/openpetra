@@ -28,6 +28,7 @@ using System.IO;
 using Ict.Common;
 using GNU.Gettext;
 using System.Windows.Forms;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Exceptions;
 
 namespace Ict.Petra.Client.App.Core
@@ -86,14 +87,59 @@ namespace Ict.Petra.Client.App.Core
         public static void UnhandledExceptionHandler(object ASender, UnhandledExceptionEventArgs AEventArgs)
         {
             TUnhandledExceptionForm UEDialogue;
+            string FunctionalityNotImplementedMsg = AppCoreResourcestrings.StrFunctionalityNotAvailableYet;
+            string Reason = String.Empty;
 
             if (((Exception)AEventArgs.ExceptionObject is NotImplementedException))
             {
-                TLogging.Log(Catalog.GetString("This functionality is not yet implemented in OpenPetra."));
+                if (((Exception)AEventArgs.ExceptionObject).Message != String.Empty)
+                {
+                    FunctionalityNotImplementedMsg = ((Exception)AEventArgs.ExceptionObject).Message;
+                }
+
+                TLogging.Log(FunctionalityNotImplementedMsg);
                 TLogging.Log(((Exception)AEventArgs.ExceptionObject).StackTrace);
-                MessageBox.Show(Catalog.GetString("This functionality is not yet implemented in OpenPetra."),
-                    Catalog.GetString("Not Implemented"),
+
+                MessageBox.Show(FunctionalityNotImplementedMsg, AppCoreResourcestrings.StrFunctionalityNotAvailableYetTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else if (((Exception)AEventArgs.ExceptionObject is EDBAccessLackingCoordinationException))
+            {
+                Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
+
+                // Ensure MessageBox is shown on the UI Thread!
+                if (MainMenuForm.InvokeRequired)
+                {
+                    MainMenuForm.Invoke((MethodInvoker) delegate {
+                            TServerBusyHelperGui.ShowDBAccessLackingActionNotPossibleDialog(
+                                (EDBAccessLackingCoordinationException)AEventArgs.ExceptionObject, out Reason);
+                        });
+                }
+                else
+                {
+                    TServerBusyHelperGui.ShowDBAccessLackingActionNotPossibleDialog(
+                        (EDBAccessLackingCoordinationException)AEventArgs.ExceptionObject, out Reason);
+                }
+
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_COORDINATED_DB_ACCESS)
+                {
+                    TLogging.Log(String.Format(Catalog.GetString(
+                                TLogging.LOG_PREFIX_INFO + "The OpenPetra Server was too busy to perform the requested action. (Reason: {0})"),
+                            Reason));
+                    TLogging.Log(((Exception)AEventArgs.ExceptionObject).StackTrace);
+                }
+            }
+            else if (((Exception)AEventArgs.ExceptionObject is ECachedDataTableLoadingRetryGotCancelledException))
+            {
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_COORDINATED_DB_ACCESS)
+                {
+                    TLogging.Log(Catalog.GetString(
+                            TLogging.LOG_PREFIX_INFO +
+                            "The OpenPetra Server was too busy to retrieve the data for a Cacheable DataTable and the user cancelled the loading after the retry attempts were exhausted."));
+                    TLogging.Log(((Exception)AEventArgs.ExceptionObject).StackTrace);
+                }
+
+                TServerBusyHelperGui.ShowLoadingOfDataGotCancelledDialog();
             }
             else if (((Exception)AEventArgs.ExceptionObject is ESecurityAccessDeniedException))
             {
@@ -159,7 +205,8 @@ namespace Ict.Petra.Client.App.Core
         public void OnThreadException(object ASender, ThreadExceptionEventArgs AEventArgs)
         {
             TUnhandledExceptionForm UEDialogue;
-            string FunctionalityNotImplementedMsg = Catalog.GetString("This functionality is not yet implemented in OpenPetra.");
+            string FunctionalityNotImplementedMsg = AppCoreResourcestrings.StrFunctionalityNotAvailableYet;
+            string Reason = String.Empty;
 
             if ((AEventArgs.Exception is NotImplementedException))
             {
@@ -171,9 +218,46 @@ namespace Ict.Petra.Client.App.Core
                 TLogging.Log(FunctionalityNotImplementedMsg);
                 TLogging.Log(AEventArgs.Exception.StackTrace);
 
-                MessageBox.Show(FunctionalityNotImplementedMsg,
-                    Catalog.GetString("Not Yet Implemented in OpenPetra"),
+                MessageBox.Show(FunctionalityNotImplementedMsg, AppCoreResourcestrings.StrFunctionalityNotAvailableYetTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else if ((AEventArgs.Exception is EDBAccessLackingCoordinationException))
+            {
+                Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
+
+                // Ensure MessageBox is shown on the UI Thread!
+                if (MainMenuForm.InvokeRequired)
+                {
+                    MainMenuForm.Invoke((MethodInvoker) delegate {
+                            TServerBusyHelperGui.ShowDBAccessLackingActionNotPossibleDialog(
+                                (EDBAccessLackingCoordinationException)AEventArgs.Exception, out Reason);
+                        });
+                }
+                else
+                {
+                    TServerBusyHelperGui.ShowDBAccessLackingActionNotPossibleDialog(
+                        (EDBAccessLackingCoordinationException)AEventArgs.Exception, out Reason);
+                }
+
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_COORDINATED_DB_ACCESS)
+                {
+                    TLogging.Log(String.Format(Catalog.GetString(
+                                TLogging.LOG_PREFIX_INFO + "The OpenPetra Server was too busy to perform the requested action. (Reason: {0})"),
+                            Reason));
+                    TLogging.Log((AEventArgs.Exception).StackTrace);
+                }
+            }
+            else if (((Exception)AEventArgs.Exception is ECachedDataTableLoadingRetryGotCancelledException))
+            {
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_COORDINATED_DB_ACCESS)
+                {
+                    TLogging.Log(Catalog.GetString(
+                            TLogging.LOG_PREFIX_INFO +
+                            "The OpenPetra Server was too busy to retrieve the data for a Cacheable DataTable and the user cancelled the loading after the retry attempts were exhausted."));
+                    TLogging.Log(((Exception)AEventArgs.Exception).StackTrace);
+                }
+
+                TServerBusyHelperGui.ShowLoadingOfDataGotCancelledDialog();
             }
             else if ((AEventArgs.Exception is ESecurityAccessDeniedException))
             {

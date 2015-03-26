@@ -124,7 +124,6 @@ namespace Ict.Common.Remoting.Client
         {
             DataTable ClientTasksDataTable;
             TClientTasksQueue ClientTasksQueueInstance;
-            Thread ClientTaskQueueThread;
 
             // Check whether this Thread should still execute
             while (FKeepPollingClientTasks)
@@ -142,12 +141,16 @@ namespace Ict.Common.Remoting.Client
                         TLogging.LogAtLevel(4, "Client Tasks Table has " + ClientTasksDataTable.Rows.Count.ToString() + " entries!");
 
                         // Queue new ClientTasks and execute them.
-                        // This is done in a separate Thread to make sure the PollClientTasks thread can run
-                        // without the risk of being interrupted!
                         ClientTasksQueueInstance = new TClientTasksQueue(FClientID, ClientTasksDataTable);
-                        ClientTaskQueueThread = new Thread(new ThreadStart(ClientTasksQueueInstance.QueueClientTasks));
-                        ClientTaskQueueThread.Name = "ClientTaskQueueThread" + Guid.NewGuid().ToString();
-                        ClientTaskQueueThread.Start();
+                        ClientTasksQueueInstance.QueueClientTasks();
+
+                        /*
+                         * // This is done in a separate Thread to make sure the PollClientTasks thread can run
+                         * // without the risk of being interrupted!
+                         *
+                         * Thread ClientTaskQueueThread = new Thread(new ThreadStart(ClientTasksQueueInstance.QueueClientTasks));
+                         * ClientTaskQueueThread.Start();
+                         */
                     }
                 }
                 catch (System.Runtime.Remoting.RemotingException Exp)

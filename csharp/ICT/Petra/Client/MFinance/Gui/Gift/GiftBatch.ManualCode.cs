@@ -58,6 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // Variables that are used to select a specific batch on startup
         private Int32 FInitialBatchNumber = -1;
         private Int32 FInitialBatchYear = -1;
+        private Int32 FInitialBatchPeriod = -1;
 
         private Boolean FLatestSaveIncludedForex = false;
 
@@ -98,6 +99,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             get
             {
                 return FInitialBatchYear;
+            }
+        }
+
+        /// <summary>
+        /// Set this property if you want to load the screen with an initial Year/Batch/Journal
+        /// </summary>
+        public Int32 InitialBatchPeriod
+        {
+            set
+            {
+                FInitialBatchPeriod = value;
+            }
+            get
+            {
+                return FInitialBatchPeriod;
             }
         }
 
@@ -586,6 +602,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             standardTabIndex = 1;     // later we switch to the detail tab
         }
 
+        /// <summary>
+        /// find a special gift detail
+        /// </summary>
+        public void FindGiftDetail(int ABatchNumber, int ATransactionNumber, int ADetailNumber)
+        {
+            ucoBatches.SelectBatchNumber(ABatchNumber);
+            ucoTransactions.SelectGiftDetailNumber(ATransactionNumber, ADetailNumber);
+            standardTabIndex = 1;     // later we switch to the detail tab
+        }
+
         private int GetChangedRecordCountManual(out string AMessage)
         {
             // For Gift Batch we will
@@ -710,7 +736,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Set up the screen to show only this batch
+        /// Set up the screen to highlight this batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
@@ -719,7 +745,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber, int ABatchYear, int ABatchPeriod)
         {
             FLedgerNumber = ALedgerNumber;
-            ucoBatches.LoadOneBatch(ALedgerNumber, ABatchNumber, ABatchYear, ABatchPeriod);
+            InitialBatchNumber = ABatchNumber;
+
+            // filter will show this year and period
+            FInitialBatchYear = ABatchYear;
+            FInitialBatchPeriod = ABatchPeriod;
+
             Show();
         }
 

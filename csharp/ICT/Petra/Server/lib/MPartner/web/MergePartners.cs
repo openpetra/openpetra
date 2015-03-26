@@ -101,6 +101,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             decimal TrackerPercent;
             int NumberOfCategories = 0;
+            bool DifferentFamilies = ADifferentFamilies;
 
             foreach (bool Cat in ACategories)
             {
@@ -119,360 +120,355 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Merging Partners"), 100);
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            /* // TODO write original data to xml file
-             * string path = "../../log/OriginalRecordsBeforeMerge.xml";
-             * FileStream outStream = File.Create(Path.GetFullPath(path);
-             * MyWriter = new StreamWriter(outStream, Encoding.UTF8);*/
-
-            try
-            {
-                if (ACategories[0] == true)
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Gift Destination"),
+                    /* // TODO write original data to xml file
+                     * string path = "../../log/OriginalRecordsBeforeMerge.xml";
+                     * FileStream outStream = File.Create(Path.GetFullPath(path);
+                     * MyWriter = new StreamWriter(outStream, Encoding.UTF8);*/
+
+                    if (ACategories[0] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Gift Destination"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergeGiftDestination(AFromPartnerKey, AToPartnerKey, AFromPartnerClass, Transaction);
+                    }
+
+                    if (ACategories[1] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Gift Info"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergeGiftInfo(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    if (ACategories[1] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: AP Info"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergeAPInfo(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    if (ACategories[2] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Motivations"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergeMotivations(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    if (ACategories[3] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Extracts"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergeExtracts(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    if (ACategories[4] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Greetings"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergeGreetings(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    if (ACategories[5] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Contacts and Reminders"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergeContactsAndReminders(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    if (ACategories[6] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Interests"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergeInterests(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    if (ACategories[7] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner Locations"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergePartnerLocations(AFromPartnerKey, AToPartnerKey, ASiteKeys, ALocationKeys, Transaction);
+                    }
+
+                    if (ACategories[8] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Types"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergePartnerTypes(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    if (ACategories[9] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Subscriptions"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergeSubscriptions(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    if (ACategories[10] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Applications"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergeApplications(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    if (ACategories[11] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Personnel Data"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergePMData(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    if (ACategories[12] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Jobs"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergeJobs(AFromPartnerKey, AToPartnerKey, AFromPartnerClass, Transaction);
+                    }
+
+                    // merge Partner class records
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner") + " (" +
+                        AFromPartnerClass.ToString() + ")", TrackerPercent * CurrentCategory);
+                    CurrentCategory++;
+
+                    if (AFromPartnerClass == TPartnerClass.UNIT)
+                    {
+                        if (AToPartnerClass == TPartnerClass.UNIT)
+                        {
+                            MergeUnit(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else
+                        {
+                            throw new Exception("Selected Partner Classes cannot be merged!");
+                        }
+                    }
+                    else if (AFromPartnerClass == TPartnerClass.CHURCH)
+                    {
+                        if (AToPartnerClass == TPartnerClass.ORGANISATION)
+                        {
+                            MergeChurchToOrganisation(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else if (AToPartnerClass == TPartnerClass.FAMILY)
+                        {
+                            MergeChurchToFamily(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else if (AToPartnerClass == TPartnerClass.CHURCH)
+                        {
+                            MergeChurch(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else
+                        {
+                            throw new Exception("Selected Partner Classes cannot be merged!");
+                        }
+                    }
+                    else if (AFromPartnerClass == TPartnerClass.VENUE)
+                    {
+                        if (AToPartnerClass == TPartnerClass.VENUE)
+                        {
+                            MergeVenue(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else
+                        {
+                            throw new Exception("Selected Partner Classes cannot be merged!");
+                        }
+                    }
+                    else if (AFromPartnerClass == TPartnerClass.FAMILY)
+                    {
+                        if (AToPartnerClass == TPartnerClass.ORGANISATION)
+                        {
+                            MergeFamilyToOrganisation(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else if (AToPartnerClass == TPartnerClass.CHURCH)
+                        {
+                            MergeFamilyToChurch(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else if (AToPartnerClass == TPartnerClass.FAMILY)
+                        {
+                            MergeFamily(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else
+                        {
+                            throw new Exception("Selected Partner Classes cannot be merged!");
+                        }
+                    }
+                    else if (AFromPartnerClass == TPartnerClass.PERSON)
+                    {
+                        if (AToPartnerClass == TPartnerClass.PERSON)
+                        {
+                            MergePerson(AFromPartnerKey, AToPartnerKey, ref DifferentFamilies, Transaction);
+                        }
+                        else
+                        {
+                            throw new Exception("Selected Partner Classes cannot be merged!");
+                        }
+                    }
+                    else if (AFromPartnerClass == TPartnerClass.ORGANISATION)
+                    {
+                        if (AToPartnerClass == TPartnerClass.CHURCH)
+                        {
+                            MergeOrganisationToChurch(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else if (AToPartnerClass == TPartnerClass.FAMILY)
+                        {
+                            MergeOrganisationToFamily(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else if (AToPartnerClass == TPartnerClass.BANK)
+                        {
+                            MergeOrganisationToBank(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else if (AToPartnerClass == TPartnerClass.ORGANISATION)
+                        {
+                            MergeOrganisation(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else
+                        {
+                            throw new Exception("Selected Partner Classes cannot be merged!");
+                        }
+                    }
+                    else if (AFromPartnerClass == TPartnerClass.BANK)
+                    {
+                        if (AToPartnerClass == TPartnerClass.ORGANISATION)
+                        {
+                            MergeBankToOrganisation(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else if (AToPartnerClass == TPartnerClass.BANK)
+                        {
+                            MergeBank(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+                        else
+                        {
+                            throw new Exception("Selected Partner Classes cannot be merged!");
+                        }
+                    }
+
+                    if (ACategories[13] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Relationships"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
+
+                        MergeRelationships(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+
+                    // merge PPartner records
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner (Common)"),
                         TrackerPercent * CurrentCategory);
                     CurrentCategory++;
 
-                    MergeGiftDestination(AFromPartnerKey, AToPartnerKey, AFromPartnerClass, Transaction);
-                }
+                    MergePartner(AFromPartnerKey, AToPartnerKey, Transaction);
 
-                if (ACategories[1] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Gift Info"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergeGiftInfo(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
-
-                if (ACategories[1] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: AP Info"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergeAPInfo(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
-
-                if (ACategories[2] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Motivations"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergeMotivations(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
-
-                if (ACategories[3] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Extracts"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergeExtracts(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
-
-                if (ACategories[4] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Greetings"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergeGreetings(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
-
-                if (ACategories[5] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Contacts and Reminders"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergeContactsAndReminders(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
-
-                if (ACategories[6] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Interests"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergeInterests(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
-
-                if (ACategories[7] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner Locations"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergePartnerLocations(AFromPartnerKey, AToPartnerKey, ASiteKeys, ALocationKeys, Transaction);
-                }
-
-                if (ACategories[8] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Types"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergePartnerTypes(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
-
-                if (ACategories[9] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Subscriptions"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergeSubscriptions(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
-
-                if (ACategories[10] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Applications"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergeApplications(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
-
-                if (ACategories[11] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Personnel Data"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergePMData(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
-
-                if (ACategories[12] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Jobs"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
-
-                    MergeJobs(AFromPartnerKey, AToPartnerKey, AFromPartnerClass, Transaction);
-                }
-
-                // merge Partner class records
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner") + " (" +
-                    AFromPartnerClass.ToString() + ")", TrackerPercent * CurrentCategory);
-                CurrentCategory++;
-
-                if (AFromPartnerClass == TPartnerClass.UNIT)
-                {
-                    if (AToPartnerClass == TPartnerClass.UNIT)
+                    if (ACategories[14] == true)
                     {
-                        MergeUnit(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else
-                    {
-                        throw new Exception("Selected Partner Classes cannot be merged!");
-                    }
-                }
-                else if (AFromPartnerClass == TPartnerClass.CHURCH)
-                {
-                    if (AToPartnerClass == TPartnerClass.ORGANISATION)
-                    {
-                        MergeChurchToOrganisation(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else if (AToPartnerClass == TPartnerClass.FAMILY)
-                    {
-                        MergeChurchToFamily(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else if (AToPartnerClass == TPartnerClass.CHURCH)
-                    {
-                        MergeChurch(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else
-                    {
-                        throw new Exception("Selected Partner Classes cannot be merged!");
-                    }
-                }
-                else if (AFromPartnerClass == TPartnerClass.VENUE)
-                {
-                    if (AToPartnerClass == TPartnerClass.VENUE)
-                    {
-                        MergeVenue(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else
-                    {
-                        throw new Exception("Selected Partner Classes cannot be merged!");
-                    }
-                }
-                else if (AFromPartnerClass == TPartnerClass.FAMILY)
-                {
-                    if (AToPartnerClass == TPartnerClass.ORGANISATION)
-                    {
-                        MergeFamilyToOrganisation(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else if (AToPartnerClass == TPartnerClass.CHURCH)
-                    {
-                        MergeFamilyToChurch(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else if (AToPartnerClass == TPartnerClass.FAMILY)
-                    {
-                        MergeFamily(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else
-                    {
-                        throw new Exception("Selected Partner Classes cannot be merged!");
-                    }
-                }
-                else if (AFromPartnerClass == TPartnerClass.PERSON)
-                {
-                    if (AToPartnerClass == TPartnerClass.PERSON)
-                    {
-                        MergePerson(AFromPartnerKey, AToPartnerKey, ref ADifferentFamilies, Transaction);
-                    }
-                    else
-                    {
-                        throw new Exception("Selected Partner Classes cannot be merged!");
-                    }
-                }
-                else if (AFromPartnerClass == TPartnerClass.ORGANISATION)
-                {
-                    if (AToPartnerClass == TPartnerClass.CHURCH)
-                    {
-                        MergeOrganisationToChurch(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else if (AToPartnerClass == TPartnerClass.FAMILY)
-                    {
-                        MergeOrganisationToFamily(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else if (AToPartnerClass == TPartnerClass.BANK)
-                    {
-                        MergeOrganisationToBank(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else if (AToPartnerClass == TPartnerClass.ORGANISATION)
-                    {
-                        MergeOrganisation(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else
-                    {
-                        throw new Exception("Selected Partner Classes cannot be merged!");
-                    }
-                }
-                else if (AFromPartnerClass == TPartnerClass.BANK)
-                {
-                    if (AToPartnerClass == TPartnerClass.ORGANISATION)
-                    {
-                        MergeBankToOrganisation(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else if (AToPartnerClass == TPartnerClass.BANK)
-                    {
-                        MergeBank(AFromPartnerKey, AToPartnerKey, Transaction);
-                    }
-                    else
-                    {
-                        throw new Exception("Selected Partner Classes cannot be merged!");
-                    }
-                }
+                        if (AFromPartnerClass == TPartnerClass.VENUE)
+                        {
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                Catalog.GetString("Merging: Venue - Buildings, Rooms and Allocations"), TrackerPercent * CurrentCategory);
 
-                if (ACategories[13] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Relationships"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
+                            MergeBuildingsAndRooms(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
 
-                    MergeRelationships(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
-
-                // merge PPartner records
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner (Common)"),
-                    TrackerPercent * CurrentCategory);
-                CurrentCategory++;
-
-                MergePartner(AFromPartnerKey, AToPartnerKey, Transaction);
-
-                if (ACategories[14] == true)
-                {
-                    if (AFromPartnerClass == TPartnerClass.VENUE)
-                    {
-                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                            Catalog.GetString("Merging: Venue - Buildings, Rooms and Allocations"), TrackerPercent * CurrentCategory);
-
-                        MergeBuildingsAndRooms(AFromPartnerKey, AToPartnerKey, Transaction);
+                        CurrentCategory++;
                     }
 
-                    CurrentCategory++;
-                }
+                    if (ACategories[15] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner - Bank Accounts"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
 
-                if (ACategories[15] == true)
-                {
+                        MergeBankAccounts(AFromPartnerKey, AToPartnerKey, AMainBankingDetailsKey, Transaction);
+                    }
+
                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner - Bank Accounts"),
                         TrackerPercent * CurrentCategory);
                     CurrentCategory++;
 
-                    MergeBankAccounts(AFromPartnerKey, AToPartnerKey, AMainBankingDetailsKey, Transaction);
-                }
+                    MergeRecentAndLastPartnerInfo(AFromPartnerKey, AToPartnerKey, Transaction);
 
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner - Bank Accounts"),
-                    TrackerPercent * CurrentCategory);
-                CurrentCategory++;
-
-                MergeRecentAndLastPartnerInfo(AFromPartnerKey, AToPartnerKey, Transaction);
-
-                if (ACategories[16] == true)
-                {
-                    if (TaxDeductiblePercentageEnabled
-                        && (((AFromPartnerClass == TPartnerClass.FAMILY) && (AToPartnerClass == TPartnerClass.FAMILY))
-                            || ((AFromPartnerClass == TPartnerClass.UNIT) && (AToPartnerClass == TPartnerClass.UNIT))))
+                    if (ACategories[16] == true)
                     {
-                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                            Catalog.GetString("Merging: Tax Deductibility Percentage"),
-                            TrackerPercent * CurrentCategory);
+                        if (TaxDeductiblePercentageEnabled
+                            && (((AFromPartnerClass == TPartnerClass.FAMILY) && (AToPartnerClass == TPartnerClass.FAMILY))
+                                || ((AFromPartnerClass == TPartnerClass.UNIT) && (AToPartnerClass == TPartnerClass.UNIT))))
+                        {
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                Catalog.GetString("Merging: Tax Deductibility Percentage"),
+                                TrackerPercent * CurrentCategory);
 
-                        MergeTaxDeductibilityPercentage(AFromPartnerKey, AToPartnerKey, Transaction);
+                            MergeTaxDeductibilityPercentage(AFromPartnerKey, AToPartnerKey, Transaction);
+                        }
+
+                        CurrentCategory++;
                     }
 
-                    CurrentCategory++;
-                }
+                    if (ACategories[17] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Link to Cost Centre"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
 
-                if (ACategories[17] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Link to Cost Centre"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
+                        MergeLinkToCostCentre(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
 
-                    MergeLinkToCostCentre(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
+                    if (ACategories[18] == true)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Graphic"),
+                            TrackerPercent * CurrentCategory);
+                        CurrentCategory++;
 
-                if (ACategories[18] == true)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Graphic"),
-                        TrackerPercent * CurrentCategory);
-                    CurrentCategory++;
+                        MergeGraphic(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
 
-                    MergeGraphic(AFromPartnerKey, AToPartnerKey, Transaction);
-                }
+                    if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                    {
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        throw new Exception("Partner merge was cancelled by the user");
+                    }
 
-                if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
-                {
-                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw new Exception("Partner merge was cancelled by the user");
-                }
+                    DBAccess.GDBAccessObj.CommitTransaction();
 
-                DBAccess.GDBAccessObj.CommitTransaction();
+                    //TODO MyWriter.Close();
 
-                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                    SubmissionOK = true;
+                });
 
-                //TODO MyWriter.Close();
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-                // TODO MyWriter.Close();
-                return false;
-            }
-            finally
-            {
-                TLogging.LogAtLevel(7, "TMergePartnersWebConnector.MergeTwoPartners: rollback own transaction.");
-            }
+            ADifferentFamilies = DifferentFamilies;
 
             return true;
         }

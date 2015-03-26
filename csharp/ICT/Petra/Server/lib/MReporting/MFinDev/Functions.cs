@@ -664,6 +664,7 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             Int64 LedgerNumber = situation.GetParameters().Get("param_ledger_number_i").ToInt64();
             String CurrencyType = situation.GetParameters().Get("param_currency").ToString();
             StringBuilder SqlString = new StringBuilder();
+            decimal TotalForSelection = 0;
 
             SqlString.Append("SELECT DISTINCT ");
             SqlString.Append("gift.p_donor_key_n AS DonorKey, ");
@@ -848,12 +849,48 @@ namespace Ict.Petra.Server.MReporting.MFinDev
 
                     situation.GetResults().AddRow(0, ChildRow++, true, 2, "", "", false,
                         Header, Description, Columns);
+
+                    TotalForSelection += CurrentAmount;
                 }
                 else
                 {
                     CummulativeAmount += CurrentAmount;
                 }
             }
+
+            // Add footer rows.
+            // This is a bit of a hack... but it is the only way I could find to get these totals onto this report.
+
+            TVariant[] FooterHeader = new TVariant[NumColumns];
+            TVariant[] FooterDescription =
+            {
+                new TVariant(), new TVariant()
+            };
+            TVariant[] FooterColumns = new TVariant[NumColumns];
+
+            for (int Counter2 = 0; Counter2 < NumColumns; ++Counter2)
+            {
+                FooterHeader[Counter2] = new TVariant();
+                FooterColumns[Counter2] = new TVariant();
+            }
+
+            FooterColumns[2] = new TVariant("");
+            FooterColumns[3] = new TVariant("___________");
+
+            situation.GetResults().AddRow(0, ChildRow++, true, 2, "", "", false,
+                FooterHeader, FooterDescription, FooterColumns);
+
+            FooterColumns[2] = new TVariant("Total for this level:");
+            FooterColumns[3] = new TVariant(TotalForSelection, "-#,##0.00;#,##0.00");
+
+            situation.GetResults().AddRow(0, ChildRow++, true, 2, "", "", false,
+                FooterHeader, FooterDescription, FooterColumns);
+
+            FooterColumns[2] = new TVariant("Grand Total for selection:");
+            FooterColumns[3] = new TVariant(ATotalAmount, "-#,##0.00;#,##0.00");
+
+            situation.GetResults().AddRow(0, ChildRow++, true, 2, "", "", false,
+                FooterHeader, FooterDescription, FooterColumns);
 
             return true;
         }

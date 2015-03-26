@@ -662,57 +662,62 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// Data is held in variable MainDS.PPartner and then MainDS.PLocation, PFamilyAccess etc...
         /// The latter is to get the additional information not present in PPartner but in dependent tables.
         /// </summary>
-        /// <param name="MainDS">
+        /// <param name="AMainDS">
         /// The Datastructure which is filled with the data from the DB.
         /// It should be empty initially.
         /// </param>
-        private static void LoadDataFromDB(ref PartnerEditTDS MainDS)
+        private static void LoadDataFromDB(ref PartnerEditTDS AMainDS)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            try
-            {
-                PPartnerAccess.LoadAll(MainDS, Transaction);
-                TLogging.LogAtLevel(TLogging.DEBUGLEVEL_TRACE, "Read Partners from Database : " + MainDS.PPartner.Rows.Count.ToString());
-                TLogging.LogAtLevel(TLogging.DEBUGLEVEL_TRACE, "Now reading additional data for each Partner:");
-
-                foreach (PPartnerRow partnerRow in MainDS.PPartner.Rows)
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    long partnerKey = partnerRow.PartnerKey;
-                    PLocationAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
-                    PPartnerLocationAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
-                    PPartnerAttributeAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
-                    PPartnerTypeAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
-                    PPersonAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
-                    PFamilyAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
-                    POrganisationAccess.LoadViaPPartnerPartnerKey(MainDS, partnerKey, Transaction);
-                    PUnitAccess.LoadViaPPartnerPartnerKey(MainDS, partnerKey, Transaction);
-                    UmUnitStructureAccess.LoadViaPUnitChildUnitKey(MainDS, partnerKey, Transaction);
-                    PBankAccess.LoadViaPPartnerPartnerKey(MainDS, partnerKey, Transaction);
-                }
+                    PPartnerAccess.LoadAll(MainDS, Transaction);
+                    TLogging.LogAtLevel(TLogging.DEBUGLEVEL_TRACE, "Read Partners from Database : " + MainDS.PPartner.Rows.Count.ToString());
+                    TLogging.LogAtLevel(TLogging.DEBUGLEVEL_TRACE, "Now reading additional data for each Partner:");
 
-                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
-                {
-                    TLogging.Log("All in all:");
-                    SortedList <string, int>sortedtables = new SortedList <string, int>();
-                    sortedtables.Add("PLocation", MainDS.PLocation.Count);
-                    sortedtables.Add("PPartnerLocation", MainDS.PPartnerLocation.Count);
-                    sortedtables.Add("PPartnerAttribute", MainDS.PPartnerAttribute.Count);
-                    sortedtables.Add("PPartnerType", MainDS.PPartnerType.Count);
-                    sortedtables.Add("PPerson", MainDS.PPerson.Count);
-                    sortedtables.Add("PFamily", MainDS.PFamily.Count);
-                    sortedtables.Add("POrganisation", MainDS.POrganisation.Count);
-
-                    foreach (KeyValuePair <string, int /*TTypedDataTable*/>pair  in sortedtables)
+                    foreach (PPartnerRow partnerRow in MainDS.PPartner.Rows)
                     {
-                        TLogging.Log(pair.Key + " : " + pair.Value.ToString());
+                        long partnerKey = partnerRow.PartnerKey;
+                        PLocationAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
+                        PPartnerLocationAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
+                        PPartnerAttributeAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
+                        PPartnerTypeAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
+                        PPersonAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
+                        PFamilyAccess.LoadViaPPartner(MainDS, partnerKey, Transaction);
+                        POrganisationAccess.LoadViaPPartnerPartnerKey(MainDS, partnerKey, Transaction);
+                        PUnitAccess.LoadViaPPartnerPartnerKey(MainDS, partnerKey, Transaction);
+                        UmUnitStructureAccess.LoadViaPUnitChildUnitKey(MainDS, partnerKey, Transaction);
+                        PBankAccess.LoadViaPPartnerPartnerKey(MainDS, partnerKey, Transaction);
                     }
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("ExportPartners: " + e.Message);
-            }
+
+                    if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
+                    {
+                        TLogging.Log("All in all:");
+                        SortedList <string, int>sortedtables = new SortedList <string, int>();
+                        sortedtables.Add("PLocation", MainDS.PLocation.Count);
+                        sortedtables.Add("PPartnerLocation", MainDS.PPartnerLocation.Count);
+                        sortedtables.Add("PPartnerAttribute", MainDS.PPartnerAttribute.Count);
+                        sortedtables.Add("PPartnerType", MainDS.PPartnerType.Count);
+                        sortedtables.Add("PPerson", MainDS.PPerson.Count);
+                        sortedtables.Add("PFamily", MainDS.PFamily.Count);
+                        sortedtables.Add("POrganisation", MainDS.POrganisation.Count);
+
+                        foreach (KeyValuePair <string, int /*TTypedDataTable*/>pair in sortedtables)
+                        {
+                            TLogging.Log(pair.Key + " : " + pair.Value.ToString());
+                        }
+                    }
+
+                    SubmissionOK = true;
+                });
+
+            AMainDS.Merge(MainDS);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
         }

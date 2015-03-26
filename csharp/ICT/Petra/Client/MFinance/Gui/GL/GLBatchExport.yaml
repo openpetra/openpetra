@@ -1,46 +1,43 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
-    FormTitle: Export Batches
+    BaseClass: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Export GL Batches
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
-    FormType: browse
+    FormType: dialog
     Template: window
-    WindowWidth: 620
-    WindowHeight: 600
+    WindowWidth: 550
+    WindowHeight: 570
     Actions:
         actExportBatches: {Label=&Start, ActionClick=ExportBatches}
         actClose: {Label=&Close, ActionClick=BtnCloseClick}
         actHelp: {Label=&Help, ActionClick=BtnHelpClick}
     Controls:
-        pnlContent:
-            Controls: [pnlTop, pnlButtons]
-            Dock: Fill
-        pnlTop:
-            Dock: Top
+        pnlDialogContent:
             Controls:
                 Row0: [rgrDetailSummary]
-                Row0b: [rgrCurrency]
-                Row1: [rgrDateOrBatchRange]
-                Row2: [chkIncludeUnposted]
-                Row3: [chkTransactionsOnly]
-                Row4: [pnlFilename]
-                Row5: [cmbDelimiter]
-                Row6: [cmbDateFormat]
-                Row7: [cmbNumberFormat]
+                Row1: [rgrCurrency]
+                Row2: [rgrDateOrBatchRange]
+                Row3: [grpExportOptions]
         rgrDetailSummary:
             Label: Detail or Summary
             Controls: [rbtDetail, rbtSummary]
+            Stretch: horizontally
+            Align: top
             Width:600
         rbtDetail:
             Label: Detail
-            Width:400
+            Width:200
         rbtSummary:
             Controls: [dtpDateSummary, chkDontSummarize, cmbDontSummarizeAccount]
-            Width:400
+            Width:200
         rgrCurrency:
             OptionalValues: [Base Currency, Original Transaction Currency]
+            Stretch: horizontally
+            Align: top
             Width:600
         rgrDateOrBatchRange:
             Controls: [rbtDateRange, rbtBatchNumberSelection]
+            Stretch: horizontally
+            Align: top
             Width:600
         rbtDateRange:
             NoLabel: true
@@ -54,30 +51,42 @@ RootNode:
         dtpDateTo: {Label=To, Width=110}
         txtBatchNumberStart: {Label=Batch from, Format=Integer, Width=110, LabelWidth=90}
         txtBatchNumberEnd: {Label=To, Format=Integer, Width=110}
+
+        grpExportOptions:
+            Label: Export Options
+            Stretch: horizontally
+            Align: top
+            Width:600
+            Controls:
+                Row0: [chkIncludeUnposted]
+                Row1: [chkTransactionsOnly]
+                Row2: [pnlFilename]
+                Row3: [cmbDelimiter]
+                Row4: [cmbDateFormat]
+                Row5: [cmbNumberFormat]
         chkIncludeUnposted: {Label=Include Unposted Batches}
         chkTransactionsOnly:
         chkDontSummarize: {Label=Don't summarize with}
+            Width:200
         cmbDontSummarizeAccount:
+            Width:200
             List: UserDefinedList
             Label: Account
         dtpDateSummary:
+            Width:120
             Label: Date for summary
         pnlFilename:
             Controls:
                 Row0: [txtFilename, btnBrowseFilename]
-        pnlButtons:
-            Dock:Top
-            Controls:
-                Row0: [btnHelp, btnOK, btnClose]
-            ColWidths: [0=Fixed:440,1=Fixed:60,2=Fixed:60]
-        btnHelp: {Action=actHelp}
-        btnClose: {Action=actClose}
-        btnOK: {Action=actExportBatches}                
+            Stretch: horizontally
+            Align: top
         txtFilename:
             LabelWidth:160
-            Width:200
+            Stretch: horizontally
+            Width:365
         btnBrowseFilename:
-            Label: Browse
+            Label: ...
+            Align: Right
             ActionClick: BtnBrowseClick
         cmbDateFormat:
             OptionalValues: [MM/dd/yyyy,dd/MM/yyyy,yyyy-MM-dd]
@@ -88,5 +97,3 @@ RootNode:
         cmbDelimiter:
             OptionalValues: [";", ",", ":", "[SPACE]"]
             Width: 80
-    Toolbar:
-        tbbExportBatches:

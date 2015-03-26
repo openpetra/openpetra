@@ -88,10 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
 
-        private string FBatchDescription = string.Empty;
-
         //Date related
-        private DateTime FDateEffective;
         private DateTime FDefaultDate;
         private DateTime FStartDateCurrentPeriod;
         private DateTime FEndDateLastForwardingPeriod;
@@ -341,58 +338,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        ///
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="ABatchYear"></param>
-        /// <param name="ABatchPeriod"></param>
-        public void LoadOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber, int ABatchYear, int ABatchPeriod)
-        {
-            FLedgerNumber = ALedgerNumber;
-            InitialiseLogicObjects();
-
-            FMainDS.Merge(ViewModeTDS);
-            FPetraUtilsObject.SuppressChangeDetection = true;
-
-            if (FLoadAndFilterLogicObject.BatchYear != ABatchYear)
-            {
-                FLoadAndFilterLogicObject.BatchYear = ABatchYear;
-                FLoadAndFilterLogicObject.RefreshPeriods(ABatchYear);
-            }
-
-            FLoadAndFilterLogicObject.BatchPeriod = ABatchPeriod;
-            FLoadAndFilterLogicObject.DisableYearAndPeriod(false);
-
-            FMainDS.AGiftBatch.DefaultView.RowFilter =
-                String.Format("{0}={1}", AGiftBatchTable.GetBatchNumberDBName(), ABatchNumber);
-            Int32 RowToSelect = GetDataTableRowIndexByPrimaryKeys(ALedgerNumber, ABatchNumber);
-
-            FAccountAndCostCentreLogicObject.RefreshBankAccountAndCostCentreData(FLoadAndFilterLogicObject);
-            SetupExtraGridFunctionality();
-
-            // if this form is readonly, then we need all codes, because old codes might have been used
-            bool ActiveOnly = this.Enabled;
-            SetupAccountAndCostCentreCombos(ActiveOnly);
-
-            cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
-            TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
-
-            SelectRowInGrid(RowToSelect);
-
-            UpdateChangeableStatus();
-            FPetraUtilsObject.HasChanges = false;
-            FPetraUtilsObject.SuppressChangeDetection = false;
-            FBatchLoaded = true;
-        }
-
-        /// <summary>
         /// load the batches into the grid
         /// </summary>
         public void LoadBatchesForCurrentYear()
         {
-            FDateEffective = FDefaultDate;
-
             TFrmGiftBatch myParentForm = (TFrmGiftBatch) this.ParentForm;
             bool performStandardLoad = true;
 
@@ -405,7 +354,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (yearIndex >= 0)
                 {
                     FLoadAndFilterLogicObject.YearIndex = yearIndex;
-                    FLoadAndFilterLogicObject.PeriodIndex = (myParentForm.InitialBatchYear == FMainDS.ALedger[0].CurrentFinancialYear) ? 1 : 0;
+
+                    if (myParentForm.InitialBatchPeriod >= 0)
+                    {
+                        FLoadAndFilterLogicObject.PeriodIndex = FLoadAndFilterLogicObject.FindPeriodAsIndex(myParentForm.InitialBatchPeriod);
+                    }
+                    else
+                    {
+                        FLoadAndFilterLogicObject.PeriodIndex = (myParentForm.InitialBatchYear == FMainDS.ALedger[0].CurrentFinancialYear) ? 1 : 0;
+                    }
+
                     performStandardLoad = false;
                 }
 
@@ -971,27 +929,54 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void PostBatch(System.Object sender, EventArgs e)
         {
+            bool Success = false;
+
             if (GetSelectedRowIndex() < 0)
             {
                 return; // Oops - there's no selected row.
             }
 
-            if (FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow))
+            try
             {
-                // Posting succeeded so now deal with gift receipting ...
-                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber,
-                    FSelectedBatchNumber,
-                    false);
+                Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow);
 
-                FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
-
-                // Now we need to get the data back from the server to pick up all the changes
-                RefreshAllData();
-
-                if (FPetraUtilsObject.HasChanges)
+                if (Success)
                 {
-                    ((TFrmGiftBatch)ParentForm).SaveChangesManual();
+                    // Posting succeeded so now deal with gift receipting ...
+                    GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber,
+                        FSelectedBatchNumber,
+                        false);
+
+                    FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
+
+                    // Now we need to get the data back from the server to pick up all the changes
+                    RefreshAllData();
+
+                    if (FPetraUtilsObject.HasChanges)
+                    {
+                        ((TFrmGiftBatch)ParentForm).SaveChangesManual();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                string errMsg;
+
+                if (!Success)
+                {
+                    errMsg = Catalog.GetString("Error trying to post batch");
+                }
+                else
+                {
+                    errMsg = Catalog.GetString("Error trying to print gift receipts for batch");
+                }
+
+                errMsg += String.Format(" {0}:{1}{1}{2}",
+                    FPreviouslySelectedDetailRow.BatchNumber,
+                    Environment.NewLine,
+                    ex.Message);
+
+                MessageBox.Show(errMsg, Catalog.GetString("Post Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 

@@ -55,6 +55,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TUC_PartnerInfo));
             this.lblPartnerKey = new System.Windows.Forms.Label();
             this.lblAcquisitionCode = new System.Windows.Forms.Label();
             this.lblStatusCode = new System.Windows.Forms.Label();
@@ -126,6 +127,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlKeyInfo = new System.Windows.Forms.Panel();
             this.lblNoPartner = new System.Windows.Forms.Label();
             this.rtbContactDetails = new Ict.Common.Controls.TRtbHyperlinks();
+            this.btnReload = new System.Windows.Forms.Button();
             this.tabPartnerDetailInfo.SuspendLayout();
             this.tbpAddress.SuspendLayout();
             this.pnlContactDetails.SuspendLayout();
@@ -1033,12 +1035,25 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.rtbContactDetails.TabIndex = 0;
             this.rtbContactDetails.LinkClicked += rtbContactDetails_LinkClicked;
             //
+            // btnReload
+            //
+            this.btnReload.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
+            this.btnReload.Image = ((System.Drawing.Image)(resources.GetObject("btnReload.Image")));
+            this.btnReload.Location = new System.Drawing.Point(532, 5);
+            this.btnReload.Name = "btnReload";
+            this.btnReload.Size = new System.Drawing.Size(24, 23);
+            this.btnReload.TabIndex = 1;
+            this.btnReload.UseVisualStyleBackColor = true;
+            this.btnReload.Click += new System.EventHandler(this.btnReload_Click);
+            //
             // TUC_PartnerInfo
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.BackColor = System.Drawing.SystemColors.Info;
             this.Controls.Add(this.tabPartnerDetailInfo);
             this.Controls.Add(this.pnlKeyInfo);
+            this.Controls.Add(this.btnReload);
             this.Controls.Add(this.lblNoPartner);
             this.Font = new System.Drawing.Font("Verdana", 6.75F);
             this.Name = "TUC_PartnerInfo";
@@ -1170,5 +1185,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.TabPage tbpAddress;
         private Ict.Common.Controls.TTabVersatile tabPartnerDetailInfo;
         private System.Windows.Forms.Panel pnlAddressDetails;
+        private System.Windows.Forms.Button btnReload;
     }
 }

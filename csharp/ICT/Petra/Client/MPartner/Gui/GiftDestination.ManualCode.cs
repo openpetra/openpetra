@@ -228,7 +228,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 try
                 {
                     // If a user enters a date command (e.g. -100) this will fail. Hence the try-catch.
-                    FPreviouslySelectedDetailRow["Order"] = Convert.ToDateTime(dtpDetailDateExpires.Text);
+                    FPreviouslySelectedDetailRow["Order"] = dtpDetailDateExpires.Date.Value;
                 }
                 catch
                 {

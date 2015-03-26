@@ -544,32 +544,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     this.Cursor = Cursors.WaitCursor;
 
                     TFrmGiftBatch gb = new TFrmGiftBatch(this);
+                    gb.LedgerNumber = FLedgerNumber;
 
                     // load dataset with data for whole transaction (all details)
-                    gb.ViewModeTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftSingle(FLedgerNumber,
-                        (int)FPreviouslySelectedDetailRow["BatchNumber"],
-                        (int)FPreviouslySelectedDetailRow["GiftTransactionNumber"]);
 
-                    if (gb.ViewModeTDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_POSTED)
-                    {
-                        // read only if gift belongs to a posted batch
-                        gb.ViewMode = true;
-                        gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)FPreviouslySelectedDetailRow["BatchNumber"],
-                            gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
-                    }
-                    else
-                    {
-                        gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)FPreviouslySelectedDetailRow["BatchNumber"],
-                            gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
-                        gb.DisableBatches();
-                    }
+                    // Viewmode = true
+
+                    /*gb.ViewModeTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftSingle(FLedgerNumber,
+                     *  (int)FPreviouslySelectedDetailRow["BatchNumber"],
+                     *  (int)FPreviouslySelectedDetailRow["GiftTransactionNumber"]);
+                     *
+                     * if (gb.ViewModeTDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_POSTED)
+                     * {
+                     *  // read only if gift belongs to a posted batch
+                     *  gb.ViewMode = true;
+                     *  gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)FPreviouslySelectedDetailRow["BatchNumber"],
+                     *      gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
+                     * }
+                     * else
+                     * {
+                     *  gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)FPreviouslySelectedDetailRow["BatchNumber"],
+                     *      gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
+                     *  gb.DisableBatches();
+                     * }*/
+
+                    // Viewmode = false
+                    gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)FPreviouslySelectedDetailRow["BatchNumber"],
+                        (int)FPreviouslySelectedDetailRow["BatchYear"], (int)FPreviouslySelectedDetailRow["BatchPeriod"]);
 
                     gb.SelectTab(TFrmGiftBatch.eGiftTabs.Transactions);
-                    gb.FindGiftDetail((AGiftDetailRow)gb.ViewModeTDS.AGiftDetail.Rows.Find(
-                            new object[] { FLedgerNumber,
-                                           FPreviouslySelectedDetailRow["BatchNumber"],
-                                           FPreviouslySelectedDetailRow["GiftTransactionNumber"],
-                                           FPreviouslySelectedDetailRow["DetailNumber"] }));
+
+                    gb.FindGiftDetail((int)FPreviouslySelectedDetailRow["BatchNumber"],
+                        (int)FPreviouslySelectedDetailRow["GiftTransactionNumber"], (int)FPreviouslySelectedDetailRow["DetailNumber"]);
                 }
                 finally
                 {

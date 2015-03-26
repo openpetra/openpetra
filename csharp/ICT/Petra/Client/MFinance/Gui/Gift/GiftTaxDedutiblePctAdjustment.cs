@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            // show the list of gift to be adjusted and ask the user for confirmation
+            // show the list of gifts to be adjusted and ask the user for confirmation
             TFrmGiftFieldAdjustmentConfirmation ConfirmationForm = new TFrmGiftFieldAdjustmentConfirmation(AParentForm);
             ConfirmationForm.MainDS = GiftBatchDS;
             ConfirmationForm.Text = Catalog.GetString("Confirm Tax Deductible Percentage Adjustment");

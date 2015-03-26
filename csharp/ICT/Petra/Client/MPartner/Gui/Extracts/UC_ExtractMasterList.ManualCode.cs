@@ -590,6 +590,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             PContactLogTable ContactLogTable = new PContactLogTable();
             PContactLogRow ContactLogRow = ContactLogTable.NewRowTyped();
+            PPartnerContactAttributeTable PartnerContactAttributeTable = new PPartnerContactAttributeTable();
 
             string MessageText;
 
@@ -601,11 +602,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    dialog.GetReturnedParameters(ref ContactLogRow);
+                    dialog.GetReturnedParameters(ref ContactLogRow, ref PartnerContactAttributeTable);
                     ContactLogTable.Rows.Add(ContactLogRow);
                     // perform update of extract data on server side
                     TRemote.MPartner.Partner.WebConnectors.AddContactLog(
-                        GetSelectedDetailRow().ExtractId, ref ContactLogTable);
+                        GetSelectedDetailRow().ExtractId, ContactLogTable, PartnerContactAttributeTable);
 
                     MessageText =
                         string.Format(Catalog.GetString(
@@ -836,6 +837,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.MaintainExtract);
             grdDetails.EnterKeyPressed += new TKeyPressedEventHandler(this.MaintainExtract);
+
+            FPetraUtilsObject.SetToolTip(btnRefreshGrid, Catalog.GetString("Refresh Extract List"));
         }
 
         /// <summary>

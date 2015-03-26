@@ -2175,8 +2175,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             FLimitToOption = ALimitToOption;
             FDoNotOverwrite = ADoNotOverwrite;
             FMainDS = new PartnerImportExportTDS();
-            TDBTransaction Transaction;
-            Boolean NewTransaction;
 
             InitReading(ALinesToImport);
 
@@ -2191,49 +2189,54 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
             else
             {
-                try
-                {
-                    Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+                TDBTransaction Transaction = null;
+                bool SubmissionOK = false;
 
-                    while (CheckForKeyword("PARTNER"))
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    ref Transaction,
+                    ref SubmissionOK,
+                    delegate
                     {
-                        PPartnerRow PartnerRow = ImportPartner(Transaction);
+                        try
+                        {
+                            while (CheckForKeyword("PARTNER"))
+                            {
+                                PPartnerRow PartnerRow = ImportPartner(Transaction);
 
-                        ImportPartnerClassSpecific(PartnerRow.PartnerClass, PetraVersion, Transaction);
+                                ImportPartnerClassSpecific(PartnerRow.PartnerClass, PetraVersion, Transaction);
 
-                        ImportLocation(Transaction);
+                                ImportLocation(Transaction);
 
-                        ImportOptionalDetails(PartnerRow, PetraVersion, Transaction);
-                    }
+                                ImportOptionalDetails(PartnerRow, PetraVersion, Transaction);
+                            }
 
-                    ImportContext = "Checking data references";
+                            ImportContext = "Checking data references";
 
-                    CheckRequiredUnits(Transaction);
-                    //                AddRequiredUnits(FRequiredOfficeKeys, "F", 1000000, "Office", Transaction);
-                    //                AddRequiredUnits(FRequiredOptionKeys, "CONF", 1000000, "Conference", Transaction);
+                            CheckRequiredUnits(Transaction);
+                            //                AddRequiredUnits(FRequiredOfficeKeys, "F", 1000000, "Office", Transaction);
+                            //                AddRequiredUnits(FRequiredOptionKeys, "CONF", 1000000, "Conference", Transaction);
 
-                    if (FParsingOfPartnerLocationsForContactDetailsNecessary)
-                    {
-                        TPartnerContactDetails_LocationConversionHelper.PartnerAttributeLoadUsingTemplate =
-                            PPartnerAttributeAccess.LoadUsingTemplate;
-                        TPartnerContactDetails_LocationConversionHelper.SequenceGetter =
-                            MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence;
+                            if (FParsingOfPartnerLocationsForContactDetailsNecessary)
+                            {
+                                TPartnerContactDetails_LocationConversionHelper.PartnerAttributeLoadUsingTemplate =
+                                    PPartnerAttributeAccess.LoadUsingTemplate;
+                                TPartnerContactDetails_LocationConversionHelper.SequenceGetter =
+                                    MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence;
 
-                        TPartnerContactDetails_LocationConversionHelper.ParsePartnerLocationsForContactDetails(FMainDS,
-                            Transaction);
-                    }
-                }
-                catch (Exception e)
-                {
-                    TLogging.Log(e.GetType().ToString() + ": " + e.Message + " in line " + (CurrentLineCounter + 1).ToString());
-                    TLogging.Log(CurrentLine);
-                    TLogging.Log(e.StackTrace);
-                    throw;
-                }
-                finally
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                                TPartnerContactDetails_LocationConversionHelper.ParsePartnerLocationsForContactDetails(FMainDS,
+                                    Transaction);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            TLogging.Log(e.GetType().ToString() + ": " + e.Message + " in line " + (CurrentLineCounter + 1).ToString());
+                            TLogging.Log(CurrentLine);
+                            TLogging.Log(e.StackTrace);
+                            throw;
+                        }
+
+                        SubmissionOK = true;
+                    });
             }
 
             AResultList = FResultList;

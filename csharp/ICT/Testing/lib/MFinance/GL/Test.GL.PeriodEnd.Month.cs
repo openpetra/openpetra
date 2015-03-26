@@ -270,7 +270,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountGift, (FLedgerNumber * 100).ToString(), "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 100);
 
-            commonAccountingTool.CloseSaveAndPost(); // returns true if posting seemed to work
+            Boolean PostedOk = commonAccountingTool.CloseSaveAndPost(); // returns true if posting seemed to work
+            Assert.IsTrue(PostedOk, "Post foreign gift batch");
 
 
             TVerificationResultCollection verificationResult;
@@ -285,7 +286,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 {
                     blnStatusArrived = true;
                     Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
-                        "we need a critical error: need to run revaluation first ...");
+                        "A critical error is required: need to run revaluation first ...");
                 }
             }
 
@@ -293,14 +294,27 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.IsTrue(blnHasErrors, "should fail because revaluation needs to be run first");
 
             // run revaluation
-            blnHasErrors = TRevaluationWebConnector.Revaluate(FLedgerNumber, new TLedgerInfo(
-                    FLedgerNumber).CurrentPeriod, new string[] { "GBP" }, new decimal[] { 1.2m }, out verificationResult);
+            blnHasErrors = TRevaluationWebConnector.Revaluate(FLedgerNumber, new string[] { "GBP" }, new decimal[] { 1.2m },
+                TLedgerInfo.GetStandardCostCentre(FLedgerNumber),
+                out verificationResult);
 
-            TLogging.Log(verificationResult.BuildVerificationResultString());
+            if (blnHasErrors)
+            {
+                TLogging.Log("\n\n\nTRevaluationWebConnector.Revaluate returned false, VerificationResult follows:");
+                TLogging.Log(verificationResult.BuildVerificationResultString());
+            }
+
             Assert.IsFalse(blnHasErrors, "Problem running the revaluation");
 
             blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
                 FLedgerNumber, true, out verificationResult);
+
+            if (blnHasErrors)
+            {
+                TLogging.Log("\n\n\nTPeriodMonthEnd returned true, VerificationResult follows:");
+                TLogging.Log(verificationResult.BuildVerificationResultString());
+            }
+
             Assert.IsFalse(blnHasErrors, "should now be able to close the month now that the revaluation has been run");
         }
 

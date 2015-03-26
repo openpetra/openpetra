@@ -95,6 +95,7 @@ namespace Ict.Petra.Client.CommonDialogs
             // TProgressDialog
             //
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 14);
+            this.CancelButton = btnCancel;
             this.ClientSize = new System.Drawing.Size(309, 182);
             this.Controls.Add(this.lblMessage);
             this.Controls.Add(this.btnCancel);

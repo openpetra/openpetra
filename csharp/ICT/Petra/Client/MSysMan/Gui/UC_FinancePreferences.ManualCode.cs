@@ -34,6 +34,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
     {
         private int FCurrentLedger;
         private bool FNewDonorWarning = true;
+        private bool FAutoSave = false;
 
         private void InitializeManualCode()
         {
@@ -52,6 +53,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
             chkNewDonorWarning.Checked = FNewDonorWarning;
+
+            FAutoSave = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_AUTO_SAVE_GIFT_SCREEN, false);
+            chkAutoSave.Checked = FAutoSave;
         }
 
         /// <summary>
@@ -86,6 +90,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 FNewDonorWarning = chkNewDonorWarning.Checked;
                 TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
+            }
+
+            if (FAutoSave != chkAutoSave.Checked)
+            {
+                FAutoSave = chkAutoSave.Checked;
+                TUserDefaults.SetDefault(TUserDefaults.FINANCE_AUTO_SAVE_GIFT_SCREEN, FAutoSave);
             }
 
             return false;

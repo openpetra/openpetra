@@ -296,8 +296,10 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// There may or may not already be attribute assignments for this transaction.
         /// </summary>
         /// <param name="AGLBatchDS"></param>
+        /// <param name="AGLSetupDS">Can be null.  If supplied the code will use this data set to work out the required analysis attributes
+        /// without a need to make a server call.  If not supplied the code will make a separate server call for each transaction row.  This may take several seconds.</param>
         /// <param name="ATransactionNumbers"></param>
-        public void ReconcileTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS, out string ATransactionNumbers)
+        public void ReconcileTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS, GLSetupTDS AGLSetupDS, out string ATransactionNumbers)
         {
             ATransactionNumbers = string.Empty;
 
@@ -305,7 +307,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             {
                 ATransactionRow tr = (ATransactionRow)drv.Row;
 
-                if (ReconcileTransAnalysisAttributes(ref AGLBatchDS, tr.AccountCode, tr.TransactionNumber))
+                if (ReconcileTransAnalysisAttributes(ref AGLBatchDS, AGLSetupDS, tr.AccountCode, tr.TransactionNumber))
                 {
                     ATransactionNumbers += tr.TransactionNumber.ToString() + ", ";
                 }
@@ -318,10 +320,13 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// There may or may not already be attribute assignments for this transaction.
         /// </summary>
         /// <param name="AGLBatchDS"></param>
+        /// <param name="AGLSetupDS">Can be null.  If supplied the code will use this to discover the required attributes without making a trip to the server.
+        /// Otherwise a server request is made.</param>
         /// <param name="AAccountCode"></param>
         /// <param name="ATransactionNumber"></param>
         /// <returns></returns>
         public bool ReconcileTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS,
+            GLSetupTDS AGLSetupDS,
             string AAccountCode,
             int ATransactionNumber)
         {
@@ -332,8 +337,26 @@ namespace Ict.Petra.Client.MFinance.Logic
                 return RetVal;
             }
 
-            StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
-                AAccountCode, true);
+            StringCollection RequiredAnalAttrCodes = new StringCollection();
+
+            if (AGLSetupDS == null)
+            {
+                // This makes a remote call to the server, which is costly when this method is being called in a loop for all transactions
+                RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+                    AAccountCode, true);
+            }
+            else
+            {
+                // This makes use of the supplied SetupTDS, which is useful if it has been loaded prior to a loop
+                AGLSetupDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                    AAnalysisAttributeTable.GetAccountCodeDBName(),
+                    AAccountCode);
+
+                foreach (DataRowView drv in AGLSetupDS.AAnalysisAttribute.DefaultView)
+                {
+                    RequiredAnalAttrCodes.Add(drv.Row[AAnalysisAttributeTable.ColumnAnalysisTypeCodeId].ToString());
+                }
+            }
 
             SetTransAnalAttributeDefaultView(AGLBatchDS, true, ATransactionNumber,
                 TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'"));

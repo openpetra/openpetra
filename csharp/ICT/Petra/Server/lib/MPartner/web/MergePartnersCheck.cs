@@ -305,30 +305,29 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool GetSupplierCurrency(long APartnerKey, out string ACurrency)
         {
+            Boolean Result = false;
+
             ACurrency = "";
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            string Currency = "";
 
-            try
-            {
-                AApSupplierTable Table = AApSupplierAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+            TDBTransaction Transaction = null;
 
-                if (Table.Rows.Count != 0)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    ACurrency = ((AApSupplierRow)Table.Rows[0]).CurrencyCode;
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.LogAtLevel(7, "TMergePartnersWebConnector.GetSupplierCurrency: rollback own transaction.");
-            }
+                    AApSupplierTable Table = AApSupplierAccess.LoadByPrimaryKey(APartnerKey, Transaction);
 
-            return false;
+                    if (Table.Rows.Count != 0)
+                    {
+                        Currency = ((AApSupplierRow)Table.Rows[0]).CurrencyCode;
+                        Result = true;
+                    }
+                });
+
+            ACurrency = Currency;
+
+            return Result;
         }
 
         /// <summary>
@@ -339,42 +338,36 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static int CanFamilyMergeIntoDifferentClass(long APartnerKey)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            int ReturnValue = 0;
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                PPersonTable PersonTable = PPersonAccess.LoadViaPFamily(APartnerKey, Transaction);
-
-                if (PersonTable.Rows.Count > 0)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    return 1;
-                }
+                    PPersonTable PersonTable = PPersonAccess.LoadViaPFamily(APartnerKey, Transaction);
 
-                AGiftDetailTable GiftDetailTable = AGiftDetailAccess.LoadViaPPartnerRecipientKey(APartnerKey, Transaction);
+                    if (PersonTable.Rows.Count > 0)
+                    {
+                        ReturnValue = 1;
+                    }
 
-                if (GiftDetailTable.Rows.Count > 0)
-                {
-                    return 2;
-                }
+                    AGiftDetailTable GiftDetailTable = AGiftDetailAccess.LoadViaPPartnerRecipientKey(APartnerKey, Transaction);
 
-                PBankingDetailsTable BankingDetailsTable = PBankingDetailsAccess.LoadViaPPartner(APartnerKey, Transaction);
+                    if (GiftDetailTable.Rows.Count > 0)
+                    {
+                        ReturnValue = 2;
+                    }
 
-                if (BankingDetailsTable.Rows.Count > 0)
-                {
-                    return 3;
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.LogAtLevel(7, "TMergePartnersWebConnector.CanFamilyMergeIntoDifferentClass: rollback own transaction.");
-            }
+                    PBankingDetailsTable BankingDetailsTable = PBankingDetailsAccess.LoadViaPPartner(APartnerKey, Transaction);
 
-            return 0;
+                    if (BankingDetailsTable.Rows.Count > 0)
+                    {
+                        ReturnValue = 3;
+                    }
+                });
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -392,48 +385,41 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PPersonTable ToPersonTable = null;
             int ReturnValue = 0;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                if (APartnerClass == TPartnerClass.FAMILY)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    FromPersonTable = PPersonAccess.LoadViaPFamily(AFromPartnerKey, Transaction);
-                    ToPersonTable = PPersonAccess.LoadViaPFamily(AToPartnerKey, Transaction);
-                }
-                else if (APartnerClass == TPartnerClass.PERSON)
-                {
-                    FromPersonTable = PPersonAccess.LoadViaPPartner(AFromPartnerKey, Transaction);
-                    ToPersonTable = PPersonAccess.LoadViaPPartner(AToPartnerKey, Transaction);
-                }
-
-                // check if from partner has commitments
-                if (PersonHasCommitments(FromPersonTable, Transaction))
-                {
-                    ReturnValue = 1;
-
-                    // check if two persons are in same family
-                    if ((APartnerClass == TPartnerClass.PERSON)
-                        && (((PPersonRow)FromPersonTable.Rows[0]).FamilyKey == ((PPersonRow)ToPersonTable.Rows[0]).FamilyKey))
+                    if (APartnerClass == TPartnerClass.FAMILY)
                     {
-                        ReturnValue = 3;
+                        FromPersonTable = PPersonAccess.LoadViaPFamily(AFromPartnerKey, Transaction);
+                        ToPersonTable = PPersonAccess.LoadViaPFamily(AToPartnerKey, Transaction);
                     }
-                    // check if to partner also has commitments
-                    else if (PersonHasCommitments(ToPersonTable, Transaction))
+                    else if (APartnerClass == TPartnerClass.PERSON)
                     {
-                        ReturnValue = 2;
+                        FromPersonTable = PPersonAccess.LoadViaPPartner(AFromPartnerKey, Transaction);
+                        ToPersonTable = PPersonAccess.LoadViaPPartner(AToPartnerKey, Transaction);
                     }
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.LogAtLevel(7, "TMergePartnersWebConnector.CheckPartnerCommitments: rollback own transaction.");
-            }
+
+                    // check if from partner has commitments
+                    if (PersonHasCommitments(FromPersonTable, Transaction))
+                    {
+                        ReturnValue = 1;
+
+                        // check if two persons are in same family
+                        if ((APartnerClass == TPartnerClass.PERSON)
+                            && (((PPersonRow)FromPersonTable.Rows[0]).FamilyKey == ((PPersonRow)ToPersonTable.Rows[0]).FamilyKey))
+                        {
+                            ReturnValue = 3;
+                        }
+                        // check if to partner also has commitments
+                        else if (PersonHasCommitments(ToPersonTable, Transaction))
+                        {
+                            ReturnValue = 2;
+                        }
+                    }
+                });
 
             return ReturnValue;
         }
@@ -467,26 +453,19 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static PFoundationTable GetOrganisationFoundation(long AFromPartnerKey)
         {
             PFoundationTable ReturnValue = null;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                PFoundationTable FoundationTable = PFoundationAccess.LoadViaPOrganisation(AFromPartnerKey, Transaction);
-
-                if (FoundationTable.Rows.Count > 0)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    ReturnValue = FoundationTable;
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.LogAtLevel(7, "TMergePartnersWebConnector.OrganisationIsFoundation: rollback own transaction.");
-            }
+                    PFoundationTable FoundationTable = PFoundationAccess.LoadViaPOrganisation(AFromPartnerKey, Transaction);
+
+                    if (FoundationTable.Rows.Count > 0)
+                    {
+                        ReturnValue = FoundationTable;
+                    }
+                });
 
             return ReturnValue;
         }
@@ -500,61 +479,55 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool NeedMainBankAccount(long AFromPartnerKey, long AToPartnerKey)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool ReturnValue = false;
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                PPartnerBankingDetailsTable FromBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPPartner(AFromPartnerKey, Transaction);
-                PPartnerBankingDetailsTable ToBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPPartner(AToPartnerKey, Transaction);
-
-                int MainBankAccounts = 0;
-                int FromBankAccounts = FromBankingDetailsTable.Rows.Count;
-                int ToBankAccounts = ToBankingDetailsTable.Rows.Count;
-
-                if (FromBankAccounts > 0)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    foreach (DataRow Row in FromBankingDetailsTable.Rows)
-                    {
-                        PPartnerBankingDetailsRow FromRow = (PPartnerBankingDetailsRow)Row;
+                    PPartnerBankingDetailsTable FromBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPPartner(AFromPartnerKey, Transaction);
+                    PPartnerBankingDetailsTable ToBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPPartner(AToPartnerKey, Transaction);
 
-                        if (PBankingDetailsUsageAccess.Exists(AFromPartnerKey, FromRow.BankingDetailsKey, "MAIN", Transaction))
+                    int MainBankAccounts = 0;
+                    int FromBankAccounts = FromBankingDetailsTable.Rows.Count;
+                    int ToBankAccounts = ToBankingDetailsTable.Rows.Count;
+
+                    if (FromBankAccounts > 0)
+                    {
+                        foreach (DataRow Row in FromBankingDetailsTable.Rows)
                         {
-                            MainBankAccounts += 1;
+                            PPartnerBankingDetailsRow FromRow = (PPartnerBankingDetailsRow)Row;
+
+                            if (PBankingDetailsUsageAccess.Exists(AFromPartnerKey, FromRow.BankingDetailsKey, "MAIN", Transaction))
+                            {
+                                MainBankAccounts += 1;
+                            }
                         }
                     }
-                }
 
-                if (ToBankAccounts > 0)
-                {
-                    foreach (DataRow Row in ToBankingDetailsTable.Rows)
+                    if (ToBankAccounts > 0)
                     {
-                        PPartnerBankingDetailsRow FromRow = (PPartnerBankingDetailsRow)Row;
-
-                        if (PBankingDetailsUsageAccess.Exists(AToPartnerKey, FromRow.BankingDetailsKey, "MAIN", Transaction))
+                        foreach (DataRow Row in ToBankingDetailsTable.Rows)
                         {
-                            MainBankAccounts += 1;
+                            PPartnerBankingDetailsRow FromRow = (PPartnerBankingDetailsRow)Row;
+
+                            if (PBankingDetailsUsageAccess.Exists(AToPartnerKey, FromRow.BankingDetailsKey, "MAIN", Transaction))
+                            {
+                                MainBankAccounts += 1;
+                            }
                         }
                     }
-                }
 
-                // if the merged Partner will have more than one bank account and either 0 or 2 of the bank accounts are 'Main' accounts
-                // then a new 'Main' account needs to be selected
-                if (((FromBankAccounts + ToBankAccounts) > 1) && (MainBankAccounts != 1))
-                {
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.LogAtLevel(7, "TMergePartnersWebConnector.OrganisationIsFoundation: rollback own transaction.");
-            }
+                    // if the merged Partner will have more than one bank account and either 0 or 2 of the bank accounts are 'Main' accounts
+                    // then a new 'Main' account needs to be selected
+                    if (((FromBankAccounts + ToBankAccounts) > 1) && (MainBankAccounts != 1))
+                    {
+                        ReturnValue = true;
+                    }
+                });
 
-            return false;
+            return ReturnValue;
         }
 
         /// <summary>
@@ -563,44 +536,36 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PBankingDetailsTable GetPartnerBankingDetails(long AFromPartnerKey, long AToPartnerKey)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
             PBankingDetailsTable ReturnTable = new PBankingDetailsTable();
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                PBankingDetailsTable FromBankingDetailsTable = PBankingDetailsAccess.LoadViaPPartner(AFromPartnerKey, Transaction);
-                PBankingDetailsTable ToBankingDetailsTable = PBankingDetailsAccess.LoadViaPPartner(AToPartnerKey, Transaction);
-
-                // clone the data in each table and add them to a new table to combine the data
-
-                foreach (DataRow Row in FromBankingDetailsTable.Rows)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    object[] RowArray = Row.ItemArray;
-                    object[] RowArrayClone = (object[])RowArray.Clone();
-                    DataRow RowClone = ReturnTable.NewRowTyped(false);
-                    RowClone.ItemArray = RowArrayClone;
-                    ReturnTable.Rows.Add(RowClone);
-                }
+                    PBankingDetailsTable FromBankingDetailsTable = PBankingDetailsAccess.LoadViaPPartner(AFromPartnerKey, Transaction);
+                    PBankingDetailsTable ToBankingDetailsTable = PBankingDetailsAccess.LoadViaPPartner(AToPartnerKey, Transaction);
 
-                foreach (DataRow Row in ToBankingDetailsTable.Rows)
-                {
-                    object[] RowArray = Row.ItemArray;
-                    object[] RowArrayClone = (object[])RowArray.Clone();
-                    DataRow RowClone = ReturnTable.NewRowTyped(false);
-                    RowClone.ItemArray = RowArrayClone;
-                    ReturnTable.Rows.Add(RowClone);
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.LogAtLevel(7, "TMergePartnersWebConnector.GetPartnerBankingDetails: rollback own transaction.");
-            }
+                    // clone the data in each table and add them to a new table to combine the data
+
+                    foreach (DataRow Row in FromBankingDetailsTable.Rows)
+                    {
+                        object[] RowArray = Row.ItemArray;
+                        object[] RowArrayClone = (object[])RowArray.Clone();
+                        DataRow RowClone = ReturnTable.NewRowTyped(false);
+                        RowClone.ItemArray = RowArrayClone;
+                        ReturnTable.Rows.Add(RowClone);
+                    }
+
+                    foreach (DataRow Row in ToBankingDetailsTable.Rows)
+                    {
+                        object[] RowArray = Row.ItemArray;
+                        object[] RowArrayClone = (object[])RowArray.Clone();
+                        DataRow RowClone = ReturnTable.NewRowTyped(false);
+                        RowClone.ItemArray = RowArrayClone;
+                        ReturnTable.Rows.Add(RowClone);
+                    }
+                });
 
             return ReturnTable;
         }
@@ -621,57 +586,56 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             out bool AFromGiftDestinationNeedsEnded,
             out bool AToGiftDestinationNeedsEnded)
         {
-            AFromGiftDestinationNeedsEnded = false;
-            AToGiftDestinationNeedsEnded = false;
+            bool ReturnValue = true;
+            bool FromGiftDestinationNeedsEnded = false;
+            bool ToGiftDestinationNeedsEnded = false;
             PPartnerGiftDestinationRow FromGiftDestinationRowNeedsEnded = null;
             PPartnerGiftDestinationRow ToGiftDestinationRowNeedsEnded = null;
             PPartnerGiftDestinationRow ActiveRow = null;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            try
-            {
-                // if partners are Person's then find their family keys
-                if (APartnerClass == TPartnerClass.PERSON)
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    AFromPartnerKey = ((PPersonRow)PPersonAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction).Rows[0]).FamilyKey;
-                    AToPartnerKey = ((PPersonRow)PPersonAccess.LoadByPrimaryKey(AToPartnerKey, Transaction).Rows[0]).FamilyKey;
-                }
+                    // if partners are Person's then find their family keys
+                    if (APartnerClass == TPartnerClass.PERSON)
+                    {
+                        AFromPartnerKey = ((PPersonRow)PPersonAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction).Rows[0]).FamilyKey;
+                        AToPartnerKey = ((PPersonRow)PPersonAccess.LoadByPrimaryKey(AToPartnerKey, Transaction).Rows[0]).FamilyKey;
+                    }
 
-                // check for an active gift destination for the 'From' partner
-                PPartnerGiftDestinationTable GiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AFromPartnerKey, Transaction);
-                ActiveRow = GetActiveGiftDestination(GiftDestinations);
+                    // check for an active gift destination for the 'From' partner
+                    PPartnerGiftDestinationTable GiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AFromPartnerKey, Transaction);
+                    ActiveRow = GetActiveGiftDestination(GiftDestinations);
 
-                // return if no active record has been found
-                if (ActiveRow == null)
-                {
-                    return false;
-                }
+                    // return if no active record has been found
+                    if (ActiveRow == null)
+                    {
+                        ReturnValue = false;
+                    }
 
-                // check for clash with the 'To' partner
-                PPartnerGiftDestinationTable ToGiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AToPartnerKey, Transaction);
-                CheckGiftDestinationClashes(ToGiftDestinations, ActiveRow, out FromGiftDestinationRowNeedsEnded, out ToGiftDestinationRowNeedsEnded);
+                    // check for clash with the 'To' partner
+                    PPartnerGiftDestinationTable ToGiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AToPartnerKey, Transaction);
+                    CheckGiftDestinationClashes(ToGiftDestinations, ActiveRow, out FromGiftDestinationRowNeedsEnded,
+                        out ToGiftDestinationRowNeedsEnded);
 
-                if (FromGiftDestinationRowNeedsEnded != null)
-                {
-                    AFromGiftDestinationNeedsEnded = true;
-                }
+                    if (FromGiftDestinationRowNeedsEnded != null)
+                    {
+                        FromGiftDestinationNeedsEnded = true;
+                    }
 
-                if (ToGiftDestinationRowNeedsEnded != null)
-                {
-                    AToGiftDestinationNeedsEnded = true;
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.LogAtLevel(7, "TMergePartnersWebConnector.GetPartnerBankingDetails: rollback own transaction.");
-            }
+                    if (ToGiftDestinationRowNeedsEnded != null)
+                    {
+                        ToGiftDestinationNeedsEnded = true;
+                    }
+                });
 
-            return true;
+            AFromGiftDestinationNeedsEnded = FromGiftDestinationNeedsEnded;
+            AToGiftDestinationNeedsEnded = ToGiftDestinationNeedsEnded;
+
+            return ReturnValue;
         }
 
         /// <summary>

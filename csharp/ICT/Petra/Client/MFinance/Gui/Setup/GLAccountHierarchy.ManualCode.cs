@@ -73,7 +73,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         public String Msg;
 
         /// <summary>The actual data:</summary>
-        public AAccountRow AccountRow;
+        public GLSetupTDSAAccountRow AccountRow;
 
         /// <summary>The actual data:</summary>
         public AAccountHierarchyDetailRow DetailRow;
@@ -114,7 +114,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>
         /// Create an AccountNodeDetails object for this account
         /// </summary>
-        public static AccountNodeDetails AddNewAccount(TreeNode NewTreeNode, AAccountRow AccountRow, AAccountHierarchyDetailRow HierarchyDetailRow)
+        public static AccountNodeDetails AddNewAccount(TreeNode NewTreeNode,
+            GLSetupTDSAAccountRow AccountRow,
+            AAccountHierarchyDetailRow HierarchyDetailRow)
         {
             AccountNodeDetails NodeDetails = new AccountNodeDetails();
 
@@ -466,6 +468,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 cmbDetailForeignCurrencyCode.SetSelectedString("", -1);
                 UpdateForeignCurrencyCheckbox();
             }
+
+            GetSelectedDetailRowManual().ForeignCurrencyFlag = chkDetailForeignCurrencyFlag.Checked;
         }
 
         private void AutoFillDescriptions(object sender, EventArgs e)
@@ -643,6 +647,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (FCurrentAccount == null)
             {
                 MessageBox.Show(Catalog.GetString("You can only add a new account after selecting a parent account"));
+                return;
+            }
+
+            if (FCurrentAccount.AccountRow.ForeignCurrencyFlag == true)
+            {
+                MessageBox.Show(Catalog.GetString("Foreign Currency Accounts cannot have children."));
                 return;
             }
 
@@ -879,6 +889,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // If the parent account now has no accounts reporting to it (in any hierarchies), mark it as posting account.
             FCurrentAccount.GetAttrributes();
             tbbDeleteAccount.Enabled = (FCurrentAccount.CanDelete.HasValue ? FCurrentAccount.CanDelete.Value : false);
+            mniDeleteAccount.Enabled = tbbDeleteAccount.Enabled;
             AAccountRow ParentAccountRow = FCurrentAccount.AccountRow;
             AHD_stillInUse.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_to_report_to_c='{1}'",
                 FLedgerNumber, ParentAccountRow.AccountCode);
@@ -913,6 +924,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (FCurrentAccount != null)
             {
+                // check if name has just been changed before the save button was pressed
+                CheckAccountCodeValueChanged();
+
                 AutoFillDescriptions(null, null);
                 GetDetailsFromControls(GetSelectedDetailRowManual());
                 //
@@ -941,8 +955,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <returns>false if the user must stay on the current row and fix the problem</returns>
         public Boolean CheckControlsValidateOk()
         {
-            GetDetailsFromControls((GLSetupTDSAAccountRow)FCurrentAccount.AccountRow);
-            return ValidateAllData(true, true);
+            if (FCurrentAccount != null)
+            {
+                GetDetailsFromControls((GLSetupTDSAAccountRow)FCurrentAccount.AccountRow);
+                return ValidateAllData(true, true);
+            }
+            else
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -979,6 +1000,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 tbbAddNewAccount.ToolTipText = "";
             }
 
+            mniAddNewAccount.Enabled = tbbAddNewAccount.Enabled;
+
             if ((FCurrentAccount != null) && (FCurrentAccount.CanDelete.HasValue))
             {
                 tbbDeleteAccount.Enabled = FCurrentAccount.CanDelete.Value;
@@ -989,6 +1012,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 tbbDeleteAccount.Enabled = false;
                 tbbDeleteAccount.ToolTipText = "";
             }
+
+            mniDeleteAccount.Enabled = tbbDeleteAccount.Enabled;
 
             FPetraUtilsObject.HasChanges = hasChanges;
         }

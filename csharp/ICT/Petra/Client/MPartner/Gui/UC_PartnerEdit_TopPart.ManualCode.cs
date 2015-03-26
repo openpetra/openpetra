@@ -648,6 +648,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void OnAnyDataColumnChanging(System.Object sender, EventArgs e)
         {
+            Control ctrl = (Control)sender;
+
+            // return if control has not actually been changed (i.e. CTRL+A will unneccessarily fire this event)
+            if (ctrl.GetType() == typeof(TextBox))
+            {
+                if ((((TextBox)ctrl).SelectedText == ctrl.Text) && (ctrl.Text != ""))
+                {
+                    return;
+                }
+            }
+
             TPartnerClassMainDataChangedEventArgs EventFireArgs;
 
             /* messagebox.show('Column_Changing Event: Column=' + e.Column.ColumnName + */

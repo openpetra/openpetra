@@ -193,6 +193,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>The Class of the Partner that the screen is working with (read-only!).</summary>
+        /// <remarks>Available only after data has been loaded from the server!</remarks>
+        public TPartnerClass PartnerClass
+        {
+            get
+            {
+                return SharedTypes.PartnerClassStringToEnum(FPartnerClass);
+            }
+        }
+
         /// <summary>
         /// set this property before showing the screen, or use SetParameters
         /// </summary>
@@ -793,6 +803,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void SetParameters(TScreenMode AScreenMode)
         {
             SetParameters(AScreenMode, "FAMILY", -1, -1, "", "", false, -1, -1, -1, true, TPartnerEditTabPageEnum.petpDefault);
+        }
+
+        /// <summary>
+        /// Selects the given contact log.
+        /// </summary>
+        /// <param name="AContactLogID">Contact Log identifier.</param>
+        public void SelectContactLog(string AContactLogID)
+        {
+            ucoLowerPart.SelectContactLog(AContactLogID);
         }
 
         /// <summary>
@@ -1740,7 +1759,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                             {
                                 // update unposted gifts
-                                TRemote.MFinance.Gift.WebConnectors.UpdateUnpostedGiftsTaxDeductiblePct(FPartnerKey, NewPct);
+                                TRemote.MFinance.Gift.WebConnectors.UpdateUnpostedGiftsTaxDeductiblePct(FPartnerKey, NewPct, NewValidFrom);
                             }
                         }
                         else
@@ -2386,6 +2405,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FPartnerClass == TPartnerClass.FAMILY.ToString())
             {
+                // this will be 0 for a new and unsaved family partner
+                // (new person partners can have gift destination added straight away as they are added to the person's family partner)
+                if (FPartnerKey == 0)
+                {
+                    MessageBox.Show(Catalog.GetString("This new partner must be saved before a Gift Destination can be added."),
+                        Catalog.GetString("Gift Destination"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
                 TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), FPartnerKey);
 
                 GiftDestinationForm.Show();
@@ -2588,9 +2617,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!GetPartnerEditUIConnector(TUIConnectorType.uictNewPartner))
                     {
                         MessageBox.Show(
-                            String.Format(MCommonResourcestrings.StrOpeningCancelledByUser,
+                            String.Format(AppCoreResourcestrings.StrOpeningCancelledByUser,
                                 StrScreenCaption),
-                            MCommonResourcestrings.StrOpeningCancelledByUserTitle,
+                            AppCoreResourcestrings.StrOpeningCancelledByUserTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         // to prevent strange error message, that would stop the form from closing
@@ -2757,9 +2786,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         if (!GetPartnerEditUIConnector(TUIConnectorType.uictPartnerKey))
                         {
                             MessageBox.Show(
-                                String.Format(MCommonResourcestrings.StrOpeningCancelledByUser,
+                                String.Format(AppCoreResourcestrings.StrOpeningCancelledByUser,
                                     StrScreenCaption),
-                                MCommonResourcestrings.StrOpeningCancelledByUserTitle,
+                                AppCoreResourcestrings.StrOpeningCancelledByUserTitle,
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             // to prevent strange error message, that would stop the form from closing
@@ -2775,9 +2804,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         if (!GetPartnerEditUIConnector(TUIConnectorType.uictLocationKey))
                         {
                             MessageBox.Show(
-                                String.Format(MCommonResourcestrings.StrOpeningCancelledByUser,
+                                String.Format(AppCoreResourcestrings.StrOpeningCancelledByUser,
                                     StrScreenCaption),
-                                MCommonResourcestrings.StrOpeningCancelledByUserTitle,
+                                AppCoreResourcestrings.StrOpeningCancelledByUserTitle,
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             // to prevent strange error message, that would stop the form from closing
@@ -3048,6 +3077,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
 #else
                 case TPartnerEditTabPageEnum.petpContacts:
+                    FInitiallySelectedTabPage = FShowTabPage;
+
+                    break;
+
                 case TPartnerEditTabPageEnum.petpReminders:
                     FShowTabPage = TPartnerEditTabPageEnum.petpAddresses;
                     FInitiallySelectedTabPage = FShowTabPage;
@@ -3337,14 +3370,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private Boolean GetPartnerEditUIConnector(TUIConnectorType AUIConnectorType)
         {
-            Boolean ServerCallSuccessful;
+            bool ServerCallSuccessful = false;
 
-            System.Windows.Forms.DialogResult ServerBusyDialogResult;
-            ServerCallSuccessful = false;
-
-            do
-            {
-                try
+            TServerBusyHelper.CoordinatedAutoRetryCall("Partner Edit", ref ServerCallSuccessful,
+                delegate
                 {
                     switch (AUIConnectorType)
                     {
@@ -3368,31 +3397,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     ServerCallSuccessful = true;
-                }
-                catch (EDBTransactionBusyException)
-                {
-                    ServerBusyDialogResult =
-                        MessageBox.Show(String.Format(MCommonResourcestrings.StrPetraServerTooBusy, "open the " + StrScreenCaption + " screen"),
-                            MCommonResourcestrings.StrPetraServerTooBusyTitle,
-                            MessageBoxButtons.RetryCancel,
-                            MessageBoxIcon.Warning,
-                            MessageBoxDefaultButton.Button1);
+                });
 
-                    if (ServerBusyDialogResult == System.Windows.Forms.DialogResult.Retry)
-                    {
-                        // retry will happen because of the repeat block
-                    }
-                    else
-                    {
-                        // break out of repeat block; this function will return false because of that.
-                        break;
-                    }
-                }
-                catch (Exception)
+            if (!ServerCallSuccessful)
+            {
+                // ServerCallRetries must be equal to MAX_RETRIES when we get here!
+                if (TServerBusyHelperGui.ShowServerBusyDialogWhenOpeningForm(StrScreenCaption) == DialogResult.Retry)
                 {
-                    throw;
+                    return GetPartnerEditUIConnector(AUIConnectorType);
                 }
-            } while (!(ServerCallSuccessful));
+            }
 
             return ServerCallSuccessful;
         }

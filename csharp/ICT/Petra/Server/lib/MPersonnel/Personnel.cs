@@ -107,14 +107,17 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         public static PersonnelTDS LoadPersonellStaffData(Int64 APartnerKey)
         {
             PersonnelTDS MainDS = new PersonnelTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
 
-            PmCommitmentStatusAccess.LoadAll(MainDS, Transaction);
-            PmStaffDataAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
+                    PmCommitmentStatusAccess.LoadAll(MainDS, Transaction);
+                    PmStaffDataAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
+                });
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
 
@@ -129,22 +132,24 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             PmStaffDataTable StaffDataDT;
             bool Result = false;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            StaffDataDT = PmStaffDataAccess.LoadByPrimaryKey(0, APartnerKey, Transaction);
-
-            foreach (PmStaffDataRow row in StaffDataDT.Rows)
-            {
-                if ((row.IsEndOfCommitmentNull()
-                     || (row.EndOfCommitment >= DateTime.Today))
-                    && (row.IsStartOfCommitmentNull()
-                        || (row.StartOfCommitment <= DateTime.Today)))
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
                 {
-                    Result = true;
-                }
-            }
+                    StaffDataDT = PmStaffDataAccess.LoadByPrimaryKey(0, APartnerKey, Transaction);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                    foreach (PmStaffDataRow row in StaffDataDT.Rows)
+                    {
+                        if ((row.IsEndOfCommitmentNull()
+                             || (row.EndOfCommitment >= DateTime.Today))
+                            && (row.IsStartOfCommitmentNull()
+                                || (row.StartOfCommitment <= DateTime.Today)))
+                        {
+                            Result = true;
+                        }
+                    }
+                });
 
             return Result;
         }
@@ -159,35 +164,35 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         [RequireModulePermission("PERSONNEL")]
         public static int GetOrCreateUmJobKey(Int64 AUnitKey, string APositionName, string APositionScope)
         {
-            int JobKey;
-            bool NewTransaction;
+            int JobKey = 0;
 
             UmJobTable JobTableTemp = new UmJobTable();
             UmJobRow TemplateRow = (UmJobRow)JobTableTemp.NewRow();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            TemplateRow.UnitKey = AUnitKey;
-            TemplateRow.PositionName = APositionName;
-            TemplateRow.PositionScope = APositionScope;
-            JobTableTemp = UmJobAccess.LoadUsingTemplate(TemplateRow, Transaction);
-
-            // if no corresponding job record found then we need to create a new job key
-            if (JobTableTemp.Count == 0)
-            {
-                JobKey = Convert.ToInt32(MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_job));
-
-                if (NewTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction, ref SubmissionOK,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
-            else
-            {
-                JobKey = ((UmJobRow)JobTableTemp.Rows[0]).JobKey;
+                    TemplateRow.UnitKey = AUnitKey;
+                    TemplateRow.PositionName = APositionName;
+                    TemplateRow.PositionScope = APositionScope;
+                    JobTableTemp = UmJobAccess.LoadUsingTemplate(TemplateRow, Transaction);
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                    // if no corresponding job record found then we need to create a new job key
+                    if (JobTableTemp.Count == 0)
+                    {
+                        JobKey = Convert.ToInt32(MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_job));
+
+                        SubmissionOK = true;
+                    }
+                    else
+                    {
+                        JobKey = ((UmJobRow)JobTableTemp.Rows[0]).JobKey;
+                    }
+                });
 
             return JobKey;
         }
@@ -201,56 +206,50 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean LoadShortTermApplications(ref ApplicationTDS AMainDS, string AOutreachCode)
         {
-            Boolean NewTransaction;
-
             string QueryShortTermApplication = "";
+            ApplicationTDS MainDS = new ApplicationTDS();
+            String ShortTermAppTableName = AMainDS.PmShortTermApplication.TableName;
 
             List <OdbcParameter>Parameters = new List <OdbcParameter>();
             OdbcParameter Parameter = new OdbcParameter("eventcode", OdbcType.VarChar, PmShortTermApplicationTable.GetConfirmedOptionCodeLength());
 
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                QueryShortTermApplication =
-                    "SELECT PUB_pm_short_term_application.*, PUB_pm_general_application.*, PUB_p_partner.p_partner_short_name_c " +
-                    "FROM PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_partner ";
-
-                if (AOutreachCode.Length == 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    // load all appicants with no event
-                    QueryShortTermApplication += "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c IS NULL ";
-                }
-                else if (AOutreachCode.Length > 0)
-                {
-                    Parameter.Value = AOutreachCode.Substring(0, 5);
-                    Parameters.Add(Parameter);
+                    QueryShortTermApplication =
+                        "SELECT PUB_pm_short_term_application.*, PUB_pm_general_application.*, PUB_p_partner.p_partner_short_name_c " +
+                        "FROM PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_partner ";
 
-                    QueryShortTermApplication += "WHERE SUBSTRING(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) = ? ";
-                }
+                    if (AOutreachCode.Length == 0)
+                    {
+                        // load all appicants with no event
+                        QueryShortTermApplication += "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c IS NULL ";
+                    }
+                    else if (AOutreachCode.Length > 0)
+                    {
+                        Parameter.Value = AOutreachCode.Substring(0, 5);
+                        Parameters.Add(
+                            Parameter);
 
-                QueryShortTermApplication += "AND PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n " +
-                                             "AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i "
-                                             +
-                                             "AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n "
-                                             +
-                                             "AND PUB_p_partner.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n";
+                        QueryShortTermApplication += "WHERE SUBSTRING(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) = ? ";
+                    }
 
-                DBAccess.GDBAccessObj.Select(AMainDS,
-                    QueryShortTermApplication,
-                    AMainDS.PmShortTermApplication.TableName, ReadTransaction, Parameters.ToArray());
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.LoadShortTermApplications: commit own transaction.");
-                }
-            }
+                    QueryShortTermApplication += "AND PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n " +
+                                                 "AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i "
+                                                 +
+                                                 "AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n "
+                                                 +
+                                                 "AND PUB_p_partner.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n";
+
+                    DBAccess.GDBAccessObj.Select(MainDS,
+                        QueryShortTermApplication,
+                        ShortTermAppTableName, Transaction, Parameters.ToArray());
+                });
+
+            AMainDS.Merge(MainDS);
 
             return true;
         }
@@ -265,8 +264,8 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean LoadLongTermApplications(ref ApplicationTDS AMainDS, long ATargetFieldKey, long APlacementPersonKey)
         {
-            Boolean NewTransaction;
-
+            ApplicationTDS MainDS = new ApplicationTDS();
+            String GenAppTableName = AMainDS.PmGeneralApplication.TableName;
             string QueryLongTermApplication = "";
 
             List <OdbcParameter>Parameters = new List <OdbcParameter>();
@@ -275,54 +274,48 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             OdbcParameter Parameter2 = new OdbcParameter(
                 "Placementpersonkey", OdbcType.BigInt, PmGeneralApplicationTable.GetPlacementPartnerKeyLength());
 
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                QueryLongTermApplication =
-                    "SELECT PUB_pm_general_application.*, PUB_pm_year_program_application.*, PUB_p_partner.p_partner_short_name_c " +
-                    "FROM PUB_pm_general_application, PUB_pm_year_program_application, PUB_p_partner WHERE ";
-
-                if (ATargetFieldKey != 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    Parameter1.Value = ATargetFieldKey;
-                    Parameters.Add(Parameter1);
+                    QueryLongTermApplication =
+                        "SELECT PUB_pm_general_application.*, PUB_pm_year_program_application.*, PUB_p_partner.p_partner_short_name_c " +
+                        "FROM PUB_pm_general_application, PUB_pm_year_program_application, PUB_p_partner WHERE ";
 
-                    // load all appicants with given Target Field
-                    QueryLongTermApplication += "PUB_pm_general_application.pm_gen_app_poss_srv_unit_key_n = ? AND ";
-                }
+                    if (ATargetFieldKey != 0)
+                    {
+                        Parameter1.Value = ATargetFieldKey;
+                        Parameters.Add(Parameter1);
 
-                if (APlacementPersonKey != 0)
-                {
-                    Parameter2.Value = APlacementPersonKey;
-                    Parameters.Add(Parameter2);
+                        // load all appicants with given Target Field
+                        QueryLongTermApplication += "PUB_pm_general_application.pm_gen_app_poss_srv_unit_key_n = ? AND ";
+                    }
 
-                    // load all appicants with given Placement Person
-                    QueryLongTermApplication += "PUB_pm_general_application.pm_placement_partner_key_n = ? AND ";
-                }
+                    if (APlacementPersonKey != 0)
+                    {
+                        Parameter2.Value = APlacementPersonKey;
+                        Parameters.Add(
+                            Parameter2);
 
-                QueryLongTermApplication += "PUB_pm_year_program_application.p_partner_key_n = PUB_pm_general_application.p_partner_key_n " +
-                                            "AND PUB_pm_year_program_application.pm_application_key_i = PUB_pm_general_application.pm_application_key_i "
-                                            +
-                                            "AND PUB_pm_year_program_application.pm_registration_office_n = PUB_pm_general_application.pm_registration_office_n "
-                                            +
-                                            "AND PUB_p_partner.p_partner_key_n = PUB_pm_general_application.p_partner_key_n";
+                        // load all appicants with given Placement Person
+                        QueryLongTermApplication += "PUB_pm_general_application.pm_placement_partner_key_n = ? AND ";
+                    }
 
-                DBAccess.GDBAccessObj.Select(AMainDS,
-                    QueryLongTermApplication,
-                    AMainDS.PmGeneralApplication.TableName, ReadTransaction, Parameters.ToArray());
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.LoadLongTermApplications: commit own transaction.");
-                }
-            }
+                    QueryLongTermApplication += "PUB_pm_year_program_application.p_partner_key_n = PUB_pm_general_application.p_partner_key_n " +
+                                                "AND PUB_pm_year_program_application.pm_application_key_i = PUB_pm_general_application.pm_application_key_i "
+                                                +
+                                                "AND PUB_pm_year_program_application.pm_registration_office_n = PUB_pm_general_application.pm_registration_office_n "
+                                                +
+                                                "AND PUB_p_partner.p_partner_key_n = PUB_pm_general_application.p_partner_key_n";
+
+                    DBAccess.GDBAccessObj.Select(MainDS,
+                        QueryLongTermApplication,
+                        GenAppTableName, Transaction, Parameters.ToArray());
+                });
+
+            AMainDS.Merge(MainDS);
 
             return true;
         }

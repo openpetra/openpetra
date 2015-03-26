@@ -93,14 +93,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private bool OnDeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
-            bool deletionSuccessful = false;
-            string originatingDetailRef = string.Empty;
+            bool DeletionSuccessful = false;
+            string OriginatingDetailRef = string.Empty;
 
             ACompletionMessage = string.Empty;
 
             if (ARowToDelete == null)
             {
-                return deletionSuccessful;
+                return DeletionSuccessful;
             }
 
             // temporarily disable  New Donor Warning
@@ -109,7 +109,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmGiftBatch) this.ParentForm).SaveChangesManual())
             {
                 MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
-                return deletionSuccessful;
+                return DeletionSuccessful;
             }
 
             ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = true;
@@ -138,7 +138,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (ARowToDelete.ModifiedDetailKey != null)
                 {
-                    originatingDetailRef = ARowToDelete.ModifiedDetailKey;
+                    OriginatingDetailRef = ARowToDelete.ModifiedDetailKey;
                 }
 
                 //Delete current detail row
@@ -247,9 +247,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 //Check if deleting a reversed gift detail
-                if (originatingDetailRef.StartsWith("|"))
+                if (OriginatingDetailRef.StartsWith("|"))
                 {
-                    bool ok = TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, originatingDetailRef);
+                    bool ok = TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, OriginatingDetailRef);
 
                     if (!ok)
                     {
@@ -270,7 +270,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 ACompletionMessage = Catalog.GetString("Gift row deleted successfully!");
 
-                deletionSuccessful = true;
+                DeletionSuccessful = true;
             }
             catch (Exception ex)
             {
@@ -292,7 +292,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateRecordNumberDisplay();
 
-            return deletionSuccessful;
+            return DeletionSuccessful;
         }
 
         private void OnPostDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete,

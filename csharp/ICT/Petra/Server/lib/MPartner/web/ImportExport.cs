@@ -1587,16 +1587,25 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         public static Boolean CommitChanges(PartnerImportExportTDS MainDS, out TVerificationResultCollection AVerificationResult)
         {
             TVerificationResultCollection ReferenceResults = new TVerificationResultCollection();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
-            bool CanImport = CheckModificationId(MainDS, ref ReferenceResults, Transaction);
+            bool CanImport = false;
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            if (CanImport)
-            {
-                CanImport = CheckReferencedTables(MainDS, ref ReferenceResults, Transaction);
-            }
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
+                {
+                    CanImport = CheckModificationId(MainDS, ref ReferenceResults, Transaction);
 
-            DBAccess.GDBAccessObj.CommitTransaction();
+                    if (CanImport)
+                    {
+                        CanImport = CheckReferencedTables(MainDS, ref ReferenceResults, Transaction);
+                    }
+
+                    SubmissionOK = true;
+                });
 
             TSubmitChangesResult Res = TSubmitChangesResult.scrError;
 

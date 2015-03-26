@@ -64,19 +64,6 @@ namespace Ict.Petra.Client.MCommon
         public static readonly string StrGenericFunctionalityNotAvailable = Catalog.GetString("Functionality not available");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrPetraServerTooBusy = Catalog.GetString("The OpenPetra Server is currently too busy to {0}.\r\n\r\n" +
-            "Please wait a few seconds and press 'Retry' then to retry, or 'Cancel' to abort.");
-
-        /// <summary>todoComment</summary>
-        public static readonly string StrPetraServerTooBusyTitle = Catalog.GetString("OpenPetra Server Too Busy");
-
-        /// <summary>todoComment</summary>
-        public static readonly string StrOpeningCancelledByUser = Catalog.GetString("Opening of {0} screen got cancelled by user.");
-
-        /// <summary>todoComment</summary>
-        public static readonly string StrOpeningCancelledByUserTitle = Catalog.GetString("Screen opening cancelled");
-
-        /// <summary>todoComment</summary>
         public static readonly string StrErrorNoInstalledSites = Catalog.GetString("No Installed Sites!");
 
         /// <summary>todoComment</summary>
@@ -392,11 +379,12 @@ namespace Ict.Petra.Client.MCommon
 
         /// <summary>todoComment</summary>
         public static readonly string StrErrorInFilterCriterion = Catalog.GetString(
-            "There is an error in the input text of one of the filter panel controls");
+            "An error was encountered while setting up one of the Filter Panel Critria. The Filter Panel - and indeed the whole section " +
+            "that it is in - might well not be usable!\r\n\r\nReason: {0}");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrFilterTitle = Catalog.GetString(
-            "Filtering Records");
+        public static readonly string StrErrorInFilterCriterionTitle = Catalog.GetString(
+            "Filtering Records: Error Encountered");
 
         #endregion
     }

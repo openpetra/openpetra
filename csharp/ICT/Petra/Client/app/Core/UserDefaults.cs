@@ -91,25 +91,19 @@ namespace Ict.Petra.Client.App.Core
             /// <param name="ALastPartnerUse">Specifies which 'Last Partner Used' setting should be
             /// updated
             /// </param>
+            /// <param name="APartnerClass">Partner Class of the Partner (default=<see cref="TPartnerClass.FAMILY"/>).
+            /// Only relevant if <paramref name="ALastPartnerUse"/> is <see cref="TLastPartnerUse.lpuMailroomPartner"/>.</param>
             /// <returns>void</returns>
-            public static void SetLastPartnerWorkedWith(Int64 APartnerKey, TLastPartnerUse ALastPartnerUse)
+            public static void SetLastPartnerWorkedWith(Int64 APartnerKey,
+                TLastPartnerUse ALastPartnerUse,
+                TPartnerClass APartnerClass = TPartnerClass.FAMILY)
             {
-                String PartnerName;
-                TPartnerClass PartnerClass;
-
-                /*
-                 * Store the fact that this Partner is the 'Last Partner' that was worked with
-                 */
-
                 switch (ALastPartnerUse)
                 {
                     case TLastPartnerUse.lpuMailroomPartner:
                         TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, (object)APartnerKey);
 
-                        // if partner is person then also set this for personnel module
-                        TServerLookup.TMPartner.GetPartnerShortName(APartnerKey, out PartnerName, out PartnerClass);
-
-                        if (PartnerClass == TPartnerClass.PERSON)
+                        if (APartnerClass == TPartnerClass.PERSON)
                         {
                             TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey);
                         }
@@ -257,6 +251,12 @@ namespace Ict.Petra.Client.App.Core
         public const String PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT = "findopt_criteriafieldsright";
 
         /// <summary>todoComment</summary>
+        public const String PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSLEFT = "findoptbank_criteriafieldsleft";
+
+        /// <summary>todoComment</summary>
+        public const String PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSRIGHT = "findoptbank_criteriafieldsright";
+
+        /// <summary>todoComment</summary>
         public const String PARTNER_FINDOPTIONS_NUMBEROFRESULTROWS = "findopt_numberofresultrows";
 
         /// <summary>todoComment</summary>
@@ -340,6 +340,9 @@ namespace Ict.Petra.Client.App.Core
 
         /// <summary>Whether or not the user should be alerted when a new gift is from a new donor</summary>
         public const String FINANCE_NEW_DONOR_WARNING = "NewDonorWarning";
+
+        /// <summary>Whether or not the Gift Batch screen should be auto saved when creating a new gifts or adding a gift detail</summary>
+        public const String FINANCE_AUTO_SAVE_GIFT_SCREEN = "AutoSaveGiftScreen";
 
         /*------------------------------------------------------------------------------
          *  Conference Default Constants

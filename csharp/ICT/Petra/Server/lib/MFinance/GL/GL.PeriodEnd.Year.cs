@@ -628,13 +628,12 @@ namespace Ict.Petra.Server.MFinance.GL
                         AGeneralLedgerMasterTable.GetAccountCodeDBName() + "," +
                         AGeneralLedgerMasterTable.GetCostCentreCodeDBName();
 
-                    DataTable GlmpTbl = GetGlmpRows(FOldYearNum, Transaction, FLedgerAccountingPeriods);
+                    DataTable GlmpTbl = GetGlmpRows(FLedgerInfo.LedgerNumber, FOldYearNum, Transaction, 0);
                     FGlmpFrom.Merge(GlmpTbl);
-                    FGlmpFrom.DefaultView.Sort = "a_glm_sequence_i,a_period_number_i";
+                    FGlmpFrom.DefaultView.Sort = "a_period_number_i";
 
-                    GlmpTbl = GetGlmpRows(FNewYearNum, Transaction, 0);
+                    GlmpTbl = GetGlmpRows(FLedgerInfo.LedgerNumber, FNewYearNum, Transaction, 0);
                     GlmTDS.AGeneralLedgerMasterPeriod.Merge(GlmpTbl);
-                    GlmTDS.AGeneralLedgerMasterPeriod.DefaultView.Sort = "a_glm_sequence_i,a_period_number_i";
                 });
         }
 
@@ -660,12 +659,22 @@ namespace Ict.Petra.Server.MFinance.GL
  */
         }
 
+        // get posting glm rows
         private DataTable LoadTable(int ALedgerNumber, int AYear, TDBTransaction ATransaction)
         {
             AGeneralLedgerMasterTable typedTable = new AGeneralLedgerMasterTable();
-            string strSQL = "SELECT * FROM PUB_a_general_ledger_master" +
-                            " WHERE a_ledger_number_i = " + ALedgerNumber +
-                            " AND a_year_i = " + AYear +
+            string strSQL = "SELECT PUB_a_general_ledger_master.*" +
+                            " FROM PUB_a_general_ledger_master, PUB_a_account, PUB_a_cost_centre" +
+                            " WHERE PUB_a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber +
+                            " AND PUB_a_general_ledger_master.a_year_i = " + AYear +
+
+                            " AND PUB_a_account.a_ledger_number_i = PUB_a_general_ledger_master.a_ledger_number_i" +
+                            " AND PUB_a_account.a_account_code_c = PUB_a_general_ledger_master.a_account_code_c" +
+                            " AND PUB_a_account.a_posting_status_l = true" +
+                            " AND PUB_a_cost_centre.a_ledger_number_i = PUB_a_general_ledger_master.a_ledger_number_i" +
+                            " AND PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c" +
+                            " AND PUB_a_cost_centre.a_posting_cost_centre_flag_l = true" +
+
                             " ORDER BY a_account_code_c,a_cost_centre_code_c";
 
 
@@ -674,14 +683,25 @@ namespace Ict.Petra.Server.MFinance.GL
             return typedTable;
         }
 
-        private DataTable GetGlmpRows(Int32 AYear, TDBTransaction ATransaction, Int32 APeriodGreaterThan)
+        // get posting glmp rows
+        private DataTable GetGlmpRows(int ALedgerNumber, Int32 AYear, TDBTransaction ATransaction, Int32 APeriodGreaterThan)
         {
             AGeneralLedgerMasterPeriodTable typedTable = new AGeneralLedgerMasterPeriodTable();
             string strSQL = "SELECT PUB_a_general_ledger_master_period.* " +
-                            " FROM PUB_a_general_ledger_master, PUB_a_general_ledger_master_period" +
-                            " WHERE PUB_a_general_ledger_master.a_year_i = " + AYear +
+                            " FROM PUB_a_general_ledger_master, PUB_a_general_ledger_master_period, PUB_a_account, PUB_a_cost_centre" +
+
+                            " WHERE PUB_a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber +
+                            " AND PUB_a_general_ledger_master.a_year_i = " + AYear +
                             " AND PUB_a_general_ledger_master.a_glm_sequence_i = PUB_a_general_ledger_master_period.a_glm_sequence_i" +
                             " AND PUB_a_general_ledger_master_period.a_period_number_i > " + APeriodGreaterThan +
+
+                            " AND PUB_a_account.a_ledger_number_i = PUB_a_general_ledger_master.a_ledger_number_i" +
+                            " AND PUB_a_account.a_account_code_c = PUB_a_general_ledger_master.a_account_code_c" +
+                            " AND PUB_a_account.a_posting_status_l = true" +
+                            " AND PUB_a_cost_centre.a_ledger_number_i = PUB_a_general_ledger_master.a_ledger_number_i" +
+                            " AND PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c" +
+                            " AND PUB_a_cost_centre.a_posting_cost_centre_flag_l = true" +
+
                             " ORDER BY PUB_a_general_ledger_master_period.a_period_number_i;";
 
             DBAccess.GDBAccessObj.SelectDT(typedTable, strSQL, ATransaction);
@@ -714,6 +734,10 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
 
                     FGlmpFrom.DefaultView.RowFilter = "a_glm_sequence_i=" + GlmRowFrom.GlmSequence;
+                    FGlmpFrom.DefaultView.Sort = "a_period_number_i";
+
+                    // get the number of forward periods that actually exist (this should be FLedgerFwdPeriods but just incase...)
+                    int ForwardPeriods = Math.Max(FGlmpFrom.DefaultView.Count - FLedgerAccountingPeriods, 0);
 
                     AGeneralLedgerMasterRow GlmRowTo = null;
                     //
@@ -739,43 +763,34 @@ namespace Ict.Petra.Server.MFinance.GL
                         GlmRowTo.Year = FNewYearNum;
 
                         GlmTDS.AGeneralLedgerMaster.Rows.Add(GlmRowTo);
+                    }
 
-                        GlmRowTo.YtdActualBase = GlmRowFrom.YtdActualBase;
+                    GlmRowTo.YtdActualBase = GlmRowFrom.YtdActualBase;
+                    GlmRowTo.YtdActualIntl = GlmRowFrom.YtdActualIntl;
 
-                        if (!GlmRowFrom.IsYtdActualForeignNull())
-                        {
-                            GlmRowTo.YtdActualForeign = GlmRowFrom.YtdActualForeign;
-                        }
+                    if (!GlmRowFrom.IsYtdActualForeignNull())
+                    {
+                        GlmRowTo.YtdActualForeign = GlmRowFrom.YtdActualForeign;
                     }
 
                     // If the GlmRowTo row already existed, its GLMP records will also exist,
                     // but I need to update them with data from last year's forward periods.
                     // Otherwise I need to create a clutch of matching GLMP records.
 
-                    // The first (FwdPostingPeriods) rows are copies of last year's Fwd records,
-                    // and the remainder have the balances carried forward.
-
-
-                    Int32 LastPeriodFromLastYear = FGlmpFrom.DefaultView.Count;
-                    Decimal ActualBase = GlmRowTo.YtdActualBase;
-                    Decimal ActualForeign = 0;
-                    Boolean UsingForeign = false;
-
-                    if (!GlmRowTo.IsYtdActualForeignNull())
-                    {
-                        ActualForeign = GlmRowTo.YtdActualForeign;
-                        UsingForeign = true;
-                    }
-
+                    // Create GLM period records for new year if required
                     for (int PeriodCount = 1;
                          PeriodCount <= FLedgerAccountingPeriods + FLedgerFwdPeriods;
                          PeriodCount++)
                     {
                         AGeneralLedgerMasterPeriodRow glmPeriodRow;
 
-                        if (GlmToRowIdx >= 0) // If there's already a GLM entry, I need to use the existing GLMP row for this period
+                        // If there's already a GLM and GLMP entry, I need to use the existing GLMP row for this period
+                        if ((GlmToRowIdx >= 0)
+                            && GlmTDS.AGeneralLedgerMasterPeriod.Rows.Contains(new object[] { GlmRowTo.GlmSequence, PeriodCount }))
                         {
-                            glmPeriodRow = (AGeneralLedgerMasterPeriodRow)GlmTDS.AGeneralLedgerMasterPeriod.DefaultView[PeriodCount - 1].Row;
+                            glmPeriodRow =
+                                (AGeneralLedgerMasterPeriodRow)GlmTDS.AGeneralLedgerMasterPeriod.Rows.Find(new object[] { GlmRowTo.GlmSequence,
+                                                                                                                          PeriodCount });
                         }
                         else // otherwise I need to create one now.
                         {
@@ -784,26 +799,62 @@ namespace Ict.Petra.Server.MFinance.GL
                             glmPeriodRow.PeriodNumber = PeriodCount;
                             GlmTDS.AGeneralLedgerMasterPeriod.Rows.Add(glmPeriodRow);
                         }
+                    }
 
-                        if (PeriodCount <= LastPeriodFromLastYear) // For any forward periods, I've already got data...
+                    // carry forward period balances (if any) over to the start of the new year
+                    for (int PeriodCount = 1;
+                         PeriodCount <= ForwardPeriods;
+                         PeriodCount++)
+                    {
+                        AGeneralLedgerMasterPeriodRow OldGlmForwardPeriodRow =
+                            (AGeneralLedgerMasterPeriodRow)FGlmpFrom.DefaultView[FLedgerAccountingPeriods + PeriodCount - 1].Row;
+                        AGeneralLedgerMasterPeriodRow NewGlmPeriodRow =
+                            (AGeneralLedgerMasterPeriodRow)GlmTDS.AGeneralLedgerMasterPeriod.Rows.Find(new object[] { GlmRowTo.GlmSequence,
+                                                                                                                      PeriodCount });
+
+                        NewGlmPeriodRow.ActualBase = OldGlmForwardPeriodRow.ActualBase;
+                        NewGlmPeriodRow.ActualIntl = OldGlmForwardPeriodRow.ActualIntl;
+
+                        if (!OldGlmForwardPeriodRow.IsActualForeignNull())
                         {
-                            AGeneralLedgerMasterPeriodRow GlmFromRow =
-                                (AGeneralLedgerMasterPeriodRow)FGlmpFrom.DefaultView[PeriodCount - 1].Row;
-                            ActualBase = GlmFromRow.ActualBase;
-
-                            if (!GlmFromRow.IsActualForeignNull())
-                            {
-                                ActualForeign = GlmFromRow.ActualForeign;
-                                UsingForeign = true;
-                            }
+                            NewGlmPeriodRow.ActualForeign = OldGlmForwardPeriodRow.ActualForeign;
                         }
+                    }
 
-                        glmPeriodRow.ActualBase = ActualBase;
+                    AGeneralLedgerMasterPeriodRow LastOldGlmForwardPeriodRow =
+                        (AGeneralLedgerMasterPeriodRow)FGlmpFrom.DefaultView[FGlmpFrom.DefaultView.Count - 1].Row;
 
-                        if (UsingForeign)
+                    // populate the new periods not populated by last year's forward periods
+                    for (int PeriodCount = ForwardPeriods + 1;
+                         PeriodCount <= FLedgerAccountingPeriods + ForwardPeriods;
+                         PeriodCount++)
+                    {
+                        AGeneralLedgerMasterPeriodRow NewGlmPeriodRow =
+                            (AGeneralLedgerMasterPeriodRow)GlmTDS.AGeneralLedgerMasterPeriod.Rows.Find(new object[] { GlmRowTo.GlmSequence,
+                                                                                                                      PeriodCount });
+
+                        NewGlmPeriodRow.ActualBase = LastOldGlmForwardPeriodRow.ActualBase;
+                        NewGlmPeriodRow.ActualIntl = LastOldGlmForwardPeriodRow.ActualIntl;
+
+                        if (!LastOldGlmForwardPeriodRow.IsActualForeignNull())
                         {
-                            glmPeriodRow.ActualForeign = ActualForeign;
+                            NewGlmPeriodRow.ActualForeign = LastOldGlmForwardPeriodRow.ActualForeign;
                         }
+                    }
+
+                    // get the number of (not forward) periods that actually exist (this should be FLedgerAccountingPeriods but just incase...)
+                    int ActualAccountingPeriods = Math.Min(FLedgerAccountingPeriods, FGlmpFrom.DefaultView.Count);
+
+                    AGeneralLedgerMasterPeriodRow LastOldGlmPeriodRow =
+                        (AGeneralLedgerMasterPeriodRow)FGlmpFrom.DefaultView[ActualAccountingPeriods - 1].Row;
+
+                    //Set starting balances
+                    GlmRowTo.StartBalanceBase = GlmRowFrom.ClosingPeriodActualBase + LastOldGlmPeriodRow.ActualBase;
+                    GlmRowTo.StartBalanceIntl = GlmRowFrom.ClosingPeriodActualIntl + LastOldGlmPeriodRow.ActualIntl;
+
+                    if (!LastOldGlmPeriodRow.IsActualForeignNull())
+                    {
+                        GlmRowTo.StartBalanceForeign = LastOldGlmPeriodRow.ActualForeign;
                     }
                 }
             }

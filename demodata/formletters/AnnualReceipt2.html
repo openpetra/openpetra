@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+  <title>Annual Receipt</title>
+  <!-- todo: CSS for position of address label, font sizes, etc? -->
+</head>
+<body>
+<table>
+  <colgroup>
+    <col width="340"/>
+    <col width="260"/>
+  </colgroup>
+<tr>
+<td><br/><b>INVALID, JUST FOR DEMO PURPOSES</b></td>
+<td><!-- <img src="logo.png"/> --> </td>
+</tr>
+</table>
+<table>
+  <colgroup>
+    <col width="400"/>
+    <col width="200"/>
+  </colgroup>
+<tr>
+<td>
+<br/>
+#TITLE #NAME<br/>
+#STREETNAME<br/>
+#POSTALCODE #CITY<br/>
+#COUNTRYNAME<br/><br/>
+#DONORKEY
+</td>
+<td>
+<font size="-2">
+My Charity<br/>
+Sample Way 14<br/>
+23232 London<br/>
+<table>
+  <colgroup>
+    <col width="60"/>
+    <col width="170"/>
+  </colgroup>
+<tr><td>Tel</td><td>+49 (0) 234 456789</td></tr>
+<tr><td>Email</td><td>info@example.org</td></tr>
+<tr><td>Web</td><td>www.example.org</td></tr>
+</table>
+<br/>
+#DATE
+</font>
+</td>
+</tr>
+</table>
+<br/>
+
+<font size="-2">
+<table border="0">
+  <colgroup>
+    <col width="90"/>
+    <col width="80"/>
+    <col width="80"/>
+    <col width="80"/>
+    <col width="120"/>
+    <col width="230"/>
+  </colgroup>
+  <tbody>
+    <tr>
+    <th align="left">Datum</th>
+    <th align="right">Betrag Total</th>
+    <th align="right">davon gemeinnützig</th>
+    <th align="right">davon kultus</th>
+    <th align="left">Feld</th>
+    <th align="left">Empfänger</th>
+    </tr>
+    <tr>
+      <td align="left">#DONATIONDATE</td>
+      <td align="right">#AMOUNT</td>
+      <td align="right">#TAXDEDUCTAMOUNT</td>
+      <td align="right">#TAXNONDEDUCTAMOUNT</td>
+      <td align="left">#FIELDNAME</td>
+      <td align="left">#RECIPIENTNAME</td>
+    </tr>
+  </tbody>
+</table>
+<table border="0">
+  <colgroup>
+    <col width="90"/>
+    <col width="80"/>
+    <col width="80"/>
+    <col width="80"/>
+  </colgroup>
+  <tbody>
+    <tr>
+    <td align="left"><b>Summe #OVERALLAMOUNTCURRENCY:</b></td>
+    <td align="right">#OVERALLAMOUNT</td>
+    <td align="right">#OVERALLTAXDEDUCTAMOUNT</td>
+    <td align="right">#OVERALLTAXNONDEDUCTAMOUNT</td>
+    </tr>
+  </tbody>
+</table>
+</font>
+
+</body>
+</html>

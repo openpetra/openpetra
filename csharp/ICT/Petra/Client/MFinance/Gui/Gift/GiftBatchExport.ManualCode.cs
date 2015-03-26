@@ -28,6 +28,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Globalization;
 using System.Threading;
+using System.Diagnostics;
 
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
@@ -37,6 +38,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Client.CommonDialogs;
 
@@ -81,6 +83,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FLedgerNumber = value;
                 //TFinanceControls.InitialiseAccountList(ref cmbDontSummarizeAccount, FLedgerNumber, true, false, false, false);
+                this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             }
         }
 
@@ -177,34 +180,62 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // This is for compatibility with old Petra
             txtFilename.Text = TUserDefaults.GetStringDefault("Imp Filename",
                 TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "export.csv");
-            String expOptions = TUserDefaults.GetStringDefault("Exp Options", "DTrans");
+            String expOptions = TUserDefaults.GetStringDefault("Exp Options", "DU-T-X-DTrans");
 
             // This is for compatibility with old Petra
             if (expOptions.StartsWith("D"))
             {
-                rbtDetail.Select();
+                rbtDetail.Checked = true;
             }
             else
             {
-                rbtSummary.Select();
+                rbtSummary.Checked = true;
             }
 
             if (expOptions.EndsWith("Trans"))
             {
-                rbtOriginalTransactionCurrency.Select();
+                rbtOriginalTransactionCurrency.Checked = true;
             }
             else
             {
-                rbtBaseCurrency.Select();
+                rbtBaseCurrency.Checked = true;
+            }
+
+            if (expOptions.Length > 11)
+            {
+                // Extended options
+                if (expOptions[1] == 'U')
+                {
+                    chkIncludeUnposted.Checked = (expOptions[2] == '+');
+                }
+
+                if (expOptions[3] == 'T')
+                {
+                    chkTransactionsOnly.Checked = (expOptions[4] == '+');
+                }
+
+                if (expOptions[5] == 'X')
+                {
+                    chkExtraColumns.Checked = (expOptions[6] == '+');
+                }
+
+                if (expOptions[7] == 'N')
+                {
+                    rbtBatchNumberSelection.Checked = true;
+                }
+                else
+                {
+                    rbtDateRange.Checked = true;
+                }
             }
 
             CultureInfo myCulture = Thread.CurrentThread.CurrentCulture;
 
-            string defaultImpOptions = myCulture.TextInfo.ListSeparator + "European";
+            string defaultImpOptions = myCulture.TextInfo.ListSeparator + TDlgSelectCSVSeparator.NUMBERFORMAT_EUROPEAN;
 
             if (myCulture.EnglishName.EndsWith("-US"))
             {
-                defaultImpOptions = myCulture.TextInfo.ListSeparator + "American";
+                defaultImpOptions = myCulture.TextInfo.ListSeparator + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN;
             }
 
             String impOptions = TUserDefaults.GetStringDefault("Imp Options", defaultImpOptions);
@@ -216,11 +247,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (impOptions.Length > 1)
             {
-                cmbNumberFormat.SelectedIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                cmbNumberFormat.SelectedIndex = impOptions.Substring(1) == TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN ? 0 : 1;
             }
 
-            cmbDateFormat.SetSelectedString(TUserDefaults.GetStringDefault("Imp Date",
-                    myCulture.EnglishName.EndsWith("-US") ? "MDY" : "DMY"));
+            string DateFormat = TUserDefaults.GetStringDefault("Imp Date", "yyyy-MM-dd");
+
+            // mdy and dmy have been the old default settings in Petra 2.x
+            if (DateFormat.ToLower() == "mdy")
+            {
+                DateFormat = "MM/dd/yyyy";
+            }
+
+            if (DateFormat.ToLower() == "dmy")
+            {
+                DateFormat = "dd/MM/yyyy";
+            }
+
+            cmbDateFormat.SetSelectedString(DateFormat);
         }
 
         private void SaveUserDefaults()
@@ -228,26 +271,56 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TUserDefaults.SetDefault("Imp Filename", txtFilename.Text);
 
             String expOptions = (rbtDetail.Checked) ? "D" : "S";
+            expOptions += (chkIncludeUnposted.Checked) ? "U+" : "U-";
+            expOptions += (chkTransactionsOnly.Checked) ? "T+" : "T-";
+            expOptions += (chkExtraColumns.Checked) ? "X+" : "X-";
+            expOptions += (rbtBatchNumberSelection.Checked) ? "N" : "D";
             expOptions += (rbtOriginalTransactionCurrency.Checked) ? "Trans" : "Base";
             TUserDefaults.SetDefault("Exp Options", expOptions);
+
             String impOptions = ConvertDelimiter((String)cmbDelimiter.SelectedItem, false);
             impOptions += ConvertNumberFormat(cmbNumberFormat);
             TUserDefaults.SetDefault("Imp Options", impOptions);
+
             TUserDefaults.SetDefault("Imp Date", (String)cmbDateFormat.SelectedItem);
             TUserDefaults.SaveChangedUserDefaults();
         }
 
-        private void ExportBatches(object sender, EventArgs e)
+        private void BtnOK_Click(object sender, EventArgs e)
         {
-            ExportBatches();
+            if (ExportBatches())
+            {
+                Close();
+            }
         }
 
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
         /// </summary>
-        public void ExportBatches(bool AWithInteractionOnSuccess = true)
+        /// <returns>True if the Export succeeded and a file was created, false otherwise</returns>
+        public bool ExportBatches(bool AWithInteractionOnSuccess = true)
         {
+            if (txtFilename.Text == String.Empty)
+            {
+                MessageBox.Show(Catalog.GetString("Please choose a location for the Export File."),
+                    Catalog.GetString("Error"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return false;
+            }
+
+            if (!Directory.Exists(Path.GetDirectoryName(txtFilename.Text)))
+            {
+                MessageBox.Show(Catalog.GetString("Please select an existing directory for this file!"),
+                    Catalog.GetString("Error"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                txtFilename.Text = string.Empty;
+                return false;
+            }
+
             if (File.Exists(txtFilename.Text))
             {
                 if (MessageBox.Show(Catalog.GetString("The file already exists. Is it OK to overwrite it?"),
@@ -256,70 +329,69 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         MessageBoxIcon.Question,
                         MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.No)
                 {
-                    return;
+                    return false;
+                }
+
+                try
+                {
+                    File.Delete(txtFilename.Text);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(String.Format(
+                            Catalog.GetString(
+                                "Failed to delete the file. Maybe it is already open in another application?  The system message was:{0}{1}"),
+                            Environment.NewLine, ex.Message),
+                        Catalog.GetString("Export Gift Batches"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return false;
                 }
             }
 
-            StreamWriter sw1 = null;
-
-            try
+            if (rbtBatchNumberSelection.Checked)
             {
-                sw1 = new StreamWriter(txtFilename.Text,
-                    false,
-                    Encoding.GetEncoding(TAppSettingsManager.GetInt32("ExportGiftBatchEncoding", 1252)));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message,
-                    Catalog.GetString("Failed to open file"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                return;
-            }
-
-            try
-            {
-                if (rbtBatchNumberSelection.Checked)
+                if (!txtBatchNumberStart.NumberValueInt.HasValue)
                 {
-                    if (!txtBatchNumberStart.NumberValueInt.HasValue)
-                    {
-                        txtBatchNumberStart.NumberValueInt = 0;
-                    }
-
-                    if (!txtBatchNumberEnd.NumberValueInt.HasValue)
-                    {
-                        txtBatchNumberEnd.NumberValueInt = 999999;
-                    }
-                }
-                else
-                {
-                    if ((dtpDateFrom.Text == "") || (dtpDateTo.Text == ""))
-                    {
-                        MessageBox.Show(Catalog.GetString("Start and end dates must be provided."),
-                            Catalog.GetString("Error"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    if ((!dtpDateFrom.ValidDate()) || (!dtpDateTo.ValidDate()))  // If ValidDate fails, it displays a helpful message.
-                    {
-                        return;
-                    }
+                    txtBatchNumberStart.NumberValueInt = 0;
                 }
 
-                String numberFormat = ConvertNumberFormat(cmbNumberFormat);
-                String delimiter = ConvertDelimiter(cmbDelimiter.GetSelectedString(), false);
-
-                if (((numberFormat == "European") && (delimiter == ",")) || ((numberFormat == "American") && (delimiter == ".")))
+                if (!txtBatchNumberEnd.NumberValueInt.HasValue)
                 {
-                    MessageBox.Show(Catalog.GetString("Numeric Decimal cannot be the same as the delimiter."),
+                    txtBatchNumberEnd.NumberValueInt = 999999;
+                }
+            }
+            else
+            {
+                if ((dtpDateFrom.Text == "") || (dtpDateTo.Text == ""))
+                {
+                    MessageBox.Show(Catalog.GetString("Start and end dates must be provided."),
                         Catalog.GetString("Error"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
-                    return;
+                    return false;
                 }
 
+                if ((!dtpDateFrom.ValidDate()) || (!dtpDateTo.ValidDate()))  // If ValidDate fails, it displays a helpful message.
+                {
+                    return false;
+                }
+            }
+
+            String numberFormat = ConvertNumberFormat(cmbNumberFormat);
+            String delimiter = ConvertDelimiter(cmbDelimiter.GetSelectedString(), false);
+
+            if (((numberFormat == "European") && (delimiter == ",")) || ((numberFormat == "American") && (delimiter == ".")))
+            {
+                MessageBox.Show(Catalog.GetString("Numeric Decimal cannot be the same as the delimiter."),
+                    Catalog.GetString("Error"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return false;
+            }
+
+            try
+            {
                 Hashtable requestParams = new Hashtable();
                 requestParams.Add("ALedgerNumber", FLedgerNumber);
                 requestParams.Add("Delimiter", delimiter);
@@ -368,7 +440,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Error"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error);
-                        return;
+                        return false;
                     }
                     else
                     {
@@ -378,27 +450,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
+                SaveUserDefaults();
+
                 if (BatchCount == 0)
                 {
                     MessageBox.Show(Catalog.GetString("There are no batches matching your criteria"),
                         Catalog.GetString("Error"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
-                    return;
+                    return false;
                 }
 
+                StreamWriter sw1 = new StreamWriter(txtFilename.Text,
+                    false,
+                    Encoding.GetEncoding(TAppSettingsManager.GetInt32("ExportGiftBatchEncoding", 1252)));
                 sw1.Write(exportString);
                 sw1.Close();
-
-                SaveUserDefaults();
-
-                if (AWithInteractionOnSuccess)
-                {
-                    MessageBox.Show(Catalog.GetString("Gift Batches Exported successfully."),
-                        Catalog.GetString("Gift Batch Export"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
             }
             catch (Exception ex)
             {
@@ -407,11 +474,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     Catalog.GetString("Error"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
+
+                return false;
             }
-            finally
+
+            if (AWithInteractionOnSuccess)
             {
-                sw1.Close();
+                if (MessageBox.Show(Catalog.GetString(
+                            "Gift Batches Exported successfully. Would you like to open the file in your default application?"),
+                        Catalog.GetString("Gift Batch Export"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Information,
+                        MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    ProcessStartInfo si = new ProcessStartInfo(txtFilename.Text);
+                    si.UseShellExecute = true;
+                    si.Verb = "open";
+
+                    Process p = new Process();
+                    p.StartInfo = si;
+                    p.Start();
+                }
             }
+
+            return true;
         }
 
         /// <summary>
@@ -445,24 +531,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
-            saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.Filter = "Text Files (*.txt)|*.txt|Delimited Files (*.csv)|*.csv|All Files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 3;
             saveFileDialog1.RestoreDirectory = true;
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 txtFilename.Text = saveFileDialog1.FileName;
             }
-        }
-
-        void BtnCloseClick(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        void BtnHelpClick(object sender, EventArgs e)
-        {
-            // TODO
         }
     }
 }

@@ -4,7 +4,7 @@
 // @Authors:
 //       timh, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //

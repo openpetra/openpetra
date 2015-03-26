@@ -22,24 +22,28 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
+
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
-using Ict.Common.Verification;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Server.MFinance.Gift.Data.Access;
-using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Server.MCommon.Data.Access;
-using Ict.Petra.Server.App.Core;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MFinance;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Verification;
+
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+
+using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.Common
 {
@@ -48,14 +52,14 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TLedgerInfo
     {
-        int ledgerNumber;
+        int FLedgerNumber;
 
         //
         // Several utilities may each have their own TLedgerInfo object, so several objects can be created for the same ledger.
         // This static DataTable attempts to ensure that they all see the same view of the world.
 
         static private ALedgerTable FLedgerTbl = null;
-        DataView MyView = null;
+        DataView FMyDataView = null;
         ALedgerRow FLedgerRow;
 
 
@@ -68,54 +72,108 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerNumber"></param>
         public TLedgerInfo(int ALedgerNumber)
         {
-            ledgerNumber = ALedgerNumber;
+            FLedgerNumber = ALedgerNumber;
             GetDataRow();
         }
 
         private void GetDataRow()
         {
-            bool NewTransaction = false;
+            TDBTransaction Transaction = null;
 
             try
             {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadUncommitted,
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
                     TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
+                    ref Transaction,
+                    delegate
+                    {
+                        FLedgerTbl = ALedgerAccess.LoadAll(Transaction); // FLedgerTbl is static - this refreshes *any and all* TLedgerInfo objects.
 
-                FLedgerTbl = ALedgerAccess.LoadAll(transaction); // FLedgerTbl is static - this refreshes *any and all* TLedgerInfo objects.
-                MyView = new DataView(FLedgerTbl);
-                MyView.RowFilter = "a_ledger_number_i = " + ledgerNumber;
-                FLedgerRow = (ALedgerRow)MyView[0].Row; // More than one TLedgerInfo object may point to this same row.
+                        #region Validate Data 1
+
+                        if ((FLedgerTbl == null) || (FLedgerTbl.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - The Ledger table is empty or could not be accessed!"),
+                                    Utilities.GetMethodName(true)));
+                        }
+
+                        #endregion Validate Data 1
+
+                        FMyDataView = new DataView(FLedgerTbl);
+                        FMyDataView.RowFilter = String.Format("{0} = {1}", ALedgerTable.GetLedgerNumberDBName(), FLedgerNumber); //a_ledger_number_i
+
+                        #region Validate Data 2
+
+                        if (FMyDataView.Count == 0)
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    FLedgerNumber));
+                        }
+
+                        #endregion Validate Data 2
+
+                        FLedgerRow = (ALedgerRow)FMyDataView[0].Row; // More than one TLedgerInfo object may point to this same row.
+                    });
             }
-            finally
+            catch (Exception ex)
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
         }
 
         private void CommitLedgerChange()
         {
-            TDBTransaction transaction = null;
-            Boolean SubmissionOk = true;
+            TDBTransaction Transaction = null;
+            Boolean SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref transaction, ref SubmissionOk,
-                delegate
-                {
-                    ALedgerAccess.SubmitChanges(FLedgerTbl, transaction);
-                });
-            FLedgerTbl.AcceptChanges();
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                    delegate
+                    {
+                        ALedgerAccess.SubmitChanges(FLedgerTbl, Transaction);
+
+                        SubmissionOK = true;
+                    });
+
+                FLedgerTbl.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
             GetDataRow();
         }
 
         /// <summary>
         /// Get the name for this Ledger
         /// </summary>
-        public static string GetLedgerName(int ledgernumber)
+        public static string GetLedgerName(int ALedgerNumber)
         {
-            String ReturnValue = "";
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            String ReturnValue = string.Empty;
             TDBTransaction ReadTransaction = null;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -124,12 +182,12 @@ namespace Ict.Petra.Server.MFinance.Common
                 delegate
                 {
                     String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
-                                    ledgernumber + " AND PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
+                                    ALedgerNumber + " AND PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
                     DataTable tab = DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
 
                     if (tab.Rows.Count > 0)
                     {
-                        ReturnValue = Convert.ToString(tab.Rows[0]["p_partner_short_name_c"]);
+                        ReturnValue = Convert.ToString(tab.Rows[0][PPartnerTable.GetPartnerShortNameDBName()]); //"p_partner_short_name_c"
                     }
                 });
 
@@ -342,6 +400,17 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public static string GetStandardCostCentre(int ALedgerNumber)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
             return String.Format("{0:##00}00", ALedgerNumber);
         }
 
@@ -351,72 +420,108 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerNumber"></param>
         public static string GetDefaultBankAccount(int ALedgerNumber)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
             string BankAccountCode = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
                 SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
 
             if (BankAccountCode.Length == 0)
             {
-                TDBTransaction Transaction = null;
+                TDBTransaction readTransaction = null;
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref Transaction,
-                    delegate
-                    {
-                        // use the first bank account
-                        AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, Transaction);
-                        accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" +
-                                                                  MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " +
-                                                                  AAccountPropertyTable.GetPropertyValueDBName() + " = 'true'";
-
-                        if (accountProperties.DefaultView.Count > 0)
+                try
+                {
+                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                        TEnforceIsolationLevel.eilMinimum, ref readTransaction,
+                        delegate
                         {
-                            BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
-                        }
-                        else
-                        {
-                            string SQLQuery = "SELECT a_gift_batch.a_bank_account_code_c " +
-                                              "FROM a_gift_batch " +
-                                              "WHERE a_gift_batch.a_ledger_number_i = " + ALedgerNumber +
-                                              " AND a_gift_batch.a_batch_number_i = (" +
-                                              "SELECT max(a_gift_batch.a_batch_number_i) " +
-                                              "FROM a_gift_batch " +
-                                              "WHERE a_gift_batch.a_ledger_number_i = " + ALedgerNumber +
-                                              " AND a_gift_batch.a_gift_type_c = '" + MFinanceConstants.GIFT_TYPE_GIFT + "')";
+                            // use the first bank account
+                            AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, readTransaction);
 
-                            DataTable LatestAccountCode = DBAccess.GDBAccessObj.SelectDT(SQLQuery, "LatestAccountCode", Transaction);
+                            accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" +
+                                                                      MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " +
+                                                                      AAccountPropertyTable.GetPropertyValueDBName() + " = 'true'";
 
-                            // use the Bank Account of the previous Gift Batch
-                            if ((LatestAccountCode != null) && (LatestAccountCode.Rows.Count > 0))
+                            if (accountProperties.DefaultView.Count > 0)
                             {
-                                BankAccountCode = LatestAccountCode.Rows[0]["a_bank_account_code_c"].ToString();
+                                BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
                             }
-                            // if this is the first ever gift batch (this should happen only once!) then use the first appropriate Account Code in the database
                             else
                             {
-                                AAccountTable AccountTable = AAccountAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                                string SQLQuery = "SELECT a_gift_batch.a_bank_account_code_c " +
+                                                  "FROM a_gift_batch " +
+                                                  "WHERE a_gift_batch.a_ledger_number_i = " + ALedgerNumber +
+                                                  " AND a_gift_batch.a_batch_number_i = (" +
+                                                  "SELECT max(a_gift_batch.a_batch_number_i) " +
+                                                  "FROM a_gift_batch " +
+                                                  "WHERE a_gift_batch.a_ledger_number_i = " + ALedgerNumber +
+                                                  " AND a_gift_batch.a_gift_type_c = '" + MFinanceConstants.GIFT_TYPE_GIFT + "')";
 
-                                DataView dv = AccountTable.DefaultView;
-                                dv.Sort = "a_account_code_c asc";
-                                dv.RowFilter = "a_account_active_flag_l = true AND a_posting_status_l = true";
-                                DataTable sortedDT = dv.ToTable();
+                                DataTable LatestAccountCode = DBAccess.GDBAccessObj.SelectDT(SQLQuery, "LatestAccountCode", readTransaction);
 
-                                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
-                                TGetAccountHierarchyDetailInfo accountHierarchyTools = new TGetAccountHierarchyDetailInfo(ledgerInfo);
-                                List <string>children = accountHierarchyTools.GetChildren(MFinanceConstants.CASH_ACCT);
-
-                                foreach (DataRow account in sortedDT.Rows)
+                                // use the Bank Account of the previous Gift Batch
+                                if ((LatestAccountCode != null) && (LatestAccountCode.Rows.Count > 0))
                                 {
-                                    // check if this account reports to the CASH account
-                                    if (children.Contains(account["a_account_code_c"].ToString()))
+                                    BankAccountCode = LatestAccountCode.Rows[0][AGiftBatchTable.GetBankAccountCodeDBName()].ToString(); //"a_bank_account_code_c"
+                                }
+                                // if this is the first ever gift batch (this should happen only once!) then use the first appropriate Account Code in the database
+                                else
+                                {
+                                    AAccountTable AccountTable = AAccountAccess.LoadViaALedger(ALedgerNumber, readTransaction);
+
+                                    #region Validate Data
+
+                                    if ((AccountTable == null) || (AccountTable.Count == 0))
                                     {
-                                        BankAccountCode = account["a_account_code_c"].ToString();
-                                        break;
+                                        throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                                    "Function:{0} - Account data for Ledger number {1} does not exist or could not be accessed!"),
+                                                Utilities.GetMethodName(true),
+                                                ALedgerNumber));
+                                    }
+
+                                    #endregion Validate Data
+
+                                    DataView dv = AccountTable.DefaultView;
+                                    dv.Sort = AAccountTable.GetAccountCodeDBName() + " ASC"; //a_account_code_c
+                                    dv.RowFilter = String.Format("{0} = true AND {1} = true",
+                                        AAccountTable.GetAccountActiveFlagDBName(),
+                                        AAccountTable.GetPostingStatusDBName()); // "a_account_active_flag_l = true AND a_posting_status_l = true";
+                                    DataTable sortedDT = dv.ToTable();
+
+                                    TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
+                                    TGetAccountHierarchyDetailInfo accountHierarchyTools = new TGetAccountHierarchyDetailInfo(ledgerInfo);
+                                    List <string>children = accountHierarchyTools.GetChildren(MFinanceConstants.CASH_ACCT);
+
+                                    foreach (DataRow account in sortedDT.Rows)
+                                    {
+                                        // check if this account reports to the CASH account
+                                        if (children.Contains(account["a_account_code_c"].ToString()))
+                                        {
+                                            BankAccountCode = account["a_account_code_c"].ToString();
+                                            break;
+                                        }
                                     }
                                 }
                             }
-                        }
-                    });
+                        });
+                }
+                catch (Exception ex)
+                {
+                    TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                            Utilities.GetMethodSignature(),
+                            Environment.NewLine,
+                            ex.Message));
+                    throw ex;
+                }
             }
 
             return BankAccountCode;
@@ -452,8 +557,8 @@ namespace Ict.Petra.Server.MFinance.Common
     public class TLedgerInitFlagHandler
     {
         private int FLedgerNumber;
-        private string strFlagName;
-        private string strFlagNameHelp;
+        private string FFlagName;
+        private string FFlagNameHelp;
 
         /// <summary>
         /// This Constructor only takes and stores the initial parameters.
@@ -464,18 +569,18 @@ namespace Ict.Petra.Server.MFinance.Common
         public TLedgerInitFlagHandler(int ALedgerNumber, TLedgerInitFlagEnum AFlagEnum)
         {
             FLedgerNumber = ALedgerNumber;
-            strFlagName = String.Empty;
+            FFlagName = String.Empty;
 
             if (AFlagEnum.Equals(TLedgerInitFlagEnum.Revaluation))
             {
-                strFlagName = "REVALUATION-RUN";
+                FFlagName = "REVALUATION-RUN";
             }
             else
             {
-                strFlagName = AFlagEnum.ToString();
+                FFlagName = AFlagEnum.ToString();
             }
 
-            strFlagNameHelp = strFlagName;
+            FFlagNameHelp = FFlagName;
         }
 
         /// <summary>
@@ -483,7 +588,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public void AddMarker(string AMarker)
         {
-            strFlagName = strFlagNameHelp + ":" + AMarker;
+            FFlagName = FFlagNameHelp + ":" + AMarker;
         }
 
         /// <summary>
@@ -516,117 +621,126 @@ namespace Ict.Petra.Server.MFinance.Common
 
 
         /// <summary>
-        ///
+        /// Set Flag and Name
         /// </summary>
-        public void SetFlagAndName(string AName)
+        public void SetFlagAndName() //string AName
         {
-            TDBTransaction transaction = null;
-            Boolean SubmissionOk = true;
+            //TODO: Delete? Argument string AName was never used! neither is this method called
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref transaction, ref SubmissionOk,
-                delegate
-                {
-                    ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                        FLedgerNumber, strFlagName, transaction);
+            TDBTransaction Transaction = null;
+            Boolean SubmissionOK = false;
 
-                    ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                    delegate
+                    {
+                        ALedgerInitFlagTable ledgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+                            FLedgerNumber, FFlagName, Transaction);
 
-                    aLedgerInitFlagRow.LedgerNumber = FLedgerNumber;
-                    aLedgerInitFlagRow.InitOptionName = strFlagName;
+                        ALedgerInitFlagRow ledgerInitFlagRow = (ALedgerInitFlagRow)ledgerInitFlagTable.NewRow();
 
-                    aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
+                        ledgerInitFlagRow.LedgerNumber = FLedgerNumber;
+                        ledgerInitFlagRow.InitOptionName = FFlagName;
 
-                    ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, transaction);
-                });
+                        ledgerInitFlagTable.Rows.Add(ledgerInitFlagRow);
+
+                        ALedgerInitFlagAccess.SubmitChanges(ledgerInitFlagTable, Transaction);
+
+                        SubmissionOK = true;
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
         }
 
         private bool FindRecord()
         {
-            bool boolValue;
-            bool NewTransaction;
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            bool RecordFound = false;
+
+            TDBTransaction ReadTransaction = null;
+            ALedgerInitFlagTable LedgerInitFlagTable = null;
 
             try
             {
-                ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                    FLedgerNumber, strFlagName, ReadTransaction);
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                    delegate
+                    {
+                        LedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(FLedgerNumber, FFlagName, ReadTransaction);
 
-                boolValue = (aLedgerInitFlagTable.Rows.Count == 1);
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
+                        RecordFound = (LedgerInitFlagTable != null && LedgerInitFlagTable.Rows.Count == 1);
+                    });
             }
-            catch (Exception Exc)
+            catch (Exception ex)
             {
-                TLogging.Log("An Exception occured in FindRecord:" + Environment.NewLine + Exc.ToString());
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                throw;
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
-            return boolValue;
+            return RecordFound;
         }
 
         private void CreateRecord()
         {
-            bool NewTransaction;
-            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                out NewTransaction);
+            TDBTransaction ReadWriteTransaction = null;
+            Boolean SubmissionOK = false;
 
             try
             {
-                ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                    FLedgerNumber, strFlagName, ReadWriteTransaction);
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                    ref ReadWriteTransaction, ref SubmissionOK,
+                    delegate
+                    {
+                        ALedgerInitFlagTable ledgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+                            FLedgerNumber, FFlagName, ReadWriteTransaction);
 
-                ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
-                aLedgerInitFlagRow.LedgerNumber = FLedgerNumber;
-                aLedgerInitFlagRow.InitOptionName = strFlagName;
-                aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
+                        ALedgerInitFlagRow ledgerInitFlagRow = (ALedgerInitFlagRow)ledgerInitFlagTable.NewRow();
+                        ledgerInitFlagRow.LedgerNumber = FLedgerNumber;
+                        ledgerInitFlagRow.InitOptionName = FFlagName;
+                        ledgerInitFlagTable.Rows.Add(ledgerInitFlagRow);
 
-                ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, ReadWriteTransaction);
+                        ALedgerInitFlagAccess.SubmitChanges(ledgerInitFlagTable, ReadWriteTransaction);
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
+                        SubmissionOK = true;
+                    });
             }
-            catch (Exception Exc)
+            catch (Exception ex)
             {
-                TLogging.Log("An Exception occured in CreateRecord:" + Environment.NewLine + Exc.ToString());
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                throw;
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
         }
 
         private void DeleteRecord()
         {
-            TDBTransaction transaction = null;
+            TDBTransaction Transaction = null;
             Boolean SubmissionOK = true;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
-                ref transaction, ref SubmissionOK,
+                ref Transaction, ref SubmissionOK,
                 delegate
                 {
-                    ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                        FLedgerNumber, strFlagName, transaction);
+                    ALedgerInitFlagTable LedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+                        FLedgerNumber, FFlagName, Transaction);
 
-                    if (aLedgerInitFlagTable.Rows.Count == 1)
+                    if (LedgerInitFlagTable.Rows.Count == 1)
                     {
-                        ((ALedgerInitFlagRow)aLedgerInitFlagTable.Rows[0]).Delete();
+                        ((ALedgerInitFlagRow)LedgerInitFlagTable.Rows[0]).Delete();
 
-                        ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, transaction);
+                        ALedgerInitFlagAccess.SubmitChanges(LedgerInitFlagTable, Transaction);
                     }
                 });
         }

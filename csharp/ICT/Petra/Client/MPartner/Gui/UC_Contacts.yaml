@@ -47,5 +47,7 @@ RootNode:
                 Row1: [ucoDetails]
         lblRelatedLogs:
             Height: 20
+            Dock: Top
         ucoDetails:
             Type: Ict.Petra.Client.MPartner.Gui.TUC_Contact
+            Dock: Fill

@@ -390,6 +390,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// display data that is about to be validated.</param>
         /// <param name="ARecipientPartnerClass">Recipient's Partner Class (used for Motivation Detail validation).</param>
         /// <param name="ACostCentres">Optional - a CostCentres table.  Is required for import validation. </param>
+        /// <param name="AAccounts">Optional - a Accounts table.  Is required for import validation. </param>
         /// <param name="AMotivationGroups">Optional - a MotivationGroups table.  Is required for import validation. </param>
         /// <param name="AMotivationDetails">Optional - a MotivationDetails table.  Is required for import validation. </param>
         /// <param name="ARecipientField">Optional The recipient field for the gift.  Is required for import validation. </param>
@@ -400,6 +401,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             TValidationControlsDict AValidationControlsDict,
             TPartnerClass? ARecipientPartnerClass,
             ACostCentreTable ACostCentres = null,
+            AAccountTable AAccounts = null,
             AMotivationGroupTable AMotivationGroups = null,
             AMotivationDetailTable AMotivationDetails = null,
             Int64 ARecipientField = -1)
@@ -641,6 +643,52 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                     {
                         VerifResultCollAddedCount++;
+                    }
+                }
+            }
+
+            // Account Code must exist and be active.  Only required for importing because the GUI does this for us otherwise.
+            if (isImporting && (AAccounts != null) && !ARow.IsAccountCodeNull())
+            {
+                DataColumn[] ValidationColumns = new DataColumn[] {
+                    ARow.Table.Columns[AGiftDetailTable.ColumnAccountCodeId], ARow.Table.Columns[AGiftDetailTable.ColumnTaxDeductibleAccountCodeId]
+                };
+                string[] AccountCodes = new string[] {
+                    ARow.AccountCode, ARow.TaxDeductibleAccountCode
+                };
+
+                for (int i = 0; i < 2; i++)
+                {
+                    if (AValidationControlsDict.TryGetValue(ValidationColumns[i], out ValidationControlsData))
+                    {
+                        // We even need to check that the code exists!
+                        DataRow foundRow = AAccounts.Rows.Find(new object[] { ARow.LedgerNumber, AccountCodes[i] });
+
+                        if ((foundRow == null)
+                            && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                                AContext,
+                                new TVerificationResult(AccountCodes[i],
+                                    String.Format(Catalog.GetString("Unknown account code '{0}'."), AccountCodes[i]),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumns[i]))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
+
+                        VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
+                            AAccounts,
+                            AccountCodes[i],
+                            AAccountTable.GetAccountActiveFlagDBName(),
+                            AContext,
+                            ValidationColumns[i],
+                            ValidationControlsData.ValidationControl);
+
+                        // Handle addition/removal to/from TVerificationResultCollection
+                        if ((VerificationResult != null)
+                            && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumns[i], true))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
                     }
                 }
             }
@@ -1348,11 +1396,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (ATaxDeductiblePercentageEnabled)
             {
                 // 'TaxDeductibleAccount' must have a value (NOT NULL constraint)
-                ValidationColumn = ARow.Table.Columns[AMotivationDetailTable.ColumnTaxDeductibleAccountId];
+                ValidationColumn = ARow.Table.Columns[AMotivationDetailTable.ColumnTaxDeductibleAccountCodeId];
 
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
-                    VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.TaxDeductibleAccount,
+                    VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.TaxDeductibleAccountCode,
                         ValidationControlsData.ValidationControlLabel,
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 

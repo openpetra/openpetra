@@ -189,120 +189,118 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool CanPartnerBeDeleted(Int64 APartnerKey, out String ADisplayMessage)
         {
-            TDBTransaction Transaction;
-            Boolean NewTransaction;
             string ShortName;
             TPartnerClass PartnerClass;
             TStdPartnerStatusCode PartnerStatusCode;
             bool ResultValue = true;
 
-            ADisplayMessage = "";
+            String DisplayMessage = "";
 
-            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            // check if the partner does exist in the database at all
-            if (!MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, Transaction))
-            {
-                ResultValue = false;
-                ADisplayMessage = String.Format(Catalog.GetString("Partner {0} does not exist."), APartnerKey.ToString());
-            }
-
-            // check if the partner is linked to an OpenPetra user
-            if (ResultValue
-                && (SUserAccess.CountViaPPartner(APartnerKey, Transaction) > 0))
-            {
-                ResultValue = false;
-                ADisplayMessage = Catalog.GetString("Unable to delete an OpenPetra user.");
-            }
-
-            // make sure we don't delete an active ledger
-            if (ResultValue
-                && (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
-                            "SELECT COUNT(*) FROM PUB_" + ALedgerTable.GetTableDBName() +
-                            " WHERE " + ALedgerTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString(),
-                            Transaction)) > 0))
-            {
-                ResultValue = false;
-                ADisplayMessage = Catalog.GetString("Unable to delete an active ledger.");
-            }
-
-            // check if the partner is a gift donor or recipient
-            if (ResultValue
-                && ((AGiftAccess.CountViaPPartner(APartnerKey, Transaction) > 0)
-                    || (AGiftDetailAccess.CountViaPPartnerRecipientKey(APartnerKey, Transaction) > 0)))
-            {
-                ResultValue = false;
-                ADisplayMessage = Catalog.GetString("Unable to delete a gift donor or recipient.");
-            }
-
-            // make sure the partner is not currently linked to a cost centre
-            if (ResultValue
-                && (AValidLedgerNumberAccess.CountViaPPartnerPartnerKey(APartnerKey, Transaction) > 0))
-            {
-                ResultValue = false;
-                ADisplayMessage = Catalog.GetString("Unable to delete a partner currently linked to a cost centre.");
-            }
-
-            // make sure the partner is not a supplier in the AP system
-            if (ResultValue
-                && (AApSupplierAccess.CountViaPPartner(APartnerKey, Transaction) > 0))
-            {
-                ResultValue = false;
-                ADisplayMessage = Catalog.GetString("Unable to delete a supplier from the AP system.");
-            }
-
-            // make sure the partner is not signed up to gift a subscription
-            if (ResultValue
-                && (PSubscriptionAccess.CountViaPPartnerGiftFromKey(APartnerKey, Transaction) > 0))
-            {
-                ResultValue = false;
-                ADisplayMessage = Catalog.GetString("Unable to delete a Partner who has gifted a Subscription.");
-            }
-
-            // now check partner class specific information
-            if (ResultValue)
-            {
-                switch (PartnerClass)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    case TPartnerClass.FAMILY:
-                        ResultValue = CanFamilyPartnerBeDeleted(APartnerKey, Transaction, out ADisplayMessage);
-                        break;
+                    // check if the partner does exist in the database at all
+                    if (!MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, Transaction))
+                    {
+                        ResultValue = false;
+                        DisplayMessage = String.Format(Catalog.GetString("Partner {0} does not exist."), APartnerKey.ToString());
+                    }
 
-                    case TPartnerClass.PERSON:
-                        ResultValue = CanPersonPartnerBeDeleted(APartnerKey, Transaction, out ADisplayMessage);
-                        break;
+                    // check if the partner is linked to an OpenPetra user
+                    if (ResultValue
+                        && (SUserAccess.CountViaPPartner(APartnerKey, Transaction) > 0))
+                    {
+                        ResultValue = false;
+                        DisplayMessage = Catalog.GetString("Unable to delete an OpenPetra user.");
+                    }
 
-                    case TPartnerClass.UNIT:
-                        ResultValue = CanUnitPartnerBeDeleted(APartnerKey, Transaction, out ADisplayMessage);
-                        break;
+                    // make sure we don't delete an active ledger
+                    if (ResultValue
+                        && (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                                    "SELECT COUNT(*) FROM PUB_" + ALedgerTable.GetTableDBName() +
+                                    " WHERE " + ALedgerTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString(),
+                                    Transaction)) > 0))
+                    {
+                        ResultValue = false;
+                        DisplayMessage = Catalog.GetString("Unable to delete an active ledger.");
+                    }
 
-                    case TPartnerClass.ORGANISATION:
-                        ResultValue = CanOrganisationPartnerBeDeleted(APartnerKey, Transaction, out ADisplayMessage);
-                        break;
+                    // check if the partner is a gift donor or recipient
+                    if (ResultValue
+                        && ((AGiftAccess.CountViaPPartner(APartnerKey, Transaction) > 0)
+                            || (AGiftDetailAccess.CountViaPPartnerRecipientKey(APartnerKey, Transaction) > 0)))
+                    {
+                        ResultValue = false;
+                        DisplayMessage = Catalog.GetString("Unable to delete a gift donor or recipient.");
+                    }
 
-                    case TPartnerClass.CHURCH:
-                        ResultValue = CanChurchPartnerBeDeleted(APartnerKey, Transaction, out ADisplayMessage);
-                        break;
+                    // make sure the partner is not currently linked to a cost centre
+                    if (ResultValue
+                        && (AValidLedgerNumberAccess.CountViaPPartnerPartnerKey(APartnerKey, Transaction) > 0))
+                    {
+                        ResultValue = false;
+                        DisplayMessage = Catalog.GetString("Unable to delete a partner currently linked to a cost centre.");
+                    }
 
-                    case TPartnerClass.BANK:
-                        ResultValue = CanBankPartnerBeDeleted(APartnerKey, Transaction, out ADisplayMessage);
-                        break;
+                    // make sure the partner is not a supplier in the AP system
+                    if (ResultValue
+                        && (AApSupplierAccess.CountViaPPartner(APartnerKey, Transaction) > 0))
+                    {
+                        ResultValue = false;
+                        DisplayMessage = Catalog.GetString("Unable to delete a supplier from the AP system.");
+                    }
 
-                    case TPartnerClass.VENUE:
-                        ResultValue = CanVenuePartnerBeDeleted(APartnerKey, Transaction, out ADisplayMessage);
-                        break;
+                    // make sure the partner is not signed up to gift a subscription
+                    if (ResultValue
+                        && (PSubscriptionAccess.CountViaPPartnerGiftFromKey(APartnerKey, Transaction) > 0))
+                    {
+                        ResultValue = false;
+                        DisplayMessage = Catalog.GetString("Unable to delete a Partner who has gifted a Subscription.");
+                    }
 
-                    default:
-                        break;
-                }
-            }
+                    // now check partner class specific information
+                    if (ResultValue)
+                    {
+                        switch (PartnerClass)
+                        {
+                            case TPartnerClass.FAMILY:
+                                ResultValue = CanFamilyPartnerBeDeleted(APartnerKey, Transaction, out DisplayMessage);
+                                break;
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+                            case TPartnerClass.PERSON:
+                                ResultValue = CanPersonPartnerBeDeleted(APartnerKey, Transaction, out DisplayMessage);
+                                break;
+
+                            case TPartnerClass.UNIT:
+                                ResultValue = CanUnitPartnerBeDeleted(APartnerKey, Transaction, out DisplayMessage);
+                                break;
+
+                            case TPartnerClass.ORGANISATION:
+                                ResultValue = CanOrganisationPartnerBeDeleted(APartnerKey, Transaction, out DisplayMessage);
+                                break;
+
+                            case TPartnerClass.CHURCH:
+                                ResultValue = CanChurchPartnerBeDeleted(APartnerKey, Transaction, out DisplayMessage);
+                                break;
+
+                            case TPartnerClass.BANK:
+                                ResultValue = CanBankPartnerBeDeleted(APartnerKey, Transaction, out DisplayMessage);
+                                break;
+
+                            case TPartnerClass.VENUE:
+                                ResultValue = CanVenuePartnerBeDeleted(APartnerKey, Transaction, out DisplayMessage);
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+                });
+
+            ADisplayMessage = DisplayMessage;
 
             return ResultValue;
         }
@@ -317,70 +315,70 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool GetPartnerStatisticsForDeletion(Int64 APartnerKey, out String APartnerShortName, out String ADisplayMessage)
         {
-            TDBTransaction Transaction;
-            Boolean NewTransaction;
             TPartnerClass PartnerClass;
             TStdPartnerStatusCode PartnerStatusCode;
             string Linebreak = "\r\n";
             int Count;
             bool ResultValue = true;
 
-            ADisplayMessage = "";
+            String DisplayMessage = "";
+            String PartnerShortName = "";
 
-            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDBTransaction Transaction = null;
 
-            if (MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out PartnerClass, out PartnerStatusCode, Transaction))
-            {
-                ADisplayMessage = String.Format(Catalog.GetString("Are you sure you want to delete {0} {1} ?"),
-                    SharedTypes.PartnerClassEnumToString(PartnerClass), APartnerShortName);
-                ADisplayMessage += Linebreak + Linebreak;
-
-                // count active subscription records
-                Count = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
-                        "SELECT COUNT(*) FROM PUB_" + PSubscriptionTable.GetTableDBName() +
-                        " WHERE " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
-                        " AND " + PSubscriptionTable.GetSubscriptionStatusDBName() + " NOT IN ('CANCELLED','EXPIRED')",
-                        Transaction));
-                ADisplayMessage += String.Format(Catalog.GetString("{0} active Subscriptions"), Count.ToString()) + Linebreak;
-
-                // count contact records
-                Count = PPartnerContactAccess.CountViaPPartner(APartnerKey, Transaction);
-                ADisplayMessage += String.Format(Catalog.GetString("{0} Contacts"), Count.ToString()) + Linebreak;
-
-                // count relationships (consider both possible partner key fields in relationship table)
-                Count = 0;
-                Count = PPartnerRelationshipAccess.CountViaPPartnerPartnerKey(APartnerKey, Transaction);
-                Count += PPartnerRelationshipAccess.CountViaPPartnerRelationKey(APartnerKey, Transaction);
-                ADisplayMessage += String.Format(Catalog.GetString("{0} Relationships"), Count.ToString()) + Linebreak;
-
-                if (PartnerClass == TPartnerClass.PERSON)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    // count application records
-                    Count = PmGeneralApplicationAccess.CountViaPPersonPartnerKey(APartnerKey, Transaction);
-                    ADisplayMessage += String.Format(Catalog.GetString("{0} Applications"), Count.ToString()) + Linebreak;
+                    if (MCommonMain.RetrievePartnerShortName(APartnerKey, out PartnerShortName, out PartnerClass, out PartnerStatusCode, Transaction))
+                    {
+                        DisplayMessage = String.Format(Catalog.GetString("Are you sure you want to delete {0} {1} ?"),
+                            SharedTypes.PartnerClassEnumToString(PartnerClass), PartnerShortName);
+                        DisplayMessage += Linebreak + Linebreak;
 
-                    // count commitment records
-                    Count = PmStaffDataAccess.CountViaPPerson(APartnerKey, Transaction);
-                    ADisplayMessage += String.Format(Catalog.GetString("{0} Commitments"), Count.ToString()) + Linebreak;
+                        // count active subscription records
+                        Count = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                                "SELECT COUNT(*) FROM PUB_" + PSubscriptionTable.GetTableDBName() +
+                                " WHERE " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
+                                " AND " + PSubscriptionTable.GetSubscriptionStatusDBName() + " NOT IN ('CANCELLED','EXPIRED')",
+                                Transaction));
+                        DisplayMessage += String.Format(Catalog.GetString("{0} active Subscriptions"), Count.ToString()) + Linebreak;
 
-                    // count past experience records
-                    Count = PmPastExperienceAccess.CountViaPPerson(APartnerKey, Transaction);
-                    ADisplayMessage += String.Format(Catalog.GetString("{0} Past Experience"), Count.ToString()) + Linebreak;
-                }
-            }
-            else
-            {
-                // Partner not found
-                APartnerShortName = "";
-                ResultValue = false;
-            }
+                        // count contact records
+                        Count = PPartnerContactAccess.CountViaPPartner(APartnerKey, Transaction);
+                        DisplayMessage += String.Format(Catalog.GetString("{0} Contacts"), Count.ToString()) + Linebreak;
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+                        // count relationships (consider both possible partner key fields in relationship table)
+                        Count = 0;
+                        Count = PPartnerRelationshipAccess.CountViaPPartnerPartnerKey(APartnerKey, Transaction);
+                        Count += PPartnerRelationshipAccess.CountViaPPartnerRelationKey(APartnerKey, Transaction);
+                        DisplayMessage += String.Format(Catalog.GetString("{0} Relationships"), Count.ToString()) + Linebreak;
+
+                        if (PartnerClass == TPartnerClass.PERSON)
+                        {
+                            // count application records
+                            Count = PmGeneralApplicationAccess.CountViaPPersonPartnerKey(APartnerKey, Transaction);
+                            DisplayMessage += String.Format(Catalog.GetString("{0} Applications"), Count.ToString()) + Linebreak;
+
+                            // count commitment records
+                            Count = PmStaffDataAccess.CountViaPPerson(APartnerKey, Transaction);
+                            DisplayMessage += String.Format(Catalog.GetString("{0} Commitments"), Count.ToString()) + Linebreak;
+
+                            // count past experience records
+                            Count = PmPastExperienceAccess.CountViaPPerson(APartnerKey, Transaction);
+                            DisplayMessage += String.Format(Catalog.GetString("{0} Past Experience"), Count.ToString()) + Linebreak;
+                        }
+                    }
+                    else
+                    {
+                        // Partner not found
+                        PartnerShortName = "";
+                        ResultValue = false;
+                    }
+                });
+
+            APartnerShortName = PartnerShortName;
+            ADisplayMessage = DisplayMessage;
 
             return ResultValue;
         }
@@ -394,8 +392,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool DeletePartner(Int64 APartnerKey, out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction Transaction;
-            Boolean NewTransaction;
             string ShortName;
             TPartnerClass PartnerClass;
             TStdPartnerStatusCode PartnerStatusCode;
@@ -404,451 +400,435 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             AVerificationResult = null;
             ResultValue = true;
 
-            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            try
-            {
-                ResultValue = MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, Transaction);
-
-                /* s_user - delete not allowed by CanPartnerBeDeleted */
-                if (ResultValue)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction, ref SubmissionOK,
+                delegate
                 {
-                    ResultValue = DeleteEntries(PRecentPartnersTable.GetTableDBName(),
-                        PRecentPartnersTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
+                    ResultValue =
+                        MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, Transaction);
 
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PPartnerGraphicTable.GetTableDBName(),
-                        PPartnerGraphicTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                /* Delete extract entries before possibly attempting to delete a  */
-                /* location record referenced in the extract.  Decrease key count */
-                /* in m_extract_master.                                           */
-                if (ResultValue)
-                {
-                    // first make sure that extract master tables are up to date
-                    // (decrease key count by number of rows to be deleted)
-                    MExtractMasterTable ExtractMasterTable;
-                    MExtractMasterRow ExtractMasterRow;
-                    MExtractTable ExtractTable = MExtractAccess.LoadViaPPartner(APartnerKey, Transaction);
-
-                    foreach (DataRow Row in ExtractTable.Rows)
-                    {
-                        ExtractMasterTable = MExtractMasterAccess.LoadByPrimaryKey(((MExtractRow)Row).ExtractId, Transaction);
-                        ExtractMasterRow = (MExtractMasterRow)ExtractMasterTable.Rows[0];
-                        ExtractMasterRow.KeyCount = ExtractMasterRow.KeyCount - 1;
-                        MExtractMasterAccess.SubmitChanges(ExtractMasterTable, Transaction);
-                    }
-
-                    // now delete the actual extract entries
-                    ResultValue = DeleteEntries(MExtractTable.GetTableDBName(),
-                        MExtractTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                // Delete Partner Location. If locations were only used by this partner then also delete location record.
-                if (ResultValue)
-                {
-                    PPartnerLocationTable PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, Transaction);
-                    PPartnerLocationTable OtherPartnerLocationTable;
-                    PPartnerLocationRow PartnerLocationRow;
-                    PLocationRow LocationRow;
-                    PLocationTable LocationTableToDelete = new PLocationTable();
-
-                    foreach (DataRow Row in PartnerLocationTable.Rows)
-                    {
-                        PartnerLocationRow = (PPartnerLocationRow)Row;
-                        OtherPartnerLocationTable = PPartnerLocationAccess.LoadViaPLocation(PartnerLocationRow.SiteKey,
-                            PartnerLocationRow.LocationKey,
-                            Transaction);
-
-                        // if there is only one partner left using this location (which must be this one) then delete location
-                        if ((OtherPartnerLocationTable.Count == 1)
-                            && (PartnerLocationRow.LocationKey != 0))
-                        {
-                            LocationRow = LocationTableToDelete.NewRowTyped();
-                            LocationRow.SiteKey = PartnerLocationRow.SiteKey;
-                            LocationRow.LocationKey = PartnerLocationRow.LocationKey;
-                            LocationTableToDelete.Rows.Add(LocationRow);
-                        }
-                    }
-
-                    // now first delete the partner locations
-                    ResultValue = DeleteEntries(PPartnerLocationTable.GetTableDBName(),
-                        PPartnerLocationTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-
-                    // and now locations if they don't refer to any partners any longer
-                    foreach (DataRow RowToDelete in LocationTableToDelete.Rows)
-                    {
-                        LocationRow = (PLocationRow)RowToDelete;
-                        PLocationAccess.DeleteByPrimaryKey(LocationRow.SiteKey, LocationRow.LocationKey, Transaction);
-                    }
-                }
-
-                if (ResultValue)
-                {
-                    TSearchCriteria[] PartnerAttributeAccessSC = new TSearchCriteria[] {
-                        new TSearchCriteria(PPartnerAttributeTable.GetPartnerKeyDBName(),
-                            APartnerKey)
-                    };
-
-                    if (PPartnerAttributeAccess.CountUsingTemplate(PartnerAttributeAccessSC, Transaction) > 0)
-                    {
-                        PPartnerAttributeAccess.DeleteUsingTemplate(PartnerAttributeAccessSC, Transaction);
-                    }
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = ZeroEntries(PChurchTable.GetTableDBName(),
-                        PChurchTable.GetContactPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = ZeroEntries(POrganisationTable.GetTableDBName(),
-                        POrganisationTable.GetContactPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = ZeroEntries(PBankTable.GetTableDBName(),
-                        PBankTable.GetContactPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = ZeroEntries(PVenueTable.GetTableDBName(),
-                        PVenueTable.GetContactPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                // Delete Partner Banking Details.
-                // If Banking Details were only used by this partner then also delete Banking Details record.
-                if (ResultValue)
-                {
-                    PPartnerBankingDetailsTable PartnerBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPPartner(APartnerKey, Transaction);
-                    PPartnerBankingDetailsTable OtherPartnerBankingDetailsTable;
-                    PPartnerBankingDetailsRow PartnerBankingDetailsRow;
-                    PBankingDetailsRow BankingDetailsRow;
-                    PBankingDetailsTable BankingDetailsTableToDelete = new PBankingDetailsTable();
-
-                    foreach (DataRow Row in PartnerBankingDetailsTable.Rows)
-                    {
-                        PartnerBankingDetailsRow = (PPartnerBankingDetailsRow)Row;
-                        OtherPartnerBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPBankingDetails(
-                            PartnerBankingDetailsRow.BankingDetailsKey,
-                            Transaction);
-
-                        // if there is only one partner left using this banking details record (which must be this one) then delete banking details
-                        if (OtherPartnerBankingDetailsTable.Count == 1)
-                        {
-                            BankingDetailsRow = BankingDetailsTableToDelete.NewRowTyped();
-                            BankingDetailsRow.BankingDetailsKey = PartnerBankingDetailsRow.BankingDetailsKey;
-                            BankingDetailsTableToDelete.Rows.Add(BankingDetailsRow);
-                        }
-                    }
-
-                    // now first delete the partner banking details
-                    ResultValue = DeleteEntries(PPartnerBankingDetailsTable.GetTableDBName(),
-                        PPartnerBankingDetailsTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-
-                    // and now banking details if they don't refer to any partners any longer
-                    foreach (DataRow RowToDelete in BankingDetailsTableToDelete.Rows)
-                    {
-                        BankingDetailsRow = (PBankingDetailsRow)RowToDelete;
-                        PBankingDetailsAccess.DeleteByPrimaryKey(BankingDetailsRow.BankingDetailsKey, Transaction);
-                    }
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PPartnerTypeTable.GetTableDBName(),
-                        PPartnerTypeTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PPartnerRelationshipTable.GetTableDBName(),
-                        PPartnerRelationshipTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PPartnerRelationshipTable.GetTableDBName(),
-                        PPartnerRelationshipTable.GetRelationKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PCustomisedGreetingTable.GetTableDBName(),
-                        PCustomisedGreetingTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PSubscriptionTable.GetTableDBName(),
-                        PSubscriptionTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                // delete reminders before contacts
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PPartnerReminderTable.GetTableDBName(),
-                        PPartnerReminderTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                var partnerContacts = MPartner.Partner.WebConnectors.TContactsWebConnector.GetPartnerContacts(APartnerKey)
-                                      .AsEnumerable().Select(r => {
-                        var id = r.ItemArray[PPartnerContactTable.ColumnContactLogIdId];
-                        return new { ContactLogId = id, deleteThis = !TContactsWebConnector.IsContactLogAssociatedWithMoreThanOnePartner((long)id) };
-                    });;
-
-                // Delete contact attributes before deleting contacts
-                if (ResultValue)
-                {
-                    String SqlStmt;
-
-                    foreach (var row in partnerContacts)
-                    {
-                        if (row.deleteThis)
-                        {
-                            try
-                            {
-                                // build sql statement for deletion
-                                SqlStmt = "DELETE FROM " + PPartnerContactAttributeTable.GetTableDBName() +
-                                          " WHERE " + PPartnerContactAttributeTable.GetContactIdDBName() +
-                                          " IN (SELECT " + PPartnerContactTable.GetContactLogIdDBName() +
-                                          " FROM " + PPartnerContactTable.GetTableDBName() +
-                                          " WHERE " + PPartnerContactTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
-                                          " AND " + PPartnerContactTable.GetContactLogIdDBName() + " = " + row.ContactLogId + ")";
-
-                                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
-                            }
-                            catch (Exception Exc)
-                            {
-                                TLogging.Log(
-                                    "An Exception occured during the deletion of " + PPartnerContactAttributeTable.GetTableDBName() +
-                                    " while deleting a partner: " + Environment.NewLine + Exc.ToString());
-
-                                throw;
-                            }
-                        }
-                    }
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PPartnerContactTable.GetTableDBName(),
-                        PPartnerContactTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                // Delete any would-be orphaned ContactLog records
-                if (ResultValue)
-                {
-                    foreach (var r in partnerContacts.Where(p => p.deleteThis))
-                    {
-                        PContactLogAccess.DeleteByPrimaryKey((long)r.ContactLogId, Transaction);
-                    }
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(AEmailDestinationTable.GetTableDBName(),
-                        AEmailDestinationTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = ZeroEntries(AMotivationDetailTable.GetTableDBName(),
-                        AMotivationDetailTable.GetRecipientKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                /* a_recurring_gift - delete not allowed by CanPartnerBeDeleted */
-                /* a_recurring_gift_detail - delete not allowed by CanPartnerBeDeleted */
-                /* a_gift - delete not allowed by CanPartnerBeDeleted */
-                /* a_gift_detail - delete not allowed by CanPartnerBeDeleted */
-                /* a_ap_supplier - delete not allowed by CanPartnerBeDeleted */
-
-                if (ResultValue)
-                {
-                    ResultValue = ZeroEntries(PmDocumentTable.GetTableDBName(),
-                        PmDocumentTable.GetContactPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PDataLabelValuePartnerTable.GetTableDBName(),
-                        PDataLabelValuePartnerTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = ZeroEntries(PDataLabelValuePartnerTable.GetTableDBName(),
-                        PDataLabelValuePartnerTable.GetValuePartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = ZeroEntries(PDataLabelValueApplicationTable.GetTableDBName(),
-                        PDataLabelValueApplicationTable.GetValuePartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PmJobAssignmentTable.GetTableDBName(),
-                        PmJobAssignmentTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PTaxTable.GetTableDBName(),
-                        PTaxTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PPartnerInterestTable.GetTableDBName(),
-                        PPartnerInterestTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PPartnerMergeTable.GetTableDBName(),
-                        PPartnerMergeTable.GetMergeFromDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PPartnerMergeTable.GetTableDBName(),
-                        PPartnerMergeTable.GetMergeToDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PPartnerGiftDestinationTable.GetTableDBName(),
-                        PPartnerGiftDestinationTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PPartnerCommentTable.GetTableDBName(),
-                        PPartnerCommentTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = ZeroEntries(PFoundationTable.GetTableDBName(),
-                        PFoundationTable.GetContactPartnerDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (ResultValue)
-                {
-                    ResultValue = ZeroEntries(PFoundationProposalTable.GetTableDBName(),
-                        PFoundationProposalTable.GetPartnerSubmittedByDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                // now delete partner class specific information
-                if (ResultValue)
-                {
-                    switch (PartnerClass)
-                    {
-                        case TPartnerClass.FAMILY:
-                            ResultValue = DeleteFamily(APartnerKey, Transaction);
-                            break;
-
-                        case TPartnerClass.PERSON:
-                            ResultValue = DeletePerson(APartnerKey, Transaction);
-                            break;
-
-                        case TPartnerClass.UNIT:
-                            ResultValue = DeleteUnit(APartnerKey, Transaction);
-                            break;
-
-                        case TPartnerClass.ORGANISATION:
-                            ResultValue = DeleteOrganisation(APartnerKey, Transaction);
-                            break;
-
-                        case TPartnerClass.CHURCH:
-                            ResultValue = DeleteChurch(APartnerKey, Transaction);
-                            break;
-
-                        case TPartnerClass.BANK:
-                            ResultValue = DeleteBank(APartnerKey, Transaction);
-                            break;
-
-                        case TPartnerClass.VENUE:
-                            ResultValue = DeleteVenue(APartnerKey, Transaction);
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-
-                // finally delete p_partner record itself
-                if (ResultValue)
-                {
-                    ResultValue = DeleteEntries(PPartnerTable.GetTableDBName(),
-                        PPartnerTable.GetPartnerKeyDBName(),
-                        APartnerKey, Transaction);
-                }
-
-                if (NewTransaction)
-                {
+                    /* s_user - delete not allowed by CanPartnerBeDeleted */
                     if (ResultValue)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        ResultValue = DeleteEntries(PRecentPartnersTable.GetTableDBName(),
+                            PRecentPartnersTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
                     }
-                    else
+
+                    if (ResultValue)
                     {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        ResultValue = DeleteEntries(PPartnerGraphicTable.GetTableDBName(),
+                            PPartnerGraphicTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
                     }
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during the deletion of a Partner:" + Environment.NewLine + Exc.ToString());
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                    /* Delete extract entries before possibly attempting to delete a  */
+                    /* location record referenced in the extract.  Decrease key count */
+                    /* in m_extract_master.                                           */
+                    if (ResultValue)
+                    {
+                        // first make sure that extract master tables are up to date
+                        // (decrease key count by number of rows to be deleted)
+                        MExtractMasterTable ExtractMasterTable;
+                        MExtractMasterRow ExtractMasterRow;
+                        MExtractTable ExtractTable = MExtractAccess.LoadViaPPartner(APartnerKey, Transaction);
 
-                throw;
-            }
+                        foreach (DataRow Row in ExtractTable.Rows)
+                        {
+                            ExtractMasterTable = MExtractMasterAccess.LoadByPrimaryKey(((MExtractRow)Row).ExtractId, Transaction);
+                            ExtractMasterRow = (MExtractMasterRow)ExtractMasterTable.Rows[0];
+                            ExtractMasterRow.KeyCount = ExtractMasterRow.KeyCount - 1;
+                            MExtractMasterAccess.SubmitChanges(ExtractMasterTable, Transaction);
+                        }
+
+                        // now delete the actual extract entries
+                        ResultValue = DeleteEntries(MExtractTable.GetTableDBName(),
+                            MExtractTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    // Delete Partner Location. If locations were only used by this partner then also delete location record.
+                    if (ResultValue)
+                    {
+                        PPartnerLocationTable PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, Transaction);
+                        PPartnerLocationTable OtherPartnerLocationTable;
+                        PPartnerLocationRow PartnerLocationRow;
+                        PLocationRow LocationRow;
+                        PLocationTable LocationTableToDelete = new PLocationTable();
+
+                        foreach (DataRow Row in PartnerLocationTable.Rows)
+                        {
+                            PartnerLocationRow = (PPartnerLocationRow)Row;
+                            OtherPartnerLocationTable = PPartnerLocationAccess.LoadViaPLocation(PartnerLocationRow.SiteKey,
+                                PartnerLocationRow.LocationKey,
+                                Transaction);
+
+                            // if there is only one partner left using this location (which must be this one) then delete location
+                            if ((OtherPartnerLocationTable.Count == 1)
+                                && (PartnerLocationRow.LocationKey != 0))
+                            {
+                                LocationRow = LocationTableToDelete.NewRowTyped();
+                                LocationRow.SiteKey = PartnerLocationRow.SiteKey;
+                                LocationRow.LocationKey = PartnerLocationRow.LocationKey;
+                                LocationTableToDelete.Rows.Add(LocationRow);
+                            }
+                        }
+
+                        // now first delete the partner locations
+                        ResultValue = DeleteEntries(PPartnerLocationTable.GetTableDBName(),
+                            PPartnerLocationTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+
+                        // and now locations if they don't refer to any partners any longer
+                        foreach (DataRow RowToDelete in LocationTableToDelete.Rows)
+                        {
+                            LocationRow = (PLocationRow)RowToDelete;
+                            PLocationAccess.DeleteByPrimaryKey(LocationRow.SiteKey, LocationRow.LocationKey, Transaction);
+                        }
+                    }
+
+                    if (ResultValue)
+                    {
+                        TSearchCriteria[] PartnerAttributeAccessSC = new TSearchCriteria[] {
+                            new TSearchCriteria(PPartnerAttributeTable.GetPartnerKeyDBName(),
+                                APartnerKey)
+                        };
+
+                        if (PPartnerAttributeAccess.CountUsingTemplate(PartnerAttributeAccessSC, Transaction) > 0)
+                        {
+                            PPartnerAttributeAccess.DeleteUsingTemplate(PartnerAttributeAccessSC, Transaction);
+                        }
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = ZeroEntries(PChurchTable.GetTableDBName(),
+                            PChurchTable.GetContactPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = ZeroEntries(POrganisationTable.GetTableDBName(),
+                            POrganisationTable.GetContactPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = ZeroEntries(PBankTable.GetTableDBName(),
+                            PBankTable.GetContactPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = ZeroEntries(PVenueTable.GetTableDBName(),
+                            PVenueTable.GetContactPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    // Delete Partner Banking Details.
+                    // If Banking Details were only used by this partner then also delete Banking Details record.
+                    if (ResultValue)
+                    {
+                        PPartnerBankingDetailsTable PartnerBankingDetailsTable =
+                            PPartnerBankingDetailsAccess.LoadViaPPartner(APartnerKey, Transaction);
+                        PPartnerBankingDetailsTable OtherPartnerBankingDetailsTable;
+                        PPartnerBankingDetailsRow PartnerBankingDetailsRow;
+                        PBankingDetailsRow BankingDetailsRow;
+                        PBankingDetailsTable BankingDetailsTableToDelete = new PBankingDetailsTable();
+
+                        foreach (DataRow Row in PartnerBankingDetailsTable.Rows)
+                        {
+                            PartnerBankingDetailsRow = (PPartnerBankingDetailsRow)Row;
+                            OtherPartnerBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPBankingDetails(
+                                PartnerBankingDetailsRow.BankingDetailsKey,
+                                Transaction);
+
+                            // if there is only one partner left using this banking details record (which must be this one) then delete banking details
+                            if (OtherPartnerBankingDetailsTable.Count == 1)
+                            {
+                                BankingDetailsRow = BankingDetailsTableToDelete.NewRowTyped();
+                                BankingDetailsRow.BankingDetailsKey = PartnerBankingDetailsRow.BankingDetailsKey;
+                                BankingDetailsTableToDelete.Rows.Add(BankingDetailsRow);
+                            }
+                        }
+
+                        // now first delete the partner banking details
+                        ResultValue = DeleteEntries(PPartnerBankingDetailsTable.GetTableDBName(),
+                            PPartnerBankingDetailsTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+
+                        // and now banking details if they don't refer to any partners any longer
+                        foreach (DataRow RowToDelete in BankingDetailsTableToDelete.Rows)
+                        {
+                            BankingDetailsRow = (PBankingDetailsRow)RowToDelete;
+                            PBankingDetailsAccess.DeleteByPrimaryKey(BankingDetailsRow.BankingDetailsKey, Transaction);
+                        }
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PPartnerTypeTable.GetTableDBName(),
+                            PPartnerTypeTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PPartnerRelationshipTable.GetTableDBName(),
+                            PPartnerRelationshipTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PPartnerRelationshipTable.GetTableDBName(),
+                            PPartnerRelationshipTable.GetRelationKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PCustomisedGreetingTable.GetTableDBName(),
+                            PCustomisedGreetingTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PSubscriptionTable.GetTableDBName(),
+                            PSubscriptionTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    // delete reminders before contacts
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PPartnerReminderTable.GetTableDBName(),
+                            PPartnerReminderTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    var partnerContacts = MPartner.Partner.WebConnectors.TContactsWebConnector.GetPartnerContactLogData(APartnerKey).PPartnerContact
+                                          .AsEnumerable().Select(r =>
+                        {
+                            var id = r.ItemArray[PPartnerContactTable.ColumnContactLogIdId];
+                            return new { ContactLogId = id, deleteThis = !TContactsWebConnector.IsContactLogAssociatedWithMoreThanOnePartner((long)id) };
+                        });
+
+                    // Delete contact attributes before deleting contacts
+                    if (ResultValue)
+                    {
+                        String SqlStmt;
+
+                        foreach (var row in partnerContacts)
+                        {
+                            if (row.deleteThis)
+                            {
+                                try
+                                {
+                                    // build sql statement for deletion
+                                    SqlStmt = "DELETE FROM " + PPartnerContactAttributeTable.GetTableDBName() +
+                                              " WHERE " + PPartnerContactAttributeTable.GetContactIdDBName() +
+                                              " IN (SELECT " + PPartnerContactTable.GetContactLogIdDBName() +
+                                              " FROM " + PPartnerContactTable.GetTableDBName() +
+                                              " WHERE " + PPartnerContactTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
+                                              " AND " + PPartnerContactTable.GetContactLogIdDBName() + " = " + row.ContactLogId + ")";
+
+                                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                                }
+                                catch (Exception Exc)
+                                {
+                                    TLogging.Log(
+                                        "An Exception occured during the deletion of " + PPartnerContactAttributeTable.GetTableDBName() +
+                                        " while deleting a partner: " + Environment.NewLine + Exc.ToString());
+
+                                    throw;
+                                }
+                            }
+                        }
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PPartnerContactTable.GetTableDBName(),
+                            PPartnerContactTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    // Delete any would-be orphaned ContactLog records
+                    if (ResultValue)
+                    {
+                        foreach (var r in partnerContacts.Where(p => p.deleteThis))
+                        {
+                            PContactLogAccess.DeleteByPrimaryKey((long)r.ContactLogId, Transaction);
+                        }
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(AEmailDestinationTable.GetTableDBName(),
+                            AEmailDestinationTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = ZeroEntries(AMotivationDetailTable.GetTableDBName(),
+                            AMotivationDetailTable.GetRecipientKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    /* a_recurring_gift - delete not allowed by CanPartnerBeDeleted */
+                    /* a_recurring_gift_detail - delete not allowed by CanPartnerBeDeleted */
+                    /* a_gift - delete not allowed by CanPartnerBeDeleted */
+                    /* a_gift_detail - delete not allowed by CanPartnerBeDeleted */
+                    /* a_ap_supplier - delete not allowed by CanPartnerBeDeleted */
+
+                    if (ResultValue)
+                    {
+                        ResultValue = ZeroEntries(PmDocumentTable.GetTableDBName(),
+                            PmDocumentTable.GetContactPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PDataLabelValuePartnerTable.GetTableDBName(),
+                            PDataLabelValuePartnerTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = ZeroEntries(PDataLabelValuePartnerTable.GetTableDBName(),
+                            PDataLabelValuePartnerTable.GetValuePartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = ZeroEntries(PDataLabelValueApplicationTable.GetTableDBName(),
+                            PDataLabelValueApplicationTable.GetValuePartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PmJobAssignmentTable.GetTableDBName(),
+                            PmJobAssignmentTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PTaxTable.GetTableDBName(),
+                            PTaxTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PPartnerInterestTable.GetTableDBName(),
+                            PPartnerInterestTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PPartnerMergeTable.GetTableDBName(),
+                            PPartnerMergeTable.GetMergeFromDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PPartnerMergeTable.GetTableDBName(),
+                            PPartnerMergeTable.GetMergeToDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PPartnerGiftDestinationTable.GetTableDBName(),
+                            PPartnerGiftDestinationTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PPartnerCommentTable.GetTableDBName(),
+                            PPartnerCommentTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = ZeroEntries(PFoundationTable.GetTableDBName(),
+                            PFoundationTable.GetContactPartnerDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    if (ResultValue)
+                    {
+                        ResultValue = ZeroEntries(PFoundationProposalTable.GetTableDBName(),
+                            PFoundationProposalTable.GetPartnerSubmittedByDBName(),
+                            APartnerKey, Transaction);
+                    }
+
+                    // now delete partner class specific information
+                    if (ResultValue)
+                    {
+                        switch (PartnerClass)
+                        {
+                            case TPartnerClass.FAMILY:
+                                ResultValue = DeleteFamily(APartnerKey, Transaction);
+                                break;
+
+                            case TPartnerClass.PERSON:
+                                ResultValue = DeletePerson(APartnerKey, Transaction);
+                                break;
+
+                            case TPartnerClass.UNIT:
+                                ResultValue = DeleteUnit(APartnerKey, Transaction);
+                                break;
+
+                            case TPartnerClass.ORGANISATION:
+                                ResultValue = DeleteOrganisation(APartnerKey, Transaction);
+                                break;
+
+                            case TPartnerClass.CHURCH:
+                                ResultValue = DeleteChurch(APartnerKey, Transaction);
+                                break;
+
+                            case TPartnerClass.BANK:
+                                ResultValue = DeleteBank(APartnerKey, Transaction);
+                                break;
+
+                            case TPartnerClass.VENUE:
+                                ResultValue = DeleteVenue(APartnerKey, Transaction);
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+
+                    // finally delete p_partner record itself
+                    if (ResultValue)
+                    {
+                        ResultValue = DeleteEntries(PPartnerTable.GetTableDBName(),
+                            PPartnerTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction);
+
+                        SubmissionOK = true;
+                    }
+                });
 
             return ResultValue;
         }

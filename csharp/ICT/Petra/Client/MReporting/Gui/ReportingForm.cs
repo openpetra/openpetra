@@ -290,6 +290,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="e">EventArgs that allow cancelling of the closing</param>
         public override void TFrmPetra_Closing(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Cancel the report
+            if (FDelegateCancelReportOverride != null)
+            {
+                FDelegateCancelReportOverride(FCalculator);
+            }
+
             FStoredSettings.SaveWrapOption(FWrapColumn);
             base.TFrmPetra_Closing(sender, e);
         }
@@ -1226,7 +1232,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             TVerificationResult VerificationResultEntry;
 
             System.Collections.IEnumerator VerificationResultEnum;
-            String UserMessage;
+            String UserMessage = string.Empty;
             ReturnValue = false;
             try
             {
@@ -1235,8 +1241,17 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 if (FVerificationResults.Count != 0)
                 {
-                    UserMessage = "Report could not be generated." + Environment.NewLine + Environment.NewLine + "Reasons:" + Environment.NewLine +
-                                  Environment.NewLine;
+                    if (AReportAction == TReportActionEnum.raGenerate)
+                    {
+                        UserMessage = "Report could not be generated.";
+                    }
+                    else if (AReportAction == TReportActionEnum.raSave)
+                    {
+                        UserMessage = "Report could not be saved.";
+                    }
+
+                    UserMessage += Environment.NewLine + Environment.NewLine + "Reasons:" + Environment.NewLine +
+                                   Environment.NewLine;
                     VerificationResultEnum = FVerificationResults.GetEnumerator();
 
                     while (VerificationResultEnum.MoveNext())

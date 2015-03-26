@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, timop
+//       ChristianK, timop, TimI
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.Odbc;
 using Ict.Common;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
@@ -250,8 +251,7 @@ namespace Ict.Petra.Server.MCommon
         /// <summary>An instance of TAsyncFindParameters containing parameters for the query execution</summary>
         TAsyncFindParameters FFindParameters;
 
-        /// <summary>DataAdapter that is used to execute the query</summary>
-        DbDataAdapter FDataAdapter;
+        TDataAdapterCanceller FDataAdapterCanceller;
 
         /// <summary>SQL command that will be used to execute the query</summary>
         String FSelectSQL;
@@ -438,30 +438,31 @@ namespace Ict.Petra.Server.MCommon
             // create temp table
             FTmpDataTable = new DataTable(FFindParameters.FPagedTable + "_for_paging");
 
-            TDBTransaction transaction;
+            TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
 
             try
             {
-                transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
+
                 // Fill temporary table with query results (all records)
-                FDataAdapter = null;
-                DBAccess.GDBAccessObj.PrepareNextCommand();
-                DBAccess.GDBAccessObj.SetTimeoutForNextCommand(60);
+                FTotalRecords = DBAccess.GDBAccessObj.SelectUsingDataAdapter(FSelectSQL, ReadTransaction,
+                    ref FTmpDataTable, out FDataAdapterCanceller,
+                    delegate(ref IDictionaryEnumerator AEnumerator)
+                    {
+                        if (FFindParameters.FColumNameMapping != null)
+                        {
+                            AEnumerator = FFindParameters.FColumNameMapping.GetEnumerator();
 
-                FDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(FSelectSQL, transaction, FFindParameters.FParametersArray);
-
-                if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
-                {
-                    PerformColumnNameMapping();
-                }
-
-                //
-                // Actual DB call for execution of SELECT query
-                //
-                FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
+                            return FFindParameters.FPagedTable + "_for_paging";
+                        }
+                        else
+                        {
+                            return String.Empty;
+                        }
+                    }, true, 60, FFindParameters.FParametersArray);
             }
             catch (NpgsqlException Exp)
             {
@@ -623,63 +624,45 @@ namespace Ict.Petra.Server.MCommon
         }
 
         /// <summary>
-        /// Creates a mapping between the names of the fields in the DB and how they
-        /// should be named in the resulting DataTable.
-        ///
+        /// Cancels an asynchronously executing query. This might take some time!
         /// </summary>
-        /// <returns>void</returns>
-        private void PerformColumnNameMapping()
-        {
-            DataTableMapping AliasNames;
-            IDictionaryEnumerator ColumNameMappingEnumerator;
-
-            AliasNames = FDataAdapter.TableMappings.Add(FFindParameters.FPagedTable + "_for_paging", FFindParameters.FPagedTable + "_for_paging");
-            ColumNameMappingEnumerator = FFindParameters.FColumNameMapping.GetEnumerator();
-
-            while (ColumNameMappingEnumerator.MoveNext())
-            {
-                AliasNames.ColumnMappings.Add(ColumNameMappingEnumerator.Key.ToString(), ColumNameMappingEnumerator.Value.ToString());
-            }
-        }
-
-        /// <summary>
-        /// Cancels an asynchronously executing query. This might take some time;
-        /// therefore always execute this procedure in a separate Thread!
-        ///
-        /// </summary>
+        /// <remarks><em>IMPORTANT:</em> This Method <em>MUST</em> be called on a separate Thread as otherwise the cancellation
+        /// will not work correctly (this is an implementation detail of ADO.NET!).</remarks>
         /// <returns>void</returns>
         public void StopQuery()
         {
 #if TODORemoting
-            TLogging.LogAtLevel(7,
-                (this.GetType().FullName + ".StopQuery: ProgressState = " +
-                 Enum.GetName(typeof(TAsyncExecProgressState), FAsyncExecProgress.ProgressState)));
+             TLogging.LogAtLevel(7,
+                 (this.GetType().FullName + ".StopQuery: ProgressState = " +
+                  Enum.GetName(typeof(TAsyncExecProgressState), FAsyncExecProgress.ProgressState)));
 #endif
             // TODO this cannot work, since FDataAdapter is always null
             // and even if FDataAdapter was implemented, we would have a different thread, and I am not sure how to access the Database object from the other thread?
 
-            if (FDataAdapter == null)
+            if (FDataAdapterCanceller == null)
             {
                 return;
             }
 
             try
             {
-#if TODORemoting
-                if (FAsyncExecProgress.ProgressState == TAsyncExecProgressState.Aeps_Stopping)
+                // TODORemoting
+                if (true /* FAsyncExecProgress.ProgressState == TAsyncExecProgressState.Aeps_Stopping */ )
                 {
-#endif
-                // Cancel the executing query.
-                TLogging.LogAtLevel(7, "TPagedDataSet.StopQuery called...");
-                FDataAdapter.SelectCommand.Cancel();
-                TLogging.LogAtLevel(7, "TPagedDataSet.StopQuery finished.");
-#if TODORemoting
-            }
-            else
-            {
-                TLogging.LogAtLevel(7, this.GetType().FullName + ".StopQuery: Query got cancelled after returning records.");
-            }
-#endif
+                    if (FDataAdapterCanceller != null)
+                    {
+                        // Cancel the executing query.
+                        TLogging.LogAtLevel(7, "TPagedDataSet.StopQuery called...");
+
+                        FDataAdapterCanceller.CancelFillOperation();
+
+                        TLogging.LogAtLevel(7, "TPagedDataSet.StopQuery finished.");
+                    }
+                }
+                else
+                {
+                    TLogging.LogAtLevel(7, this.GetType().FullName + ".StopQuery: Query got cancelled after returning records.");
+                }
 
                 TProgressTracker.SetCurrentState(FProgressID, "Query cancelled!", 0.0m);
                 TProgressTracker.CancelJob(FProgressID);
@@ -918,7 +901,6 @@ namespace Ict.Petra.Server.MCommon
             String criteriavalue;
             object outcome;
             String matchvalue;
-            double DoubleValue = -1;
 
             outcome = "";
             try
@@ -957,20 +939,8 @@ namespace Ict.Petra.Server.MCommon
 
                 if (matchvalue == "EXACT")
                 {
-                    // Check if criteria value is a valid number
                     criteriavalue = FDataRow[FCriteriaField].ToString();
-                    Double.TryParse(criteriavalue, out DoubleValue);
-
-                    if (DoubleValue == 0)
-                    {
-                        // Criteria value isn't a valid number, so convert it to lowercase to make
-                        // for case-insensitive searches
-                        outcome = (object)(criteriavalue.ToLower());
-                    }
-                    else
-                    {
-                        outcome = (object)DoubleValue;
-                    }
+                    outcome = (object)(criteriavalue.ToLower());
                 }
             }
 
@@ -1047,33 +1017,16 @@ namespace Ict.Petra.Server.MCommon
             return outcome;
         }
     }
+
     #endregion
 
-    /// <summary>Reporting Query with Cancel Option</summary>
+    /// <summary>Reporting Query for use with 'FastReports', with Cancel Option.</summary>
     public class TReportingDbAdapter
     {
         private Boolean FCancelFlag = false;
-        private DbDataAdapter FDataAdapter;
-
-        /// <summary>
-        /// Cancels any reporting query that's running right now,
-        /// and effectively short-circuits any subsequent queries made using this object.
-        /// </summary>
-        public void CancelQuery()
-        {
-            if (!FCancelFlag)
-            {
-                FCancelFlag = true;
-                try
-                {
-                    FDataAdapter.SelectCommand.Cancel();
-                }
-                catch (Exception ex)
-                {
-                    TLogging.Log("Exception occured in ReportingQueryCancel: " + ex.Message);
-                }
-            }
-        }
+        private TDataAdapterCanceller FDataAdapterCanceller;
+        private Boolean FRunningQuery = false;
+        private Exception FRunQueryException = null;
 
         /// <summary>Check this before assuming that the query returned a good result!</summary>
         public Boolean IsCancelled
@@ -1085,28 +1038,104 @@ namespace Ict.Petra.Server.MCommon
         }
 
         /// <summary>
+        /// Exception that occured during a RunQuery call (if any!)
+        /// </summary>
+        public Exception RunQueryException
+        {
+            get
+            {
+                return FRunQueryException;
+            }
+        }
+
+        /// <summary>
+        /// Cancels any reporting query that's running right now, and effectively short-circuits any subsequent queries
+        /// made using this object. This might take some time!
+        /// </summary>
+        public void CancelQuery()
+        {
+            if (FRunningQuery
+                && (!FCancelFlag))
+            {
+                FCancelFlag = true;
+
+                try
+                {
+                    if (FDataAdapterCanceller != null)
+                    {
+                        TLogging.LogAtLevel(7, "TReportingDbAdapter.CancelQuery called. Stopping query...!");
+
+                        FDataAdapterCanceller.CancelFillOperation();
+
+                        TLogging.LogAtLevel(3, "TReportingDbAdapter.CancelQuery: Stopped running query.");
+                    }
+                }
+                catch (Exception Exc)
+                {
+                    TLogging.Log("Exception occured in TReportingDbAdapter.CancelQuery: " + Exc.ToString());
+                }
+            }
+
+            FRunningQuery = false;
+        }
+
+        /// <summary>
         /// Run this Database query.
-        /// if FReportingQueryCancelFlag is set, this returns immediately with an empty table.
+        /// If FReportingQueryCancelFlag is set, this returns immediately with an empty table.
         /// The query can be cancelled WHILE IT IS RUNNING. In this case the returned table may be partially filled.
         /// </summary>
-        /// <returns>DataTable. May be empty (with no fields even defined) if cancel happens or has happened.</returns>
+        /// <returns>DataTable. May be empty (even with no fields defined!) if cancellation happens or has happened.</returns>
         public DataTable RunQuery(String Query, String TableName, TDBTransaction Trans)
         {
-            DataTable resultTable = new DataTable(TableName);
+            var ResultDT = new DataTable(TableName);
+            bool DBAccessCallSuccessful = false;
 
             if (!FCancelFlag)
             {
                 try
                 {
-                    FDataAdapter = DBAccess.GDBAccessObj.SelectDA(Query, Trans, null);
-                    FDataAdapter.Fill(resultTable);
-                }
-                catch (Exception ex)
-                {
-                    TLogging.Log("ReportingQueryWithCancelOption: Query Raised exception:" + ex.Message +
-                        "\nQuery: " + Query
-                        );
+                    FRunningQuery = true;
 
+                    TServerBusyHelper.CoordinatedAutoRetryCall("FastReports Reporting / RunQuery", ref DBAccessCallSuccessful,
+                        delegate
+                        {
+                            DBAccess.GDBAccessObj.SelectUsingDataAdapter(Query, Trans,
+                                ref ResultDT, out FDataAdapterCanceller);
+
+                            DBAccessCallSuccessful = true;
+                        }, true,
+                        Catalog.GetString("Report calculation could not be completed because the OpenPetra server was too busy. " +
+                            String.Format(TServerBusyHelper.StrPleaseWaitAFewSecondsManualRetryRequiredCustom,
+                                Catalog.GetString("re-start the generation of the Report"))));
+                }
+                catch (NpgsqlException Exp)
+                {
+                    if (Exp.Code == "57014")  // Exception with Code 57014 is what Npgsql raises as a response to a Cancel request of a Command
+                    {
+                        TLogging.LogAtLevel(7, this.GetType().FullName + ".RunQuery: Query got cancelled; proper reply from Npgsql!");
+                    }
+                    else if (Exp.Code == "25P02")  // Exception with Code 25P02 is what Npgsql raises as a response to a cancellation of a request of a Command when that happens in another code path (eg. on a different Thread [e.g. Partner Find
+                    {                               // screen: Cancel got pressed while Report Query ran, for instance])
+                        TLogging.LogAtLevel(1, this.GetType().FullName +
+                            ".RunQuery: Query got cancelled (likely trought another code path [likely on another Thread]); proper reply from Npgsql!");
+                    }
+                    else
+                    {
+                        TLogging.Log(this.GetType().FullName + ".RunQuery: Query got cancelled; general NpgsqlException occured: " + Exp.ToString());
+                    }
+
+                    FCancelFlag = true;
+
+                    return null;
+                }
+                catch (Exception Exc)
+                {
+                    TLogging.Log("ReportingQueryWithCancelOption: Query Raised exception: " + Exc.ToString() +
+                        "\nQuery: " + Query);
+
+                    FRunQueryException = Exc;
+
+                    FCancelFlag = true;
 
                     /*
                      *     WE MUST 'SWALLOW' ANY EXCEPTION HERE, OTHERWISE THE WHOLE
@@ -1118,9 +1147,13 @@ namespace Ict.Petra.Server.MCommon
                      *
                      */
                 }
+                finally
+                {
+                    FRunningQuery = false;
+                }
             }
 
-            return resultTable;
+            return ResultDT;
         }
     }
 }

@@ -299,5 +299,36 @@ namespace Ict.Common.IO
 
             return null;
         }
+
+        /// <summary>
+        /// Sets the InitialDirectory and FileName properties of the specified OpenFile dialog.
+        /// It checks that the directory exists and, if not, sets the directory to the default export path, which will always exist if the location
+        /// is discovered from TClientSettings.
+        /// If the file name does not exist the property will not be set.
+        /// </summary>
+        /// <param name="ADialog">A reference to an Open File Dialog</param>
+        /// <param name="AFullPath">The full path to the file to open</param>
+        /// <param name="ADefaultExportPath">The path to the export folder obtained from TClientSettings.GetExportPath()</param>
+        public static void SetOpenFileDialogFilePathAndName(OpenFileDialog ADialog, String AFullPath, String ADefaultExportPath)
+        {
+            string directoryPath = Path.GetDirectoryName(AFullPath);
+
+            if (!Directory.Exists(directoryPath))
+            {
+                // ADefaultExportPath will have been created by the caller already
+                directoryPath = ADefaultExportPath;
+                AFullPath = String.Empty;
+            }
+
+            if (Directory.Exists(directoryPath))
+            {
+                ADialog.InitialDirectory = directoryPath;
+            }
+
+            if ((AFullPath.Length > 0) && (File.Exists(AFullPath)))
+            {
+                ADialog.FileName = Path.GetFileName(AFullPath);
+            }
+        }
     }
 }

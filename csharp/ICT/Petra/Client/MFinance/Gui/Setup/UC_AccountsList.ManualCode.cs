@@ -54,6 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private TSgrdDataGridPaged grdDetails = null;
         private int FPrevRowChangedRow = -1;
         private DataRow FPreviouslySelectedDetailRow = null;
+        private bool FSelectionMadeInList = false;
 
         // The account selected in the parent form
         AccountNodeDetails FSelectedAccount;
@@ -75,13 +76,78 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FSelectedAccount = value;
 
-                if (FDataView != null)
+                // FSelectionMadeInList will be tree if the change was made in the list view.
+                // We only need to run this code if selection was made in tree view
+                if ((FDataView != null) && !FSelectionMadeInList)
                 {
                     Int32 RowIdx = -1;
 
                     if (FSelectedAccount != null)
                     {
-                        RowIdx = FDataView.Find(FSelectedAccount.AccountRow.AccountCode) + 1;
+                        // The grid could be sorted by any column. We need to make sure that the grid is sorted 1st or 2nd by a_account_code_c.
+                        // Otherwise we may not be able to find the account and retrieve the accurate row ID.
+                        if (FDataView.Sort.Contains("a_account_code_short_desc_c"))
+                        {
+                            if (FDataView.Sort.Contains("DESC"))
+                            {
+                                FDataView.Sort = "a_account_code_short_desc_c DESC, a_account_code_c";
+                            }
+                            else
+                            {
+                                FDataView.Sort = "a_account_code_short_desc_c, a_account_code_c";
+                            }
+
+                            RowIdx = FDataView.Find(new object[] { FSelectedAccount.AccountRow.AccountCodeShortDesc,
+                                                                   FSelectedAccount.AccountRow.AccountCode }) + 1;
+                        }
+                        else if (FDataView.Sort.Contains("a_ytd_actual_base_n"))
+                        {
+                            if (FDataView.Sort.Contains("DESC"))
+                            {
+                                FDataView.Sort = "a_ytd_actual_base_n DESC, a_account_code_c";
+                            }
+                            else
+                            {
+                                FDataView.Sort = "a_ytd_actual_base_n, a_account_code_c";
+                            }
+
+                            // YTD Actual might be DBNull
+                            if (FSelectedAccount.AccountRow.IsYtdActualBaseNull())
+                            {
+                                RowIdx = FDataView.Find(new object[] { null, FSelectedAccount.AccountRow.AccountCode }) + 1;
+                            }
+                            else
+                            {
+                                RowIdx = FDataView.Find(new object[] { FSelectedAccount.AccountRow.YtdActualBase,
+                                                                       FSelectedAccount.AccountRow.AccountCode }) + 1;
+                            }
+                        }
+                        else if (FDataView.Sort.Contains("a_ytd_actual_foreign_n"))
+                        {
+                            if (FDataView.Sort.Contains("DESC"))
+                            {
+                                FDataView.Sort = "a_ytd_actual_foreign_n DESC, a_account_code_c";
+                            }
+                            else
+                            {
+                                FDataView.Sort = "a_ytd_actual_foreign_n, a_account_code_c";
+                            }
+
+                            // YTD Actual might be DBNull
+                            if (FSelectedAccount.AccountRow.IsYtdActualForeignNull())
+                            {
+                                RowIdx = FDataView.Find(new object[] { null, FSelectedAccount.AccountRow.AccountCode }) + 1;
+                            }
+                            else
+                            {
+                                RowIdx = FDataView.Find(new object[] { FSelectedAccount.AccountRow.YtdActualForeign,
+                                                                       FSelectedAccount.AccountRow.AccountCode }) + 1;
+                            }
+                        }
+                        else
+                        {
+                            RowIdx = FDataView.Find(new object[] { FSelectedAccount.AccountRow.AccountCode }) + 1;
+                        }
                     }
 
                     FParentForm.FIAmUpdating++;
@@ -136,7 +202,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     FPreviouslySelectedDetailRow = rowView.Row;
                     String SelectedAccountCode = ((GLSetupTDSAAccountRow)rowView.Row).AccountCode;
+
+                    FSelectionMadeInList = true;
                     FParentForm.SetSelectedAccountCode(SelectedAccountCode);
+                    FSelectionMadeInList = false;
 
                     if (previousRowId == -1)
                     {
@@ -172,6 +241,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdAccounts.AddTextColumn(Catalog.GetString("Descr"), MainDS.AAccount.ColumnAccountCodeShortDesc);
             grdAccounts.AddCurrencyColumn(Catalog.GetString("YTD Actual"), MainDS.AAccount.ColumnYtdActualBase);
             grdAccounts.AddCurrencyColumn(Catalog.GetString("Foreign"), MainDS.AAccount.ColumnYtdActualForeign);
+
+            if (FSelectedAccount != null)
+            {
+                this.SelectedAccount = FSelectedAccount;
+            }
+            else
+            {
+                grdAccounts.SelectRowInGrid(0);
+            }
         }
 
         /// <summary>

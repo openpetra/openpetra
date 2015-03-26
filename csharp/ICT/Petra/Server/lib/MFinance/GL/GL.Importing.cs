@@ -38,7 +38,9 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -135,9 +137,13 @@ namespace Ict.Petra.Server.MFinance.GL
                 5);
 
             TVerificationResultCollection Messages = new TVerificationResultCollection();
+
+            // fix for Mono issue with out parameter: https://bugzilla.xamarin.com/show_bug.cgi?id=28196
             AMessages = Messages;
+
             GLBatchTDS MainDS = new GLBatchTDS();
             GLSetupTDS SetupDS = new GLSetupTDS();
+            SetupDS.CaseSensitive = true;
             StringReader sr = new StringReader(AImportString);
 
             // Parse the supplied parameters
@@ -162,6 +168,9 @@ namespace Ict.Petra.Server.MFinance.GL
             int BatchYearNr = -1;
             String ImportMessage = "";
             Int32 RowNumber = 0;
+            decimal intlRateFromBase = -1.0m;
+            Boolean gotFirstBatch = false;
+            Boolean CancelledByUser = false;
 
             // Create some validation dictionaries
             TValidationControlsDict ValidationControlsDictBatch = new TValidationControlsDict();
@@ -182,11 +191,15 @@ namespace Ict.Petra.Server.MFinance.GL
                     {
                         // Load supplementary tables that we are going to need for validation
                         ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(LedgerNumber, transaction);
+                        ACurrencyTable CurrencyTable = ACurrencyAccess.LoadAll(transaction);
+
                         AAnalysisTypeAccess.LoadAll(SetupDS, transaction);
                         AFreeformAnalysisAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
                         AAnalysisAttributeAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
                         ACostCentreAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
                         AAccountAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
+                        ALedgerInitFlagAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
+                        ATransactionTypeAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
 
                         if (LedgerTable.Rows.Count == 0)
                         {
@@ -194,6 +207,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
 
                         string LedgerBaseCurrency = LedgerTable[0].BaseCurrency;
+                        string LedgerIntlCurrency = LedgerTable[0].IntlCurrency;
                         ACorporateExchangeRateTable CorporateExchangeTable =
                             ACorporateExchangeRateAccess.LoadViaACurrencyToCurrencyCode(LedgerBaseCurrency,
                                 transaction);
@@ -217,9 +231,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#"))
                             {
                                 int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count;
+                                int preParseMessageCount = Messages.Count;
 
                                 // Read the row analysisType - there is no 'validation' on this so we can make the call with null parameters
-                                string RowType = ImportString(Catalog.GetString("row type"), null, null);
+                                string RowType = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("row type"), null, null);
 
                                 if (RowType == "B")
                                 {
@@ -263,6 +278,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                     }
 
                                     ImportMessage = Catalog.GetString("Starting new batch");
+                                    gotFirstBatch = true;
                                     NewBatch = MainDS.ABatch.NewRowTyped(true);
                                     NewBatch.LedgerNumber = LedgerNumber;
                                     LedgerTable[0].LastBatchNumber++;
@@ -270,62 +286,72 @@ namespace Ict.Petra.Server.MFinance.GL
                                     NewBatch.BatchPeriod = LedgerTable[0].CurrentPeriod;
                                     MainDS.ABatch.Rows.Add(NewBatch);
                                     NewJournal = null;
+                                    intlRateFromBase = -1.0m;
 
-                                    NewBatch.BatchDescription = ImportString(Catalog.GetString("Batch description"),
-                                        MainDS.ABatch.ColumnBatchDescription, ValidationControlsDictBatch);
+                                    NewBatch.BatchDescription =
+                                        TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Batch description"),
+                                            MainDS.ABatch.ColumnBatchDescription, ValidationControlsDictBatch);
 
-                                    NewBatch.BatchControlTotal = ImportDecimal(Catalog.GetString("Batch hash value"),
-                                        MainDS.ABatch.ColumnBatchControlTotal, RowNumber, Messages, ValidationControlsDictBatch);
-                                    NewBatch.DateEffective = ImportDate(Catalog.GetString("Batch effective date"),
-                                        MainDS.ABatch.ColumnDateEffective, RowNumber, Messages, ValidationControlsDictBatch);
+                                    NewBatch.BatchControlTotal =
+                                        TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat,
+                                            Catalog.GetString("Batch hash value"),
+                                            MainDS.ABatch.ColumnBatchControlTotal, RowNumber, Messages, ValidationControlsDictBatch);
+                                    NewBatch.DateEffective =
+                                        TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate,
+                                            Catalog.GetString("Batch effective date"),
+                                            MainDS.ABatch.ColumnDateEffective, RowNumber, Messages, ValidationControlsDictBatch);
 
-                                    if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
-                                            NewBatch.DateEffective,
-                                            out BatchPeriodNumber,
-                                            out BatchYearNr,
-                                            transaction))
+                                    if (Messages.Count == preParseMessageCount)
                                     {
-                                        NewBatch.BatchYear = BatchYearNr;
-                                        NewBatch.BatchPeriod = BatchPeriodNumber;
-                                    }
-                                    else
-                                    {
-                                        Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine,
-                                                    RowNumber),
-                                                String.Format(Catalog.GetString(
-                                                        "The effective date [{0}] of the imported batch is not in an open period."),
-                                                    StringHelper.DateToLocalizedString(NewBatch.DateEffective)), TResultSeverity.Resv_Critical));
-                                    }
-
-                                    int messageCountBeforeValidate = Messages.Count;
-
-                                    // Validate using the standard validation
-                                    ImportMessage = Catalog.GetString("Validating the batch data");
-                                    ABatchValidation.Validate(this, NewBatch, ref Messages, ValidationControlsDictBatch);
-
-                                    // Now do the additional manual validation
-                                    ImportMessage = Catalog.GetString("Additional validation of the batch data");
-                                    TSharedFinanceValidation_GL.ValidateGLBatchManual(this, NewBatch, ref Messages, ValidationControlsDictBatch);
-
-                                    for (int i = messageCountBeforeValidate; i < Messages.Count; i++)
-                                    {
-                                        ((TVerificationResult)Messages[i]).OverrideResultContext(String.Format(MCommonConstants.
-                                                StrValidationErrorInLine,
-                                                RowNumber));
-
-                                        if (Messages[i] is TScreenVerificationResult)
+                                        if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
+                                                NewBatch.DateEffective,
+                                                out BatchPeriodNumber,
+                                                out BatchYearNr,
+                                                transaction))
                                         {
-                                            TVerificationResult downgrade = new TVerificationResult((TScreenVerificationResult)Messages[i]);
-                                            Messages.RemoveAt(i);
-                                            Messages.Insert(i, downgrade);
+                                            NewBatch.BatchYear = BatchYearNr;
+                                            NewBatch.BatchPeriod = BatchPeriodNumber;
                                         }
-                                    }
+                                        else
+                                        {
+                                            Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine,
+                                                        RowNumber),
+                                                    String.Format(Catalog.GetString(
+                                                            "The effective date [{0}] of the imported batch is not in an open period."),
+                                                        StringHelper.DateToLocalizedString(NewBatch.DateEffective)), TResultSeverity.Resv_Critical));
+                                        }
 
-                                    if ((NewBatch.BatchDescription == null)   // raise error if empty batch description is imported
-                                        || (NewBatch.BatchDescription == ""))
-                                    {
-                                        Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, RowNumber),
-                                                Catalog.GetString("The batch description must not be empty."), TResultSeverity.Resv_Critical));
+                                        int messageCountBeforeValidate = Messages.Count;
+
+                                        // Validate using the standard validation
+                                        ImportMessage = Catalog.GetString("Validating the batch data");
+                                        ABatchValidation.Validate(this, NewBatch, ref Messages, ValidationControlsDictBatch);
+
+                                        // Now do the additional manual validation
+                                        ImportMessage = Catalog.GetString("Additional validation of the batch data");
+                                        TSharedFinanceValidation_GL.ValidateGLBatchManual(this, NewBatch, ref Messages, ValidationControlsDictBatch);
+
+                                        for (int i = messageCountBeforeValidate; i < Messages.Count; i++)
+                                        {
+                                            ((TVerificationResult)Messages[i]).OverrideResultContext(String.Format(MCommonConstants.
+                                                    StrValidationErrorInLine,
+                                                    RowNumber));
+
+                                            if (Messages[i] is TScreenVerificationResult)
+                                            {
+                                                TVerificationResult downgrade = new TVerificationResult((TScreenVerificationResult)Messages[i]);
+                                                Messages.RemoveAt(i);
+                                                Messages.Insert(i, downgrade);
+                                            }
+                                        }
+
+                                        if ((NewBatch.BatchDescription == null)   // raise error if empty batch description is imported
+                                            || (NewBatch.BatchDescription == ""))
+                                        {
+                                            Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine,
+                                                        RowNumber),
+                                                    Catalog.GetString("The batch description must not be empty."), TResultSeverity.Resv_Critical));
+                                        }
                                     }
                                 }
                                 else if (RowType == "J")
@@ -374,126 +400,170 @@ namespace Ict.Petra.Server.MFinance.GL
                                     NewJournal.ExchangeRateToBase = 1;
                                     NewJournal.DateEffective = NewBatch.DateEffective;
                                     NewJournal.JournalPeriod = NewBatch.BatchPeriod;
+                                    intlRateFromBase = -1.0m;
                                     NewBatch.LastJournal++;
 
                                     MainDS.AJournal.Rows.Add(NewJournal);
 
-                                    NewJournal.JournalDescription = ImportString(Catalog.GetString("Journal description"),
-                                        MainDS.AJournal.ColumnJournalDescription, ValidationControlsDictJournal);
+                                    NewJournal.JournalDescription =
+                                        TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Journal description"),
+                                            MainDS.AJournal.ColumnJournalDescription, ValidationControlsDictJournal);
 
-                                    NewJournal.SubSystemCode = ImportString(Catalog.GetString("Journal sub system code"),
-                                        MainDS.AJournal.ColumnSubSystemCode, ValidationControlsDictJournal);
-                                    NewJournal.TransactionTypeCode = ImportString(Catalog.GetString("Journal transaction type"),
-                                        MainDS.AJournal.ColumnTransactionCurrency, ValidationControlsDictJournal);
-                                    NewJournal.TransactionCurrency = ImportString(Catalog.GetString("Journal transaction currency"),
-                                        MainDS.AJournal.ColumnTransactionCurrency, ValidationControlsDictJournal);
-                                    NewJournal.ExchangeRateToBase = ImportDecimal(Catalog.GetString("Journal exchange rate"),
-                                        MainDS.AJournal.ColumnExchangeRateToBase, RowNumber, Messages, ValidationControlsDictJournal);
-                                    NewJournal.DateEffective = ImportDate(Catalog.GetString("Journal effective date"),
-                                        MainDS.AJournal.ColumnDateEffective, RowNumber, Messages, ValidationControlsDictJournal);
+                                    NewJournal.SubSystemCode =
+                                        TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Journal sub system code"),
+                                            MainDS.AJournal.ColumnSubSystemCode, ValidationControlsDictJournal).ToUpper();
+                                    NewJournal.TransactionTypeCode =
+                                        TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Journal transaction type"),
+                                            MainDS.AJournal.ColumnTransactionTypeCode, ValidationControlsDictJournal).ToUpper();
+                                    NewJournal.TransactionCurrency =
+                                        TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Journal transaction currency"),
+                                            MainDS.AJournal.ColumnTransactionCurrency, ValidationControlsDictJournal).ToUpper();
+                                    NewJournal.ExchangeRateToBase =
+                                        TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat,
+                                            Catalog.GetString("Journal exchange rate"),
+                                            MainDS.AJournal.ColumnExchangeRateToBase, RowNumber, Messages, ValidationControlsDictJournal);
+                                    NewJournal.DateEffective =
+                                        TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate,
+                                            Catalog.GetString("Journal effective date"),
+                                            MainDS.AJournal.ColumnDateEffective, RowNumber, Messages, ValidationControlsDictJournal);
 
-                                    int messageCountBeforeValidate = Messages.Count;
-
-                                    // Validate using the standard validation
-                                    ImportMessage = Catalog.GetString("Validating the journal data");
-                                    AJournalValidation.Validate(this, NewJournal, ref Messages, ValidationControlsDictJournal);
-
-                                    // Now do the additional manual validation
-                                    ImportMessage = Catalog.GetString("Additional validation of the journal data");
-                                    TSharedFinanceValidation_GL.ValidateGLJournalManual(this, NewJournal, ref Messages, ValidationControlsDictJournal,
-                                        CorporateExchangeTable, LedgerBaseCurrency);
-
-                                    for (int i = messageCountBeforeValidate; i < Messages.Count; i++)
+                                    if (Messages.Count == preParseMessageCount)
                                     {
-                                        ((TVerificationResult)Messages[i]).OverrideResultContext(String.Format(MCommonConstants.
-                                                StrValidationErrorInLine,
-                                                RowNumber));
+                                        int messageCountBeforeValidate = Messages.Count;
 
-                                        if (Messages[i] is TScreenVerificationResult)
+                                        // Validate using the standard validation
+                                        ImportMessage = Catalog.GetString("Validating the journal data");
+                                        AJournalValidation.Validate(this, NewJournal, ref Messages, ValidationControlsDictJournal);
+
+                                        // Now do the additional manual validation
+                                        ImportMessage = Catalog.GetString("Additional validation of the journal data");
+                                        TSharedFinanceValidation_GL.ValidateGLJournalManual(this, NewJournal, ref Messages,
+                                            ValidationControlsDictJournal, SetupDS, CurrencyTable,
+                                            CorporateExchangeTable, LedgerBaseCurrency);
+
+                                        for (int i = messageCountBeforeValidate; i < Messages.Count; i++)
                                         {
-                                            TVerificationResult downgrade = new TVerificationResult((TScreenVerificationResult)Messages[i]);
-                                            Messages.RemoveAt(i);
-                                            Messages.Insert(i, downgrade);
+                                            ((TVerificationResult)Messages[i]).OverrideResultContext(String.Format(MCommonConstants.
+                                                    StrValidationErrorInLine,
+                                                    RowNumber));
+
+                                            if (Messages[i] is TScreenVerificationResult)
+                                            {
+                                                TVerificationResult downgrade = new TVerificationResult((TScreenVerificationResult)Messages[i]);
+                                                Messages.RemoveAt(i);
+                                                Messages.Insert(i, downgrade);
+                                            }
                                         }
-                                    }
 
-                                    // If this batch is in my base currency,
-                                    // the ExchangeRateToBase must be 1:
-                                    if ((NewJournal.TransactionCurrency == LedgerBaseCurrency)
-                                        && (NewJournal.ExchangeRateToBase != 1.0m))
-                                    {
-                                        Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, RowNumber),
-                                                Catalog.GetString("Journal in base currency must have exchange rate of 1.00."),
-                                                TResultSeverity.Resv_Critical));
-                                    }
-
-                                    //
-                                    // The DateEffective might be different to that of the Batch,
-                                    // but it must be in the same accounting period.
-                                    Int32 journalYear;
-                                    Int32 journalPeriod;
-                                    DateTime journalDate = NewJournal.DateEffective;
-
-                                    TFinancialYear.GetLedgerDatePostingPeriod(LedgerNumber, ref journalDate,
-                                        out journalYear, out journalPeriod, transaction, false);
-
-                                    if ((journalYear != BatchYearNr) || (journalPeriod != BatchPeriodNumber))
-                                    {
-                                        Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, RowNumber),
-                                                String.Format(Catalog.GetString(
-                                                        "The journal effective date {0} is not in the same period as the batch date {1}."),
-                                                    journalDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString()),
-                                                TResultSeverity.Resv_Critical));
-                                    }
-
-                                    if (TVerificationHelper.IsNullOrOnlyNonCritical(Messages))
-                                    {
-                                        // This row passes validation so we can do final actions if the batch is not in the ledger currency
-                                        if (NewJournal.TransactionCurrency != LedgerBaseCurrency)
+                                        // If this batch is in my base currency,
+                                        // the ExchangeRateToBase must be 1:
+                                        if ((NewJournal.TransactionCurrency == LedgerBaseCurrency)
+                                            && (NewJournal.ExchangeRateToBase != 1.0m))
                                         {
-                                            // Validation will have ensured that we have a corporate rate for the effective date
-                                            // We need to know what that rate is...
-                                            DateTime firstOfMonth = new DateTime(NewJournal.DateEffective.Year, NewJournal.DateEffective.Month, 1);
-                                            ACorporateExchangeRateRow corporateRateRow = (ACorporateExchangeRateRow)CorporateExchangeTable.Rows.Find(
-                                                new object[] { NewJournal.TransactionCurrency, LedgerBaseCurrency, firstOfMonth });
-                                            decimal corporateRate = corporateRateRow.RateOfExchange;
+                                            Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine,
+                                                        RowNumber),
+                                                    Catalog.GetString("Journal in base currency must have exchange rate of 1.00."),
+                                                    TResultSeverity.Resv_Critical));
+                                        }
 
-                                            if (Math.Abs((NewJournal.ExchangeRateToBase - corporateRate) / corporateRate) > 0.20m)
+                                        //
+                                        // The DateEffective might be different to that of the Batch,
+                                        // but it must be in the same accounting period.
+                                        Int32 journalYear;
+                                        Int32 journalPeriod;
+                                        DateTime journalDate = NewJournal.DateEffective;
+
+                                        TFinancialYear.GetLedgerDatePostingPeriod(LedgerNumber, ref journalDate,
+                                            out journalYear, out journalPeriod, transaction, false);
+
+                                        if ((journalYear != BatchYearNr) || (journalPeriod != BatchPeriodNumber))
+                                        {
+                                            Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine,
+                                                        RowNumber),
+                                                    String.Format(Catalog.GetString(
+                                                            "The journal effective date {0} is not in the same period as the batch date {1}."),
+                                                        journalDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString()),
+                                                    TResultSeverity.Resv_Critical));
+                                        }
+
+                                        // Get a Corporate Exchange Rate for international currency
+                                        DateTime firstDayOfMonth;
+
+                                        if (TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod(LedgerNumber, NewJournal.DateEffective,
+                                                out firstDayOfMonth))
+                                        {
+                                            intlRateFromBase =
+                                                TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency, firstDayOfMonth,
+                                                    NewJournal.DateEffective);
+                                        }
+
+                                        if (intlRateFromBase <= 0.0m)
+                                        {
+                                            Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
+                                                    String.Format(
+                                                        "There is no Corporate Exchange Rate for {0} to {1} applicable to the period {2} to {3}.  Please set up an appropriate rate and then import the data again.",
+                                                        LedgerBaseCurrency,
+                                                        LedgerIntlCurrency,
+                                                        StringHelper.DateToLocalizedString(firstDayOfMonth),
+                                                        StringHelper.DateToLocalizedString(NewJournal.DateEffective)),
+                                                    TResultSeverity.Resv_Critical));
+                                        }
+
+                                        if (TVerificationHelper.IsNullOrOnlyNonCritical(Messages))
+                                        {
+                                            // This row passes validation so we can do final actions if the batch is not in the ledger currency
+                                            if (NewJournal.TransactionCurrency != LedgerBaseCurrency)
                                             {
-                                                Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine,
-                                                            RowNumber),
-                                                        String.Format(Catalog.GetString(
-                                                                "The exchange rate of {0} differs from the Corporate Rate of {1} for the month commencing {2} by more than 20 percent."),
-                                                            NewJournal.ExchangeRateToBase, corporateRate,
-                                                            StringHelper.DateToLocalizedString(firstOfMonth)),
-                                                        TResultSeverity.Resv_Noncritical));
-                                            }
+                                                // Validation will have ensured that we have a corporate rate for the effective date
+                                                // We need to know what that rate is...
+                                                DateTime firstOfMonth = new DateTime(NewJournal.DateEffective.Year,
+                                                    NewJournal.DateEffective.Month,
+                                                    1);
+                                                ACorporateExchangeRateRow corporateRateRow =
+                                                    (ACorporateExchangeRateRow)CorporateExchangeTable.Rows.Find(
+                                                        new object[] { NewJournal.TransactionCurrency, LedgerBaseCurrency, firstOfMonth });
+                                                decimal corporateRate = corporateRateRow.RateOfExchange;
 
-                                            // we need to create a daily exchange rate pair for the transaction date
-                                            // start with To Ledger currency
-                                            if (UpdateDailyExchangeRateTable(DailyExchangeToTable, NewJournal.TransactionCurrency, LedgerBaseCurrency,
-                                                    NewJournal.ExchangeRateToBase, NewJournal.DateEffective))
-                                            {
-                                                Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportInformationForLine,
-                                                            RowNumber),
-                                                        String.Format(Catalog.GetString(
-                                                                "Added exchange rate of {0} to Daily Exchange Rate table for {1}"),
-                                                            NewJournal.ExchangeRateToBase,
-                                                            StringHelper.DateToLocalizedString(NewJournal.DateEffective)),
-                                                        TResultSeverity.Resv_Info));
-                                            }
+                                                if (Math.Abs((NewJournal.ExchangeRateToBase - corporateRate) / corporateRate) > 0.20m)
+                                                {
+                                                    Messages.Add(new TVerificationResult(String.Format(MCommonConstants.
+                                                                StrImportValidationWarningInLine,
+                                                                RowNumber),
+                                                            String.Format(Catalog.GetString(
+                                                                    "The exchange rate of {0} differs from the Corporate Rate of {1} for the month commencing {2} by more than 20 percent."),
+                                                                NewJournal.ExchangeRateToBase, corporateRate,
+                                                                StringHelper.DateToLocalizedString(firstOfMonth)),
+                                                            TResultSeverity.Resv_Noncritical));
+                                                }
 
-                                            // Now the inverse for From Ledger currency
-                                            ADailyExchangeRateTable DailyExchangeFromTable =
-                                                ADailyExchangeRateAccess.LoadViaACurrencyFromCurrencyCode(NewJournal.TransactionCurrency, transaction);
-                                            decimal inverseRate = Math.Round(1 / NewJournal.ExchangeRateToBase, 10);
+                                                // we need to create a daily exchange rate pair for the transaction date
+                                                // start with To Ledger currency
+                                                if (UpdateDailyExchangeRateTable(DailyExchangeToTable, NewJournal.TransactionCurrency,
+                                                        LedgerBaseCurrency,
+                                                        NewJournal.ExchangeRateToBase, NewJournal.DateEffective))
+                                                {
+                                                    Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportInformationForLine,
+                                                                RowNumber),
+                                                            String.Format(Catalog.GetString(
+                                                                    "Added exchange rate of {0} to Daily Exchange Rate table for {1}"),
+                                                                NewJournal.ExchangeRateToBase,
+                                                                StringHelper.DateToLocalizedString(NewJournal.DateEffective)),
+                                                            TResultSeverity.Resv_Info));
+                                                }
 
-                                            if (UpdateDailyExchangeRateTable(DailyExchangeFromTable, LedgerBaseCurrency,
-                                                    NewJournal.TransactionCurrency,
-                                                    inverseRate, NewJournal.DateEffective))
-                                            {
-                                                ImportMessage = Catalog.GetString("Saving an updated daily exchange rate");
-                                                ADailyExchangeRateAccess.SubmitChanges(DailyExchangeFromTable, transaction);
+                                                // Now the inverse for From Ledger currency
+                                                ADailyExchangeRateTable DailyExchangeFromTable =
+                                                    ADailyExchangeRateAccess.LoadViaACurrencyFromCurrencyCode(NewJournal.TransactionCurrency,
+                                                        transaction);
+                                                decimal inverseRate = Math.Round(1 / NewJournal.ExchangeRateToBase, 10);
+
+                                                if (UpdateDailyExchangeRateTable(DailyExchangeFromTable, LedgerBaseCurrency,
+                                                        NewJournal.TransactionCurrency,
+                                                        inverseRate, NewJournal.DateEffective))
+                                                {
+                                                    ImportMessage = Catalog.GetString("Saving an updated daily exchange rate");
+                                                    ADailyExchangeRateAccess.SubmitChanges(DailyExchangeFromTable, transaction);
+                                                }
                                             }
                                         }
                                     }
@@ -501,13 +571,26 @@ namespace Ict.Petra.Server.MFinance.GL
                                 else if (RowType == "T")
                                 {
                                     ImportMessage = Catalog.GetString("Parsing a transaction row");
+                                    bool skipThisLine = false;
 
                                     if (numberOfElements < 8)
                                     {
                                         Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
                                                 Catalog.GetString("Wrong number of transaction columns.  Expected at least 8 columns."),
                                                 TResultSeverity.Resv_Critical));
+                                        skipThisLine = true;
+                                    }
 
+                                    if (NewJournal == null)
+                                    {
+                                        Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
+                                                Catalog.GetString("Expected a Journal row but found a Transaction row."),
+                                                TResultSeverity.Resv_Critical));
+                                        skipThisLine = true;
+                                    }
+
+                                    if (skipThisLine)
+                                    {
                                         FImportLine = sr.ReadLine();
 
                                         if (FImportLine != null)
@@ -519,14 +602,41 @@ namespace Ict.Petra.Server.MFinance.GL
                                     }
 
                                     ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatch, ref NewJournal,
-                                        ref transaction, ref ImportMessage, ref Messages, ref ValidationControlsDictTransaction);
+                                        intlRateFromBase, ref transaction, ref ImportMessage, ref Messages,
+                                        ref ValidationControlsDictTransaction);
                                 }
                                 else
                                 {
-                                    Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                            Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
+                                    if ((NewBatch == null) && !gotFirstBatch)
+                                    {
+                                        string msg = Catalog.GetString(
+                                            "Expecting a Row Type definition. Valid types are 'B', 'J' or 'T'. Maybe you are opening a 'Transactions' file.");
+                                        msg +=
+                                            Catalog.GetString(
+                                                "  You need to be on the 'Transactions' Tab to import transaction-only data into an existing batch.");
+                                        msg += Catalog.GetString("  Alternatively you may have selected the wrong Field Delimiter.");
+                                        msg += Catalog.GetString("  Choose a delimiter that shows multiple columns in the preview window.");
+                                        Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
+                                                msg,
+                                                TResultSeverity.Resv_Critical));
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
+                                                String.Format(Catalog.GetString(
+                                                        "'{0}' is not a valid Row Type. Valid types are 'B', 'J' or 'T'."),
+                                                    RowType),
+                                                TResultSeverity.Resv_Critical));
+                                    }
                                 }
                             }  // if the CSV line qualifies
+
+                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                            {
+                                CancelledByUser = true;
+                                break;
+                            }
 
                             if (Messages.Count > 100)
                             {
@@ -552,6 +662,15 @@ namespace Ict.Petra.Server.MFinance.GL
                             }
                         }  // while CSV lines
 
+                        if (CancelledByUser)
+                        {
+                            Messages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
+                                    String.Format(Catalog.GetString("{0} messages reported."), Messages.Count), TResultSeverity.Resv_Info));
+                            Messages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
+                                    "The import was cancelled by the user.", TResultSeverity.Resv_Info));
+                            return;
+                        }
+
                         // Finished reading the file - did we have critical errors?
                         if (!TVerificationHelper.IsNullOrOnlyNonCritical(Messages))
                         {
@@ -574,13 +693,21 @@ namespace Ict.Petra.Server.MFinance.GL
                             else
                             {
                                 // We gave up before the end
-                                Messages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                                        Catalog.GetString(
-                                            "Stopped reading the file after generating more than 100 messages.  The file may contain more errors beyond the ones listed here."),
-                                        TResultSeverity.Resv_Info));
+                                if (Messages.Count > 100)
+                                {
+                                    Messages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
+                                            Catalog.GetString(
+                                                "Stopped reading the file after generating more than 100 messages.  The file may contain more errors beyond the ones listed here."),
+                                            TResultSeverity.Resv_Info));
+                                }
+                                else
+                                {
+                                    Messages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
+                                            Catalog.GetString(
+                                                "Stopped reading the file. Please check you are using a GL Batch Import file and have chosen the correct Field Delimiter."),
+                                            TResultSeverity.Resv_Info));
+                                }
                             }
-
-                            TLogging.Log("Return from here!");
 
                             // Do the 'finally' actions and return false
                             return;
@@ -658,26 +785,33 @@ namespace Ict.Petra.Server.MFinance.GL
                             Catalog.GetString("Exception Occurred"),
                             0);
                     } // catch
+                    finally
+                    {
+                        sr.Close();
+
+                        if (submissionOK)
+                        {
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Gift batch import successful"),
+                                100);
+                        }
+                        else
+                        {
+                            Messages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
+                                    Catalog.GetString("None of the data from the import was saved."),
+                                    TResultSeverity.Resv_Critical));
+
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                Catalog.GetString("Data could not be saved."),
+                                0);
+                        }
+
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                    } // end of 'finally'
                 }); // Begin Auto Transaction
 
-            sr.Close();
 
-            if (submissionOK)
-            {
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Gift batch import successful"), 100);
-            }
-            else
-            {
-                AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                        Catalog.GetString("None of the data from the import was saved."),
-                        TResultSeverity.Resv_Critical));
-
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    Catalog.GetString("Data could not be saved."),
-                    0);
-            }
-
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            // Set our 'out' parameters
+            AMessages = Messages;
 
             return submissionOK;
         } // Import GL Batches
@@ -711,9 +845,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 5);
 
             TVerificationResultCollection Messages = new TVerificationResultCollection();
+
+            // fix for Mono issue with out parameter: https://bugzilla.xamarin.com/show_bug.cgi?id=28196
             AMessages = Messages;
 
             GLSetupTDS SetupDS = new GLSetupTDS();
+            SetupDS.CaseSensitive = true;
             StringReader sr = new StringReader(AImportString);
 
             FDelimiter = (String)ARequestParams["Delimiter"];
@@ -733,6 +870,7 @@ namespace Ict.Petra.Server.MFinance.GL
             Int32 PercentDone = 10;
             Int32 PreviousPercentDone = 0;
             bool submissionOK = false;
+            Boolean CancelledByUser = false;
 
             // Create some validation dictionaries
             TValidationControlsDict ValidationControlsDictTransaction = new TValidationControlsDict();
@@ -765,11 +903,42 @@ namespace Ict.Petra.Server.MFinance.GL
                         AJournalRow NewJournalRow = (AJournalRow)MainDS.AJournal.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber });
 
                         // Load supplementary tables that we are going to need for validation
+                        ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
                         AAnalysisTypeAccess.LoadAll(SetupDS, Transaction);
                         AFreeformAnalysisAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                         AAnalysisAttributeAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                         ACostCentreAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                         AAccountAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
+                        ALedgerInitFlagAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
+
+                        DateTime firstDayOfMonth;
+                        decimal intlRateFromBase = -1.0m;
+
+                        if (LedgerTable.Rows.Count > 0)
+                        {
+                            string intlCurrency = LedgerTable[0].IntlCurrency;
+                            string baseCurrency = LedgerTable[0].BaseCurrency;
+
+                            if (TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod(LedgerNumber, NewJournalRow.DateEffective,
+                                    out firstDayOfMonth))
+                            {
+                                intlRateFromBase =
+                                    TExchangeRateTools.GetCorporateExchangeRate(baseCurrency, intlCurrency, firstDayOfMonth,
+                                        NewJournalRow.DateEffective);
+                            }
+
+                            if (intlRateFromBase <= 0.0m)
+                            {
+                                Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, 1),
+                                        String.Format(
+                                            "There is no Corporate Exchange Rate for {0} to {1} applicable to the period {2} to {3}.  Please set up an appropriate rate and then import the data again.",
+                                            baseCurrency,
+                                            intlCurrency,
+                                            StringHelper.DateToLocalizedString(firstDayOfMonth),
+                                            StringHelper.DateToLocalizedString(NewJournalRow.DateEffective)),
+                                        TResultSeverity.Resv_Critical));
+                            }
+                        }
 
                         ImportMessage = Catalog.GetString("Parsing first line");
 
@@ -805,8 +974,15 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
 
                                 ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatchRow, ref NewJournalRow,
-                                    ref Transaction, ref ImportMessage, ref Messages, ref ValidationControlsDictTransaction);
+                                    intlRateFromBase, ref Transaction, ref ImportMessage, ref Messages,
+                                    ref ValidationControlsDictTransaction);
                             }  // if the CSV line qualifies
+
+                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                            {
+                                CancelledByUser = true;
+                                break;
+                            }
 
                             if (Messages.Count > 100)
                             {
@@ -831,6 +1007,15 @@ namespace Ict.Petra.Server.MFinance.GL
                                 TextProcessedLength += (FImportLine.Length + FNewLine.Length);
                             }
                         }  // while CSV lines
+
+                        if (CancelledByUser)
+                        {
+                            Messages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
+                                    String.Format(Catalog.GetString("{0} messages reported."), Messages.Count), TResultSeverity.Resv_Info));
+                            Messages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
+                                    "The import was cancelled by the user.", TResultSeverity.Resv_Info));
+                            return;
+                        }
 
                         // Finished reading the file - did we have critical errors?
                         if (!TVerificationHelper.IsNullOrOnlyNonCritical(Messages))
@@ -894,11 +1079,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 // Make the message more friendly in that case
                 String friendlyExceptionText = MakeFriendlyFKExceptions(ex, "T");
 
-                if (AMessages == null)
-                {
-                    AMessages = new TVerificationResultCollection();
-                }
-
                 if (RowNumber > 0)
                 {
                     // At least we made a start
@@ -956,12 +1136,23 @@ namespace Ict.Petra.Server.MFinance.GL
                 TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             } // end of 'finally'
 
+            // Set our 'out' parameters
+            AMessages = Messages;
+
             return submissionOK;
         } // Import GL Transactions
 
-        private void ImportGLTransactionsInner(Int32 ALedgerNumber, Int32 ARowNumber, ref GLBatchTDS AMainDS, ref GLSetupTDS ASetupDS,
-            ref ABatchRow ANewBatchRow, ref AJournalRow ANewJournalRow, ref TDBTransaction ATransaction, ref string AImportMessage,
-            ref TVerificationResultCollection AMessages, ref TValidationControlsDict AValidationControlsDictTransaction)
+        private void ImportGLTransactionsInner(Int32 ALedgerNumber,
+            Int32 ARowNumber,
+            ref GLBatchTDS AMainDS,
+            ref GLSetupTDS ASetupDS,
+            ref ABatchRow ANewBatchRow,
+            ref AJournalRow ANewJournalRow,
+            decimal AIntlRateFromBase,
+            ref TDBTransaction ATransaction,
+            ref string AImportMessage,
+            ref TVerificationResultCollection AMessages,
+            ref TValidationControlsDict AValidationControlsDictTransaction)
         {
             AImportMessage = Catalog.GetString("Parsing a transaction line.");
             string strIgnoreAnalysisTypeAndValue = Catalog.GetString(" The analysis type/value pair will be ignored.");
@@ -975,31 +1166,45 @@ namespace Ict.Petra.Server.MFinance.GL
 
             AMainDS.ATransaction.Rows.Add(NewTransaction);
 
-            NewTransaction.CostCentreCode = ImportString(Catalog.GetString("Cost centre"),
+            string costCentreCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Cost centre"),
                 AMainDS.ATransaction.ColumnCostCentreCode, AValidationControlsDictTransaction).ToUpper();
 
-            NewTransaction.AccountCode = ImportString(Catalog.GetString("Account code"),
+            string accountCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Account code"),
                 AMainDS.ATransaction.ColumnAccountCode, AValidationControlsDictTransaction).ToUpper();
 
-            NewTransaction.Narrative = ImportString(Catalog.GetString("Narrative"),
+            // This might add a non-critical error
+            TCommonImport.FixAccountCodes(ALedgerNumber, ARowNumber, ref accountCode, ASetupDS.AAccount,
+                ref costCentreCode, ASetupDS.ACostCentre, AMessages);
+
+            NewTransaction.CostCentreCode = costCentreCode;
+            NewTransaction.AccountCode = accountCode;
+
+            // Its ok to start our counter here because we can't have had any parsing errors yet
+            int preParseMessageCount = AMessages.Count;
+
+            NewTransaction.Narrative = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Narrative"),
                 AMainDS.ATransaction.ColumnNarrative, AValidationControlsDictTransaction);
 
-            NewTransaction.Reference = ImportString(Catalog.GetString("Reference"),
+            NewTransaction.Reference = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Reference"),
                 AMainDS.ATransaction.ColumnReference, AValidationControlsDictTransaction);
 
-            DateTime TransactionDate = ImportDate(Catalog.GetString("Transaction date"),
+            DateTime TransactionDate = TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, Catalog.GetString("Transaction date"),
                 AMainDS.ATransaction.ColumnTransactionDate, ARowNumber, AMessages, AValidationControlsDictTransaction);
 
-            decimal DebitAmount = ImportDecimal(Catalog.GetString("Debit amount"),
+            decimal DebitAmount = TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat, Catalog.GetString("Debit amount"),
                 AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, AValidationControlsDictTransaction, "0");
-            decimal CreditAmount = ImportDecimal(Catalog.GetString("Credit amount"),
-                AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, AValidationControlsDictTransaction, "0");
+            decimal CreditAmount =
+                TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat, Catalog.GetString("Credit amount"),
+                    AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, AValidationControlsDictTransaction, "0");
+
+            // The critical parsing is complete now
+            bool hasParsingErrors = (AMessages.Count != preParseMessageCount);
 
             for (int i = 0; i < 10; i++)
             {
-                String analysisType = ImportString(Catalog.GetString("Analysis Type") + "#" + i,
-                    AMainDS.ATransAnalAttrib.ColumnAnalysisTypeCode, AValidationControlsDictTransaction);
-                String analysisValue = ImportString(Catalog.GetString("Analysis Value") + "#" + i,
+                String analysisType = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Analysis Type") + "#" + i,
+                    AMainDS.ATransAnalAttrib.ColumnAnalysisTypeCode, AValidationControlsDictTransaction).ToUpper();
+                String analysisValue = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Analysis Value") + "#" + i,
                     AMainDS.ATransAnalAttrib.ColumnAnalysisAttributeValue, AValidationControlsDictTransaction);
 
                 bool gotType = (analysisType != null) && (analysisType.Length > 0);
@@ -1013,143 +1218,155 @@ namespace Ict.Petra.Server.MFinance.GL
                             TResultSeverity.Resv_Noncritical));
                 }
 
-                // The analysis data is only imported if all corresponding values are there:
-                // Errors are recorded on-the-fly but are marked as non-critical
-                if (gotType && gotValue)
+                if (!hasParsingErrors)
                 {
-                    DataRow atrow = ASetupDS.AAnalysisType.Rows.Find(new Object[] { analysisType });
-                    DataRow afrow = ASetupDS.AFreeformAnalysis.Rows.Find(new Object[] { NewTransaction.LedgerNumber, analysisType, analysisValue });
-                    AAnalysisAttributeRow anrow = (AAnalysisAttributeRow)ASetupDS.AAnalysisAttribute.Rows.Find(
-                        new Object[] { NewTransaction.LedgerNumber, analysisType, NewTransaction.AccountCode });
-
-                    bool isActive = (anrow != null) && anrow.Active;
-
-                    if ((atrow != null) && (afrow != null) && isActive)
+                    // The analysis data is only imported if all corresponding values are there:
+                    // Errors are recorded on-the-fly but are marked as non-critical
+                    if (gotType && gotValue)
                     {
-                        ATransAnalAttribRow NewTransAnalAttrib = AMainDS.ATransAnalAttrib.NewRowTyped(true);
-                        NewTransAnalAttrib.LedgerNumber = NewTransaction.LedgerNumber;
-                        NewTransAnalAttrib.BatchNumber = NewTransaction.BatchNumber;
-                        NewTransAnalAttrib.JournalNumber = NewTransaction.JournalNumber;
-                        NewTransAnalAttrib.TransactionNumber = NewTransaction.TransactionNumber;
-                        NewTransAnalAttrib.AnalysisTypeCode = analysisType;
-                        NewTransAnalAttrib.AnalysisAttributeValue = analysisValue;
-                        NewTransAnalAttrib.AccountCode = NewTransaction.AccountCode;
-                        AMainDS.ATransAnalAttrib.Rows.Add(NewTransAnalAttrib);
-                    }
-                    else
-                    {
-                        // All analysis analysisType errors are non-critical
-                        if (atrow == null)
+                        DataRow atrow = ASetupDS.AAnalysisType.Rows.Find(new Object[] { analysisType });
+                        DataRow afrow = ASetupDS.AFreeformAnalysis.Rows.Find(new Object[] { NewTransaction.LedgerNumber, analysisType, analysisValue });
+                        AAnalysisAttributeRow anrow = (AAnalysisAttributeRow)ASetupDS.AAnalysisAttribute.Rows.Find(
+                            new Object[] { NewTransaction.LedgerNumber, analysisType, NewTransaction.AccountCode });
+
+                        bool isActive = (anrow != null) && anrow.Active;
+
+                        if ((atrow != null) && (afrow != null) && isActive)
                         {
-                            AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, ARowNumber),
-                                    String.Format(Catalog.GetString("Unknown transaction analysis attribute '{0}'."),
-                                        analysisType) + strIgnoreAnalysisTypeAndValue,
-                                    TResultSeverity.Resv_Noncritical));
+                            ATransAnalAttribRow NewTransAnalAttrib = AMainDS.ATransAnalAttrib.NewRowTyped(true);
+                            NewTransAnalAttrib.LedgerNumber = NewTransaction.LedgerNumber;
+                            NewTransAnalAttrib.BatchNumber = NewTransaction.BatchNumber;
+                            NewTransAnalAttrib.JournalNumber = NewTransaction.JournalNumber;
+                            NewTransAnalAttrib.TransactionNumber = NewTransaction.TransactionNumber;
+                            NewTransAnalAttrib.AnalysisTypeCode = analysisType;
+                            NewTransAnalAttrib.AnalysisAttributeValue = analysisValue;
+                            NewTransAnalAttrib.AccountCode = NewTransaction.AccountCode;
+                            AMainDS.ATransAnalAttrib.Rows.Add(NewTransAnalAttrib);
                         }
-                        else if (afrow == null)
+                        else
                         {
-                            AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, ARowNumber),
-                                    String.Format(Catalog.GetString("Unknown transaction analysis value '{0}' for type '{1}'."),
-                                        analysisValue, analysisType) + strIgnoreAnalysisTypeAndValue,
-                                    TResultSeverity.Resv_Noncritical));
-                        }
-                        else if (!isActive)
-                        {
-                            if (anrow == null)
+                            // All analysis analysisType errors are non-critical
+                            if (atrow == null)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, ARowNumber),
-                                        String.Format(Catalog.GetString(
-                                                "Transaction analysis type/value '{0}'/'{1}' is not associated with account '{2}'."),
-                                            analysisType, analysisValue, NewTransaction.AccountCode) + strIgnoreAnalysisTypeAndValue,
+                                        String.Format(Catalog.GetString("Unknown transaction analysis attribute '{0}'."),
+                                            analysisType) + strIgnoreAnalysisTypeAndValue,
                                         TResultSeverity.Resv_Noncritical));
                             }
-                            else
+                            else if (afrow == null)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, ARowNumber),
-                                        String.Format(Catalog.GetString("Transaction analysis type/value '{0}'/'{1}' is no longer active."),
-                                            analysisType, analysisValue) + strIgnoreAnalysisTypeAndValue,
+                                        String.Format(Catalog.GetString("Unknown transaction analysis value '{0}' for type '{1}'."),
+                                            analysisValue, analysisType) + strIgnoreAnalysisTypeAndValue,
                                         TResultSeverity.Resv_Noncritical));
+                            }
+                            else if (!isActive)
+                            {
+                                if (anrow == null)
+                                {
+                                    AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, ARowNumber),
+                                            String.Format(Catalog.GetString(
+                                                    "Transaction analysis type/value '{0}'/'{1}' is not associated with account '{2}'."),
+                                                analysisType, analysisValue, NewTransaction.AccountCode) + strIgnoreAnalysisTypeAndValue,
+                                            TResultSeverity.Resv_Noncritical));
+                                }
+                                else
+                                {
+                                    AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, ARowNumber),
+                                            String.Format(Catalog.GetString("Transaction analysis type/value '{0}'/'{1}' is no longer active."),
+                                                analysisType, analysisValue) + strIgnoreAnalysisTypeAndValue,
+                                            TResultSeverity.Resv_Noncritical));
+                                }
                             }
                         }
                     }
                 }
             }
 
-            NewTransaction.TransactionDate = TransactionDate;
-
-            if ((DebitAmount == 0) && (CreditAmount == 0))
+            if (!hasParsingErrors)
             {
-                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                        Catalog.GetString("Either the debit amount or the credit amount must be greater than 0."), TResultSeverity.Resv_Critical));
-            }
+                NewTransaction.TransactionDate = TransactionDate;
 
-            if ((DebitAmount < 0) || (CreditAmount < 0))
-            {
-                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                        Catalog.GetString("Negative amount specified - debits and credits must be positive."), TResultSeverity.Resv_Critical));
-            }
-
-            if ((DebitAmount != 0) && (CreditAmount != 0))
-            {
-                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                        Catalog.GetString("Transactions cannot have values for both debit and credit amounts."), TResultSeverity.Resv_Critical));
-            }
-
-            if (DebitAmount != 0)
-            {
-                NewTransaction.DebitCreditIndicator = true;
-                NewTransaction.TransactionAmount = DebitAmount;
-            }
-            else
-            {
-                NewTransaction.DebitCreditIndicator = false;
-                NewTransaction.TransactionAmount = CreditAmount;
-            }
-
-            NewTransaction.AmountInBaseCurrency = GLRoutines.Divide(NewTransaction.TransactionAmount, ANewJournalRow.ExchangeRateToBase);
-
-            // Now we can start validation
-            int messageCountBeforeValidate = AMessages.Count;
-
-            // Do our standard gift batch validation checks on this row
-            AImportMessage = Catalog.GetString("Validating the transaction data");
-            ATransactionValidation.Validate(this, NewTransaction, ref AMessages, AValidationControlsDictTransaction);
-
-            // And do the additional manual ones
-            AImportMessage = Catalog.GetString("Additional validation of the transaction data");
-            TSharedFinanceValidation_GL.ValidateGLDetailManual(this,
-                ANewBatchRow,
-                NewTransaction,
-                null,
-                ref AMessages,
-                AValidationControlsDictTransaction,
-                ASetupDS.ACostCentre,
-                ASetupDS.AAccount);
-
-            for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
-            {
-                ((TVerificationResult)AMessages[i]).OverrideResultContext(String.Format(MCommonConstants.StrValidationErrorInLine, ARowNumber));
-
-                if (AMessages[i] is TScreenVerificationResult)
+                if ((DebitAmount == 0) && (CreditAmount == 0))
                 {
-                    TVerificationResult downgrade = new TVerificationResult((TScreenVerificationResult)AMessages[i]);
-                    AMessages.RemoveAt(i);
-                    AMessages.Insert(i, downgrade);
+                    AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
+                            Catalog.GetString("Either the debit amount or the credit amount must be greater than 0."), TResultSeverity.Resv_Critical));
                 }
-            }
 
-            if (NewTransaction.TransactionAmount <= 0.0m)
-            {
-                // We will have a validation message that will duplicate one we already have and may not really make sense in the context
-                //  of separate credit and debit amounts
+                if ((DebitAmount < 0) || (CreditAmount < 0))
+                {
+                    AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
+                            Catalog.GetString("Negative amount specified - debits and credits must be positive."), TResultSeverity.Resv_Critical));
+                }
+
+                if ((DebitAmount != 0) && (CreditAmount != 0))
+                {
+                    AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
+                            Catalog.GetString("Transactions cannot have values for both debit and credit amounts."), TResultSeverity.Resv_Critical));
+                }
+
+                if (DebitAmount != 0)
+                {
+                    NewTransaction.DebitCreditIndicator = true;
+                    NewTransaction.TransactionAmount = DebitAmount;
+                }
+                else
+                {
+                    NewTransaction.DebitCreditIndicator = false;
+                    NewTransaction.TransactionAmount = CreditAmount;
+                }
+
+                NewTransaction.AmountInBaseCurrency = GLRoutines.Divide(NewTransaction.TransactionAmount, ANewJournalRow.ExchangeRateToBase);
+
+                // If we know the international currency exchange rate we can set the value for the transaction amount
+                if (AIntlRateFromBase > 0.0m)
+                {
+                    NewTransaction.AmountInIntlCurrency = GLRoutines.Divide(NewTransaction.AmountInBaseCurrency, AIntlRateFromBase, 2);
+                }
+
+                // Now we can start validation
+                int messageCountBeforeValidate = AMessages.Count;
+
+                // Do our standard gift batch validation checks on this row
+                AImportMessage = Catalog.GetString("Validating the transaction data");
+                ATransactionValidation.Validate(this, NewTransaction, ref AMessages, AValidationControlsDictTransaction);
+
+                // And do the additional manual ones
+                AImportMessage = Catalog.GetString("Additional validation of the transaction data");
+                TSharedFinanceValidation_GL.ValidateGLDetailManual(this,
+                    ANewBatchRow,
+                    NewTransaction,
+                    null,
+                    ref AMessages,
+                    AValidationControlsDictTransaction,
+                    ASetupDS.ACostCentre,
+                    ASetupDS.AAccount);
+
                 for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
                 {
-                    TVerificationResult msg = (TVerificationResult)AMessages[i];
+                    ((TVerificationResult)AMessages[i]).OverrideResultContext(String.Format(MCommonConstants.StrValidationErrorInLine, ARowNumber));
 
-                    if (msg.ResultText.Contains(Catalog.GetString("Debit amount")) || msg.ResultText.Contains(Catalog.GetString("Credit amount")))
+                    if (AMessages[i] is TScreenVerificationResult)
                     {
+                        TVerificationResult downgrade = new TVerificationResult((TScreenVerificationResult)AMessages[i]);
                         AMessages.RemoveAt(i);
-                        break;
+                        AMessages.Insert(i, downgrade);
+                    }
+                }
+
+                if (NewTransaction.TransactionAmount <= 0.0m)
+                {
+                    // We will have a validation message that will duplicate one we already have and may not really make sense in the context
+                    //  of separate credit and debit amounts
+                    for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
+                    {
+                        TVerificationResult msg = (TVerificationResult)AMessages[i];
+
+                        if (msg.ResultText.Contains(Catalog.GetString("Debit amount")) || msg.ResultText.Contains(Catalog.GetString("Credit amount")))
+                        {
+                            AMessages.RemoveAt(i);
+                            break;
+                        }
                     }
                 }
             }
@@ -1211,180 +1428,6 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             return ex.Message;
-        }
-
-        private String ImportString(String AColumnTitle,
-            DataColumn ADataColumn,
-            TValidationControlsDict AValidationColumnsDict,
-            bool ATreatEmptyStringAsText = true)
-        {
-            if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
-            {
-                AValidationColumnsDict.Add(ADataColumn, new TValidationControlsData(null, AColumnTitle));
-            }
-
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-
-            if ((sReturn.Length == 0) && !ATreatEmptyStringAsText)
-            {
-                return null;
-            }
-
-            return sReturn;
-        }
-
-        private Boolean ImportBoolean(String AColumnTitle,
-            DataColumn ADataColumn,
-            TValidationControlsDict AValidationColumnsDict,
-            String ADefaultString = "")
-        {
-            if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
-            {
-                AValidationColumnsDict.Add(ADataColumn, new TValidationControlsData(null, AColumnTitle));
-            }
-
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-
-            if (sReturn == String.Empty)
-            {
-                sReturn = ADefaultString;
-            }
-
-            return sReturn.ToLower().Equals("yes");
-        }
-
-        private Int64 ImportInt64(String AColumnTitle,
-            DataColumn ADataColumn,
-            int ARowNumber,
-            TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict,
-            String ADefaultString = "")
-        {
-            if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
-            {
-                AValidationColumnsDict.Add(ADataColumn, new TValidationControlsData(null, AColumnTitle));
-            }
-
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-
-            if (sReturn == String.Empty)
-            {
-                sReturn = ADefaultString;
-            }
-
-            Int64 retVal;
-
-            if (Int64.TryParse(sReturn, out retVal))
-            {
-                return retVal;
-            }
-
-            AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
-                    String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
-                    TResultSeverity.Resv_Critical));
-            return -1;
-        }
-
-        private Int32 ImportInt32(String AColumnTitle,
-            DataColumn ADataColumn,
-            int ARowNumber,
-            TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict,
-            String ADefaultString = "")
-        {
-            if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
-            {
-                AValidationColumnsDict.Add(ADataColumn, new TValidationControlsData(null, AColumnTitle));
-            }
-
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-
-            if (sReturn == String.Empty)
-            {
-                sReturn = ADefaultString;
-            }
-
-            Int32 retVal;
-
-            if (Int32.TryParse(sReturn, out retVal))
-            {
-                return retVal;
-            }
-
-            AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
-                    String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
-                    TResultSeverity.Resv_Critical));
-            return -1;
-        }
-
-        private decimal ImportDecimal(String AColumnTitle,
-            DataColumn ADataColumn,
-            int ARowNumber,
-            TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict,
-            String ADefaultString = "")
-        {
-            if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
-            {
-                AValidationColumnsDict.Add(ADataColumn, new TValidationControlsData(null, AColumnTitle));
-            }
-
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-
-            if (sReturn == String.Empty)
-            {
-                sReturn = ADefaultString;
-            }
-
-            try
-            {
-                decimal dec = Convert.ToDecimal(sReturn, FCultureInfoNumberFormat);
-                return dec;
-            }
-            catch
-            {
-                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
-                        String.Format(Catalog.GetString("Cannot convert '{0}' to a decimal number. Will assume a value of 1.00."), sReturn),
-                        TResultSeverity.Resv_Critical));
-                return 1.0m;
-            }
-        }
-
-        private DateTime ImportDate(String AColumnTitle,
-            DataColumn ADataColumn,
-            int ARowNumber,
-            TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict,
-            String ADefaultString = "")
-        {
-            if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
-            {
-                AValidationColumnsDict.Add(ADataColumn, new TValidationControlsData(null, AColumnTitle));
-            }
-
-            String sDate = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-
-            if (sDate == String.Empty)
-            {
-                sDate = ADefaultString;
-            }
-
-            DateTime dtReturn;
-
-            try
-            {
-                dtReturn = Convert.ToDateTime(sDate, FCultureInfoDate);
-            }
-            catch (Exception)
-            {
-                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
-                        String.Format(Catalog.GetString("Cannot convert '{0}' to a date. Will assume a value of 'Today'."), sDate),
-                        TResultSeverity.Resv_Critical));
-                TLogging.Log("Problem parsing " + sDate + " with format " + FCultureInfoDate.DateTimeFormat.ShortDatePattern);
-                return DateTime.Today;
-            }
-
-            return dtReturn;
         }
     }
 }

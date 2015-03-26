@@ -391,7 +391,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 FSplashScreen.Close();
                 TLogging.Log(e.ToString());
                 MessageBox.Show(e.Message);
-                Shutdown.StopPetraClient();
+                Shutdown.StopPetraClient(false);
             }
 
             if (!LoadClientSettings())
@@ -527,11 +527,11 @@ namespace Ict.Petra.Client.App.PetraClient
                 // No successful login
 
                 // APPLICATION STOPS IN THIS PROCEDURE !!!
-                Shutdown.StopPetraClient();
+                Shutdown.StopPetraClient(false);
             }
 
             // APPLICATION STOPS IN THIS PROCEDURE !!!
-            Shutdown.StopPetraClient();
+            Shutdown.StopPetraClient(false);
         }
 
 #if TODO

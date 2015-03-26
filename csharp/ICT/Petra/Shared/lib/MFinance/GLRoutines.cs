@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
@@ -344,6 +345,21 @@ namespace Ict.Petra.Shared.MFinance
         public static void UpdateTotalsOfBatch(ref GLBatchTDS AMainDS,
             ABatchRow ACurrentBatch)
         {
+            #region Validate Arguments
+
+            if (AMainDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ACurrentBatch == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch datarow is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             decimal BatchDebitTotal = 0.0m;
             decimal BatchCreditTotal = 0.0m;
 

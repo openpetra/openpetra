@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -22,30 +22,121 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections.Specialized;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
-using Ict.Common.DB;
+
 using Ict.Common;
-using Ict.Common.Data;
+using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Verification;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MConference.Data.Access;
-using Ict.Petra.Shared.MConference;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MConference.Data;
-
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 {
     /// <summary>
-    /// Deletes a conference from the server
-    ///
+    /// provides server side methods for the Conference Find Form
     /// </summary>
-    public class TDeleteConferenceWebConnector
+    public class TConferenceFindForm
     {
+        /// <summary>
+        /// Create a new Conference
+        /// </summary>
+        /// <param name="APartnerKey">match long for conference key</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static void CreateNewConference(long APartnerKey)
+        {
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
+
+            PcConferenceTable ConferenceTable;
+            PUnitTable UnitTable;
+            PPartnerLocationTable PartnerLocationTable;
+
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    try
+                    {
+                        ConferenceTable = PcConferenceAccess.LoadAll(Transaction);
+                        UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+                        PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, Transaction);
+
+                        DateTime Start = new DateTime();
+                        DateTime End = new DateTime();
+
+                        foreach (PPartnerLocationRow PartnerLocationRow in PartnerLocationTable.Rows)
+                        {
+                            if ((PartnerLocationRow.DateEffective != null) || (PartnerLocationRow.DateGoodUntil != null))
+                            {
+                                if (PartnerLocationRow.DateEffective != null)
+                                {
+                                    Start = (DateTime)PartnerLocationRow.DateEffective;
+                                }
+
+                                if (PartnerLocationRow.DateGoodUntil != null)
+                                {
+                                    End = (DateTime)PartnerLocationRow.DateGoodUntil;
+                                }
+
+                                break;
+                            }
+                        }
+
+                        // set column values
+                        PcConferenceRow AddRow = ConferenceTable.NewRowTyped();
+                        AddRow.ConferenceKey = APartnerKey;
+
+                        string OutreachPrefix = ((PUnitRow)UnitTable.Rows[0]).OutreachCode;
+
+                        if (OutreachPrefix.Length > 4)
+                        {
+                            AddRow.OutreachPrefix = OutreachPrefix.Substring(0, 5);
+                        }
+                        else
+                        {
+                            AddRow.OutreachPrefix = OutreachPrefix;
+                        }
+
+                        if (Start != DateTime.MinValue)
+                        {
+                            AddRow.Start = Start;
+                        }
+
+                        if (End != DateTime.MinValue)
+                        {
+                            AddRow.End = End;
+                        }
+
+                        string CurrencyCode = ((PUnitRow)UnitTable.Rows[0]).OutreachCostCurrencyCode;
+
+                        if (!string.IsNullOrEmpty(CurrencyCode))
+                        {
+                            AddRow.CurrencyCode = CurrencyCode;
+                        }
+                        else
+                        {
+                            AddRow.CurrencyCode = "USD";
+                        }
+
+                        // add new row to database table
+                        ConferenceTable.Rows.Add(AddRow);
+                        PcConferenceAccess.SubmitChanges(ConferenceTable, Transaction);
+
+                        SubmissionOK = true;
+                    }
+                    catch (Exception Exc)
+                    {
+                        TLogging.Log("An Exception occured during the creation of a new Conference:" + Environment.NewLine + Exc.ToString());
+                    }
+                });
+        }
+
         /// <summary>
         /// deletes the complete conference including all conference data
         /// </summary>

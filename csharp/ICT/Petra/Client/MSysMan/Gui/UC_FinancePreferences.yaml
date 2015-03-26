@@ -16,7 +16,7 @@ RootNode:
         grpGiftProcessing:
             Controls: [pnlGiftProcessing]
             Width: 430
-            Height: 60
+            Height: 80
         pnlLedgers:
             Controls: [cmbDefaultLedger]
             Width: 410
@@ -25,10 +25,15 @@ RootNode:
             List: LedgerNameList
             Width: 390
         pnlGiftProcessing:
-            Controls: [chkNewDonorWarning]
+            Controls: [chkNewDonorWarning, chkAutoSave]
             Width: 410
-            Height: 40
+            Height: 60
         chkNewDonorWarning:
             CheckBoxAttachedLabel: right
             Label: Warning displayed when a gift is entered for a new donor
             Width: 390
+        chkAutoSave:
+            CheckBoxAttachedLabel: right
+            Label: Auto save Gift Batch screen when creating a new gift or gift detail
+            Width: 390
+            Multiline: true

@@ -75,6 +75,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // Get the glm-values before and after the test and taking the differences enables
             // to run the test several times
+
+            // ** NOTE! Both of these initially return empty data because the GLMInfo line doesn't exist.
+            //          When they are later used in a comparison, 0 is returned for the non-existant rows,
+            //          And the test succeeds by a fortunate accident!
             TGet_GLM_Info getGLM_InfoBeforeStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
             TGet_GLM_Info getGLM_InfoBeforeEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 
@@ -165,6 +169,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // Get the glm-values before and after the test and taking the differences enables
             // to run the test several times
+
+            // ** NOTE! Both of these initially return empty data because the GLMInfo line doesn't exist.
+            //          When they are later used in a comparison, 0 is returned for the non-existant rows.
+            //          And the test succeeds by a fortunate accident!
+
             TGet_GLM_Info getGLM_InfoBeforeStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
             TGet_GLM_Info getGLM_InfoBeforeEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 

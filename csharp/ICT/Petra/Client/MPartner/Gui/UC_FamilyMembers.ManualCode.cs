@@ -463,6 +463,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void InitializeManualCode()
         {
             FMainDS.InitVars();
+
+            FPetraUtilsObject.SetToolTip(btnRefreshGrid, Catalog.GetString("Refresh Family Members List"));
+            FPetraUtilsObject.SetToolTip(btnFamilyIDHelp, Catalog.GetString("Help for Family ID"));
         }
 
         /// <summary>
@@ -1313,73 +1316,82 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                if (!DataGridExist())
+                this.Cursor = Cursors.WaitCursor;
+
+                try
                 {
-                    try
+                    if (!DataGridExist())
                     {
-                        if (LoadDataOnDemand())
+                        try
                         {
-                            /* Create SourceDataGrid columns */
-                            CreateGridColumns();
+                            if (LoadDataOnDemand())
+                            {
+                                /* Create SourceDataGrid columns */
+                                CreateGridColumns();
 
-                            /* DataBinding */
-                            DataBindGrid();
+                                /* DataBinding */
+                                DataBindGrid();
 
-                            /* Setup the DataGrid's visual appearance */
-                            FDataGridAutoSized = false;  // ensure Columns are Auto-Sized again (needed if there wasn't a Person in the list before)
-                            SetupDataGridVisualAppearance();
+                                /* Setup the DataGrid's visual appearance */
+                                FDataGridAutoSized = false;  // ensure Columns are Auto-Sized again (needed if there wasn't a Person in the list before)
+                                SetupDataGridVisualAppearance();
 
-                            /* Prepare the Demote and Promote buttons first time */
-                            PrepareArrowButtons();
+                                /* Prepare the Demote and Promote buttons first time */
+                                PrepareArrowButtons();
 
-                            /* Hook up event that fires when a different Row is selected */
-                            grdFamilyMembers.Selection.FocusRowEntered += new RowEventHandler(this.DataGrid_FocusRowEntered);
-                            OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpFamilyMembers));
-                            this.btnEditPerson.Enabled = true;
-                            this.btnMovePersonToOtherFamily.Enabled = true;
-                            this.btnEditFamilyID.Enabled = true;
-                            ApplySecurity();
+                                /* Hook up event that fires when a different Row is selected */
+                                grdFamilyMembers.Selection.FocusRowEntered += new RowEventHandler(this.DataGrid_FocusRowEntered);
+                                OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpFamilyMembers));
+                                this.btnEditPerson.Enabled = true;
+                                this.btnMovePersonToOtherFamily.Enabled = true;
+                                this.btnEditFamilyID.Enabled = true;
+                                ApplySecurity();
+                            }
                         }
-                    }
-                    catch (NullReferenceException)
-                    {
-                    }
-                }
-                else
-                {
-                    if (LoadDataOnDemand())
-                    {
-                        /* One or more Family Members present > select first one in Grid */
-                        grdFamilyMembers.Selection.SelectRow(1, true);
-
-                        // if refresh is the result of a broadcast message we do not want to bring the grid into focus
-                        if (!FBroadcastRefresh)
+                        catch (NullReferenceException)
                         {
-                            /* Make the Grid respond on updown keys */
-                            grdFamilyMembers.Focus();
                         }
-
-                        btnEditPerson.Enabled = true;
-                        btnMovePersonToOtherFamily.Enabled = true;
-                        btnEditFamilyID.Enabled = true;
-
-                        /* Prepare the Demote and Promote buttons */
-                        SetArrowButtons();
                     }
                     else
                     {
-                        /* No Family Member present > disable buttons that are no longer relevant */
-                        btnFamilyMemberDemote.Enabled = false;
-                        btnFamilyMemberPromote.Enabled = false;
-                        btnEditPerson.Enabled = false;
-                        btnMovePersonToOtherFamily.Enabled = false;
-                        btnEditFamilyID.Enabled = false;
+                        if (LoadDataOnDemand())
+                        {
+                            /* One or more Family Members present > select first one in Grid */
+                            grdFamilyMembers.Selection.SelectRow(1, true);
 
-                        /* Prepare the Demote and Promote buttons */
-                        PrepareArrowButtons();
+                            // if refresh is the result of a broadcast message we do not want to bring the grid into focus
+                            if (!FBroadcastRefresh)
+                            {
+                                /* Make the Grid respond on updown keys */
+                                grdFamilyMembers.Focus();
+                            }
+
+                            btnEditPerson.Enabled = true;
+                            btnMovePersonToOtherFamily.Enabled = true;
+                            btnEditFamilyID.Enabled = true;
+
+                            /* Prepare the Demote and Promote buttons */
+                            SetArrowButtons();
+                        }
+                        else
+                        {
+                            /* No Family Member present > disable buttons that are no longer relevant */
+                            btnFamilyMemberDemote.Enabled = false;
+                            btnFamilyMemberPromote.Enabled = false;
+                            btnEditPerson.Enabled = false;
+                            btnMovePersonToOtherFamily.Enabled = false;
+                            btnEditFamilyID.Enabled = false;
+
+                            /* Prepare the Demote and Promote buttons */
+                            PrepareArrowButtons();
+                        }
+
+                        ApplySecurity();
                     }
-
-                    ApplySecurity();
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
                 }
             }
         }

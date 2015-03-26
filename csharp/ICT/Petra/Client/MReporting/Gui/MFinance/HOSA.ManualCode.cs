@@ -172,19 +172,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (pm.Get("param_period").ToBool() == true)
             {
-                Int32 LedgerNumber = pm.Get("param_ledger_number_i").ToInt32();
-                DataTable AccountingPeriodTbl =
-                    (AAccountingPeriodTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
-                        LedgerNumber);
                 Int32 PeriodStart = pm.Get("param_start_period_i").ToInt32();
                 Int32 PeriodEnd = pm.Get("param_end_period_i").ToInt32();
 
-                AccountingPeriodTbl.DefaultView.RowFilter = LedgerFilter + " AND a_accounting_period_number_i=" + PeriodStart;
-                DateTime DateStart = Convert.ToDateTime(AccountingPeriodTbl.DefaultView[0].Row["a_period_start_date_d"]);
-                pm.Add("param_start_date", DateStart);
-                AccountingPeriodTbl.DefaultView.RowFilter = LedgerFilter + " AND a_accounting_period_number_i=" + PeriodEnd;
-                DateTime DateEnd = Convert.ToDateTime(AccountingPeriodTbl.DefaultView[0].Row["a_period_end_date_d"]);
-                pm.Add("param_end_date", DateEnd);
+                DateTime DateStart = pm.Get("param_start_date").ToDate();
+                DateTime DateEnd = pm.Get("param_end_date").ToDate();
 
                 ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                     TCacheableFinanceTablesEnum.LedgerDetails);

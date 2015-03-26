@@ -249,7 +249,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
             {
                 if (!CalculateFromMethod(Parameters.Get("calculateFromMethod").ToString()))
                 {
-                    TLogging.Log("ERROR: could not calculate from method (or report was cancelled).");
+                    TLogging.Log(TLogging.LOG_PREFIX_ERROR + "Could not calculate from method (or report was cancelled).");
                     return false;
                 }
             }
@@ -262,7 +262,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
 
                 if ((calclevel.Calculate(CurrentReport.GetLevel("main"), 0) == -1) || (Parameters.Get("CancelReportCalculation").ToBool() == true))
                 {
-                    TLogging.Log("ERROR: could not calculate main level (or report was cancelled).");
+                    TLogging.Log(TLogging.LOG_PREFIX_ERROR + "Could not calculate main level (or report was cancelled).");
                     return false;
                 }
 

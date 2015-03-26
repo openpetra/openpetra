@@ -45,7 +45,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 {
     /// <summary>
-    /// Performs server-side lookups for the Client in the MCommon DataReader sub-namespace.
+    /// Performs server-side lookups for the Client in the MConference DataReader sub-namespace.
     ///
     /// </summary>
     public class TConferenceMasterDataWebConnector

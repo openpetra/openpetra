@@ -31,7 +31,7 @@
             ParameterName: param_partner_source
         grpSelection:
             Label: Selection
-            Controls: [dtpStartDate, dtpEndDate, txtMinimumAmount]
+            Controls: [dtpStartDate, dtpEndDate, txtMinimumAmount, chkExcludeSupportGifts]
         grpCurrencySelection:
             Label: Select Currency
             Controls: [cmbCurrency]
@@ -55,7 +55,11 @@
         txtMinimumAmount:
             Label: Minimum Amount
             ParameterName: param_minimum_amount
-            Format: Integer
+            Format: Decimal
+        chkExcludeSupportGifts:
+            Label: Exclude Support Gifts
+            ParameterName: param_exclude_support_gifts
+            CheckBoxAttachedLabel: Right
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [Base, International]

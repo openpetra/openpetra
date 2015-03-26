@@ -660,6 +660,8 @@ namespace Ict.Petra.Client.CommonForms
                 TFormsList.GFormsList.Remove(FWinForm);
 
                 FWindowExtensions.TForm_Closing();
+                FStatusBar = null; // Throwing away my reference to the status bar may allow the form to be disposed,
+                                   // and may avoid an exception in WriteToStatusBar, below.
             }
         }
 
@@ -695,13 +697,13 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="s"></param>
         public void WriteToStatusBar(String s)
         {
-            if (FStatusBar != null)
+            if ((FStatusBar == null) || (FStatusBar.IsDisposed) || (!FStatusBar.IsHandleCreated))
             {
-                if (!FStatusBar.IsHandleCreated)
-                {
-                    return;
-                }
+                return;
+            }
 
+            try // despite the efforts above, it's still possible that the FStatusBar object will be invalid by the time it's actually used.
+            {   // so if it gives any problem, I'm just ignoring it.
                 if (FStatusBar.InvokeRequired)
                 {
                     FStatusBar.Invoke(new WriteCallback(WriteToStatusBar), new object[] { s });
@@ -710,6 +712,9 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     FStatusBar.ShowMessage(s);
                 }
+            }
+            catch (Exception)
+            {
             }
         }
 

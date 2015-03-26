@@ -59,32 +59,30 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    DateTime CurrentDate = DateTime.Today;
+                    String CurrentDate = DateTime.Today.ToString(
+                        "yyyy-MM-dd");
 
                     string Query =
                         "SELECT DISTINCT a_gift_batch.a_batch_description_c, a_gift_batch.a_batch_status_c, a_gift_batch.a_gift_type_c, a_gift_batch.a_gl_effective_date_d, "
                         +
                         "a_gift_batch.a_bank_cost_centre_c, a_gift_batch.a_bank_account_code_c, a_gift_batch.a_currency_code_c, a_gift_batch.a_hash_total_n, a_gift_batch.a_batch_total_n, "
                         +
-
-                        "a_gift_detail.a_gift_transaction_number_i, a_gift_detail.a_detail_number_i, a_gift_detail.a_confidential_gift_flag_l, "
-                        +
+                        "a_gift_detail.a_gift_transaction_number_i, a_gift_detail.a_detail_number_i, a_gift_detail.a_confidential_gift_flag_l, " +
                         "a_gift_detail.p_recipient_key_n, a_gift_detail.a_gift_amount_n, a_gift_detail.a_gift_amount_intl_n, a_gift_detail.a_gift_transaction_amount_n, "
                         +
                         "a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, a_gift_detail.a_recipient_ledger_number_n, "
                         +
                         "a_gift_detail.a_gift_comment_one_c, a_gift_detail.a_gift_comment_two_c, a_gift_detail.a_gift_comment_three_c, a_gift_detail.a_tax_deductible_pct_n, "
                         +
-
-                        "a_gift.p_donor_key_n, a_gift.a_reference_c, a_gift.a_method_of_giving_code_c, a_gift.a_method_of_payment_code_c, "
+                        "a_gift.p_donor_key_n AS DonorKey, a_gift.a_reference_c AS GiftReference, a_gift.a_method_of_giving_code_c, a_gift.a_method_of_payment_code_c, "
                         +
-                        "a_gift.a_receipt_letter_code_c, a_gift.a_date_entered_d, a_gift.a_first_time_gift_l, a_gift.a_receipt_number_i, "
+                        "a_gift.a_receipt_letter_code_c, a_gift.a_date_entered_d, a_gift.a_first_time_gift_l, a_gift.a_receipt_number_i, " +
+                        "Donor.p_partner_class_c AS DonorClass, Donor.p_partner_short_name_c AS DonorShortName, Donor.p_receipt_letter_frequency_c, Donor.p_receipt_each_gift_l, "
                         +
-
-                        "Donor.p_partner_class_c, Donor.p_partner_short_name_c, Donor.p_receipt_letter_frequency_c, Donor.p_receipt_each_gift_l, "
+                        "Recipient.p_partner_class_c AS RecipientClass, Recipient.p_partner_short_name_c AS RecipientShortName, " +
+                        "a_gift_detail.p_mailing_code_c AS MailingCode, " +
+                        "a_gift_detail.a_charge_flag_l AS ChargeFlag, "
                         +
-                        "Recipient.p_partner_class_c, Recipient.p_partner_short_name_c, " +
-
                         // true if donor has a valid Ex-Worker special type
                         "CASE WHEN EXISTS (SELECT p_partner_type.* FROM p_partner_type WHERE " +
                         "p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
@@ -117,7 +115,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         " AND Donor.p_partner_key_n = a_gift.p_donor_key_n" +
                         " AND Recipient.p_partner_key_n = a_gift_detail.p_recipient_key_n";
 
-                    Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
+                    Results = DbAdapter.RunQuery(Query, "Results", Transaction);
                 });
 
             return Results;
@@ -160,7 +158,26 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " PUB_a_gift as gift, " +
                                    " PUB_a_gift_detail AS detail," +
                                    " PUB_a_gift_batch," +
-                                   " PUB_p_partner AS Recipient";
+                                   " PUB_p_partner AS Recipient" +
+
+                                   " LEFT JOIN PUB_p_partner_gift_destination" +
+                                   " ON Recipient.p_partner_class_c = 'FAMILY'" +
+                                   " AND PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n" +
+                                   " AND PUB_p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate + "'" +
+                                   " AND (PUB_p_partner_gift_destination.p_date_expires_d IS NULL" +
+                                   " OR (PUB_p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate + "'" +
+                                   " AND PUB_p_partner_gift_destination.p_date_effective_d <> PUB_p_partner_gift_destination.p_date_expires_d))" +
+
+                                   " LEFT JOIN um_unit_structure" +
+                                   " ON Recipient.p_partner_class_c = 'UNIT'" +
+                                   " AND um_unit_structure.um_child_unit_key_n = Recipient.p_partner_key_n" +
+
+                                   " LEFT JOIN PUB_p_partner" +
+                                   " ON (PUB_p_partner.p_partner_key_n = PUB_p_partner_gift_destination.p_field_key_n" +
+                                   " AND EXISTS (SELECT * FROM PUB_p_partner_gift_destination WHERE PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n))"
+                                   +
+                                   " OR (PUB_p_partner.p_partner_key_n = um_unit_structure.um_parent_unit_key_n" +
+                                   " AND EXISTS (SELECT * FROM um_unit_structure WHERE um_unit_structure.um_child_unit_key_n = Recipient.p_partner_key_n))";
 
                     if (RecipientSelection == "Extract")
                     {
@@ -168,33 +185,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                  " PUB_m_extract_master";
                     }
 
-                    Query += " LEFT JOIN PUB_p_partner_gift_destination" +
-                             " ON Recipient.p_partner_class_c = 'FAMILY'" +
-                             " AND PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n" +
-                             " AND PUB_p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate + "'" +
-                             " AND (PUB_p_partner_gift_destination.p_date_expires_d IS NULL" +
-                             " OR (PUB_p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate + "'" +
-                             " AND PUB_p_partner_gift_destination.p_date_effective_d <> PUB_p_partner_gift_destination.p_date_expires_d))" +
-
-                             " LEFT JOIN um_unit_structure" +
-                             " ON Recipient.p_partner_class_c = 'UNIT'" +
-                             " AND um_unit_structure.um_child_unit_key_n = Recipient.p_partner_key_n" +
-
-                             " LEFT JOIN PUB_p_partner" +
-                             " ON (PUB_p_partner.p_partner_key_n = PUB_p_partner_gift_destination.p_field_key_n" +
-                             " AND EXISTS (SELECT * FROM PUB_p_partner_gift_destination WHERE PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n))"
-                             +
-                             " OR (PUB_p_partner.p_partner_key_n = um_unit_structure.um_parent_unit_key_n" +
-                             " AND EXISTS (SELECT * FROM um_unit_structure WHERE um_unit_structure.um_child_unit_key_n = Recipient.p_partner_key_n))"
-                             +
-
-                             " WHERE";
+                    Query += " WHERE";
 
                     if (RecipientSelection == "Extract")
                     {
                         Query += " detail.p_recipient_key_n =  PUB_m_extract.p_partner_key_n" +
                                  " AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
-                                 " AND PUB_m_extract_master.m_extract_name_c = " + AParameters["param_extract_name"].ToString() +
+                                 " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
                                  " AND";
                     }
 
@@ -257,7 +254,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
@@ -334,7 +333,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {

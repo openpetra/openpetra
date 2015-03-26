@@ -38,6 +38,8 @@ using Ict.Petra.Client.App.Core;
 using System.IO;
 using Ict.Common.IO;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -201,9 +203,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FInitState = TInitState.LoadedOK;
                 LoadedOK = true;
             }
-            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
+            catch (Exception e)
             {
-//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+                TLogging.Log("FastReports Wrapper (" + FReportName + ") Not loaded: " + e.Message);
             }
         }
 
@@ -232,9 +234,9 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 LoadedOK = true;
             }
-            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
+            catch (Exception e)
             {
-//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+                TLogging.Log("FastReports Wrapper (" + FReportName + ") Not loaded: " + e.Message);
             }
         }
 
@@ -330,6 +332,14 @@ namespace Ict.Petra.Client.MReporting.Gui
                 ClientVersion.Minor.ToString() + "." +
                 ClientVersion.Build.ToString() + "." +
                 ClientVersion.Revision.ToString());
+            //
+            // Some params are always provided for reports:
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
+            ACalc.AddParameter("param_tax_deductible_pct", TaxDeductiblePercentageEnabled);
+
+
             ArrayList reportParam = ACalc.GetParameters().Elems;
             MethodInfo FastReport_SetParameterValue = FFastReportType.GetMethod("SetParameterValue");
 
@@ -659,6 +669,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return;
             }
 
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
             TRptCalculator Calc = new TRptCalculator();
 
             //
@@ -671,7 +682,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     if (term[1][0] == '"') // This is a string
                     {
-                        Calc.AddStringParameter(term[0], term[1].Substring(1, term[1].Length - 2));
+                        String val = term[1].Substring(1, term[1].Length - 2);
+                        Calc.AddStringParameter(term[0], val);
+                        paramsDictionary.Add(term[0], new TVariant(val));
                     }
                     else // This is a number - Int32 assumed.
                     {
@@ -680,6 +693,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                         if (Int32.TryParse(term[1], out IntTerm))
                         {
                             Calc.AddParameter(term[0], IntTerm);
+                            paramsDictionary.Add(term[0], new TVariant(IntTerm));
 
                             //
                             // As I'm adding these values, I'll keep a note of any that may be useful later..
@@ -708,13 +722,16 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     MessageBox.Show("Error: malformed Parameter: " + param, "FastReportWrapper.PrintReportNoUi");
                 }
-            } // foreach
+            } // foreach param
 
             //
             // Get Data for report:
             switch (ReportName)
             {
                 case "Batch Posting Register":
+                    // Batch Posting Register report has no UI page as most reports do.
+                    // Code similar to this appears in csharp\ict\petra\client\mfinance\gui\gl\glbatch.manualcode.cs
+                    // where it's wired to the "File Print" function in the GL Batch list.
                 {
                     if ((LedgerNumber != -1) && (BatchNumber != -1))
                     {
@@ -722,6 +739,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                         ReportingEngine.RegisterData(BatchTDS.ABatch, "ABatch");
                         ReportingEngine.RegisterData(BatchTDS.AJournal, "AJournal");
                         ReportingEngine.RegisterData(BatchTDS.ATransaction, "ATransaction");
+                        ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
+                                LedgerNumber), "AAccount");
+                        ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                                LedgerNumber), "ACostCentre");
                     }
                     else
                     {
@@ -730,9 +751,19 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                     break;
                 }
+
+                case "Gift Batch Detail":
+                {
+                    DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("GiftBatchDetail", paramsDictionary);
+                    ReportingEngine.RegisterData(ReportTable, "GiftBatchDetail");
+                    break;
+                }
             } // switch
 
-            ReportingEngine.GenerateReport(Calc);
+            // I'm not in the User Interface thread, so I can use an invoke here:
+
+            Application.OpenForms[0].Invoke((ThreadStart) delegate { ReportingEngine.GenerateReport(Calc); });
+            // ReportingEngine.GenerateReport(Calc);
         } // PrintReportNoUi
     }
 }

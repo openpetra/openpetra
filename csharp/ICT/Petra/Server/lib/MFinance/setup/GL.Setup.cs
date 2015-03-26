@@ -33,6 +33,7 @@ using System.Text;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
@@ -75,25 +76,72 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLSetupTDS LoadLedgerInfo(Int32 ALedgerNumber)
         {
-            GLSetupTDS MainDS = new GLSetupTDS();
+            #region Validate Arguments
 
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - Ledger number must be greater than 0"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            GLSetupTDS MainDS = new GLSetupTDS();
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                        AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                        AAccountingPeriodAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    });
+
+                #region Validate Data
+
+                if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
                 {
-                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                    AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                    AAccountingPeriodAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                });
+                    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                "Function:{0} Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                            Utilities.GetMethodName(true),
+                            ALedgerNumber));
+                }
+                else if ((MainDS.AAccountingSystemParameter == null) || (MainDS.AAccountingSystemParameter.Count == 0))
+                {
+                    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                "Function:{0} - Accounting System Parameter data for Ledger number {1} does not exist or could not be accessed!"),
+                            Utilities.GetMethodName(true),
+                            ALedgerNumber));
+                }
+                else if ((MainDS.AAccountingPeriod == null) || (MainDS.AAccountingPeriod.Count == 0))
+                {
+                    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                "Function:{0} - Accounting Period data for Ledger number {1} does not exist or could not be accessed!"),
+                            Utilities.GetMethodName(true),
+                            ALedgerNumber));
+                }
 
-            // Accept row changes here so that the Client gets 'unmodified' rows
-            MainDS.AcceptChanges();
+                #endregion Validate Data
 
-            // Remove all Tables that were not filled with data before remoting them.
-            MainDS.RemoveEmptyTables();
+                // Accept row changes here so that the Client gets 'unmodified' rows
+                MainDS.AcceptChanges();
+
+                // Remove all Tables that were not filled with data before remoting them.
+                MainDS.RemoveEmptyTables();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             return MainDS;
         }
@@ -110,6 +158,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static GLSetupTDS LoadLedgerSettings(Int32 ALedgerNumber, out DateTime ACalendarStartDate,
             out bool ACurrencyChangeAllowed, out bool ACalendarChangeAllowed)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format("Function:{0} - Ledger number must be greater than 0",
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
             ACalendarStartDate = DateTime.MinValue;
             ACurrencyChangeAllowed = false;
             ACalendarChangeAllowed = false;
@@ -119,71 +177,106 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                    AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                    ALedgerInitFlagAccess.LoadViaALedger(MainDS, ALedgerNumber, null, Transaction);
-
-                    // retrieve calendar start date (start date of financial year)
-                    AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
-
-                    if (CalendarTable.Count > 0)
+            try
+            {
+                TDBTransaction Transaction = null;
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
                     {
-                        CalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
-                    }
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                        AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                        ALedgerInitFlagAccess.LoadViaALedger(MainDS, ALedgerNumber, null, Transaction);
 
-                    // now check if currency change would be allowed
-                    CurrencyChangeAllowed = true;
+                        #region Validate Data
 
-                    if ((AJournalAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
-                        || (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0))
-                    {
-                        // don't allow currency change if journals or gift batches exist
-                        CurrencyChangeAllowed = false;
-                    }
+                        //ALedgerInitFlag is optional so no need to check
+                        //TODO confirm this
 
-                    if (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
-                    {
-                        // don't allow currency change if journals exist
-                        CurrencyChangeAllowed = false;
-                    }
-
-                    if (CurrencyChangeAllowed)
-                    {
-                        // don't allow currency change if there are foreign currency accounts for this ledger
-                        AAccountTable TemplateTable;
-                        AAccountRow TemplateRow;
-                        StringCollection TemplateOperators;
-
-                        TemplateTable = new AAccountTable();
-                        TemplateRow = TemplateTable.NewRowTyped(false);
-                        TemplateRow.LedgerNumber = ALedgerNumber;
-                        TemplateRow.ForeignCurrencyFlag = true;
-                        TemplateOperators = new StringCollection();
-                        TemplateOperators.Add("=");
-
-                        if (AAccountAccess.CountUsingTemplate(TemplateRow, TemplateOperators, Transaction) > 0)
+                        if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
                         {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Ledger Data for Ledger number {0} does not exist!"), ALedgerNumber));
+                        }
+                        else if ((MainDS.AAccountingSystemParameter == null) || (MainDS.AAccountingSystemParameter.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "AccountingSystemParameter Data for Ledger number {0} does not exist!"), ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
+
+                        // retrieve calendar start date (start date of financial year)
+                        AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
+
+                        if (CalendarTable.Count > 0)
+                        {
+                            CalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
+                        }
+
+                        // now check if currency change would be allowed
+                        CurrencyChangeAllowed = true;
+
+                        if ((AJournalAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+                            || (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0))
+                        {
+                            // don't allow currency change if journals or gift batches exist
                             CurrencyChangeAllowed = false;
                         }
-                    }
-                });
 
-            ACalendarStartDate = CalendarStartDate;
-            ACurrencyChangeAllowed = CurrencyChangeAllowed;
-            // now check if calendar change would be allowed
-            ACalendarChangeAllowed = IsCalendarChangeAllowed(ALedgerNumber);
+                        if (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+                        {
+                            // don't allow currency change if journals exist
+                            CurrencyChangeAllowed = false;
+                        }
 
-            // Accept row changes here so that the Client gets 'unmodified' rows
-            MainDS.AcceptChanges();
+                        if (CurrencyChangeAllowed)
+                        {
+                            // don't allow currency change if there are foreign currency accounts for this ledger
+                            AAccountTable TemplateTable;
+                            AAccountRow TemplateRow;
+                            StringCollection TemplateOperators;
 
-            // Remove all Tables that were not filled with data before remoting them.
-            MainDS.RemoveEmptyTables();
+                            TemplateTable = new AAccountTable();
+                            TemplateRow = TemplateTable.NewRowTyped(false);
+                            TemplateRow.LedgerNumber = ALedgerNumber;
+                            TemplateRow.ForeignCurrencyFlag = true;
+                            TemplateOperators = new StringCollection();
+                            TemplateOperators.Add("=");
+
+                            if (AAccountAccess.CountUsingTemplate(TemplateRow, TemplateOperators, Transaction) > 0)
+                            {
+                                CurrencyChangeAllowed = false;
+                            }
+                        }
+                    });
+
+                ACalendarStartDate = CalendarStartDate;
+                ACurrencyChangeAllowed = CurrencyChangeAllowed;
+                // now check if calendar change would be allowed
+                ACalendarChangeAllowed = IsCalendarChangeAllowed(ALedgerNumber);
+
+                // Accept row changes here so that the Client gets 'unmodified' rows
+                MainDS.AcceptChanges();
+
+                // Remove all Tables that were not filled with data before remoting them.
+                MainDS.RemoveEmptyTables();
+            }
+            catch (EFinanceSystemDataTableReturnedNoDataException ex)
+            {
+                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format("Function:{0} - {1}",
+                        Utilities.GetMethodName(true),
+                        ex.Message));
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             return MainDS;
         }
@@ -196,6 +289,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool IsCalendarChangeAllowed(Int32 ALedgerNumber)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format("Function:{0} - Ledger number must be greater than 0",
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
             Boolean CalendarChangeAllowed = true;
 
             TDBTransaction Transaction = null;
@@ -223,24 +326,55 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static int NumberOfAccountingPeriods(Int32 ALedgerNumber)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format("Function:{0} - Ledger number must be greater than 0",
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
             int NumberOfAccountingPeriods = 0;
-            ALedgerTable LedgerTable;
-            ALedgerRow LedgerRow;
+
+            ALedgerTable LedgerTable = null;
+            ALedgerRow LedgerRow = null;
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref Transaction,
-                delegate
-                {
-                    LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-
-                    if (LedgerTable.Count > 0)
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum, ref Transaction,
+                    delegate
                     {
-                        LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
-                        NumberOfAccountingPeriods = LedgerRow.NumberOfAccountingPeriods;
-                    }
-                });
+                        LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                    });
+
+                #region Validate Data
+
+                if ((LedgerTable == null) || (LedgerTable.Count == 0))
+                {
+                    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                            Utilities.GetMethodName(true),
+                            ALedgerNumber));
+                }
+
+                #endregion Validate Data
+
+                LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+                NumberOfAccountingPeriods = LedgerRow.NumberOfAccountingPeriods;
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             return NumberOfAccountingPeriods;
         }
@@ -254,6 +388,22 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         private static bool IsSubsystemActivated(Int32 ALedgerNumber, String ASubsystemCode)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ASubsystemCode.Length == 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Subsystem Code is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             Boolean Activated = false;
 
             ASystemInterfaceTable TemplateTable;
@@ -314,98 +464,131 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static void ActivateGiftProcessingSubsystem(Int32 ALedgerNumber,
             Int32 AStartingReceiptNumber)
         {
-            Boolean NewTransaction;
+            #region Validate Arguments
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
             try
             {
-                // if subsystem already active then no need to go further
-                if (!IsGiftProcessingSubsystemActivated(ALedgerNumber))
-                {
-                    // create or update account for Creditor's Control
-
-                    // make sure transaction type exists for gift processing subsystem
-                    ATransactionTypeTable TemplateTransactionTypeTable;
-                    ATransactionTypeRow TemplateTransactionTypeRow;
-                    StringCollection TemplateTransactionTypeOperators;
-
-                    TemplateTransactionTypeTable = new ATransactionTypeTable();
-                    TemplateTransactionTypeRow = TemplateTransactionTypeTable.NewRowTyped(false);
-                    TemplateTransactionTypeRow.LedgerNumber = ALedgerNumber;
-                    TemplateTransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
-                    TemplateTransactionTypeOperators = new StringCollection();
-                    TemplateTransactionTypeOperators.Add("=");
-
-                    if (ATransactionTypeAccess.CountUsingTemplate(TemplateTransactionTypeRow, TemplateTransactionTypeOperators, Transaction) == 0)
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum, ref Transaction, ref SubmissionOK,
+                    delegate
                     {
-                        ATransactionTypeTable TransactionTypeTable;
-                        ATransactionTypeRow TransactionTypeRow;
+                        // if subsystem already active then no need to go further
+                        if (!IsGiftProcessingSubsystemActivated(ALedgerNumber))
+                        {
+                            // create or update account for Creditor's Control
 
-                        TransactionTypeTable = new ATransactionTypeTable();
-                        TransactionTypeRow = TransactionTypeTable.NewRowTyped();
-                        TransactionTypeRow.LedgerNumber = ALedgerNumber;
-                        TransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
-                        TransactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
-                        TransactionTypeRow.DebitAccountCode = "CASH";
-                        TransactionTypeRow.CreditAccountCode = "GIFT";
-                        TransactionTypeRow.TransactionTypeDescription = "Gift Processing";
-                        TransactionTypeRow.SpecialTransactionType = true;
-                        TransactionTypeTable.Rows.Add(TransactionTypeRow);
+                            // make sure transaction type exists for gift processing subsystem
+                            ATransactionTypeTable TemplateTransactionTypeTable;
+                            ATransactionTypeRow TemplateTransactionTypeRow;
+                            StringCollection TemplateTransactionTypeOperators;
 
-                        ATransactionTypeAccess.SubmitChanges(TransactionTypeTable, Transaction);
-                    }
+                            TemplateTransactionTypeTable = new ATransactionTypeTable();
+                            TemplateTransactionTypeRow = TemplateTransactionTypeTable.NewRowTyped(false);
+                            TemplateTransactionTypeRow.LedgerNumber = ALedgerNumber;
+                            TemplateTransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+                            TemplateTransactionTypeOperators = new StringCollection();
+                            TemplateTransactionTypeOperators.Add("=");
 
-                    ASystemInterfaceTable SystemInterfaceTable;
-                    ASystemInterfaceRow SystemInterfaceRow;
-                    SystemInterfaceTable = ASystemInterfaceAccess.LoadByPrimaryKey(ALedgerNumber,
-                        CommonAccountingSubSystemsEnum.GR.ToString(),
-                        Transaction);
+                            if (ATransactionTypeAccess.CountUsingTemplate(TemplateTransactionTypeRow, TemplateTransactionTypeOperators,
+                                    Transaction) == 0)
+                            {
+                                ATransactionTypeTable TransactionTypeTable;
+                                ATransactionTypeRow TransactionTypeRow;
 
-                    if (SystemInterfaceTable.Count == 0)
-                    {
-                        SystemInterfaceRow = SystemInterfaceTable.NewRowTyped();
-                        SystemInterfaceRow.LedgerNumber = ALedgerNumber;
-                        SystemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
-                        SystemInterfaceRow.SetUpComplete = true;
-                        SystemInterfaceTable.Rows.Add(SystemInterfaceRow);
-                    }
-                    else
-                    {
-                        SystemInterfaceRow = (ASystemInterfaceRow)SystemInterfaceTable.Rows[0];
-                        SystemInterfaceRow.SetUpComplete = true;
-                    }
+                                TransactionTypeTable = new ATransactionTypeTable();
+                                TransactionTypeRow = TransactionTypeTable.NewRowTyped();
+                                TransactionTypeRow.LedgerNumber = ALedgerNumber;
+                                TransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+                                TransactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
+                                TransactionTypeRow.DebitAccountCode = MFinanceConstants.CASH_ACCT; // "CASH";
+                                TransactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_GIFT; // "GIFT";
+                                TransactionTypeRow.TransactionTypeDescription = MFinanceConstants.TRANS_TYPE_GIFT_PROCESSING; // "Gift Processing";
+                                TransactionTypeRow.SpecialTransactionType = true;
+                                TransactionTypeTable.Rows.Add(TransactionTypeRow);
 
-                    ASystemInterfaceAccess.SubmitChanges(SystemInterfaceTable, Transaction);
+                                ATransactionTypeAccess.SubmitChanges(TransactionTypeTable, Transaction);
+                            }
 
-                    // now set the starting receipt number
+                            ASystemInterfaceTable SystemInterfaceTable = null;
+                            ASystemInterfaceRow SystemInterfaceRow = null;
 
-                    ALedgerTable LedgerTable;
-                    ALedgerRow LedgerRow;
+                            SystemInterfaceTable = ASystemInterfaceAccess.LoadByPrimaryKey(ALedgerNumber,
+                                CommonAccountingSubSystemsEnum.GR.ToString(),
+                                Transaction);
 
-                    LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-                    LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
-                    LedgerRow.LastHeaderRNumber = AStartingReceiptNumber;
+                            #region Validate Data 1
 
-                    ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
-                }
+                            if (SystemInterfaceTable == null)
+                            {
+                                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                            "System Interface Table data for Ledger number {0} does not exist!"), ALedgerNumber));
+                            }
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
+                            #endregion Validate Data 1
+
+                            if (SystemInterfaceTable.Count == 0)
+                            {
+                                SystemInterfaceRow = SystemInterfaceTable.NewRowTyped();
+                                SystemInterfaceRow.LedgerNumber = ALedgerNumber;
+                                SystemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+                                SystemInterfaceRow.SetUpComplete = true;
+                                SystemInterfaceTable.Rows.Add(SystemInterfaceRow);
+                            }
+                            else
+                            {
+                                SystemInterfaceRow = (ASystemInterfaceRow)SystemInterfaceTable.Rows[0];
+                                SystemInterfaceRow.SetUpComplete = true;
+                            }
+
+                            ASystemInterfaceAccess.SubmitChanges(SystemInterfaceTable, Transaction);
+
+                            // now set the starting receipt number
+                            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+                            #region Validate Data 2
+
+                            if ((LedgerTable == null) || (LedgerTable.Count == 0))
+                            {
+                                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                            "Ledger Data for Ledger number {0} does not exist!"), ALedgerNumber));
+                            }
+
+                            #endregion Validate Data 2
+
+                            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+                            LedgerRow.LastHeaderRNumber = AStartingReceiptNumber;
+
+                            ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+                        }
+
+                        SubmissionOK = true;
+                    });
             }
-            catch (Exception Exc)
+            catch (EFinanceSystemDataTableReturnedNoDataException ex)
             {
-                TLogging.Log("An Exception occured while activating the Gift Receipting Subsystem:" + Environment.NewLine + Exc.ToString());
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                throw;
+                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format("Function:{0} - {1}",
+                        Utilities.GetMethodName(true),
+                        ex.Message));
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
         }
 
@@ -612,9 +795,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         private static bool DeactivateSubsystem(Int32 ALedgerNumber, String SubsystemCode)
         {
-            Boolean SubmissionOK = false;
-
             TDBTransaction Transaction = null;
+            Boolean SubmissionOK = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, ref Transaction, ref SubmissionOK,
@@ -719,7 +901,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             // Don't include any AnalysisType for which there are no values set
-            MainDS.AFreeformAnalysis.DefaultView.Sort = "a_analysis_type_code_c";
+            MainDS.AFreeformAnalysis.DefaultView.Sort = AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(); // "a_analysis_type_code_c";
 
             foreach (AAnalysisTypeRow TypeRow in MainDS.AAnalysisType.Rows)
             {
@@ -910,7 +1092,22 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static DataTable LoadCostCentrePartnerLinks(Int32 ALedgerNumber, Int64 APartnerKey = 0)
         {
-            //
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (APartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Partner Key is less than 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             // Load Partners where PartnerType includes "COSTCENTRE":
             String SqlQuery = "SELECT p_partner.p_partner_short_name_c as ShortName," +
                               "   p_partner.p_partner_key_n as PartnerKey," +
@@ -928,43 +1125,54 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             DataTable PartnerCostCentreTbl = null;
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
-
-                    PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
-
-                    AValidLedgerNumberTable LinksTbl = null;
-
-                    if (APartnerKey == 0)
+            try
+            {
+                TDBTransaction Transaction = null;
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
                     {
-                        LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
-                    }
-                    else
-                    {
-                        LinksTbl = AValidLedgerNumberAccess.LoadByPrimaryKey(ALedgerNumber, APartnerKey, Transaction);
-                    }
+                        PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
-                    foreach (AValidLedgerNumberRow Row in LinksTbl.Rows)
-                    {
-                        Int32 RowIdx = PartnerCostCentreTbl.DefaultView.Find(Row.PartnerKey);
+                        PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
 
-                        if (RowIdx >= 0)
+                        AValidLedgerNumberTable LinksTbl = null;
+
+                        if (APartnerKey == 0)
                         {
-                            PartnerCostCentreTbl.DefaultView[RowIdx].Row["IsLinked"] = Row.CostCentreCode;
-                            ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, Row.CostCentreCode, Transaction);
+                            LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                        }
+                        else
+                        {
+                            LinksTbl = AValidLedgerNumberAccess.LoadByPrimaryKey(ALedgerNumber, APartnerKey, Transaction);
+                        }
 
-                            if (CCTbl.Rows.Count > 0)
+                        foreach (AValidLedgerNumberRow Row in LinksTbl.Rows)
+                        {
+                            Int32 RowIdx = PartnerCostCentreTbl.DefaultView.Find(Row.PartnerKey);
+
+                            if (RowIdx >= 0)
                             {
-                                PartnerCostCentreTbl.DefaultView[RowIdx].Row["ReportsTo"] = CCTbl[0].CostCentreToReportTo;
+                                PartnerCostCentreTbl.DefaultView[RowIdx].Row["IsLinked"] = Row.CostCentreCode;
+                                ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, Row.CostCentreCode, Transaction);
+
+                                if (CCTbl.Rows.Count > 0)
+                                {
+                                    PartnerCostCentreTbl.DefaultView[RowIdx].Row["ReportsTo"] = CCTbl[0].CostCentreToReportTo;
+                                }
                             }
                         }
-                    }
-                });
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             return PartnerCostCentreTbl;
         }

@@ -169,8 +169,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_quarter", (System.Object)(Quarter));
                 ACalculator.AddParameter("param_start_period_i", (System.Object)(Quarter * 3 - 2));
                 ACalculator.AddParameter("param_end_period_i", (System.Object)(Quarter * 3));
-                ACalculator.AddParameter("param_start_date",
-                    TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3 - 2));
+                StartDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3 - 2);
+                ACalculator.AddParameter("param_start_date", StartDate);
                 EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3);
                 ACalculator.AddParameter("param_end_date", EndDate);
 
@@ -236,7 +236,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     }
                     else
                     {
-                        ACalculator.AddParameter("param_start_date", dtpStartDate.Date.Value);
+                        StartDate = dtpStartDate.Date.Value;
+                        ACalculator.AddParameter("param_start_date", StartDate);
                         EndDate = dtpEndDate.Date.Value;
                         ACalculator.AddParameter("param_end_date", EndDate);
                         ACalculator.AddParameter("param_real_year", dtpEndDate.Date.Value.Year);
@@ -248,7 +249,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 Year = cmbBreakdownYear.GetSelectedInt32();
                 ACalculator.AddParameter("param_real_year", cmbBreakdownYear.GetSelectedString(1));
                 ACalculator.AddParameter("param_year_i", Year);
-                ACalculator.AddParameter("param_start_date", TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, 1));
+                StartDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, 1);
+                ACalculator.AddParameter("param_start_date", StartDate);
                 EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12);
                 ACalculator.AddParameter("param_end_date", EndDate);
             }
@@ -261,7 +263,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (CurrencyName == FLedgerRow.IntlCurrency)
             {
-                Decimal IntlRate = TExchangeRateCache.GetDailyExchangeRate(FLedgerRow.BaseCurrency, FLedgerRow.IntlCurrency, EndDate);
+                Decimal IntlRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(FLedgerRow.BaseCurrency,
+                    CurrencyName,
+                    StartDate,
+                    EndDate);
 
                 if (IntlRate == 0) // No exchange rate has been specified
                 {

@@ -155,6 +155,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 FLoadCompleted = true;
+
+                return false;
             }
             else
             {
@@ -224,10 +226,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FActiveOnly = ActiveOnly;
 
                     //Load all analysis attribute values
-                    if (FCacheDS == null)
-                    {
-                        FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, FActiveOnly);
-                    }
+                    FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, FActiveOnly);
 
                     SetupExtraGridFunctionality();
 
@@ -254,7 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 string updatedTransactions;
 
-                FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref FMainDS, out updatedTransactions);
+                FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref FMainDS, FCacheDS, out updatedTransactions);
 
                 if (updatedTransactions.Length > 0)
                 {
@@ -752,19 +751,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     txtDebitTotalAmountBase.NumberValueDecimal = 0;
                 }
 
+                // NOTE: AlanP changed this code in Feb 2015.  Before that the code used the DataView directly.
+                // We did a foreach on the DataView and modified the international currency amounts in the rows of the DataRowView.
+                // Amazingly the effect of this was that each iteration of the loop took longer and longer.  We had a set of 70 transactions
+                // that we worked with and the first row took 50ms and then the times increased linearly until row 70 took 410ms!
+                // Overall the 70 rows CONSISTENTLY took just over 15 seconds.  But the scary thing was that if we had, say, 150 rows (which
+                // would easily be possible), we would be looking at more than 1 minute to execute this loop.
+                // So the code now converts the view to a Working Table, then operates on the data in that table and finally merges the
+                // working table back into FMainDS.  By doing this the time for the 70 rows goes from 15 seconds to 300ms.
+
+                DataTable dtWork = TransactionsToUpdateDV.ToTable();
+
                 //Iterate through all transactions in Journal
-                foreach (DataRowView trv in TransactionsToUpdateDV)
+                foreach (DataRow drWork in dtWork.Rows)
                 {
-                    ATransactionRow tr = (ATransactionRow)trv.Row;
+                    drWork.BeginEdit();
 
                     bool IsCurrentActiveTransRow = (TransactionRowActive
-                                                    && tr.TransactionNumber == CurrentTransNumber
-                                                    && tr.BatchNumber == CurrentTransBatchNumber
-                                                    && tr.JournalNumber == CurrentTransJournalNumber);
+                                                    && Convert.ToInt32(drWork[ATransactionTable.ColumnTransactionNumberId]) == CurrentTransNumber
+                                                    && Convert.ToInt32(drWork[ATransactionTable.ColumnBatchNumberId]) == CurrentTransBatchNumber
+                                                    && Convert.ToInt32(drWork[ATransactionTable.ColumnJournalNumberId]) == CurrentTransJournalNumber);
 
                     if (AUpdateTransDates)
                     {
-                        tr.TransactionDate = CurrentBatchRow.DateEffective;
+                        drWork[ATransactionTable.ColumnTransactionDateId] = CurrentBatchRow.DateEffective;
 
                         AmountsChanged = true;
                     }
@@ -802,20 +812,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // recalculate the amount in base currency
                     if (jr.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
                     {
-                        AmtInBaseCurrency = GLRoutines.Divide(tr.TransactionAmount, jr.ExchangeRateToBase);
+                        AmtInBaseCurrency = GLRoutines.Divide(Convert.ToDecimal(
+                                drWork[ATransactionTable.ColumnTransactionAmountId]), jr.ExchangeRateToBase);
 
-                        if (AmtInBaseCurrency != tr.AmountInBaseCurrency)
+                        if (AmtInBaseCurrency != Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
                         {
-                            tr.AmountInBaseCurrency = AmtInBaseCurrency;
+                            drWork[ATransactionTable.ColumnAmountInBaseCurrencyId] = AmtInBaseCurrency;
 
                             AmountsChanged = true;
                         }
 
                         if (IsTransactionInIntlCurrency)
                         {
-                            if (tr.AmountInIntlCurrency != tr.TransactionAmount)
+                            if (Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]) !=
+                                Convert.ToDecimal(drWork[ATransactionTable.ColumnTransactionAmountId]))
                             {
-                                tr.AmountInIntlCurrency = tr.TransactionAmount;
+                                drWork[ATransactionTable.ColumnAmountInIntlCurrencyId] = drWork[ATransactionTable.ColumnTransactionAmountId];
 
                                 AmountsChanged = true;
                             }
@@ -823,34 +835,40 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         else
                         {
                             // TODO: Instead of hard coding the number of decimals to 2 (for US cent) it should come from the database.
-                            AmtInIntlCurrency = (IntlRateToBaseCurrency == 0) ? 0 : GLRoutines.Divide(tr.AmountInBaseCurrency,
-                                IntlRateToBaseCurrency,
-                                2);
+                            AmtInIntlCurrency =
+                                (IntlRateToBaseCurrency ==
+                                 0) ? 0 : GLRoutines.Divide(Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]),
+                                    IntlRateToBaseCurrency,
+                                    2);
 
-                            if (tr.AmountInIntlCurrency != AmtInIntlCurrency)
+                            if (Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]) != AmtInIntlCurrency)
                             {
-                                tr.AmountInIntlCurrency = AmtInIntlCurrency;
+                                drWork[ATransactionTable.ColumnAmountInIntlCurrencyId] = AmtInIntlCurrency;
 
                                 AmountsChanged = true;
                             }
                         }
                     }
 
-                    if (tr.DebitCreditIndicator)
+                    if (Convert.ToBoolean(drWork[ATransactionTable.ColumnDebitCreditIndicatorId]) == true)
                     {
-                        AmtDebitTotal += tr.TransactionAmount;
-                        AmtDebitTotalBase += tr.AmountInBaseCurrency;
+                        AmtDebitTotal += Convert.ToDecimal(drWork[ATransactionTable.ColumnTransactionAmountId]);
+                        AmtDebitTotalBase += Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
 
                         if (IsCurrentActiveTransRow)
                         {
-                            if ((FPreviouslySelectedDetailRow.AmountInBaseCurrency != tr.AmountInBaseCurrency)
-                                || (FPreviouslySelectedDetailRow.AmountInIntlCurrency != tr.AmountInIntlCurrency)
-                                || (txtDebitAmountBase.NumberValueDecimal != tr.AmountInBaseCurrency)
+                            if ((FPreviouslySelectedDetailRow.AmountInBaseCurrency !=
+                                 Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
+                                || (FPreviouslySelectedDetailRow.AmountInIntlCurrency !=
+                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]))
+                                || (txtDebitAmountBase.NumberValueDecimal != Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
                                 || (txtCreditAmountBase.NumberValueDecimal != 0))
                             {
-                                FPreviouslySelectedDetailRow.AmountInBaseCurrency = tr.AmountInBaseCurrency;
-                                FPreviouslySelectedDetailRow.AmountInIntlCurrency = tr.AmountInIntlCurrency;
-                                txtDebitAmountBase.NumberValueDecimal = tr.AmountInBaseCurrency;
+                                FPreviouslySelectedDetailRow.AmountInBaseCurrency =
+                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
+                                FPreviouslySelectedDetailRow.AmountInIntlCurrency =
+                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]);
+                                txtDebitAmountBase.NumberValueDecimal = Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
                                 txtCreditAmountBase.NumberValueDecimal = 0;
 
                                 AmountsChanged = true;
@@ -859,26 +877,35 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
                     else
                     {
-                        AmtCreditTotal += tr.TransactionAmount;
-                        AmtCreditTotalBase += tr.AmountInBaseCurrency;
+                        AmtCreditTotal += Convert.ToDecimal(drWork[ATransactionTable.ColumnTransactionAmountId]);
+                        AmtCreditTotalBase += Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
 
                         if (IsCurrentActiveTransRow)
                         {
-                            if ((FPreviouslySelectedDetailRow.AmountInBaseCurrency != tr.AmountInBaseCurrency)
-                                || (FPreviouslySelectedDetailRow.AmountInIntlCurrency != tr.AmountInIntlCurrency)
-                                || (txtCreditAmountBase.NumberValueDecimal != tr.AmountInBaseCurrency)
+                            if ((FPreviouslySelectedDetailRow.AmountInBaseCurrency !=
+                                 Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
+                                || (FPreviouslySelectedDetailRow.AmountInIntlCurrency !=
+                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]))
+                                || (txtCreditAmountBase.NumberValueDecimal !=
+                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
                                 || (txtDebitAmountBase.NumberValueDecimal != 0))
                             {
-                                FPreviouslySelectedDetailRow.AmountInBaseCurrency = tr.AmountInBaseCurrency;
-                                FPreviouslySelectedDetailRow.AmountInIntlCurrency = tr.AmountInIntlCurrency;
-                                txtCreditAmountBase.NumberValueDecimal = tr.AmountInBaseCurrency;
+                                FPreviouslySelectedDetailRow.AmountInBaseCurrency =
+                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
+                                FPreviouslySelectedDetailRow.AmountInIntlCurrency =
+                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]);
+                                txtCreditAmountBase.NumberValueDecimal = Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
                                 txtDebitAmountBase.NumberValueDecimal = 0;
 
                                 AmountsChanged = true;
                             }
                         }
                     }
+
+                    drWork.EndEdit();
                 }
+
+                FMainDS.ATransaction.Merge(dtWork);
 
                 if (TransactionRowActive
                     && (jr.BatchNumber == CurrentTransBatchNumber)
@@ -1559,7 +1586,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((FPreviouslySelectedDetailRow.TransactionNumber == FTransactionNumber)
                 && (FTransactionNumber != -1))
             {
-                FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref FMainDS, cmbDetailAccountCode.GetSelectedString(), FTransactionNumber);
+                FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref FMainDS, FCacheDS,
+                    cmbDetailAccountCode.GetSelectedString(), FTransactionNumber);
                 RefreshAnalysisAttributesGrid();
             }
 
@@ -1589,6 +1617,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 cmbDetailKeyMinistryKey.SetSelectedString("", -1);
                 cmbDetailKeyMinistryKey.Enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Select a special transaction number from outside
+        /// </summary>
+        /// <param name="ATransactionNumber"></param>
+        /// <returns>True if the record is displayed in the grid, False otherwise</returns>
+        public void SelectTransactionNumber(Int32 ATransactionNumber)
+        {
+            DataView myView = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView;
+
+            for (int counter = 0; (counter < myView.Count); counter++)
+            {
+                int myViewTransactionNumber = (int)myView[counter]["a_transaction_number_i"];
+
+                if (myViewTransactionNumber == ATransactionNumber)
+                {
+                    SelectRowInGrid(counter + 1);
+                    break;
+                }
             }
         }
 

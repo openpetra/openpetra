@@ -156,15 +156,15 @@ RootNode:
         txtDetailGiftCommentThree: {Label=Comment 3, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         cmbDetailCommentOneType:
             Label: for
-            OptionalValues: [Donor,Recipient,Both,Office]
+            OptionalValues: [Donor,Recipient,=Both,Office]
             OnLeave: DetailCommentTypeChanged
         cmbDetailCommentTwoType:
             Label: for
-            OptionalValues: [Donor,Recipient,Both,Office]
+            OptionalValues: [Donor,Recipient,=Both,Office]
             OnLeave: DetailCommentTypeChanged
         cmbDetailCommentThreeType:
             Label: for
-            OptionalValues: [Donor,Recipient,Both,Office]
+            OptionalValues: [Donor,Recipient,=Both,Office]
             OnLeave: DetailCommentTypeChanged
         tbrTabPage:
         mnuTabPage:

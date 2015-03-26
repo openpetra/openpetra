@@ -153,6 +153,9 @@ namespace Ict.Petra.Client.MFinance.Logic
             string AImportMode,
             TVerificationResultCollection AResultCollection)
         {
+            List <string>InvalidRows = new List <string>();
+            bool InvalidColumnNumber = false;
+
             if ((AImportMode != "Corporate") && (AImportMode != "Daily"))
             {
                 throw new ArgumentException("Invalid value '" + AImportMode + "' for mode argument: Valid values are Corporate and Daily");
@@ -250,39 +253,24 @@ namespace Ict.Petra.Client.MFinance.Logic
                     if (IsShortFileFormat && (NumCols < 2))
                     {
                         // raise an error
-                        string resultText = String.Format(Catalog.GetString("Failed to import the CSV currency file:{0}   {1}{0}{0}"),
-                            Environment.NewLine, ADataFilename);
-                        resultText +=
-                            String.Format(Catalog.GetString(
-                                    "Line #{1} contains {2} column(s). Import files with names like 'USD_HKD.csv', where the From and To currencies are given in the name, should contain 2 or 3 columns:{0}{0}"),
-                                Environment.NewLine, LineNumber, NumCols.ToString());
-                        resultText +=
-                            String.Format(Catalog.GetString(
-                                    "  1. Effective Date{0}  2. Exchange Rate{0}  3. Effective time in seconds (Optional for Daily Rate only)"),
-                                Environment.NewLine);
-                        TVerificationResult result = new TVerificationResult(AImportMode,
-                            resultText,
-                            CommonErrorCodes.ERR_INFORMATIONMISSING,
-                            TResultSeverity.Resv_Critical);
-                        AResultCollection.Add(result);
-                        return RowsImported;
+                        string resultText = String.Format(Catalog.GetPluralString(
+                                "Line {0}: contains 1 column", "Line {0}: contains {1} columns", NumCols, true),
+                            LineNumber, NumCols.ToString());
+
+                        InvalidRows.Add(resultText);
+                        InvalidColumnNumber = true;
+                        continue;
                     }
                     else if (!IsShortFileFormat && (NumCols < 4))
                     {
-                        string resultText = String.Format(Catalog.GetString("Failed to import the CSV currency file:{0}   {1}{0}{0}"),
-                            Environment.NewLine, ADataFilename);
-                        resultText += String.Format(Catalog.GetString("Line #{1} contains {2} column(s). It should have 4 or 5 as follows:{0}{0}"),
-                            Environment.NewLine, LineNumber, NumCols.ToString());
-                        resultText +=
-                            String.Format(Catalog.GetString(
-                                    "    1. From Currency{0}    2. To Currency{0}    3. Effective Date{0}    4. Exchange Rate{0}    5. Effective time in seconds (Optional for Daily Rate only)"),
-                                Environment.NewLine);
-                        TVerificationResult result = new TVerificationResult(AImportMode,
-                            resultText,
-                            CommonErrorCodes.ERR_INFORMATIONMISSING,
-                            TResultSeverity.Resv_Critical);
-                        AResultCollection.Add(result);
-                        return RowsImported;
+                        // raise an error
+                        string resultText = String.Format(Catalog.GetPluralString(
+                                "Line {0}: contains 1 column", "Line {0}: contains {1} columns", NumCols, true),
+                            LineNumber, NumCols.ToString());
+
+                        InvalidRows.Add(resultText);
+                        InvalidColumnNumber = true;
+                        continue;
                     }
 
                     if (!IsShortFileFormat)
@@ -295,16 +283,32 @@ namespace Ict.Petra.Client.MFinance.Logic
                     }
 
                     // Perform validation on the From and To currencies at this point!!
-                    if ((allCurrencies.Rows.Find(Currencies[0]) == null) || (allCurrencies.Rows.Find(Currencies[1]) == null))
+                    if ((allCurrencies.Rows.Find(Currencies[0]) == null) && (allCurrencies.Rows.Find(Currencies[1]) == null))
                     {
                         // raise an error
-                        string resultText = String.Format(Catalog.GetString("Invalid currency in import file in line #{0}"), LineNumber.ToString());
-                        TVerificationResult result = new TVerificationResult(AImportMode,
-                            resultText,
-                            CommonErrorCodes.ERR_INCONGRUOUSSTRINGS,
-                            TResultSeverity.Resv_Critical);
-                        AResultCollection.Add(result);
-                        return RowsImported;
+                        string resultText = String.Format(Catalog.GetString(
+                                "Line {0}: invalid currency codes ({1} and {2})"), LineNumber.ToString(), Currencies[0], Currencies[1]);
+
+                        InvalidRows.Add(resultText);
+                        continue;
+                    }
+                    else if (allCurrencies.Rows.Find(Currencies[0]) == null)
+                    {
+                        // raise an error
+                        string resultText = String.Format(Catalog.GetString(
+                                "Line {0}: invalid currency code ({1})"), LineNumber.ToString(), Currencies[0]);
+
+                        InvalidRows.Add(resultText);
+                        continue;
+                    }
+                    else if (allCurrencies.Rows.Find(Currencies[1]) == null)
+                    {
+                        // raise an error
+                        string resultText = String.Format(Catalog.GetString(
+                                "Line {0}: invalid currency code ({1})"), LineNumber.ToString(), Currencies[1]);
+
+                        InvalidRows.Add(resultText);
+                        continue;
                     }
 
                     // Date parsing as in Petra 2.x instead of using XML date format!!!
@@ -315,13 +319,10 @@ namespace Ict.Petra.Client.MFinance.Logic
                     {
                         // raise an error
                         string resultText = String.Format(Catalog.GetString(
-                                "Invalid date ({0}) in import file in line #{1}"), DateEffectiveStr, LineNumber.ToString());
-                        TVerificationResult result = new TVerificationResult(AImportMode,
-                            resultText,
-                            CommonErrorCodes.ERR_INVALIDDATE,
-                            TResultSeverity.Resv_Critical);
-                        AResultCollection.Add(result);
-                        return RowsImported;
+                                "Line {0}: invalid date ({1})"), LineNumber.ToString(), DateEffectiveStr);
+
+                        InvalidRows.Add(resultText);
+                        continue;
                     }
 
                     decimal ExchangeRate = 0.0m;
@@ -332,18 +333,20 @@ namespace Ict.Petra.Client.MFinance.Logic
                                 DecimalSeparator, ".").Replace("\"", String.Empty);
 
                         ExchangeRate = Convert.ToDecimal(ExchangeRateString, System.Globalization.CultureInfo.InvariantCulture);
+
+                        if (ExchangeRate == 0)
+                        {
+                            throw new Exception();
+                        }
                     }
                     catch (Exception)
                     {
                         // raise an error
                         string resultText = String.Format(Catalog.GetString(
-                                "Invalid rate of exchange in import file in line #{0}"), LineNumber.ToString());
-                        TVerificationResult result = new TVerificationResult(AImportMode,
-                            resultText,
-                            CommonErrorCodes.ERR_INVALIDNUMBER,
-                            TResultSeverity.Resv_Critical);
-                        AResultCollection.Add(result);
-                        return RowsImported;
+                                "Line {0}: invalid rate of exchange ({1})"), LineNumber.ToString(), ExchangeRate);
+
+                        InvalidRows.Add(resultText);
+                        continue;
                     }
 
                     int TimeEffective = 7200;
@@ -376,13 +379,10 @@ namespace Ict.Petra.Client.MFinance.Logic
                             {
                                 // raise an error
                                 string resultText = String.Format(Catalog.GetString(
-                                        "Invalid effective time in import file in line #{0}"), LineNumber.ToString());
-                                TVerificationResult result = new TVerificationResult(AImportMode,
-                                    resultText,
-                                    CommonErrorCodes.ERR_INVALIDINTEGERTIME,
-                                    TResultSeverity.Resv_Critical);
-                                AResultCollection.Add(result);
-                                return RowsImported;
+                                        "Line {0}: invalid effective time ({1})"), LineNumber.ToString(), t);
+
+                                InvalidRows.Add(resultText);
+                                continue;
                             }
                         }
                     }
@@ -456,6 +456,43 @@ namespace Ict.Petra.Client.MFinance.Logic
                             }
                         }
                     }
+                }
+
+                // if there are rows that could not be imported
+                if ((InvalidRows != null) && (InvalidRows.Count > 0))
+                {
+                    string resultText = "";
+
+                    resultText = string.Format(Catalog.GetPluralString("1 row was not imported due to invalid data:",
+                            "{0} rows were not imported due to invalid data:", InvalidRows.Count, true), InvalidRows.Count) +
+                                 "\n";
+
+                    foreach (string Row in InvalidRows)
+                    {
+                        resultText += "\n" + Row;
+                    }
+
+                    // additional message if one or more rows has an invalid number of columns
+                    if (InvalidColumnNumber && IsShortFileFormat)
+                    {
+                        resultText += String.Format("{0}{0}" + Catalog.GetString("Each row should contain 2 or 3 columns as follows:") + "{0}" +
+                            Catalog.GetString(
+                                "  1. Effective Date{0}  2. Exchange Rate{0}  3. Effective time in seconds (Optional for Daily Rate only)"),
+                            Environment.NewLine);
+                    }
+                    else if (InvalidColumnNumber && !IsShortFileFormat)
+                    {
+                        resultText += String.Format("{0}{0}" + Catalog.GetString("Each row should contain 4 or 5 columns as follows:") + "{0}" +
+                            Catalog.GetString(
+                                "    1. From Currency{0}    2. To Currency{0}    3. Effective Date{0}    4. Exchange Rate{0}    5. Effective time in seconds (Optional for Daily Rate only)"),
+                            Environment.NewLine);
+                    }
+
+                    TVerificationResult result = new TVerificationResult(AImportMode,
+                        resultText,
+                        CommonErrorCodes.ERR_INCONGRUOUSSTRINGS,
+                        TResultSeverity.Resv_Critical);
+                    AResultCollection.Add(result);
                 }
 
                 DataFile.Close();

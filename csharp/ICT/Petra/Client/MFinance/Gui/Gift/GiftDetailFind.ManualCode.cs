@@ -182,11 +182,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.SetStatusBarText(txtReceiptNumber, Catalog.GetString("Enter a Gift Receipt Number"));
             FPetraUtilsObject.SetStatusBarText(cmbMotivationGroup, Catalog.GetString("Select a Motivation Group"));
             FPetraUtilsObject.SetStatusBarText(cmbMotivationDetail, Catalog.GetString("Select a Motivation Detail"));
-            FPetraUtilsObject.SetStatusBarText(txtReceiptNumber, Catalog.GetString("Enter a Comment"));
+            FPetraUtilsObject.SetStatusBarText(txtComment1, Catalog.GetString("Enter a Comment"));
             FPetraUtilsObject.SetStatusBarText(txtDonor, Catalog.GetString("Enter a Donor's Partner Key"));
             FPetraUtilsObject.SetStatusBarText(txtRecipient, Catalog.GetString("Enter a Recipient's Partner Key"));
             FPetraUtilsObject.SetStatusBarText(dtpDateFrom, Catalog.GetString("Enter a date for which gifts must have been entered on or after"));
-            FPetraUtilsObject.SetStatusBarText(dtpDateTo, Catalog.GetString("Enter a date for which gifts must have been enetered on or before"));
+            FPetraUtilsObject.SetStatusBarText(dtpDateTo, Catalog.GetString("Enter a date for which gifts must have been entered on or before"));
             FPetraUtilsObject.SetStatusBarText(txtMinimumAmount,
                 Catalog.GetString("Enter an amount for which gifts must have an amount equal or greater than"));
             FPetraUtilsObject.SetStatusBarText(txtMaximumAmount,
@@ -664,6 +664,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // Clear result table
             try
             {
+                // If the scroll bar is scrolled to the bottom of the results table, we will get empty rows in the grid after the next search.
+                // I've no idea why this is but automatically scrolling to the the top of the grid prevents it happening.
+                grdResult.ShowCell(0);
+
                 if (FPagedDataTable != null)
                 {
                     FPagedDataTable.Clear();
@@ -732,32 +736,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     this.Cursor = Cursors.WaitCursor;
 
                     TFrmGiftBatch gb = new TFrmGiftBatch(this);
+                    gb.LedgerNumber = FLedgerNumber;
 
                     // load dataset with data for whole transaction (all details)
-                    gb.ViewModeTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftSingle(FLedgerNumber,
-                        (int)CurrentlySelectedRow["a_batch_number_i"],
-                        (int)CurrentlySelectedRow["a_gift_transaction_number_i"]);
 
-                    if (gb.ViewModeTDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_POSTED)
-                    {
-                        // read only if gift belongs to a posted batch
-                        gb.ViewMode = true;
-                        gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)CurrentlySelectedRow["a_batch_number_i"],
-                            gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
-                    }
-                    else
-                    {
-                        gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)CurrentlySelectedRow["a_batch_number_i"],
-                            gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
-                        gb.DisableBatches();
-                    }
+                    // Viewmode = true
+
+                    /*gb.ViewModeTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftSingle(FLedgerNumber,
+                     *  (int)CurrentlySelectedRow["a_batch_number_i"],
+                     *  (int)CurrentlySelectedRow["a_gift_transaction_number_i"]);
+                     *
+                     * if (gb.ViewModeTDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_POSTED)
+                     * {
+                     *  // read only if gift belongs to a posted batch
+                     *  gb.ViewMode = true;
+                     *  gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)CurrentlySelectedRow["a_batch_number_i"],
+                     *      gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
+                     * }
+                     * else
+                     * {
+                     *  gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)CurrentlySelectedRow["a_batch_number_i"],
+                     *      gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
+                     *  gb.DisableBatches();
+                     * }*/
+
+                    // Viewmode = false
+                    gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)CurrentlySelectedRow["a_batch_number_i"],
+                        (int)CurrentlySelectedRow["a_batch_year_i"], (int)CurrentlySelectedRow["a_batch_period_i"]);
 
                     gb.SelectTab(TFrmGiftBatch.eGiftTabs.Transactions);
-                    gb.FindGiftDetail((AGiftDetailRow)gb.ViewModeTDS.AGiftDetail.Rows.Find(
-                            new object[] { FLedgerNumber,
-                                           CurrentlySelectedRow["a_batch_number_i"],
-                                           CurrentlySelectedRow["a_gift_transaction_number_i"],
-                                           CurrentlySelectedRow["a_detail_number_i"] }));
+
+                    gb.FindGiftDetail((int)CurrentlySelectedRow["a_batch_number_i"],
+                        (int)CurrentlySelectedRow["a_gift_transaction_number_i"], (int)CurrentlySelectedRow["a_detail_number_i"]);
                 }
                 finally
                 {

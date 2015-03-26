@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       andreww
+//       andreww, peters
 //
 // Copyright 2004-2014 by OM International
 //
@@ -24,26 +24,17 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
-using Ict.Common;
-using Ict.Common.Controls;
-using Ict.Common.Verification;
-using Ict.Common.Remoting.Client;
-using Ict.Petra.Shared.Interfaces.MPartner;
-using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.App.Gui;
-using Ict.Petra.Client.CommonControls;
-using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Client.MCommon;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_Contact
     {
         private PContactLogRow FContactDR = null;
+        private DataView FGridTableDV = null;
+
         private bool FInitializationRunning {
             get; set;
         }
@@ -73,6 +64,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             FContactDR = ARow;
 
             ShowData(ARow);
+
+            // if this is the first row to be showing then we need to set up the grid
+            if ((FGridTableDV == null) && (FMainDS.PPartnerContactAttribute != null) && (FMainDS.PPartnerContactAttribute.Count > 0))
+            {
+                ContactAttributesLogic.SetupContactAttributesGrid(ref grdSelectedAttributes,
+                    FMainDS.PPartnerContactAttribute,
+                    true,
+                    FContactDR.ContactLogId);
+            }
+
+            if (FGridTableDV != null)
+            {
+                FGridTableDV.RowFilter = PPartnerContactAttributeTable.GetContactIdDBName() + " = " + ARow.ContactLogId;
+            }
+
             FInitializationRunning = false;
         }
 
@@ -128,15 +134,33 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         protected void SelectAttributes(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
-        }
+            TFrmContactAttributesDialog ContactAttributesDialog = new TFrmContactAttributesDialog(FPetraUtilsObject.GetForm());
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="ARow"></param>
-        public void ValidateRowManual(PContactLogRow ARow)
-        {
+            ContactAttributesDialog.ContactID = FContactDR.ContactLogId;
+            ContactAttributesDialog.SelectedContactAttributeTable = FMainDS.PPartnerContactAttribute;
+
+            if (ContactAttributesDialog.ShowDialog() == DialogResult.OK)
+            {
+                PPartnerContactAttributeTable Changes = ContactAttributesDialog.SelectedContactAttributeTable.GetChangesTyped();
+
+                // if changes were made or a previously added row (unsaved) was deleted
+                if ((Changes != null) || ContactAttributesDialog.AddedAttributeDeleted)
+                {
+                    FMainDS.PPartnerContactAttribute.Clear();
+                    FMainDS.PPartnerContactAttribute.Merge(ContactAttributesDialog.SelectedContactAttributeTable);
+
+                    FGridTableDV = ContactAttributesLogic.SetupContactAttributesGrid(ref grdSelectedAttributes,
+                        FMainDS.PPartnerContactAttribute,
+                        true,
+                        FContactDR.ContactLogId);
+
+                    // only enable save if there are actual changes from the original datatable
+                    if (Changes != null)
+                    {
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+                }
+            }
         }
     }
 }

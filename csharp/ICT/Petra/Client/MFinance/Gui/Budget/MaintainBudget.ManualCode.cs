@@ -409,12 +409,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
             OpenFileDialog dialog = new OpenFileDialog();
 
-            dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
-                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
+            string exportPath = TClientSettings.GetExportPath();
+            string fullPath = TUserDefaults.GetStringDefault("Imp Filename",
+                exportPath + Path.DirectorySeparatorChar + "import.csv");
+            TImportExportDialogs.SetOpenFileDialogFilePathAndName(dialog, fullPath, exportPath);
 
             dialog.Title = Catalog.GetString("Import budget(s) from csv file");
             dialog.Filter = Catalog.GetString("Budget files (*.csv)|*.csv");
             String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+
+            // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
+            TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(fullPath));
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {

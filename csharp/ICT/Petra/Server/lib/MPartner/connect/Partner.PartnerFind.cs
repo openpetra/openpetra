@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -128,6 +128,18 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public DataTable GetDataPagedResult(System.Int16 APage, System.Int16 APageSize, out System.Int32 ATotalRecords, out System.Int16 ATotalPages)
         {
             return FPartnerFind.GetDataPagedResult(APage, APageSize, out ATotalRecords, out ATotalPages);
+        }
+
+        /// <summary>
+        /// Gets the page number containing given partner key.
+        /// </summary>
+        /// <param name="APartnerKey">Partner key to search for</param>
+        /// <param name="AStartPage">Page to start searching</param>
+        /// <param name="APageSize">Size of a page.</param>
+        /// <returns></returns>
+        public Int16 GetPageNumberContainingPartnerKey(Int64 APartnerKey, System.Int16 AStartPage, System.Int16 APageSize)
+        {
+            return FPartnerFind.GetPageNumberContainingPartnerKey(APartnerKey, AStartPage, APageSize);
         }
 
         /// <summary>

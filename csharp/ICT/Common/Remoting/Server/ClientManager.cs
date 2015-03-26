@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -872,6 +872,11 @@ namespace Ict.Common.Remoting.Server
             {
                 // TODORemoting if (Monitor.TryEnter(UConnectClientMonitor, TSrvSetting.ClientConnectionTimeoutAfterXSeconds * 1000))
                 {
+                    if (Thread.CurrentThread.Name != "TestRunnerThread")
+                    {
+                        Thread.CurrentThread.Name = "Client_" + AUserName + "__CLIENTCONNECTION_THREAD";
+                    }
+
                     #region Logging
 
                     if (TLogging.DL >= 4)
