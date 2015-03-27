@@ -111,28 +111,55 @@ namespace Ict.Petra.Server.MFinance.Common
 
             #endregion Validate Arguments
 
-            ALedgerRow Ledger = AMainDS.ALedger[0];
+            int RetVal = 0;
 
-            AGeneralLedgerMasterRow GLMRow = AMainDS.AGeneralLedgerMaster.NewRowTyped();
-
-            // row.GlmSequence will be set by SubmitChanges
-            GLMRow.GlmSequence = (AMainDS.AGeneralLedgerMaster.Rows.Count * -1) - 1;
-            GLMRow.LedgerNumber = ALedgerNumber;
-            GLMRow.Year = Ledger.CurrentFinancialYear;
-            GLMRow.AccountCode = AAccountCode;
-            GLMRow.CostCentreCode = ACostCentreCode;
-
-            AMainDS.AGeneralLedgerMaster.Rows.Add(GLMRow);
-
-            for (int PeriodCount = 1; PeriodCount < Ledger.NumberOfAccountingPeriods + Ledger.NumberFwdPostingPeriods + 1; PeriodCount++)
+            try
             {
-                AGeneralLedgerMasterPeriodRow PeriodRow = AMainDS.AGeneralLedgerMasterPeriod.NewRowTyped();
-                PeriodRow.GlmSequence = GLMRow.GlmSequence;
-                PeriodRow.PeriodNumber = PeriodCount;
-                AMainDS.AGeneralLedgerMasterPeriod.Rows.Add(PeriodRow);
+                ALedgerRow LedgerRow = AMainDS.ALedger[0];
+
+                #region Validate Data
+
+                if (LedgerRow == null)
+                {
+                    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                            Utilities.GetMethodName(true),
+                            ALedgerNumber));
+                }
+
+                #endregion Validate Data
+
+                AGeneralLedgerMasterRow GLMRow = AMainDS.AGeneralLedgerMaster.NewRowTyped();
+
+                // row.GlmSequence will be set by SubmitChanges
+                GLMRow.GlmSequence = (AMainDS.AGeneralLedgerMaster.Count * -1) - 1;
+                GLMRow.LedgerNumber = ALedgerNumber;
+                GLMRow.Year = LedgerRow.CurrentFinancialYear;
+                GLMRow.AccountCode = AAccountCode;
+                GLMRow.CostCentreCode = ACostCentreCode;
+
+                AMainDS.AGeneralLedgerMaster.Rows.Add(GLMRow);
+
+                for (int PeriodCount = 1; PeriodCount < LedgerRow.NumberOfAccountingPeriods + LedgerRow.NumberFwdPostingPeriods + 1; PeriodCount++)
+                {
+                    AGeneralLedgerMasterPeriodRow PeriodRow = AMainDS.AGeneralLedgerMasterPeriod.NewRowTyped();
+                    PeriodRow.GlmSequence = GLMRow.GlmSequence;
+                    PeriodRow.PeriodNumber = PeriodCount;
+                    AMainDS.AGeneralLedgerMasterPeriod.Rows.Add(PeriodRow);
+                }
+
+                RetVal = GLMRow.GlmSequence;
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
-            return GLMRow.GlmSequence;
+            return RetVal;
         }
 
         /// <summary>
@@ -184,28 +211,55 @@ namespace Ict.Petra.Server.MFinance.Common
 
             #endregion Validate Arguments
 
-            ALedgerRow Ledger = AMainDS.ALedger[0];
+            int RetVal = 0;
 
-            AGeneralLedgerMasterRow GLMRow = AMainDS.AGeneralLedgerMaster.NewRowTyped();
-
-            // row.GlmSequence will be set by SubmitChanges
-            GLMRow.GlmSequence = (AMainDS.AGeneralLedgerMaster.Rows.Count * -1) - 1;
-            GLMRow.LedgerNumber = ALedgerNumber;
-            GLMRow.Year = AYear;
-            GLMRow.AccountCode = AAccountCode;
-            GLMRow.CostCentreCode = ACostCentreCode;
-
-            AMainDS.AGeneralLedgerMaster.Rows.Add(GLMRow);
-
-            for (int PeriodCount = 1; PeriodCount < Ledger.NumberOfAccountingPeriods + Ledger.NumberFwdPostingPeriods + 1; PeriodCount++)
+            try
             {
-                AGeneralLedgerMasterPeriodRow PeriodRow = AMainDS.AGeneralLedgerMasterPeriod.NewRowTyped();
-                PeriodRow.GlmSequence = GLMRow.GlmSequence;
-                PeriodRow.PeriodNumber = PeriodCount;
-                AMainDS.AGeneralLedgerMasterPeriod.Rows.Add(PeriodRow);
+                ALedgerRow LedgerRow = AMainDS.ALedger[0];
+
+                #region Validate Data
+
+                if (LedgerRow == null)
+                {
+                    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                            Utilities.GetMethodName(true),
+                            ALedgerNumber));
+                }
+
+                #endregion Validate Data
+
+                AGeneralLedgerMasterRow GLMRow = AMainDS.AGeneralLedgerMaster.NewRowTyped();
+
+                // row.GlmSequence will be set by SubmitChanges
+                GLMRow.GlmSequence = (AMainDS.AGeneralLedgerMaster.Rows.Count * -1) - 1;
+                GLMRow.LedgerNumber = ALedgerNumber;
+                GLMRow.Year = AYear;
+                GLMRow.AccountCode = AAccountCode;
+                GLMRow.CostCentreCode = ACostCentreCode;
+
+                AMainDS.AGeneralLedgerMaster.Rows.Add(GLMRow);
+
+                for (int PeriodCount = 1; PeriodCount < LedgerRow.NumberOfAccountingPeriods + LedgerRow.NumberFwdPostingPeriods + 1; PeriodCount++)
+                {
+                    AGeneralLedgerMasterPeriodRow PeriodRow = AMainDS.AGeneralLedgerMasterPeriod.NewRowTyped();
+                    PeriodRow.GlmSequence = GLMRow.GlmSequence;
+                    PeriodRow.PeriodNumber = PeriodCount;
+                    AMainDS.AGeneralLedgerMasterPeriod.Rows.Add(PeriodRow);
+                }
+
+                RetVal = GLMRow.GlmSequence;
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
-            return GLMRow.GlmSequence;
+            return RetVal;
         }
 
         /// <summary>
@@ -369,6 +423,7 @@ namespace Ict.Petra.Server.MFinance.Common
             #endregion Validate Arguments
 
             GLPostingTDS PostingDS = new GLPostingTDS();
+
             TDBTransaction Transaction = null;
 
             try
@@ -466,13 +521,14 @@ namespace Ict.Petra.Server.MFinance.Common
             else if (ABatchToPost == null)
             {
                 throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
-                            "Function:{0} - The GL Batch to post datarow is null!"),
+                            "Function:{0} - The GL Batch to post data row is null!"),
                         Utilities.GetMethodName(true)));
             }
 
             #endregion Validate Arguments
 
             GLPostingTDS GLPostingDS = AGLPostingDS;
+
             TDBTransaction Transaction = null;
 
             try
@@ -553,7 +609,7 @@ namespace Ict.Petra.Server.MFinance.Common
             else if (ABatchToPost == null)
             {
                 throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
-                            "Function:{0} - The GL Batch to post datarow is null!"),
+                            "Function:{0} - The GL Batch to post data row is null!"),
                         Utilities.GetMethodName(true)));
             }
 
@@ -616,8 +672,9 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             //Perform additional checks
-            TDBTransaction Transaction = null;
             GLBatchTDS GLBatchDS = AGLBatchDS;
+
+            TDBTransaction Transaction = null;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -925,90 +982,24 @@ namespace Ict.Petra.Server.MFinance.Common
             return TVerificationHelper.IsNullOrOnlyNonCritical(AVerifications);
         }
 
-        /// Helper class for storing the amounts of a batch at posting level for account/costcentre combinations
-        private class TAmount
-        {
-            /// amount in the base currency of the ledger
-            public decimal baseAmount = 0.0M;
-
-            /// amount in the intl currency of the ledger
-            public decimal intlAmount = 0.0M;
-
-            /// amount in transaction currency; only for foreign currency accounts
-            public decimal transAmount = 0.0M;
-
-            /// generate a key for the account/costcentre combination
-            public static string MakeKey(string AccountCode, string CostCentreCode)
-            {
-                return AccountCode + ":" + CostCentreCode;
-            }
-
-            /// get the account code from the key
-            public static string GetAccountCode(string key)
-            {
-                return key.Split(':')[0];
-            }
-
-            /// get the cost centre code from the key
-            public static string GetCostCentreCode(string key)
-            {
-                return key.Split(':')[1];
-            }
-        }
-
-        /// Helper class for managing the account hierarchy for posting the batch
-        private class TAccountTreeElement
-        {
-            /// Constructor
-            public TAccountTreeElement(bool AInvert, bool AForeign)
-            {
-                Invert = AInvert;
-                Foreign = AForeign;
-            }
-
-            /// is the debit credit indicator different of the reporting account to the parent account
-            public bool Invert = false;
-
-            /// is this account a foreign currency account
-            public bool Foreign = false;
-
-            /// generate a key for the reporting account/parent account combination
-            public static string MakeKey(string ReportingAccountCode, string AccountCodeReportTo)
-            {
-                return ReportingAccountCode + ":" + AccountCodeReportTo;
-            }
-
-            /// get the reporting account code from the key
-            public static string GetReportingAccountCode(string key)
-            {
-                return key.Split(':')[0];
-            }
-
-            /// get the parent account code from the key
-            public static string GetAccountReportToCode(string key)
-            {
-                return key.Split(':')[1];
-            }
-        }
-
         /// <summary>
         /// mark each journal, each transaction as being posted;
         /// add sums for costcentre/account combinations
         /// </summary>
-        /// <param name="MainDS">can contain several batches and journals and transactions</param>
+        /// <param name="AMainDS">can contain several batches and journals and transactions</param>
         /// <param name="APostingDS"></param>
         /// <param name="APostingLevel">the balance changes at the posting level</param>
         /// <param name="ABatchToPost">the batch to post</param>
         /// <returns>a list with the sums for each costcentre/account combination</returns>
-        private static SortedList <string, TAmount>MarkAsPostedAndCollectData(GLBatchTDS MainDS,
+        private static SortedList <string, TAmount>MarkAsPostedAndCollectData(GLBatchTDS AMainDS,
             GLPostingTDS APostingDS,
             SortedList <string, TAmount>APostingLevel, ABatchRow ABatchToPost)
         {
-            DataView myView = new DataView(MainDS.ATransaction);
+            DataView myView = new DataView(AMainDS.ATransaction);
 
             myView.Sort = ATransactionTable.GetJournalNumberDBName();
 
-            foreach (AJournalRow journal in MainDS.AJournal.Rows)
+            foreach (AJournalRow journal in AMainDS.AJournal.Rows)
             {
                 if (journal.BatchNumber != ABatchToPost.BatchNumber)
                 {
@@ -1051,15 +1042,15 @@ namespace Ict.Petra.Server.MFinance.Common
                         APostingLevel.Add(key, new TAmount());
                     }
 
-                    APostingLevel[key].baseAmount += SignBaseAmount;
-                    APostingLevel[key].intlAmount += SignIntlAmount;
+                    APostingLevel[key].BaseAmount += SignBaseAmount;
+                    APostingLevel[key].IntlAmount += SignIntlAmount;
 
                     // Only foreign currency accounts store a value in the transaction currency,
                     // if the transaction was actually in the foreign currency.
 
                     if (Account.ForeignCurrencyFlag && (journal.TransactionCurrency == Account.ForeignCurrencyCode))
                     {
-                        APostingLevel[key].transAmount += SignTransAmount;
+                        APostingLevel[key].TransAmount += SignTransAmount;
                     }
                 }
 
@@ -1202,9 +1193,9 @@ namespace Ict.Petra.Server.MFinance.Common
                             if (CostCentreKey.StartsWith(CostCentreCode + ":"))
                             {
                                 string CostCentreCodeToReportTo = CostCentreKey.Split(':')[1];
-                                decimal SignBaseAmount = PostingLevelElement.baseAmount;
-                                decimal SignIntlAmount = PostingLevelElement.intlAmount;
-                                decimal SignTransAmount = PostingLevelElement.transAmount;
+                                decimal SignBaseAmount = PostingLevelElement.BaseAmount;
+                                decimal SignIntlAmount = PostingLevelElement.IntlAmount;
+                                decimal SignTransAmount = PostingLevelElement.TransAmount;
 
                                 // Set the sign of the amounts according to the debit/credit indicator
                                 if (AccountTreeElement.Invert)
@@ -1347,8 +1338,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 GlmRow = (AGeneralLedgerMasterRow)GLMMasterView[GLMMasterIndex].Row;
 
-                GlmRow.YtdActualBase += PostingLevelElement.baseAmount;
-                GlmRow.YtdActualIntl += PostingLevelElement.intlAmount;
+                GlmRow.YtdActualBase += PostingLevelElement.BaseAmount;
+                GlmRow.YtdActualIntl += PostingLevelElement.IntlAmount;
 
                 AAccountRow account = (AAccountRow)AMainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, AccountCode });
 
@@ -1356,18 +1347,18 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     if (GlmRow.IsYtdActualForeignNull())
                     {
-                        GlmRow.YtdActualForeign = PostingLevelElement.transAmount;
+                        GlmRow.YtdActualForeign = PostingLevelElement.TransAmount;
                     }
                     else
                     {
-                        GlmRow.YtdActualForeign += PostingLevelElement.transAmount;
+                        GlmRow.YtdActualForeign += PostingLevelElement.TransAmount;
                     }
                 }
 
                 if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
                 {
-                    GlmRow.ClosingPeriodActualBase += PostingLevelElement.baseAmount;
-                    GlmRow.ClosingPeriodActualIntl += PostingLevelElement.intlAmount;
+                    GlmRow.ClosingPeriodActualBase += PostingLevelElement.BaseAmount;
+                    GlmRow.ClosingPeriodActualIntl += PostingLevelElement.IntlAmount;
                 } // Last use of GlmRow in this routine ...
 
                 // propagate the data through the following periods
@@ -1389,18 +1380,18 @@ namespace Ict.Petra.Server.MFinance.Common
                         GlmPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodView[GLMPeriodIndex].Row;
                     }
 
-                    GlmPeriodRow.ActualBase += PostingLevelElement.baseAmount;
-                    GlmPeriodRow.ActualIntl += PostingLevelElement.intlAmount;
+                    GlmPeriodRow.ActualBase += PostingLevelElement.BaseAmount;
+                    GlmPeriodRow.ActualIntl += PostingLevelElement.IntlAmount;
 
                     if (account.ForeignCurrencyFlag)
                     {
                         if (GlmPeriodRow.IsActualForeignNull())
                         {
-                            GlmPeriodRow.ActualForeign = PostingLevelElement.transAmount;
+                            GlmPeriodRow.ActualForeign = PostingLevelElement.TransAmount;
                         }
                         else
                         {
-                            GlmPeriodRow.ActualForeign += PostingLevelElement.transAmount;
+                            GlmPeriodRow.ActualForeign += PostingLevelElement.TransAmount;
                         }
                     }
                 }
@@ -2078,29 +2069,44 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, Boolean ACommitTransaction = true)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
-            GLBatchTDS MainDS = null;
 
-            //Error handling
-            string ErrorContext = "Create a Batch";
-            string ErrorMessage = String.Empty;
-            //Set default type as non-critical
-            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
-            TVerificationResultCollection VerificationResult = null;
-
-            MainDS = new GLBatchTDS();
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                ref SubmissionOK,
-                ACommitTransaction,
-                delegate
-                {
-                    try
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    ref SubmissionOK,
+                    ACommitTransaction,
+                    delegate
                     {
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                        #region Validate Data
+
+                        if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
 
                         ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
                         NewRow.LedgerNumber = ALedgerNumber;
@@ -2112,23 +2118,19 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         GLBatchTDSAccess.SubmitChanges(MainDS);
 
-                        MainDS.AcceptChanges();
-
                         SubmissionOK = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        ErrorMessage =
-                            String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
-                                    Environment.NewLine + Environment.NewLine + ex.ToString()),
-                                ALedgerNumber);
-                        ErrorType = TResultSeverity.Resv_Critical;
-                        VerificationResult = new TVerificationResultCollection();
-                        VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                    });
 
-                        throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
-                    }
-                });
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             return MainDS;
         }
@@ -2148,28 +2150,43 @@ namespace Ict.Petra.Server.MFinance.Common
             decimal ABatchControlTotal,
             DateTime ADateEffective)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
-            GLBatchTDS MainDS = null;
 
-            //Error handling
-            string ErrorContext = "Create a Batch";
-            string ErrorMessage = String.Empty;
-            //Set default type as non-critical
-            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
-            TVerificationResultCollection VerificationResult = null;
-
-            MainDS = new GLBatchTDS();
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                ref SubmissionOK,
-                delegate
-                {
-                    try
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    ref SubmissionOK,
+                    delegate
                     {
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                        #region Validate Data
+
+                        if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
 
                         ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
                         NewRow.LedgerNumber = ALedgerNumber;
@@ -2195,23 +2212,19 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         GLBatchTDSAccess.SubmitChanges(MainDS);
 
-                        MainDS.AcceptChanges();
-
                         SubmissionOK = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        ErrorMessage =
-                            String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
-                                    Environment.NewLine + Environment.NewLine + ex.ToString()),
-                                ALedgerNumber);
-                        ErrorType = TResultSeverity.Resv_Critical;
-                        VerificationResult = new TVerificationResultCollection();
-                        VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                    });
 
-                        throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
-                    }
-                });
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             return MainDS;
         }
@@ -2222,73 +2235,85 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public static GLBatchTDS CreateARecurringBatch(Int32 ALedgerNumber)
         {
-            bool NewTransactionStarted = false;
+            #region Validate Arguments
 
-            GLBatchTDS MainDS = null;
-            GLBatchTDS Temp = null;
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
 
-            //Error handling
-            string ErrorContext = "Create a recurring Batch";
-            string ErrorMessage = String.Empty;
-            //Set default type as non-critical
-            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
-            TVerificationResultCollection VerificationResult = null;
+            #endregion Validate Arguments
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+            GLBatchTDS TempDS = new GLBatchTDS();
+
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
             try
             {
-                MainDS = new GLBatchTDS();
-                Temp = new GLBatchTDS();
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    ref SubmissionOK,
+                    delegate
+                    {
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                                 (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
+                        #region Validate Data
 
-                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                        if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
 
-                ARecurringBatchAccess.LoadViaALedger(Temp, ALedgerNumber, Transaction);
+                        #endregion Validate Data
 
-                DataView RecurringBatchDV = new DataView(Temp.ARecurringBatch);
-                RecurringBatchDV.RowFilter = string.Empty;
-                RecurringBatchDV.Sort = string.Format("{0} DESC",
-                    ARecurringBatchTable.GetBatchNumberDBName());
+                        ARecurringBatchAccess.LoadViaALedger(TempDS, ALedgerNumber, Transaction);
 
-                //Recurring batch numbers can be reused so check each time for current highest number
-                if (RecurringBatchDV.Count > 0)
-                {
-                    MainDS.ALedger[0].LastRecurringBatchNumber = (int)(RecurringBatchDV[0][ARecurringBatchTable.GetBatchNumberDBName()]);
-                }
-                else
-                {
-                    MainDS.ALedger[0].LastRecurringBatchNumber = 0;
-                }
+                        DataView RecurringBatchDV = new DataView(TempDS.ARecurringBatch);
+                        RecurringBatchDV.RowFilter = string.Empty;
+                        RecurringBatchDV.Sort = string.Format("{0} DESC",
+                            ARecurringBatchTable.GetBatchNumberDBName());
 
-                ARecurringBatchRow NewRow = MainDS.ARecurringBatch.NewRowTyped(true);
-                NewRow.LedgerNumber = ALedgerNumber;
-                NewRow.BatchNumber = ++MainDS.ALedger[0].LastRecurringBatchNumber;
-                MainDS.ARecurringBatch.Rows.Add(NewRow);
+                        //Recurring batch numbers can be reused so check each time for current highest number
+                        if (RecurringBatchDV.Count > 0)
+                        {
+                            MainDS.ALedger[0].LastRecurringBatchNumber = (int)(RecurringBatchDV[0][ARecurringBatchTable.GetBatchNumberDBName()]);
+                        }
+                        else
+                        {
+                            MainDS.ALedger[0].LastRecurringBatchNumber = 0;
+                        }
 
-                GLBatchTDSAccess.SubmitChanges(MainDS);
+                        ARecurringBatchRow NewRow = MainDS.ARecurringBatch.NewRowTyped(true);
+                        NewRow.LedgerNumber = ALedgerNumber;
+                        NewRow.BatchNumber = ++MainDS.ALedger[0].LastRecurringBatchNumber;
+                        MainDS.ARecurringBatch.Rows.Add(NewRow);
+
+                        //Empty the TempDS
+                        TempDS.RejectChanges();
+
+                        //Submit changes to MainDS
+                        GLBatchTDSAccess.SubmitChanges(MainDS);
+
+                        SubmissionOK = true;
+                    });
 
                 MainDS.AcceptChanges();
-                Temp.RejectChanges();
             }
             catch (Exception ex)
             {
-                ErrorMessage =
-                    String.Format(Catalog.GetString("Unknown error while creating a recurring batch for Ledger: {0}." +
-                            Environment.NewLine + Environment.NewLine + ex.ToString()),
-                        ALedgerNumber);
-                ErrorType = TResultSeverity.Resv_Critical;
-                VerificationResult = new TVerificationResultCollection();
-                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-
-                throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
-            }
-            finally
-            {
-                if (NewTransactionStarted)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
             return MainDS;
@@ -2303,16 +2328,47 @@ namespace Ict.Petra.Server.MFinance.Common
             string AJournalDescription, string ACurrency, decimal AXRateToBase,
             DateTime ADateEffective, Int32 APeriodNumber, out Int32 AJournalNumber)
         {
+            #region Validate Arguments
+
+            if (AMainDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if ((AMainDS.ABatch == null) || (AMainDS.ABatch.Count == 0))
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The GL Batch table does not exist or is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+            else if (ACurrency.Length == 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Currency code is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AXRateToBase <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Exchange Rate to base must be greater than 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             bool CreationSuccessful = false;
 
             AJournalNumber = 0;
-
-            //Error handling
-            string ErrorContext = "Create a Journal";
-            string ErrorMessage = String.Empty;
-            //Set default type as non-critical
-            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
-            TVerificationResultCollection VerificationResult = null;
 
             try
             {
@@ -2328,22 +2384,36 @@ namespace Ict.Petra.Server.MFinance.Common
                 JournalRow.ExchangeRateToBase = AXRateToBase;
                 JournalRow.DateEffective = ADateEffective;
                 JournalRow.JournalPeriod = APeriodNumber;
+
                 AMainDS.AJournal.Rows.Add(JournalRow);
 
                 //Update the Last Journal
                 ABatchRow BatchRow = (ABatchRow)AMainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber });
+
+                #region Validate Data
+
+                if (BatchRow == null)
+                {
+                    throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                                "Function:{0} - Batch row data for GL Batch {1} from Ledger {2} does not exist or could not be accessed!"),
+                            Utilities.GetMethodName(true),
+                            ABatchNumber,
+                            ALedgerNumber));
+                }
+
+                #endregion Validate Data
+
                 BatchRow.LastJournal = AJournalNumber;
 
                 CreationSuccessful = true;
             }
             catch (Exception ex)
             {
-                ErrorMessage =
-                    String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
-                            Environment.NewLine + Environment.NewLine + ex.ToString()),
-                        ALedgerNumber);
-                ErrorType = TResultSeverity.Resv_Critical;
-                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
             return CreationSuccessful;
@@ -2368,24 +2438,68 @@ namespace Ict.Petra.Server.MFinance.Common
             decimal ABaseAmount,
             out int ATransactionNumber)
         {
+            #region Validate Arguments
+
+            if (AMainDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+            else if (AAccountCode.Length == 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Account code is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ACostCentreCode.Length == 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Cost Centre code is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if ((ABaseAmount != 0) && (Math.Sign(ATransAmount) != Math.Sign(ABaseAmount)))
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Transaction amount is a different sign to the base currency amount!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             bool CreationSuccessful = false;
 
             ATransactionNumber = 0;
-
-            //Error handling
-            string ErrorContext = "Create a Transaction";
-            string ErrorMessage = String.Empty;
-            //Set default type as non-critical
-            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
-            TVerificationResultCollection VerificationResult = null;
 
             try
             {
                 AJournalRow JournalRow = (AJournalRow)AMainDS.AJournal.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber });
 
+                #region Validate Data
+
+                if (JournalRow == null)
+                {
+                    throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                                "Function:{0} - Journal row data for GL Journal {1} in Batch {2} from Ledger {3} does not exist or could not be accessed!"),
+                            Utilities.GetMethodName(true),
+                            AJournalNumber,
+                            ABatchNumber,
+                            ALedgerNumber));
+                }
+
+                #endregion Validate Data
+
                 //Increment the LastTransactionNumber
-                JournalRow.LastTransactionNumber++;
-                ATransactionNumber = JournalRow.LastTransactionNumber;
+                ATransactionNumber = ++JournalRow.LastTransactionNumber;
 
                 ATransactionRow TransactionRow = AMainDS.ATransaction.NewRowTyped();
 
@@ -2409,16 +2523,101 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                ErrorMessage =
-                    String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
-                            Environment.NewLine + Environment.NewLine + ex.ToString()),
-                        ALedgerNumber);
-                ErrorType = TResultSeverity.Resv_Critical;
-
-                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
             return CreationSuccessful;
+        }
+
+        /// Helper class for storing the amounts of a batch at posting level for account/costcentre combinations
+        private class TAmount
+        {
+            /// Amount in the base currency of the ledger
+            public decimal BaseAmount = 0.0M;
+
+            /// Amount in the intl currency of the ledger
+            public decimal IntlAmount = 0.0M;
+
+            /// Amount in transaction currency; only for foreign currency accounts
+            public decimal TransAmount = 0.0M;
+
+            /// Generate a key for the account/costcentre combination
+            public static string MakeKey(string AAccountCode, string ACostCentreCode)
+            {
+                return AAccountCode + ":" + ACostCentreCode;
+            }
+
+            /// <summary>
+            /// Get the account code from the key
+            /// </summary>
+            /// <param name="AKey"></param>
+            /// <returns></returns>
+            public static string GetAccountCode(string AKey)
+            {
+                return AKey.Split(':')[0];
+            }
+
+            /// <summary>
+            /// Get the cost centre code from the key
+            /// </summary>
+            /// <param name="AKey"></param>
+            /// <returns></returns>
+            public static string GetCostCentreCode(string AKey)
+            {
+                return AKey.Split(':')[1];
+            }
+        }
+
+        /// Helper class for managing the account hierarchy for posting the batch
+        private class TAccountTreeElement
+        {
+            /// Is the debit credit indicator different of the reporting account to the parent account
+            public bool Invert = false;
+
+            /// Is this account a foreign currency account
+            public bool Foreign = false;
+
+            /// Constructor
+            public TAccountTreeElement(bool AInvert, bool AForeign)
+            {
+                Invert = AInvert;
+                Foreign = AForeign;
+            }
+
+            /// <summary>
+            /// Generate a key for the reporting account/parent account combination
+            /// </summary>
+            /// <param name="AReportingAccountCode"></param>
+            /// <param name="AAccountCodeReportTo"></param>
+            /// <returns></returns>
+            public static string MakeKey(string AReportingAccountCode, string AAccountCodeReportTo)
+            {
+                return AReportingAccountCode + ":" + AAccountCodeReportTo;
+            }
+
+            /// <summary>
+            /// Get the reporting account code from the key
+            /// </summary>
+            /// <param name="AKey"></param>
+            /// <returns></returns>
+            public static string GetReportingAccountCode(string AKey)
+            {
+                return AKey.Split(':')[0];
+            }
+
+            /// <summary>
+            /// Get the parent account code from the key
+            /// </summary>
+            /// <param name="AKey"></param>
+            /// <returns></returns>
+            public static string GetAccountReportToCode(string AKey)
+            {
+                return AKey.Split(':')[1];
+            }
         }
     }
 }

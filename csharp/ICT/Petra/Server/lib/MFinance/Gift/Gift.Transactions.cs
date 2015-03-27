@@ -2083,12 +2083,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 if (GiftBatchTableInDataSet || GiftTableInDataSet || GiftDetailTableInDataSet)
                 {
-                    throw new Exception(String.Format("Function:{0} - Recurring and normal gift data found in same batch!",
+                    throw new Exception(String.Format("Function:{0} - Recurring and normal gift data found in same changes batch!",
                             Utilities.GetMethodName(true)));
                 }
 
-                return SaveRecurringGiftBatchTDS(ref AInspectDS, ref AVerificationResult, RecurrGiftBatchTableInDataSet,
-                    RecurrGiftTableInDataSet, RecurrGiftDetailTableInDataSet);
+                return SaveRecurringGiftBatchTDS(ref AInspectDS,
+                    ref AVerificationResult,
+                    RecurrGiftBatchTableInDataSet,
+                    RecurrGiftTableInDataSet,
+                    RecurrGiftDetailTableInDataSet);
             }
             else
             {

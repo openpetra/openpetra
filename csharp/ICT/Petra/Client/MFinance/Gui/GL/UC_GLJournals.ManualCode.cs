@@ -490,34 +490,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ResetCurrencyExchangeRate(object sender, EventArgs e)
         {
-            bool CurrencyCodeHasChanged = false;
-
             if (FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null)
                 || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
                 return;
             }
 
-            CurrencyCodeHasChanged = (FTransactionCurrency != cmbDetailTransactionCurrency.GetSelectedString());
-
-            if (CurrencyCodeHasChanged)
+            if (FTransactionCurrency != cmbDetailTransactionCurrency.GetSelectedString())
             {
                 FTransactionCurrency = cmbDetailTransactionCurrency.GetSelectedString();
 
                 FPreviouslySelectedDetailRow.TransactionCurrency = FTransactionCurrency;
 
-                FPreviouslySelectedDetailRow.ExchangeRateToBase = 0.0m;
-                //FPreviouslySelectedDetailRow.ExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
-                //    FTransactionCurrency,
-                //    FMainDS.ALedger[0].BaseCurrency,
-                //    FBatchRow.DateEffective);
-
-                if (FPreviouslySelectedDetailRow.ExchangeRateToBase > 0)
+                if (FTransactionCurrency == FMainDS.ALedger[0].BaseCurrency)
                 {
+                    FPreviouslySelectedDetailRow.ExchangeRateToBase = 1.0m;
                     RefreshCurrencyAndExchangeRate();
                 }
                 else
                 {
+                    FPreviouslySelectedDetailRow.ExchangeRateToBase = 0.0m;
                     txtDetailExchangeRateToBase.NumberValueDecimal = 0M;
                     btnGetSetExchangeRate.Enabled = true;
                 }
