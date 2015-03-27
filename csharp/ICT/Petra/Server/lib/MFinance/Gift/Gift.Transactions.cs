@@ -2070,7 +2070,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool GiftTableInDataSet = (AInspectDS.AGift != null && AInspectDS.AGift.Count > 0);
             bool GiftDetailTableInDataSet = (AInspectDS.AGiftDetail != null && AInspectDS.AGiftDetail.Count > 0);
 
-            int GiftBatchCount = GiftBatchTableInDataSet ? AInspectDS.AGiftBatch.Count : 0;
+            //Not needed at present
+            //int GiftBatchCount = GiftBatchTableInDataSet ? AInspectDS.AGiftBatch.Count : 0;
             int GiftCount = GiftTableInDataSet ? AInspectDS.AGift.Count : 0;
             int GiftDetailCount = GiftDetailTableInDataSet ? AInspectDS.AGiftDetail.Count : 0;
 
@@ -2338,7 +2339,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             bool AllValidationsOK = true;
 
-            int RecurrGiftBatchCount = ARecurringGiftBatchTableInDataSet ? AInspectDS.ARecurringGiftBatch.Count : 0;
+            //Not needed as yet
+            //int RecurrGiftBatchCount = ARecurringGiftBatchTableInDataSet ? AInspectDS.ARecurringGiftBatch.Count : 0;
             int RecurrGiftCount = ARecurringGiftTableInDataSet ? AInspectDS.ARecurringGift.Count : 0;
             int RecurrGiftDetailCount = ARecurringGiftDetailTableInDataSet ? AInspectDS.ARecurringGiftDetail.Count : 0;
 
@@ -3770,12 +3772,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             decimal GiftPercentageAmount;
             decimal ChargeAmount;
             string ChargeOption;
-
-            //Error handling
-            string ErrorContext = String.Empty;
-            string ErrorMessage = String.Empty;
-            //Set default type as non-critical
-            //TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
 
             AVerificationResult = new TVerificationResultCollection();
 

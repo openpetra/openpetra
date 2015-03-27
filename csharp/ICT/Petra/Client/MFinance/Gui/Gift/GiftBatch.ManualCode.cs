@@ -52,6 +52,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private int standardTabIndex = 0;
         private bool FNewDonorWarning = true;
         private bool FWarnAboutMissingIntlExchangeRate = false;
+        private eGiftTabs FPreviouslySelectedTab = eGiftTabs.None;
+
         // changed gift records
         GiftBatchTDSAGiftDetailTable FGiftDetailTable = null;
 
@@ -464,7 +466,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Batches,
 
             /// list of transactions
-            Transactions
+            Transactions,
+
+            /// None
+            None
         };
 
         void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
@@ -495,18 +500,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
-        public void SelectTab(eGiftTabs ATab)
+        /// <param name="ARepeatEvent"></param>
+        public void SelectTab(eGiftTabs ATab, bool ARepeatEvent = false)
         {
             FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
 
             if (ATab == eGiftTabs.Batches)
             {
+                if ((FPreviouslySelectedTab == eGiftTabs.Batches) && !ARepeatEvent)
+                {
+                    //Repeat event
+                    return;
+                }
+
+                FPreviouslySelectedTab = eGiftTabs.Batches;
                 this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                 this.ucoBatches.SetFocusToGrid();
             }
             else if (ATab == eGiftTabs.Transactions)
             {
+                if ((FPreviouslySelectedTab == eGiftTabs.Transactions) && !ARepeatEvent)
+                {
+                    //Repeat event
+                    return;
+                }
+
+                FPreviouslySelectedTab = eGiftTabs.Transactions;
+
                 if (this.tpgTransactions.Enabled)
                 {
                     // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
