@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Specifies that initial transactions have loaded into the dataset
         /// </summary>
-        public bool FTransactionsLoaded = false;
+        public bool FGiftTransactionsLoaded = false;
 
         private Boolean ViewMode
         {
@@ -153,44 +153,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitialiseControls()
         {
-            //Fix to length of field
-            txtDetailReference.MaxLength = 20;
-
-            cmbDetailMotivationDetailCode.Width += 20;
-
-            //Fix a layering issue
-            txtDetailRecipientLedgerNumber.SendToBack();
-
-            //Changing this will stop taborder issues
-            sptTransactions.TabStop = false;
-
-            SetupTextBoxMenuItems();
-            txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
-
-            //Event fires when the recipient key is changed and the new partner has a different Partner Class
-            txtDetailRecipientKey.PartnerClassChanged += RecipientPartnerClassChanged;
-
-            //Set initial width of this textbox
-            cmbKeyMinistries.ComboBoxWidth = 250;
-            cmbKeyMinistries.AttachedLabel.Visible = false;
-
-            //Setup hidden text boxes used to speed up reading transactions
-            SetupComboTextBoxOverlayControls();
-
-            //Make TextBox look like a label
-            txtDonorInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            txtDonorInfo.Font = TAppSettingsManager.GetDefaultBoldFont();
-
-            if (FTaxDeductiblePercentageEnabled)
+            try
             {
-                // set up Tax Deductibility Percentage (specifically for OM Switzerland)
-                SetupTaxDeductibilityControls();
+                FPetraUtilsObject.SuppressChangeDetection = true;
+
+                //Fix to length of field
+                txtDetailReference.MaxLength = 20;
+
+                cmbDetailMotivationDetailCode.Width += 20;
+
+                //Fix a layering issue
+                txtDetailRecipientLedgerNumber.SendToBack();
+
+                //Changing this will stop taborder issues
+                sptTransactions.TabStop = false;
+
+                SetupTextBoxMenuItems();
+                txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
+
+                //Event fires when the recipient key is changed and the new partner has a different Partner Class
+                txtDetailRecipientKey.PartnerClassChanged += RecipientPartnerClassChanged;
+
+                //Set initial width of this textbox
+                cmbKeyMinistries.ComboBoxWidth = 250;
+                cmbKeyMinistries.AttachedLabel.Visible = false;
+
+                //Setup hidden text boxes used to speed up reading transactions
+                SetupComboTextBoxOverlayControls();
+
+                //Make TextBox look like a label
+                txtDonorInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
+                txtDonorInfo.Font = TAppSettingsManager.GetDefaultBoldFont();
+
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    // set up Tax Deductibility Percentage (specifically for OM Switzerland)
+                    SetupTaxDeductibilityControls();
+                }
+
+                // set tooltip
+                grdDetails.SetHeaderTooltip(4, Catalog.GetString("Confidential"));
+
+                chkDetailChargeFlag.Enabled = UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE3);
             }
-
-            // set tooltip
-            grdDetails.SetHeaderTooltip(4, Catalog.GetString("Confidential"));
-
-            chkDetailChargeFlag.Enabled = UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE3);
+            finally
+            {
+                FPetraUtilsObject.SuppressChangeDetection = false;
+            }
         }
 
         private void SetupTextBoxMenuItems()
@@ -320,6 +329,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if gift transactions were loaded from server, false if transactions had been loaded already.</returns>
         public bool LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus, bool AForceLoadFromServer = false)
         {
+            //Set key flags
+            bool FirstGiftTransLoad = (FLedgerNumber == -1);
+            bool SameCurrentBatch =
+                ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus) && !AForceLoadFromServer);
+
+            //Read key fields
             FBatchRow = GetCurrentBatchRow();
 
             if ((FBatchRow == null) && (GetAnyBatchRow(ABatchNumber) == null))
@@ -328,12 +343,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return false;
             }
 
-            //Reset Batch method of payment variable
-            FBatchMethodOfPayment = ((TFrmGiftBatch)ParentForm).GetBatchControl().MethodOfPaymentCode;
+            FLedgerNumber = ALedgerNumber;
+            FBatchNumber = ABatchNumber;
+            FBatchStatus = ABatchStatus;
+            FBatchUnposted = (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+            FBatchCurrencyCode = FBatchRow.CurrencyCode;
+            FBatchMethodOfPayment = FBatchRow.MethodOfPaymentCode;
 
-            bool firstLoad = (FLedgerNumber == -1);
-
-            if (firstLoad)
+            if (FirstGiftTransLoad)
             {
                 InitialiseControls();
             }
@@ -341,10 +358,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateCurrencySymbols(FBatchRow.CurrencyCode);
 
             //Check if the same batch is selected, so no need to apply filter
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus) && !AForceLoadFromServer)
+            if (SameCurrentBatch)
             {
                 //Same as previously selected and we have not been asked to force a full refresh
-                if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (GetSelectedRowIndex() > 0))
+                if (FBatchUnposted && (GetSelectedRowIndex() > 0))
                 {
                     if (FGLEffectivePeriodChanged)
                     {
@@ -363,8 +380,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 UpdateControlsProtection();
 
-                if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED)
-                    && ((FBatchCurrencyCode != FBatchRow.CurrencyCode) || (FBatchExchangeRateToBase != FBatchRow.ExchangeRateToBase)))
+                if (FBatchUnposted
+                    && ((FBatchCurrencyCode != FBatchRow.CurrencyCode)
+                        || (FBatchExchangeRateToBase != FBatchRow.ExchangeRateToBase)))
                 {
                     UpdateBaseAmount(false);
                 }
@@ -373,33 +391,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //New set of transactions to be loaded
-            FTransactionsLoaded = false;
-
+            FGiftTransactionsLoaded = false;
             FSuppressListChanged = true;
-
-            //Read key fields
-            FLedgerNumber = ALedgerNumber;
-            FBatchNumber = ABatchNumber;
-            FBatchCurrencyCode = FBatchRow.CurrencyCode;
-
-            //Process Batch status
-            FBatchStatus = ABatchStatus;
-            FBatchUnposted = (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
             //Apply new filter
             FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
 
-            // if this form is readonly, then we need all codes, because old codes might have been used
-            if (firstLoad || (FActiveOnly == (ViewMode || !FBatchUnposted)))
+            // if this form is readonly, then we need all codes, because old (inactive) codes might have been used
+            if (FirstGiftTransLoad || (FActiveOnly == (ViewMode || !FBatchUnposted)))
             {
                 FActiveOnly = !(ViewMode || !FBatchUnposted);
 
-                TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, FActiveOnly);
-                TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, FActiveOnly);
-                TFinanceControls.InitialiseMethodOfGivingCodeList(ref cmbDetailMethodOfGivingCode, FActiveOnly);
-                TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, FActiveOnly);
-                TFinanceControls.InitialisePMailingList(ref cmbDetailMailingCode, FActiveOnly);
+                try
+                {
+                    //Without this, the Save button enables even for Posted batches!
+                    FPetraUtilsObject.SuppressChangeDetection = true;
+
+                    TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, FActiveOnly);
+                    TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, FActiveOnly);
+                    TFinanceControls.InitialiseMethodOfGivingCodeList(ref cmbDetailMethodOfGivingCode, FActiveOnly);
+                    TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, FActiveOnly);
+                    TFinanceControls.InitialisePMailingList(ref cmbDetailMailingCode, FActiveOnly);
+                }
+                finally
+                {
+                    FPetraUtilsObject.SuppressChangeDetection = false;
+                }
             }
 
             // This sets the incomplete filter but does check the panel enabled state
@@ -417,7 +435,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Check if need to update batch period in each gift
-            ((TFrmGiftBatch)ParentForm).GetBatchControl().UpdateBatchPeriod();
+            if (FBatchUnposted)
+            {
+                ((TFrmGiftBatch)ParentForm).GetBatchControl().UpdateBatchPeriod();
+            }
 
             // Now we set the full filter
             FFilterAndFindObject.ApplyFilter();
@@ -432,7 +453,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateTotals();
 
-            if ((FPreviouslySelectedDetailRow != null) && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            if ((FPreviouslySelectedDetailRow != null) && (FBatchUnposted))
             {
                 bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
 
@@ -442,7 +463,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            FTransactionsLoaded = true;
+            FGiftTransactionsLoaded = true;
+
             return true;
         }
 
@@ -1233,7 +1255,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ShowDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
             if (TUC_GiftTransactions_Recipient.OnStartShowDetailsManual(ARow, cmbKeyMinistries, cmbDetailMotivationDetailCode,
-                    txtDetailRecipientKeyMinistry, ref FMotivationDetail, FActiveOnly, FTransactionsLoaded, FInEditMode, FBatchUnposted))
+                    txtDetailRecipientKeyMinistry, ref FMotivationDetail, FActiveOnly, FGiftTransactionsLoaded, FInEditMode, FBatchUnposted))
             {
                 try
                 {
@@ -1890,7 +1912,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (reverseWholeBatch && (FBatchNumber != BatchNumber))
             {
-                ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions);
+                ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, true);
                 ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Batches);
                 ((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
             }

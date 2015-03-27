@@ -71,7 +71,7 @@ namespace Ict.Common.DB
             Action AEncapsulatedServerCallCode, bool AWhenNotSuccessfulThrowSpecialException = false,
             string AExceptionMessage = null)
         {
-            int MaxRetries = TAppSettingsManager.GetInt16("MaxServerCallRetries", 3);
+            int MaxRetries = TAppSettingsManager.GetInt16("CoordinatedAutoRetryCallMaxRetries", 3);
             int ServerCallRetries = 0;
 
             do
