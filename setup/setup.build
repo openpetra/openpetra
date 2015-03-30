@@ -462,6 +462,17 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <include name="${setupDir}/INSTALL" />
       </fileset>
     </delete>
+    <foreach item="File" property="filename">
+        <in>
+            <items>
+                <include name="${dir.root}/csharp/ICT/Petra/Plugins/**/UINavigation.yml" />
+            </items>
+        </in>
+        <do>
+            <property name="pluginname" value="${path::get-file-name(directory::get-parent-directory(filename))}"/>
+            <copy file="${filename}" tofile="${setupDir}/bin30/Plugins/${pluginname}.UINavigation.yml"/>
+        </do>
+    </foreach>
   </if>
 
   <if test="${BuildArchive != 'server'}">

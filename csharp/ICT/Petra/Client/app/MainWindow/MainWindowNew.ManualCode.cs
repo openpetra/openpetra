@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -574,9 +574,9 @@ namespace Ict.Petra.Client.App.PetraClient
             }
         }
 
-        private static void MergePluginUINavigation(ref XmlDocument AUINavigation)
+        private static void MergePluginUINavigation(string APluginsPath, ref XmlDocument AUINavigation)
         {
-            string[] UINavigationFiles = Directory.GetFiles("../../csharp/ICT/Petra/Plugins", "UINavigation.yml", SearchOption.AllDirectories);
+            string[] UINavigationFiles = Directory.GetFiles(APluginsPath, "*UINavigation.yml", SearchOption.AllDirectories);
 
             foreach (string UINavFile in UINavigationFiles)
             {
@@ -594,10 +594,18 @@ namespace Ict.Petra.Client.App.PetraClient
             TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("UINavigation.File"));
             XmlDocument UINavigation = parser.ParseYML2XML();
 
-            // look for plugin UINavigation files, only for development mode in the OpenPetra source code working tree
-            if (Directory.Exists("../../csharp/ICT/Petra/Plugins"))
+            // look for plugin UINavigation files, for development mode in the OpenPetra source code working tree
+            string PluginsPath = "../../csharp/ICT/Petra/Plugins";
+
+            if (!Directory.Exists(PluginsPath))
             {
-                MergePluginUINavigation(ref UINavigation);
+                // in Production, we can have extension yml UINavigation files for the plugins too
+                PluginsPath = "Plugins";
+            }
+
+            if (Directory.Exists(PluginsPath))
+            {
+                MergePluginUINavigation(PluginsPath, ref UINavigation);
             }
 
             ALedgerTable AvailableLedgers = new ALedgerTable();

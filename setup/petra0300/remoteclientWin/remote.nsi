@@ -109,6 +109,8 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\delivery\bin\Ict.Tools.PatchTool.exe
   File ..\..\..\delivery\bin\Ict.Tools.PatchTool.Library.dll
   File ..\..\..\tmp\UINavigation.yml
+  SetOutPath "$INSTDIR\bin30\Plugins"
+  File ..\..\..\delivery\bin\Plugins\*UINavigation.yml
   SetOutPath "$INSTDIR\bin30\de-DE"
   File ..\..\..\delivery\bin\de-DE\OpenPetra.resources.dll
   SetOutPath "$INSTDIR\bin30\es-ES"
