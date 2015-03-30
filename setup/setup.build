@@ -419,6 +419,8 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <exclude name="Ict.Tools.*" />
       <exclude name="ICT.Tools.*" />
       <exclude name="Ict.Petra.Tools.*" />
+      <exclude name="Ict.Petra.Plugins.*.Testing*dll" />
+      <exclude name="Ict.Petra.Plugins.*.exe" />
       <exclude name="ICSharpCode.NRefactory*" />
       <exclude name="Ionic.Zip*" />
       <exclude name="WebDriver*" />
@@ -441,10 +443,10 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <fileset>
         <include name="${setupDir}/bin30/Ict.Petra.Client*" />
         <include name="${setupDir}/bin30/Ict.Petra.Plugins.*.Client.dll" />
-        <include name="${setupDir}/bin30/Ict.Petra.Plugins.*.Testing.dll" />
         <include name="${setupDir}/bin30/PetraClient*" />
         <include name="${setupDir}/bin30/sqlite3.dll" />
         <include name="${setupDir}/bin30/Ict.Tools.PatchTool.exe" />
+        <include name="${setupDir}/bin30/Ict.Tools.PatchTool.Library.dll" />
       </fileset>
     </delete>
   </if>
