@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1049,6 +1049,16 @@ namespace Ict.Common.IO
             // now sort the list by the order attribute
             list.Sort(new YamlItemOrderComparer());
 
+            if (TLogging.DebugLevel >= 1)
+            {
+                TLogging.LogAtLevel(1, "Result of sorting the Yaml controls:");
+
+                foreach (XmlNode x in list)
+                {
+                   TLogging.LogAtLevel(1, "  " + x.Name);
+                }
+            }
+
             return list;
         }
 
@@ -1565,23 +1575,39 @@ namespace Ict.Common.IO
                     else if (realParentNode1 == realParentNode2)
                     {
                         // are the nodes siblings? then keep the order
-                        XmlNode child = node1.ParentNode.FirstChild;
+                        XmlNode child = realParentNode1.FirstChild;
+                        int pos1 = -1, pos2 = -1;
+                        int currentPos = 0;
 
                         while (child != null)
                         {
                             if (child == node1)
                             {
-                                returnValue = -1;
-                                break;
+                                pos1 = currentPos;
                             }
                             else if (child == node2)
                             {
-                                returnValue = +1;
-                                break;
+                                pos2 = currentPos;
                             }
 
                             child = child.NextSibling;
+                            currentPos++;
                         }
+
+                        if (pos1 == -1 || pos2 == -1)
+                        {
+                            // they are not from the same parent, just children of Controls, but from different yaml files. order does not matter
+                            returnValue = 0;
+                        }
+                        else if (pos1 < pos2)
+                        {
+                            returnValue = -1;
+                        }
+                        else
+                        {
+                            returnValue = 1;
+                        }
+
                     }
                     else
                     {
@@ -1593,16 +1619,9 @@ namespace Ict.Common.IO
                     returnValue = CheckOrderAttribute(order1, order2);
                 }
 
-/*
- *                      if (node1.Name == "tpgReportSpecific" || node2.Name == "tpgReportSpecific"
- || node1.Name == "tpgOutputDestinations" || node2.Name == "tpgOutputDestinations"
- || node1.Name == "tpgSorting" || node2.Name == "tpgSorting"
- *                        )
- *          Console.WriteLine("sorting " + node1.Name + " " + (returnValue == 0? "==": (returnValue == -1? "<":">")) +
- *                                        " " + node2.Name +
- *                                        " depth: " + depth1.ToString() + " " + depth2.ToString());
- */
             }
+
+            TLogging.LogAtLevel(1, "Sorting Yaml Controls: " + node1.Name + (returnValue == 0? " = ": (returnValue > 0 ? " > " : " < ")) + node2.Name);
 
             return returnValue;
         }

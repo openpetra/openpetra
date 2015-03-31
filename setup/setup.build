@@ -180,7 +180,8 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#RELEASEID}', ReleaseID)}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#PATCHVERSION}', ReleaseID)}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#DELIVERY.DIR}', dir.delivery)}"/>
-    
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SETUP.DIR}', setupDir)}"/>
+
     <!-- for remote installer -->
     <if test="${property::exists('HostedServer')}">
         <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#ORGNAME}', OrgName)}"/>
@@ -414,8 +415,13 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <fileset basedir="${dir.bin}">
       <include name="*.dll" />
       <include name="*.exe" />
+      <exclude name="PetraMultiStart.exe" />
       <exclude name="Ict.Testing.*" />
       <exclude name="Ict.Tools.*" />
+      <exclude name="ICT.Tools.*" />
+      <exclude name="Ict.Petra.Tools.*" />
+      <exclude name="Ict.Petra.Plugins.*.Testing*dll" />
+      <exclude name="Ict.Petra.Plugins.*.exe" />
       <exclude name="ICSharpCode.NRefactory*" />
       <exclude name="Ionic.Zip*" />
       <exclude name="WebDriver*" />
@@ -440,6 +446,8 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <include name="${setupDir}/bin30/Ict.Petra.Plugins.*.Client.dll" />
         <include name="${setupDir}/bin30/PetraClient*" />
         <include name="${setupDir}/bin30/sqlite3.dll" />
+        <include name="${setupDir}/bin30/Ict.Tools.PatchTool.exe" />
+        <include name="${setupDir}/bin30/Ict.Tools.PatchTool.Library.dll" />
       </fileset>
     </delete>
   </if>
@@ -455,6 +463,17 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <include name="${setupDir}/INSTALL" />
       </fileset>
     </delete>
+    <foreach item="File" property="filename">
+        <in>
+            <items>
+                <include name="${dir.root}/csharp/ICT/Petra/Plugins/**/UINavigation.yml" />
+            </items>
+        </in>
+        <do>
+            <property name="pluginname" value="${path::get-file-name(directory::get-parent-directory(filename))}"/>
+            <copy file="${filename}" tofile="${setupDir}/bin30/Plugins/${pluginname}.UINavigation.yml"/>
+        </do>
+    </foreach>
   </if>
 
   <if test="${BuildArchive != 'server'}">
