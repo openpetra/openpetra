@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -71,6 +71,15 @@ namespace Ict.Petra.Client.MReporting.Logic
         {
             Parameters = new TParameterList();
             MaxDisplayColumns = -1;
+        }
+
+        /// <summary>
+        /// Destructor
+        /// </summary>
+        ~TRptCalculator()
+        {
+            // Release the server object
+            FReportingGenerator = null;
         }
 
         /// <summary>
@@ -500,8 +509,8 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             ReturnValue = FReportingGenerator.GetSuccess();
 
-            // Release the server object
-            FReportingGenerator = null;
+            // Do not release the server object, we still might want to send an email...
+            // FReportingGenerator = null;
 
             if (ReturnValue)
             {
