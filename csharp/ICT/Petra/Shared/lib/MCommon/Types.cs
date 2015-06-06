@@ -23,7 +23,6 @@
 //
 using System;
 using Ict.Common;
-using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 

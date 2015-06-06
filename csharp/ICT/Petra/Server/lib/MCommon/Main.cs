@@ -34,7 +34,6 @@ using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
-using Ict.Common.Remoting.Client;
 using Ict.Common.Session;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared;

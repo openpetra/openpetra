@@ -29,7 +29,6 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
-using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.MCommon.Validation;
