@@ -34,7 +34,11 @@ namespace Ict.Common.Remoting.Client
 
 {##CONNECTORSTANDALONE}
 // this is code for the standalone openpetra, there is no server, only one single application
-Thread.CurrentThread.Name = "StandaloneOpenPetra";
+if (Thread.CurrentThread.Name == String.Empty)
+{
+    Thread.CurrentThread.Name = "StandaloneOpenPetra";
+}
+
 DomainManager.GClientID = 0;
 
 TServerManager TheServerManager = new TServerManager();
