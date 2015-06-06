@@ -34,17 +34,30 @@ namespace Ict.Common.Remoting.Client
 
 {##CONNECTORSTANDALONE}
 // this is code for the standalone openpetra, there is no server, only one single application
-Thread.CurrentThread.Name = "StandaloneOpenPetra";
+if (Thread.CurrentThread.Name == String.Empty)
+{
+    Thread.CurrentThread.Name = "StandaloneOpenPetra";
+}
+
 DomainManager.GClientID = 0;
 
 TServerManager TheServerManager = new TServerManager();
 
 //
-// Connect to main Database
+// Connect to main Database. need to do the same initialisation as csharp/ICT/Petra/Server/app/WebService/SessionManager.cs
 //
 try
 {
     TheServerManager.EstablishDBConnection();
+
+    TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
+    DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(
+	Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
+
+    TLanguageCulture.Init();
+
+    // initialise the cached tables
+    TSetupDelegates.Init();
 }
 catch (FileNotFoundException ex)
 {

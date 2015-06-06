@@ -101,14 +101,14 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll
   File ..\..\..\csharp\ThirdParty\GNU\GNU.Gettext.dll
   File ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll
+  File ..\..\..\csharp\ThirdParty\A1Panel\Owf.Controls.A1Panel.dll
+  File ..\..\..\csharp\ThirdParty\OrientedTextControls\CustomControl.OrientedTextControls.dll
   File ..\..\..\delivery\bin\Ict.Common*dll
   File ..\..\..\delivery\bin\Ict.Petra.Client*dll
   File ..\..\..\delivery\bin\Ict.Petra.Shared*dll
   File ..\..\..\delivery\bin\PetraClient.exe
   File ..\..\..\delivery\bin\Ict.Petra.Server*.dll
   File ..\..\..\delivery\bin\Ict.Petra.ServerAdmin*.dll
-  File ..\..\..\delivery\bin\PetraServerAdminConsole.exe
-  File ..\..\..\delivery\bin\PetraServerConsole.exe
   File ..\..\..\tmp\UINavigation.yml
   SetOutPath "$INSTDIR\bin30\de-DE"
   File ..\..\..\delivery\bin\de-DE\OpenPetra.resources.dll
@@ -130,9 +130,7 @@ Section "Main Section" SecInstallFiles
   SetOutPath "$INSTDIR"
   File ..\..\..\LICENSE
   File ..\..\..\resources\petraico-big.ico
-  File /oname=PetraServerAdminConsole-3.0.config PetraServerAdminConsole.config
   File /oname=PetraClient-3.0.config PetraClient.config
-  File /oname=PetraServerConsole-3.0.config PetraServerConsole-Sqlite.config
   SetOutPath "$INSTDIR\demo30"
   File ..\..\..\demodata\*.*
   SetOutPath "$INSTDIR\db30"
@@ -157,10 +155,6 @@ Section "Main Section" SecInstallFiles
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
 
-  ;ExecWait '"cmd.exe" /C netsh firewall set allowedprogram program = "$INSTDIR\bin30\PetraClient.exe" name = PetraClient mode = DISABLE'
-  ;ExecWait '"cmd.exe" /C netsh firewall set allowedprogram program = "$INSTDIR\bin30\PetraServerConsole.exe" name = PetraServerConsole mode = DISABLE'
-  ;ExecWait '"cmd.exe" /C netsh firewall set allowedprogram program = "$INSTDIR\bin30\PetraServerAdminConsole.exe" name = PetraServerAdminConsole mode = DISABLE'
-  
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 SectionEnd

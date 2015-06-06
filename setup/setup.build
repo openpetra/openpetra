@@ -102,7 +102,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 </target> 
   
 <target name="setupStandalone">
-    <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/standalone/standalone.iss"/>
+    <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/standalone/standalone.nsi"/>
     <call target="setupTemplate"/>
 </target>
 
@@ -128,10 +128,10 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <!-- ************ build backup client tar.gz for the patches ********* -->
     <property name="BuildArchive" value="client" overwrite="true"/>
     <call target="prepareSetupDirForTarFile"/>
-    <copy file="${Config.file}" tofile="${setupDir}/etc30/PetraClientRemote.config" overwrite="true" outputencoding="utf-8"/>
+    <copy file="${Config.file}" tofile="${dir.setup}/etc30/PetraClientRemote.config" overwrite="true" outputencoding="utf-8"/>
     <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
     <tar destfile="${dir.delivery}/openpetraorg-client-backup-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
-      <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
+      <fileset basedir="${dir.setup}" prefix="openpetraorg-${ReleaseID}">
         <include name="**/*" />
       </fileset>
     </tar>
@@ -180,7 +180,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#RELEASEID}', ReleaseID)}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#PATCHVERSION}', ReleaseID)}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#DELIVERY.DIR}', dir.delivery)}"/>
-    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SETUP.DIR}', setupDir)}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SETUP.DIR}', dir.setup)}"/>
 
     <!-- for remote installer -->
     <if test="${property::exists('HostedServer')}">
@@ -207,12 +207,12 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <call target="prepareSetupDirForTarFile"/>
    
   <if test="${not platform::is-windows()}">
-    <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.delivery}/openpetraorg-server-${DBMS.Type}-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz openpetraorg-${ReleaseID}&quot;"/>
+    <ExecCmd program="sh" commandline="/C &quot;cd ${dir.setup}/..; tar czpf ${dir.delivery}/openpetraorg-server-${DBMS.Type}-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz openpetraorg-${ReleaseID}&quot;"/>
   </if>
   <if test="${platform::is-windows()}">
       <!-- this does not keep the executable flag -->
       <tar destfile="${dir.delivery}/openpetraorg-server-${DBMS.Type}-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
-        <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
+        <fileset basedir="${dir.setup}" prefix="openpetraorg-${ReleaseID}">
           <include name="**/*" />
         </fileset>
       </tar>
@@ -238,15 +238,15 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <call target="prepareSetupDirForTarFile"/>
   <!-- copy startclient sh und remote config -->
   <copy file="${dir.root}/setup/petra${PetraRelease}/linuxclient/startClient.sh"
-              tofile="${setupDir}/startClient.sh"/>
+              tofile="${dir.setup}/startClient.sh"/>
   <copy file="${dir.root}/setup/petra${PetraRelease}/linuxclient/PetraClientRemote.config"
-              tofile="${setupDir}/etc30/PetraClientRemote.config" outputencoding="utf-8">
+              tofile="${dir.setup}/etc30/PetraClientRemote.config" outputencoding="utf-8">
         <filterchain>
             <expandproperties />
         </filterchain>
   </copy>
 
-  <!-- result is in setupDir for building the rpm or deb package -->
+  <!-- result is in dir.setup for building the rpm or deb package -->
 </target>
 
 <target name="buildServerCentOSPostgresqlOBS">
@@ -263,9 +263,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <call target="createSQLStatements"/>
   <property name="BuildArchive" value="server" overwrite="true"/>
   <call target="prepareSetupDirForTarFile"/>
-  <move file="${setupDir}/centos/openpetra-server.sh" tofile="${setupDir}/openpetra-server.sh"/>
+  <move file="${dir.setup}/centos/openpetra-server.sh" tofile="${dir.setup}/openpetra-server.sh"/>
 
-  <!-- result is in setupDir for building the rpm package -->
+  <!-- result is in dir.setup for building the rpm package -->
 </target>
 
 <target name="buildServerDebianPostgresqlOBS">
@@ -282,9 +282,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <call target="createSQLStatements"/>
   <property name="BuildArchive" value="server" overwrite="true"/>
   <call target="prepareSetupDirForTarFile"/>
-  <move file="${setupDir}/debian/openpetra-server.sh" tofile="${setupDir}/openpetra-server.sh"/>
+  <move file="${dir.setup}/debian/openpetra-server.sh" tofile="${dir.setup}/openpetra-server.sh"/>
 
-  <!-- result is in setupDir for building the rpm package -->
+  <!-- result is in dir.setup for building the rpm package -->
 </target>
 
 <target name="buildWindowsRemoteClient" help="build the windows remote client, and the patches">
@@ -309,7 +309,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <if test="${WithWindowsClient}">
     <call target="setupRemote"/>
   </if>
-  <delete dir="${setupDir}"/>
+  <delete dir="${dir.setup}"/>
 </target>
 
 <target name="buildRemoteInstallers" help="build a tar.gz file for the server, the remote installer for the client, and a backup for future patches">
@@ -340,7 +340,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <call target="buildLinuxClient"/>
   </if>
 
-  <delete dir="${setupDir}"/>
+  <delete dir="${dir.setup}"/>
 </target>
 
 <target name="createRemoteClientPatch" depends="init">
@@ -362,9 +362,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <call target="prepareSetupDirForTarFile"/>
   <!-- copy startclient sh und remote config -->
   <copy file="${dir.root}/setup/petra${PetraRelease}/linuxclient/startClient.sh"
-              tofile="${setupDir}/startClient.sh"/>
+              tofile="${dir.setup}/startClient.sh"/>
   <copy file="${dir.root}/setup/petra${PetraRelease}/linuxclient/PetraClientRemote.config"
-              tofile="${setupDir}/etc30/PetraClientRemote.config" outputencoding="utf-8">
+              tofile="${dir.setup}/etc30/PetraClientRemote.config" outputencoding="utf-8">
         <filterchain>
             <expandproperties />
         </filterchain>
@@ -372,13 +372,13 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
   <if test="${not platform::is-windows()}">
     <!-- change the executable flag -->
-    <ExecCmd program="sh" commandline="/C &quot;chmod a+x ${setupDir}/*.sh&quot;"/>
-    <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.delivery}/openpetraorg-client-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz openpetraorg-${ReleaseID}&quot;"/>
+    <ExecCmd program="sh" commandline="/C &quot;chmod a+x ${dir.setup}/*.sh&quot;"/>
+    <ExecCmd program="sh" commandline="/C &quot;cd ${dir.setup}/..; tar czpf ${dir.delivery}/openpetraorg-client-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz openpetraorg-${ReleaseID}&quot;"/>
   </if>
   <if test="${platform::is-windows()}">
     <!-- this does not keep the executable flag -->
     <tar destfile="${dir.delivery}/openpetraorg-client-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
-      <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
+      <fileset basedir="${dir.setup}" prefix="openpetraorg-${ReleaseID}">
         <include name="**/*" />
       </fileset>
     </tar>
@@ -393,25 +393,25 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
      Parameter BuildArchive: if client, all the server specific files are ignored; if server, all the client specific files are ignored
 -->
-  <property name="setupDir" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
-  <delete dir="${setupDir}"/>
-  <mkdir dir="${setupDir}"/>
+  <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
+  <delete dir="${dir.setup}"/>
+  <mkdir dir="${dir.setup}"/>
   
-  <mkdir dir="${setupDir}/db30"/>
-  <mkdir dir="${setupDir}/demo30"/>
-  <mkdir dir="${setupDir}/log30"/>
-  <mkdir dir="${setupDir}/etc30"/>
-  <mkdir dir="${setupDir}/reports30"/>
-  <mkdir dir="${setupDir}/patches30"/>  
-  <mkdir dir="${setupDir}/manuals30"/>
-  <mkdir dir="${setupDir}/sql30"/>
-  <mkdir dir="${setupDir}/formletters30"/>
-  <mkdir dir="${setupDir}/resources30"/>
-  <mkdir dir="${setupDir}/bin30"/>
-  <mkdir dir="${setupDir}/js30"/>
+  <mkdir dir="${dir.setup}/db30"/>
+  <mkdir dir="${dir.setup}/demo30"/>
+  <mkdir dir="${dir.setup}/log30"/>
+  <mkdir dir="${dir.setup}/etc30"/>
+  <mkdir dir="${dir.setup}/reports30"/>
+  <mkdir dir="${dir.setup}/patches30"/>  
+  <mkdir dir="${dir.setup}/manuals30"/>
+  <mkdir dir="${dir.setup}/sql30"/>
+  <mkdir dir="${dir.setup}/formletters30"/>
+  <mkdir dir="${dir.setup}/resources30"/>
+  <mkdir dir="${dir.setup}/bin30"/>
+  <mkdir dir="${dir.setup}/js30"/>
 
-  <echo file="${setupDir}/bin30/version.txt">${ReleaseVersion}</echo>
-  <copy todir="${setupDir}/bin30">
+  <echo file="${dir.setup}/bin30/version.txt">${ReleaseVersion}</echo>
+  <copy todir="${dir.setup}/bin30">
     <fileset basedir="${dir.bin}">
       <include name="*.dll" />
       <include name="*.exe" />
@@ -430,10 +430,10 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <include name="*/*.dll" /> <!-- i18n DLLs-->
     </fileset>
   </copy>
-  <copy file="${dir.bin}/Ict.Tools.PatchTool.exe" tofile="${setupDir}/bin30/Ict.Tools.PatchTool.exe" overwrite="true"/>
-  <copy file="${dir.bin}/Ict.Tools.PatchTool.Library.dll" tofile="${setupDir}/bin30/Ict.Tools.PatchTool.Library.dll" overwrite="true"/>
+  <copy file="${dir.bin}/Ict.Tools.PatchTool.exe" tofile="${dir.setup}/bin30/Ict.Tools.PatchTool.exe" overwrite="true"/>
+  <copy file="${dir.bin}/Ict.Tools.PatchTool.Library.dll" tofile="${dir.setup}/bin30/Ict.Tools.PatchTool.Library.dll" overwrite="true"/>
 
-  <copy todir="${setupDir}/js30">
+  <copy todir="${dir.setup}/js30">
     <fileset basedir="${dir.root}/js">
       <include name="**/*"/>
     </fileset>
@@ -442,12 +442,12 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <if test="${BuildArchive == 'server'}">
     <delete>
       <fileset>
-        <include name="${setupDir}/bin30/Ict.Petra.Client*" />
-        <include name="${setupDir}/bin30/Ict.Petra.Plugins.*.Client.dll" />
-        <include name="${setupDir}/bin30/PetraClient*" />
-        <include name="${setupDir}/bin30/sqlite3.dll" />
-        <include name="${setupDir}/bin30/Ict.Tools.PatchTool.exe" />
-        <include name="${setupDir}/bin30/Ict.Tools.PatchTool.Library.dll" />
+        <include name="${dir.setup}/bin30/Ict.Petra.Client*" />
+        <include name="${dir.setup}/bin30/Ict.Petra.Plugins.*.Client.dll" />
+        <include name="${dir.setup}/bin30/PetraClient*" />
+        <include name="${dir.setup}/bin30/sqlite3.dll" />
+        <include name="${dir.setup}/bin30/Ict.Tools.PatchTool.exe" />
+        <include name="${dir.setup}/bin30/Ict.Tools.PatchTool.Library.dll" />
       </fileset>
     </delete>
   </if>
@@ -455,12 +455,12 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <if test="${BuildArchive == 'client'}">
     <delete>
       <fileset>
-        <exclude name="${setupDir}/bin30/Ict.Petra.Server*.connect.dll" />
-        <include name="${setupDir}/bin30/Ict.Petra.Plugins.*.Server.dll" />
-        <include name="${setupDir}/bin30/Ict.Petra.Server*" />
-        <include name="${setupDir}/bin30/PetraServer*" />
-        <include name="${setupDir}/*.sh" />
-        <include name="${setupDir}/INSTALL" />
+        <exclude name="${dir.setup}/bin30/Ict.Petra.Server*.connect.dll" />
+        <include name="${dir.setup}/bin30/Ict.Petra.Plugins.*.Server.dll" />
+        <include name="${dir.setup}/bin30/Ict.Petra.Server*" />
+        <include name="${dir.setup}/bin30/PetraServer*" />
+        <include name="${dir.setup}/*.sh" />
+        <include name="${dir.setup}/INSTALL" />
       </fileset>
     </delete>
     <foreach item="File" property="filename">
@@ -471,7 +471,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         </in>
         <do>
             <property name="pluginname" value="${path::get-file-name(directory::get-parent-directory(filename))}"/>
-            <copy file="${filename}" tofile="${setupDir}/bin30/Plugins/${pluginname}.UINavigation.yml"/>
+            <copy file="${filename}" tofile="${dir.setup}/bin30/Plugins/${pluginname}.UINavigation.yml"/>
         </do>
     </foreach>
   </if>
@@ -479,52 +479,52 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <if test="${BuildArchive != 'server'}">
     <property name="UINavigation.file" value="${dir.root}/csharp/ICT/Petra/Definitions/UINavigation.yml.my"/>
     <if test="${file::exists(UINavigation.file)}">
-      <copy file="${UINavigation.file}" tofile="${setupDir}/bin30/UINavigation.yml" overwrite="true"/>
+      <copy file="${UINavigation.file}" tofile="${dir.setup}/bin30/UINavigation.yml" overwrite="true"/>
     </if>
     <if test="${not file::exists(UINavigation.file)}">
       <property name="UINavigation.file" value="${dir.root}/csharp/ICT/Petra/Definitions/UINavigation.yml"/>
-      <copy file="${UINavigation.file}" tofile="${setupDir}/bin30/UINavigation.yml" overwrite="true"/>
+      <copy file="${UINavigation.file}" tofile="${dir.setup}/bin30/UINavigation.yml" overwrite="true"/>
     </if>
   </if>
   <if test="${BuildArchive == 'server'}">
     <property name="UINavigation.file" value="${dir.root}/js/UINavigation.yml.my"/>
     <if test="${file::exists(UINavigation.file)}">
-      <copy file="${UINavigation.file}" tofile="${setupDir}/bin30/UINavigation.yml" overwrite="true"/>
+      <copy file="${UINavigation.file}" tofile="${dir.setup}/bin30/UINavigation.yml" overwrite="true"/>
     </if>
     <if test="${not file::exists(UINavigation.file)}">
       <property name="UINavigation.file" value="${dir.root}/js/UINavigation.yml"/>
-      <copy file="${UINavigation.file}" tofile="${setupDir}/bin30/UINavigation.yml" overwrite="true"/>
+      <copy file="${UINavigation.file}" tofile="${dir.setup}/bin30/UINavigation.yml" overwrite="true"/>
     </if>
   </if>
-  <copy todir="${setupDir}/resources30">
+  <copy todir="${dir.setup}/resources30">
     <fileset basedir="${dir.root}/resources">
       <include name="*.ico" />
       <include name="*.png" />
     </fileset>
   </copy>       
   
-  <copy todir="${setupDir}/manuals30">
+  <copy todir="${dir.setup}/manuals30">
     <fileset basedir="${dir.root}/setup/petra${PetraRelease}/releasenotes/">
       <include name="*.html" />
     </fileset>
   </copy>
-  <copy todir="${setupDir}/reports30">
+  <copy todir="${dir.setup}/reports30">
     <fileset basedir="${dir.root}/XmlReports/">
       <include name="*.dtd" />
       <!-- TODO exclude the report xml files from client tar, only include report settings -->
       <include name="**/*.xml" />
     </fileset>
   </copy>
-  <copy file="${dir.root}/LICENSE" tofile="${setupDir}/LICENSE"/>
+  <copy file="${dir.root}/LICENSE" tofile="${dir.setup}/LICENSE"/>
   
   <if test="${BuildArchive != 'client'}">
-    <mkdir dir="${setupDir}/asmx"/>
-    <copy todir="${setupDir}/asmx">
+    <mkdir dir="${dir.setup}/asmx"/>
+    <copy todir="${dir.setup}/asmx">
       <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/app/WebService">
          <include name="*.asmx" />
       </fileset>
     </copy>
-    <copy todir="${setupDir}/asmx" flatten="true">
+    <copy todir="${dir.setup}/asmx" flatten="true">
       <fileset basedir="${dir.root}/csharp/ICT/Petra/Plugins">
          <include name="**/*.asmx" />
       </fileset>
@@ -536,7 +536,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <!-- ***************  create the linux config script for the server side ***************  -->
       <property name="RandomDBPassword" value="${script::GetPasswordSalt()}" overwrite="false"/>
       <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/${DBMS.Type}/${LinuxTargetDistribution}/openpetra-server.sh"
-        tofile="${setupDir}/${LinuxTargetDistribution}/openpetra-server.sh" overwrite="true" outputencoding="latin1">
+        tofile="${dir.setup}/${LinuxTargetDistribution}/openpetra-server.sh" overwrite="true" outputencoding="latin1">
         <filterchain>
             <replacetokens>
                 <token key="RandomDBPassword" value="${RandomDBPassword}" />
@@ -555,14 +555,14 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     </if>
     <if test="${file::exists(Config.file)}">
         <copy file="${Config.file}"
-            tofile="${setupDir}/etc30/web-sample.config" overwrite="true">
+            tofile="${dir.setup}/etc30/web-sample.config" overwrite="true">
             <filterchain>
                 <expandproperties />
             </filterchain>
         </copy>
     </if>
 
-    <copy todir="${setupDir}/etc30">
+    <copy todir="${dir.setup}/etc30">
       <fileset basedir="${dir.root}/setup/petra${PetraRelease}/linuxserver/">
           <include name="*.config" />
       </fileset>
@@ -570,20 +570,20 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
           <expandproperties />
       </filterchain>
     </copy>
-    <copy todir="${setupDir}/demo30">
+    <copy todir="${dir.setup}/demo30">
       <fileset basedir="${dir.bin}/demodata/">
           <include name="**/*.*" />
       </fileset>
     </copy>
 
-    <copy todir="${setupDir}/sql30">
+    <copy todir="${dir.setup}/sql30">
       <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/sql/">
           <include name="*.sql" />
           <include name="*.yml" />
       </fileset>
     </copy>
 
-    <copy todir="${setupDir}/formletters30">
+    <copy todir="${dir.setup}/formletters30">
       <fileset basedir="${dir.root}/demodata/formletters/">
           <include name="*.html" />
           <include name="*.png" />
@@ -592,24 +592,24 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
     <if test="${string::contains(DBMS.Type, 'postgresql')}">
       <copy file="${dir.root}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql"
-                tofile="${setupDir}/db30/createtables-PostgreSQL.sql"/>
+                tofile="${dir.setup}/db30/createtables-PostgreSQL.sql"/>
       <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql"
-                tofile="${setupDir}/db30/createconstraints-PostgreSQL.sql"/>
+                tofile="${dir.setup}/db30/createconstraints-PostgreSQL.sql"/>
       <if test="${file::exists(dir.root + '/setup/petra' + PetraRelease + '/demodata-PostgreSQL.sql')}">
          <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"
-                tofile="${setupDir}/db30/demodata-PostgreSQL.sql"/>
+                tofile="${dir.setup}/db30/demodata-PostgreSQL.sql"/>
       </if>
     </if>
     <if test="${string::contains(DBMS.Type, 'mysql')}">
       <copy file="${dir.root}/setup/petra${PetraRelease}/createtables-MySQL.sql"
-                tofile="${setupDir}/db30/createtables-MySQL.sql"/>
+                tofile="${dir.setup}/db30/createtables-MySQL.sql"/>
       <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-MySQL.sql"
-                tofile="${setupDir}/db30/createconstraints-MySQL.sql"/>
+                tofile="${dir.setup}/db30/createconstraints-MySQL.sql"/>
       <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-MySQL.sql"
-                tofile="${setupDir}/db30/demodata-MySQL.sql"/>
+                tofile="${dir.setup}/db30/demodata-MySQL.sql"/>
     </if>
     <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/INSTALL"
-                tofile="${setupDir}/INSTALL"/>
+                tofile="${dir.setup}/INSTALL"/>
   </if>
 </target> 
 

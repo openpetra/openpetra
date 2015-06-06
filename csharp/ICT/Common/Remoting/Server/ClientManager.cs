@@ -872,7 +872,7 @@ namespace Ict.Common.Remoting.Server
             {
                 // TODORemoting if (Monitor.TryEnter(UConnectClientMonitor, TSrvSetting.ClientConnectionTimeoutAfterXSeconds * 1000))
                 {
-                    if (Thread.CurrentThread.Name != "TestRunnerThread")
+                    if (Thread.CurrentThread.Name == String.Empty)
                     {
                         Thread.CurrentThread.Name = "Client_" + AUserName + "__CLIENTCONNECTION_THREAD";
                     }
@@ -1092,6 +1092,8 @@ namespace Ict.Common.Remoting.Server
             {
                 return eLoginEnum.eLoginServerTooBusy;
             }
+
+            TLogging.Log("Unspecified Error: " + e.ToString());
 
             return eLoginEnum.eLoginFailedForUnspecifiedError;
         }
