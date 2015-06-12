@@ -3791,10 +3791,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             "Function:{0} - The Exchange Rate from Journal currency to Base currency must be greater than 0!"),
                         Utilities.GetMethodName(true)));
             }
-            else if (AExchangeRateIntlToBase <= 0)
+            else if (AExchangeRateIntlToBase < 0)
             {
                 throw new ArgumentException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Exchange Rate from International currency to Base currency must be greater than 0!"),
+                            "Function:{0} - The Exchange Rate from International currency to Base currency cannot be a negative number!"),
                         Utilities.GetMethodName(true)));
             }
 
@@ -3912,9 +3912,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                                                 if (!TransactionInIntlCurrency)
                                                 {
-                                                    TransactionRow.AmountInIntlCurrency =
-                                                        GLRoutines.Divide((decimal)TransactionRow.AmountInBaseCurrency,
-                                                            AExchangeRateIntlToBase);
+                                                    TransactionRow.AmountInIntlCurrency = ((AExchangeRateIntlToBase == 0) ? 0 :
+                                                                                           GLRoutines.Divide((decimal)TransactionRow.
+                                                                                               AmountInBaseCurrency,
+                                                                                               AExchangeRateIntlToBase));
                                                 }
                                                 else
                                                 {
@@ -3959,8 +3960,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             }
                         }
 
-                        ABatchAccess.SubmitChanges(GLMainDS.ABatch, Transaction);
                         ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+                        ABatchAccess.SubmitChanges(GLMainDS.ABatch, Transaction);
                         AJournalAccess.SubmitChanges(GLMainDS.AJournal, Transaction);
                         ATransactionAccess.SubmitChanges(GLMainDS.ATransaction, Transaction);
                         ATransAnalAttribAccess.SubmitChanges(GLMainDS.ATransAnalAttrib, Transaction);

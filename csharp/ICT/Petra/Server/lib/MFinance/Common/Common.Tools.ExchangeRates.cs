@@ -503,8 +503,6 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            TLogging.Log("Cannot find daily exchange rate for " + ACurrencyFrom + " " + ACurrencyTo + " for " + ADateEffective.ToString("yyyy-MM-dd"));
-
             //Returning 0 causes a validation error to force the user to select an exchange rate:
             return 0.0m;
         }
@@ -528,10 +526,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (!GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out ExchangeRate))
             {
-                //ExchangeRate = 1.0M;
-                //Instead return 0 to make it easy to catch error
+                //Return 0 to make it easy to catch error when dividing by exchange rate
                 ExchangeRate = 0M;
-                TLogging.Log("Cannot find corporate exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
             }
 
             return ExchangeRate;

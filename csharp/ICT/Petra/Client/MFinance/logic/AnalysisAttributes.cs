@@ -28,6 +28,7 @@ using System.Drawing;
 
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -339,13 +340,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             StringCollection RequiredAnalAttrCodes = new StringCollection();
 
-            if (AGLSetupDS == null)
-            {
-                // This makes a remote call to the server, which is costly when this method is being called in a loop for all transactions
-                RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
-                    AAccountCode, true);
-            }
-            else
+            if (AGLSetupDS != null)
             {
                 // This makes use of the supplied SetupTDS, which is useful if it has been loaded prior to a loop
                 AGLSetupDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}='{1}'",
@@ -356,6 +351,12 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     RequiredAnalAttrCodes.Add(drv.Row[AAnalysisAttributeTable.ColumnAnalysisTypeCodeId].ToString());
                 }
+            }
+            else
+            {
+                // Should only run once if needed
+                RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+                    AAccountCode, true);
             }
 
             SetTransAnalAttributeDefaultView(AGLBatchDS, true, ATransactionNumber,

@@ -403,6 +403,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             ucoJournals.GetSelectedDetailRow().JournalStatus,
                             ucoJournals.GetSelectedDetailRow().TransactionCurrency,
                             batchWasPreviousTab);
+
+                        //Warn if missing International Exchange Rate
+                        WarnAboutMissingIntlExchangeRate = true;
+                        GetInternationalCurrencyExchangeRate();
                     }
                 }
             }
@@ -664,14 +668,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns></returns>
         public decimal GetInternationalCurrencyExchangeRate()
         {
-            decimal IntlToBaseCurrencyExchRate = 0;
-            string NotUsed = "";
+            string NotUsed = string.Empty;
 
             ABatchRow BatchRow = ucoBatches.GetSelectedDetailRow();
 
             if (BatchRow == null)
             {
-                return IntlToBaseCurrencyExchRate;
+                return 0;
             }
 
             return GetInternationalCurrencyExchangeRate(BatchRow.DateEffective, out NotUsed);

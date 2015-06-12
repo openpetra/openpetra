@@ -907,6 +907,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Get the corporate exchange rate
+            ((TFrmGLBatch) this.ParentForm).WarnAboutMissingIntlExchangeRate = false;
             IntlRateToBaseCurrency = ((TFrmGLBatch) this.ParentForm).GetInternationalCurrencyExchangeRate();
 
             if (!EnsureGLDataPresent(LedgerNumber, CurrentBatchNumber, CurrentJournalNumber, ref JournalsToUpdateDV, TransactionRowActive))
