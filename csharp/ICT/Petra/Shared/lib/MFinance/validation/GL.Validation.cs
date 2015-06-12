@@ -247,7 +247,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     VerifResultCollAddedCount++;
                 }
 
-                // Exchange rate must be 1.00 if the currency is the the base ledger currency
+                // Exchange rate must be 1.00 if the currency is the base ledger currency
                 if ((ABaseCurrency != null)
                     && (!ARow.IsExchangeRateToBaseNull())
                     && (ARow.TransactionCurrency == ABaseCurrency)
@@ -314,7 +314,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                             "There is no Corporate Exchange Rate defined for '{0}' to '{1}' for the month starting on '{2}'."),
                                         ABaseCurrency, AIntlCurrency,
                                         StringHelper.DateToLocalizedString(firstOfMonth)),
-                                    TResultSeverity.Resv_Critical),
+                                    TResultSeverity.Resv_Noncritical),
                                 ValidationColumn))
                         {
                             VerifResultCollAddedCount++;

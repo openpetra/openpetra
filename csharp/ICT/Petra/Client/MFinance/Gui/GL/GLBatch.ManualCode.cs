@@ -750,25 +750,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            //Do only at posting and when first entering transactions
+            //---------------------------------------------------------
             // Check if corporate exchange rate exists for any new batches or modified batches.
             // Note: all previously saved batches will have an exchange rate for that saved batch date as
             // it is impossible to delete a corporate exchange rate if batches exist that need it.
-            string ErrorMessage = ValidateCorporateExchangeRate(SubmitDS);
+            //string ErrorMessage = ValidateCorporateExchangeRate(SubmitDS);
 
-            if (!string.IsNullOrEmpty(ErrorMessage))
-            {
-                AVerificationResult = new TVerificationResultCollection();
-                TScreenVerificationResult Verification = null;
+            //if (!string.IsNullOrEmpty(ErrorMessage))
+            //{
+            //    AVerificationResult = new TVerificationResultCollection();
+            //    TScreenVerificationResult Verification = null;
 
-                Verification = new TScreenVerificationResult(
-                    new TVerificationResult(this, ErrorMessage, TResultSeverity.Resv_Critical),
-                    null, null);
+            //    Verification = new TScreenVerificationResult(
+            //        new TVerificationResult(this, ErrorMessage, TResultSeverity.Resv_Noncritical),
+            //        null, null);
 
-                // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResult.Auto_Add_Or_AddOrRemove(this, Verification, null, true);
+            //    // Handle addition/removal to/from TVerificationResultCollection
+            //    AVerificationResult.Auto_Add_Or_AddOrRemove(this, Verification, null, true);
 
-                return TSubmitChangesResult.scrError;
-            }
+            //    return TSubmitChangesResult.scrError;
+            //}
 
             // Now do the standard call to save the changes
             return TRemote.MFinance.GL.WebConnectors.SaveGLBatchTDS(ref SubmitDS, out AVerificationResult);
