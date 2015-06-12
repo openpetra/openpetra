@@ -1341,7 +1341,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             this.Cursor = Cursors.Default;
                             EnableSave(false);
 
-                            // If the screen was opened for a NEW Partner, remove the 'NEW:' indicator from the Window Title Bar and 
+                            // If the screen was opened for a NEW Partner, remove the 'NEW:' indicator from the Window Title Bar and
                             // set this Partner to be the "Last Used Partner".
                             if (SavedPartnerIsNewPartner)
                             {
@@ -1349,7 +1349,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 SetScreenCaption();
 
                                 // Set Partner to be the "Last Used Partner"
-                                TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(AInspectDS.PPartner[0].PartnerKey, 
+                                TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(AInspectDS.PPartner[0].PartnerKey,
                                     TLastPartnerUse.lpuMailroomPartner, SharedTypes.PartnerClassStringToEnum(FPartnerClass));
                             }
 
@@ -3475,7 +3475,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // MessageBox.Show('NewPartnerDialog: pressed OK, will exit again.');
                 FPetraUtilsObject.HasNewData = true;
 
-                // SetScreenCaption;                
+                // SetScreenCaption;
                 ReturnValue = true;
             }
 

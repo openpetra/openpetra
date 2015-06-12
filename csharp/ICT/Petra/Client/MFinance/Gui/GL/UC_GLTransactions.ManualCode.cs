@@ -74,11 +74,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private SourceGrid.Cells.Editors.ComboBox FcmbAnalAttribValues;
 
-        private bool FDoneComboInitialise = false;
-        private bool FIsUnposted = true;
         private bool FShowStatusDialogOnLoad = true;
+
+        private bool FIsUnposted = true;
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
+        private bool FDoneComboInitialise = false;
         private bool FContainsSystemGenerated = false;
 
         /// <summary>
@@ -156,9 +157,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 this.Cursor = Cursors.WaitCursor;
 
                 //Check if the same batch is selected, so no need to apply filter
-                if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
-                    && (FTransactionCurrency == ACurrencyCode) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus)
-                    && (FMainDS.ATransaction.DefaultView.Count > 0))
+                if ((FLedgerNumber == ALedgerNumber)
+                    && (FBatchNumber == ABatchNumber)
+                    && (FJournalNumber == AJournalNumber)
+                    && (FTransactionCurrency == ACurrencyCode)
+                    && (FMainDS.ATransaction.DefaultView.Count > 0)
+                    && (FBatchStatus == ABatchStatus)
+                    && (FJournalStatus == AJournalStatus))
                 {
                     //Same as previously selected
                     if (FIsUnposted && (GetSelectedRowIndex() > 0))
@@ -178,6 +183,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     return false;
                 }
 
+                // A new ledger/batch
+                DifferentBatchSelected = true;
+                bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != ACurrencyCode);
+
                 dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
 
                 if (FShowStatusDialogOnLoad == true)
@@ -187,10 +196,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     dlgStatus.Heading = String.Format(Catalog.GetString("Batch {0}, Journal {1}"), ABatchNumber, AJournalNumber);
                     dlgStatus.CurrentStatus = Catalog.GetString("Loading transactions ...");
                 }
-
-                // A new ledger/batch
-                DifferentBatchSelected = true;
-                bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != ACurrencyCode);
 
                 FLedgerNumber = ALedgerNumber;
                 FBatchNumber = ABatchNumber;
@@ -270,8 +275,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FActiveOnly = ActiveOnly;
 
                     //Load all analysis attribute values
-                    dlgStatus.CurrentStatus = Catalog.GetString("Loading analysis attributes ...");
-                    FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, FActiveOnly);
+                    if (FCacheDS == null)
+                    {
+                        dlgStatus.CurrentStatus = Catalog.GetString("Loading analysis attributes ...");
+                        FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, FActiveOnly);
+                    }
 
                     SetupExtraGridFunctionality();
 
@@ -290,8 +298,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 UpdateTransactionTotals();
                 grdDetails.ResumeLayout();
                 FLoadCompleted = true;
-
-                UpdateChangeableStatus();
 
                 ShowData();
                 SelectRowInGrid(1);
@@ -487,10 +493,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         FPetraUtilsObject.DisableSaveButton();
                     }
                 }
-
-                // Needs to be called to process Analysis Attributes
-                // AlanP: Not sure we need this? It already gets called.
-                //AccountCodeDetailChanged(null, null);
             }
         }
 
@@ -526,7 +528,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPetraUtilsObject.HasChanges && !FIsUnposted)
             {
-                FPetraUtilsObject.HasChanges = false;
                 FPetraUtilsObject.DisableSaveButton();
             }
 
@@ -723,6 +724,91 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        private Boolean EnsureGLDataPresent(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
+            ref DataView AJournalDV,
+            bool AUpdateCurrentTransOnly)
+        {
+            bool RetVal = false;
+
+            DataView TransDV = new DataView(FMainDS.ATransaction);
+
+            if (AUpdateCurrentTransOnly)
+            {
+                AJournalDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                    AJournalTable.GetBatchNumberDBName(),
+                    ABatchNumber,
+                    AJournalTable.GetJournalNumberDBName(),
+                    AJournalNumber);
+
+                RetVal = true;
+            }
+            else if (AJournalNumber == 0)
+            {
+                AJournalDV.RowFilter = String.Format("{0}={1} And {2}='{3}'",
+                    AJournalTable.GetBatchNumberDBName(),
+                    ABatchNumber,
+                    AJournalTable.GetJournalStatusDBName(),
+                    MFinanceConstants.BATCH_UNPOSTED);
+
+                if (AJournalDV.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalATransaction(ALedgerNumber, ABatchNumber));
+
+                    if (AJournalDV.Count == 0)
+                    {
+                        return false;
+                    }
+                }
+
+                TransDV.RowFilter = String.Format("{0}={1}",
+                    ATransactionTable.GetBatchNumberDBName(),
+                    ABatchNumber);
+
+                if (TransDV.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionForBatch(ALedgerNumber, ABatchNumber));
+                }
+
+                //As long as transactions exist, return true
+                RetVal = true;
+            }
+            else
+            {
+                AJournalDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                    AJournalTable.GetBatchNumberDBName(),
+                    ABatchNumber,
+                    AJournalTable.GetJournalNumberDBName(),
+                    AJournalNumber);
+
+                if (AJournalDV.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber, AJournalNumber));
+
+                    if (AJournalDV.Count == 0)
+                    {
+                        return false;
+                    }
+                }
+
+                TransDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                    ATransactionTable.GetBatchNumberDBName(),
+                    ABatchNumber,
+                    ATransactionTable.GetJournalNumberDBName(),
+                    AJournalNumber);
+
+                if (TransDV.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
+                }
+
+                RetVal = true;
+            }
+
+            return RetVal;
+        }
+
         /// <summary>
         ///  update amount in other currencies (optional) and recalculate all totals for current batch and journal
         /// </summary>
@@ -730,7 +816,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AUpdateTransDates"></param>
         public void UpdateTransactionTotals(string AUpdateLevel = "TRANSACTION", bool AUpdateTransDates = false)
         {
-            bool OriginalSaveButtonState = FPetraUtilsObject.HasChanges;
+            bool OriginalSaveButtonState = false;
             bool TransactionRowActive = false;
             bool TransactionDataChanged = false;
             bool JournalDataChanged = false;
@@ -746,20 +832,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             decimal AmtInBaseCurrency = 0.0M;
             decimal AmtInIntlCurrency = 0.0M;
 
-            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
-            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+            string LedgerBaseCurrency = string.Empty;
+            string LedgerIntlCurrency = string.Empty;
             decimal IntlRateToBaseCurrency = 0;
             bool IsTransactionInIntlCurrency = false;
+            int LedgerNumber = 0;
+            int CurrentBatchNumber = 0;
+            int CurrentJournalNumber = 0;
 
-            int LedgerNumber;
-            int CurrentBatchNumber;
-            int CurrentJournalNumber;
-
-            ABatchRow CurrentBatchRow = GetBatchRow();
-            AJournalRow CurrentJournalRow = null;
-
-            DataView JournalsToUpdateDV = new DataView(FMainDS.AJournal);
-            DataView TransactionsToUpdateDV = new DataView(FMainDS.ATransaction);
+            DataView JournalsToUpdateDV = null;
+            DataView TransactionsToUpdateDV = null;
 
             bool BatchLevelUpdate = (AUpdateLevel.ToUpper() == "BATCH");
             bool JournalLevelUpdate = (AUpdateLevel.ToUpper() == "JOURNAL");
@@ -771,14 +853,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
+            ABatchRow CurrentBatchRow = GetBatchRow();
+            AJournalRow CurrentJournalRow = null;
+
             if ((CurrentBatchRow == null)
                 || (CurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
                 return;
             }
 
+            //Set inital values after confirming not null
+            OriginalSaveButtonState = FPetraUtilsObject.HasChanges;
+            LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
             LedgerNumber = CurrentBatchRow.LedgerNumber;
             CurrentBatchNumber = CurrentBatchRow.BatchNumber;
+
+            JournalsToUpdateDV = new DataView(FMainDS.AJournal);
+            TransactionsToUpdateDV = new DataView(FMainDS.ATransaction);
 
             //If called at the batch level, clear the current selections
             if (BatchLevelUpdate)
@@ -1758,7 +1850,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void UpdateCmbDetailKeyMinistryKey()
         {
-            Int64 RecipientKey;
+            Int64 RecipientKey = 0;
 
             // update key ministry combobox depending on account code and cost centre
             if ((cmbDetailAccountCode.GetSelectedString() == MFinanceConstants.FUND_TRANSFER_INCOME_ACC)
@@ -1775,27 +1867,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 cmbDetailKeyMinistryKey.SetSelectedString("", -1);
                 cmbDetailKeyMinistryKey.Enabled = false;
-            }
-        }
-
-        /// <summary>
-        /// Select a special transaction number from outside
-        /// </summary>
-        /// <param name="ATransactionNumber"></param>
-        /// <returns>True if the record is displayed in the grid, False otherwise</returns>
-        public void SelectTransactionNumber(Int32 ATransactionNumber)
-        {
-            DataView myView = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView;
-
-            for (int counter = 0; (counter < myView.Count); counter++)
-            {
-                int myViewTransactionNumber = (int)myView[counter]["a_transaction_number_i"];
-
-                if (myViewTransactionNumber == ATransactionNumber)
-                {
-                    SelectRowInGrid(counter + 1);
-                    break;
-                }
             }
         }
 
@@ -1999,91 +2070,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private Boolean EnsureGLDataPresent(Int32 ALedgerNumber,
-            Int32 ABatchNumber,
-            Int32 AJournalNumber,
-            ref DataView AJournalDV,
-            bool AUpdateCurrentTransOnly)
-        {
-            bool RetVal = false;
-
-            DataView TransDV = new DataView(FMainDS.ATransaction);
-
-            if (AUpdateCurrentTransOnly)
-            {
-                AJournalDV.RowFilter = String.Format("{0}={1} And {2}={3}",
-                    AJournalTable.GetBatchNumberDBName(),
-                    ABatchNumber,
-                    AJournalTable.GetJournalNumberDBName(),
-                    AJournalNumber);
-
-                RetVal = true;
-            }
-            else if (AJournalNumber == 0)
-            {
-                AJournalDV.RowFilter = String.Format("{0}={1} And {2}='{3}'",
-                    AJournalTable.GetBatchNumberDBName(),
-                    ABatchNumber,
-                    AJournalTable.GetJournalStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED);
-
-                if (AJournalDV.Count == 0)
-                {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalATransaction(ALedgerNumber, ABatchNumber));
-
-                    if (AJournalDV.Count == 0)
-                    {
-                        return false;
-                    }
-                }
-
-                TransDV.RowFilter = String.Format("{0}={1}",
-                    ATransactionTable.GetBatchNumberDBName(),
-                    ABatchNumber);
-
-                if (TransDV.Count == 0)
-                {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionForBatch(ALedgerNumber, ABatchNumber));
-                }
-
-                //As long as transactions exist, return true
-                RetVal = true;
-            }
-            else
-            {
-                AJournalDV.RowFilter = String.Format("{0}={1} And {2}={3}",
-                    AJournalTable.GetBatchNumberDBName(),
-                    ABatchNumber,
-                    AJournalTable.GetJournalNumberDBName(),
-                    AJournalNumber);
-
-                if (AJournalDV.Count == 0)
-                {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber, AJournalNumber));
-
-                    if (AJournalDV.Count == 0)
-                    {
-                        return false;
-                    }
-                }
-
-                TransDV.RowFilter = String.Format("{0}={1} And {2}={3}",
-                    ATransactionTable.GetBatchNumberDBName(),
-                    ABatchNumber,
-                    ATransactionTable.GetJournalNumberDBName(),
-                    AJournalNumber);
-
-                if (TransDV.Count == 0)
-                {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
-                }
-
-                RetVal = true;
-            }
-
-            return RetVal;
-        }
-
         private void ImportTransactionsFromFile(object sender, EventArgs e)
         {
             if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
@@ -2172,6 +2158,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             Font font = new Font(((Control)sender).Font, (brush == Brushes.Red) ? FontStyle.Bold : FontStyle.Regular);
             e.Graphics.DrawString(content, font, brush, new PointF(e.Bounds.X, e.Bounds.Y));
+        }
+
+        /// <summary>
+        /// Select a special transaction number from outside
+        /// </summary>
+        /// <param name="ATransactionNumber"></param>
+        /// <returns>True if the record is displayed in the grid, False otherwise</returns>
+        public void SelectTransactionNumber(Int32 ATransactionNumber)
+        {
+            DataView myView = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView;
+
+            for (int counter = 0; (counter < myView.Count); counter++)
+            {
+                int myViewTransactionNumber = (int)myView[counter]["a_transaction_number_i"];
+
+                if (myViewTransactionNumber == ATransactionNumber)
+                {
+                    SelectRowInGrid(counter + 1);
+                    break;
+                }
+            }
         }
     }
 }

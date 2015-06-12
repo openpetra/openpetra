@@ -153,7 +153,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// Sets the Forms' Title. 
+        /// Sets the Forms' Title.
         /// </summary>
         /// <remarks>Utilised by <see cref="TFrmPetraEditUtils.SetScreenCaption"/>.</remarks>
         public string FormTitle

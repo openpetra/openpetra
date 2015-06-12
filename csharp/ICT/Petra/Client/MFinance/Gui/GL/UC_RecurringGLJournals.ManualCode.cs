@@ -49,20 +49,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TUC_RecurringGLJournals
     {
-        private Int32 FLedgerNumber = -1;
-        private Int32 FJournalNumberToDelete = -1;
-        private ARecurringBatchRow FBatchRow = null;
-        private string FCurrencyCodeForJournals = string.Empty;
-        /// <summary>
-        /// The current active Batch number
-        /// </summary>
-        public Int32 FBatchNumber = -1;
-
-        /// <summary>
-        /// flags if the Journal(s) have finished loading
-        /// </summary>
-        public bool FJournalsLoaded = false;
-
         /// <summary>
         /// Returns FMainDS
         /// </summary>
@@ -73,17 +59,37 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// The current active Batch number
+        /// </summary>
+        public Int32 FBatchNumber = -1;
+
+        /// <summary>
+        /// flags if the Journal(s) have finished loading
+        /// </summary>
+        public bool FJournalsLoaded = false;
+
+        private string FLedgerBaseCurrency = string.Empty;
+        private Int32 FLedgerNumber = -1;
+        private Int32 FJournalNumberToDelete = -1;
+        private ARecurringBatchRow FBatchRow = null;
+        private string FCurrencyCodeForJournals = string.Empty;
+
+        /// <summary>
         /// WorkAroundInitialization
         /// </summary>
         public void WorkAroundInitialization()
         {
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
             cmbDetailTransactionCurrency.SelectedValueChanged += new System.EventHandler(CurrencyCodeChanged);
+            cmbDetailTransactionCurrency.cmbCombobox.StickySelectedValueChanged += new EventHandler(StickyCurrencyChange);
         }
 
         private void RunOnceOnParentActivationManual()
         {
-            //nothing to do
+            if (FMainDS != null)
+            {
+                FLedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            }
         }
 
         /// <summary>
@@ -93,9 +99,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ABatchNumber"></param>
         public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            bool FirstRun = (FLedgerNumber != ALedgerNumber);
-            bool BatchChanged = (FBatchNumber != ABatchNumber);
-
             FJournalsLoaded = false;
             FBatchRow = GetBatchRow();
 
@@ -103,6 +106,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return;
             }
+
+            bool FirstRun = (FLedgerNumber != ALedgerNumber);
+            bool BatchChanged = (FBatchNumber != ABatchNumber);
 
             //Check if same Journals as previously selected
             if (!FirstRun && !BatchChanged)
@@ -121,16 +127,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 SetJournalDefaultView();
                 FPreviouslySelectedDetailRow = null;
 
+                //Load Journals
                 if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(ALedgerNumber, ABatchNumber));
+                    //FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(ALedgerNumber, ABatchNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, FBatchNumber));
                 }
 
                 ShowData();
 
                 // Now set up the complete current filter
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FMainDS.ARecurringJournal.DefaultView.RowFilter, true);
                 FFilterAndFindObject.ApplyFilter();
             }
+
+            int nRowToSelect = (BatchChanged || FirstRun) ? 1 : FPrevRowChangedRow;
+
+            //This will also call UpdateChangeableStatus
+            SelectRowInGrid(nRowToSelect);
+
+            UpdateRecordNumberDisplay();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
 
             //Check for incorrect Exchange rate to base
             foreach (DataRowView drv in FMainDS.ARecurringJournal.DefaultView)
@@ -145,27 +162,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             FJournalsLoaded = true;
-
-            //This will also call UpdateChangeableStatus
-            SelectRowInGrid((BatchChanged || FirstRun) ? 1 : FPrevRowChangedRow);
-
-            UpdateRecordNumberDisplay();
-            FFilterAndFindObject.SetRecordNumberDisplayProperties();
         }
 
         private void SetJournalDefaultView()
         {
-            string rowFilter = string.Format("{0} = {1}",
+            string DVRowFilter = string.Format("{0} = {1}",
                 ARecurringJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
 
-            FMainDS.ARecurringJournal.DefaultView.RowFilter = rowFilter;
-            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, true);
-            FFilterAndFindObject.CurrentActiveFilter = rowFilter;
-
+            FMainDS.ARecurringJournal.DefaultView.RowFilter = DVRowFilter;
             FMainDS.ARecurringJournal.DefaultView.Sort = String.Format("{0} DESC",
                 ARecurringJournalTable.GetJournalNumberDBName()
                 );
+
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(DVRowFilter, true);
+            FFilterAndFindObject.CurrentActiveFilter = DVRowFilter;
         }
 
         /// <summary>
@@ -173,22 +184,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void ShowDataManual()
         {
-            if (FLedgerNumber != -1)
+            try
             {
-                txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-                txtBatchNumber.Text = FBatchNumber.ToString();
-            }
+                FPetraUtilsObject.SuppressChangeDetection = true;
 
-            if (FPreviouslySelectedDetailRow != null)
+                if (FLedgerNumber != -1)
+                {
+                    txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+                    txtBatchNumber.Text = FBatchNumber.ToString();
+                }
+
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    txtDebit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalDebitTotal;
+                    txtCredit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalCreditTotal;
+                    txtControl.NumberValueDecimal =
+                        FPreviouslySelectedDetailRow.JournalDebitTotal -
+                        FPreviouslySelectedDetailRow.JournalCreditTotal;
+                }
+            }
+            finally
             {
-                txtDebit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalDebitTotal;
-                txtCredit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalCreditTotal;
-                txtControl.NumberValueDecimal =
-                    FPreviouslySelectedDetailRow.JournalDebitTotal -
-                    FPreviouslySelectedDetailRow.JournalCreditTotal;
+                FPetraUtilsObject.SuppressChangeDetection = false;
             }
-
-            UpdateChangeableStatus();
         }
 
         /// <summary>
@@ -197,8 +215,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ABatch"></param>
         public void UpdateHeaderTotals(ARecurringBatchRow ABatch)
         {
-            decimal sumDebits = 0.0M;
-            decimal sumCredits = 0.0M;
+            decimal SumDebits = 0.0M;
+            decimal SumCredits = 0.0M;
 
             DataView JournalDV = new DataView(FMainDS.ARecurringJournal);
 
@@ -210,16 +228,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ARecurringJournalRow r = (ARecurringJournalRow)v.Row;
 
-                sumCredits += r.JournalCreditTotal;
-                sumDebits += r.JournalDebitTotal;
+                SumCredits += r.JournalCreditTotal;
+                SumDebits += r.JournalDebitTotal;
             }
 
             FPetraUtilsObject.DisableDataChangedEvent();
-            txtCurrentPeriod.Text = ABatch.BatchPeriod.ToString();
-            txtDebit.NumberValueDecimal = sumDebits;
-            ABatch.BatchDebitTotal = sumDebits;
-            txtCredit.NumberValueDecimal = sumCredits;
-            ABatch.BatchCreditTotal = sumCredits;
+            txtDebit.NumberValueDecimal = SumDebits;
+            txtCredit.NumberValueDecimal = SumCredits;
             txtControl.NumberValueDecimal = ABatch.BatchControlTotal;
             FPetraUtilsObject.EnableDataChangedEvent();
         }
@@ -230,6 +245,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.TabStop = (!JournalRowIsNull);
 
+            //Enable the transactions tab accordingly
+            ((TFrmRecurringGLBatch)ParentForm).EnableTransactions(!JournalRowIsNull);
+
+            UpdateChangeableStatus();
+
             if (JournalRowIsNull)
             {
                 btnAdd.Focus();
@@ -239,11 +259,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FCurrencyCodeForJournals = ARow.TransactionCurrency;
             }
-
-            //Enable the transactions tab accordingly
-            ((TFrmRecurringGLBatch)ParentForm).EnableTransactions(!JournalRowIsNull);
-
-            UpdateChangeableStatus();
         }
 
         private ARecurringBatchRow GetBatchRow()
@@ -306,6 +321,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ANewRow.ExchangeRateToBase = 1;
             ANewRow.DateEffective = FBatchRow.DateEffective;
             ANewRow.JournalPeriod = FBatchRow.BatchPeriod;
+            ANewRow.JournalDebitTotalBase = 0.0M;
+            ANewRow.JournalCreditTotalBase = 0.0M;
         }
 
         /// initialise some comboboxes
@@ -315,7 +332,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.cmbDetailSubSystemCode.Items.Clear();
             this.cmbDetailSubSystemCode.Items.AddRange(new object[] { ARow.SubSystemCode });
 
-            //TFinanceControls.InitialiseTransactionTypeList(ref cmbDetailTransactionTypeCode, FLedgerNumber, ARow.SubSystemCode);
+            TFinanceControls.InitialiseTransactionTypeList(ref cmbDetailTransactionTypeCode, FLedgerNumber, ARow.SubSystemCode);
         }
 
         private void ShowTransactionTab(Object sender, EventArgs e)
@@ -328,18 +345,113 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateChangeableStatus()
         {
-            Boolean IsChangeable = (!FPetraUtilsObject.DetailProtectedMode && GetBatchRow() != null);
+            Boolean IsChangeable = ((!FPetraUtilsObject.DetailProtectedMode)
+                                    && (GetBatchRow() != null));
 
             Boolean JournalUpdatable = (FPreviouslySelectedDetailRow != null);
 
-            this.btnDelete.Enabled = IsChangeable && JournalUpdatable;
+            //Process buttons
+            this.btnDelete.Enabled = (IsChangeable && JournalUpdatable);
             this.btnAdd.Enabled = IsChangeable;
-            pnlDetails.Enabled = IsChangeable && JournalUpdatable;
+
+            pnlDetails.Enabled = (IsChangeable && JournalUpdatable);
             pnlDetailsProtected = !IsChangeable;
 
             if (!IsChangeable)
             {
                 FPetraUtilsObject.DisableSaveButton();
+            }
+        }
+
+        private void ClearControls()
+        {
+            FPetraUtilsObject.DisableDataChangedEvent();
+
+            txtDetailJournalDescription.Clear();
+            cmbDetailTransactionTypeCode.SelectedIndex = -1;
+            cmbDetailTransactionCurrency.SelectedIndex = -1;
+
+            FPetraUtilsObject.EnableDataChangedEvent();
+        }
+
+        /// <summary>
+        /// clear the current selection
+        /// </summary>
+        public void ClearCurrentSelection()
+        {
+            //Called from Batch tab, so no need to check for GetDetailsFromControls()
+            // as tab change does that and current tab is Batch tab.
+            this.FPreviouslySelectedDetailRow = null;
+        }
+
+        private void ValidateDataDetailsManual(ARecurringJournalRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_GL.ValidateRecurringGLJournalManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
+
+            //TODO: remove this once database definition is set for Batch Description to be NOT NULL
+            // Description is mandatory then make sure it is set
+            if (txtDetailJournalDescription.Text.Length == 0)
+            {
+                DataColumn ValidationColumn;
+                TVerificationResult VerificationResult = null;
+                object ValidationContext;
+
+                ValidationColumn = ARow.Table.Columns[ARecurringJournalTable.ColumnJournalDescriptionId];
+                ValidationContext = String.Format("Recurring Batch no.: {0}, Journal no.: {1}",
+                    ARow.BatchNumber,
+                    ARow.JournalNumber);
+
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.JournalDescription,
+                    "Description of " + ValidationContext,
+                    this, ValidationColumn, null);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
+            }
+        }
+
+        private void SetFocusToDetailsGrid()
+        {
+            if ((grdDetails != null) && grdDetails.CanFocus)
+            {
+                grdDetails.Focus();
+            }
+        }
+
+        /// <summary>
+        /// Shows the Filter/Find UserControl and switches to the Find Tab.
+        /// </summary>
+        public void ShowFindPanel()
+        {
+            if (FFilterAndFindObject.FilterFindPanel == null)
+            {
+                FFilterAndFindObject.ToggleFilter();
+            }
+
+            FFilterAndFindObject.FilterFindPanel.DisplayFindTab();
+        }
+
+        /// <summary>
+        /// This event is fired when there is a currency change that 'sticks' for more than 1 second.
+        /// We use it to see if the server has a specific rate for this currency and date
+        /// </summary>
+        private void StickyCurrencyChange(object sender, EventArgs e)
+        {
+            if (FPreviouslySelectedDetailRow.TransactionCurrency == FLedgerBaseCurrency)
+            {
+                return;
+            }
+
+            decimal suggestedRate = 0.0m;
+
+            // Is it different??
+            if (FPreviouslySelectedDetailRow.ExchangeRateToBase != suggestedRate)
+            {
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = suggestedRate;
+                CurrencyCodeChanged(null, null);
             }
         }
 
@@ -639,75 +751,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 GetBatchRow().LastJournal = 0;
             }
-        }
-
-        private void ClearControls()
-        {
-            FPetraUtilsObject.DisableDataChangedEvent();
-
-            txtDetailJournalDescription.Clear();
-            cmbDetailTransactionTypeCode.SelectedIndex = -1;
-            cmbDetailTransactionCurrency.SelectedIndex = -1;
-
-            FPetraUtilsObject.EnableDataChangedEvent();
-        }
-
-        /// <summary>
-        /// clear the current selection
-        /// </summary>
-        public void ClearCurrentSelection()
-        {
-            this.FPreviouslySelectedDetailRow = null;
-        }
-
-        private void ValidateDataDetailsManual(ARecurringJournalRow ARow)
-        {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-
-            TSharedFinanceValidation_GL.ValidateRecurringGLJournalManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict);
-
-            //TODO: remove this once database definition is set for Batch Description to be NOT NULL
-            // Description is mandatory then make sure it is set
-            if (txtDetailJournalDescription.Text.Length == 0)
-            {
-                DataColumn ValidationColumn;
-                TVerificationResult VerificationResult = null;
-                object ValidationContext;
-
-                ValidationColumn = ARow.Table.Columns[ARecurringJournalTable.ColumnJournalDescriptionId];
-                ValidationContext = String.Format("Recurring Batch no.: {0}, Journal no.: {1}",
-                    ARow.BatchNumber,
-                    ARow.JournalNumber);
-
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.JournalDescription,
-                    "Description of " + ValidationContext,
-                    this, ValidationColumn, null);
-
-                // Handle addition/removal to/from TVerificationResultCollection
-                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
-            }
-        }
-
-        private void SetFocusToDetailsGrid()
-        {
-            if ((grdDetails != null) && grdDetails.CanFocus)
-            {
-                grdDetails.Focus();
-            }
-        }
-
-        /// <summary>
-        /// Shows the Filter/Find UserControl and switches to the Find Tab.
-        /// </summary>
-        public void ShowFindPanel()
-        {
-            if (FFilterAndFindObject.FilterFindPanel == null)
-            {
-                FFilterAndFindObject.ToggleFilter();
-            }
-
-            FFilterAndFindObject.FilterFindPanel.DisplayFindTab();
         }
 
         private void CurrencyCodeChanged(object sender, EventArgs e)

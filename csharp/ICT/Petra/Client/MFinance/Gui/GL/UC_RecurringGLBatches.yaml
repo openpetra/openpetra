@@ -51,7 +51,7 @@ RootNode:
                 Row0: [txtDetailBatchDescription]
                 Row1: [txtDetailBatchControlTotal]
         txtDetailBatchDescription: {Label=Batch Description, Width=350}
-        txtDetailBatchControlTotal: {Label=Batch Hash Total, Format=Decimal, Width=115, NullValueAllowed=false}
+        txtDetailBatchControlTotal: {Label=Batch Hash Total, Format=Currency, Width=115, NullValueAllowed=false}
         tbrTabPage: {NoAttribute=true}
         mnuTabPage: {NoAttribute=true}
     Menu:

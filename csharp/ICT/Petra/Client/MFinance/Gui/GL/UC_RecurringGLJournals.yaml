@@ -17,10 +17,8 @@ RootNode:
         pnlInfo:
             Dock: Top
             Controls:
-                Row0: [txtCurrentPeriod] 
-                Row1: [txtLedgerNumber, txtBatchNumber]
-                Row2: [txtDebit, txtCredit, txtControl]
-        txtCurrentPeriod: {ReadOnly=true, Label=Current Period, Align=right, Unbound=true, SuppressChangeDetection=true}
+                Row0: [txtLedgerNumber, txtBatchNumber]
+                Row1: [txtDebit, txtCredit, txtControl]
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true, SuppressChangeDetection=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true, SuppressChangeDetection=true}
         txtDebit: {ReadOnly=true, Label=Debit, Unbound=true, Format=Decimal, Width=150, SuppressChangeDetection=true}
@@ -69,8 +67,5 @@ RootNode:
         # SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
         cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}
         # transaction type depends on the ledger and the selected sub system; see BeforeShowDetailsManual
-        cmbDetailTransactionTypeCode:
-            Label: Transaction Type
-            OptionalValues: [STD]
-            Tooltip: Select one of the available transaction type codes
+        cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList, Tooltip=Select one of the available transaction type codes}
         cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList, CurrencyChanged}

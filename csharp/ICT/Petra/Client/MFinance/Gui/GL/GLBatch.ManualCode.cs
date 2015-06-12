@@ -32,17 +32,17 @@ using Ict.Common.Data;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Verification;
 
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
 
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -67,9 +67,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private eGLTabs FPreviouslySelectedTab = eGLTabs.None;
         private Int32 FLedgerNumber = -1;
         private Int32 FStandardTabIndex = 0;
+        private bool FChangesDetected = false;
+
         private bool FLoadForImport = false;
         private bool FWarnAboutMissingIntlExchangeRate = true;
-        private bool FChangesDetected = false;
 
         // Variables that are used to select a specific batch on startup
         private Int32 FInitialBatchYear = -1;
@@ -285,63 +286,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        /// <summary>
-        /// Print or reprint the posting report for this batch.
-        /// </summary>
-        public static void PrintPostingRegister(Int32 ALedgerNumber, Int32 ABatchNumber, Boolean AEditTemplate = false)
+        private void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
         {
-            FastReportsWrapper ReportingEngine = new FastReportsWrapper("Batch Posting Register");
+            FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!ReportingEngine.LoadedOK)
+            if (!ValidateAllData(false, TErrorProcessingMode.Epm_All))
             {
-                ReportingEngine.ShowErrorPopup();
-                return;
+                e.Cancel = true;
+
+                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
             }
 
-            GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(ALedgerNumber, ABatchNumber);
-            TRptCalculator Calc = new TRptCalculator();
-            ALedgerRow LedgerRow = BatchTDS.ALedger[0];
-
-            //Call RegisterData to give the data to the template
-            ReportingEngine.RegisterData(BatchTDS.ABatch, "ABatch");
-            ReportingEngine.RegisterData(BatchTDS.AJournal, "AJournal");
-            ReportingEngine.RegisterData(BatchTDS.ATransaction, "ATransaction");
-            ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
-                    ALedgerNumber), "AAccount");
-            ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
-                    ALedgerNumber), "ACostCentre");
-
-            Calc.AddParameter("param_batch_number_i", ABatchNumber);
-            Calc.AddParameter("param_ledger_number_i", ALedgerNumber);
-            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(ALedgerNumber);
-            Calc.AddStringParameter("param_ledger_name", LedgerName);
-
-            if (AEditTemplate)
-            {
-                ReportingEngine.DesignReport(Calc);
-            }
-            else
-            {
-                ReportingEngine.GenerateReport(Calc);
-            }
-        }
-
-        /// <summary>
-        /// Print out the selected batch using FastReports template.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void FilePrint(object sender, EventArgs e)
-        {
-            if (!this.tpgJournals.Enabled)
-            {
-                MessageBox.Show(Catalog.GetString("No Batch is selected"), Catalog.GetString("Batch Posting Register"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            ABatchRow BatchRow = ucoBatches.GetSelectedDetailRow();
-            PrintPostingRegister(FLedgerNumber, BatchRow.BatchNumber, ModifierKeys.HasFlag(Keys.Control));
+            //Before the TabSelectionChanged event occurs, changes are incorrectly detected on Journal controls
+            // TODO: find cause but use this field for now
+            FChangesDetected = FPetraUtilsObject.HasChanges;
         }
 
         /// <summary>
@@ -455,20 +413,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        private void SelectTabManual(Int32 ASelectedTabIndex)
         {
-            FPetraUtilsObject.VerificationResultCollection.Clear();
-
-            if (!ValidateAllData(false, TErrorProcessingMode.Epm_All))
+            switch (ASelectedTabIndex)
             {
-                e.Cancel = true;
+                case (int)eGLTabs.Batches:
+                    SelectTab(eGLTabs.Batches);
+                    break;
 
-                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                case (int)eGLTabs.Journals:
+                    SelectTab(eGLTabs.Journals);
+                    break;
+
+                default: //(ASelectedTabIndex == (int)eGLTabs.Transactions)
+                    SelectTab(eGLTabs.Transactions);
+                    break;
             }
-
-            //Before the TabSelectionChanged event occurs, changes are incorrectly detected on Journal controls
-            // TODO: find cause but use this field for now
-            FChangesDetected = FPetraUtilsObject.HasChanges;
         }
 
         /// <summary>
@@ -507,45 +467,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 AJournalStatus);
         }
 
-        private void SelectTabManual(Int32 ASelectedTabIndex)
-        {
-            switch (ASelectedTabIndex)
-            {
-                case (int)eGLTabs.Batches:
-                    SelectTab(eGLTabs.Batches);
-                    break;
-
-                case (int)eGLTabs.Journals:
-                    SelectTab(eGLTabs.Journals);
-                    break;
-
-                default: //(ASelectedTabIndex == (int)eGLTabs.Transactions)
-                    SelectTab(eGLTabs.Transactions);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Set up the screen to highlight this batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AJournalNumber"></param>
-        /// <param name="ABatchYear"></param>
-        /// <param name="ABatchPeriod"></param>
-        public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, int ABatchYear, int ABatchPeriod)
-        {
-            FLedgerNumber = ALedgerNumber;
-            InitialBatchNumber = ABatchNumber;
-            InitialJournalNumber = AJournalNumber;
-
-            // filter will show this year and period
-            FInitialBatchYear = ABatchYear;
-            FInitialBatchPeriod = ABatchPeriod;
-
-            Show();
-        }
-
         /// <summary>
         /// directly access the batches control
         /// </summary>
@@ -570,84 +491,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return ucoTransactions;
         }
 
-        private void RunOnceOnActivationManual()
-        {
-        }
-
-        /// <summary>
-        /// Uses the current Batch effective date to return the
-        ///   corporate exchange rate value
-        /// </summary>
-        /// <returns></returns>
-        public decimal GetInternationalCurrencyExchangeRate()
-        {
-            decimal IntlToBaseCurrencyExchRate = 0;
-            string NotUsed = "";
-
-            ABatchRow BatchRow = ucoBatches.GetSelectedDetailRow();
-
-            if (BatchRow == null)
-            {
-                return IntlToBaseCurrencyExchRate;
-            }
-
-            return GetInternationalCurrencyExchangeRate(BatchRow.DateEffective, out NotUsed);
-        }
-
-        /// <summary>
-        /// Returns the corporate exchange rate for a given batch row
-        ///  and specifies whether or not the transaction is in International
-        ///  currency
-        /// </summary>
-        /// <param name="AEffectiveDate"></param>
-        /// <param name="AErrorMessage"></param>
-        /// <returns></returns>
-        public decimal GetInternationalCurrencyExchangeRate(DateTime AEffectiveDate, out string AErrorMessage)
-        {
-            DateTime StartOfMonth = new DateTime(AEffectiveDate.Year, AEffectiveDate.Month, 1);
-            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
-            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
-
-            AErrorMessage = string.Empty;
-
-            decimal IntlToBaseCurrencyExchRate = 0;
-
-            if (FLedgerNumber != -1)
-            {
-                if (LedgerBaseCurrency == LedgerIntlCurrency)
-                {
-                    IntlToBaseCurrencyExchRate = 1;
-                }
-                else
-                {
-                    IntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
-                        LedgerIntlCurrency,
-                        StartOfMonth,
-                        AEffectiveDate);
-
-                    // if no rate exists for the choosen period
-                    if (IntlToBaseCurrencyExchRate == 0)
-                    {
-                        AErrorMessage =
-                            String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
-                                LedgerBaseCurrency,
-                                LedgerIntlCurrency,
-                                AEffectiveDate);
-
-                        // show message immediately
-                        if (FWarnAboutMissingIntlExchangeRate)
-                        {
-                            FWarnAboutMissingIntlExchangeRate = false;
-
-                            MessageBox.Show(AErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        }
-                    }
-                }
-            }
-
-            return IntlToBaseCurrencyExchRate;
-        }
-
         private int GetChangedRecordCountManual(out string AMessage)
         {
             // For GL Batch we will get some mix of batches, journals and transactions
@@ -663,7 +506,34 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     foreach (DataRow dr in dt.Rows)
                     {
-                        if (dr.RowState != DataRowState.Unchanged)
+                        if ((dr.RowState != DataRowState.Unchanged) && (dr.RowState != DataRowState.Deleted) && (dr.RowState != DataRowState.Added))
+                        {
+                            //Check if fields have actually changed
+                            bool fieldDifferenceDetected = false;
+
+                            for (int i = 0; i < dt.Columns.Count; i++)
+                            {
+                                string originalValue = dr[i, DataRowVersion.Original].ToString();
+                                string currentValue = dr[i, DataRowVersion.Current].ToString();
+
+                                if (originalValue != currentValue)
+                                {
+                                    fieldDifferenceDetected = true;
+                                    break;
+                                }
+                            }
+
+                            if (!fieldDifferenceDetected)
+                            {
+                                dr.RejectChanges();
+                            }
+                            else
+                            {
+                                tableChangesCount++;
+                                allChangesCount++;
+                            }
+                        }
+                        else if ((dr.RowState == DataRowState.Deleted) || (dr.RowState == DataRowState.Added))
                         {
                             tableChangesCount++;
                             allChangesCount++;
@@ -766,9 +636,104 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return allChangesCount;
         }
 
+        /// <summary>
+        /// Set up the screen to highlight this batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="ABatchYear"></param>
+        /// <param name="ABatchPeriod"></param>
+        public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, int ABatchYear, int ABatchPeriod)
+        {
+            FLedgerNumber = ALedgerNumber;
+            InitialBatchNumber = ABatchNumber;
+            InitialJournalNumber = AJournalNumber;
+
+            // filter will show this year and period
+            FInitialBatchYear = ABatchYear;
+            FInitialBatchPeriod = ABatchPeriod;
+
+            Show();
+        }
+
+        /// <summary>
+        /// Uses the current Batch effective date to return the
+        ///   corporate exchange rate value
+        /// </summary>
+        /// <returns></returns>
+        public decimal GetInternationalCurrencyExchangeRate()
+        {
+            decimal IntlToBaseCurrencyExchRate = 0;
+            string NotUsed = "";
+
+            ABatchRow BatchRow = ucoBatches.GetSelectedDetailRow();
+
+            if (BatchRow == null)
+            {
+                return IntlToBaseCurrencyExchRate;
+            }
+
+            return GetInternationalCurrencyExchangeRate(BatchRow.DateEffective, out NotUsed);
+        }
+
+        /// <summary>
+        /// Returns the corporate exchange rate for a given batch row
+        ///  and specifies whether or not the transaction is in International
+        ///  currency
+        /// </summary>
+        /// <param name="AEffectiveDate"></param>
+        /// <param name="AErrorMessage"></param>
+        /// <returns></returns>
+        public decimal GetInternationalCurrencyExchangeRate(DateTime AEffectiveDate, out string AErrorMessage)
+        {
+            DateTime StartOfMonth = new DateTime(AEffectiveDate.Year, AEffectiveDate.Month, 1);
+            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+
+            AErrorMessage = string.Empty;
+
+            decimal IntlToBaseCurrencyExchRate = 0;
+
+            if (FLedgerNumber != -1)
+            {
+                if (LedgerBaseCurrency == LedgerIntlCurrency)
+                {
+                    IntlToBaseCurrencyExchRate = 1;
+                }
+                else
+                {
+                    IntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
+                        LedgerIntlCurrency,
+                        StartOfMonth,
+                        AEffectiveDate);
+
+                    // if no rate exists for the choosen period
+                    if (IntlToBaseCurrencyExchRate == 0)
+                    {
+                        AErrorMessage =
+                            String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
+                                LedgerBaseCurrency,
+                                LedgerIntlCurrency,
+                                AEffectiveDate);
+
+                        // show message immediately
+                        if (FWarnAboutMissingIntlExchangeRate)
+                        {
+                            FWarnAboutMissingIntlExchangeRate = false;
+
+                            MessageBox.Show(AErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                    }
+                }
+            }
+
+            return IntlToBaseCurrencyExchRate;
+        }
+
         // This manual method lets us peek at the data that is about to be saved...
         // The data has already been collected from the contols and validated and there is definitely something to save...
-        private TSubmitChangesResult StoreManualCode(ref GLBatchTDS SubmitDS, out TVerificationResultCollection VerificationResult)
+        private TSubmitChangesResult StoreManualCode(ref GLBatchTDS SubmitDS, out TVerificationResultCollection AVerificationResult)
         {
             FLatestSaveIncludedForex = false;
 
@@ -792,7 +757,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (!string.IsNullOrEmpty(ErrorMessage))
             {
-                VerificationResult = new TVerificationResultCollection();
+                AVerificationResult = new TVerificationResultCollection();
                 TScreenVerificationResult Verification = null;
 
                 Verification = new TScreenVerificationResult(
@@ -800,13 +765,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     null, null);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                VerificationResult.Auto_Add_Or_AddOrRemove(this, Verification, null, true);
+                AVerificationResult.Auto_Add_Or_AddOrRemove(this, Verification, null, true);
 
                 return TSubmitChangesResult.scrError;
             }
 
             // Now do the standard call to save the changes
-            return TRemote.MFinance.GL.WebConnectors.SaveGLBatchTDS(ref SubmitDS, out VerificationResult);
+            return TRemote.MFinance.GL.WebConnectors.SaveGLBatchTDS(ref SubmitDS, out AVerificationResult);
         }
 
         private string ValidateCorporateExchangeRate(GLBatchTDS ASubmitDS)
@@ -854,6 +819,65 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             ucoTransactions.SelectTransactionNumber(ATransactionNumber);
             FStandardTabIndex = 2;     // later we switch to the transaction tab
+        }
+
+        /// <summary>
+        /// Print or reprint the posting report for this batch.
+        /// </summary>
+        public static void PrintPostingRegister(Int32 ALedgerNumber, Int32 ABatchNumber, Boolean AEditTemplate = false)
+        {
+            FastReportsWrapper ReportingEngine = new FastReportsWrapper("Batch Posting Register");
+
+            if (!ReportingEngine.LoadedOK)
+            {
+                ReportingEngine.ShowErrorPopup();
+                return;
+            }
+
+            GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(ALedgerNumber, ABatchNumber);
+            TRptCalculator Calc = new TRptCalculator();
+            ALedgerRow LedgerRow = BatchTDS.ALedger[0];
+
+            //Call RegisterData to give the data to the template
+            ReportingEngine.RegisterData(BatchTDS.ABatch, "ABatch");
+            ReportingEngine.RegisterData(BatchTDS.AJournal, "AJournal");
+            ReportingEngine.RegisterData(BatchTDS.ATransaction, "ATransaction");
+            ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
+                    ALedgerNumber), "AAccount");
+            ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                    ALedgerNumber), "ACostCentre");
+
+            Calc.AddParameter("param_batch_number_i", ABatchNumber);
+            Calc.AddParameter("param_ledger_number_i", ALedgerNumber);
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(ALedgerNumber);
+            Calc.AddStringParameter("param_ledger_name", LedgerName);
+
+            if (AEditTemplate)
+            {
+                ReportingEngine.DesignReport(Calc);
+            }
+            else
+            {
+                ReportingEngine.GenerateReport(Calc);
+            }
+        }
+
+        /// <summary>
+        /// Print out the selected batch using FastReports template.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FilePrint(object sender, EventArgs e)
+        {
+            if (!this.tpgJournals.Enabled)
+            {
+                MessageBox.Show(Catalog.GetString("No Batch is selected"), Catalog.GetString("Batch Posting Register"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            ABatchRow BatchRow = ucoBatches.GetSelectedDetailRow();
+            PrintPostingRegister(FLedgerNumber, BatchRow.BatchNumber, ModifierKeys.HasFlag(Keys.Control));
         }
 
         #region Menu and command key handlers for our user controls

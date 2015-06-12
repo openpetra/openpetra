@@ -195,56 +195,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Updates the data display.  Call this after the DataSet has changed.
-        /// </summary>
-        public void UpdateDisplay()
-        {
-            TFrmGLBatch myParentForm = (TFrmGLBatch)ParentForm;
-            Cursor prevCursor = myParentForm.Cursor;
-
-            try
-            {
-                myParentForm.Cursor = Cursors.WaitCursor;
-
-                // Remember our current row position
-                int nCurrentRowIndex = GetSelectedRowIndex();
-
-                // This single call will fire the event that loads data and populates the grid
-                FFilterAndFindObject.ApplyFilter();
-
-                // Did the start-up specify a batch to select?
-                if (myParentForm.InitialBatchNumber > 0)
-                {
-                    nCurrentRowIndex = 1;
-                    string filter = String.Format("{0}={1}", ABatchTable.GetBatchNumberDBName(), myParentForm.InitialBatchNumber);
-                    DataView dv = new DataView(FMainDS.ABatch, filter, "", DataViewRowState.CurrentRows);
-
-                    if (dv.Count > 0)
-                    {
-                        int rowToSelect = grdDetails.DataSourceRowToIndex2(dv[0].Row) + 1;
-
-                        if (rowToSelect > 0)
-                        {
-                            nCurrentRowIndex = rowToSelect;
-                            myParentForm.InitialBatchFound = true;
-                        }
-                    }
-
-                    // Reset the start-up value
-                    myParentForm.InitialBatchNumber = -1;
-                }
-
-                // Now we can select the row index we had before (if it exists)
-                SelectRowInGrid(nCurrentRowIndex);
-                UpdateRecordNumberDisplay();
-            }
-            finally
-            {
-                myParentForm.Cursor = prevCursor;
-            }
-        }
-
-        /// <summary>
         /// Enable the transaction tab
         /// </summary>
         public void AutoEnableTransTabForBatch()
@@ -293,7 +243,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDataManual()
         {
-            // AlanP: Can this happen?
             if (FLedgerNumber == -1)
             {
                 EnableButtonControl(false);
@@ -305,14 +254,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPetraUtilsObject.EnableAction("actReverseBatch", (FPreviouslySelectedDetailRow != null)
                 && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_POSTED);
 
-            Boolean postable = (FPreviouslySelectedDetailRow != null)
+            Boolean Postable = (FPreviouslySelectedDetailRow != null)
                                && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
 
-            FPetraUtilsObject.EnableAction("actPostBatch", postable);
-            FPetraUtilsObject.EnableAction("actTestPostBatch", postable);
-            FPetraUtilsObject.EnableAction("actCancel", postable);
-            pnlDetails.Enabled = postable;
-            pnlDetailsProtected = !postable;
+            FPetraUtilsObject.EnableAction("actPostBatch", Postable);
+            FPetraUtilsObject.EnableAction("actTestPostBatch", Postable);
+            FPetraUtilsObject.EnableAction("actCancel", Postable);
+            pnlDetails.Enabled = Postable;
+            pnlDetailsProtected = !Postable;
 
             if ((FPreviouslySelectedDetailRow == null) && (((TFrmGLBatch) this.ParentForm) != null))
             {
@@ -331,8 +280,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ParseHashTotal(ARow);
 
-            TSharedFinanceValidation_GL.ValidateGLBatchManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict, FStartDateCurrentPeriod, FEndDateLastForwardingPeriod);
+            TSharedFinanceValidation_GL.ValidateGLBatchManual(this,
+                ARow,
+                ref VerificationResultCollection,
+                FValidationControlsDict,
+                FStartDateCurrentPeriod,
+                FEndDateLastForwardingPeriod);
 
             //TODO: remove this once database definition is set for Batch Description to be NOT NULL
             // Description is mandatory then make sure it is set
@@ -364,9 +317,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if ((txtDetailBatchControlTotal.NumberValueDecimal == null) || !txtDetailBatchControlTotal.NumberValueDecimal.HasValue)
             {
+                bool prev = FPetraUtilsObject.SuppressChangeDetection;
                 FPetraUtilsObject.SuppressChangeDetection = true;
                 txtDetailBatchControlTotal.NumberValueDecimal = 0m;
-                FPetraUtilsObject.SuppressChangeDetection = false;
+                FPetraUtilsObject.SuppressChangeDetection = prev;
             }
 
             if (ARow.BatchControlTotal != txtDetailBatchControlTotal.NumberValueDecimal.Value)
@@ -486,31 +440,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
         }
 
-        /// <summary>
-        /// Cancel a batch (there is no deletion of batches)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CancelRow(System.Object sender, EventArgs e)
-        {
-            int newCurrentRowPos = grdDetails.GetFirstHighlightedRowIndex();
-
-            if (FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow, txtDetailBatchDescription))
-            {
-                SelectRowInGrid(newCurrentRowPos);
-            }
-
-            //If some row(s) still exist after deletion
-            if (grdDetails.Rows.Count < 2)
-            {
-                EnableButtonControl(false);
-                ClearDetailControls();
-
-                ((TFrmGLBatch)ParentForm).DisableJournals();
-                ((TFrmGLBatch)ParentForm).DisableTransactions();
-            }
-        }
-
         private void ClearControls()
         {
             try
@@ -532,202 +461,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchControlTotal.NumberValueDecimal = 0;
             dtpDetailDateEffective.Date = FDefaultDate;
             FPetraUtilsObject.SuppressChangeDetection = false;
-        }
-
-        private void UpdateBatchPeriod(object sender, EventArgs e)
-        {
-            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
-            {
-                return;
-            }
-
-            bool UpdateTransactionDates = false;
-
-            Int32 PeriodNumber = 0;
-            Int32 YearNumber = 0;
-            string EffectiveDateString = string.Empty;
-            DateTime EffectiveDateValue;
-
-            try
-            {
-                bool rowDataHasChanged = false;
-
-                EffectiveDateString = dtpDetailDateEffective.Date.ToString();
-
-                if (DateTime.TryParse(EffectiveDateString, out EffectiveDateValue))
-                {
-                    if ((EffectiveDateValue == FCurrentEffectiveDate)
-                        || (EffectiveDateValue < FStartDateCurrentPeriod)
-                        || (EffectiveDateValue > FEndDateLastForwardingPeriod))
-                    {
-                        return;
-                    }
-
-                    //GetDetailsFromControls will do this automatically if the user tabs
-                    //  passed the last control, but not if they click on another control
-                    FCurrentEffectiveDate = EffectiveDateValue;
-
-                    if (FPreviouslySelectedDetailRow.DateEffective != EffectiveDateValue)
-                    {
-                        FPreviouslySelectedDetailRow.DateEffective = EffectiveDateValue;
-                        rowDataHasChanged = true;
-                    }
-
-                    //Check if new date is in a different Batch period to the current one
-                    if (GetAccountingYearPeriodByDate(FLedgerNumber, EffectiveDateValue, out YearNumber, out PeriodNumber))
-                    {
-                        if (FPreviouslySelectedDetailRow.BatchPeriod != PeriodNumber)
-                        {
-                            FPreviouslySelectedDetailRow.BatchPeriod = PeriodNumber;
-                            rowDataHasChanged = true;
-
-                            //Update the Transaction effective dates
-                            UpdateTransactionDates = true;
-
-                            if (FLoadAndFilterLogicObject.YearIndex != 0)
-                            {
-                                FLoadAndFilterLogicObject.YearIndex = 0;
-                                FLoadAndFilterLogicObject.PeriodIndex = 1;
-                                dtpDetailDateEffective.Date = EffectiveDateValue;
-                                dtpDetailDateEffective.Focus();
-                            }
-                            else if (FLoadAndFilterLogicObject.PeriodIndex != 1)
-                            {
-                                FLoadAndFilterLogicObject.PeriodIndex = 1;
-                                dtpDetailDateEffective.Date = EffectiveDateValue;
-                                dtpDetailDateEffective.Focus();
-                            }
-                        }
-                    }
-
-                    if (rowDataHasChanged)
-                    {
-                        FPetraUtilsObject.SetChangedFlag();
-                    }
-
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("BATCH", UpdateTransactionDates);
-                }
-            }
-            catch (Exception ex)
-            {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
-            }
-        }
-
-        private void ReverseBatch(System.Object sender, EventArgs e)
-        {
-            //get index position of row to post
-            int newCurrentRowPos = GetSelectedRowIndex();
-
-            if (FReverseLogicObject.ReverseBatch(FPreviouslySelectedDetailRow, dtpDetailDateEffective.Date.Value, FStartDateCurrentPeriod,
-                    FEndDateLastForwardingPeriod))
-            {
-                // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
-                //Select unposted batch row in same index position as batch just posted
-                //grdDetails.DataSource = null;
-                //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
-
-                if (grdDetails.Rows.Count > 1)
-                {
-                    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
-                    // such that a removal of a row is not detected
-                    SelectRowInGrid(newCurrentRowPos);
-                }
-                else
-                {
-                    EnableButtonControl(false);
-                    ClearDetailControls();
-                    btnNew.Focus();
-                    pnlDetails.Enabled = false;
-                }
-
-                UpdateRecordNumberDisplay();
-                FFilterAndFindObject.SetRecordNumberDisplayProperties();
-            }
-        }
-
-        private void PostBatch(System.Object sender, EventArgs e)
-        {
-            //get index position of row to post
-            int newCurrentRowPos = GetSelectedRowIndex();
-
-            if (FPostLogicObject.PostBatch(FPreviouslySelectedDetailRow, dtpDetailDateEffective.Date.Value, FStartDateCurrentPeriod,
-                    FEndDateLastForwardingPeriod))
-            {
-                // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
-                ////Select unposted batch row in same index position as batch just posted
-                //grdDetails.DataSource = null;
-                //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
-
-                if (grdDetails.Rows.Count > 1)
-                {
-                    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
-                    // such that a removal of a row is not detected
-                    SelectRowInGrid(newCurrentRowPos);
-                }
-                else
-                {
-                    EnableButtonControl(false);
-                    ClearDetailControls();
-                    btnNew.Focus();
-                    pnlDetails.Enabled = false;
-                }
-
-                UpdateRecordNumberDisplay();
-                FFilterAndFindObject.SetRecordNumberDisplayProperties();
-            }
-        }
-
-        /// <summary>
-        /// this function calculates the balances of the accounts involved, if this batch would be posted
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TestPostBatch(System.Object sender, EventArgs e)
-        {
-            FPostLogicObject.TestPostBatch(FPreviouslySelectedDetailRow);
-        }
-
-        private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)
-        {
-            //string RowFilter = string.Empty;
-
-            if (!ASelectOnly)
-            {
-                //RowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-
-                //// AlanP: review this
-                //FFilterAndFindObject.FilterPanelControls.SetBaseFilter(RowFilter, (FSelectedPeriod == -1)
-                //    && (FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_ALL));
-                FFilterAndFindObject.ApplyFilter();
-            }
-
-            if (grdDetails.Rows.Count < 2)
-            {
-                ShowDetails(null);
-                ((TFrmGLBatch) this.ParentForm).DisableJournals();
-                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
-            }
-            else if (FBatchesLoaded == true)
-            {
-                //Select same row after refilter
-                int newRowToSelectAfterFilter =
-                    (ABatchNumber > 0) ? GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, ABatchNumber) : FPrevRowChangedRow;
-
-                if (ANoFocusChange)
-                {
-                    SelectRowInGrid(newRowToSelectAfterFilter);
-                    //grdDetails.SelectRowWithoutFocus(newRowToSelectAfterFilter);
-                }
-                else
-                {
-                    SelectRowInGrid(newRowToSelectAfterFilter);
-                }
-            }
         }
 
         private int GetDataTableRowIndexByPrimaryKeys(int ALedgerNumber, int ABatchNumber)
@@ -978,6 +711,277 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FLoadAndFilterLogicObject != null)
             {
                 FLoadAndFilterLogicObject.ApplyFilterManual(ref AFilterString);
+            }
+        }
+
+        /// <summary>
+        /// Updates the data display.  Call this after the DataSet has changed.
+        /// </summary>
+        public void UpdateDisplay()
+        {
+            TFrmGLBatch myParentForm = (TFrmGLBatch)ParentForm;
+            Cursor prevCursor = myParentForm.Cursor;
+
+            try
+            {
+                myParentForm.Cursor = Cursors.WaitCursor;
+
+                // Remember our current row position
+                int nCurrentRowIndex = GetSelectedRowIndex();
+
+                // This single call will fire the event that loads data and populates the grid
+                FFilterAndFindObject.ApplyFilter();
+
+                // Did the start-up specify a batch to select?
+                if (myParentForm.InitialBatchNumber > 0)
+                {
+                    nCurrentRowIndex = 1;
+                    string filter = String.Format("{0}={1}", ABatchTable.GetBatchNumberDBName(), myParentForm.InitialBatchNumber);
+                    DataView dv = new DataView(FMainDS.ABatch, filter, "", DataViewRowState.CurrentRows);
+
+                    if (dv.Count > 0)
+                    {
+                        int rowToSelect = grdDetails.DataSourceRowToIndex2(dv[0].Row) + 1;
+
+                        if (rowToSelect > 0)
+                        {
+                            nCurrentRowIndex = rowToSelect;
+                            myParentForm.InitialBatchFound = true;
+                        }
+                    }
+
+                    // Reset the start-up value
+                    myParentForm.InitialBatchNumber = -1;
+                }
+
+                // Now we can select the row index we had before (if it exists)
+                SelectRowInGrid(nCurrentRowIndex);
+                UpdateRecordNumberDisplay();
+            }
+            finally
+            {
+                myParentForm.Cursor = prevCursor;
+            }
+        }
+
+        /// <summary>
+        /// Cancel a batch (there is no deletion of batches)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CancelRow(System.Object sender, EventArgs e)
+        {
+            int newCurrentRowPos = grdDetails.GetFirstHighlightedRowIndex();
+
+            if (FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow, txtDetailBatchDescription))
+            {
+                SelectRowInGrid(newCurrentRowPos);
+            }
+
+            //If some row(s) still exist after deletion
+            if (grdDetails.Rows.Count < 2)
+            {
+                EnableButtonControl(false);
+                ClearDetailControls();
+
+                ((TFrmGLBatch)ParentForm).DisableJournals();
+                ((TFrmGLBatch)ParentForm).DisableTransactions();
+            }
+        }
+
+        private void UpdateBatchPeriod(object sender, EventArgs e)
+        {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            bool UpdateTransactionDates = false;
+
+            Int32 PeriodNumber = 0;
+            Int32 YearNumber = 0;
+            string EffectiveDateString = string.Empty;
+            DateTime EffectiveDateValue;
+
+            try
+            {
+                bool rowDataHasChanged = false;
+
+                EffectiveDateString = dtpDetailDateEffective.Date.ToString();
+
+                if (DateTime.TryParse(EffectiveDateString, out EffectiveDateValue))
+                {
+                    if ((EffectiveDateValue == FCurrentEffectiveDate)
+                        || (EffectiveDateValue < FStartDateCurrentPeriod)
+                        || (EffectiveDateValue > FEndDateLastForwardingPeriod))
+                    {
+                        return;
+                    }
+
+                    //GetDetailsFromControls will do this automatically if the user tabs
+                    //  passed the last control, but not if they click on another control
+                    FCurrentEffectiveDate = EffectiveDateValue;
+
+                    if (FPreviouslySelectedDetailRow.DateEffective != EffectiveDateValue)
+                    {
+                        FPreviouslySelectedDetailRow.DateEffective = EffectiveDateValue;
+                        rowDataHasChanged = true;
+                    }
+
+                    //Check if new date is in a different Batch period to the current one
+                    if (GetAccountingYearPeriodByDate(FLedgerNumber, EffectiveDateValue, out YearNumber, out PeriodNumber))
+                    {
+                        if (FPreviouslySelectedDetailRow.BatchPeriod != PeriodNumber)
+                        {
+                            FPreviouslySelectedDetailRow.BatchPeriod = PeriodNumber;
+                            rowDataHasChanged = true;
+
+                            //Update the Transaction effective dates
+                            UpdateTransactionDates = true;
+
+                            if (FLoadAndFilterLogicObject.YearIndex != 0)
+                            {
+                                FLoadAndFilterLogicObject.YearIndex = 0;
+                                FLoadAndFilterLogicObject.PeriodIndex = 1;
+                                dtpDetailDateEffective.Date = EffectiveDateValue;
+                                dtpDetailDateEffective.Focus();
+                            }
+                            else if (FLoadAndFilterLogicObject.PeriodIndex != 1)
+                            {
+                                FLoadAndFilterLogicObject.PeriodIndex = 1;
+                                dtpDetailDateEffective.Date = EffectiveDateValue;
+                                dtpDetailDateEffective.Focus();
+                            }
+                        }
+                    }
+
+                    if (rowDataHasChanged)
+                    {
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("BATCH", UpdateTransactionDates);
+                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+        }
+
+        private void ReverseBatch(System.Object sender, EventArgs e)
+        {
+            //get index position of row to post
+            int newCurrentRowPos = GetSelectedRowIndex();
+
+            if (FReverseLogicObject.ReverseBatch(FPreviouslySelectedDetailRow, dtpDetailDateEffective.Date.Value, FStartDateCurrentPeriod,
+                    FEndDateLastForwardingPeriod))
+            {
+                // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
+                //Select unposted batch row in same index position as batch just posted
+                //grdDetails.DataSource = null;
+                //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+
+                if (grdDetails.Rows.Count > 1)
+                {
+                    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                    // such that a removal of a row is not detected
+                    SelectRowInGrid(newCurrentRowPos);
+                }
+                else
+                {
+                    EnableButtonControl(false);
+                    ClearDetailControls();
+                    btnNew.Focus();
+                    pnlDetails.Enabled = false;
+                }
+
+                UpdateRecordNumberDisplay();
+                FFilterAndFindObject.SetRecordNumberDisplayProperties();
+            }
+        }
+
+        private void PostBatch(System.Object sender, EventArgs e)
+        {
+            //get index position of row to post
+            int newCurrentRowPos = GetSelectedRowIndex();
+
+            if (FPostLogicObject.PostBatch(FPreviouslySelectedDetailRow, dtpDetailDateEffective.Date.Value, FStartDateCurrentPeriod,
+                    FEndDateLastForwardingPeriod))
+            {
+                // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
+                ////Select unposted batch row in same index position as batch just posted
+                //grdDetails.DataSource = null;
+                //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+
+                if (grdDetails.Rows.Count > 1)
+                {
+                    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                    // such that a removal of a row is not detected
+                    SelectRowInGrid(newCurrentRowPos);
+                }
+                else
+                {
+                    EnableButtonControl(false);
+                    ClearDetailControls();
+                    btnNew.Focus();
+                    pnlDetails.Enabled = false;
+                }
+
+                UpdateRecordNumberDisplay();
+                FFilterAndFindObject.SetRecordNumberDisplayProperties();
+            }
+        }
+
+        /// <summary>
+        /// this function calculates the balances of the accounts involved, if this batch would be posted
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TestPostBatch(System.Object sender, EventArgs e)
+        {
+            FPostLogicObject.TestPostBatch(FPreviouslySelectedDetailRow);
+        }
+
+        private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)
+        {
+            //string RowFilter = string.Empty;
+
+            if (!ASelectOnly)
+            {
+                //RowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+
+                //// AlanP: review this
+                //FFilterAndFindObject.FilterPanelControls.SetBaseFilter(RowFilter, (FSelectedPeriod == -1)
+                //    && (FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_ALL));
+                FFilterAndFindObject.ApplyFilter();
+            }
+
+            if (grdDetails.Rows.Count < 2)
+            {
+                ShowDetails(null);
+                ((TFrmGLBatch) this.ParentForm).DisableJournals();
+                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
+            }
+            else if (FBatchesLoaded == true)
+            {
+                //Select same row after refilter
+                int newRowToSelectAfterFilter =
+                    (ABatchNumber > 0) ? GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, ABatchNumber) : FPrevRowChangedRow;
+
+                if (ANoFocusChange)
+                {
+                    SelectRowInGrid(newRowToSelectAfterFilter);
+                    //grdDetails.SelectRowWithoutFocus(newRowToSelectAfterFilter);
+                }
+                else
+                {
+                    SelectRowInGrid(newRowToSelectAfterFilter);
+                }
             }
         }
     }

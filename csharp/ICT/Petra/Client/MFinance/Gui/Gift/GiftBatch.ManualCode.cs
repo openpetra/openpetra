@@ -649,9 +649,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private int GetChangedRecordCountManual(out string AMessage)
         {
-            // For Gift Batch we will
-            //  either get a change to N Batches
-            //  or get changes to M transactions in N Batches
+            // For GL Batch we will get a mix of some batches, gifts and gift details.
             List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
             int allChangesCount = 0;
 
@@ -711,7 +709,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (TableAndCountList.Count == 1)
                 {
-                    // Only saving changes to batches
                     Tuple <string, int>TableAndCount = TableAndCountList[0];
 
                     string tableName = TableAndCount.Item1;
@@ -723,19 +720,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             Catalog.GetPluralString("batch", "batches", TableAndCount.Item2),
                             Environment.NewLine);
                     }
-                    else
+                    else if (TableAndCount.Item1.Equals(AGiftTable.GetTableName()))
                     {
                         AMessage = String.Format(Catalog.GetString("    You have made changes to the details of {0} {1}.{2}"),
                             TableAndCount.Item2,
-                            Catalog.GetPluralString("transaction", "transactions", TableAndCount.Item2),
+                            Catalog.GetPluralString("gift", "gifts", TableAndCount.Item2),
+                            Environment.NewLine);
+                    }
+                    else //if (TableAndCount.Item1.Equals(AGiftDetailTable.GetTableName()))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            TableAndCount.Item2,
+                            Catalog.GetPluralString("gift detail", "gift details", TableAndCount.Item2),
                             Environment.NewLine);
                     }
                 }
                 else
                 {
-                    // Saving changes to transactions as well
                     int nBatches = 0;
-                    int nTransactions = 0;
+                    int nGifts = 0;
+                    int nGiftDetails = 0;
 
                     foreach (Tuple <string, int>TableAndCount in TableAndCountList)
                     {
@@ -743,26 +747,73 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         {
                             nBatches = TableAndCount.Item2;
                         }
-                        else if (TableAndCount.Item2 > nTransactions)
+                        else if (TableAndCount.Item1.Equals(AGiftTable.GetTableName()))
                         {
-                            nTransactions = TableAndCount.Item2;
+                            nGifts = TableAndCount.Item2;
+                        }
+                        else //if (TableAndCount.Item1.Equals(AGiftDetailTable.GetTableName()))
+                        {
+                            nGiftDetails = TableAndCount.Item2;
                         }
                     }
 
-                    if (nBatches == 0)
+                    if ((nBatches > 0) && (nGifts > 0) && (nGiftDetails > 0))
                     {
-                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
-                            nTransactions,
-                            Catalog.GetPluralString("transaction", "transactions", nTransactions),
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}, {2} {3} and {4} {5}.{6}"),
+                            nBatches,
+                            Catalog.GetPluralString("batch", "batches", nBatches),
+                            nGifts,
+                            Catalog.GetPluralString("gift", "gifts", nGifts),
+                            nGiftDetails,
+                            Catalog.GetPluralString("gift detail", "gift details", nGiftDetails),
                             Environment.NewLine);
                     }
-                    else
+                    else if ((nBatches > 0) && (nGifts > 0) && (nGiftDetails == 0))
                     {
                         AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1} and {2} {3}.{4}"),
                             nBatches,
                             Catalog.GetPluralString("batch", "batches", nBatches),
-                            nTransactions,
-                            Catalog.GetPluralString("transaction", "transactions", nTransactions),
+                            nGifts,
+                            Catalog.GetPluralString("gift", "gifts", nGifts),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches > 0) && (nGifts == 0) && (nGiftDetails > 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1} and {2} {3}.{4}"),
+                            nBatches,
+                            Catalog.GetPluralString("batch", "batches", nBatches),
+                            nGiftDetails,
+                            Catalog.GetPluralString("gift detail", "gift details", nGiftDetails),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches > 0) && (nGifts == 0) && (nGiftDetails == 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            nBatches,
+                            Catalog.GetPluralString("batch", "batches", nBatches),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches == 0) && (nGifts > 0) && (nGiftDetails > 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1} and {2} {3}.{4}"),
+                            nGifts,
+                            Catalog.GetPluralString("gift", "gifts", nGifts),
+                            nGiftDetails,
+                            Catalog.GetPluralString("gift detail", "gift details", nGiftDetails),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches == 0) && (nGifts > 0) && (nGiftDetails == 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            nGifts,
+                            Catalog.GetPluralString("gift", "gifts", nGiftDetails),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches == 0) && (nGifts == 0) && (nGiftDetails > 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            nGiftDetails,
+                            Catalog.GetPluralString("gift detail", "gift details", nGiftDetails),
                             Environment.NewLine);
                     }
                 }
