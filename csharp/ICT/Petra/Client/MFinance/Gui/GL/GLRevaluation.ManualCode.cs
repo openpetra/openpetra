@@ -68,7 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         //TFrmSetupDailyExchangeRate tFrmSetupDailyExchangeRate;
 
 
-        LinkClickDelete linkClickDelete = new LinkClickDelete();
+        ClickController linkController = new ClickController();
 
         /// <summary>
         /// use this ledger
@@ -110,7 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DataTable table = TDataCache.TMFinance.GetCacheableFinanceTable(
                 TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
 
-            int ic = 0;
+            int RowIndex = 0;
             String strRevaluationCurrencies = "";
 
             foreach (DataRow row in table.Rows)
@@ -121,25 +121,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 bool blnAccountHasPostings = (bool)row["a_posting_status_l"];
                 String AccountCode = (String)row["a_account_code_c"];
 
-                if (blnIsLedger && blnAccountActive
-                    && blnAccountForeign && blnAccountHasPostings)
+                if (blnIsLedger && blnAccountActive && blnAccountForeign && blnAccountHasPostings)
                 {
                     if (strRevaluationCurrencies == "")
                     {
-                        strRevaluationCurrencies =
-                            "[" + (string)row["a_foreign_currency_code_c"];
+                        strRevaluationCurrencies = "[" + (string)row["a_foreign_currency_code_c"];
                     }
                     else
                     {
-                        strRevaluationCurrencies = strRevaluationCurrencies +
-                                                   "|" + (string)row["a_foreign_currency_code_c"];
+                        strRevaluationCurrencies += ("|" + (string)row["a_foreign_currency_code_c"]);
                     }
 
                     string strCurrencyCode = (string)row["a_foreign_currency_code_c"];
+                    DateTime dateEffectiveFrom;
                     decimal decExchangeRate = frmExchangeRate.GetLastExchangeValueOfInterval(FLedgerNumber,
-                        FperiodStart, FperiodEnd, strCurrencyCode);
-                    AddADataRow(ic, AccountCode, strCurrencyCode, decExchangeRate);
-                    ++ic;
+                        FperiodStart, FperiodEnd, strCurrencyCode, out dateEffectiveFrom);
+                    AddADataRow(RowIndex, AccountCode, strCurrencyCode, decExchangeRate, dateEffectiveFrom);
+                    ++RowIndex;
                 }
             }
 
@@ -161,26 +159,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 typeof(string)).Width = 60;
             grdDetails.Columns.Add("Currency", "[CUR]",
                 typeof(string)).Width = 50;
-            grdDetails.Columns.Add("ExchangeRate", Catalog.GetString("Exchange Rate"),
-                typeof(decimal)).Width = 110;
+            grdDetails.Columns.Add("ExchangeRate", Catalog.GetString("Rate"),
+                typeof(String)).Width = 90;
+            grdDetails.Columns.Add("Effective", Catalog.GetString("Effective"),
+                typeof(string)).Width = 60;
             grdDetails.Columns.Add("Status", Catalog.GetString("Status"),
-                typeof(string)).Width = 110;
+                typeof(string)).Width = 100;
+            SourceGrid.DataGridColumn gridColumn =
+                grdDetails.Columns.Add(null, "", new SourceGrid.Cells.Button("..."));
+            linkController.InitFrmData(this, FperiodStart, FperiodEnd);
+            gridColumn.DataCell.AddController(linkController);
 
             grdDetails.SelectionMode = SourceGrid.GridSelectionMode.Row;
             grdDetails.CancelEditingWithEscapeKey = false;
-
-
-            SourceGrid.DataGridColumn gridColumn;
-
-            gridColumn = grdDetails.Columns.Add(
-                null, "", new SourceGrid.Cells.Button("..."));
-            linkClickDelete.InitFrmData(this, FperiodStart, FperiodEnd);
-            gridColumn.DataCell.AddController(linkClickDelete);
         }
 
-        private void AddADataRow(int AIndex, String AAccountCode, string ACurrencyValue, decimal AExchangeRate)
+        private void AddADataRow(int AIndex, String AAccountCode, string ACurrencyValue, decimal AExchangeRate, DateTime AdateEffectiveFrom)
         {
-            CurrencyExchange ce = new CurrencyExchange(AAccountCode, ACurrencyValue, AExchangeRate);
+            CurrencyExchange ce = new CurrencyExchange(AAccountCode, ACurrencyValue, AExchangeRate, AdateEffectiveFrom);
 
             FcurrencyExchangeList.Add(ce);
             FBoundList = new DevAge.ComponentModel.BoundList <CurrencyExchange>
@@ -190,12 +186,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FBoundList.AllowNew = false;
             FBoundList.AllowDelete = false;
 
-            for (Int32 column = 1; column <= 3; column++)
-            {
-                grdDetails.Columns[column].GetDataCell(AIndex).Editor.EnableEdit = false;
-            }
-
-            linkClickDelete.SetDataList(FcurrencyExchangeList);
+            linkController.SetDataList(FcurrencyExchangeList);
         }
 
         private String GetLedgerInfo(Int32 ALedgerNumber)
@@ -217,6 +208,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunRevaluation(object btn, EventArgs e)
         {
+            String ToCostCentre = cmbCostCentres.GetSelectedString();
+
+            if (ToCostCentre == "")
+            {
+                MessageBox.Show(Catalog.GetString("You must select a revaluation Cost Centre."));
+                return;
+            }
+
             int intUsedEntries = 0;
 
             for (int i = 0; i < FcurrencyExchangeList.Count; ++i)
@@ -227,18 +226,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            String ToCostCentre = cmbCostCentres.GetSelectedString();
-
-            if (ToCostCentre == "")
-            {
-                MessageBox.Show(Catalog.GetString("You must select a revaluation Cost Centre."));
-                return;
-            }
-
             if (intUsedEntries == 0)
             {
                 MessageBox.Show(Catalog.GetString("No Revaluation operation required."));
-                this.Close();
+                return;
             }
 
             string[] currencies = new string[intUsedEntries];
@@ -250,7 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (FcurrencyExchangeList[i].DoRevaluation)
                 {
                     currencies[j] = FcurrencyExchangeList[i].Currency;
-                    rates[j] = FcurrencyExchangeList[i].ExchangeRate;
+                    rates[j] = FcurrencyExchangeList[i].mExchangeRate;
                     j++;
                 }
             }
@@ -266,11 +257,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (blnRevalutationState)
             {
                 MessageBox.Show(verificationResult.BuildVerificationResultString(),
-                    Catalog.GetString("Revaluation errors ..."));
+                    Catalog.GetString("Revaluation error"));
             }
             else
             {
-                MessageBox.Show(Catalog.GetString("GL Revaluation complete."));
+                MessageBox.Show(verificationResult.BuildVerificationResultString(),
+                    Catalog.GetString("Revaluation success"));
             }
 
             this.Close();
@@ -294,61 +286,40 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             public const int DO_REVALUATION = 1;
 
             /// <summary>
-            /// The revalueation shall not to be done even if the exchange rate is valid.
+            /// The revaluation shall not to be done even if the exchange rate is valid.
             /// </summary>
             public const int DO_NO_REVALUATION = 2;
-
-            private string strMessageNotInitialized = Catalog.GetString("Not initialized");
-            private string strMessageRunRevaluation = Catalog.GetString("Revaluation");
-            private string strMessageRunNoRevaluation = Catalog.GetString("No Revaluation");
 
             private bool mDoRevaluation = true;
             private string mCurrency = "?";
             private String FAccountCode = "";
-            private decimal mExchangeRate = 1.0m;
-            private string mStatus = "?";
+            private DateTime FdateEffectiveFrom;
+            /// <summary>
+            /// I've made this public because the ExchangeRate property is now a string.
+            /// </summary>
+            public decimal mExchangeRate = 1.0m;
             private int intStatus;
 
-            private void SetRateAndStatus(decimal ANewExchangeRate)
+            private void SetRateAndStatus(decimal ANewExchangeRate, DateTime AeffectiveDate)
             {
-                if (ANewExchangeRate == 0)
+                mExchangeRate = ANewExchangeRate;
+                FdateEffectiveFrom = AeffectiveDate;
+
+                if (mExchangeRate == 0) // This is set when user de-selects a row
                 {
-                    if (mDoRevaluation)
-                    {
-                        intStatus = DO_REVALUATION;
-                    }
-                    else
-                    {
-                        intStatus = DO_NO_REVALUATION;
-                    }
+                    intStatus = DO_NO_REVALUATION;
+                    mDoRevaluation = false;
+                }
+
+                if (mExchangeRate == 1.0m)
+                {
+                    intStatus = IS_NOT_INITIALIZED;
+                    mDoRevaluation = false;
                 }
                 else
                 {
-                    mExchangeRate = ANewExchangeRate;
-
-                    if (mExchangeRate == 1.0m)
-                    {
-                        intStatus = IS_NOT_INITIALIZED;
-                        mDoRevaluation = false;
-                    }
-                    else
-                    {
-                        intStatus = DO_REVALUATION;
-                        mDoRevaluation = true;
-                    }
-                }
-
-                if (intStatus == IS_NOT_INITIALIZED)
-                {
-                    mStatus = strMessageNotInitialized;
-                }
-                else if (intStatus == DO_REVALUATION)
-                {
-                    mStatus = strMessageRunRevaluation;
-                }
-                else if (intStatus == DO_NO_REVALUATION)
-                {
-                    mStatus = strMessageRunNoRevaluation;
+                    intStatus = DO_REVALUATION;
+                    mDoRevaluation = true;
                 }
             }
 
@@ -357,13 +328,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /// </summary>
             /// <param name="AAccountCode">Foreign currency Account</param>
             /// <param name="ACurrency">Defines the foreign currency</param>
-            /// <param name="AExchangeRate">Defines the exchange rate and 0 is the
-            /// value to define a invalid rate.</param>
-            public CurrencyExchange(String AAccountCode, string ACurrency, decimal AExchangeRate)
+            /// <param name="AExchangeRate">Defines the exchange rate and 0 is the value to define a invalid rate.</param>
+            /// <param name="AdateEffectiveFrom">How old is this Exchange Rate</param>
+            public CurrencyExchange(String AAccountCode, string ACurrency, decimal AExchangeRate, DateTime AdateEffectiveFrom)
             {
                 FAccountCode = AAccountCode;
                 mCurrency = ACurrency;
-                SetRateAndStatus(AExchangeRate);
+                SetRateAndStatus(AExchangeRate, AdateEffectiveFrom);
             }
 
             /// <summary>
@@ -381,7 +352,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     if (intStatus != IS_NOT_INITIALIZED)
                     {
                         mDoRevaluation = value;
-                        SetRateAndStatus(0.0m);
+//                      SetRateAndStatus(0.0m, DateTime.Now);
                     }
                 }
             }
@@ -412,14 +383,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             /// <summary>
-            /// For the exchange rate only the get part is defined. So the user cannot change the
-            /// value by using the grid.
+            /// Only the get part is defined. So the user cannot change the value by using the grid.
             /// </summary>
-            public decimal ExchangeRate
+            public String ExchangeRate
             {
                 get
                 {
-                    return mExchangeRate;
+                    return (mDoRevaluation) ? mExchangeRate.ToString("G6") : "";
+                }
+            }
+
+            /// <summary>
+            /// Only the get part is defined. So the user cannot change the value by using the grid.
+            /// </summary>
+            public String Effective
+            {
+                get
+                {
+                    return (mDoRevaluation) ? FdateEffectiveFrom.ToString("dd-MMM") : "";
                 }
             }
 
@@ -430,7 +411,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 get
                 {
-                    return mStatus;
+                    if (intStatus == IS_NOT_INITIALIZED)
+                    {
+                        return Catalog.GetString("Not initialized");
+                    }
+
+                    return (mDoRevaluation) ? Catalog.GetString("Revaluation") : Catalog.GetString("No Revaluation");
+                }
+            }
+
+            /// <summary>
+            ///
+            /// </summary>
+            public Boolean Update
+            {
+                set
+                {
+                    MessageBox.Show("Update!");
                 }
             }
 
@@ -438,19 +435,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /// External interface routine to update the exchange rate.
             /// </summary>
             /// <param name="newRate"></param>
-            public void updateExchangeRate(decimal newRate)
+            /// <param name="AeffectiveDate"></param>
+            public void updateExchangeRate(decimal newRate, DateTime AeffectiveDate)
             {
                 if (newRate != mExchangeRate)
                 {
-                    SetRateAndStatus(newRate);
+                    SetRateAndStatus(newRate, AeffectiveDate);
                 }
             }
         }
 
-        private class LinkClickDelete : SourceGrid.Cells.Controllers.ControllerBase
+        private class ClickController : SourceGrid.Cells.Controllers.ControllerBase
         {
-            int ix = 0;
-
             TGLRevaluation mainForm;
             DateTime dteStart;
             DateTime dteEnd;
@@ -458,17 +454,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             List <CurrencyExchange>currencyExchangeList;
 
 
-            public override void OnClick(SourceGrid.CellContext sender, EventArgs e)
+            public override void OnMouseUp(SourceGrid.CellContext sender, MouseEventArgs e)
             {
-                base.OnClick(sender, e);
-
-                ++ix;
-                System.Diagnostics.Debug.WriteLine(sender.Position.Row.ToString());
-
+                base.OnMouseUp(sender, e);
                 int iRow = sender.Position.Row - 1;
 
-                TFrmSetupDailyExchangeRate frmExchangeRate =
-                    new TFrmSetupDailyExchangeRate(mainForm);
+                if (iRow < 0)
+                {
+                    return;
+                }
+
+                TFrmSetupDailyExchangeRate frmExchangeRate = new TFrmSetupDailyExchangeRate(mainForm);
 
                 decimal selectedExchangeRate;
                 DateTime selectedEffectiveDate;
@@ -479,15 +475,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         dteStart,
                         dteEnd,
                         currencyExchangeList[iRow].Currency,
-                        currencyExchangeList[iRow].ExchangeRate,
+                        currencyExchangeList[iRow].mExchangeRate,
                         out selectedExchangeRate,
                         out selectedEffectiveDate,
-                        out selectedEffectiveTime) == DialogResult.Cancel)
+                        out selectedEffectiveTime) != DialogResult.Cancel)
                 {
-                    return;
+                    currencyExchangeList[iRow].updateExchangeRate(selectedExchangeRate, selectedEffectiveDate);
+                    sender.Grid.InvalidateRange(new SourceGrid.Range(sender.Position.Row, 1, sender.Position.Row, 4));
                 }
-
-                currencyExchangeList[iRow].updateExchangeRate(selectedExchangeRate);
             }
 
             public void InitFrmData(TGLRevaluation AMain, DateTime ADateStart, DateTime ADateEnd)

@@ -136,10 +136,10 @@ namespace Tests.MFinance.Client.ExchangeRates
             // define our working date range
             DateTime dtStart = new DateTime(2000, 01, 01);
             DateTime dtEnd = new DateTime(2000, 12, 31);
-
+            DateTime dateEffectiveFrom;
             // First test is with empty data - should return 1.0m
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-            decimal result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP");
+            decimal result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP", out dateEffectiveFrom);
             Assert.AreEqual(1.0m, result, "The result should be 1.0m when the table contains no data");
 
             // Repeat test with data but outside the date range - again should return 1.0m
@@ -147,7 +147,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.SaveChanges();
 
             mainScreen = new TFrmSetupDailyExchangeRate(null);
-            result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP");
+            result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP", out dateEffectiveFrom);
             Assert.AreEqual(1.0m, result, "The result should be 1.0m because there is no data in the date range");
 
             // Repeat again with data inside the range
@@ -158,7 +158,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.SaveChanges();
 
             mainScreen = new TFrmSetupDailyExchangeRate(null);
-            result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP");
+            result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP", out dateEffectiveFrom);
             Assert.AreEqual(2.15m, result);
         }
 

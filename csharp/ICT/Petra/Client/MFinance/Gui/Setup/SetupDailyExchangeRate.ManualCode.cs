@@ -573,10 +573,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="dteStart">The start date for the date range</param>
         /// <param name="dteEnd">The end date for the date range.</param>
         /// <param name="strCurrencyFrom">The actual foreign currency used for the transaction</param>
+        /// <param name="ADateEffectiveFrom">The date when this exchange rate was entered or used.</param>
         /// <returns>The most recent exchange rate in the specified date range</returns>
         public decimal GetLastExchangeValueOfInterval(Int32 LedgerNumber, DateTime dteStart,
             DateTime dteEnd,
-            string strCurrencyFrom)
+            string strCurrencyFrom,
+            out DateTime ADateEffectiveFrom)
         {
             ALedgerRow ledger =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
@@ -599,10 +601,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (myView.Count > 0)
             {
+                ADateEffectiveFrom = ((ADailyExchangeRateRow)(myView[0].Row)).DateEffectiveFrom;
                 return ((ADailyExchangeRateRow)(myView[0].Row)).RateOfExchange;
             }
             else
             {
+                ADateEffectiveFrom = DateTime.Now;
                 return 1.0m;
             }
         }

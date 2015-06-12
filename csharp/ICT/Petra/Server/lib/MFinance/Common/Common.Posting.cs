@@ -499,8 +499,10 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// Load all GLM and GLMPeriod records for the batch period and the following periods, since that will avoid loading them one by one during submitchanges.
-        /// this is called after ValidateBatchAndTransactions, because the BatchYear and BatchPeriod are validated and recalculated there
+        /// Load all GLM and GLMPeriod records for the batch period and the following periods, since that will avoid loading them one by one during summarize.
+        /// this is called after ValidateBatchAndTransactions, because the BatchYear and BatchPeriod are validated and recalculated there.
+        ///
+        /// This should probably be changed, in the new, skinny summarization, only a few rows need to be accessed.
         /// </summary>
         private static void LoadGLMData(ref GLPostingTDS AGLPostingDS, Int32 ALedgerNumber, ABatchRow ABatchToPost)
         {
@@ -1145,7 +1147,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// for each posting level, propagate the value upwards through both the account and the cost centre hierarchy in glm master;
+        /// For each posting level, propagate the value upwards through both the account and the cost centre hierarchy in glm master;
         /// also propagate the value from the posting period through the following periods;
         /// </summary>
         private static bool SummarizeData(
@@ -1169,30 +1171,34 @@ namespace Ict.Petra.Server.MFinance.Common
             DataView GLMPeriodView = APostingDS.AGeneralLedgerMasterPeriod.DefaultView;
             GLMPeriodView.Sort = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "," + AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName();
 
-            // Loop through the posting data collected earlier.  Summarize it to a
-            // temporary table, which is much faster than finding and updating records
-            // in the glm tables multiple times.  WriteData will write it to the real
-            // tables in a single pass.
+            // Loop through the posting data collected earlier.
+
             foreach (string PostingLevelKey in APostingLevel.Keys)
             {
-                string AccountCode = TAmount.GetAccountCode(PostingLevelKey);
-                string CostCentreCode = TAmount.GetCostCentreCode(PostingLevelKey);
+                String[] KeyParts = PostingLevelKey.Split(':');
+
+                string AccountCode = KeyParts[0];
+                string CostCentreCode = KeyParts[1];
 
                 TAmount PostingLevelElement = APostingLevel[PostingLevelKey];
 
                 // Combine the summarization trees for both the account and the cost centre.
                 foreach (string AccountTreeKey in AAccountTree.Keys)
                 {
-                    if (TAccountTreeElement.GetReportingAccountCode(AccountTreeKey) == AccountCode)
+                    String[] AccountKeyParts = AccountTreeKey.Split(':');
+
+                    if (AccountKeyParts[0] == AccountCode)
                     {
-                        string AccountCodeToReportTo = TAccountTreeElement.GetAccountReportToCode(AccountTreeKey);
+                        string AccountCodeToReportTo = AccountKeyParts[1];
                         TAccountTreeElement AccountTreeElement = AAccountTree[AccountTreeKey];
 
                         foreach (string CostCentreKey in ACostCentreTree.Keys)
                         {
-                            if (CostCentreKey.StartsWith(CostCentreCode + ":"))
+                            String[] CCKeyParts = CostCentreKey.Split(':');
+
+                            if (CCKeyParts[0] == CostCentreCode)
                             {
-                                string CostCentreCodeToReportTo = CostCentreKey.Split(':')[1];
+                                string CostCentreCodeToReportTo = CCKeyParts[1];
                                 decimal SignBaseAmount = PostingLevelElement.BaseAmount;
                                 decimal SignIntlAmount = PostingLevelElement.IntlAmount;
                                 decimal SignTransAmount = PostingLevelElement.TransAmount;
@@ -1242,7 +1248,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                     GlmRow.ClosingPeriodActualIntl += SignIntlAmount;
                                 }
 
-                                // Add the period data from the posting level to the summary levels
+                                // Add the data to forward periods, to the end of the GLMP list
                                 for (Int32 PeriodCount = AFromPeriod;
                                      PeriodCount <= APostingDS.ALedger[0].NumberOfAccountingPeriods + APostingDS.ALedger[0].NumberFwdPostingPeriods;
                                      PeriodCount++)
@@ -1310,14 +1316,12 @@ namespace Ict.Petra.Server.MFinance.Common
             DataView GLMPeriodView = AMainDS.AGeneralLedgerMasterPeriod.DefaultView;
             GLMPeriodView.Sort = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "," + AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName();
 
-            // Loop through the posting data collected earlier.  Summarize it to a
-            // temporary table, which is much faster than finding and updating records
-            // in the glm tables multiple times.  WriteData will write it to the real
-            // tables in a single pass.
             foreach (string PostingLevelKey in APostingLevel.Keys)
             {
-                string AccountCode = TAmount.GetAccountCode(PostingLevelKey);
-                string CostCentreCode = TAmount.GetCostCentreCode(PostingLevelKey);
+                String[] KeyParts = PostingLevelKey.Split(':');
+
+                string AccountCode = KeyParts[0];
+                string CostCentreCode = KeyParts[1];
 
                 TAmount PostingLevelElement = APostingLevel[PostingLevelKey];
 
@@ -1403,13 +1407,24 @@ namespace Ict.Petra.Server.MFinance.Common
             return true;
         }
 
+        //
+        //
+        // April 2015, Tim Ingham:
+        //
+        // NOTE that the full summarization that includes all the summary levels is to be discontinued,
+        // since our reports only use the posting levels and calculate the summaries on the fly.
+        // This makes Ledger posting MUCH faster.
+        //
+        // The full SummarizeData method, and its supporting CalculateTrees method, is still present,
+        // and we could return to it if it became necessary.
+
         private static void SummarizeInternal(Int32 ALedgerNumber,
             GLPostingTDS APostingDS,
             SortedList <string, TAmount>APostingLevel,
             Int32 AFromPeriod,
             bool ACalculatePostingTree)
         {
-            // we need the tree, because of the cost centre tree, which is not calculated by the balance sheet and other reports.
+            // We need the tree, because of the cost centre tree, which is not calculated by the balance sheet and other reports.
             // for testing the balances, we don't need to calculate the whole tree
             if (ACalculatePostingTree)
             {
@@ -1420,8 +1435,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 // key is the PostingCostCentre, the value is the parent Cost Centre
                 SortedList <string, string>CostCentreTree;
-
-                // TODO Can anything of this be done in StoredProcedures? Only SQLite here?
 
                 // this was in Petra 2.x; takes a lot of time, which the reports could do better
                 // TODO: can we just calculate the cost centre tree, since that is needed for Balance Sheet,
@@ -1694,11 +1707,11 @@ namespace Ict.Petra.Server.MFinance.Common
                             MainDS.ThrowAwayAfterSubmitChanges = true;
                             GLBatchTDSAccess.SubmitChanges(MainDS);
 
-                            SummarizeInternal(ALedgerNumber, PostingDS, PostingLevel, BatchPeriod, true);
+                            SummarizeInternal(ALedgerNumber, PostingDS, PostingLevel, BatchPeriod, true); // Set this to false to NOT summarize up the trees.
 
                             PostingDS.ThrowAwayAfterSubmitChanges = true;
                             SubmitChanges(PostingDS);
-                        }  // foreach
+                        }  // foreach batch
 
                         SubmissionOK = true;
                     }
@@ -1714,7 +1727,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
                     }
-                });
+                }); // New Or Existing AutoTransaction
 
             AVerifications = VerificationResult;
 
@@ -1823,8 +1836,6 @@ namespace Ict.Petra.Server.MFinance.Common
                             ABatchNumber),
                         TResultSeverity.Resv_Critical));
                 return null;
-
-                //TODO return the everificationsresult collection.
             }
             else if (AMainDS.ABatch[0].BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
             {
@@ -1871,7 +1882,8 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 return null;
             }
-            else if (IntlToBaseExchRate == 0)
+
+            if (IntlToBaseExchRate == 0)
             {
                 AVerifications.Add(
                     new TVerificationResult(
@@ -1913,7 +1925,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Load GLM Data...");
 
-            // TODO
             LoadGLMData(ref PostingDS, ALedgerNumber, BatchToPost);
 
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Mark as posted and collect data...");

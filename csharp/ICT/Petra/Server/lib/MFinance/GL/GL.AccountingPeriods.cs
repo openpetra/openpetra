@@ -92,7 +92,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DateTime StartDateCurrentPeriod = new DateTime();
             DateTime EndDateLastForwardingPeriod = new DateTime();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);

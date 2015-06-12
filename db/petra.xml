@@ -7223,14 +7223,6 @@
                 columnlabel="ICH Process"
                 notnull="yes"
                 initial="0"/>
-    <tablefield name="a_branch_processing_l"
-                type="bit"
-                descr="THis defines whether or not the ledger ha made up of separate branches/departments that are self contained (should balance)."
-                format="yes/no"
-                label="Branch Processing"
-                columnlabel="Branch pro"
-                help="If you have cost centres that need to balance then set to yes"
-                initial="no"/>
     <tablefield name="a_consolidation_ledger_l"
                 type="bit"
                 descr="Indicates whether the ledger is just for storing consolidated accounts (rather than a 'real' ledger)."
@@ -7841,12 +7833,28 @@
                 label="Type"
                 help="Type of cost centre (foreign or local)."
                 initial="Local"/>
-    <tablefield name="a_key_focus_area_c"
+    <tablefield name="a_clearing_account_c"
+                  type="varchar"
+                  descr="ICH or non-ICH clearing"
+                  format="X(12)"
+                  label="Clearing Account"
+                  help="Stewardship calculation will clear to this account."
+                />
+    <tablefield name="a_ret_earnings_account_code_c"
                 type="varchar"
-                descr="Key Focus Area that this cost centre relates to"
-                format="X(20)"
-                label="Key Focus Area"/>
-    <!-- Constraints on table a_cost_centre -->
+                descr="At Year End, Balance in this Cost Centre will roll up to this account"
+                format="X(12)"
+                label="Equity Account"
+                help="At Year End, Surplus or Deficit in this Cost Centre will carry forward into this account."
+                />
+    <tablefield name="a_rollup_style_c"
+                  type="varchar"
+                  descr="Determine how to roll up the balance in this Cost Centre"
+                  format="X(12)"
+                  label="Rollup Style"
+                  help="How should this Cost Centre roll up to Standard Cost Centre"
+                />
+      <!-- Constraints on table a_cost_centre -->
     <primarykey name="a_cost_centre_pk"
                 descr=""
                 thisFields="a_ledger_number_i, a_cost_centre_code_c"/>
@@ -7860,11 +7868,6 @@
                 thisFields="a_ledger_number_i, a_cost_centre_type_c"
                 otherTable="a_cost_centre_types"
                 otherFields="a_ledger_number_i, a_cost_centre_type_c"/>
-    <foreignkey name="a_cost_centre_fk3"
-                descr=""
-                thisFields="a_key_focus_area_c"
-                otherTable="a_key_focus_area"
-                otherFields="a_key_focus_area_c"/>
     <!-- Explicit Indexes on table a_cost_centre  -->
   </table>
   <table name="a_valid_ledger_number"
@@ -21246,28 +21249,6 @@
     <primarykey name="p_first_contact_pk"
                 descr=""
                 thisFields="p_first_contact_code_c"/>
-  </table>  
-  <table name="a_key_focus_area"
-         descr="Lookup table for Key Focus Areas"
-         area="Petra Data"
-         label="Key Focus Area"
-         dumpname="a_key_fa"
-         group="account">
-    <tablefield name="a_key_focus_area_c"
-                type="varchar"
-                descr="Name of Key Focus Area"
-                format="X(20)"
-                label="Key Focus Area"
-                notnull="yes"/>
-    <tablefield name="a_key_focus_area_comment_c"
-                type="varchar"
-                descr="Comment"
-                format="X(200)"
-                label="Comment"/>
-    <!-- Constraints on table a_key_focus_area -->
-    <primarykey name="a_key_focus_area_pk"
-                descr=""
-                thisFields="a_key_focus_area_c"/>
   </table>  
   <table name="s_group_function"
          descr="Gives the group access to a particular function"

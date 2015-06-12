@@ -156,6 +156,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
 
             FieldList.Add(AAccountTable.GetLedgerNumberDBName());
             FieldList.Add(AAccountTable.GetAccountCodeDBName());
+            FieldList.Add(AAccountTable.GetAccountTypeDBName());
             FieldList.Add(AAccountTable.GetAccountCodeShortDescDBName());
             FieldList.Add(AAccountTable.GetAccountActiveFlagDBName());
             FieldList.Add(AAccountTable.GetPostingStatusDBName());

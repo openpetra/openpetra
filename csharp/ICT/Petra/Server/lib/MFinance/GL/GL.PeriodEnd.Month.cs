@@ -427,10 +427,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             aSuspenseAccountRow.SuspenseAccountCode,
                             FledgerInfo.CurrentFinancialYear);
 
-                        TGlmpInfo get_GLMp_Info = new TGlmpInfo(
-                            -1, -1,
-                            get_GLM_Info.Sequence,
-                            FledgerInfo.CurrentPeriod);
+                        TGlmpInfo get_GLMp_Info = new TGlmpInfo(FledgerInfo.LedgerNumber);
+                        get_GLMp_Info.LoadBySequence(get_GLM_Info.Sequence, FledgerInfo.CurrentPeriod);
 
                         if (get_GLMp_Info.RowExists && (get_GLMp_Info.ActualBase != 0))
                         {

@@ -106,7 +106,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private AJournalRow F_journal;
 
 
-        string strStatusContent = Catalog.GetString("Revaluation ...");
+        string strStatusContent = Catalog.GetString("Revaluation");
 
         private TVerificationResultCollection FVerificationCollection;
         private TResultSeverity F_resultSeverity;
@@ -197,6 +197,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (AccountTable.Rows.Count == 0) // not using any foreign accounts?
             {
+                FVerificationCollection.Add(new TVerificationResult(
+                        strStatusContent, Catalog.GetString("No foreign currency accounts are used in this ledger."), TResultSeverity.Resv_Status));
                 return true;
             }
 
@@ -280,7 +282,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     if (delta != 0)
                     {
                         // Now we have the relevant Cost Centre ...
-                        RevaluateCostCentre(glmRow.AccountCode, glmRow.CostCentreCode, delta);
+                        RevaluateCostCentre(glmRow.AccountCode, glmRow.CostCentreCode, delta, AExchangeRate);
                     }
                     else
                     {
@@ -290,33 +292,18 @@ namespace Ict.Petra.Server.MFinance.GL
                             glmRow.CostCentreCode,
                             AExchangeRate);
                         FVerificationCollection.Add(new TVerificationResult(
-                                strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                                strStatusContent, strMessage, TResultSeverity.Resv_Status));
                     }
                 }
                 catch (EVerificationException terminate)
                 {
                     FVerificationCollection = terminate.ResultCollection();
                 }
+            } // foreach
 
-/*
- * I think that neither of these critical problems can be ignored or downgraded in this way!
- * (Tim Ingham, Feb 15)
- *
- *              catch (DivideByZeroException)
- *              {
- *                  FVerificationCollection.Add(new TVerificationResult(
- *                          strStatusContent, Catalog.GetString("DivideByZeroException"), TResultSeverity.Resv_Noncritical));
- *              }
- *              catch (OverflowException)
- *              {
- *                  FVerificationCollection.Add(new TVerificationResult(
- *                          strStatusContent, Catalog.GetString("OverflowException"), TResultSeverity.Resv_Noncritical));
- *              }
- */
-            }
         }
 
-        private void RevaluateCostCentre(string ARelevantAccount, string ACostCentre, decimal Adelta)
+        private void RevaluateCostCentre(string ARelevantAccount, string ACostCentre, decimal Adelta, decimal AExchangeRate)
         {
             // In the very first run Batch and Journal shall be created ...
             if (F_GLDataset == null)
@@ -329,18 +316,18 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (Adelta > 0)
             {
-                strMessage = Catalog.GetString("Gain on foreign account {0}, cost centre {1}");
+                strMessage = Catalog.GetString("Gain on foreign account {0}, cost centre {1}. Reval Rate {2:G6}");
                 blnDebitFlag = true;
             }
             else
             {
-                strMessage = Catalog.GetString("Loss on foreign account {0}, cost centre {1}");
+                strMessage = Catalog.GetString("Loss on foreign account {0}, cost centre {1}. Reval Rate {2:G6}");
                 blnDebitFlag = false;
             }
 
             Adelta = Math.Abs(Adelta);
 
-            strMessage = String.Format(strMessage, ARelevantAccount, ACostCentre);
+            strMessage = String.Format(strMessage, ARelevantAccount, ACostCentre, AExchangeRate);
 
             CreateTransaction(strMessage, F_RevaluationAccCode, !blnDebitFlag, F_CostCentre, Adelta);
             CreateTransaction(strMessage, ARelevantAccount, blnDebitFlag, ACostCentre, Adelta);

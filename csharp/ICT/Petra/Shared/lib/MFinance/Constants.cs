@@ -605,4 +605,30 @@ namespace Ict.Petra.Shared.MFinance
         /// </summary>
             TaxDeductiblePctAdjust
     }
+
+    /// <summary>
+    /// How should Cost Centres be 'rolled up' to the Standard Cost Centre at year end?
+    /// </summary>
+    public enum CCRollupStyleEnum
+    {
+        /// <summary>
+        /// Don't roll up Cost Centre
+        /// </summary>
+        Never,
+
+        /// <summary>
+        /// Roll up Surplus, but not Deficit
+        /// </summary>
+            Surplus,
+
+        /// <summary>
+        /// Roll up Deficit, but not Surplus
+        /// </summary>
+            Deficit,
+
+        /// <summary>
+        /// Always Roll up Cost Centre to Standard Cost Centre
+        /// </summary>
+            Always
+    }
 }

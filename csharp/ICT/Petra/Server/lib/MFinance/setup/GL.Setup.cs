@@ -874,6 +874,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     AAnalysisTypeAccess.LoadAll(MainDS, Transaction);
                     AAnalysisAttributeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                     AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+
                     AGeneralLedgerMasterAccess.LoadUsingTemplate(MainDS, Template, Transaction);
                     ASuspenseAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                 });
@@ -1760,14 +1761,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 // update a_ledger_init_flag records for:
                 // suspense account flag: "SUSP-ACCT"
                 // budget flag: "BUDGET"
-                // branch processing: "BRANCH-PROCESS" (this is a new flag for OpenPetra)
                 // base currency: "CURRENCY"
                 // international currency: "INTL-CURRENCY" (this is a new flag for OpenPetra)
                 // current period (start of ledger date): CURRENT-PERIOD
                 // calendar settings: CAL
                 AddOrRemoveLedgerInitFlag(ALedgerNumber, "SUSP-ACCT", LedgerRow.SuspenseAccountFlag, Transaction);
                 AddOrRemoveLedgerInitFlag(ALedgerNumber, "BUDGET", LedgerRow.BudgetControlFlag, Transaction);
-                AddOrRemoveLedgerInitFlag(ALedgerNumber, "BRANCH-PROCESS", LedgerRow.BranchProcessing, Transaction);
                 AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENCY", !LedgerRow.IsBaseCurrencyNull(), Transaction);
                 AddOrRemoveLedgerInitFlag(ALedgerNumber, "INTL-CURRENCY", !LedgerRow.IsIntlCurrencyNull(), Transaction);
                 AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENT-PERIOD", !LedgerRow.IsCurrentPeriodNull(), Transaction);

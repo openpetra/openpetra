@@ -118,6 +118,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -225,6 +226,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -292,6 +294,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -385,6 +388,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -461,6 +465,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -528,6 +533,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -588,6 +594,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -671,6 +678,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -738,6 +746,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -805,6 +814,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -1053,6 +1063,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -1129,6 +1140,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -1182,6 +1194,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -1356,6 +1369,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -1410,6 +1424,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -1524,6 +1539,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -2014,6 +2030,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {

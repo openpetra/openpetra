@@ -547,11 +547,14 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             set
             {
-                Reset();
-
-                if (value != "")
+                if ((FAccountRow == null) || (FAccountRow.AccountCode != value))
                 {
-                    FAccountRow = (AAccountRow)FAccountTable.Rows.Find(new Object[] { FLedgerInfo.LedgerNumber, value });
+                    Reset();
+
+                    if (value != "")
+                    {
+                        FAccountRow = (AAccountRow)FAccountTable.Rows.Find(new Object[] { FLedgerInfo.LedgerNumber, value });
+                    }
                 }
             }
         }

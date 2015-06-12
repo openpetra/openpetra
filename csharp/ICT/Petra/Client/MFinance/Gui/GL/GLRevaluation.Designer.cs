@@ -161,7 +161,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             rowY = rowY + rowHeight + 20;
 
             grdDetails.Location = new System.Drawing.Point(leftColStart, rowY);
-            grdDetails.Size = new System.Drawing.Size(430, 200);
+            grdDetails.Size = new System.Drawing.Size(440, 200);
             grdDetails.BorderStyle = BorderStyle.FixedSingle;
 
             rowY = rowY + 230;

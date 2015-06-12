@@ -545,6 +545,98 @@ namespace Ict.Petra.Client.MFinance.Logic
                 ABankAccountOnly, AForeignCurrencyName);
         }
 
+        private static Boolean AccountIsDescendantOf(DataView View, String ParentAccount, AAccountHierarchyDetailRow Row)
+        {
+            if (Row.AccountCodeToReportTo == ParentAccount)
+            {
+                return true;
+            }
+
+            Int32 Idx = View.Find(Row.AccountCodeToReportTo);
+
+            if (Idx < 0)
+            {
+                return false; // This account has no parent
+            }
+
+            return AccountIsDescendantOf(View, ParentAccount, (AAccountHierarchyDetailRow)View[Idx].Row);
+        }
+
+        /// <summary>
+        /// Clearing accounts are any and all posting accounts that are descendants of 8500S
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAccountHierarchyCode"></param>
+        public static void InitialiseClearingAccountList(ref TCmbAutoPopulated AControl, Int32 ALedgerNumber, String AAccountHierarchyCode)
+        {
+            GLSetupTDS DS = TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(ALedgerNumber);
+
+            DS.AAccount.DefaultView.Sort = "a_account_code_c";
+            DS.AAccountHierarchyDetail.DefaultView.RowFilter =
+                "a_ledger_number_i=" + ALedgerNumber + " AND a_account_hierarchy_code_c='" + AAccountHierarchyCode + "'";
+            DS.AAccountHierarchyDetail.DefaultView.Sort = "a_reporting_account_code_c";
+
+            DataTable Options = new DataTable();
+            Options.Columns.Add("AccountCode", typeof(String));
+            Options.Columns.Add("AccountDescr", typeof(String));
+
+            foreach (DataRowView rv in DS.AAccountHierarchyDetail.DefaultView)
+            {
+                AAccountHierarchyDetailRow Row = (AAccountHierarchyDetailRow)rv.Row;
+
+                if (AccountIsDescendantOf(DS.AAccountHierarchyDetail.DefaultView, "8500S", Row))
+                {
+                    //
+                    // This account is a descendant of 8500S. I also require it to be a Posting Account.
+                    Int32 Idx = DS.AAccount.DefaultView.Find(Row.ReportingAccountCode);
+
+                    if (Idx >= 0)
+                    {
+                        AAccountRow Account = (AAccountRow)DS.AAccount.DefaultView[Idx].Row;
+
+                        if (Account.PostingStatus == true)
+                        {
+                            DataRow NewRow = Options.NewRow();
+                            NewRow["AccountCode"] = Account.AccountCode;
+                            NewRow["AccountDescr"] = Account.AccountCodeShortDesc;
+                            Options.Rows.Add(NewRow);
+                        }
+                    }
+                }
+            }
+
+            AControl.InitialiseUserControl(Options,
+                "AccountCode",
+                "AccountDescr",
+                null);
+        }
+
+        /// <summary>
+        /// Equity accounts are any and all posting accounts that have a_account_type_c == 'Equity'
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        public static void InitialiseRetEarningsAccountAccountList(ref TCmbAutoPopulated AControl, Int32 ALedgerNumber)
+        {
+            AAccountTable Account = (AAccountTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
+                ALedgerNumber);
+
+            Account.DefaultView.RowFilter = "a_posting_status_l=TRUE AND a_account_type_c='Equity'";
+            Account.DefaultView.Sort = "a_account_code_c";
+            DataTable Options = Account.DefaultView.ToTable();
+            DataRow NewRow = Options.NewRow();
+            NewRow["a_account_code_c"] = "";
+            NewRow["a_ledger_number_i"] = ALedgerNumber;
+            NewRow["a_account_code_short_desc_c"] = Catalog.GetString("Select a valid account");
+            Options.Rows.Add(NewRow);
+
+            AControl.InitialiseUserControl(Options,
+                "a_account_code_c",
+                "a_account_code_short_desc_c",
+                null);
+        }
+
         /// <summary>
         /// fill combobox values with list of transaction types
         /// </summary>

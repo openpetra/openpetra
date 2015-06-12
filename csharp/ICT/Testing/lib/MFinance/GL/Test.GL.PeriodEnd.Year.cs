@@ -156,19 +156,15 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 (TYearEndProcessStatus)LedgerInfo.YearEndProcessStatus,
                 "YearEnd process status should be still on RESET");
 
+            //
+            // Reallocation is never called explicitly like this - it's not really appropriate
+            // because I'm about to call it again as part of YearEnd, below.
+            // But a tweak in the reallocation code means that it should now cope with being called twice.
+
             TReallocation reallocation = new TReallocation(LedgerInfo);
             reallocation.VerificationResultCollection = verificationResult;
             reallocation.IsInInfoMode = false;
-            Assert.AreEqual(6, reallocation.GetJobSize(), "Six reallocation jobs expected");
             reallocation.RunOperation();
-
-            //
-            // Now if I try to do the same thing again, it should find there's nothing to do:
-
-            reallocation = new TReallocation(LedgerInfo);
-            reallocation.VerificationResultCollection = verificationResult;
-            reallocation.IsInInfoMode = true;
-            Assert.AreEqual(0, reallocation.GetJobSize(), "After TReallocation, all reallocation jobs should be clear");
 
             // check amounts after reallocation
             CheckGLMEntry(intLedgerNumber, intYear, strAccountBank,
@@ -205,10 +201,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             CheckGLMPeriodEntry(intLedgerNumber, intYear, 1, strAccountGift,
                 0, 0, 0);
 
-            // 8200 is the account that the expenses and income from last year is moved to
-            TGlmInfo glmInfo = new TGlmInfo(intLedgerNumber, intYear, "8200");
+            // 9700 is the account that the expenses and income from last year is moved to
+            TGlmInfo glmInfo = new TGlmInfo(intLedgerNumber, intYear, "9700");
             glmInfo.Reset();
-            glmInfo.MoveNext();
+            Assert.IsTrue(glmInfo.MoveNext(), "9700 account not found");
 
             Assert.AreEqual(100, glmInfo.YtdActualBase);
             Assert.AreEqual(0, glmInfo.ClosingPeriodActualBase);
@@ -281,7 +277,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 TVerificationResultCollection verificationResult = new TVerificationResultCollection();
                 reallocation.VerificationResultCollection = verificationResult;
                 reallocation.IsInInfoMode = false;
-                Assert.AreEqual(1, reallocation.GetJobSize(), "Check 1 reallocation job is required");
+//                Assert.AreEqual(1, reallocation.GetJobSize(), "Check 1 reallocation job is required"); // No job size is published by Reallocation
                 reallocation.RunOperation();
 
                 TYearEnd YearEndOperator = new TYearEnd(LedgerInfo);
@@ -327,22 +323,28 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
                 if (glmInfo.CostCentreCode.Equals("4301"))
                 {
-                    Assert.AreEqual(cc1Base, glmInfo.YtdActualBase);
-                    Assert.AreEqual(cc1Closing, glmInfo.ClosingPeriodActualBase);
+                    Assert.AreEqual(cc1Base, glmInfo.YtdActualBase, "CheckGLMEntry (" + ALedgerNumber + ", " + AYear + ", 4301, " + AAccount + ")");
+                    Assert.AreEqual(cc1Closing,
+                        glmInfo.ClosingPeriodActualBase,
+                        "CheckGLMEntry (" + ALedgerNumber + ", " + AYear + ", 4301, " + AAccount + ")");
                     blnFnd1 = true;
                 }
 
                 if (glmInfo.CostCentreCode.Equals("4302"))
                 {
-                    Assert.AreEqual(cc2Base, glmInfo.YtdActualBase);
-                    Assert.AreEqual(cc2Closing, glmInfo.ClosingPeriodActualBase);
+                    Assert.AreEqual(cc2Base, glmInfo.YtdActualBase, "CheckGLMEntry (" + ALedgerNumber + ", " + AYear + ", 4302, " + AAccount + ")");
+                    Assert.AreEqual(cc2Closing,
+                        glmInfo.ClosingPeriodActualBase,
+                        "CheckGLMEntry (" + ALedgerNumber + ", " + AYear + ", 4302, " + AAccount + ")");
                     blnFnd2 = true;
                 }
 
                 if (glmInfo.CostCentreCode.Equals("4303"))
                 {
-                    Assert.AreEqual(cc3Base, glmInfo.YtdActualBase);
-                    Assert.AreEqual(cc3Closing, glmInfo.ClosingPeriodActualBase);
+                    Assert.AreEqual(cc3Base, glmInfo.YtdActualBase, "CheckGLMEntry (" + ALedgerNumber + ", " + AYear + ", 4303, " + AAccount + ")");
+                    Assert.AreEqual(cc3Closing,
+                        glmInfo.ClosingPeriodActualBase,
+                        "CheckGLMEntry (" + ALedgerNumber + ", " + AYear + ", 4303, " + AAccount + ")");
                     blnFnd3 = true;
                 }
 
@@ -352,10 +354,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 }
             }
 
-            Assert.AreEqual(3, intCnt, "3 posting cost centres ...");
-            Assert.IsTrue(blnFnd1);
-            Assert.IsTrue(blnFnd2);
-            Assert.IsTrue(blnFnd3);
+            Assert.IsTrue(blnFnd1, "CheckGLMEntry (" + ALedgerNumber + ", " + AYear + ", 4301, " + AAccount + ")");
+            Assert.IsTrue(blnFnd2, "CheckGLMEntry (" + ALedgerNumber + ", " + AYear + ", 4302, " + AAccount + ")");
+            Assert.IsTrue(blnFnd3, "CheckGLMEntry (" + ALedgerNumber + ", " + AYear + ", 4303, " + AAccount + ")");
+
+            Assert.AreEqual(3, intCnt, "CheckGLMEntry expects 3 posting cost centres ...");
         }
 
         void CheckGLMPeriodEntry(int ALedgerNumber, int AYear, int APeriodNr, string AAccount,
@@ -383,7 +386,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             {
 //              TLogging.Log("glmInfo.CostCentreCode: " + glmInfo.CostCentreCode);
 
-                TGlmpInfo glmpInfo = new TGlmpInfo(-1, -1, glmInfo.GlmSequence, APeriodNr);
+                TGlmpInfo glmpInfo = new TGlmpInfo(ALedgerNumber);
+                glmpInfo.LoadBySequence(glmInfo.GlmSequence, APeriodNr);
 
                 Assert.AreEqual(true,
                     glmpInfo.RowExists,

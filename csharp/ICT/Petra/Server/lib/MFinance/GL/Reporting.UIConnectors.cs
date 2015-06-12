@@ -131,21 +131,27 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref ReadTransaction,
                 delegate
                 {
-                    String sql = "SELECT DISTINCT to_char(" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
-                                 ",'0000000000') AS FieldKey, " +
-                                 PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + " AS FieldName" +
-                                 " FROM " + PPartnerTable.GetTableDBName() + ", " +
-                                 PPartnerTypeTable.GetTableDBName() +
-                                 " WHERE " +
-                                 PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetPartnerKeyDBName() + " = " +
-                                 PPartnerTable.GetTableDBName() +
-                                 "." + PPartnerTable.GetPartnerKeyDBName() +
-                                 " AND (" + PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetTypeCodeDBName() + " = 'LEDGER' OR " +
-                                 PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetTypeCodeDBName() + " = 'COSTCENTRE' " +
-                                 ") ORDER BY " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName();
+                    String sql = "SELECT DISTINCT p_partner.p_partner_key_n, " +
+                                 "p_partner.p_partner_short_name_c AS FieldName" +
+                                 " FROM p_partner, p_partner_type" +
+                                 " WHERE p_partner_type.p_partner_key_n = p_partner.p_partner_key_n " +
+                                 " AND (p_partner_type.p_type_code_c = 'LEDGER' OR p_partner_type.p_type_code_c = 'COSTCENTRE')" +
+                                 " ORDER BY p_partner.p_partner_short_name_c";
 
-                    ReturnTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
+                    ReturnTable = DBAccess.GDBAccessObj.SelectDT(sql, "receivingFields", ReadTransaction);
                 });
+
+            ReturnTable.Columns.Add("FieldKey", typeof(String));
+
+            foreach (DataRow Row in ReturnTable.Rows)
+            {
+                Int64 FieldKey;
+
+                if (Int64.TryParse(Row["p_partner_key_n"].ToString(), out FieldKey))
+                {
+                    Row["FieldKey"] = FieldKey.ToString("D10");
+                }
+            }
 
             return ReturnTable;
         }

@@ -44,12 +44,25 @@ namespace Ict.Petra.Server.MFinance.Common
     {
         AGeneralLedgerMasterPeriodTable FGLMpTable;
         AGeneralLedgerMasterPeriodRow FGLMpRow;
+        Int32 FLedgerNumber = -1;
 
         /// <summary>
-        /// Loads <b>all</b> GLMP data for the selected year
+        /// Instead of having several constructors, this single constructor now been separated from the initialisation methods.
         /// </summary>
-        public TGlmpInfo(Int32 ALedgerNumber, Int32 AYear, Int32 ASequence, Int32 APeriod)
+        /// <param name="ALedgerNumber"></param>
+        public TGlmpInfo(Int32 ALedgerNumber)
         {
+            FLedgerNumber = ALedgerNumber;
+        }
+
+        /// <summary>
+        /// Load a single row by sequence and period
+        /// </summary>
+        /// <returns>True if it seemed to work</returns>
+        public Boolean LoadBySequence(Int32 ASequence, Int32 APeriod)
+        {
+            Boolean LoadedOk = false;
+
             if (ASequence != -1)
             {
                 bool NewTransaction = false;
@@ -61,7 +74,8 @@ namespace Ict.Petra.Server.MFinance.Common
                         out NewTransaction);
 
                     FGLMpTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(ASequence, APeriod, transaction);
-                    FGLMpRow = (FGLMpTable.Rows.Count > 0) ? FGLMpTable[0] : null;
+                    LoadedOk = FGLMpTable.Rows.Count > 0;
+                    FGLMpRow = (LoadedOk) ? FGLMpTable[0] : null;
                 }
                 finally
                 {
@@ -71,11 +85,42 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
                 }
             }
-            else
-            {
-                LoadAll(ALedgerNumber, AYear);
-                FGLMpRow = null;
-            }
+
+            return LoadedOk;
+        }
+
+        /// <summary>
+        /// Load all GLMP rows for this Cost Centre in this period
+        /// </summary>
+        /// <returns></returns>
+        public Boolean LoadByCostCentreAccountPeriod(String ACostCentreCode, String AAccountCode, Int32 AYear, Int32 APeriod)
+        {
+            Boolean LoadedOk = false;
+
+            TDBTransaction transaction = null;
+
+            FGLMpTable = new AGeneralLedgerMasterPeriodTable();
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref transaction,
+                delegate
+                {
+                    DBAccess.GDBAccessObj.SelectDT(
+                        FGLMpTable,
+                        "SELECT a_general_ledger_master_period.* FROM" +
+                        " a_general_ledger_master_period, a_general_ledger_master" +
+                        " WHERE" +
+                        " a_general_ledger_master_period.a_glm_sequence_i=a_general_ledger_master.a_glm_sequence_i" +
+                        " AND a_general_ledger_master.a_ledger_number_i = " + FLedgerNumber +
+                        " AND a_general_ledger_master.a_year_i = " + AYear +
+                        " AND a_general_ledger_master.a_account_code_c = '" + AAccountCode + "'" +
+                        " AND a_general_ledger_master.a_cost_centre_code_c = '" + ACostCentreCode + "'" +
+                        " AND a_general_ledger_master_period.a_period_number_i=" + APeriod,
+                        transaction);
+                    LoadedOk = (FGLMpTable.Rows.Count > 0);
+                });  // Get NewOrExisting AutoReadTransaction
+
+            FGLMpRow = (LoadedOk) ? FGLMpTable[0] : null;
+            return LoadedOk;
         }
 
         /// <summary>
@@ -89,7 +134,10 @@ namespace Ict.Petra.Server.MFinance.Common
             }
         }
 
-        private void LoadAll(Int32 ALedgerNumber, Int32 AYear)
+        /// <summary>
+        /// Loads <b>all</b> GLMP data for the selected year
+        /// </summary>
+        public void LoadByYear(Int32 AYear)
         {
             bool NewTransaction = false;
 
@@ -101,7 +149,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 AGeneralLedgerMasterTable GLMTemplateTbl = new AGeneralLedgerMasterTable();
                 AGeneralLedgerMasterRow GLMTemplateRow = GLMTemplateTbl.NewRowTyped(false);
-                GLMTemplateRow.LedgerNumber = ALedgerNumber;
+                GLMTemplateRow.LedgerNumber = FLedgerNumber;
                 GLMTemplateRow.Year = AYear;
 
                 FGLMpTable = AGeneralLedgerMasterPeriodAccess.LoadViaAGeneralLedgerMasterTemplate(GLMTemplateRow, transaction);
@@ -195,10 +243,11 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 if (FGLMTbl.Rows.Count == 0)
                 {
-                    String msg = TLogging.StackTraceToText(new StackTrace(true));
+//                    String msg = TLogging.StackTraceToText(new StackTrace(true));
+                    String msg = "";
 
-                    TLogging.Log(String.Format("\nERROR: No TGet_GLM_Info row found for ({0}, {1}).\n{2}",
-                            AAccountCode, ACostCentreCode, msg));
+                    TLogging.Log(String.Format("ERROR: No TGet_GLM_Info row found for ({0}, {1}).",
+                            ACostCentreCode, AAccountCode, msg));
                 }
             }
             finally
@@ -286,6 +335,9 @@ namespace Ict.Petra.Server.MFinance.Common
                 GLMTemplateRow.AccountCode = AAccountCode;
                 GLMTemplateRow.Year = ACurrentFinancialYear;
                 FGLMTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, transaction);
+                TLogging.Log(
+                    "TGlmInfo(" + ALedgerNumber + ", " + ACurrentFinancialYear + ", " + AAccountCode + ") has loaded " + FGLMTbl.Rows.Count +
+                    " Rows.");
                 iPtr = -1;
             }
             finally
