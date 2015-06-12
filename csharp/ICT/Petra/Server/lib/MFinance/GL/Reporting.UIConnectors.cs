@@ -690,6 +690,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         ParentRow["Actual"] = Sign * Convert.ToDecimal(NewDataRow["Actual"]);
                         ParentRow["ActualYTD"] = Sign * Convert.ToDecimal(NewDataRow["ActualYTD"]);
                         ParentRow["LastYearActual"] = Sign * Convert.ToDecimal(NewDataRow["LastYearActual"]);
+
                         if (filteredResults.Columns.Contains("LastYearEnd"))
                         {
                             ParentRow["LastYearEnd"] = Sign * Convert.ToDecimal(NewDataRow["LastYearEnd"]);
@@ -751,9 +752,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         // The Income Expense row contains more LastYear fields:
                         if (filteredResults.Columns.Contains("LastYearEnd"))
                         {
-                            ParentRow["LastYearEnd"] = Convert.ToDecimal(ParentRow["LastYearEnd"]) + (Sign * Convert.ToDecimal(NewDataRow["LastYearEnd"]));
-                            ParentRow["LastYearActualYtd"] = Convert.ToDecimal(ParentRow["LastYearActualYtd"]) + (Sign * Convert.ToDecimal(NewDataRow["LastYearActualYtd"]));
-                            ParentRow["LastYearLastMonthYtd"] = Convert.ToDecimal(ParentRow["LastYearLastMonthYtd"]) + (Sign * Convert.ToDecimal(NewDataRow["LastYearLastMonthYtd"]));
+                            ParentRow["LastYearEnd"] = Convert.ToDecimal(ParentRow["LastYearEnd"]) +
+                                                       (Sign * Convert.ToDecimal(NewDataRow["LastYearEnd"]));
+                            ParentRow["LastYearActualYtd"] = Convert.ToDecimal(ParentRow["LastYearActualYtd"]) +
+                                                             (Sign * Convert.ToDecimal(NewDataRow["LastYearActualYtd"]));
+                            ParentRow["LastYearLastMonthYtd"] = Convert.ToDecimal(ParentRow["LastYearLastMonthYtd"]) +
+                                                                (Sign * Convert.ToDecimal(NewDataRow["LastYearLastMonthYtd"]));
                         }
 
                         //
@@ -1136,9 +1140,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 SummaryRow["Actual"] = Convert.ToDecimal(SummaryRow["Actual"]) + (Sign * Convert.ToDecimal(NewDataRow["Actual"]));
                 SummaryRow["ActualYTD"] = Convert.ToDecimal(SummaryRow["ActualYTD"]) + (Sign * Convert.ToDecimal(NewDataRow["ActualYTD"]));
-                SummaryRow["LastYearActualYtd"] = Convert.ToDecimal(SummaryRow["LastYearActualYtd"]) + (Sign * Convert.ToDecimal(NewDataRow["LastYearActualYtd"]));
-                SummaryRow["LastYearLastMonthYtd"] = Convert.ToDecimal(SummaryRow["LastYearLastMonthYtd"]) + (Sign * Convert.ToDecimal(NewDataRow["LastYearLastMonthYtd"]));
-                SummaryRow["LastYearActual"] = Convert.ToDecimal(SummaryRow["LastYearActual"]) + (Sign * Convert.ToDecimal(NewDataRow["LastYearActual"]));
+                SummaryRow["LastYearActualYtd"] = Convert.ToDecimal(SummaryRow["LastYearActualYtd"]) +
+                                                  (Sign * Convert.ToDecimal(NewDataRow["LastYearActualYtd"]));
+                SummaryRow["LastYearLastMonthYtd"] = Convert.ToDecimal(SummaryRow["LastYearLastMonthYtd"]) +
+                                                     (Sign * Convert.ToDecimal(NewDataRow["LastYearLastMonthYtd"]));
+                SummaryRow["LastYearActual"] = Convert.ToDecimal(SummaryRow["LastYearActual"]) +
+                                               (Sign * Convert.ToDecimal(NewDataRow["LastYearActual"]));
                 SummaryRow["LastYearEnd"] = Convert.ToDecimal(SummaryRow["LastYearEnd"]) + (Sign * Convert.ToDecimal(NewDataRow["LastYearEnd"]));
                 SummaryRow["Budget"] = Convert.ToDecimal(SummaryRow["Budget"]) + (Sign * Convert.ToDecimal(NewDataRow["Budget"]));
                 SummaryRow["BudgetYTD"] = Convert.ToDecimal(SummaryRow["BudgetYTD"]) + (Sign * Convert.ToDecimal(NewDataRow["BudgetYTD"]));
@@ -1176,9 +1183,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             {
                 AccumulatingRow["Actual"] = Convert.ToDecimal(AccumulatingRow["Actual"]) + Convert.ToDecimal(DetailRow["Actual"]);
                 AccumulatingRow["ActualYTD"] = Convert.ToDecimal(AccumulatingRow["ActualYTD"]) + Convert.ToDecimal(DetailRow["ActualYTD"]);
-                AccumulatingRow["LastYearActualYtd"] = Convert.ToDecimal(AccumulatingRow["LastYearActualYtd"]) + Convert.ToDecimal(DetailRow["LastYearActualYtd"]);
-                AccumulatingRow["LastYearLastMonthYtd"] = Convert.ToDecimal(AccumulatingRow["LastYearLastMonthYtd"]) + Convert.ToDecimal(DetailRow["LastYearLastMonthYtd"]);
-                AccumulatingRow["LastYearActual"] = Convert.ToDecimal(AccumulatingRow["LastYearActual"]) + Convert.ToDecimal(DetailRow["LastYearActual"]);
+                AccumulatingRow["LastYearActualYtd"] = Convert.ToDecimal(AccumulatingRow["LastYearActualYtd"]) +
+                                                       Convert.ToDecimal(DetailRow["LastYearActualYtd"]);
+                AccumulatingRow["LastYearLastMonthYtd"] = Convert.ToDecimal(AccumulatingRow["LastYearLastMonthYtd"]) +
+                                                          Convert.ToDecimal(DetailRow["LastYearLastMonthYtd"]);
+                AccumulatingRow["LastYearActual"] = Convert.ToDecimal(AccumulatingRow["LastYearActual"]) +
+                                                    Convert.ToDecimal(DetailRow["LastYearActual"]);
                 AccumulatingRow["LastYearEnd"] = Convert.ToDecimal(AccumulatingRow["LastYearEnd"]) + Convert.ToDecimal(DetailRow["LastYearEnd"]);
                 AccumulatingRow["Budget"] = Convert.ToDecimal(AccumulatingRow["Budget"]) + Convert.ToDecimal(DetailRow["Budget"]);
                 AccumulatingRow["BudgetYTD"] = Convert.ToDecimal(AccumulatingRow["BudgetYTD"]) + Convert.ToDecimal(DetailRow["BudgetYTD"]);
@@ -1316,11 +1326,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                              "SUM (CASE WHEN " + isThisYear + " THEN StartBalance ELSE 0 END) AS LastMonthYtd, "
                                              : "SUM (CASE WHEN " + isThisYear + " AND " + isPrevPeriod +
                                              " THEN ActualYTD ELSE 0 END) AS LastMonthYtd, ";
-                    String LastYearActualYtdQuery = "SUM (CASE WHEN " + isLastYear + " AND " + isEndPeriod + " THEN ActualYTD ELSE 0 END) AS LastYearActualYtd, ";
+                    String LastYearActualYtdQuery = "SUM (CASE WHEN " + isLastYear + " AND " + isEndPeriod +
+                                                    " THEN ActualYTD ELSE 0 END) AS LastYearActualYtd, ";
                     String LastYearPrevPeriodQuery = (ReportPeriodStart == 1) ?
-                                             "SUM (CASE WHEN " + isLastYear + " THEN StartBalance ELSE 0 END) AS LastYearLastMonthYtd, "
-                                             : "SUM (CASE WHEN " + isLastYear + " AND " + isPrevPeriod +
-                                             " THEN ActualYTD ELSE 0 END) AS LastYearLastMonthYtd, ";
+                                                     "SUM (CASE WHEN " + isLastYear + " THEN StartBalance ELSE 0 END) AS LastYearLastMonthYtd, "
+                                                     : "SUM (CASE WHEN " + isLastYear + " AND " + isPrevPeriod +
+                                                     " THEN ActualYTD ELSE 0 END) AS LastYearLastMonthYtd, ";
 
                     String LastYearEndQuery = "SUM (CASE WHEN " + isLastYear + " THEN EndBalance ELSE 0 END) AS LastYearEnd, ";
                     String BudgetQuery = "SUM (CASE WHEN " + isThisYear + " AND Period>=" + ReportPeriodStart + " AND Period <= " + ReportPeriodEnd +
@@ -1416,7 +1427,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                             PrevPeriodQuery +
                                             ActualYtdQuery +
                                             LastYearActualYtdQuery +
-                                            LastYearPrevPeriodQuery + 
+                                            LastYearPrevPeriodQuery +
                                             LastYearEndQuery +
                                             BudgetQuery +
                                             BudgetYtdQuery +
@@ -1645,15 +1656,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         {
                             foreach (DataRow Row in FilteredResults.Rows)
                             {
-                                Row["p1"]  = Convert.ToDecimal(Row["p1"]) * EffectiveExchangeRate;
-                                Row["p2"]  = Convert.ToDecimal(Row["p2"]) * EffectiveExchangeRate;
-                                Row["p3"]  = Convert.ToDecimal(Row["p3"]) * EffectiveExchangeRate;
-                                Row["p4"]  = Convert.ToDecimal(Row["p4"]) * EffectiveExchangeRate;
-                                Row["p5"]  = Convert.ToDecimal(Row["p5"]) * EffectiveExchangeRate;
-                                Row["p6"]  = Convert.ToDecimal(Row["p6"]) * EffectiveExchangeRate;
-                                Row["p7"]  = Convert.ToDecimal(Row["p7"]) * EffectiveExchangeRate;
-                                Row["p8"]  = Convert.ToDecimal(Row["p8"]) * EffectiveExchangeRate;
-                                Row["p9"]  = Convert.ToDecimal(Row["p9"]) * EffectiveExchangeRate;
+                                Row["p1"] = Convert.ToDecimal(Row["p1"]) * EffectiveExchangeRate;
+                                Row["p2"] = Convert.ToDecimal(Row["p2"]) * EffectiveExchangeRate;
+                                Row["p3"] = Convert.ToDecimal(Row["p3"]) * EffectiveExchangeRate;
+                                Row["p4"] = Convert.ToDecimal(Row["p4"]) * EffectiveExchangeRate;
+                                Row["p5"] = Convert.ToDecimal(Row["p5"]) * EffectiveExchangeRate;
+                                Row["p6"] = Convert.ToDecimal(Row["p6"]) * EffectiveExchangeRate;
+                                Row["p7"] = Convert.ToDecimal(Row["p7"]) * EffectiveExchangeRate;
+                                Row["p8"] = Convert.ToDecimal(Row["p8"]) * EffectiveExchangeRate;
+                                Row["p9"] = Convert.ToDecimal(Row["p9"]) * EffectiveExchangeRate;
                                 Row["p10"] = Convert.ToDecimal(Row["p10"]) * EffectiveExchangeRate;
                                 Row["p11"] = Convert.ToDecimal(Row["p11"]) * EffectiveExchangeRate;
                                 Row["p12"] = Convert.ToDecimal(Row["p12"]) * EffectiveExchangeRate;
@@ -2121,6 +2132,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                 " AND a_cost_centre.a_ledger_number_i = a_ich_stewardship.a_ledger_number_i" +
                                 " AND a_cost_centre.a_cost_centre_code_c = a_ich_stewardship.a_cost_centre_code_c " +
                                 " AND a_cost_centre.a_cost_centre_type_c = '" + MFinanceConstants.FOREIGN_CC_TYPE + "'" +
+                                " AND a_cost_centre.a_clearing_account_c = '" + MFinanceConstants.ICH_ACCT_ICH + "'" +
                                 " GROUP BY CostCentreCode, CostCentreName " +
                                 " ORDER BY CostCentreCode";
                     }
@@ -2203,6 +2215,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Query += " WHERE " +
                                  " a_cost_centre.a_ledger_number_i = " + LedgerNumber +
                                  " AND a_cost_centre.a_cost_centre_type_c = '" + MFinanceConstants.FOREIGN_CC_TYPE + "'" +
+                                 " AND a_cost_centre.a_clearing_account_c = '" + MFinanceConstants.ICH_ACCT_ICH + "'" +
                                  " GROUP BY CostCentreCode, CostCentreName " +
                                  " ORDER BY CostCentreCode";
                     }

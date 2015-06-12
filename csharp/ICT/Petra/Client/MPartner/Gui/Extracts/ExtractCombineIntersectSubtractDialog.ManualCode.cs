@@ -109,6 +109,33 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
 
+        /// <summary>
+        /// Pre-select an extract to be displayed in the grid.
+        /// </summary>
+        /// <param name="ARow"></param>
+        public void PreSelectExtract(MExtractMasterRow ARow)
+        {
+            if (FMode == TMode.ecisSubtractMode)
+            {
+                txtBaseExtract.Text = ARow.ExtractName;
+            }
+            else
+            {
+                MExtractMasterRow NewRow = FExtractMasterTable.NewRowTyped();
+                NewRow.ExtractId = ARow.ExtractId;
+                NewRow.ExtractName = ARow.ExtractName;
+                NewRow.ExtractDesc = ARow.ExtractDesc;
+                NewRow.KeyCount = ARow.KeyCount;
+                NewRow.CreatedBy = ARow.CreatedBy;
+                NewRow.DateCreated = ARow.DateCreated;
+
+                FExtractMasterTable.Rows.Add(NewRow);
+
+                grdExtracts.SelectRowInGrid(1);
+                btnRemove.Enabled = true;
+            }
+        }
+
         private void InitializeManualCode()
         {
             // show this dialog in center of screen

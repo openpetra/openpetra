@@ -6,7 +6,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
     FormType: edit
     Template: window
-    WindowWidth: 800
+    WindowWidth: 900
     WindowHeight: 700
     Actions:
         actExportPartnersInExtract: {ActionClick=ExportPartnersInExtract}

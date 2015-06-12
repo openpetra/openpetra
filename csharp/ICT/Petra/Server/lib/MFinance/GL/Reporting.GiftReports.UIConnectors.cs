@@ -132,14 +132,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             string RecipientSelection = AParameters["param_recipient"].ToString();
             string OrderBy = AParameters["param_order_by_name"].ToString();
-/*
-            string ReportType = string.Empty;
 
-            if (AParameters.ContainsKey("param_report_type"))
-            {
-                ReportType = AParameters["param_report_type"].ToString();
-            }
-*/
+/*
+ *          string ReportType = string.Empty;
+ *
+ *          if (AParameters.ContainsKey("param_report_type"))
+ *          {
+ *              ReportType = AParameters["param_report_type"].ToString();
+ *          }
+ */
             DateTime CurrentDate = DateTime.Today;
 
             // create new datatable

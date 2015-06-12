@@ -36,6 +36,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
@@ -96,7 +97,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             // set fixed column widths as otherwise grid will spend a long time recalculating optimal width with big extracts
             grdDetails.Columns.Clear();
-            grdDetails.AddTextColumn("Partner Key", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetPartnerKeyDBName()], 100);
+            grdDetails.AddPartnerKeyColumn("Partner Key", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetPartnerKeyDBName()], 100);
             grdDetails.AddTextColumn("Class", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetPartnerClassDBName()], 100);
             grdDetails.AddTextColumn("Partner Name", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetPartnerShortNameDBName()], 300);
             grdDetails.AddTextColumn("Location Key", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetLocationKeyDBName()], 100);
@@ -230,6 +231,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             FPetraUtilsObject.DisableSaveButton();
 
                             SetPrimaryKeyReadOnly(true);
+
+                            // refresh extract master screen if it is open
+                            TFormsMessage BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcExtractCreated);
+                            BroadcastMessage.SetMessageDataName(ExtractName);
+                            TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
 
                             // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                             return true;

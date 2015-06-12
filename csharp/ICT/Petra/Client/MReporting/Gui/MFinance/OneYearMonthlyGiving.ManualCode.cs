@@ -150,14 +150,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 this.cmbCurrency.SelectedIndex = 0;  // I don't mind what you select - just don't select nothing!
             }
-/*
-            int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
 
-            for (int Counter = 0; Counter <= MaxColumns; ++Counter)
-            {
-                String ColumnName = ACalc.GetParameters().Get("param_calculation", Counter, 0).ToString();
-                ACalc.AddParameter(ColumnName, Counter);
-            }
+/*
+ *          int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
+ *
+ *          for (int Counter = 0; Counter <= MaxColumns; ++Counter)
+ *          {
+ *              String ColumnName = ACalc.GetParameters().Get("param_calculation", Counter, 0).ToString();
+ *              ACalc.AddParameter(ColumnName, Counter);
+ *          }
  */
         }
 

@@ -8,9 +8,9 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actMaintain: {Label=&Maintain, ActionClick=MaintainExtract}      
+        actMaintain: {Label=M&aintain, ActionClick=MaintainExtract}      
         actDelete: {Label=&Delete, SkipReferenceCheck=true, ActionClick=DeleteRecord}
-        actRefreshGrid: {ActionClick=RefreshExtractList, Image: Refresh.ico}
+#        actRefreshGrid: {ActionClick=RefreshExtractList, Image: Refresh.ico}
     Controls:
         pnlContent: 
             Controls: [pnlGrid, pnlDetails]
@@ -20,29 +20,29 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [txtExtractName, txtCreatedBy, txtModifiedBy, dtpDateCreated, dtpDateModified, txtExtractDesc, Column:Frozen]
-            FindControls: [txtExtractName, txtCreatedBy, txtModifiedBy, dtpDateCreated, dtpDateModified, txtExtractDesc]
+            FilterControls: [txtExtractName, cmbCreatedBy, cmbModifiedBy, dtpDateCreated, dtpDateModified, txtExtractDesc, Column:Frozen]
+            FindControls: [txtExtractName, cmbCreatedBy, cmbModifiedBy, dtpDateCreated, dtpDateModified, txtExtractDesc]
             ControlAttributes:
-                txtCreatedBy: {Label=Created By}
-                txtModifiedBy: {Label=Modified By}
+                cmbCreatedBy: {Label=Created By}
+                cmbModifiedBy: {Label=Modified By}
                 dtpDateCreated: {Label=From Created Date, Comparison=gte}
                 dtpDateModified: {Label=From Modified Date, Comparison=gte}
         pnlButtons:
             Dock: Bottom
-            Controls: [btnMaintain, btnDelete, btnRefreshGrid]
+            Controls: [btnMaintain, btnDelete]#, btnRefreshGrid]
             ControlsOrientation: horizontal
         btnMaintain: {Width=80}
             Action: actMaintain
         btnDelete: {Width=80}
             Label: Delete
             Action: actDelete
-        btnRefreshGrid: {NoLabel=true, Width=50}
-            Action: actRefreshGrid
-            Tooltip: Refresh Extract List (e.g. after a new extract has been created)
+#        btnRefreshGrid: {NoLabel=true, Width=50}
+#            Action: actRefreshGrid
+#            Tooltip: Refresh Extract List (e.g. after a new extract has been created)
         grdDetails:
             Dock: Fill
             Columns: [MExtractMaster.ExtractName, MExtractMaster.CreatedBy, MExtractMaster.KeyCount, MExtractMaster.ExtractDesc, MExtractMaster.DateCreated, MExtractMaster.Deletable]
-            SortOrder: MExtractMaster.DateCreated DESC
+            SortOrder: MExtractMaster.ExtractName ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
@@ -50,10 +50,10 @@ RootNode:
                 Row0: [txtExtractName, txtKeyCount]
                 Row1: [chkDeletable, chkFrozen]
                 Row2: [txtExtractDesc]
-                #Row3: [chkManualMod, dtpManualMod, txtManualModBy]
-                Row3: [dtpManualMod, txtManualModBy]
-                Row4: [dtpDateCreated, txtCreatedBy]
-                Row5: [dtpDateModified, txtModifiedBy]
+                #Row3: [chkManualMod, dtpManualMod, cmbManualModBy]
+                Row3: [dtpManualMod, cmbManualModBy]
+                Row4: [dtpDateCreated, cmbCreatedBy]
+                Row5: [dtpDateModified, cmbModifiedBy]
                
         txtExtractName: {Label=Extract Name}
         txtKeyCount: {Label=Key Count, ReadOnly=true}
@@ -62,8 +62,8 @@ RootNode:
         txtExtractDesc: {Label=Description, ColSpan=2, Multiline=true, ScrollBars=Vertical, Height=50, Width=500}
         #chkManualMod:{Label=Manually updated, ReadOnly=true}
         dtpManualMod:{Label=Manually modified, ReadOnly=true}
-        txtManualModBy:{Label=By, ReadOnly=true}
+        cmbManualModBy:{Label=By, ReadOnly=true, List=UserList, AllowDbNull=true}
         dtpDateCreated:{Label=Created, ReadOnly=true}
-        txtCreatedBy:{Label=By, ReadOnly=true}
+        cmbCreatedBy:{Label=By, ReadOnly=true, List=UserList, AllowDbNull=true}
         dtpDateModified:{Label=Modified, ReadOnly=true}
-        txtModifiedBy:{Label=By, ReadOnly=true}
+        cmbModifiedBy:{Label=By, ReadOnly=true, List=UserList, AllowDbNull=true}

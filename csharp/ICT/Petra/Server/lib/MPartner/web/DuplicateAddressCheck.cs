@@ -80,6 +80,10 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                     // create another table that contains all locations without a valid country code
                     for (int i = 0; i < LocationDataTables.Count; i++)
                     {
+                        // this helps the time left feature to be more accurate from the start
+                        LocationDataTables[i].DefaultView.Sort = PLocationTable.GetPostalCodeDBName() + " DESC";
+                        LocationDataTables[i] = LocationDataTables[i].DefaultView.ToTable();
+
                         if (string.IsNullOrEmpty(LocationDataTables[i].Rows[0]["p_country_code_c"].ToString())
                             || (LocationDataTables[i].Rows[0]["p_country_code_c"].ToString() == "99"))
                         {
@@ -99,7 +103,7 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                     {
                         if (LocationDataTables[i].Rows.Count > 0)
                         {
-                            TotalCalculations += LocationDataTables[i].Rows.Count * (LocationDataTables[i].Rows.Count - 1) / 2;
+                            TotalCalculations += ((Int64)LocationDataTables[i].Rows.Count) * ((Int64)LocationDataTables[i].Rows.Count - 1) / 2;
 
                             // if not table containing invalid country codes
                             if (!string.IsNullOrEmpty(LocationDataTables[i].Rows[0]["p_country_code_c"].ToString())
@@ -110,11 +114,10 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                         }
                     }
 
-                    Stopwatch time = Stopwatch.StartNew();
-                    long ElapsedMilliseconds;
                     Int64 TimeLeft;
                     int MinutesLeft;
                     int SecondsLeft;
+                    Stopwatch time = Stopwatch.StartNew();
 
                     // begin search for possible duplicates
                     foreach (DataTable LocationCountry in LocationDataTables)
@@ -201,16 +204,33 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                             }
 
                             // estimate the remaining time
-                            ElapsedMilliseconds = time.ElapsedMilliseconds;
                             PercentageCompleted = decimal.Divide(CompletedCalculations * 100, TotalCalculations);
-                            TimeLeft = (Int64)(time.ElapsedMilliseconds * (100 - PercentageCompleted) / PercentageCompleted) / 1000;
-                            MinutesLeft = (int)TimeLeft / 60;
-                            SecondsLeft = (int)TimeLeft % 60;
+                            TimeLeft = (Int64)(time.ElapsedMilliseconds * ((100 / PercentageCompleted) - 1));
+                            MinutesLeft = (int)TimeLeft / 60000;
+
+                            string OutputMessage = string.Format(Catalog.GetString("Completed: {0}%"), Math.Round(PercentageCompleted, 1));
+
+                            // only show estimated time left if at least 0.1% complete
+                            if (PercentageCompleted >= (decimal)0.1)
+                            {
+                                // only show seconds if less than 10 minutes remaining
+                                if (MinutesLeft < 10)
+                                {
+                                    SecondsLeft = (int)(TimeLeft % 60000) / 1000;
+
+                                    OutputMessage += string.Format(Catalog.GetPluralString(" (approx. {0} minute and {1} seconds remaining)",
+                                            " (approx. {0} minutes and {1} seconds remaining)", MinutesLeft, true),
+                                        MinutesLeft, SecondsLeft);
+                                }
+                                else
+                                {
+                                    OutputMessage += string.Format(Catalog.GetString(" (approx. {0} minutes remaining)"),
+                                        MinutesLeft);
+                                }
+                            }
 
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                string.Format(Catalog.GetPluralString("Completed: {0}% (approx. {1} minute and {2} seconds remaining)",
-                                        "Completed: {0}% (approx. {1} minutes and {2} seconds remaining)", MinutesLeft, true),
-                                    Math.Round(PercentageCompleted, 1), MinutesLeft, SecondsLeft),
+                                OutputMessage,
                                 PercentageCompleted);
                         }
                     }
@@ -228,6 +248,7 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
             bool AExactMatchNumber)
         {
             bool ReturnValue = true;
+            bool MatchingPostCodes = false;
             string AddressB = null;
 
             // if addresses have two different postcodes then discount immediately
@@ -239,6 +260,8 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                 {
                     return false;
                 }
+
+                MatchingPostCodes = true;
             }
 
             // if this is the first time this address has got this far...
@@ -264,6 +287,19 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
             // make sure there is a space between all letters and numbers (i.e. caused by a typo)
             AddressB = Regex.Replace(AddressB, "(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])", " ");
 
+            if (string.IsNullOrWhiteSpace(AAddressA)) // if addressA is blank
+            {
+                // match if addressB is also blank or postcodes match
+                if (string.IsNullOrWhiteSpace(AddressB) || MatchingPostCodes)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
             String[] AddressBArray = AddressB.Split(' ');
 
             bool PossibleMatch = false;
@@ -279,11 +315,14 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
 
                 if (IsDigitsOnly(Item1)) // if word is a number
                 {
-                    // if this word is a number but the 2nd address contains no numbers then success
+                    // if this word is a number but the 2nd address contains no numbers
                     if (!AddressB.Any(char.IsDigit))
                     {
-                        PossibleMatch = true;
-                        NumbersMatch = true;
+                        if (MatchingPostCodes) // if matching postcodes continue
+                        {
+                            PossibleMatch = true;
+                            NumbersMatch = true;
+                        }
                     }
                     else
                     {
@@ -310,11 +349,19 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                 {
                     foreach (string Item2 in AddressBArray)
                     {
+                        // calculate max allowed distance to get from first item to the second
+                        decimal Distance = 0;
+
+                        if (AAddressAArray.Count() > 1)
+                        {
+                            Distance = Math.Min(Math.Floor((decimal)Math.Min(Item1.Length, Item2.Length) / 2), 2);
+                        }
+
                         // if two words have a similar length then use the Levenshtein Distance algorithm to determine how alike they are.
-                        // If they have a distance less than or equal to 2 then success.
+                        // If they have a distance less than or equal to 'Distance' then success.
                         if (!IsDigitsOnly(Item2)
                             && (Math.Abs(Item1.Length - Item2.Length) <= Math.Min(Math.Min(Item1.Length, Item2.Length), 2))
-                            && (ComputeDamerauLevenshteinDistance(Item1, Item2) <= Math.Min(Math.Min(Item1.Length, Item2.Length), 2)))
+                            && (ComputeDamerauLevenshteinDistance(Item1, Item2) <= Distance))
                         {
                             PossibleMatch = true;
                             break;
@@ -355,11 +402,19 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                     {
                         foreach (string Item2 in AAddressAArray)
                         {
+                            // calculate max allowed distance to get from first item to the second
+                            decimal Distance = 0;
+
+                            if (AAddressAArray.Count() > 1)
+                            {
+                                Distance = Math.Min(Math.Floor((decimal)Math.Min(Item1.Length, Item2.Length) / 2), 2);
+                            }
+
                             // if two words have a similar length then use the Levenshtein Distance algorithm to determine how alike they are.
-                            // If they have a distance less than or equal to 2 then success.
+                            // If they have a distance less than or equal to 'Distance' then success.
                             if (!IsDigitsOnly(Item2)
                                 && (Math.Abs(Item1.Length - Item2.Length) <= Math.Min(Math.Min(Item1.Length, Item2.Length), 2))
-                                && (ComputeDamerauLevenshteinDistance(Item1, Item2) <= Math.Min(Math.Min(Item1.Length, Item2.Length), 2)))
+                                && (ComputeDamerauLevenshteinDistance(Item1, Item2) <= Distance))
                             {
                                 PossibleMatch = true;
                                 break;

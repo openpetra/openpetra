@@ -114,6 +114,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }  // if receipt required
             } // foreach gift
 
+            if (GiftsPerDonor.Count == 0) // no receipts needed
+            {
+                return;
+            }
+
             String HtmlDoc = "";
 
             OpenFileDialog DialogOpen = new OpenFileDialog();
@@ -133,6 +138,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             string HTMLTemplateFilename = DialogOpen.FileName;
+            int NumberOfDonors = 0;
 
             foreach (Int64 DonorKey in GiftsPerDonor.Keys)
             {
@@ -152,6 +158,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 TFormLettersTools.AttachNextPage(ref HtmlDoc, HtmlPage);
                 ReceiptedDonorsList += (DonorShortName + "\r\n");
+                NumberOfDonors++;
 
                 foreach (AGiftRow GiftRow in GiftsPerDonor[DonorKey].Rows)
                 {
@@ -165,13 +172,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 TFrmReceiptControl.PreviewOrPrint(HtmlDoc);
 
-                if (MessageBox.Show(
-                        Catalog.GetString(
-                            "Press OK if receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") +
-                        ReceiptedDonorsList,
+                string Message = Catalog.GetPluralString("Was a receipt to the following donor printed correctly?",
+                    "Were receipts to the following donors printed correctly?", NumberOfDonors);
 
+                if (MessageBox.Show(
+                        Message + "\n\n" +
+                        ReceiptedDonorsList,
                         Catalog.GetString("Receipt Printing"),
-                        MessageBoxButtons.OKCancel) == DialogResult.OK)
+                        MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     foreach (Int32 Trans in ReceiptedGiftTransactions)
                     {

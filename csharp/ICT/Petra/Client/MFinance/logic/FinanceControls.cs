@@ -624,11 +624,6 @@ namespace Ict.Petra.Client.MFinance.Logic
             Account.DefaultView.RowFilter = "a_posting_status_l=TRUE AND a_account_type_c='Equity'";
             Account.DefaultView.Sort = "a_account_code_c";
             DataTable Options = Account.DefaultView.ToTable();
-            DataRow NewRow = Options.NewRow();
-            NewRow["a_account_code_c"] = "";
-            NewRow["a_ledger_number_i"] = ALedgerNumber;
-            NewRow["a_account_code_short_desc_c"] = Catalog.GetString("Select a valid account");
-            Options.Rows.Add(NewRow);
 
             AControl.InitialiseUserControl(Options,
                 "a_account_code_c",

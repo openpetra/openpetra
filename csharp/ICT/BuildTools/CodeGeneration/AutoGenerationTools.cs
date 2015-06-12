@@ -137,6 +137,14 @@ namespace Ict.Tools.CodeGeneration
                     }
 
                     TypeAsString += tr.Type;
+
+                    if (tr.IsArrayType)
+                    {
+                        foreach (int i in tr.RankSpecifier)
+                        {
+                            TypeAsString += "[]";
+                        }
+                    }
                 }
 
                 TypeAsString += ">";
@@ -144,7 +152,10 @@ namespace Ict.Tools.CodeGeneration
 
             if (ATypeRef.IsArrayType)
             {
-                TypeAsString += "[]";
+                foreach (int i in ATypeRef.RankSpecifier)
+                {
+                    TypeAsString += "[]";
+                }
             }
 
             if (TypeAsString == "System.Void")
