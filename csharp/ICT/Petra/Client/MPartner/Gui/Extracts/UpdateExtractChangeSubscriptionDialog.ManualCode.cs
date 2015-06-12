@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
     public partial class TFrmUpdateExtractChangeSubscriptionDialog : System.Windows.Forms.Form
     {
         private PartnerEditTDS FMainDS;
-        private System.Drawing.Color ChangeControlBackgroundColor = System.Drawing.Color.Yellow;
+        private System.Drawing.Color ChangeControlBackgroundColor = System.Drawing.Color.Pink;
         private String ExtractName;
 
         /// <summary>
@@ -308,18 +308,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 dtpPSubscriptionLastIssue.Enabled = CheckBoxSender.Checked;
             }
 
+            // don't change background colour at the moment (left code here in case we need to change it later)
             // now change background colour of selected field
-            if (ChangeControl != null)
-            {
-                if (!CheckBoxSender.Checked)
-                {
-                    ChangeControl.ResetBackColor();
-                }
-                else
-                {
-                    ChangeControl.BackColor = ChangeControlBackgroundColor;
-                }
-            }
+            //if (ChangeControl != null)
+            //{
+            //    if (!CheckBoxSender.Checked)
+            //    {
+            //        ChangeControl.ResetBackColor();
+            //    }
+            //    else
+            //    {
+            //        ChangeControl.BackColor = ChangeControlBackgroundColor;
+            //    }
+            //}
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
