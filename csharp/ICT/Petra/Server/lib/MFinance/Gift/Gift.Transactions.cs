@@ -1432,9 +1432,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (AModifiedDetailKeys.Count == 0)
             {
-                throw new ArgumentException(String.Format(Catalog.GetString(
-                            "Function:{0} - The list of modified detail keys is empty!"),
-                        Utilities.GetMethodName(true)));
+                //Not an error condition, just return.
+                return;
             }
 
             #endregion Validate Arguments

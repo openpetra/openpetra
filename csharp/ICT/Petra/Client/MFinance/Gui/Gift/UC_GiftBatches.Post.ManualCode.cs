@@ -238,7 +238,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                   ex.InnerException.Message));
 
                 TLogging.Log(msg);
-                MessageBox.Show(msg, "Post Gift Batch Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw ex;
+                //MessageBox.Show(msg, "Post Gift Batch Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {

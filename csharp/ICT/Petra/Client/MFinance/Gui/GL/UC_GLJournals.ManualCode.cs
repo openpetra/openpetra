@@ -232,7 +232,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if ((GetBatchRow() != null) && (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
-                FMainDS.AJournal.RejectChanges();
+                DataView journalDV = new DataView(FMainDS.AJournal);
+                journalDV.RowFilter = string.Format("{0}={1}",
+                    AJournalTable.GetBatchNumberDBName(),
+                    GetBatchRow().BatchNumber);
+
+                foreach (DataRowView drv in journalDV)
+                {
+                    AJournalRow jr = (AJournalRow)drv.Row;
+                    jr.RejectChanges();
+                }
             }
         }
 

@@ -1865,7 +1865,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if ((GetBatchRow() != null) && (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
-                FMainDS.ATransaction.RejectChanges();
+                DataView transDV = new DataView(FMainDS.ATransaction);
+                transDV.RowFilter = string.Format("{0}={1}",
+                    ATransactionTable.GetBatchNumberDBName(),
+                    GetBatchRow().BatchNumber);
+
+                foreach (DataRowView drv in transDV)
+                {
+                    ATransactionRow tr = (ATransactionRow)drv.Row;
+                    tr.RejectChanges();
+                }
             }
         }
 

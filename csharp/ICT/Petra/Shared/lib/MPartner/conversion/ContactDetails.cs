@@ -435,7 +435,8 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 FInsertionOrderPerPartner = -1;
 
                 // Get that Partner's p_partner_location records from PPartnerLocationRecords
-                DataRow[] CurrentRows = FPartnerLocationRecords[Math.Abs(PartnerKey) % NumberOfTables].Select("p_partner_key_n = " + PartnerKey.ToString());
+                DataRow[] CurrentRows = FPartnerLocationRecords[Math.Abs(PartnerKey) % NumberOfTables].Select(
+                    "p_partner_key_n = " + PartnerKey.ToString());
 
                 if (CurrentRows.Length == 0)
                 {
