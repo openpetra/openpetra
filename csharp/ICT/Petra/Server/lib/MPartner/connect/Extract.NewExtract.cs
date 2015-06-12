@@ -98,7 +98,6 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
         /// <param name="APartnerKeysTable"></param>
         /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
         /// <param name="AAddressFilterAdded">true if location key fields exist in APartnerKeysTable</param>
-        /// <param name="ACommitTransaction">true if transaction should committed at end of method</param>
         /// <returns>True if the new Extract was created, otherwise false.</returns>
         public bool CreateExtractFromListOfPartnerKeys(
             String AExtractName,
@@ -106,8 +105,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
             out Int32 ANewExtractId,
             DataTable APartnerKeysTable,
             Int32 APartnerKeyColumn,
-            bool AAddressFilterAdded,
-            bool ACommitTransaction)
+            bool AAddressFilterAdded)
         {
             bool Success;
 
@@ -117,8 +115,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 out ANewExtractId,
                 APartnerKeysTable,
                 APartnerKeyColumn,
-                AAddressFilterAdded,
-                ACommitTransaction);
+                AAddressFilterAdded);
 
             if (Success)
             {

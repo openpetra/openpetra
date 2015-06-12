@@ -160,6 +160,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                         if (FDatacalculator.GenerateResult(ref FParameterList, ref FResultList, ref FErrorMessage))
                         {
                             FSuccess = true;
+                            SubmissionOK = true;
                         }
                         else
                         {

@@ -65,67 +65,66 @@ namespace Ict.Petra.Server.MPartner.Extracts
             out Int32 ANewExtractId,
             out Boolean AExtractAlreadyExists)
         {
-            TDBTransaction WriteTransaction;
-            Boolean NewTransaction;
+            TDBTransaction Transaction = null;
             Boolean ReturnValue = false;
-
-            ANewExtractId = -1;
-            AExtractAlreadyExists = false;
+            bool SubmissionOK = false;
+            MExtractMasterTable NewExtractMasterDT = null;
+            MExtractMasterRow TemplateRow = null;
+            Boolean ExtractAlreadyExists = false;
+            Int32 NewExtractId = -1;
 
             TLogging.LogAtLevel(9, "CreateNewExtract called!");
 
-            WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            try
-            {
-                // Check if there is already an extract with the extract name
-                if (!CheckExtractExists(AExtractName))
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
                 {
-                    // The extract name is unique. So create the new extract...
-                    MExtractMasterTable NewExtractMasterDT = new MExtractMasterTable();
+                    // Check if there is already an extract with the extract name
+                    if (!CheckExtractExists(AExtractName))
+                    {
+                        // The extract name is unique. So create the new extract...
+                        NewExtractMasterDT = new MExtractMasterTable();
 
-                    MExtractMasterRow TemplateRow = (MExtractMasterRow)NewExtractMasterDT.NewRowTyped(true);
-                    TemplateRow.ExtractName = AExtractName;
-                    TemplateRow.ExtractDesc = AExtractDescription;
-                    TemplateRow.ExtractId = -1;   // initialize id negative so sequence can be used
+                        TemplateRow = (MExtractMasterRow)NewExtractMasterDT.NewRowTyped(true);
+                        TemplateRow.ExtractName = AExtractName;
+                        TemplateRow.ExtractDesc = AExtractDescription;
+                        TemplateRow.ExtractId = -1;   // initialize id negative so sequence can be used
 
-                    NewExtractMasterDT.Rows.Add(TemplateRow);
+                        NewExtractMasterDT.Rows.Add(TemplateRow);
 
-                    MExtractMasterAccess.SubmitChanges(NewExtractMasterDT, WriteTransaction);
+                        MExtractMasterAccess.SubmitChanges(NewExtractMasterDT, Transaction);
 
-                    // Get the Extract Id
-                    TemplateRow = (MExtractMasterRow)NewExtractMasterDT.Rows[0];
-                    ANewExtractId = TemplateRow.ExtractId;
+                        // Get the Extract Id
+                        TemplateRow = (MExtractMasterRow)NewExtractMasterDT.Rows[0];
+                        NewExtractId = TemplateRow.ExtractId;
 
-                    ReturnValue = true;
-                }
-                else
-                {
-                    AExtractAlreadyExists = true;
-                    ReturnValue = false;
-                }
+                        SubmissionOK = true;
+                        ReturnValue = true;
+                    }
+                    else
+                    {
+                        ExtractAlreadyExists = true;
+                        ReturnValue = false;
+                    }
 
-                if (ReturnValue && NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during the creation of a new Extract:" + Environment.NewLine + Exc.ToString());
+                    if (ReturnValue)
+                    {
+                        SubmissionOK = true;
+                    }
+                    else
+                    {
+                        SubmissionOK = false;
+                    }
+                });
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+            // Get the Extract Id
+//            if (NewExtractMasterDT != null)
+//            {
+//                TemplateRow = (MExtractMasterRow)NewExtractMasterDT.Rows[0];
+//                ANewExtractId = TemplateRow.ExtractId;
+//            }
+            ANewExtractId = NewExtractId;
 
-                throw;
-            }
+            AExtractAlreadyExists = ExtractAlreadyExists;
 
             return ReturnValue;
         }
@@ -144,72 +143,45 @@ namespace Ict.Petra.Server.MPartner.Extracts
             out bool AExtractNotDeletable,
             out TVerificationResult AVerificationResult)
         {
-            TDBTransaction WriteTransaction;
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
             MExtractMasterTable ExtractMasterDT;
-            Boolean NewTransaction;
-            Boolean Success = false;
+            Boolean ExtractNotDeletable = false;
+            TVerificationResult VerificationResult = null;
 
-            AVerificationResult = null;
-            AExtractNotDeletable = false;
-
-            WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            try
-            {
-                ExtractMasterDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId,
-                    WriteTransaction);
-
-                if (ExtractMasterDT.Rows.Count == 1)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
                 {
-                    if (ExtractMasterDT[0].Deletable)
+                    ExtractMasterDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId,
+                        Transaction);
+
+                    if (ExtractMasterDT.Rows.Count == 1)
                     {
-                        MExtractMasterCascading.DeleteByPrimaryKey(AExtractId,
-                            WriteTransaction, true);
-                        Success = true;
+                        if (ExtractMasterDT[0].Deletable)
+                        {
+                            MExtractMasterCascading.DeleteByPrimaryKey(AExtractId,
+                                Transaction, true);
+                            SubmissionOK = true;
+                        }
+                        else
+                        {
+                            ExtractNotDeletable = true;
+                            SubmissionOK = false;
+                        }
                     }
                     else
                     {
-                        AExtractNotDeletable = true;
-                        Success = false;
+                        VerificationResult = new TVerificationResult(
+                            "TExtractsHandling.DeleteExtract", "Extract with Extract Id " + AExtractId.ToString() +
+                            "doesn't exist!", TResultSeverity.Resv_Critical);
+                        SubmissionOK = false;
                     }
-                }
-                else
-                {
-                    AVerificationResult = new TVerificationResult(
-                        "TExtractsHandling.DeleteExtract", "Extract with Extract Id " + AExtractId.ToString() +
-                        "doesn't exist!", TResultSeverity.Resv_Critical);
-                    Success = false;
-                }
-            }
-            catch (Exception Exp)
-            {
-                TLogging.LogAtLevel(8, "TExtractsHandling.DeleteExtract: Exception occured: " + Exp.ToString());
-                throw;
-            }
-            finally
-            {
-                if (Success)
-                {
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                        TLogging.LogAtLevel(8, "TExtractsHandling.DeleteExtract: committed own transaction!");
-                    }
-                }
-                else
-                {
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                        TLogging.LogAtLevel(8, "TExtractsHandling.DeleteExtract: ROLLED BACK own transaction!");
-                    }
-                }
-            }
+                });
 
-            return Success;
+            AVerificationResult = VerificationResult;
+            AExtractNotDeletable = ExtractNotDeletable;
+
+            return SubmissionOK;
         }
 
         /// <summary>
@@ -220,43 +192,22 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// otherwise false.</returns>
         public static bool CheckExtractExists(string AExtractName)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            TDBTransaction Transaction = null;
             Boolean ReturnValue = false;
             MExtractMasterRow TemplateRow;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            // Check if there is already an extract with the extract name
-            try
-            {
-                TemplateRow = new MExtractMasterTable().NewRowTyped(false);
-                TemplateRow.ExtractName = AExtractName;
-
-                if (MExtractMasterAccess.CountUsingTemplate(TemplateRow, null, ReadTransaction) > 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref Transaction,
+                delegate
                 {
-                    ReturnValue = true;
-                }
+                    // Check if there is already an extract with the extract name
+                    TemplateRow = new MExtractMasterTable().NewRowTyped(false);
+                    TemplateRow.ExtractName = AExtractName;
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-
-                    TLogging.LogAtLevel(8, "TExtractsHandling.CheckExtractExists: committed own transaction!");
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during the checking whether an Extract exists:" + Environment.NewLine + Exc.ToString());
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                throw;
-            }
+                    if (MExtractMasterAccess.CountUsingTemplate(TemplateRow, null, Transaction) > 0)
+                    {
+                        ReturnValue = true;
+                    }
+                });
 
             return ReturnValue;
         }
@@ -288,33 +239,26 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// Extract Id doesn't exist.</returns>
         public static Int32 GetExtractKeyCount(int AExtractId)
         {
-            Boolean NewTransaction;
+            TDBTransaction Transaction = null;
+            Int32 KeyCount = 0;
 
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref Transaction,
+                delegate
+                {
+                    MExtractMasterTable ExtractDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId, Transaction);
 
-            try
-            {
-                MExtractMasterTable ExtractDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId, ReadTransaction);
+                    if (ExtractDT.Rows.Count == 1)
+                    {
+                        KeyCount = ExtractDT[0].KeyCount;
+                    }
+                    else
+                    {
+                        KeyCount = - 1;
+                    }
+                });
 
-                if (ExtractDT.Rows.Count == 1)
-                {
-                    return ExtractDT[0].KeyCount;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(8, "TExtractsHandling.GetExtractKeyCount: committed own transaction.");
-                }
-            }
+            return KeyCount;
+
         }
 
         /// <summary>
@@ -328,66 +272,34 @@ namespace Ict.Petra.Server.MPartner.Extracts
         public static bool UpdateExtractKeyCount(int AExtractId, int ACount,
             out TVerificationResultCollection AVerificationResult)
         {
-            Boolean NewTransaction;
-            Boolean Success = true;
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
 
-            AVerificationResult = null;
-
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            try
-            {
-                MExtractMasterTable ExtractMasterDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId,
-                    WriteTransaction);
-
-                if (ExtractMasterDT.Rows.Count == 1)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
                 {
-                    ExtractMasterDT[0].KeyCount = ACount;
+                    MExtractMasterTable ExtractMasterDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId,
+                        Transaction);
 
-                    MExtractMasterAccess.SubmitChanges(ExtractMasterDT, WriteTransaction);
-                }
-                else
-                {
-                    AVerificationResult.Add(new TVerificationResult(
-                            "TExtractsHandling.UpdateExtractCount", "Extract with Extract Id " + AExtractId.ToString() +
-                            " doesn't exist!", TResultSeverity.Resv_Critical));
-
-                    Success = false;
-                }
-
-                if (Success)
-                {
-                    if (NewTransaction)
+                    if (ExtractMasterDT.Rows.Count == 1)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        ExtractMasterDT[0].KeyCount = ACount;
 
-                        TLogging.LogAtLevel(8, "TExtractsHandling.UpdateExtractCount: committed own transaction!");
+                        MExtractMasterAccess.SubmitChanges(ExtractMasterDT, Transaction);
+                        SubmissionOK = true;
                     }
-                }
-                else
-                {
-                    if (NewTransaction)
+                    else
                     {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-
-                        TLogging.LogAtLevel(8, "TExtractsHandling.UpdateExtractCount: ROLLED BACK own transaction!");
+                        VerificationResult.Add(new TVerificationResult(
+                                "TExtractsHandling.UpdateExtractCount", "Extract with Extract Id " + AExtractId.ToString() +
+                                " doesn't exist!", TResultSeverity.Resv_Critical));
                     }
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during the updating of an Extracts' Key Count:" + Environment.NewLine + Exc.ToString());
+                });
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+            AVerificationResult = VerificationResult;
 
-                throw;
-            }
-
-            return Success;
+            return SubmissionOK;
         }
 
         /// <summary>
@@ -428,75 +340,55 @@ namespace Ict.Petra.Server.MPartner.Extracts
         public static bool AddPartnerToExtract(Int64 APartnerKey,
             TLocationPK ALocationPK, int AExtractId)
         {
-            bool ReturnValue;
-            TDBTransaction WriteTransaction;
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
             MExtractTable TemplateTable;
             MExtractRow TemplateRow;
             MExtractRow NewRow;
-            Boolean NewTransaction;
 
             if (APartnerKey > 0)
             {
-                WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                    IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-                try
-                {
-                    /*
-                     * First check whether the Partner isn't already in that Extract
-                     */
-                    TemplateTable = new MExtractTable();
-                    TemplateRow = TemplateTable.NewRowTyped(false);
-                    TemplateRow.ExtractId = AExtractId;
-                    TemplateRow.PartnerKey = APartnerKey;
-
-                    if (MExtractAccess.CountUsingTemplate(TemplateRow, null, WriteTransaction) == 0)
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                    delegate
                     {
                         /*
-                         * Add Partner to Extract.
+                         * First check whether the Partner isn't already in that Extract
                          */
-                        NewRow = TemplateTable.NewRowTyped(false);
-                        NewRow.ExtractId = AExtractId;
-                        NewRow.PartnerKey = APartnerKey;
-                        NewRow.SiteKey = ALocationPK.SiteKey;
-                        NewRow.LocationKey = ALocationPK.LocationKey;
-                        TemplateTable.Rows.Add(NewRow);
+                        TemplateTable = new MExtractTable();
+                        TemplateRow = TemplateTable.NewRowTyped(false);
+                        TemplateRow.ExtractId = AExtractId;
+                        TemplateRow.PartnerKey = APartnerKey;
 
-                        MExtractAccess.SubmitChanges(TemplateTable, WriteTransaction);
+                        if (MExtractAccess.CountUsingTemplate(TemplateRow, null, Transaction) == 0)
+                        {
+                            /*
+                             * Add Partner to Extract.
+                             */
+                            NewRow = TemplateTable.NewRowTyped(false);
+                            NewRow.ExtractId = AExtractId;
+                            NewRow.PartnerKey = APartnerKey;
+                            NewRow.SiteKey = ALocationPK.SiteKey;
+                            NewRow.LocationKey = ALocationPK.LocationKey;
+                            TemplateTable.Rows.Add(NewRow);
 
-                        ReturnValue = true;
-                    }
-                    else
-                    {
-                        // Partner is already in that Extract -> Partner does not get added.
-                        ReturnValue = false;
-                    }
+                            MExtractAccess.SubmitChanges(TemplateTable, Transaction);
 
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                        TLogging.LogAtLevel(8, "TExtractsHandling.AddPartnerToExtract: committed own transaction!");
-                    }
-                }
-                catch (Exception Exc)
-                {
-                    TLogging.Log("An Exception occured while adding a Partner to an Extract:" + Environment.NewLine + Exc.ToString());
-
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-
-                    throw;
-                }
+                            SubmissionOK = true;
+                        }
+                        else
+                        {
+                            // Partner is already in that Extract -> Partner does not get added.
+                            SubmissionOK = false;
+                        }
+                    });
             }
             else
             {
                 // Invalid PartnerKey -> return false;
-                ReturnValue = false;
+                SubmissionOK = false;
             }
 
-            return ReturnValue;
+            return SubmissionOK;
         }
 
         /// <summary>
@@ -509,7 +401,6 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// <param name="APartnerKeysTable"></param>
         /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
         /// <param name="AAddressFilterAdded">true if location key fields exist in APartnerKeysTable</param>
-        /// <param name="ACommitTransaction">true if transaction should committed at end of method</param>
         /// <returns>True if the new Extract was created, otherwise false.</returns>
         public static bool CreateExtractFromListOfPartnerKeys(
             String AExtractName,
@@ -517,20 +408,19 @@ namespace Ict.Petra.Server.MPartner.Extracts
             out Int32 ANewExtractId,
             DataTable APartnerKeysTable,
             Int32 APartnerKeyColumn,
-            bool AAddressFilterAdded,
-            bool ACommitTransaction)
+            bool AAddressFilterAdded)
         {
             if (AAddressFilterAdded)
             {
                 // if address filter was added then site key is in third and location in fourth column
                 return CreateExtractFromListOfPartnerKeys(AExtractName, AExtractDescription, out ANewExtractId,
-                    APartnerKeysTable, APartnerKeyColumn, 2, 3, ACommitTransaction);
+                    APartnerKeysTable, APartnerKeyColumn, 2, 3);
             }
             else
             {
                 // if no address filter was added (no location keys were added): set location and site key to -1
                 return CreateExtractFromListOfPartnerKeys(AExtractName, AExtractDescription, out ANewExtractId,
-                    APartnerKeysTable, APartnerKeyColumn, -1, -1, ACommitTransaction);
+                    APartnerKeysTable, APartnerKeyColumn, -1, -1);
             }
         }
 
@@ -545,7 +435,6 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
         /// <param name="ASiteKeyColumn">number of the column that contains the site keys</param>
         /// <param name="ALocationKeyColumn">number of the column that contains the location keys</param>
-        /// <param name="ACommitTransaction">true if transaction should committed at end of method</param>
         /// <returns>True if the new Extract was created, otherwise false.</returns>
         public static bool CreateExtractFromListOfPartnerKeys(
             String AExtractName,
@@ -554,8 +443,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             DataTable APartnerKeysTable,
             Int32 APartnerKeyColumn,
             Int32 ASiteKeyColumn,
-            Int32 ALocationKeyColumn,
-            bool ACommitTransaction)
+            Int32 ALocationKeyColumn)
         {
             bool ReturnValue = false;
             bool ExtractAlreadyExists;
@@ -571,7 +459,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             if (ReturnValue)
             {
                 ExtendExtractFromListOfPartnerKeys(ANewExtractId, APartnerKeysTable, APartnerKeyColumn,
-                    ASiteKeyColumn, ALocationKeyColumn, true, ACommitTransaction);
+                    ASiteKeyColumn, ALocationKeyColumn, true);
             }
 
             return ReturnValue;
@@ -585,26 +473,24 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
         /// <param name="AAddressFilterAdded">true if location key fields exist in APartnerKeysTable</param>
         /// <param name="AIgnoreDuplicates">true if duplicates should be looked out for. Can be set to false if called only once and not several times per extract.</param>
-        /// <param name="ACommitTransaction">true if transaction should be committed at end of method</param>
         public static void ExtendExtractFromListOfPartnerKeys(
             Int32 AExtractId,
             DataTable APartnerKeysTable,
             Int32 APartnerKeyColumn,
             bool AAddressFilterAdded,
-            bool AIgnoreDuplicates,
-            bool ACommitTransaction)
+            bool AIgnoreDuplicates)
         {
             if (AAddressFilterAdded)
             {
                 // if address filter was added then site key is in third and location in fourth column
                 ExtendExtractFromListOfPartnerKeys(AExtractId,
-                    APartnerKeysTable, APartnerKeyColumn, 2, 3, AIgnoreDuplicates, ACommitTransaction);
+                    APartnerKeysTable, APartnerKeyColumn, 2, 3, AIgnoreDuplicates);
             }
             else
             {
                 // if no address filter was added (no location keys were added): set location and site key to -1
                 ExtendExtractFromListOfPartnerKeys(AExtractId,
-                    APartnerKeysTable, APartnerKeyColumn, -1, -1, AIgnoreDuplicates, ACommitTransaction);
+                    APartnerKeysTable, APartnerKeyColumn, -1, -1, AIgnoreDuplicates);
             }
         }
 
@@ -617,113 +503,71 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// <param name="ASiteKeyColumn">number of the column that contains the site keys</param>
         /// <param name="ALocationKeyColumn">number of the column that contains the location keys</param>
         /// <param name="AIgnoreDuplicates">true if duplicates should be looked out for. Can be set to false if called only once and not several times per extract.</param>
-        /// <param name="ACommitTransaction">true if transaction should be committed at end of method</param>
         public static void ExtendExtractFromListOfPartnerKeys(
             Int32 AExtractId,
             DataTable APartnerKeysTable,
             Int32 APartnerKeyColumn,
             Int32 ASiteKeyColumn,
             Int32 ALocationKeyColumn,
-            bool AIgnoreDuplicates,
-            bool ACommitTransaction)
+            bool AIgnoreDuplicates)
         {
-            Boolean NewTransaction;
             int RecordCounter = 0;
             PPartnerLocationTable PartnerLocationKeysTable;
             Int64 PartnerKey;
 
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = true;
 
-            try
-            {
-                MExtractTable ExtractTable = new MExtractTable();
-                ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, WriteTransaction);
-
-                // Location Keys need to be determined as extracts do not only need partner keys but
-                // also Location Keys.
-                DetermineBestLocationKeys(APartnerKeysTable, APartnerKeyColumn, ASiteKeyColumn,
-                    ALocationKeyColumn, out PartnerLocationKeysTable,
-                    WriteTransaction);
-
-                // use the returned table which contains partner and location keys to build the extract
-                foreach (PPartnerLocationRow PartnerLocationRow in PartnerLocationKeysTable.Rows)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
                 {
-                    PartnerKey = Convert.ToInt64(PartnerLocationRow[PPartnerLocationTable.GetPartnerKeyDBName()]);
+                    MExtractTable ExtractTable = new MExtractTable();
+                    ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
 
-                    if (PartnerKey > 0)
+                    // Location Keys need to be determined as extracts do not only need partner keys but
+                    // also Location Keys.
+                    DetermineBestLocationKeys(APartnerKeysTable, APartnerKeyColumn, ASiteKeyColumn,
+                        ALocationKeyColumn, out PartnerLocationKeysTable,
+                        Transaction);
+
+                    // use the returned table which contains partner and location keys to build the extract
+                    foreach (PPartnerLocationRow PartnerLocationRow in PartnerLocationKeysTable.Rows)
                     {
-                        RecordCounter += 1;
-                        TLogging.Log("Preparing Partner " + PartnerKey.ToString() + " (Record Number " + RecordCounter.ToString() + ")");
+                        PartnerKey = Convert.ToInt64(PartnerLocationRow[PPartnerLocationTable.GetPartnerKeyDBName()]);
 
-                        // add row for partner to extract and fill with contents
-                        MExtractRow NewRow = ExtractTable.NewRowTyped();
-                        NewRow.ExtractId = AExtractId;
-                        NewRow.PartnerKey = PartnerKey;
-                        NewRow.SiteKey = Convert.ToInt64(PartnerLocationRow[PPartnerLocationTable.GetSiteKeyDBName()]);
-                        NewRow.LocationKey = Convert.ToInt32(PartnerLocationRow[PPartnerLocationTable.GetLocationKeyDBName()]);
-
-                        // only add row if it does not already exist for this partner
-                        if (AIgnoreDuplicates || !ExtractTable.Rows.Contains(new object[] { NewRow.ExtractId, NewRow.PartnerKey, NewRow.SiteKey }))
+                        if (PartnerKey > 0)
                         {
-                            ExtractTable.Rows.Add(NewRow);
+                            RecordCounter += 1;
+                            TLogging.Log("Preparing Partner " + PartnerKey.ToString() + " (Record Number " + RecordCounter.ToString() + ")");
+
+                            // add row for partner to extract and fill with contents
+                            MExtractRow NewRow = ExtractTable.NewRowTyped();
+                            NewRow.ExtractId = AExtractId;
+                            NewRow.PartnerKey = PartnerKey;
+                            NewRow.SiteKey = Convert.ToInt64(PartnerLocationRow[PPartnerLocationTable.GetSiteKeyDBName()]);
+                            NewRow.LocationKey = Convert.ToInt32(PartnerLocationRow[PPartnerLocationTable.GetLocationKeyDBName()]);
+
+                            // only add row if it does not already exist for this partner
+                            if (AIgnoreDuplicates || !ExtractTable.Rows.Contains(new object[] { NewRow.ExtractId, NewRow.PartnerKey, NewRow.SiteKey }))
+                            {
+                                ExtractTable.Rows.Add(NewRow);
+                            }
                         }
                     }
-                }
 
-                if (ExtractTable.Rows.Count > 0)
-                {
-                    // update field in extract master for quick access to number of partners in extract
-                    MExtractMasterTable ExtractMaster = MExtractMasterAccess.LoadByPrimaryKey(AExtractId, WriteTransaction);
-                    ExtractMaster[0].KeyCount = ExtractTable.Rows.Count;
+                    if (ExtractTable.Rows.Count > 0)
+                    {
+                        // update field in extract master for quick access to number of partners in extract
+                        MExtractMasterTable ExtractMaster = MExtractMasterAccess.LoadByPrimaryKey(AExtractId, Transaction);
+                        ExtractMaster[0].KeyCount = ExtractTable.Rows.Count;
 
-                    ExtractTable.ThrowAwayAfterSubmitChanges = true; // no need to keep data as this increases speed significantly
+                        ExtractTable.ThrowAwayAfterSubmitChanges = true; // no need to keep data as this increases speed significantly
 
-                    MExtractAccess.SubmitChanges(ExtractTable, WriteTransaction);
+                        MExtractAccess.SubmitChanges(ExtractTable, Transaction);
 
-                    MExtractMasterAccess.SubmitChanges(ExtractMaster, WriteTransaction);
-                }
-
-                if (ACommitTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured while extending an Extract from a list of Partner Keys:" + Environment.NewLine + Exc.ToString());
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// finalize extract from a list of best addresses (commit or rollback current transaction)
-        /// </summary>
-        /// <param name="ACommitTransaction">true if transaction needs to be committed, otherwise rollback</param>
-        /// <returns>True if the new Extract was created, otherwise false.</returns>
-        public static void FinishExtractFromListOfPartnerKeys(bool ACommitTransaction)
-        {
-#if TODO
-            Boolean NewTransaction;
-
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            if (ACommitTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            else
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-#endif
+                        MExtractMasterAccess.SubmitChanges(ExtractMaster, Transaction);
+                    }
+                });
         }
 
         /// <summary>

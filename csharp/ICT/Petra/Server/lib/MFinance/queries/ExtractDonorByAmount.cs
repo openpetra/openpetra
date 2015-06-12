@@ -131,8 +131,7 @@ namespace Ict.Petra.Server.MFinance.queries
                         out ExtractId,
                         partnerkeys,
                         0,
-                        AddressFilterAdded,
-                        true);
+                        AddressFilterAdded);
                 });
             AExtractId = ExtractId;
             return ReturnValue;

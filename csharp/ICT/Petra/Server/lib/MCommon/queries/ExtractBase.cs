@@ -125,8 +125,7 @@ namespace Ict.Petra.Server.MCommon.queries
                                 out ExtractId,
                                 partnerkeys,
                                 0,
-                                AddressFilterAdded,
-                                true);
+                                AddressFilterAdded);
                         }
                     }
 

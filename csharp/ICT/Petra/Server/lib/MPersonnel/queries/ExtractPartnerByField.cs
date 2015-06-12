@@ -124,9 +124,6 @@ namespace Ict.Petra.Server.MPersonnel.queries
             // for sending fields only commitments are taken into account
             ReturnValue = ProcessCommitments(false, AParameters, ATransaction, out AExtractId);
 
-            // if result was true then commit transaction, otherwise rollback
-            TExtractsHandling.FinishExtractFromListOfPartnerKeys(ReturnValue);
-
             return ReturnValue;
         }
 
@@ -156,8 +153,6 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             if (ReturnValue == false)
             {
-                // if result was false then rollback transaction
-                TExtractsHandling.FinishExtractFromListOfPartnerKeys(false);
                 return ReturnValue;
             }
 
@@ -265,7 +260,6 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 partnerkeys,
                 0,
                 AddressFilterAdded,
-                false,
                 false);
 
             // ----------------------------------------------------------------------------------------
@@ -329,13 +323,9 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 partnerkeys,
                 0,
                 AddressFilterAdded,
-                false,
                 false);
 
             ReturnValue = true;
-
-            // if result was true then commit transaction, otherwise rollback
-            TExtractsHandling.FinishExtractFromListOfPartnerKeys(ReturnValue);
 
             return ReturnValue;
         }
@@ -455,8 +445,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 out AExtractId,
                 partnerkeys,
                 0,
-                AddressFilterAdded,
-                false);
+                AddressFilterAdded);
 
             return ReturnValue;
         }
