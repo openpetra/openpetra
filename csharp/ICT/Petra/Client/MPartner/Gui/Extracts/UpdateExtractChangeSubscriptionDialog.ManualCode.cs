@@ -1027,32 +1027,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             TUCPartnerSubscriptionsLogic.CheckPublicationComboValidValue(cmbPSubscriptionPublicationCode);
         }
-
-        /// <summary>
-        /// called when combo box value for publication status is changed
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void PublicationStatusChanged(object sender, EventArgs e)
-        {
-            if (!(this.cmbPSubscriptionSubscriptionStatus.GetSelectedString() == MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED)
-                && !(this.cmbPSubscriptionSubscriptionStatus.GetSelectedString() == MPartnerConstants.SUBSCRIPTIONS_STATUS_EXPIRED))
-            {
-                /* CANCELLED or EXPIRED */
-
-                /* clear any previously supplied reason for cancellation */
-                if (chkChangeReasonSubsCancelledCode.Checked)
-                {
-                    chkChangeReasonSubsCancelledCode.Checked = false;
-                }
-
-                /* clear any previously supplied Date Ended */
-                if (chkChangeDateCancelled.Checked)
-                {
-                    chkChangeDateCancelled.Checked = false;
-                }
-            }
-        }
     }
 
     // in addition derive class from IFrmPetraEdit so TFrmPetraEditUtils can be created

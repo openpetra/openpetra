@@ -62,7 +62,7 @@ RootNode:
 
         cmbPSubscriptionPublicationCode: {List=PublicationInfoList}
             Label: Pub&lication Code
-        cmbPSubscriptionSubscriptionStatus: {OnChange=PublicationStatusChanged}
+        cmbPSubscriptionSubscriptionStatus:
             Label: S&ubscription Status
             OptionalValues: [=PERMANENT, PROVISIONAL, GIFT, CANCELLED, EXPIRED]
         chkPSubscriptionGratisSubscription:
