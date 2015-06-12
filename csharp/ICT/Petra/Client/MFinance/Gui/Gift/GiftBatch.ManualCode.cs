@@ -663,7 +663,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     foreach (DataRow dr in dt.Rows)
                     {
-                        if (dr.RowState != DataRowState.Unchanged)
+                        if ((dr.RowState != DataRowState.Unchanged) && (dr.RowState != DataRowState.Deleted) && (dr.RowState != DataRowState.Added))
+                        {
+                            //Check if fields have actually changed
+                            bool fieldDifferenceDetected = false;
+
+                            for (int i = 0; i < dt.Columns.Count; i++)
+                            {
+                                string originalValue = dr[i, DataRowVersion.Original].ToString();
+                                string currentValue = dr[i, DataRowVersion.Current].ToString();
+
+                                if (originalValue != currentValue)
+                                {
+                                    fieldDifferenceDetected = true;
+                                    break;
+                                }
+                            }
+
+                            if (!fieldDifferenceDetected)
+                            {
+                                dr.RejectChanges();
+                            }
+                            else
+                            {
+                                tableChangesCount++;
+                                allChangesCount++;
+                            }
+                        }
+                        else if ((dr.RowState == DataRowState.Deleted) || (dr.RowState == DataRowState.Added))
                         {
                             tableChangesCount++;
                             allChangesCount++;
@@ -687,10 +714,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     // Only saving changes to batches
                     Tuple <string, int>TableAndCount = TableAndCountList[0];
 
-                    AMessage = String.Format(Catalog.GetString("    You have made changes to the details of {0} {1}.{2}"),
-                        TableAndCount.Item2,
-                        Catalog.GetPluralString("batch", "batches", TableAndCount.Item2),
-                        Environment.NewLine);
+                    string tableName = TableAndCount.Item1;
+
+                    if (TableAndCount.Item1.Equals(AGiftBatchTable.GetTableName()))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to the details of {0} {1}.{2}"),
+                            TableAndCount.Item2,
+                            Catalog.GetPluralString("batch", "batches", TableAndCount.Item2),
+                            Environment.NewLine);
+                    }
+                    else
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to the details of {0} {1}.{2}"),
+                            TableAndCount.Item2,
+                            Catalog.GetPluralString("transaction", "transactions", TableAndCount.Item2),
+                            Environment.NewLine);
+                    }
                 }
                 else
                 {

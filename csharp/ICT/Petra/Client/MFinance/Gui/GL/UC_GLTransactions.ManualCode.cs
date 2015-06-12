@@ -1011,7 +1011,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (dtWork.Rows.Count > 0)
                 {
-                    dtWork.AcceptChanges();
                     FMainDS.ATransaction.Merge(dtWork);
                     JournalDataChanged = true;
                 }

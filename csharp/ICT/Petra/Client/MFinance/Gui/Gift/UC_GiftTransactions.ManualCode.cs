@@ -269,7 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void BeginEditMode(object sender, EventArgs e)
         {
-            bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
+            bool DisableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
 
             FInEditMode = true;
 
@@ -307,7 +307,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //On populating key ministry
-            if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+            if (DisableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
             {
                 FPetraUtilsObject.DisableSaveButton();
             }
@@ -959,28 +959,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void UpdateTotals()
         {
-            Decimal sum = 0;
-            Decimal sumBatch = 0;
-            Int32 GiftNumber = 0;
-            bool disableSaveButton = false;
-
             if (FPetraUtilsObject == null)
             {
                 return;
             }
 
-            //Sometimes a change in this unbound textbox causes a data changed condition
-            disableSaveButton = !FPetraUtilsObject.HasChanges;
+            Decimal SumTransactions = 0;
+            Decimal SumBatch = 0;
+            Int32 GiftNumber = 0;
+
+            //Sometimes a change in an unbound textbox causes a data changed condition
+            bool SaveButtonWasEnabled = FPetraUtilsObject.HasChanges;
+            bool DataChanges = false;
 
             if (FPreviouslySelectedDetailRow == null)
             {
-                txtGiftTotal.NumberValueDecimal = 0;
-                txtBatchTotal.NumberValueDecimal = 0;
+                if ((txtGiftTotal.NumberValueDecimal.Value != 0)
+                    || (txtBatchTotal.NumberValueDecimal.Value != 0))
+                {
+                    txtGiftTotal.NumberValueDecimal = 0;
+                    txtBatchTotal.NumberValueDecimal = 0;
+                }
 
                 //If all details have been deleted
                 if ((FLedgerNumber != -1) && (FBatchRow != null) && (grdDetails.Rows.Count == 1))
                 {
-                    ((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(0, FBatchRow.BatchNumber);
+                    //((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(0, FBatchRow.BatchNumber);
+                    //Now we look at the batch and update the batch data
+                    if (FBatchRow.BatchTotal != SumBatch)
+                    {
+                        FBatchRow.BatchTotal = SumBatch;
+                        DataChanges = true;
+                    }
                 }
             }
             else
@@ -997,33 +1007,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             {
                                 if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
                                 {
-                                    sum += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
-                                    sumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                                    SumTransactions += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                                    SumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
                                 }
                                 else
                                 {
-                                    sum += gdr.GiftTransactionAmount;
-                                    sumBatch += gdr.GiftTransactionAmount;
+                                    SumTransactions += gdr.GiftTransactionAmount;
+                                    SumBatch += gdr.GiftTransactionAmount;
                                 }
                             }
                             else
                             {
-                                sumBatch += gdr.GiftTransactionAmount;
+                                SumBatch += gdr.GiftTransactionAmount;
                             }
                         }
                     }
                 }
 
-                txtGiftTotal.NumberValueDecimal = sum;
+                if (txtGiftTotal.NumberValueDecimal.Value != SumTransactions)
+                {
+                    txtGiftTotal.NumberValueDecimal = SumTransactions;
+                }
+
                 txtGiftTotal.CurrencyCode = txtDetailGiftTransactionAmount.CurrencyCode;
                 txtGiftTotal.ReadOnly = true;
-                //this is here because at the moment the generator does not generate this
-                txtBatchTotal.NumberValueDecimal = sumBatch;
+
                 //Now we look at the batch and update the batch data
-                ((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(sumBatch, FBatchRow.BatchNumber);
+                if (FBatchRow.BatchTotal != SumBatch)
+                {
+                    FBatchRow.BatchTotal = SumBatch;
+                    DataChanges = true;
+                }
             }
 
-            if (disableSaveButton && FPetraUtilsObject.HasChanges)
+            if (txtBatchTotal.NumberValueDecimal.Value != SumBatch)
+            {
+                txtBatchTotal.NumberValueDecimal = SumBatch;
+            }
+
+            if (!DataChanges && !SaveButtonWasEnabled && FPetraUtilsObject.HasChanges)
             {
                 FPetraUtilsObject.DisableSaveButton();
             }

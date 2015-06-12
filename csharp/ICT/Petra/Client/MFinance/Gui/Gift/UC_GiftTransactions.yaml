@@ -44,11 +44,11 @@ RootNode:
                 Row1: [txtBatchNumber, txtBatchStatus, txtHashTotal]
             Dock: Top
         Empty0:
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
-        txtBatchNumber: {ReadOnly=true, Label=Gift Batch, Unbound=true}
-        txtBatchTotal: {Format=Currency, ReadOnly=true, Unbound=true}
-        txtHashTotal: {Format=Currency, ReadOnly=true,  Unbound=true}
-        txtBatchStatus: {ReadOnly=true, NoLabel=true, Unbound=true}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true, SuppressChangeDetection=true}
+        txtBatchNumber: {ReadOnly=true, Label=Gift Batch, Unbound=true, SuppressChangeDetection=true}
+        txtBatchTotal: {Format=Currency, ReadOnly=true, Unbound=true, SuppressChangeDetection=true}
+        txtHashTotal: {Format=Currency, ReadOnly=true,  Unbound=true, SuppressChangeDetection=true}
+        txtBatchStatus: {ReadOnly=true, NoLabel=true, Unbound=true, SuppressChangeDetection=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlDetailButtons, grdDetails]
@@ -125,7 +125,7 @@ RootNode:
                 Row10: [txtNonDeductAmount, txtDeductiblePercentage]
                 Row11: [txtTaxDeductAmount, txtDeductibleAccount]
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
-        txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true}
+        txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true, SuppressChangeDetection=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
         txtDonorInfo: {NoLabel=true, ReadOnly=true, Width=450}
         txtDetailReference: {Label=Reference, Width=170}

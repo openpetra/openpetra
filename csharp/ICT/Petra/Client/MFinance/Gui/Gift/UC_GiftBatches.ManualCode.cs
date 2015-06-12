@@ -786,40 +786,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ParseHashTotal(AGiftBatchRow ARow)
         {
-            decimal correctHashValue;
+            decimal CorrectHashValue = 0m;
 
             if (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
             {
                 return;
             }
 
-            if ((txtDetailHashTotal.NumberValueDecimal == null) || !txtDetailHashTotal.NumberValueDecimal.HasValue)
+            if ((txtDetailHashTotal.NumberValueDecimal != null) && txtDetailHashTotal.NumberValueDecimal.HasValue)
             {
-                correctHashValue = 0m;
-            }
-            else
-            {
-                correctHashValue = txtDetailHashTotal.NumberValueDecimal.Value;
+                CorrectHashValue = txtDetailHashTotal.NumberValueDecimal.Value;
             }
 
-            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
-            ARow.HashTotal = correctHashValue;
-        }
-
-        /// <summary>
-        /// Update the Batch total from the transactions values
-        /// </summary>
-        /// <param name="ABatchTotal"></param>
-        /// <param name="ABatchNumber"></param>
-        public void UpdateBatchTotal(decimal ABatchTotal, Int32 ABatchNumber)
-        {
-            if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            if (ARow.HashTotal != CorrectHashValue)
             {
-                return;
-            }
-            else if ((FPreviouslySelectedDetailRow.BatchNumber == ABatchNumber) && (FPreviouslySelectedDetailRow.BatchTotal != ABatchTotal))
-            {
-                FPreviouslySelectedDetailRow.BatchTotal = ABatchTotal;
+                ARow.HashTotal = CorrectHashValue;
+                txtDetailHashTotal.NumberValueDecimal = CorrectHashValue;
                 FPetraUtilsObject.SetChangedFlag();
             }
         }
@@ -885,32 +867,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            Int32 periodNumber = 0;
-            Int32 yearNumber = 0;
-            DateTime dateValue;
+            Int32 PeriodNumber = 0;
+            Int32 YearNumber = 0;
+            DateTime ActualDateValue;
 
             try
             {
                 if (dtpDetailGlEffectiveDate.ValidDate(false))
                 {
-                    dateValue = dtpDetailGlEffectiveDate.Date.Value;
+                    ActualDateValue = dtpDetailGlEffectiveDate.Date.Value;
 
                     //If invalid date return;
-                    if ((dateValue < FStartDateCurrentPeriod) || (dateValue > FEndDateLastForwardingPeriod))
+                    if ((ActualDateValue < FStartDateCurrentPeriod) || (ActualDateValue > FEndDateLastForwardingPeriod))
                     {
                         return;
                     }
 
-                    if (FPreviouslySelectedDetailRow.GlEffectiveDate != dateValue)
+                    if (FPreviouslySelectedDetailRow.GlEffectiveDate != ActualDateValue)
                     {
-                        FPreviouslySelectedDetailRow.GlEffectiveDate = dateValue;
+                        FPreviouslySelectedDetailRow.GlEffectiveDate = ActualDateValue;
                     }
 
-                    if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
+                    if (GetAccountingYearPeriodByDate(FLedgerNumber, ActualDateValue, out YearNumber, out PeriodNumber))
                     {
-                        if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
+                        if (PeriodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
                         {
-                            FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+                            FPreviouslySelectedDetailRow.BatchPeriod = PeriodNumber;
 
                             //Period has changed, so update transactions DateEntered
                             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateDateEntered(FPreviouslySelectedDetailRow);
@@ -922,7 +904,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                                 if (AFocusOnDate)
                                 {
-                                    dtpDetailGlEffectiveDate.Date = dateValue;
+                                    dtpDetailGlEffectiveDate.Date = ActualDateValue;
                                     dtpDetailGlEffectiveDate.Focus();
                                 }
                             }
@@ -932,7 +914,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                                 if (AFocusOnDate)
                                 {
-                                    dtpDetailGlEffectiveDate.Date = dateValue;
+                                    dtpDetailGlEffectiveDate.Date = ActualDateValue;
                                     dtpDetailGlEffectiveDate.Focus();
                                 }
                             }

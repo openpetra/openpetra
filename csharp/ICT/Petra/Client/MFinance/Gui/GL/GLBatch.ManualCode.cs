@@ -355,7 +355,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // TODO: find cause but use this field for now
             if (!FChangesDetected && FPetraUtilsObject.HasChanges)
             {
-                FPetraUtilsObject.HasChanges = false;
                 FPetraUtilsObject.DisableSaveButton();
             }
             else if (FChangesDetected && !FPetraUtilsObject.HasChanges)
