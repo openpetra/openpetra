@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr, peters
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,6 +34,9 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MReporting;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -53,6 +56,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 FPetraUtilsObject.LoadDefaultSettings();
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+            }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+            {
+                this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // Columns page not supported in the FastReports based solution.
             }
         }
 
@@ -117,14 +128,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("param_recipientkey", txtRecipient.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);
+
+            TParameterList Params = ACalc.GetParameters();
+            String RecipientType = Params.Get("param_recipient").ToString();
+
+            if (RecipientType == "Extract")
+            {
+                RecipientType = ("Recipients from extract: " + Params.Get("param_extract_name").ToString());
+            }
+
+            if (RecipientType == "One Recipient")
+            {
+                RecipientType = ("One Recipient: " + txtRecipient.Text + " " + txtRecipient.LabelText);
+                ACalc.AddParameter("param_recipientkey", txtRecipient.Text);
+            }
+
+            ACalc.AddParameter("param_recipient_title", RecipientType);
 
             if (this.cmbCurrency.SelectedItem == null)
             {
                 this.cmbCurrency.SelectedIndex = 0;  // I don't mind what you select - just don't select nothing!
             }
-
+/*
             int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
 
             for (int Counter = 0; Counter <= MaxColumns; ++Counter)
@@ -132,6 +158,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 String ColumnName = ACalc.GetParameters().Get("param_calculation", Counter, 0).ToString();
                 ACalc.AddParameter(ColumnName, Counter);
             }
+ */
         }
 
         private void SetControlsManual(TParameterList AParameters)
@@ -176,7 +203,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
             String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
+            ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
+            ALedgerRow Row = LedgerDetailsTable[0];
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            String CurrencyName = (cmbCurrency.SelectedItem.ToString() == "Base") ? Row.BaseCurrency : Row.IntlCurrency;
+            ACalc.AddStringParameter("param_currency_name", CurrencyName);
+
             ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
 
             Boolean HasData = ReportDataSet.Tables["Recipients"].Rows.Count > 0;
