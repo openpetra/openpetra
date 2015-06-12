@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
     public partial class TFrmUpdateExtractChangeSubscriptionDialog : System.Windows.Forms.Form
     {
         private PartnerEditTDS FMainDS;
-        private System.Drawing.Color ChangeControlBackgroundColor = System.Drawing.Color.Pink;
+        //private System.Drawing.Color ChangeControlBackgroundColor = System.Drawing.Color.Pink;
         private String ExtractName;
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void OnTickChangeItem(System.Object sender, EventArgs e)
         {
             CheckBox CheckBoxSender;
-            Control ChangeControl = null;
+            //Control ChangeControl = null;
 
             // if check box is unticked then disable field, reset value and background colour,
             // otherwise enable field and emphasize background colour
@@ -144,7 +144,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             if (sender == chkChangeSubscriptionStatus)
             {
-                ChangeControl = cmbPSubscriptionSubscriptionStatus;
+                //ChangeControl = cmbPSubscriptionSubscriptionStatus;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -155,7 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeGratisSubscription)
             {
-                ChangeControl = chkPSubscriptionGratisSubscription;
+                //ChangeControl = chkPSubscriptionGratisSubscription;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -166,7 +166,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeNumberComplimentary)
             {
-                ChangeControl = txtPSubscriptionNumberComplimentary;
+                //ChangeControl = txtPSubscriptionNumberComplimentary;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -177,7 +177,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangePublicationCopies)
             {
-                ChangeControl = txtPSubscriptionPublicationCopies;
+                //ChangeControl = txtPSubscriptionPublicationCopies;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -188,7 +188,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeReasonSubsGivenCode)
             {
-                ChangeControl = cmbPSubscriptionReasonSubsGivenCode.cmbCombobox;
+                //ChangeControl = cmbPSubscriptionReasonSubsGivenCode.cmbCombobox;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -199,7 +199,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeReasonSubsCancelledCode)
             {
-                ChangeControl = cmbPSubscriptionReasonSubsCancelledCode.cmbCombobox;
+                //ChangeControl = cmbPSubscriptionReasonSubsCancelledCode.cmbCombobox;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -210,7 +210,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeGiftFromKey)
             {
-                ChangeControl = txtPSubscriptionGiftFromKey;
+                //ChangeControl = txtPSubscriptionGiftFromKey;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -221,7 +221,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeStartDate)
             {
-                ChangeControl = dtpPSubscriptionStartDate;
+                //ChangeControl = dtpPSubscriptionStartDate;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -232,7 +232,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeExpiryDate)
             {
-                ChangeControl = dtpPSubscriptionExpiryDate;
+                //ChangeControl = dtpPSubscriptionExpiryDate;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -243,7 +243,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeRenewalDate)
             {
-                ChangeControl = dtpPSubscriptionSubscriptionRenewalDate;
+                //ChangeControl = dtpPSubscriptionSubscriptionRenewalDate;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -254,7 +254,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeDateNoticeSent)
             {
-                ChangeControl = dtpPSubscriptionDateNoticeSent;
+                //ChangeControl = dtpPSubscriptionDateNoticeSent;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -265,7 +265,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeDateCancelled)
             {
-                ChangeControl = dtpPSubscriptionDateCancelled;
+                //ChangeControl = dtpPSubscriptionDateCancelled;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -276,7 +276,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeNumberIssuesReceived)
             {
-                ChangeControl = txtPSubscriptionNumberIssuesReceived;
+                //ChangeControl = txtPSubscriptionNumberIssuesReceived;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -287,7 +287,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeFirstIssue)
             {
-                ChangeControl = dtpPSubscriptionFirstIssue;
+                //ChangeControl = dtpPSubscriptionFirstIssue;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -298,7 +298,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeLastIssue)
             {
-                ChangeControl = dtpPSubscriptionLastIssue;
+                //ChangeControl = dtpPSubscriptionLastIssue;
 
                 if (!CheckBoxSender.Checked)
                 {

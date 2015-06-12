@@ -347,9 +347,6 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// </summary>
         private static void PostBudget(int ALedgerNumber, ABudgetRow ABudgetRow, List <ABudgetPeriodRow>ABudgetPeriodRows)
         {
-            //Locate the row for the current account
-            AAccountRow AccountRow = (AAccountRow)GLPostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, ABudgetRow.AccountCode });
-
             GLPostingDS.AGeneralLedgerMaster.DefaultView.Sort = String.Format("{0},{1},{2},{3}",
                 AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
                 AGeneralLedgerMasterTable.GetYearDBName(),
