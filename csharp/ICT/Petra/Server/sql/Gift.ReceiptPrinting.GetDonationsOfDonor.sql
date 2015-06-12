@@ -13,7 +13,9 @@ SELECT a_gift.a_date_entered_d AS DateEntered,
         a_account.a_account_code_short_desc_c AS AccountDesc,
         a_cost_centre.a_cost_centre_name_c AS CostCentreDesc,
         GiftDestination.p_partner_short_name_c AS FieldName,
-        Recipient.p_partner_short_name_c AS RecipientName
+        Recipient.p_partner_short_name_c AS RecipientName,
+        Recipient.p_partner_key_n AS RecipientKey,
+        a_motivation_detail.a_motivation_detail_desc_c AS MotivationDetailDesc
 FROM a_gift_batch, a_gift, a_gift_detail, a_motivation_detail, a_account, a_cost_centre, p_partner AS GiftDestination, p_partner AS Recipient
 WHERE a_gift_batch.a_ledger_number_i = ?
    AND a_gift_batch.a_batch_status_c = 'Posted'
@@ -27,7 +29,6 @@ WHERE a_gift_batch.a_ledger_number_i = ?
    AND a_motivation_detail.a_ledger_number_i = a_gift_batch.a_ledger_number_i
    AND a_motivation_detail.a_motivation_group_code_c = a_gift_detail.a_motivation_group_code_c
    AND a_motivation_detail.a_motivation_detail_code_c = a_gift_detail.a_motivation_detail_code_c
-   AND a_motivation_detail.a_tax_deductible_l = 1
    AND a_motivation_detail.a_receipt_l = 1
    AND a_cost_centre.a_ledger_number_i = a_gift_batch.a_ledger_number_i
    AND a_cost_centre.a_cost_centre_code_c = a_motivation_detail.a_cost_centre_code_c 

@@ -191,6 +191,37 @@ namespace Ict.Petra.Shared
     };
 
     /// <summary>
+    /// enumeration of values for items that can be associated with modules
+    /// </summary>
+    public enum TModule
+    {
+        /// <summary>
+        /// Partner module
+        /// </summary>
+        mPartner,
+
+        /// <summary>
+        /// Finance module
+        /// </summary>
+        mFinance,
+
+        /// <summary>
+        /// Personnel module
+        /// </summary>
+        mPersonnel,
+
+        /// <summary>
+        /// Financial Development module
+        /// </summary>
+        mFinDev,
+
+        /// <summary>
+        /// System Manager module
+        /// </summary>
+        mSysMan
+    }
+
+    /// <summary>
     /// sequences that can be used with the MCommon WebConnector TSequenceWebConnector
     /// </summary>
     public enum TSequenceNames
@@ -198,59 +229,59 @@ namespace Ict.Petra.Shared
         /// <summary>see petra.xml</summary>
         seq_application,
         /// <summary>see petra.xml</summary>
-        seq_contact,
+            seq_contact,
         /// <summary>see petra.xml</summary>
-        seq_extract_number,
+            seq_extract_number,
         /// <summary>see petra.xml</summary>
-        seq_location_number,
+            seq_location_number,
         /// <summary>see petra.xml</summary>
-        seq_pe_evaluation_number,
+            seq_pe_evaluation_number,
         /// <summary>see petra.xml</summary>
-        seq_report_number,
+            seq_report_number,
         /// <summary>see petra.xml</summary>
-        seq_general_ledger_master,
+            seq_general_ledger_master,
         /// <summary>see petra.xml</summary>
-        seq_budget,
+            seq_budget,
         /// <summary>see petra.xml</summary>
-        seq_bank_details,
+            seq_bank_details,
         /// <summary>see petra.xml</summary>
-        seq_document,
+            seq_document,
         /// <summary>see petra.xml</summary>
-        seq_past_experience,
+            seq_past_experience,
         /// <summary>see petra.xml</summary>
-        seq_staff_data,
+            seq_staff_data,
         /// <summary>see petra.xml</summary>
-        seq_job,
+            seq_job,
         /// <summary>see petra.xml</summary>
-        seq_job_assignment,
+            seq_job_assignment,
         /// <summary>see petra.xml</summary>
-        seq_data_label,
+            seq_data_label,
         /// <summary>see petra.xml</summary>
-        seq_foundation_proposal,
+            seq_foundation_proposal,
         /// <summary>see petra.xml</summary>
-        seq_proposal_detail,
+            seq_proposal_detail,
         /// <summary>see petra.xml</summary>
-        seq_form_letter_insert,
+            seq_form_letter_insert,
         /// <summary>see petra.xml</summary>
-        seq_workflow,
+            seq_workflow,
         /// <summary>see petra.xml</summary>
-        seq_file_info,
+            seq_file_info,
         /// <summary>see petra.xml</summary>
-        seq_person_skill,
+            seq_person_skill,
         /// <summary>see petra.xml</summary>
-        seq_booking,
+            seq_booking,
         /// <summary>see petra.xml</summary>
-        seq_room_alloc,
+            seq_room_alloc,
         /// <summary>see petra.xml</summary>
-        seq_ar_invoice,
+            seq_ar_invoice,
         /// <summary>see petra.xml</summary>
-        seq_match_number,
+            seq_match_number,
         /// <summary>see petra.xml</summary>
-        seq_statement_number,
+            seq_statement_number,
         /// <summary>AP Document Reference</summary>
-        seq_ap_document,
+            seq_ap_document,
         /// <summary>see petra.xml</summary>
-        seq_partner_attribute_index
+            seq_partner_attribute_index
     }
 
     /// <summary>
@@ -300,6 +331,38 @@ namespace Ict.Petra.Shared
 
             return ReturnValue;
         }
+
+        /// <summary>
+        /// enumeration of values for items that can be associated with Office specific data labels
+        /// </summary>
+        public enum TModuleEnum
+        {
+            /// <summary>
+            /// Partner module
+            /// </summary>
+            Partner,
+
+            /// <summary>
+            /// Finance module
+            /// </summary>
+            Finance,
+
+            /// <summary>
+            /// Personnel module
+            /// </summary>
+            Personnel,
+
+            /// <summary>
+            /// Financial Development module
+            /// </summary>
+            FinDev,
+
+            /// <summary>
+            /// System Manager module
+            /// </summary>
+            SysMan
+        }
+
 
         /// <summary>
         /// convert partner class from enum to string

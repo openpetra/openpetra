@@ -272,15 +272,15 @@ namespace Ict.Petra.Server.MCommon.queries
 
             // add date clause if address should only be valid at a certain date
             // when "mailing addresses only" is selected no expired or future addresses should be used
-            if (   (AParameters.Exists("param_only_addresses_valid_on")
-                    && (AParameters.Get("param_only_addresses_valid_on").ToBool()))
+            if ((AParameters.Exists("param_only_addresses_valid_on")
+                 && (AParameters.Get("param_only_addresses_valid_on").ToBool()))
                 || (AParameters.Exists("param_mailing_addresses_only")
                     && (AParameters.Get("param_mailing_addresses_only").ToBool())))
             {
-            if (   (AParameters.Exists("param_only_addresses_valid_on")
-                    && (AParameters.Get("param_only_addresses_valid_on").ToBool()))
-                && (AParameters.Exists("param_address_date_valid_on")
-                    && !AParameters.Get("param_address_date_valid_on").IsZeroOrNull()))
+                if ((AParameters.Exists("param_only_addresses_valid_on")
+                     && (AParameters.Get("param_only_addresses_valid_on").ToBool()))
+                    && (AParameters.Exists("param_address_date_valid_on")
+                        && !AParameters.Get("param_address_date_valid_on").IsZeroOrNull()))
                 {
                     DateValue = AParameters.Get("param_address_date_valid_on").ToDate();
                 }
