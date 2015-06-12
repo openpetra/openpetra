@@ -4390,6 +4390,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (GLBatchNotRequired)
                             {
                                 TGLPosting.DeleteGLBatch(ALedgerNumber, batch.BatchNumber, out SingleVerificationResultCollection);
+
                                 VerificationResult.AddCollection(SingleVerificationResultCollection);
                             }
 

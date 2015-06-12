@@ -36,6 +36,8 @@ namespace Ict.Petra.Shared.MFinance
     /// </summary>
     public class GLRoutines
     {
+        private const int DECIMALS = 10;
+
         /// <summary>
         /// Update the totals for the current journal (no exchange rate calculation at this point)
         ///   and set LastTransactionNumber
@@ -45,10 +47,21 @@ namespace Ict.Petra.Shared.MFinance
         public static void UpdateTotalsOfJournal(ref GLBatchTDS AMainDS,
             ref GLBatchTDSAJournalRow ACurrentJournal)
         {
-            if (ACurrentJournal == null)
+            #region Validate Arguments
+
+            if (AMainDS == null)
             {
-                return;
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
             }
+            else if (ACurrentJournal == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Journal row does not exist or is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
 
             int LastTransactionNumber = 0;
 
@@ -125,11 +138,27 @@ namespace Ict.Petra.Shared.MFinance
         /// </summary>
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
-        /// <param name="AJournalUpdated"></param>
+        /// <param name="AJournalTotalsUpdated"></param>
         public static void UpdateTotalsOfJournal(ref GLBatchTDS AMainDS,
-            ref GLBatchTDSAJournalRow ACurrentJournal, out bool AJournalUpdated)
+            ref GLBatchTDSAJournalRow ACurrentJournal, out bool AJournalTotalsUpdated)
         {
-            AJournalUpdated = false;
+            #region Validate Arguments
+
+            if (AMainDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ACurrentJournal == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Journal row does not exist or is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            AJournalTotalsUpdated = false;
 
             if (ACurrentJournal == null)
             {
@@ -198,14 +227,14 @@ namespace Ict.Petra.Shared.MFinance
                 ACurrentJournal.JournalCreditTotal = JournalCreditTotal;
                 ACurrentJournal.JournalCreditTotalBase = JournalCreditTotalBase;
 
-                AJournalUpdated = true;
+                AJournalTotalsUpdated = true;
             }
 
             if (ACurrentJournal.LastTransactionNumber != LastTransactionNumber)
             {
                 ACurrentJournal.LastTransactionNumber = LastTransactionNumber;
 
-                AJournalUpdated = true;
+                AJournalTotalsUpdated = true;
             }
         }
 
@@ -219,26 +248,37 @@ namespace Ict.Petra.Shared.MFinance
         public static void UpdateTotalsOfRecurringJournal(ref GLBatchTDS AMainDS,
             ref GLBatchTDSARecurringJournalRow ACurrentJournal)
         {
-            if (ACurrentJournal == null)
+            #region Validate Arguments
+
+            if (AMainDS == null)
             {
-                return;
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
             }
+            else if (ACurrentJournal == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring Journal row does not exist or is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
 
             decimal JournalDebitTotal = 0.0M;
             decimal JournalDebitTotalBase = 0.0M;
             decimal JournalCreditTotal = 0.0M;
             decimal JournalCreditTotalBase = 0.0M;
 
-            DataView trnsDataView = new DataView(AMainDS.ARecurringTransaction);
+            DataView TransDataView = new DataView(AMainDS.ARecurringTransaction);
 
-            trnsDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
+            TransDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
                 ARecurringTransactionTable.GetBatchNumberDBName(),
                 ACurrentJournal.BatchNumber,
                 ARecurringTransactionTable.GetJournalNumberDBName(),
                 ACurrentJournal.JournalNumber);
 
             // transactions are filtered for this journal; add up the total amounts
-            foreach (DataRowView v in trnsDataView)
+            foreach (DataRowView v in TransDataView)
             {
                 ARecurringTransactionRow r = (ARecurringTransactionRow)v.Row;
 
@@ -273,16 +313,27 @@ namespace Ict.Petra.Shared.MFinance
         /// </summary>
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
-        /// <param name="AJournalUpdated"></param>
+        /// <param name="AJournalTotalsUpdated"></param>
         public static void UpdateTotalsOfRecurringJournal(ref GLBatchTDS AMainDS,
-            ref GLBatchTDSARecurringJournalRow ACurrentJournal, out bool AJournalUpdated)
+            ref GLBatchTDSARecurringJournalRow ACurrentJournal, out bool AJournalTotalsUpdated)
         {
-            AJournalUpdated = false;
+            #region Validate Arguments
 
-            if (ACurrentJournal == null)
+            if (AMainDS == null)
             {
-                return;
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
             }
+            else if (ACurrentJournal == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring Journal row does not exist or is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            AJournalTotalsUpdated = false;
 
             decimal JournalDebitTotal = 0.0M;
             decimal JournalDebitTotalBase = 0.0M;
@@ -299,16 +350,16 @@ namespace Ict.Petra.Shared.MFinance
                 ACurrentJournal.JournalCreditTotalBase = 0;
             }
 
-            DataView trnsDataView = new DataView(AMainDS.ARecurringTransaction);
+            DataView TransDataView = new DataView(AMainDS.ARecurringTransaction);
 
-            trnsDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
+            TransDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
                 ARecurringTransactionTable.GetBatchNumberDBName(),
                 ACurrentJournal.BatchNumber,
                 ARecurringTransactionTable.GetJournalNumberDBName(),
                 ACurrentJournal.JournalNumber);
 
             // transactions are filtered for this journal; add up the total amounts
-            foreach (DataRowView v in trnsDataView)
+            foreach (DataRowView v in TransDataView)
             {
                 ARecurringTransactionRow r = (ARecurringTransactionRow)v.Row;
 
@@ -333,7 +384,7 @@ namespace Ict.Petra.Shared.MFinance
                 ACurrentJournal.JournalDebitTotalBase = JournalDebitTotalBase;
                 ACurrentJournal.JournalCreditTotal = JournalCreditTotal;
                 ACurrentJournal.JournalCreditTotalBase = JournalCreditTotalBase;
-                AJournalUpdated = true;
+                AJournalTotalsUpdated = true;
             }
         }
 
@@ -354,7 +405,8 @@ namespace Ict.Petra.Shared.MFinance
             }
             else if (ACurrentBatch == null)
             {
-                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch datarow is null!"),
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The GL Batch data row is null!"),
                         Utilities.GetMethodName(true)));
             }
 
@@ -363,13 +415,13 @@ namespace Ict.Petra.Shared.MFinance
             decimal BatchDebitTotal = 0.0m;
             decimal BatchCreditTotal = 0.0m;
 
-            DataView jnlDataView = new DataView(AMainDS.AJournal);
+            DataView JournalDV = new DataView(AMainDS.AJournal);
 
-            jnlDataView.RowFilter = String.Format("{0}={1}",
+            JournalDV.RowFilter = String.Format("{0}={1}",
                 AJournalTable.GetBatchNumberDBName(),
                 ACurrentBatch.BatchNumber);
 
-            foreach (DataRowView journalView in jnlDataView)
+            foreach (DataRowView journalView in JournalDV)
             {
                 GLBatchTDSAJournalRow journalRow = (GLBatchTDSAJournalRow)journalView.Row;
 
@@ -396,17 +448,33 @@ namespace Ict.Petra.Shared.MFinance
         public static void UpdateTotalsOfBatch(ref GLBatchTDS AMainDS,
             ABatchRow ACurrentBatch, out bool AAmountsChanged)
         {
+            #region Validate Arguments
+
+            if (AMainDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ACurrentBatch == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The GL Batch data row is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             AAmountsChanged = false;
 
             decimal BatchDebitTotal = 0.0m;
             decimal BatchCreditTotal = 0.0m;
 
-            DataView jnlDataView = new DataView(AMainDS.AJournal);
-            jnlDataView.RowFilter = String.Format("{0}={1}",
+            DataView JournalDV = new DataView(AMainDS.AJournal);
+            JournalDV.RowFilter = String.Format("{0}={1}",
                 AJournalTable.GetBatchNumberDBName(),
                 ACurrentBatch.BatchNumber);
 
-            foreach (DataRowView journalView in jnlDataView)
+            foreach (DataRowView journalView in JournalDV)
             {
                 GLBatchTDSAJournalRow journalRow = (GLBatchTDSAJournalRow)journalView.Row;
 
@@ -440,7 +508,28 @@ namespace Ict.Petra.Shared.MFinance
         public static void UpdateTotalsOfBatchForJournal(ref GLBatchTDS AMainDS,
             ABatchRow ACurrentBatch, GLBatchTDSAJournalRow ACurrentJournal)
         {
-            //Save current values
+            #region Validate Arguments
+
+            if (AMainDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ACurrentBatch == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The GL Batch data row is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ACurrentJournal == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The Journal data row is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            //Save original values before updating
             decimal JournalDebitTotal = ACurrentJournal.JournalDebitTotal;
             decimal JournalCreditTotal = ACurrentJournal.JournalCreditTotal;
 
@@ -469,6 +558,28 @@ namespace Ict.Petra.Shared.MFinance
         public static bool UpdateTotalsOfRecurringBatchForJournal(ref GLBatchTDS AMainDS,
             ARecurringBatchRow ACurrentBatch, GLBatchTDSARecurringJournalRow ACurrentJournal)
         {
+            #region Validate Arguments
+
+            if (AMainDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ACurrentBatch == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring GL Batch data row is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ACurrentJournal == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring Journal data row is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             //Save current values
             decimal JournalDebitTotal = ACurrentJournal.JournalDebitTotal;
             decimal JournalCreditTotal = ACurrentJournal.JournalCreditTotal;
@@ -498,20 +609,31 @@ namespace Ict.Petra.Shared.MFinance
         public static void UpdateTotalsOfRecurringBatch(ref GLBatchTDS AMainDS,
             ARecurringBatchRow ACurrentBatch)
         {
-            if (ACurrentBatch == null)
+            #region Validate Arguments
+
+            if (AMainDS == null)
             {
-                return;
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
             }
+            else if (ACurrentBatch == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring GL Batch data row is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
 
             decimal BatchDebitTotal = 0.0m;
             decimal BatchCreditTotal = 0.0m;
 
-            DataView jnlDataView = new DataView(AMainDS.ARecurringJournal);
-            jnlDataView.RowFilter = String.Format("{0}={1}",
+            DataView JournalDV = new DataView(AMainDS.ARecurringJournal);
+            JournalDV.RowFilter = String.Format("{0}={1}",
                 ARecurringJournalTable.GetBatchNumberDBName(),
                 ACurrentBatch.BatchNumber);
 
-            foreach (DataRowView journalView in jnlDataView)
+            foreach (DataRowView journalView in JournalDV)
             {
                 GLBatchTDSARecurringJournalRow journalRow = (GLBatchTDSARecurringJournalRow)journalView.Row;
 
@@ -528,8 +650,6 @@ namespace Ict.Petra.Shared.MFinance
                 ACurrentBatch.BatchCreditTotal = BatchCreditTotal;
             }
         }
-
-        private const int DECIMALS = 10;
 
         /// <summary>
         /// use this method to calculate the new amount, using an exchange rate.

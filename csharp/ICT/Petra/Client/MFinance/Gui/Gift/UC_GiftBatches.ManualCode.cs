@@ -713,6 +713,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict, FAccountTable, FCostCentreTable);
+
+            //TODO: remove this once database definition is set for Batch Description to be NOT NULL
+            // Description is mandatory then make sure it is set
+            if (txtDetailBatchDescription.Text.Length == 0)
+            {
+                DataColumn ValidationColumn;
+                TVerificationResult VerificationResult = null;
+                object ValidationContext;
+
+                ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnBatchDescriptionId];
+                ValidationContext = String.Format("Batch number {0}",
+                    ARow.BatchNumber);
+
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.BatchDescription,
+                    "Description of " + ValidationContext,
+                    this, ValidationColumn, null);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
+            }
         }
 
         private void ParseHashTotal(AGiftBatchRow ARow)

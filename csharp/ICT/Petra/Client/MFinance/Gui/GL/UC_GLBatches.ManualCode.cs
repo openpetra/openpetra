@@ -269,8 +269,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void LoadJournalsForCurrentBatch()
         {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
             //Current Batch number
-            Int32 BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+            int BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+            string BatchStatus = FPreviouslySelectedDetailRow.BatchStatus;
 
             if (FMainDS.AJournal != null)
             {
@@ -280,7 +286,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (FMainDS.AJournal.DefaultView.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, BatchNumber));
+                    ((TFrmGLBatch) this.ParentForm).LoadJournals(BatchNumber, BatchStatus);
+                    //FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, BatchNumber));
                 }
             }
         }

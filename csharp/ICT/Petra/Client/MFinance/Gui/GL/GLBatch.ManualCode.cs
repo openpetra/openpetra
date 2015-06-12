@@ -58,10 +58,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Journals,
 
             /// list of transactions
-            Transactions
+            Transactions,
+
+            /// None
+            None
         };
 
-        private eGLTabs FPreviousTab = eGLTabs.Batches;
+        private eGLTabs FPreviouslySelectedTab = eGLTabs.None;
         private Int32 FLedgerNumber = -1;
         private Int32 FStandardTabIndex = 0;
         private bool FLoadForImport = false;
@@ -337,7 +340,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
-        public void SelectTab(eGLTabs ATab)
+        /// <param name="AAllowRepeatEvent"></param>
+        public void SelectTab(eGLTabs ATab, bool AAllowRepeatEvent = false)
         {
             try
             {
@@ -345,6 +349,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (ATab == eGLTabs.Batches)
                 {
+                    if ((FPreviouslySelectedTab == eGLTabs.Batches) && !AAllowRepeatEvent)
+                    {
+                        //Repeat event
+                        return;
+                    }
+
+                    FPreviouslySelectedTab = eGLTabs.Batches;
+
                     this.tabGLBatch.SelectedTab = this.tpgBatches;
                     this.tpgJournals.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                     this.tabGLBatch.TabStop = this.tpgJournals.Enabled;
@@ -357,16 +369,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     ucoBatches.AutoEnableTransTabForBatch();
                     ucoBatches.SetInitialFocus();
-                    FPreviousTab = eGLTabs.Batches;
                 }
-                else if ((ucoBatches.GetSelectedDetailRow() != null) && (ATab == eGLTabs.Journals))
+                else if (ATab == eGLTabs.Journals)
                 {
+                    if ((FPreviouslySelectedTab == eGLTabs.Journals) && !AAllowRepeatEvent)
+                    {
+                        //Repeat event
+                        return;
+                    }
+
                     if (this.tpgJournals.Enabled)
                     {
+                        FPreviouslySelectedTab = eGLTabs.Journals;
+
                         this.tabGLBatch.SelectedTab = this.tpgJournals;
 
-                        this.ucoJournals.LoadJournals(FLedgerNumber,
-                            ucoBatches.GetSelectedDetailRow().BatchNumber,
+                        LoadJournals(ucoBatches.GetSelectedDetailRow().BatchNumber,
                             ucoBatches.GetSelectedDetailRow().BatchStatus);
 
                         this.tpgTransactions.Enabled =
@@ -374,41 +392,40 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                              MFinanceConstants.BATCH_CANCELLED);
 
                         this.ucoJournals.UpdateHeaderTotals(ucoBatches.GetSelectedDetailRow());
-
-                        FPreviousTab = eGLTabs.Journals;
                     }
                 }
                 else if (ATab == eGLTabs.Transactions)
                 {
+                    if ((FPreviouslySelectedTab == eGLTabs.Transactions) && !AAllowRepeatEvent)
+                    {
+                        //Repeat event
+                        return;
+                    }
+
                     if (this.tpgTransactions.Enabled)
                     {
+                        bool batchWasPreviousTab = (FPreviouslySelectedTab == eGLTabs.Batches);
+                        FPreviouslySelectedTab = eGLTabs.Transactions;
+
                         // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
                         this.tabGLBatch.SelectedTab = this.tpgTransactions;
 
-                        bool fromBatchTab = false;
-
-                        if (FPreviousTab == eGLTabs.Batches)
+                        if (batchWasPreviousTab)
                         {
-                            fromBatchTab = true;
                             //This only happens when the user clicks from Batch to Transactions,
                             //  which is only allowed when one journal exists
 
                             //Need to make sure that the Journal is loaded
-                            this.ucoJournals.LoadJournals(FLedgerNumber,
-                                ucoBatches.GetSelectedDetailRow().BatchNumber,
+                            LoadJournals(ucoBatches.GetSelectedDetailRow().BatchNumber,
                                 ucoBatches.GetSelectedDetailRow().BatchStatus);
                         }
 
-                        this.ucoTransactions.LoadTransactions(
-                            FLedgerNumber,
-                            ucoJournals.GetSelectedDetailRow().BatchNumber,
-                            ucoJournals.GetSelectedDetailRow().JournalNumber,
-                            ucoJournals.GetSelectedDetailRow().TransactionCurrency,
-                            fromBatchTab,
+                        LoadTransactions(ucoJournals.GetSelectedDetailRow().BatchNumber,
                             ucoBatches.GetSelectedDetailRow().BatchStatus,
-                            ucoJournals.GetSelectedDetailRow().JournalStatus);
-
-                        FPreviousTab = eGLTabs.Transactions;
+                            ucoJournals.GetSelectedDetailRow().JournalNumber,
+                            ucoJournals.GetSelectedDetailRow().JournalStatus,
+                            ucoJournals.GetSelectedDetailRow().TransactionCurrency,
+                            batchWasPreviousTab);
                     }
                 }
             }
@@ -429,6 +446,42 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
             }
+        }
+
+        /// <summary>
+        /// Load Journals for current Batch
+        /// </summary>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="ABatchStatus"></param>
+        public void LoadJournals(Int32 ABatchNumber, String ABatchStatus)
+        {
+            this.ucoJournals.LoadJournals(FLedgerNumber, ABatchNumber, ABatchStatus);
+        }
+
+        /// <summary>
+        /// Load Transactions for current Batch and journal
+        /// </summary>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="ABatchStatus"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="AJournalStatus"></param>
+        /// <param name="ATransactionCurrency"></param>
+        /// <param name="AFromBatchTab"></param>
+        public void LoadTransactions(Int32 ABatchNumber,
+            String ABatchStatus,
+            Int32 AJournalNumber,
+            String AJournalStatus,
+            String ATransactionCurrency,
+            bool AFromBatchTab)
+        {
+            this.ucoTransactions.LoadTransactions(
+                FLedgerNumber,
+                ABatchNumber,
+                AJournalNumber,
+                ATransactionCurrency,
+                AFromBatchTab,
+                ABatchStatus,
+                AJournalStatus);
         }
 
         private void SelectTabManual(Int32 ASelectedTabIndex)

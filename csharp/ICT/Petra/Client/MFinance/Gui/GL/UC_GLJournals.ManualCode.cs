@@ -56,9 +56,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         // Logic Objects
         private TUC_GLJournals_Cancel FCancelLogicObject = null;
 
-        private string FTransactionCurrency = string.Empty;
-        private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
-
         /// <summary>
         /// The current active Batch number
         /// </summary>
@@ -290,18 +287,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (JournalRowIsNull)
             {
-                FTransactionCurrency = string.Empty;
                 btnAdd.Focus();
-            }
-            else
-            {
-                FTransactionCurrency = ARow.TransactionCurrency;
             }
 
             //Enable the transactions tab accordingly
             ((TFrmGLBatch)ParentForm).EnableTransactions(!JournalRowIsNull && (ARow.JournalStatus != MFinanceConstants.BATCH_CANCELLED));
 
             UpdateChangeableStatus();
+            RefreshCurrencyAndExchangeRate();
         }
 
         private ABatchRow GetBatchRow()
@@ -440,10 +433,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ValidateDataDetailsManual(AJournalRow ARow)
         {
+            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_GL.ValidateGLJournalManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict);
+                FValidationControlsDict, null, null, null, LedgerBaseCurrency);
 
             //TODO: remove this once database definition is set for Batch Description to be NOT NULL
             // Description is mandatory then make sure it is set
@@ -496,36 +491,44 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if (FTransactionCurrency != cmbDetailTransactionCurrency.GetSelectedString())
+            if (FPreviouslySelectedDetailRow.TransactionCurrency != cmbDetailTransactionCurrency.GetSelectedString())
             {
-                FTransactionCurrency = cmbDetailTransactionCurrency.GetSelectedString();
+                decimal exchangeRate;
 
-                FPreviouslySelectedDetailRow.TransactionCurrency = FTransactionCurrency;
+                FPreviouslySelectedDetailRow.TransactionCurrency = cmbDetailTransactionCurrency.GetSelectedString();
 
-                if (FTransactionCurrency == FMainDS.ALedger[0].BaseCurrency)
+                if (FPreviouslySelectedDetailRow.TransactionCurrency == FMainDS.ALedger[0].BaseCurrency)
                 {
-                    FPreviouslySelectedDetailRow.ExchangeRateToBase = 1.0m;
-                    RefreshCurrencyAndExchangeRate();
+                    exchangeRate = 1.0m;
                 }
                 else
                 {
-                    FPreviouslySelectedDetailRow.ExchangeRateToBase = 0.0m;
-                    txtDetailExchangeRateToBase.NumberValueDecimal = 0M;
-                    btnGetSetExchangeRate.Enabled = true;
+                    exchangeRate = 0.0m;
                 }
+
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = exchangeRate;
+                RefreshCurrencyAndExchangeRate(exchangeRate);
             }
         }
 
-        private void RefreshCurrencyAndExchangeRate()
+        private void RefreshCurrencyAndExchangeRate(decimal AExchangeRate = -1)
         {
-            txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
 
-            txtDetailExchangeRateToBase.BackColor =
-                (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
+            bool CurrencyIsLedger = (FPreviouslySelectedDetailRow.TransactionCurrency == FMainDS.ALedger[0].BaseCurrency);
+
+            if (AExchangeRate >= 0)
+            {
+                txtDetailExchangeRateToBase.NumberValueDecimal = AExchangeRate;
+            }
 
             ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("JOURNAL");
 
-            btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
+            txtDetailExchangeRateToBase.BackColor = CurrencyIsLedger ? Color.LightPink : Color.Empty;
+            btnGetSetExchangeRate.Enabled = !CurrencyIsLedger;
         }
 
         private void SetExchangeRateValue(Object sender, EventArgs e)
@@ -559,7 +562,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailExchangeRateToBase.NumberValueDecimal = SelectedExchangeRate;
             FPreviouslySelectedDetailRow.ExchangeRateTime = SelectedEffectiveTime;
 
-            RefreshCurrencyAndExchangeRate();
+            RefreshCurrencyAndExchangeRate(SelectedExchangeRate);
         }
 
         /// <summary>

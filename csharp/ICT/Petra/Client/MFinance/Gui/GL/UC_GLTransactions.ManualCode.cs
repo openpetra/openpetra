@@ -235,7 +235,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
                 }
 
-                UpdateTransactionTotals();
+                //TODO remove remm maeks below
+                //UpdateTransactionTotals();
                 grdDetails.ResumeLayout();
                 FLoadCompleted = true;
             }
@@ -318,6 +319,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
             if (CreateNewATransaction())
             {
                 pnlTransAnalysisAttributes.Enabled = true;
@@ -580,31 +583,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Decimal OldTransactionAmount = ARow.TransactionAmount;
             bool OldDebitCreditIndicator = ARow.DebitCreditIndicator;
 
-            if (txtDebitAmount.Text.Length == 0)
-            {
-                txtDebitAmount.NumberValueDecimal = 0;
-            }
-
-            if (txtCreditAmount.Text.Length == 0)
-            {
-                txtCreditAmount.NumberValueDecimal = 0;
-            }
-
-            ARow.DebitCreditIndicator = (txtDebitAmount.NumberValueDecimal.Value > 0);
-
-            if (ARow.DebitCreditIndicator)
-            {
-                ARow.TransactionAmount = Math.Abs(txtDebitAmount.NumberValueDecimal.Value);
-
-                if (txtCreditAmount.NumberValueDecimal.Value != 0)
-                {
-                    txtCreditAmount.NumberValueDecimal = 0;
-                }
-            }
-            else
-            {
-                ARow.TransactionAmount = Math.Abs(txtCreditAmount.NumberValueDecimal.Value);
-            }
+            GetDataForAmountFields(ARow);
 
             if ((OldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount))
                 || (OldDebitCreditIndicator != ARow.DebitCreditIndicator))
@@ -618,6 +597,53 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FcmbAnalAttribValues.Control.Focused)
             {
                 cmbDetailCostCentreCode.Focus();
+            }
+        }
+
+        private void GetDataForAmountFields(ATransactionRow ARow)
+        {
+            if (ARow == null)
+            {
+                return;
+            }
+
+            bool DebitCreditIndicator;
+            decimal TransactionAmount;
+
+            if ((txtDebitAmount.Text.Length == 0) && (txtDebitAmount.NumberValueDecimal.Value != 0))
+            {
+                txtDebitAmount.NumberValueDecimal = 0;
+            }
+
+            if ((txtCreditAmount.Text.Length == 0) && (txtCreditAmount.NumberValueDecimal.Value != 0))
+            {
+                txtCreditAmount.NumberValueDecimal = 0;
+            }
+
+            DebitCreditIndicator = (txtDebitAmount.NumberValueDecimal.Value > 0);
+
+            if (ARow.DebitCreditIndicator != DebitCreditIndicator)
+            {
+                ARow.DebitCreditIndicator = DebitCreditIndicator;
+            }
+
+            if (ARow.DebitCreditIndicator)
+            {
+                TransactionAmount = Math.Abs(txtDebitAmount.NumberValueDecimal.Value);
+
+                if (txtCreditAmount.NumberValueDecimal.Value != 0)
+                {
+                    txtCreditAmount.NumberValueDecimal = 0;
+                }
+            }
+            else
+            {
+                TransactionAmount = Math.Abs(txtCreditAmount.NumberValueDecimal.Value);
+            }
+
+            if (ARow.TransactionAmount != TransactionAmount)
+            {
+                ARow.TransactionAmount = TransactionAmount;
             }
         }
 
@@ -1666,12 +1692,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else if (TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GLREFMANDATORY, "no") == "yes")
             {
                 controlToPass = txtDetailReference;
-            }
-
-            if ((controlToPass == null) || (controlToPass == txtDetailReference))
-            {
-                //This is needed because the above runs many times during setting up the form
-                VerificationResultCollection.Clear();
             }
 
             TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, controlToPass, ref VerificationResultCollection,

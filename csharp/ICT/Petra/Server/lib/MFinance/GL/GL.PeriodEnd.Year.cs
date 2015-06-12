@@ -548,7 +548,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (DoExecuteableCode)
             {
-                /* Boolean PostedOk = */ yearEndBatch.CloseSaveAndPost(FverificationResults);
+                /* Boolean PostedOk = */
+                yearEndBatch.CloseSaveAndPost(FverificationResults);
 
 /*
  *              if (PostedOk)

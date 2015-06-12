@@ -212,7 +212,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
             GLSetupTDS AGLSetupDSRef = null,
             ACurrencyTable ACurrencyTableRef = null,
-            ACorporateExchangeRateTable ACorporateExchangeTableRef = null, string ABaseCurrency = null)
+            ACorporateExchangeRateTable ACorporateExchangeTableRef = null,
+            String ABaseCurrency = null)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -242,6 +243,22 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
                     VerifResultCollAddedCount++;
+                }
+
+                // Exchange rate must be 1.00 if the currency is the the base ledger currency
+                if ((ABaseCurrency != null)
+                    && (!ARow.IsExchangeRateToBaseNull())
+                    && (ARow.TransactionCurrency == ABaseCurrency)
+                    && (ARow.ExchangeRateToBase != 1.00m))
+                {
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext,
+                            new TVerificationResult(ValidationContext,
+                                Catalog.GetString("A journal in the ledger base currency must have exchange rate of 1.00."),
+                                TResultSeverity.Resv_Critical),
+                            ValidationColumn))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
                 }
             }
 

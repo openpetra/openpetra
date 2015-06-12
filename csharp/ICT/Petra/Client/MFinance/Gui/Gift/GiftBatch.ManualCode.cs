@@ -500,36 +500,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
-        /// <param name="ARepeatEvent"></param>
-        public void SelectTab(eGiftTabs ATab, bool ARepeatEvent = false)
+        /// <param name="AAllowRepeatEvent"></param>
+        public void SelectTab(eGiftTabs ATab, bool AAllowRepeatEvent = false)
         {
             FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
 
             if (ATab == eGiftTabs.Batches)
             {
-                if ((FPreviouslySelectedTab == eGiftTabs.Batches) && !ARepeatEvent)
+                if ((FPreviouslySelectedTab == eGiftTabs.Batches) && !AAllowRepeatEvent)
                 {
                     //Repeat event
                     return;
                 }
 
                 FPreviouslySelectedTab = eGiftTabs.Batches;
+
                 this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                 this.ucoBatches.SetFocusToGrid();
             }
             else if (ATab == eGiftTabs.Transactions)
             {
-                if ((FPreviouslySelectedTab == eGiftTabs.Transactions) && !ARepeatEvent)
+                if ((FPreviouslySelectedTab == eGiftTabs.Transactions) && !AAllowRepeatEvent)
                 {
                     //Repeat event
                     return;
                 }
 
-                FPreviouslySelectedTab = eGiftTabs.Transactions;
-
                 if (this.tpgTransactions.Enabled)
                 {
+                    FPreviouslySelectedTab = eGiftTabs.Transactions;
+
                     // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
                     this.tabGiftBatch.SelectedTab = this.tpgTransactions;
 

@@ -278,16 +278,19 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     }
 
                     // Exchange rate must be 1.00 if the currency is the the base ledger currency
-                    if ((ABaseCurrency != null) && !ARow.IsCurrencyCodeNull() && (ARow.CurrencyCode == ABaseCurrency)
-                        && (ARow.ExchangeRateToBase != 1.00m)
-                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
-                            AContext,
-                            new TVerificationResult(ValidationContext,
-                                Catalog.GetString("A batch in the ledger base currency must have exchange rate of 1.00."),
-                                TResultSeverity.Resv_Critical),
-                            ValidationColumn))
+                    if ((ABaseCurrency != null)
+                        && (!ARow.IsCurrencyCodeNull())
+                        && (ARow.CurrencyCode == ABaseCurrency)
+                        && (ARow.ExchangeRateToBase != 1.00m))
                     {
-                        VerifResultCollAddedCount++;
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext,
+                                new TVerificationResult(ValidationContext,
+                                    Catalog.GetString("A batch in the ledger base currency must have exchange rate of 1.00."),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
                     }
                 }
             }
