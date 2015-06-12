@@ -826,7 +826,7 @@ namespace Ict.Common.Verification
                     }
                 }
 
-                return (List.Count > 0);
+                return List.Count > 0;
             }
         }
 

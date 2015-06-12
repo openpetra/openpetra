@@ -97,8 +97,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             String RootCostCentre = "[" + FLedgerNumber + "]";
             paramsDictionary.Add("param_cost_centre_code", new TVariant(RootCostCentre));
 
-            ACalc.AddParameter("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
-
             //
             // The table contains extra rows for "headers" and "footers", facilitating the hierarchical printout.
 

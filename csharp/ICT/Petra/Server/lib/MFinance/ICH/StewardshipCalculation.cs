@@ -410,7 +410,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 && (TransRow.AccountCode != MFinanceConstants.DIRECT_XFER_ACCT)
                                 && (TransRow.AccountCode != MFinanceConstants.ICH_ACCT_SETTLEMENT))
                             {
-                                if (TransRow.DebitCreditIndicator = ExpenseDrCrIndicator)
+                                if (TransRow.DebitCreditIndicator == ExpenseDrCrIndicator)
                                 {
                                     ExpenseAmount += TransRow.AmountInBaseCurrency;
                                     ExpenseAmountIntl += TransRow.AmountInIntlCurrency;

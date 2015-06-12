@@ -6,6 +6,7 @@
   <Parameter id="MaxDisplayColumns" value="eInteger:9" />
   <Parameter id="param_partner_source" value="eString:AllPartner" />
   <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_rgrSorting" value="eString:Donor Name" />
   <Parameter id="param_calculation" column="0" value="eString:DonorKey" />
   <Parameter id="ColumnWidth" column="0" value="eDecimal:4612811918334230528" />
   <Parameter id="param_ytd" column="0" value="eString:false" />
@@ -33,12 +34,5 @@
   <Parameter id="param_calculation" column="8" value="eString:Total Given" />
   <Parameter id="ColumnWidth" column="8" value="eInteger:2" />
   <Parameter id="param_ytd" column="8" value="eString:false" />
-  <Parameter id="orderby0" value="eString:Partner Name" />
-  <Parameter id="orderby1" value="eString:DonorKey" />
-  <Parameter id="orderby2" value="eString:Total Given" />
-  <Parameter id="param_sortby_readable" value="eString:Partner Name, DonorKey, Total Given" />
-  <Parameter id="param_sortby_columns" value="eString:2,0,8" />
   <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
-  <Parameter id="param_extract_name" value="eString:" />
-  <Parameter id="param_extranct_name" value="eString:" />
 </Parameters>

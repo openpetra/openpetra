@@ -566,6 +566,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public decimal GetInternationalCurrencyExchangeRate()
         {
             decimal IntlToBaseCurrencyExchRate = 0;
+            string NotUsed = "";
 
             ABatchRow BatchRow = ucoBatches.GetSelectedDetailRow();
 
@@ -574,7 +575,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return IntlToBaseCurrencyExchRate;
             }
 
-            return GetInternationalCurrencyExchangeRate(BatchRow.DateEffective);
+            return GetInternationalCurrencyExchangeRate(BatchRow.DateEffective, out NotUsed);
         }
 
         /// <summary>
@@ -583,12 +584,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         ///  currency
         /// </summary>
         /// <param name="AEffectiveDate"></param>
+        /// <param name="AErrorMessage"></param>
         /// <returns></returns>
-        private decimal GetInternationalCurrencyExchangeRate(DateTime AEffectiveDate)
+        public decimal GetInternationalCurrencyExchangeRate(DateTime AEffectiveDate, out string AErrorMessage)
         {
             DateTime StartOfMonth = new DateTime(AEffectiveDate.Year, AEffectiveDate.Month, 1);
             string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
             string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+
+            AErrorMessage = string.Empty;
 
             decimal IntlToBaseCurrencyExchRate = 0;
 
@@ -605,17 +609,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         StartOfMonth,
                         AEffectiveDate);
 
-                    if ((IntlToBaseCurrencyExchRate == 0) && FWarnAboutMissingIntlExchangeRate)
+                    // if no rate exists for the choosen period
+                    if (IntlToBaseCurrencyExchRate == 0)
                     {
-                        FWarnAboutMissingIntlExchangeRate = false;
-
-                        string IntlRateErrorMessage =
+                        AErrorMessage =
                             String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
                                 LedgerBaseCurrency,
                                 LedgerIntlCurrency,
                                 AEffectiveDate);
 
-                        MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        // show message immediately
+                        if (FWarnAboutMissingIntlExchangeRate)
+                        {
+                            FWarnAboutMissingIntlExchangeRate = false;
+
+                            MessageBox.Show(AErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
                     }
                 }
             }
@@ -756,8 +765,56 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FLatestSaveIncludedForex = (dv.Count > 0);
             }
 
+            // Check if corporate exchange rate exists for any new batches or modified batches.
+            // Note: all previously saved batches will have an exchange rate for that saved batch date as
+            // it is impossible to delete a corporate exchange rate if batches exist that need it.
+            string ErrorMessage = ValidateCorporateExchangeRate(SubmitDS);
+
+            if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                VerificationResult = new TVerificationResultCollection();
+                TScreenVerificationResult Verification = null;
+
+                Verification = new TScreenVerificationResult(
+                    new TVerificationResult(this, ErrorMessage, TResultSeverity.Resv_Critical),
+                    null, null);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResult.Auto_Add_Or_AddOrRemove(this, Verification, null, true);
+
+                return TSubmitChangesResult.scrError;
+            }
+
             // Now do the standard call to save the changes
             return TRemote.MFinance.GL.WebConnectors.SaveGLBatchTDS(ref SubmitDS, out VerificationResult);
+        }
+
+        private string ValidateCorporateExchangeRate(GLBatchTDS ASubmitDS)
+        {
+            List <Int32>CheckedBatches = new List <int>();
+            Int32 BatchWithNoExchangeRate = -1;
+            string ErrorMessage = string.Empty;
+
+            WarnAboutMissingIntlExchangeRate = false;
+
+            if (ASubmitDS.ABatch != null)
+            {
+                foreach (ABatchRow BatchRow in ASubmitDS.ABatch.Rows)
+                {
+                    // if batch hasn't been deleted or already checked
+                    if ((BatchRow.RowState != DataRowState.Deleted) && !CheckedBatches.Contains(BatchRow.BatchNumber))
+                    {
+                        if (GetInternationalCurrencyExchangeRate(BatchRow.DateEffective, out ErrorMessage) == 0)
+                        {
+                            return ErrorMessage;
+                        }
+
+                        BatchWithNoExchangeRate = BatchRow.BatchNumber;
+                    }
+                }
+            }
+
+            return string.Empty;
         }
 
         private void FPetraUtilsObject_DataSaved(object sender, TDataSavedEventArgs e)

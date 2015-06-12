@@ -313,6 +313,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private bool PreDeleteManual(ACorporateExchangeRateRow ARowToDelete, ref string ADeletionQuestion)
         {
+            // Check if corporate exchange rate can be deleted.
+            // Cannot be deleted if it is effective for a period in the current year which has at least one batch.
+            if (!TRemote.MFinance.Common.ServerLookups.WebConnectors.CanDeleteCorporateExchangeRate(ARowToDelete.DateEffectiveFrom))
+            {
+                MessageBox.Show(Catalog.GetString("Corporate Exchange Rate cannot be deleted because there are still accounts with balances."),
+                    Catalog.GetString("Delete Corporate Exchange Rate"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return false;
+            }
+
             ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
             ADeletionQuestion += String.Format(Catalog.GetString("{0}{0}({1} to {2} effective from {3})"),
                 Environment.NewLine,

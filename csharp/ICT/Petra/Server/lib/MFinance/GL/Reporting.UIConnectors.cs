@@ -2474,8 +2474,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     /* Bank */
                     string[, ] Bank =
                     {
-                        { "CashAndBank", MFinanceConstants.BANK_HEADING }, { "FromToICH", MFinanceConstants.ICH_ACCT_ICH }
-                    };                                                                                                            // "CASH", 8500
+                        { "CashAndBank", MFinanceConstants.BANK_HEADING }, { "FromToICH", MFinanceConstants.ICH_ACCT_ICH + "S" }
+                    };                                                                                                            // "CASH", 8500S
 
                     for (int i = 0; i < 2; i++)
                     {

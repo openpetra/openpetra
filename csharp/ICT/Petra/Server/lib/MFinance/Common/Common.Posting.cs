@@ -1656,7 +1656,7 @@ namespace Ict.Petra.Server.MFinance.Common
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
 
             AVerifications = null;
-            TVerificationResultCollection Verifications = AVerifications;
+            TVerificationResultCollection Verifications = new TVerificationResultCollection();
 
             TDBTransaction Transaction = null;
             bool SubmissionOK = true;

@@ -91,6 +91,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                     ACalc.AddParameter("param_gift_amount_column", Counter);
                 }
             }
+
+            // this parameter is added incorrectly by the generated code
+            ACalc.RemoveParameter("param_minimum_amount");
+            ACalc.AddParameter("param_minimum_amount", this.txtMinimumAmount.NumberValueDecimal);
         }
     }
 }

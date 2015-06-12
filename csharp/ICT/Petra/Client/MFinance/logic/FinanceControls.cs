@@ -192,8 +192,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             // GetCacheableFinanceTable returns a DataTable with a bank flag
             if (ABankAccountOnly)
             {
-                Filter += " AND (" + GLSetupTDSAAccountTable.GetBankAccountFlagDBName() + " = true OR " +
-                          GLSetupTDSAAccountTable.GetCashAccountFlagDBName() + " = true)";
+                Filter += " AND (" + GLSetupTDSAAccountTable.GetBankAccountFlagDBName() + " = true)";
             }
 
             // AForeignCurrencyName.Equals("") means use default or do nothing!

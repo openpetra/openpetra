@@ -45,8 +45,7 @@
         rgrSorting:
             Dock: Top
             Label: Sort
-            Controls: [rbtSortByPartnerName, rbtSortByDonorKey]
-            ParameterName: param_sort_by
+            Controls: [rbtPartnerName, rbtPartnerKey, rbtAmount]
         pnlTitle:
             Controls: [lblLedger]
             Dock: Top
@@ -73,12 +72,15 @@
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [Base, International]
-        rbtSortByPartnerName:
-            Label: By Donor Name
+        rbtPartnerName:
+            Label: Partner Name
             ParameterValue: Donor Name
-        rbtSortByDonorKey:
-            Label: By Donor Key
-            ParameterValue: Donor Key
+        rbtPartnerKey:
+            Label: Partner Key
+            ParameterValue: Partner Key
+        rbtAmount:
+            Label: Total Given
+            ParameterValue: Amount
             
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:

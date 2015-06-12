@@ -299,12 +299,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
+            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+            DataView LedgerView = new DataView(LedgerNameTable);
+            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
+            String LedgerName = "";
+
+            if (LedgerView.Count > 0)
             {
-                ALedgerRow Row = ReportDs.ALedger[0];
-                ACalc.AddStringParameter("param_ledger_name", Row.LedgerName);
-                ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
-                ACalc.AddStringParameter("param_base_currency_name", Row.BaseCurrency);
+                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
             }
+
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+            ACalc.AddStringParameter("param_base_currency_name", uco_GeneralSettings.GetBaseCurrency());
 
             if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())
             {

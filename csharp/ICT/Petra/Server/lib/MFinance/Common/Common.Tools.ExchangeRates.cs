@@ -376,11 +376,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// todoComment
         /// </summary>
-        /// <param name="databaseConnection"></param>
-        /// <param name="pv_ledger_number_i"></param>
-        /// <param name="pv_year_i"></param>
-        /// <param name="pv_period_i"></param>
-        /// <param name="currentFinancialYear"></param>
+        /// <param name="databaseConnection">The database connection.</param>
+        /// <param name="pv_ledger_number_i">The pv_ledger_number_i.</param>
+        /// <param name="pv_year_i">The pv_year_i.</param>
+        /// <param name="pv_period_i">The pv_period_i.</param>
+        /// <param name="currentFinancialYear">The current financial year.</param>
         /// <returns></returns>
         public decimal GetCorporateExchangeRate(TDataBase databaseConnection,
             int pv_ledger_number_i,

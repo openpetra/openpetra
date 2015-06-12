@@ -151,7 +151,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
 
                     FParentForm.FIAmUpdating++;
+                    grdAccounts.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(grdAccounts_FocusRowLeaving);
                     grdAccounts.SelectRowInGrid(RowIdx);
+                    grdAccounts.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(grdAccounts_FocusRowLeaving);
                     FParentForm.FIAmUpdating--;
                 }
             }

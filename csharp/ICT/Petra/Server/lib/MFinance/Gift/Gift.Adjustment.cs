@@ -406,6 +406,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         gift.ReceiptLetterCode = "NO*RECET";
                                     }
 
+                                    // do not print a receipt for reversed gifts
+                                    if (cycle == 0)
+                                    {
+                                        gift.ReceiptPrinted = true;
+                                    }
+
                                     AGiftDS.AGift.Rows.Add(gift);
 
                                     foreach (DataRowView giftDetailRow in AGiftDS.AGiftDetail.DefaultView)

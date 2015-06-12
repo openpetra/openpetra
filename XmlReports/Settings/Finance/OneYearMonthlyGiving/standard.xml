@@ -4,7 +4,7 @@
   <Parameter id="xmlfiles" value="eString:Finance\\oneyearmonthlygiving.xml,Finance\\finance.xml,common.xml" />
   <Parameter id="currentReport" value="eString:OneYearMonthlyGiving" />
   <Parameter id="MaxDisplayColumns" value="eInteger:15" />
-  <Parameter id="param_recipient_selection" value="eString:one_partner" />
+  <Parameter id="param_recipient" value="eString:One Recipient" />
   <Parameter id="param_currency" value="eString:Base" />
   <Parameter id="param_calculation" column="0" value="eString:Donor Key" />
   <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
@@ -54,4 +54,5 @@
   <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
   <Parameter id="param_recipient_key" value="eInteger:0" />
   <Parameter id="param_extract_name" value="eString:" />
+  <Parameter id="param_order_by_name" value="eString:RecipientKey" />
 </Parameters>

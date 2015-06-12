@@ -306,6 +306,43 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         }
 
         /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// </summary>
+        [RequireModulePermission("none")]
+        public static DataSet GetOneYearMonthGivingDataSet(Dictionary <String, TVariant>AParameters)
+        {
+            FDbAdapter = new TReportingDbAdapter();
+            TLogging.SetStatusBarProcedure(WriteToStatusBar);
+            DataSet ReturnDataSet = new DataSet();
+
+            // get recipients
+            DataTable Recipients = TFinanceReportingWebConnector.RecipientGiftStatementRecipientTable(AParameters, FDbAdapter);
+
+            if (FDbAdapter.IsCancelled || (Recipients == null))
+            {
+                return null;
+            }
+
+            DataTable Donors = new DataTable("Donors");
+
+            foreach (DataRow Row in Recipients.Rows)
+            {
+                // get donor information for each recipient
+                Donors.Merge(TFinanceReportingWebConnector.OneYearMonthGivingDonorTable(AParameters, (Int64)Row["RecipientKey"], FDbAdapter));
+
+                if (FDbAdapter.IsCancelled)
+                {
+                    return null;
+                }
+            }
+
+            ReturnDataSet.Tables.Add(Recipients);
+            ReturnDataSet.Tables.Add(Donors);
+
+            return (FDbAdapter.IsCancelled) ? null : ReturnDataSet;
+        }
+
+        /// <summary>
         /// Uses the ClientTask mechanism to ask the client to request a report with the given params
         /// </summary>
         /// <param name="ReportName"></param>

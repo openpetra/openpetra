@@ -68,7 +68,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private bool LoadReportData(TRptCalculator ACalc)
         {
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
-            pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
 
             ArrayList reportParam = ACalc.GetParameters().Elems;
 

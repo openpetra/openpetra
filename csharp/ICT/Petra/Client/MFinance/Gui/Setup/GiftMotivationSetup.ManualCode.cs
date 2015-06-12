@@ -217,6 +217,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
             AVerificationResult = null;
 
+            // delete any invalid motivation detail fees (i.e. because the motivation detail's name has changed)
+            foreach (DataRowView rv in ASubmitChanges.AMotivationDetailFee.DefaultView)
+            {
+                AMotivationDetailFeeRow Row = (AMotivationDetailFeeRow)rv.Row;
+
+                if ((Row.RowState == DataRowState.Added)
+                    && !FMainDS.AMotivationDetail.Rows.Contains(new object[] { Row.LedgerNumber, Row.MotivationGroupCode, Row.MotivationDetailCode }))
+                {
+                    Row.Delete();
+                }
+            }
+
             Result = TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges);
 
             if (Result == TSubmitChangesResult.scrOK)

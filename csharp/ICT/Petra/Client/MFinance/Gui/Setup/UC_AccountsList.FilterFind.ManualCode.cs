@@ -258,7 +258,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FFindChkBankAccount.CheckState != CheckState.Indeterminate)
             {
-                if (accountRow.BankAccountFlag != isBankAccount)
+                if ((accountRow.IsBankAccountFlagNull() && (isBankAccount == true))
+                    || (!accountRow.IsBankAccountFlagNull() && (accountRow.BankAccountFlag != isBankAccount)))
                 {
                     return false;
                 }

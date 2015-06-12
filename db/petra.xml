@@ -7839,21 +7839,21 @@
                   format="X(12)"
                   label="Clearing Account"
                   help="Stewardship calculation will clear to this account."
-                />
+                  initial="8500"/>
     <tablefield name="a_ret_earnings_account_code_c"
                 type="varchar"
                 descr="At Year End, Balance in this Cost Centre will roll up to this account"
                 format="X(12)"
                 label="Equity Account"
                 help="At Year End, Surplus or Deficit in this Cost Centre will carry forward into this account."
-                />
+                initial="9700"/>
     <tablefield name="a_rollup_style_c"
                   type="varchar"
                   descr="Determine how to roll up the balance in this Cost Centre"
                   format="X(12)"
                   label="Rollup Style"
                   help="How should this Cost Centre roll up to Standard Cost Centre"
-                />
+                  initial="Always"/>
       <!-- Constraints on table a_cost_centre -->
     <primarykey name="a_cost_centre_pk"
                 descr=""

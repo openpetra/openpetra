@@ -6,7 +6,7 @@
   <Parameter id="MaxDisplayColumns" value="eInteger:4" />
   <Parameter id="param_partner_source" value="eString:AllPartner" />
   <Parameter id="param_currency" value="eString:Base" />
-  <Parameter id="param_sort_by" value="eString:Donor Name" />
+  <Parameter id="param_rgrSorting" value="eString:Donor Name" />
   <Parameter id="param_calculation" column="0" value="eString:Gift Date" />
   <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
   <Parameter id="param_ytd" column="0" value="eString:false" />
@@ -20,6 +20,5 @@
   <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
   <Parameter id="param_ytd" column="3" value="eString:false" />
   <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
-  <Parameter id="param_extranct_name" value="eString:" />
   <Parameter id="param_gift_amount_column" value="eInteger:3" />
 </Parameters>

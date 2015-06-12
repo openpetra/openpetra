@@ -78,6 +78,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             foreach (DataRowView rv in GiftView)
             {
                 AGiftRow GiftRow = (AGiftRow)rv.Row;
+
+                // this will be true for gift reversals for which we do not need a receipt
+                if (GiftRow.ReceiptPrinted)
+                {
+                    continue;
+                }
+
                 bool ReceiptEachGift;
                 String ReceiptLetterFrequency;
                 bool EmailGiftStatement;

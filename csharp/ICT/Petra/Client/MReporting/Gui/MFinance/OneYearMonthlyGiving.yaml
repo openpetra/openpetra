@@ -23,12 +23,22 @@
             Label: General Settings
             Controls: [lblLedger, rgrPartnerSelection, grpDateSelection, grpCurrencySelection]
             
+        tpgReportSorting:
+            Label: Sorting
+            Controls: [rgrSorting]
         tpgColumnSettings:
             Label: Column Settings
             Controls: [uco_Columns]
         uco_Columns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
             Dock: Fill
+   
+        rgrSorting: {ParameterName=param_order_by_name}
+            Label: Sorting
+            Controls: [rbtRecipientField, rbtRecipientKey, rbtRecipientName]
+        rbtRecipientField:
+        rbtRecipientKey:
+        rbtRecipientName:
             
         lblLedger:
             Label: Ledger
@@ -38,7 +48,7 @@
         rgrPartnerSelection:
             Label: Select Recipient
             Controls: [rbtAllPartner, rbtExtract, rbtPartner]
-            ParameterName: param_recipient_selection
+            ParameterName: param_recipient
         grpCurrencySelection:
             Label: Currency
             Controls: [cmbCurrency]
@@ -50,14 +60,14 @@
             ParameterName: param_to_date
         rbtAllPartner:
             Label: All Recipients
-            ParameterValue: all_recipients
+            ParameterValue: All Recipients
         rbtExtract:
             Label: From Extract
             ParameterValue: Extract
             Controls: [txtExtract]
         rbtPartner:
             Label: One Partner
-            ParameterValue: one_partner
+            ParameterValue: One Recipient
             Controls: [txtRecipient]
         txtExtract:
             NoLabel: true
@@ -70,23 +80,6 @@
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [=Base, International]
-        
-        tpgAdditionalSettings:
-            Label: Additional Settings
-            Controls: [rgrFormatCurrency]
-        rgrFormatCurrency:
-            ParameterName: param_currency_format
-            Label: Format currency numbers:
-            Controls: [rbtCurrencyComplete, rbtCurrencyWithoutDecimals, rbtCurrencyThousands]
-        rbtCurrencyComplete:
-            Label: Complete
-            ParameterValue: CurrencyComplete
-        rbtCurrencyWithoutDecimals:
-            Label: Without decimals
-            ParameterValue: CurrencyWithoutDecimals
-        rbtCurrencyThousands:
-            Label: Only Thousands
-            ParameterValue: CurrencyThousands
         
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para0:
