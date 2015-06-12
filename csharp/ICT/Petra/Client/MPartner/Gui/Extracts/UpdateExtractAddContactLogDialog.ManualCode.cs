@@ -106,7 +106,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            if (ucoContactLog.ValidateAllData(true, ucoContactLog))
+            if (ucoContactLog.ValidateAllData(TErrorProcessingMode.Epm_All, ucoContactLog))
             {
                 if (MessageBox.Show(Catalog.GetString("Are you sure that you want to add the selected contact log" +
                             "\r\nfor all partners in the extract?"),

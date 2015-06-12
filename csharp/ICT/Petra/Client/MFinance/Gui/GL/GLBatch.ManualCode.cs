@@ -220,9 +220,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void InitializeManualCode()
         {
             tabGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+            tabGLBatch.GotFocus += new EventHandler(tabGLBatch_GotFocus);
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
             this.tpgJournals.Enabled = false;
             this.tpgTransactions.Enabled = false;
+        }
+
+        private void tabGLBatch_GotFocus(Object Sender, EventArgs e)
+        {
+            FPetraUtilsObject.WriteToStatusBar(Catalog.GetString(
+                    "Use the left or right arrow keys to switch between Batches, Journals and Transactions"));
         }
 
         /// <summary>
@@ -440,7 +447,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!ValidateAllData(false, true))
+            if (!ValidateAllData(false, TErrorProcessingMode.Epm_All))
             {
                 e.Cancel = true;
 

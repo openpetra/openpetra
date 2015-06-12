@@ -323,9 +323,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
         /// </summary>
         /// <param name="ARecordChangeVerification"></param>
-        /// <param name="AProcessAnyDataValidationErrors"></param>
+        /// <param name="ADataValidationProcessingMode"></param>
         /// <returns></returns>
-        public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
+        public bool ValidateAllData(bool ARecordChangeVerification, TErrorProcessingMode ADataValidationProcessingMode)
         {
             // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
 

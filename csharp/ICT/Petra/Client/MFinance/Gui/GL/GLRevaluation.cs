@@ -24,6 +24,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -49,9 +50,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.Text = Catalog.GetString("Revaluation");
             #endregion
 
+            // Initialise our PetraForm object so we can use it to remember window positions
+            FPetraUtilsObject = new TFrmPetraUtils(AParentForm, this, null);
+
 
             this.btnCancel.Click += new EventHandler(CancelRevaluation);
             this.btnRevaluate.Click += new EventHandler(RunRevaluation);
+            this.Resize += TGLRevaluation_Resize;
+            this.Load += TGLRevaluation_Load;
+            this.FormClosing += TGLRevaluation_FormClosing;
         }
     }
 }

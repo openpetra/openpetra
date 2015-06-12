@@ -107,6 +107,16 @@ namespace Ict.Tools.DevelopersAssistant
             qconflicts,
 
             /// <summary>
+            /// Pull changes into a local copy of trunk
+            /// </summary>
+            qpull,
+
+            /// <summary>
+            /// Update a local copy of trunk
+            /// </summary>
+            qupdate,
+
+            /// <summary>
             /// Create a new branch on Launchpad
             /// </summary>
             qbranch,
@@ -221,6 +231,12 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.qconflicts:
                         return "   Check and resolve conflicts";
 
+                    case TaskItem.qpull:
+                        return "   Pull (mirror) changes into a local copy of trunk";
+
+                    case TaskItem.qupdate:
+                        return "   Update a local copy of trunk from trunk";
+
                     case TaskItem.qbranch:
                         return "Create a new branch";
 
@@ -296,6 +312,12 @@ namespace Ict.Tools.DevelopersAssistant
 
                 case TaskItem.qconflicts:
                     return "qconflicts";
+
+                case TaskItem.qpull:
+                    return "qpull lp:/openpetraorg --ui-mode";
+
+                case TaskItem.qupdate:
+                    return "qupdate --ui-mode";
 
                 case TaskItem.bugUrl:
                     DlgBugNumber dlgBug = new DlgBugNumber();

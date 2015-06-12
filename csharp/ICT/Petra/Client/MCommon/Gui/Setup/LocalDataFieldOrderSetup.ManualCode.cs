@@ -169,6 +169,11 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         // However, they need to be here to get the auto-gen code to compile
         private void NewRowManual(ref PDataLabelUseRow ARow)
         {
+            // Dummy use of FIgnoreFocusRowLeaving to make things compile
+            if (FIgnoreFocusRowLeaving)
+            {
+                ShowDetails();
+            }
         }
 
         private void ShowDetails()
@@ -184,5 +189,6 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         }
 
         private int FPrevRowChangedRow = -1;
+        private bool FIgnoreFocusRowLeaving = false;
     }
 }

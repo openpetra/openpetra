@@ -718,7 +718,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
             {
                 FCurrentCostCentre.GetAttrributes();
                 ACostCentreRow ParentRow = FCurrentCostCentre.CostCentreRow;
@@ -1134,7 +1134,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         public Boolean CheckControlsValidateOk()
         {
             GetDetailsFromControls(FCurrentCostCentre.CostCentreRow);
-            return ValidateAllData(true, true);
+            return ValidateAllData(true, TErrorProcessingMode.Epm_All);
         }
 
         /// <summary>

@@ -308,7 +308,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // enables extra validation (i.e. data not in grid)
             FValidateEverything = true;
 
-            if (ValidateAllData(false, true))
+            if (ValidateAllData(false, TErrorProcessingMode.Epm_All))
             {
                 // Create the transaction to take the given amount OUT of the "allocate from" account & cost centre.
                 GLBatchTDSATransactionRow NewRow = FMainDS.ATransaction.NewRowTyped(true);

@@ -31,6 +31,7 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
@@ -336,8 +337,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
         /// the UserControl.</remarks>
-        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-        /// user, otherwise set it to false.</param>
+        /// <param name="ADataValidationProcessingMode">Set to TErrorProcessingMode.Epm_All if data validation errors should be shown to the
+        /// user, otherwise set it to TErrorProcessingMode.Epm_None.</param>
         /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
         /// specific Control for which Data Validation errors might have been recorded. (Default=null).
         /// <para>
@@ -347,7 +348,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </para>
         /// </param>
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        public bool ValidateAllData(TErrorProcessingMode ADataValidationProcessingMode, Control AValidateSpecificControl = null)
         {
             bool ReturnValue = true;
 
@@ -360,7 +361,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Person UCPartnerDetailsPerson =
                             (TUC_PartnerDetails_Person)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsPerson];
 
-                        if (!UCPartnerDetailsPerson.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        if (!UCPartnerDetailsPerson.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
@@ -375,7 +376,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Family UCPartnerDetailsFamily =
                             (TUC_PartnerDetails_Family)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsFamily];
 
-                        if (!UCPartnerDetailsFamily.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        if (!UCPartnerDetailsFamily.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
@@ -390,7 +391,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Organisation UCPartnerDetailsOrganisation =
                             (TUC_PartnerDetails_Organisation)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation];
 
-                        if (!UCPartnerDetailsOrganisation.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        if (!UCPartnerDetailsOrganisation.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
@@ -410,7 +411,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_PartnerDetails_Church UCPartnerDetailsChurch =
                         (TUC_PartnerDetails_Church)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsChurch];
 
-                    if (!UCPartnerDetailsChurch.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCPartnerDetailsChurch.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -424,7 +425,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Unit UCPartnerDetailsUnit =
                             (TUC_PartnerDetails_Unit)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsUnit];
 
-                        if (!UCPartnerDetailsUnit.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        if (!UCPartnerDetailsUnit.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
@@ -439,7 +440,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Venue UCPartnerDetailsVenue =
                             (TUC_PartnerDetails_Venue)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsVenue];
 
-                        if (!UCPartnerDetailsVenue.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        if (!UCPartnerDetailsVenue.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
@@ -454,7 +455,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Bank UCPartnerDetailsBank =
                             (TUC_PartnerDetails_Bank)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsBank];
 
-                        if (!UCPartnerDetailsBank.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        if (!UCPartnerDetailsBank.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
@@ -468,7 +469,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TUC_PartnerAddresses UCPartnerAddresses =
                     (TUC_PartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
 
-                if (!UCPartnerAddresses.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCPartnerAddresses.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -478,7 +479,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 TUC_Contacts UCContactLogs = (TUC_Contacts)FTabSetup[TDynamicLoadableUserControls.dlucContacts];
 
-                if (!UCContactLogs.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCContactLogs.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -489,7 +490,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TUC_ContactDetails UCContactDetails =
                     (TUC_ContactDetails)FTabSetup[TDynamicLoadableUserControls.dlucContactDetails];
 
-                if (!UCContactDetails.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCContactDetails.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -505,7 +506,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TUC_Subscriptions UCSubscriptions =
                     (TUC_Subscriptions)FTabSetup[TDynamicLoadableUserControls.dlucSubscriptions];
 
-                if (!UCSubscriptions.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCSubscriptions.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -516,7 +517,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TUCPartnerTypes UCPartnerTypes =
                     (TUCPartnerTypes)FTabSetup[TDynamicLoadableUserControls.dlucPartnerTypes];
 
-                if (!UCPartnerTypes.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCPartnerTypes.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -527,7 +528,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TUC_PartnerRelationships UCRelationships =
                     (TUC_PartnerRelationships)FTabSetup[TDynamicLoadableUserControls.dlucPartnerRelationships];
 
-                if (!UCRelationships.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCRelationships.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -538,7 +539,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TUC_FamilyMembers UCFamilyMembers =
                     (TUC_FamilyMembers)FTabSetup[TDynamicLoadableUserControls.dlucFamilyMembers];
 
-                if (!UCFamilyMembers.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCFamilyMembers.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -549,7 +550,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TUC_PartnerNotes UCNotes =
                     (TUC_PartnerNotes)FTabSetup[TDynamicLoadableUserControls.dlucNotes];
 
-                if (!UCNotes.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCNotes.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -563,7 +564,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // enable extra validation on tab change
                 UCFinanceDetails.ValidateBankingDetailsExtra = true;
 
-                if (!UCFinanceDetails.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCFinanceDetails.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -579,7 +580,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TUC_LocalPartnerData UCLocalPartnerData =
                     (TUC_LocalPartnerData)FTabSetup[TDynamicLoadableUserControls.dlucOfficeSpecific];
 
-                if (!UCLocalPartnerData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCLocalPartnerData.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -590,7 +591,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TUC_PartnerInterests UCPartnerInterests =
                     (TUC_PartnerInterests)FTabSetup[TDynamicLoadableUserControls.dlucInterests];
 
-                if (!UCPartnerInterests.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCPartnerInterests.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -1400,7 +1401,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!ValidateAllData(true, FCurrentUserControl))
+            if (!ValidateAllData(TErrorProcessingMode.Epm_All, FCurrentUserControl))
             {
                 e.Cancel = true;
 

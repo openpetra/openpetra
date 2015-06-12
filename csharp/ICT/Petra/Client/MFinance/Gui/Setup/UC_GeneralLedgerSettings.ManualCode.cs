@@ -191,7 +191,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         public bool GetValidatedData()
         {
             // call the auto-generated code
-            return ValidateAllData(false);
+            return ValidateAllData(TErrorProcessingMode.Epm_None);
         }
 
         /// <summary>

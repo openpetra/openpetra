@@ -190,7 +190,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 FPetraUtilsObject.SetChangedFlag();
                 FPSAttributesRow.AnalysisAttributeValue = valueType.Items[selectedValueIndex].ToString();
-                ValidateAllData(false, true);
+                ValidateAllData(false, TErrorProcessingMode.Epm_All);
             }
         }
 
@@ -432,7 +432,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void NewDetail(Object sender, EventArgs e)
         {
             // do validation which will get the entered amounts, so that we can calculate the missing amount for the new detail
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
             {
                 decimal DetailAmount = FMainDS.AApDocument[0].TotalAmount;
 

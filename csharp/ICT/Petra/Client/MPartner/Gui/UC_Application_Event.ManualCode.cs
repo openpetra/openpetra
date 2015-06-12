@@ -229,24 +229,24 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
         /// the UserControl.</remarks>
-        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-        /// user, otherwise set it to false.</param>
+        /// <param name="ADataValidationProcessingMode">Set to Epm_All if data validation errors should be shown to the
+        /// user, otherwise set it to Epm_None.</param>
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
+        public bool ValidateAllData(TErrorProcessingMode ADataValidationProcessingMode)
         {
             bool ReturnValue = true;
 
-            if (!ucoEvent.ValidateAllData(AProcessAnyDataValidationErrors))
+            if (!ucoEvent.ValidateAllData(ADataValidationProcessingMode))
             {
                 ReturnValue = false;
             }
 
-            if (!ucoApplicant.ValidateAllData(AProcessAnyDataValidationErrors))
+            if (!ucoApplicant.ValidateAllData(ADataValidationProcessingMode))
             {
                 ReturnValue = false;
             }
 
-            if (!ucoTravel.ValidateAllData(AProcessAnyDataValidationErrors))
+            if (!ucoTravel.ValidateAllData(ADataValidationProcessingMode))
             {
                 ReturnValue = false;
             }
@@ -302,7 +302,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FCurrentUserControl = ucoEvent;
 
-                if (!ucoEvent.ValidateAllData(true, FCurrentUserControl))
+                if (!ucoEvent.ValidateAllData(TErrorProcessingMode.Epm_All, FCurrentUserControl))
                 {
                     e.Cancel = true;
 
@@ -313,7 +313,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FCurrentUserControl = ucoApplicant;
 
-                if (!ucoApplicant.ValidateAllData(true, FCurrentUserControl))
+                if (!ucoApplicant.ValidateAllData(TErrorProcessingMode.Epm_All, FCurrentUserControl))
                 {
                     e.Cancel = true;
 
@@ -324,7 +324,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FCurrentUserControl = ucoTravel;
 
-                if (!ucoTravel.ValidateAllData(true, FCurrentUserControl))
+                if (!ucoTravel.ValidateAllData(TErrorProcessingMode.Epm_All, FCurrentUserControl))
                 {
                     e.Cancel = true;
 

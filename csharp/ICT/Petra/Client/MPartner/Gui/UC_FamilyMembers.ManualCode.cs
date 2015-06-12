@@ -393,8 +393,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// the UserControl.</remarks>
         /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing
         /// to another record, otherwise set it to false.</param>
-        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-        /// user, otherwise set it to false.</param>
+        /// <param name="ADataValidationProcessingMode">Set to TErrorProcessingMode.Epm_All if data validation errors should be shown to the
+        /// user, otherwise set it to TErrorProcessingMode.Epm_None.</param>
         /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
         /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
         /// <para>
@@ -404,7 +404,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </para>
         /// </param>
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        public bool ValidateAllData(bool ARecordChangeVerification,
+            TErrorProcessingMode ADataValidationProcessingMode,
+            Control AValidateSpecificControl = null)
         {
             bool ReturnValue = true;
             int DuplicateFamilyID = -1;
@@ -444,7 +446,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPetraUtilsObject.VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
             }
 
-            if (AProcessAnyDataValidationErrors)
+            if (ADataValidationProcessingMode != TErrorProcessingMode.Epm_None)
             {
                 ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
                     this.GetType());

@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Petra.Client.App.Core;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.CommonDialogs
@@ -136,7 +137,7 @@ namespace Ict.Petra.Client.CommonDialogs
         /// <summary>
         /// implement dummy functions so that we can use this control on a yaml form
         /// </summary>
-        public void ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
+        public void ValidateAllData(bool ARecordChangeVerification, TErrorProcessingMode ADataValidationProcessingMode)
         {
             // not implemented
         }

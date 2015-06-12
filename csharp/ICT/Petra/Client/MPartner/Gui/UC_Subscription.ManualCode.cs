@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ARow"></param>
         public void GetDetails(PSubscriptionRow ARow)
         {
-            ValidateAllData(false);
+            ValidateAllData(TErrorProcessingMode.Epm_None);
             //GetDataFromControls(ARow);
         }
 

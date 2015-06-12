@@ -305,8 +305,8 @@ namespace {#NAMESPACE}
     /// </summary>
     /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing 
     /// to another record, otherwise set it to false.</param>
-    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-    /// user, otherwise set it to false.</param>
+    /// <param name="ADataValidationProcessingMode">Set to <see cref="TErrorProcessingMode.Epm_None"/> if no data validation errors should be shown to the user,
+    /// otherwise set it to one of <see cref="TErrorProcessingMode.Epm_IgnoreNonCritical"/> or <see cref="TErrorProcessingMode.Epm_All"/>.</param>
     /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a 
     /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
     /// <para>
@@ -316,7 +316,7 @@ namespace {#NAMESPACE}
     /// </para>    
     /// </param>
     /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
-    private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+    private bool ValidateAllData(bool ARecordChangeVerification, TErrorProcessingMode ADataValidationProcessingMode, Control AValidateSpecificControl = null)
     {
         bool ReturnValue = false;
         Control ControlToValidate = null;
@@ -398,7 +398,7 @@ namespace {#NAMESPACE}
         {#USERCONTROLVALIDATION}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
 
-        if (AProcessAnyDataValidationErrors)
+        if (ADataValidationProcessingMode != TErrorProcessingMode.Epm_None)
         {
             // Only process the Data Validations here if ControlToValidate is not null.
             // It can be null if this.ActiveControl yields null - this would happen if no Control
@@ -416,8 +416,10 @@ namespace {#NAMESPACE}
                     }
 
                     // Process Data Validation result(s)
+					bool ignoreWarnings = (ADataValidationProcessingMode == TErrorProcessingMode.Epm_IgnoreNonCritical) &&
+						!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors;
                     ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                        this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+                        this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null, ignoreWarnings);
 {#IFDEF MASTERTABLE}
             }
             else
@@ -430,8 +432,10 @@ namespace {#NAMESPACE}
                 }
             
                 // Process Data Validation result(s)
+				bool ignoreWarnings = (ADataValidationProcessingMode == TErrorProcessingMode.Epm_IgnoreNonCritical) &&
+					!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors;
                 ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                    this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+                    this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null, ignoreWarnings);
             }
 {#ENDIF MASTERTABLE}
                 }
@@ -449,9 +453,11 @@ namespace {#NAMESPACE}
 {#ENDIFN MASTERTABLE}
 {#ENDIF SHOWDETAILS}
 {#IFNDEF SHOWDETAILS}
-            // Process Data Validation result(s)
-            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+					// Process Data Validation result(s)
+					bool ignoreWarnings = (ADataValidationProcessingMode == TErrorProcessingMode.Epm_IgnoreNonCritical) &&
+						!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors;
+					ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+						this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null, ignoreWarnings);
                 }
             }
             else
@@ -562,7 +568,7 @@ namespace {#NAMESPACE}
         // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
         FPetraUtilsObject.VerificationResultCollection.Clear();
 
-        if (ValidateAllData(false, true))
+        if (ValidateAllData(false, TErrorProcessingMode.Epm_All))
         {
             foreach (DataTable InspectDT in FMainDS.Tables)
             {
@@ -719,7 +725,7 @@ namespace {#NAMESPACE}
     {
         TScreenVerificationResult SingleVerificationResult;
         
-        ValidateAllData(true, false, (Control)sender);
+        ValidateAllData(true, TErrorProcessingMode.Epm_None, (Control)sender);
         
         FPetraUtilsObject.ValidationToolTip.RemoveAll();
         

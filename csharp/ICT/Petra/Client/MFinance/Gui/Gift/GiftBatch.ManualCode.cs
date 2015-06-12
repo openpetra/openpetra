@@ -349,6 +349,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             mniFileSave.Click -= FileSave;
             tbbSave.Click += FileSaveManual;
             mniFileSave.Click += FileSaveManual;
+
+            // Add a GotFocus event for the tabs so we can display a help message
+            tabGiftBatch.GotFocus += new EventHandler(tabGiftBatch_GotFocus);
+        }
+
+        private void tabGiftBatch_GotFocus(object sender, EventArgs e)
+        {
+            FPetraUtilsObject.WriteToStatusBar(Catalog.GetString(
+                    "Use the left or right arrow keys to switch between Batches and Details"));
         }
 
         /// <summary>
@@ -476,7 +485,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!ValidateAllData(false, true))
+            if (!ValidateAllData(false, TErrorProcessingMode.Epm_All))
             {
                 e.Cancel = true;
 

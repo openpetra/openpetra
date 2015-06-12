@@ -854,8 +854,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
 
             // Perform validation in UserControls, too
-            ucoUpperPart.ValidateAllData(false);
-            ucoLowerPart.ValidateAllData(false);
+            ucoUpperPart.ValidateAllData(TErrorProcessingMode.Epm_None);
+            ucoLowerPart.ValidateAllData(TErrorProcessingMode.Epm_None);
 
             ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
                 this.GetType(), null, false);

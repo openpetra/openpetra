@@ -159,7 +159,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
-            ValidateAllData(false, false);
+            ValidateAllData(false, TErrorProcessingMode.Epm_None);
             //GetDetailsFromControls(GetSelectedDetailRow());
         }
 

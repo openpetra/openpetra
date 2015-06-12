@@ -41,6 +41,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Validation;
 
@@ -53,6 +54,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// The base currency is used to initialize the "from" combobox
         /// </summary>
         private String baseCurrencyOfLedger = null;
+
+        /// <summary>
+        /// A ledger table containing all the ledgers that this client has access to
+        /// </summary>
+        private ALedgerTable FAvailableLedgers = null;
+
+        /// <summary>
+        /// This variable will normally be 1, but if there is a ledger with a different first day of accounting period it will have that value
+        /// </summary>
+        private int FAlternativeFirstDayInMonth = 1;
 
         /// <summary>
         /// We use this to hold inverse exchange rate items that will need saving at the end
@@ -110,18 +121,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
 
-            if (baseCurrencyOfLedger == null)
+            // What ledgers does the user have access to??
+            FAvailableLedgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
+            DataView ledgerView = FAvailableLedgers.DefaultView;
+            ledgerView.RowFilter = "a_ledger_status_l = 1";     // Only view 'in use' ledgers
+
+            for (int i = 0; i < ledgerView.Count; i++)
             {
                 // Have a last attempt at deciding what the base currency is...
-                // What ledgers does the user have access to??
-                ALedgerTable ledgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
-                DataView ledgerView = ledgers.DefaultView;
-                ledgerView.RowFilter = "a_ledger_status_l = 1";     // Only view 'in use' ledgers
-
-                if (ledgerView.Count > 0)
+                if (baseCurrencyOfLedger == null)
                 {
-                    // There is at least one - so default to the currency of the first one
-                    baseCurrencyOfLedger = ((ALedgerRow)ledgerView.Table.Rows[0]).BaseCurrency;
+                    // we default to the first one we find
+                    baseCurrencyOfLedger = ((ALedgerRow)ledgerView[i].Row).BaseCurrency;
+                }
+
+                // Get the accounting periods for this ledger
+                AAccountingPeriodTable periods = (AAccountingPeriodTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                    TCacheableFinanceTablesEnum.AccountingPeriodList,
+                    ((ALedgerRow)ledgerView[i].Row).LedgerNumber);
+
+                if ((periods != null) && (periods.Rows.Count > 0))
+                {
+                    int firstDay = ((AAccountingPeriodRow)periods.Rows[0]).PeriodStartDate.Day;
+
+                    if ((FAlternativeFirstDayInMonth == 1) && (firstDay != 1))
+                    {
+                        // Now we have an alternative first day of month
+                        FAlternativeFirstDayInMonth = firstDay;
+                    }
+                    else if ((FAlternativeFirstDayInMonth != 1) && (firstDay != 1) && (firstDay != FAlternativeFirstDayInMonth))
+                    {
+                        // Ooops.  Now we seem to have more than one alternative first day of month.
+                        // We can't cope with that level of complexity!
+                        FAlternativeFirstDayInMonth = 0;
+                    }
                 }
             }
 
@@ -150,7 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // We need to update the details and validate them first
             // When we return from this method the standard code will do the validation again and might not allow the save to go ahead
             FPetraUtilsObject.VerificationResultCollection.Clear();
-            ValidateAllData(false, false);
+            ValidateAllData(false, TErrorProcessingMode.Epm_None);
 
             if (!TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
             {
@@ -219,7 +252,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_GLSetup.ValidateCorporateExchangeRate(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FPetraUtilsObject.ValidationControlsDict, FAvailableLedgers, FAlternativeFirstDayInMonth);
 
             // In MODAL mode we can validate that the date is the same as an accounting period...
         }
@@ -358,15 +391,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 DateTime dt = dtpDetailDateEffectiveFrom.Date.Value;
                 DateTime dtFirstOfMonth = new DateTime(dt.Year, dt.Month, 1);
-                //Set to first of month for corporate
 
-                if (dt != dtFirstOfMonth)
+                if (FAlternativeFirstDayInMonth != 0)
                 {
-                    dt = dtFirstOfMonth;
-                    dtpDetailDateEffectiveFrom.Date = dt;
-                }
+                    // We do have ledgers that start either on day 1 or a uniform alternative day
+                    DateTime dtAlternativeFirstOfMonth = new DateTime(dt.Year, dt.Month, FAlternativeFirstDayInMonth);
 
-                dtpDetailDateEffectiveFrom.Date = dt;
+                    if ((dt != dtFirstOfMonth) && (dt != dtAlternativeFirstOfMonth))
+                    {
+                        dt = dtFirstOfMonth;
+                        dtpDetailDateEffectiveFrom.Date = dt;
+                    }
+                }
 
                 if (dt != FPreviouslySelectedDetailRow.DateEffectiveFrom)
                 {
@@ -469,7 +505,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void Import(System.Object sender, EventArgs e)
         {
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
             {
                 TVerificationResultCollection results = FPetraUtilsObject.VerificationResultCollection;
 
@@ -494,16 +530,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                     formatter += "{0}{0}{1}{0}{0}{3}{0}{0}{4}";
 
-                    foreach (TVerificationResult Result in results)
-                    {
-                        MessageBox.Show(String.Format(formatter,
-                                Environment.NewLine,
-                                Result.ResultText,
-                                nRowsImported,
-                                MCommonResourcestrings.StrExchRateImportTryAgain,
-                                Result.ResultCode),
-                            MCommonResourcestrings.StrExchRateImportTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    TFrmExtendedMessageBox messageBox = new TFrmExtendedMessageBox(this);
+                    messageBox.ShowDialog(String.Format(
+                            formatter,
+                            Environment.NewLine,
+                            results[0].ResultText,
+                            nRowsImported,
+                            results[0].ResultSeverity ==
+                            TResultSeverity.Resv_Critical ? MCommonResourcestrings.StrExchRateImportTryAgain : String.Empty,
+                            results[0].ResultCode),
+                        MCommonResourcestrings.StrExchRateImportTitle, String.Empty, TFrmExtendedMessageBox.TButtons.embbOK,
+                        results[0].ResultSeverity ==
+                        TResultSeverity.Resv_Critical ? TFrmExtendedMessageBox.TIcon.embiError : TFrmExtendedMessageBox.TIcon.embiInformation);
 
                     results.Clear();
                 }

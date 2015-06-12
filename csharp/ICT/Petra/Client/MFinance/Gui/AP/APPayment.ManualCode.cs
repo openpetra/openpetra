@@ -59,6 +59,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             rbtPayFullOutstandingAmount.CheckedChanged += new EventHandler(EnablePartialPayment);
             chkClaimDiscount.Visible = false;
             txtExchangeRate.TextChanged += new EventHandler(UpdateTotalAmount);
+
+            TExchangeRateCache.ResetCache();
         }
 
         private void LookupExchangeRate(Object sender, EventArgs e)
@@ -83,6 +85,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             txtExchangeRate.NumberValueDecimal = selectedExchangeRate;
+
+            // Put the rate in our client-side cache
+            if (FLedgerRow != null)
+            {
+                TExchangeRateCache.SetDailyExchangeRate(txtCurrency.Text, FLedgerRow.BaseCurrency, selectedEffectiveDate, selectedExchangeRate);
+            }
         }
 
         private void ShowDataManual()
@@ -323,7 +331,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     AApSupplierRow supplier = TFrmAPMain.GetSupplier(FMainDS.AApSupplier, FSelectedPaymentRow.SupplierKey);
                     txtCurrency.Text = supplier.CurrencyCode;
 
-                    decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(supplier.CurrencyCode, FLedgerRow.BaseCurrency, DateTime.Now);
+                    decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(supplier.CurrencyCode,
+                        FLedgerRow.BaseCurrency,
+                        DateTime.Today,
+                        false);
                     txtExchangeRate.NumberValueDecimal = CurrentRate;
                     cmbPaymentType.SetSelectedString(supplier.PaymentType);
 

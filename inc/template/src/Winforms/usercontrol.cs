@@ -188,8 +188,8 @@ namespace {#NAMESPACE}
     /// </summary>
     /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
     /// the UserControl.</remarks>    
-    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-    /// user, otherwise set it to false.</param>
+    /// <param name="ADataValidationProcessingMode">Set to <see cref="TErrorProcessingMode.Epm_None"/> if no data validation errors should be shown to the user,
+    /// otherwise set it to one of <see cref="TErrorProcessingMode.Epm_IgnoreNonCritical"/> or <see cref="TErrorProcessingMode.Epm_All"/>.</param>
     /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a 
     /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
     /// <para>
@@ -203,7 +203,7 @@ namespace {#NAMESPACE}
     /// UserControl's ValidateAllData Method doesn't change a recorded DataValidationRun that was set from the 
     /// Form/UserControl that embeds this UserControl! (Default=true).</param>
     /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-    public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null, bool ADontRecordNewDataValidationRun = true)
+    public bool ValidateAllData(TErrorProcessingMode ADataValidationProcessingMode, Control AValidateSpecificControl = null, bool ADontRecordNewDataValidationRun = true)
     {
         bool ReturnValue = false;
         Control ControlToValidate = null;
@@ -292,7 +292,7 @@ namespace {#NAMESPACE}
 {#ENDIF MASTERTABLE}        
             }
 
-            if (AProcessAnyDataValidationErrors)
+            if (ADataValidationProcessingMode != TErrorProcessingMode.Epm_None)
             {
                 // Only process the Data Validations here if ControlToValidate is not null.
                 // It can be null if this.ActiveControl yields null - this would happen if no Control
@@ -301,13 +301,15 @@ namespace {#NAMESPACE}
                 {
                     if(ControlToValidate.FindUserControlOrForm(true) == this)
                     {
+						bool ignoreWarnings = (ADataValidationProcessingMode == TErrorProcessingMode.Epm_IgnoreNonCritical) &&
+							!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors;
 {#IFDEF SHOWDETAILS}
                         ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+                            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null, ignoreWarnings);
 {#ENDIF SHOWDETAILS}
 {#IFNDEF SHOWDETAILS}
                         ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType(), ignoreWarnings);
 {#ENDIFN SHOWDETAILS}
                     }
                     else
@@ -489,7 +491,7 @@ namespace {#NAMESPACE}
     {
         TScreenVerificationResult SingleVerificationResult;
         
-        ValidateAllData(false, (Control)sender, false);
+        ValidateAllData(TErrorProcessingMode.Epm_None, (Control)sender, false);
         
         FPetraUtilsObject.ValidationToolTip.RemoveAll();
         

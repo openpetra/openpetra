@@ -29,6 +29,7 @@ using Ict.Petra.Client.App.Core;
 
 using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonForms;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -39,12 +40,12 @@ using System.Windows.Forms;
 
 
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -55,7 +56,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// <summary>
     /// Description of GLRevaluation_ManualCode.
     /// </summary>
-    public partial class TGLRevaluation
+    public partial class TGLRevaluation : IFrmPetra
     {
         private Int32 FLedgerNumber;
 
@@ -154,17 +155,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.BorderStyle = BorderStyle.FixedSingle;
 
             grdDetails.Columns.Add("DoRevaluation", "...",
-                typeof(bool)).Width = 30;
+                typeof(bool));
             grdDetails.Columns.Add("AccountCode", "Account",
-                typeof(string)).Width = 60;
+                typeof(string));
             grdDetails.Columns.Add("Currency", "[CUR]",
-                typeof(string)).Width = 50;
+                typeof(string));
             grdDetails.Columns.Add("ExchangeRate", Catalog.GetString("Rate"),
-                typeof(String)).Width = 90;
+                typeof(String));
             grdDetails.Columns.Add("Effective", Catalog.GetString("Effective"),
-                typeof(string)).Width = 60;
+                typeof(string));
             grdDetails.Columns.Add("Status", Catalog.GetString("Status"),
-                typeof(string)).Width = 100;
+                typeof(string));
             SourceGrid.DataGridColumn gridColumn =
                 grdDetails.Columns.Add(null, "", new SourceGrid.Cells.Button("..."));
             linkController.InitFrmData(this, FperiodStart, FperiodEnd);
@@ -172,6 +173,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.SelectionMode = SourceGrid.GridSelectionMode.Row;
             grdDetails.CancelEditingWithEscapeKey = false;
+
+            // Set up for auto-sizing
+            grdDetails.Columns[0].AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.None;
+
+            for (int i = 1; i < 6; i++)
+            {
+                grdDetails.Columns[i].AutoSizeMode = SourceGrid.AutoSizeMode.EnableAutoSize | SourceGrid.AutoSizeMode.EnableStretch;
+            }
         }
 
         private void AddADataRow(int AIndex, String AAccountCode, string ACurrencyValue, decimal AExchangeRate, DateTime AdateEffectiveFrom)
@@ -267,6 +277,80 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.Close();
         }
+
+        /*  Form event handlers
+         *
+         */
+
+        void TGLRevaluation_Load(object sender, EventArgs e)
+        {
+            // Do intial sizing
+            TGLRevaluation_Resize(null, null);
+
+            // Set the initial window position if we have stored it.
+            FPetraUtilsObject.TFrmPetra_Load(sender, e);
+        }
+
+        void TGLRevaluation_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Remember the window position
+            FPetraUtilsObject.TFrmPetra_Closing(sender, e);
+        }
+
+        void TGLRevaluation_Resize(object sender, EventArgs e)
+        {
+            int halfWidth = this.Width / 2;
+
+            btnRevaluate.Left = halfWidth - btnRevaluate.Width - 10;
+            btnCancel.Left = halfWidth + 10;
+            btnRevaluate.Top = this.Height - btnRevaluate.Height - 60;
+            btnCancel.Top = btnRevaluate.Top;
+
+            lblAccountText.Left = halfWidth - lblAccountText.Width - 40;
+            lblAccountValue.Left = halfWidth - 30;
+            lblCostCentre.Left = halfWidth - lblCostCentre.Width - 40;
+            cmbCostCentres.Left = halfWidth - 30;
+            lblDateEnd.Left = halfWidth - lblDateEnd.Width - 40;
+            lblDateEndValue.Left = halfWidth - 30;
+            lblRevCur.Left = halfWidth - lblRevCur.Width - 40;
+            lblRevCurValue.Left = halfWidth - 30;
+
+            // Auto-size the grid columns
+            grdDetails.AutoSizeCells(new SourceGrid.Range(1, 1, grdDetails.Rows.Count - 1, 5));
+        }
+
+        #region FPetraUtilsObject and IFrmPetra interface
+
+        // FPetraUtilsObject and IFrmPetra interface
+        private TFrmPetraUtils FPetraUtilsObject = null;
+
+        /// <summary>
+        /// Interface method
+        /// </summary>
+        public void RunOnceOnActivation()
+        {
+            // Nothing to do
+        }
+
+        /// <summary>
+        /// Interface method
+        /// </summary>
+        public bool CanClose()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Interface method
+        /// </summary>
+        public TFrmPetraUtils GetPetraUtilsObject()
+        {
+            return FPetraUtilsObject;
+        }
+
+        #endregion
+
+        #region public class CurrencyExchange
 
         /// <summary>
         /// A CurrencyExchange-Element is a member of a currencyExchangeList which is used as a
@@ -445,6 +529,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        #endregion
+
+        #region private class ClickController
+
         private class ClickController : SourceGrid.Cells.Controllers.ControllerBase
         {
             TGLRevaluation mainForm;
@@ -497,5 +585,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 currencyExchangeList = ACurrencyExchangeList;
             }
         }
+
+        #endregion
     }
 }

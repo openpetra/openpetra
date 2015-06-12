@@ -72,7 +72,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         // Other variables
         private bool FIsRateUnused = false;
-        private ADailyExchangeRateTable FMainTableRaw = new ADailyExchangeRateTable();
+        private DateTime FLatestAccountingPeriodEndDate = DateTime.MaxValue;
+        private DateTime FEarliestAccountingPeriodStartDate = DateTime.MinValue;
+        private bool FSkipValidation = false;
 
         // Testing
         private bool FShowUnusedRatesAtStartup = false;
@@ -235,10 +237,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // This is where we load all the data.  The auto-generated code did not load anything yet
             FMainDS.Merge(TRemote.MFinance.Common.WebConnectors.LoadDailyExchangeRateData(FPetraUtilsObject.GetCallerForm() != null));
 
-            // Now load the raw data (we need it for when we add new rows)
-            Ict.Common.Data.TTypedDataTable TypedTable;
-            TRemote.MCommon.DataReader.WebConnectors.GetData(ADailyExchangeRateTable.GetTableDBName(), null, out TypedTable);
-            FMainTableRaw = (ADailyExchangeRateTable)TypedTable;
+            // Work out the earliest/latest accounting periods from all the active ledgers
+            foreach (ExchangeRateTDSALedgerInfoRow ledgerRow in FMainDS.ALedgerInfo.Rows)
+            {
+                if (ledgerRow.LedgerStatus != true)
+                {
+                    // inactive ledger
+                    continue;
+                }
+
+                if ((FLatestAccountingPeriodEndDate == DateTime.MaxValue) || (ledgerRow.ForwardPeriodEndDate > FLatestAccountingPeriodEndDate))
+                {
+                    FLatestAccountingPeriodEndDate = ledgerRow.ForwardPeriodEndDate;
+                }
+
+                if ((FEarliestAccountingPeriodStartDate == DateTime.MinValue)
+                    || (ledgerRow.CurrentPeriodStartDate < FEarliestAccountingPeriodStartDate))
+                {
+                    FEarliestAccountingPeriodStartDate = ledgerRow.CurrentPeriodStartDate;
+                }
+            }
         }
 
         /// <summary>
@@ -269,7 +287,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.grdRateUsage.DoubleClickCell += new TDoubleClickCellEventHandler(ViewRateUsage);
             this.chkHideOthers.CheckedChanged += new EventHandler(chk_CheckedChanged);
 
-            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+            FPetraUtilsObject.DataSavingValidated += new TDataSavingValidatedHandler(FPetraUtilsObject_DataSavingValidated);
 
             // Set a non-standard sort order (newest record first)
             DataView theView = FMainDS.ADailyExchangeRate.DefaultView;
@@ -286,14 +304,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (baseCurrencyOfLedger == null)
                 {
                     // What ledgers does the user have access to??
-                    ALedgerTable ledgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
-                    DataView ledgerView = ledgers.DefaultView;
+                    DataView ledgerView = new DataView(FMainDS.ALedgerInfo);
                     ledgerView.RowFilter = "a_ledger_status_l = 1";     // Only view 'in use' ledgers
 
                     if (ledgerView.Count > 0)
                     {
                         // There is at least one - so default to the currency of the first one
-                        baseCurrencyOfLedger = ((ALedgerRow)ledgerView.Table.Rows[0]).BaseCurrency;
+                        baseCurrencyOfLedger = ((ExchangeRateTDSALedgerInfoRow)ledgerView[0].Row).BaseCurrency;
                     }
                 }
             }
@@ -431,9 +448,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 txtDetailRateOfExchange.Focus();
             }
-            else
+            else if (FPetraUtilsObject.GetCallerForm() != null)
             {
+                // Not when testing because the _Shown method gets called in TearDown and we are disconnecting then
                 SelectRowInGrid(rowIdToSelect);
+
+                if (blnIsInModalMode && txtDetailRateOfExchange.CanFocus)
+                {
+                    txtDetailRateOfExchange.Focus();
+                }
             }
         }
 
@@ -455,7 +478,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 // re-load the data
                 FMainDS.Clear();
-                FMainDS.Merge(TRemote.MFinance.Common.WebConnectors.LoadDailyExchangeRateData(true));
+                FMainDS.Merge(TRemote.MFinance.Common.WebConnectors.LoadDailyExchangeRateData(false));
                 FMainDS.AcceptChanges();
 
                 // select the same row as before
@@ -699,7 +722,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (CreateNewADailyExchangeRate())
             {
-                // Did we manage to display the row (it may still be filtered out
+                // Did we manage to display the row (it may still be filtered out)
                 DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
                 Int32 RowNumberGrid = DataUtilities.GetDataViewIndexByDataTableIndex(dv,
                     FMainDS.ADailyExchangeRate,
@@ -714,6 +737,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FMainDS.ADailyExchangeRate,
                     FMainDS.ADailyExchangeRate.Rows.Count - 1) + 1;
                 SelectRowInGrid(RowNumberGrid);
+
+                DataView usageView = ((DevAge.ComponentModel.BoundDataView)grdRateUsage.DataSource).DataView;
+                usageView.RowFilter = "0=1";
             }
 
             if (cmbDetailFromCurrencyCode.Enabled)
@@ -836,6 +862,55 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             DeleteADailyExchangeRate();
         }
 
+        private bool DeleteRowManual(ExchangeRateTDSADailyExchangeRateRow ARowToDelete, ref string ACompletionMessage)
+        {
+            // The standard delete row method will handle any exception generated by our attempt to delete
+
+            // We may have deleted this row already, if it was an inverse of a previous one
+            if ((ARowToDelete.RowState == DataRowState.Deleted) || (ARowToDelete.RowState == DataRowState.Detached))
+            {
+                return true;
+            }
+
+            // We need to look and see if there is a matching inverse row that is unused.
+            // Find all matching from/to/date
+            string filter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=#{5}# AND {6}=0 AND {7}=0",
+                ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
+                ARowToDelete.ToCurrencyCode,
+                ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
+                ARowToDelete.FromCurrencyCode,
+                ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
+                ARowToDelete.DateEffectiveFrom.ToString("yyyy-MM-dd"),
+                ExchangeRateTDSADailyExchangeRateTable.GetJournalUsageDBName(),
+                ExchangeRateTDSADailyExchangeRateTable.GetGiftBatchUsageDBName());
+
+            DataView dv = new DataView(FMainDS.ADailyExchangeRate, filter, String.Empty, DataViewRowState.CurrentRows);
+
+            if (dv.Count > 0)
+            {
+                // from/to/date matches - now we need to check the rates
+                // Because of rounding errors we need to check both ways
+                decimal rowToDeleteInverse = Math.Round(1 / ARowToDelete.RateOfExchange, 10);
+
+                for (int i = dv.Count - 1; i >= 0; i--)
+                {
+                    ExchangeRateTDSADailyExchangeRateRow tryRow = (ExchangeRateTDSADailyExchangeRateRow)dv[i].Row;
+                    decimal tryRowInverse = Math.Round(1 / tryRow.RateOfExchange, 10);
+
+                    if ((rowToDeleteInverse == tryRow.RateOfExchange) || (tryRowInverse == ARowToDelete.RateOfExchange))
+                    {
+                        tryRow.Delete();
+                    }
+                }
+            }
+
+            // Now delete the row we were called with
+            ARowToDelete.Delete();
+
+            // handling is complete
+            return true;
+        }
+
         private void chk_CheckedChanged(object sender, EventArgs e)
         {
             string rowFilter = FFilterAndFindObject.CurrentActiveFilter;
@@ -878,7 +953,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     ExchangeRateTDSADailyExchangeRateTable.GetGiftBatchUsageDBName());
             }
 
-            if (chkHideOthers.Checked)
+            if (chkHideOthers.Checked && pnlDetails.Enabled)
             {
                 if (showRatesFilter.Length > 0)
                 {
@@ -1156,11 +1231,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void SetEnabledStates()
         {
-            //Filter only applies to currency To/From fields, which are always disabled in Modal view
-            // and so filter is not needed. Otherwise the user is able to use the filter to select different currencies
-            //  other what is displayed in the To/From comboboxes
-            chkToggleFilter.Enabled = !blnIsInModalMode;
-
             btnClose.Enabled = pnlDetails.Enabled;
 
             if (!pnlDetails.Enabled)
@@ -1208,7 +1278,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void Import(System.Object sender, EventArgs e)
         {
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
             {
                 TVerificationResultCollection results = FPetraUtilsObject.VerificationResultCollection;
 
@@ -1232,13 +1302,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
 
                     formatter += "{0}{0}{1}{0}{0}{3}{0}{0}{4}";
-                    MessageBox.Show(String.Format(formatter,
+
+                    TFrmExtendedMessageBox messageBox = new TFrmExtendedMessageBox(this);
+                    messageBox.ShowDialog(String.Format(
+                            formatter,
                             Environment.NewLine,
                             results[0].ResultText,
                             nRowsImported,
-                            MCommonResourcestrings.StrExchRateImportTryAgain,
+                            results[0].ResultSeverity ==
+                            TResultSeverity.Resv_Critical ? MCommonResourcestrings.StrExchRateImportTryAgain : String.Empty,
                             results[0].ResultCode),
-                        MCommonResourcestrings.StrExchRateImportTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MCommonResourcestrings.StrExchRateImportTitle, String.Empty, TFrmExtendedMessageBox.TButtons.embbOK,
+                        results[0].ResultSeverity ==
+                        TResultSeverity.Resv_Critical ? TFrmExtendedMessageBox.TIcon.embiError : TFrmExtendedMessageBox.TIcon.embiInformation);
 
                     results.Clear();
                 }
@@ -1265,7 +1341,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void ValidateDataDetailsManual(ADailyExchangeRateRow ARow)
         {
-            if (ARow.RowState == DataRowState.Detached)
+            if ((ARow.RowState == DataRowState.Detached) || FSkipValidation)
             {
                 return;
             }
@@ -1273,7 +1349,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_GLSetup.ValidateDailyExchangeRate(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict, minModalEffectiveDate, maxModalEffectiveDate, blnIsInModalMode);
+                FPetraUtilsObject.ValidationControlsDict, minModalEffectiveDate, maxModalEffectiveDate, blnIsInModalMode, FMainDS.ALedgerInfo,
+                FEarliestAccountingPeriodStartDate, FLatestAccountingPeriodEndDate);
 
             // Now make an additional manual check that the rate is sensible
             TScreenVerificationResult verificationResultSensible = null;
@@ -1309,7 +1386,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         drNext = (ADailyExchangeRateRow)(myView[nThis + 1]).Row;
                     }
 
-                    if (drPrev != null)
+                    if ((drPrev != null) && (drPrev.RateOfExchange > 0.0m))
                     {
                         ratio = drThis.RateOfExchange / drPrev.RateOfExchange;
 
@@ -1319,7 +1396,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         }
                     }
 
-                    if (drNext != null)
+                    if ((drNext != null) && (drNext.RateOfExchange > 0.0m))
                     {
                         decimal tryRatio = drThis.RateOfExchange / drNext.RateOfExchange;
 
@@ -1384,26 +1461,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ARow.Table.Columns[ADailyExchangeRateTable.ColumnRateOfExchangeId]);
         }
 
-        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+        private void FPetraUtilsObject_DataSavingValidated(object Sender, System.ComponentModel.CancelEventArgs e)
         {
             // The user has clicked Save.  We need to consider if we need to make any Inverse currency additions...
-            // We need to update the details and validate them first
-            // When we return from this method the standard code will do the validation again and might not allow the save to go ahead
-            FPetraUtilsObject.VerificationResultCollection.Clear();
-            // Get the current row details
-            // No messages so any duplicates (which we are about to delete) won't trigger a message
-            //   but that is better than two dialogs which we would get for any other reason - because our caller method is also about
-            //   to call ValidateAllData.  So we keep this one silent.
-            ValidateAllData(false, false);
-
-            if (!TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
-            {
-                return;
-            }
-
             // Now go through all the data checking all the added or modified rows.  Keep a list of inverses.
             //  (Remember that modified rows must by definition be unused so its ok to delete them.)
             DataView dv = new DataView(FMainDS.ADailyExchangeRate, String.Empty, SortByDateDescending, DataViewRowState.CurrentRows);
+
             List <tInverseItem>lstInverses = new List <tInverseItem>();
 
             for (int i = 0; i < dv.Count; i++)
@@ -1557,7 +1621,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // Now make sure to select the row that was currently selected when we started the Save operation
             // If we auto-deleted the 'current' row, this method will select the first row
+            // We need to skip validation for this row select because if there is a warning and we have now created an inverse
+            //  we will raise a 'you can move away from this row' message box.
+            FSkipValidation = true;
+            FIgnoreFocusRowLeaving = true;
+
             SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1);
+
+            FIgnoreFocusRowLeaving = false;
+            FSkipValidation = false;
         }
 
         /// <summary>
@@ -1589,7 +1661,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             FromCurrency, ToCurrency,
                             EffectiveDate.ToString(), tryEffectiveTime.ToString()
                         }) != null)
-                   || (FMainTableRaw.Rows.Find(new object[] {
+                   || (FMainDS.ARawDailyExchangeRate.Rows.Find(new object[] {
                                FromCurrency, ToCurrency,
                                EffectiveDate.ToString(), tryEffectiveTime.ToString()
                            }) != null))
@@ -1606,6 +1678,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // If we cannot come up with a rate, it will be 0.0 (which is not allowed so it will force the user to enter a better number)
             SuggestedRate = 0.0m;
+            DateTime suggestedRateDate = DateTime.MinValue;
             decimal tryCorporateRate;
 
             if (FromCurrency == ToCurrency)
@@ -1639,8 +1712,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 if (dv.Count > 0)
                 {
-                    // Use this rate
-                    SuggestedRate = ((ADailyExchangeRateRow)dv[0].Row).RateOfExchange;
+                    // Potentially use this rate
+                    ADailyExchangeRateRow row = (ADailyExchangeRateRow)dv[0].Row;
+                    SuggestedRate = row.RateOfExchange;
+                    suggestedRateDate = row.DateEffectiveFrom;
+                }
+
+                // try the other way round, just in case
+                rowFilter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' AND {2}='{3}' AND {4} <= #{5}#",
+                    ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
+                    ToCurrency,
+                    ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
+                    FromCurrency,
+                    ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
+                    EffectiveDate.ToString("d", CultureInfo.InvariantCulture));
+                dv.RowFilter = rowFilter;
+
+                if (dv.Count > 0)
+                {
+                    // Maybe use this rate, if its newer, or we don't have one yet
+                    ADailyExchangeRateRow row = (ADailyExchangeRateRow)dv[0].Row;
+
+                    if ((SuggestedRate == 0.0m) || (row.DateEffectiveFrom > suggestedRateDate))
+                    {
+                        SuggestedRate = Math.Round(1 / row.RateOfExchange, 10);
+                    }
                 }
             }
         }
@@ -1656,6 +1752,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private bool GetCorporateRate(string FromCurrency, string ToCurrency, DateTime EffectiveDate, out decimal SuggestedRate)
         {
             SuggestedRate = 0.0m;
+            DateTime suggestedRateDate = DateTime.MinValue;
+
             DataView dv = FMainDS.ACorporateExchangeRate.DefaultView;
             dv.RowFilter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' AND {2}='{3}' AND {4} <= #{5}#",
                 ACorporateExchangeRateTable.GetFromCurrencyCodeDBName(),
@@ -1668,11 +1766,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (dv.Count > 0)
             {
-                SuggestedRate = ((ACorporateExchangeRateRow)dv[0].Row).RateOfExchange;
-                return true;
+                ACorporateExchangeRateRow row = (ACorporateExchangeRateRow)dv[0].Row;
+                SuggestedRate = row.RateOfExchange;
+                suggestedRateDate = row.DateEffectiveFrom;
             }
 
-            return false;
+            // Now try the other way round
+            dv.RowFilter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' AND {2}='{3}' AND {4} <= #{5}#",
+                ACorporateExchangeRateTable.GetFromCurrencyCodeDBName(),
+                ToCurrency,
+                ACorporateExchangeRateTable.GetToCurrencyCodeDBName(),
+                FromCurrency,
+                ACorporateExchangeRateTable.GetDateEffectiveFromDBName(),
+                EffectiveDate.ToString("d", CultureInfo.InvariantCulture));
+
+            if (dv.Count > 0)
+            {
+                ACorporateExchangeRateRow row = (ACorporateExchangeRateRow)dv[0].Row;
+
+                if ((SuggestedRate == 0.0m) || (row.DateEffectiveFrom > suggestedRateDate))
+                {
+                    SuggestedRate = Math.Round(1 / row.RateOfExchange);
+                }
+            }
+
+            return SuggestedRate != 0.0m;
         }
 
         /// <summary>

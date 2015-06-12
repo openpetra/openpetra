@@ -2554,7 +2554,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ImportTransactionsFromFile(object sender, EventArgs e)
         {
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
             {
                 if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromFile))
                 {
@@ -2565,7 +2565,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ImportTransactionsFromClipboard(object sender, EventArgs e)
         {
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
             {
                 if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromClipboard))
                 {

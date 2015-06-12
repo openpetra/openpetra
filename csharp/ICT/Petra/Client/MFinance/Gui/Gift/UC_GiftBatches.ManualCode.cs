@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Validate all data
         /// </summary>
         bool ValidateAllData(bool ARecordChangeVerification,
-            bool AProcessAnyDataValidationErrors,
+            TErrorProcessingMode ADataValidationProcessingMode,
             Control AValidateSpecificControl = null,
             bool ADontRecordNewDataValidationRun = true);
     }
@@ -94,7 +94,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private DateTime FEndDateLastForwardingPeriod;
 
         //Currency related
-        private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
+        private string FLedgerBaseCurrency = String.Empty;
+        //private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
 
         /// <summary>
         /// Flags whether all the gift batch rows for this form have finished loading
@@ -203,6 +204,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ParentForm.Cursor = Cursors.WaitCursor;
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+            cmbDetailCurrencyCode.cmbCombobox.StickySelectedValueChanged += new EventHandler(StickyCurrencyChange);
+
+            // Load the ledger table so we know the base currency
+            FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadALedgerTable(FLedgerNumber));
+            FLedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
 
             FLoadAndFilterLogicObject.ActivateFilter();
             LoadBatchesForCurrentYear();
@@ -567,7 +573,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowTransactionTab(Object sender, EventArgs e)
         {
-            if ((grdDetails.Rows.Count > 1) && ValidateAllData(false, true))
+            if ((grdDetails.Rows.Count > 1) && ValidateAllData(false, TErrorProcessingMode.Epm_All))
             {
                 ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions);
             }
@@ -642,14 +648,55 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void CurrencyChanged(object sender, EventArgs e)
         {
-            String CurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
-
-            if (!FPetraUtilsObject.SuppressChangeDetection && (FPreviouslySelectedDetailRow != null)
-                && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            if (FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null)
+                || (GetCurrentBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
-                FPreviouslySelectedDetailRow.CurrencyCode = CurrencyCode;
-                RecalculateTransactionAmounts();
+                return;
+            }
+
+            string newCurrency = cmbDetailCurrencyCode.GetSelectedString();
+
+            if (FPreviouslySelectedDetailRow.CurrencyCode != newCurrency)
+            {
+                Console.WriteLine("--- New currency is " + newCurrency);
+                FPreviouslySelectedDetailRow.CurrencyCode = newCurrency;
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = (newCurrency == FLedgerBaseCurrency) ? 1.0m : 0.0m;
+
                 RefreshCurrencyAndExchangeRateControls();
+                RecalculateTransactionAmounts();
+            }
+        }
+
+        /// <summary>
+        /// This event is fired when there is a currency change that 'sticks' for more than 1 second.
+        /// We use it to see if the server has a specific rate for this currency and date
+        /// </summary>
+        private void StickyCurrencyChange(object sender, EventArgs e)
+        {
+            if (FPreviouslySelectedDetailRow.CurrencyCode == FLedgerBaseCurrency)
+            {
+                return;
+            }
+
+            decimal suggestedRate = 0.0m;
+
+            if (dtpDetailGlEffectiveDate.Date.HasValue)
+            {
+                FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
+
+                // get a specific single rate for the specific date
+                suggestedRate = TRemote.MFinance.GL.WebConnectors.GetDailyExchangeRate(
+                    FPreviouslySelectedDetailRow.CurrencyCode, FLedgerBaseCurrency, dtpDetailGlEffectiveDate.Date.Value, 0, true);
+
+                FPetraUtilsObject.GetForm().Cursor = Cursors.Default;
+            }
+
+            // Is it different??
+            if (FPreviouslySelectedDetailRow.ExchangeRateToBase != suggestedRate)
+            {
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = suggestedRate;
+                RefreshCurrencyAndExchangeRateControls();
+                RecalculateTransactionAmounts(suggestedRate);
             }
         }
 
@@ -889,6 +936,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             }
                         }
                     }
+
+                    if (FPreviouslySelectedDetailRow.CurrencyCode != FLedgerBaseCurrency)
+                    {
+                        // Need to check for new exchange rate for this date
+                        decimal suggestedRate = 0.0m;
+
+                        FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
+
+                        // get a specific single rate for the specific date
+                        suggestedRate = TRemote.MFinance.GL.WebConnectors.GetDailyExchangeRate(
+                            FPreviouslySelectedDetailRow.CurrencyCode, FLedgerBaseCurrency, dtpDetailGlEffectiveDate.Date.Value, 0, true);
+
+                        FPetraUtilsObject.GetForm().Cursor = Cursors.Default;
+
+                        // Is it different??
+                        if (FPreviouslySelectedDetailRow.ExchangeRateToBase != suggestedRate)
+                        {
+                            FPreviouslySelectedDetailRow.ExchangeRateToBase = suggestedRate;
+                            RefreshCurrencyAndExchangeRateControls();
+                            RecalculateTransactionAmounts(suggestedRate);
+                        }
+                    }
                 }
             }
             catch (Exception)
@@ -1032,26 +1101,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void RecalculateTransactionAmounts(decimal ANewExchangeRate = 0)
         {
             string CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
-            DateTime EffectiveDate = FPreviouslySelectedDetailRow.GlEffectiveDate;
 
             if (ANewExchangeRate == 0)
             {
-                if (CurrencyCode == FMainDS.ALedger[0].BaseCurrency)
+                if (CurrencyCode == FLedgerBaseCurrency)
                 {
                     ANewExchangeRate = 1;
                 }
-
-                //else
-                //{
-                //    ANewExchangeRate = TExchangeRateCache.GetDailyExchangeRate(
-                //        CurrencyCode,
-                //        FMainDS.ALedger[0].BaseCurrency,
-                //        EffectiveDate);
-                //}
             }
-
-            //Need to get the exchange rate
-            FPreviouslySelectedDetailRow.ExchangeRateToBase = ANewExchangeRate;
 
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(CurrencyCode);
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
@@ -1059,23 +1116,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RefreshCurrencyAndExchangeRateControls()
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
-
             txtDetailHashTotal.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
 
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
-            txtDetailExchangeRateToBase.Enabled =
-                (FPreviouslySelectedDetailRow.ExchangeRateToBase != DEFAULT_CURRENCY_EXCHANGE);
+            //txtDetailExchangeRateToBase.Enabled =
+            //    (FPreviouslySelectedDetailRow.ExchangeRateToBase != DEFAULT_CURRENCY_EXCHANGE);
 
-            if ((FMainDS.ALedger == null) || (FMainDS.ALedger.Count == 0))
-            {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadALedgerTable(FLedgerNumber));
-            }
-
-            btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
+            btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FLedgerBaseCurrency);
 
             // Note from AlanP Jan 2015:
             // We used to put the focus on the Get/Set button as the text in the currency box changed.
@@ -1114,14 +1161,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FPreviouslySelectedDetailRow.ExchangeRateToBase != selectedExchangeRate)
             {
                 FPreviouslySelectedDetailRow.ExchangeRateToBase = selectedExchangeRate;
-                txtDetailExchangeRateToBase.NumberValueDecimal = selectedExchangeRate;
+
+                RefreshCurrencyAndExchangeRateControls();
                 RecalculateTransactionAmounts(selectedExchangeRate);
-
-                //Enforce save needed condition
-                FPetraUtilsObject.SetChangedFlag();
             }
-
-            RefreshCurrencyAndExchangeRateControls();
         }
 
         private bool EnsureNewBatchIsVisible()

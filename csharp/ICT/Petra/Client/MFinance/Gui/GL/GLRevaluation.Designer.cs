@@ -161,8 +161,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             rowY = rowY + rowHeight + 20;
 
             grdDetails.Location = new System.Drawing.Point(leftColStart, rowY);
-            grdDetails.Size = new System.Drawing.Size(440, 200);
+            grdDetails.Size = new System.Drawing.Size(430, 200);
             grdDetails.BorderStyle = BorderStyle.FixedSingle;
+            grdDetails.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom;
+            grdDetails.AutoStretchColumnsToFitWidth = true;
 
             rowY = rowY + 230;
 
@@ -171,7 +173,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             btnRevaluate.Location = new System.Drawing.Point(buttonLeft, rowY);
             btnRevaluate.Name = "btnRevaluate";
-            btnRevaluate.Size = new System.Drawing.Size(120, 23);
+            btnRevaluate.Size = new System.Drawing.Size(95, 23);
             btnRevaluate.TabIndex = 2;
             btnRevaluate.Text = "Revalue";
             btnRevaluate.UseVisualStyleBackColor = true;
@@ -180,7 +182,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             btnCancel.Location = new System.Drawing.Point(150 + buttonLeft, rowY);
             btnCancel.Name = "btnCancel";
-            btnCancel.Size = new System.Drawing.Size(120, 23);
+            btnCancel.Size = new System.Drawing.Size(95, 23);
             btnCancel.TabIndex = 3;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;

@@ -148,7 +148,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
                 FCurrencyCode,
                 FMainDS.ALedger[0].BaseCurrency,
-                ADate);
+                ADate, true);
 
             txtExchangeRateToBase.Text = FExchangeRateToBase.ToString();
 

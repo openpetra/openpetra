@@ -123,14 +123,14 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         private static object[, ] StandardData =
         {
-            { "GBP", "USD", "1900-06-01", 0.50m },
-            { "GBP", "USD", "1900-07-01", 0.55m },
-            { "GBP", "USD", "2999-06-01", 0.40m },
-            { "GBP", "USD", "2999-07-01", 0.45m },
-            { "USD", "GBP", "1900-06-01", 2.00m },
-            { "USD", "GBP", "1900-07-01", 1.8181818182m },
-            { "USD", "GBP", "2999-06-01", 2.50m },
-            { "USD", "GBP", "2999-07-01", 2.2222222222m }
+            { "EUR", "USD", "1900-06-01", 0.50m },
+            { "EUR", "USD", "1900-07-01", 0.55m },
+            { "EUR", "USD", "2999-06-01", 0.40m },
+            { "EUR", "USD", "2999-07-01", 0.45m },
+            { "USD", "EUR", "1900-06-01", 2.00m },
+            { "USD", "EUR", "1900-07-01", 1.8181818182m },
+            { "USD", "EUR", "2999-06-01", 2.50m },
+            { "USD", "EUR", "2999-07-01", 2.2222222222m }
         };
 
         private const int FFromCurrencyId = 0;

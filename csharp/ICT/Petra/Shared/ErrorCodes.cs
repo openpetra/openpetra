@@ -81,12 +81,6 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Invalid Data Entered")]
         public const String ERR_VALUEUNASSIGNABLE = "GEN.00002V";
 
-        /// <summary>Value is no longer assignable (just give warning).</summary>
-        [ErrCodeAttribute("Value is no longer assignable.",
-             ErrorMessageText = "{0} '{1}' is no longer assignable.\r\nIt should no longer be used.",
-             ErrorMessageTitle = "Unassignable Code Used")]
-        public const String ERR_VALUEUNASSIGNABLE_WARNING = "GEN.00007V";
-
         /// <summary>No permission to access DB Table.</summary>
         [ErrCodeAttribute("You don't have permission to access the specified database table.")]
         public const String ERR_NOPERMISSIONTOACCESSTABLE = "GEN.00003E";
@@ -99,6 +93,12 @@ namespace Ict.Petra.Shared
 
         /// <summary>Concurrent changes to data happened.</summary>
         public const String ERR_CONCURRENTCHANGES = "GEN.00006E";
+
+        /// <summary>Value is no longer assignable (just give warning).</summary>
+        [ErrCodeAttribute("Value is no longer assignable.",
+             ErrorMessageText = "{0} '{1}' is no longer assignable.\r\nIt should no longer be used.",
+             ErrorMessageTitle = "Unassignable Code Used")]
+        public const String ERR_VALUEUNASSIGNABLE_WARNING = "GEN.00007V";
 
         /// <summary>Values must not be the same.</summary>
         [ErrCodeAttribute("Values must not be the same.",
@@ -117,6 +117,12 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Value must be entered",
              ErrorMessageTitle = "No Data Entered")]
         public const String ERR_VALUE_NOT_ENTERED = "GEN.00010V";
+
+        /// <summary>General data verification warning.</summary>
+        [ErrCodeAttribute("General data verification warning.",
+             FullDescription = "This unspecific error is shown when a check on the validity of data in OpenPetra generated warnings but no errors.",
+             ErrorMessageTitle = "Form Data Warning")]
+        public const String ERR_GENERAL_VERIFICATION_WARNING = "GEN.00011N";
 
         #endregion
 

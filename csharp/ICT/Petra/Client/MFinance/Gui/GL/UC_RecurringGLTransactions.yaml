@@ -44,7 +44,7 @@ RootNode:
             ControlsOrientation: horizontal
         btnNew: {Action=actNew, Width=120}
         btnDelete: {Action=actDelete, Width=120}
-        btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true}
+        btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true, Tooltip=Click to delete all the transactions for the current journal}
 
         pnlTransAnalysisAttributes:
             Dock: Right
@@ -92,7 +92,8 @@ RootNode:
             Multiline: true
             ScrollBars: Vertical
             Validation: true
-        txtDetailReference: {Label=Reference, Validation=true}
+            Tooltip: Enter some transaction narrative text.  This is a required field
+        txtDetailReference: {Label=Reference, Validation=true, Tooltip=Enter an optional transaction reference}
         cmbDetailKeyMinistryKey: {Label=Key Ministry, List=UserDefinedList, Stretch=horizontally}
         pnlDetailAmounts:
             Controls:
@@ -105,7 +106,7 @@ RootNode:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true, SuppressChangeDetection=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true, SuppressChangeDetection=true}
         txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true, SuppressChangeDetection=true}
-        txtDebitAmount: {Label=Dr Amount, Validation=true, Format=Currency, NullValueAllowed=false, OnChange=DebitAmountChanged}
-        txtCreditAmount: {Label=Cr Amount, Validation=true, Format=Currency, NullValueAllowed=false, OnChange=CreditAmountChanged}
+        txtDebitAmount: {Label=Dr Amount, Validation=true, Format=Currency, NullValueAllowed=false, OnChange=DebitAmountChanged, Tooltip=Enter either a credit or debit amount}
+        txtCreditAmount: {Label=Cr Amount, Validation=true, Format=Currency, NullValueAllowed=false, OnChange=CreditAmountChanged, Tooltip=Enter either a credit or debit amount}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency, Unbound=true, SuppressChangeDetection=true}
         txtCreditTotalAmount: {Label=Credit Total, ReadOnly=true, Format=Currency, Unbound=true, SuppressChangeDetection=true}

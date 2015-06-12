@@ -3189,7 +3189,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-        /// get daily exchange rate for the given currencies and date;
+        /// Gets daily exchange rate for the given currencies and date.  There is no limit on how 'old' the rate can be.
+        /// If more than one rate exists on or before the specified date the latest one is returned.  This might be old or it might
+        /// be one of several on the same day.
         /// TODO: might even collect the latest exchange rate from the web
         /// </summary>
         /// <param name="ACurrencyFrom"></param>
@@ -3200,6 +3202,29 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static decimal GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
         {
             return TExchangeRateTools.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
+        }
+
+        /// <summary>
+        /// Gets daily exchange rate for the given currencies and date. The APriorDaysAllwed parameter limits how 'old' the rate can be.
+        /// The unique rate parameter can ensure that a rate is only returned if there is only one to choose from.
+        /// TODO: might even collect the latest exchange rate from the web
+        /// </summary>
+        /// <param name="ACurrencyFrom"></param>
+        /// <param name="ACurrencyTo"></param>
+        /// <param name="ADateEffective"></param>
+        /// <param name="APriorDaysAllowed">Sets a limit on how many days prior to ADateEffective to search.  Use -1 for no limit,
+        /// 0 to imply that the rate must match for the specified date, 1 for the date and the day before and so on.</param>
+        /// <param name="AEnforceUniqueRate">If true the method will only return a value if there is one unique rate in the date range.
+        /// Otherwise it returns the latest rate.</param>
+        /// <returns></returns>
+        [RequireModulePermission("NONE")]
+        public static decimal GetDailyExchangeRate(string ACurrencyFrom,
+            string ACurrencyTo,
+            DateTime ADateEffective,
+            int APriorDaysAllowed,
+            Boolean AEnforceUniqueRate)
+        {
+            return TExchangeRateTools.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective, APriorDaysAllowed, AEnforceUniqueRate);
         }
 
         /// <summary>

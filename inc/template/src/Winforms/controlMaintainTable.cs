@@ -66,6 +66,7 @@ namespace {#NAMESPACE}
     private Control FPrimaryKeyControl = null;
     private Label FPrimaryKeyLabel = null;
     private string FDefaultDuplicateRecordHint = String.Empty;
+    private bool FIgnoreFocusRowLeaving = false;
 {#ENDIF SHOWDETAILS}
 #endregion
 
@@ -202,8 +203,25 @@ namespace {#NAMESPACE}
     /// <returns>True if the existing Details data was validated successfully and the new row was added.</returns>
     public bool CreateNew{#DETAILTABLE}()
     {
-        if(ValidateAllData(true, true))
+        if(ValidateAllData(true, TErrorProcessingMode.Epm_IgnoreNonCritical))
         {
+            FIgnoreFocusRowLeaving = false;
+
+            if (FPetraUtilsObject.VerificationResultCollection.HasOnlyNonCriticalErrors)
+            {
+			    // Some non-critical warnings exist
+                if (TDataValidation.ProcessAnyDataValidationWarnings(FPetraUtilsObject.VerificationResultCollection,
+                    MCommonResourcestrings.StrCreateNewRowAnywayQuestion, this.GetType()) == false)
+                {
+				    // Client cancelled
+                    return false;
+                }
+
+                // Client wants to continue
+				// We can ignore FocusRowLeaving because we have just displayed the message as a Yes/No dialog
+                FIgnoreFocusRowLeaving = true;
+            }
+            
 {#IFNDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
             // we create the table locally, no dataset
             {#DETAILTABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped(true);
@@ -255,7 +273,7 @@ namespace {#NAMESPACE}
                         {
                             // Set the default text for the first TextBox whose name contains 'Desc'
                             c.Text = MCommonResourcestrings.StrPleaseEnterDescription;
-                            ValidateAllData(true, false);
+                            ValidateAllData(true, TErrorProcessingMode.Epm_None);
                             break;
                         }
                     }
@@ -269,7 +287,7 @@ namespace {#NAMESPACE}
             UpdateRecordNumberDisplay();
 
 {#ENDIF BUTTONPANEL}
-            
+            FIgnoreFocusRowLeaving = false;
             return true;
         }
         else
@@ -529,6 +547,7 @@ namespace {#NAMESPACE}
     private void grdDetails_RowSelected(object sender, RangeRegionChangedEventArgs e)
     {
         int gridRow = grdDetails.Selection.ActivePosition.Row;
+
         if (grdDetails.Sorting)
         {
             // No need to ShowDetails - just update our (obsolete) variable
@@ -539,17 +558,19 @@ namespace {#NAMESPACE}
             if ((gridRow == FPrevRowChangedRow) && grdDetails.IsMouseDown)
             {
                 // This deals with the special case where the user edits a detail and then clicks on the same row in the grid
-                // When this happens we do not get a control validated event for the control that we leave
-                // We just want to treat this the same as tabbing round the controls - show any validation tooltips but do not stop the user leaving the row.
-                ValidateAllData(true, false);
+                // If the change(s) were to control(s) that have no validation we will not have had a call to get the details from the controls.
+                // So we do that here so that the grid will update and reflect the changes made.
+                ValidateAllData(true, TErrorProcessingMode.Epm_None);
             }
-            else
-            {
-                // This deals with all other cases - including the special case where, on a sorted grid, the row may be the same but contains different details
-                //  because this event fires from SelectRowInGrid, even when the selected row hasn't changed but the data has.
-                ShowDetails(gridRow);
-                //Console.WriteLine("{0}: RowSelected: ShowDetails() for row {1}", DateTime.Now.Millisecond, gridRow);
-            }
+
+            // In all other cases we need to ShowDetails, even if the active row is the same as it was before.  This covers the following cases:
+            // - the row has changed
+            // - the special case where, on a sorted grid, the row may be the same but contains different details
+            //     because this event fires from SelectRowInGrid, even when the selected row hasn't changed but the data has.
+            // - the case of SHIFT+click.  In that case the selected row stays the same but if the number of highlighted rows
+            //     is different we may need to (for example) alter the enabled state of the delete button.
+            ShowDetails(gridRow);
+            //Console.WriteLine("{0}: RowSelected: ShowDetails() for row {1}", DateTime.Now.Millisecond, gridRow);
         }
     }
 
@@ -558,7 +579,12 @@ namespace {#NAMESPACE}
     /// </summary>
     private void grdDetails_FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
     {        
-        if (!ValidateAllData(true, true))
+        if (FIgnoreFocusRowLeaving)
+        {
+            return;
+        }
+
+        if (!ValidateAllData(true, TErrorProcessingMode.Epm_All))
         {
             e.Cancel = true;
         }
@@ -698,7 +724,7 @@ namespace {#NAMESPACE}
     public void GetDataFromControls()
     {
 {#IFDEF SAVEDETAILS}
-        ValidateAllData(false, false);
+        ValidateAllData(false, TErrorProcessingMode.Epm_None);
 {#ENDIF SAVEDETAILS}
     }
 {#ENDIFN MASTERTABLE}
@@ -810,8 +836,8 @@ namespace {#NAMESPACE}
     /// the UserControl.</remarks>    
     /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing 
     /// to another record, otherwise set it to false.</param>
-    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-    /// user, otherwise set it to false.</param>
+    /// <param name="ADataValidationProcessingMode">Set to <see cref="TErrorProcessingMode.Epm_None"/> if no data validation errors should be shown to the user,
+    /// otherwise set it to one of <see cref="TErrorProcessingMode.Epm_IgnoreNonCritical"/> or <see cref="TErrorProcessingMode.Epm_All"/>.</param>
     /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a 
     /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
     /// <para>
@@ -825,7 +851,7 @@ namespace {#NAMESPACE}
     /// UserControl's ValidateAllData Method doesn't change a recorded DataValidationRun that was set from the 
     /// Form/UserControl that embeds this UserControl! (Default=true).</param>    
     /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-    public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null, bool ADontRecordNewDataValidationRun = true)
+    public bool ValidateAllData(bool ARecordChangeVerification, TErrorProcessingMode ADataValidationProcessingMode, Control AValidateSpecificControl = null, bool ADontRecordNewDataValidationRun = true)
     {
         bool ReturnValue = false;
         Control ControlToValidate = null;
@@ -972,7 +998,7 @@ namespace {#NAMESPACE}
             {#USERCONTROLVALIDATION}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
 
-            if (AProcessAnyDataValidationErrors)
+            if (ADataValidationProcessingMode != TErrorProcessingMode.Epm_None)
             {
                 // Only process the Data Validations here if ControlToValidate is not null.
                 // It can be null if this.ActiveControl yields null - this would happen if no Control
@@ -981,13 +1007,15 @@ namespace {#NAMESPACE}
                 {
                     if(ControlToValidate.FindUserControlOrForm(true) == this)
                     {
+						bool ignoreWarnings = (ADataValidationProcessingMode == TErrorProcessingMode.Epm_IgnoreNonCritical) &&
+							!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors;
 {#IFDEF SHOWDETAILS}
                         ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+                            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null, ignoreWarnings);
 {#ENDIF SHOWDETAILS}
 {#IFNDEF SHOWDETAILS}
                         ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType(), ignoreWarnings);
 {#ENDIFN SHOWDETAILS}
                     }
                     else
@@ -1112,7 +1140,7 @@ namespace {#NAMESPACE}
     {
         TScreenVerificationResult SingleVerificationResult;
         
-        ValidateAllData(true, false, (Control)sender, false);
+        ValidateAllData(true, TErrorProcessingMode.Epm_None, (Control)sender, false);
         
         FPetraUtilsObject.ValidationToolTip.RemoveAll();
         
@@ -1257,7 +1285,7 @@ return (({#DETAILTABLE}Row)ARowToDelete).{#DELETEABLEFLAG};
 {##SNIPCANDELETESELECTION}
 
     /// <summary>
-    /// Returns true if all the selected rows can be deleted.
+    /// Returns true if one of the selected rows can be deleted.
     /// </summary>
     private bool CanDeleteSelection()
     {

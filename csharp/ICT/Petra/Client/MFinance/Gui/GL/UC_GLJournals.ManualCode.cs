@@ -57,6 +57,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private TUC_GLJournals_Cancel FCancelLogicObject = null;
 
         /// <summary>
+        /// The current ledger base currency
+        /// </summary>
+        private string FLedgerBaseCurrency = string.Empty;
+
+        /// <summary>
         /// The current active Batch number
         /// </summary>
         public Int32 FBatchNumber = -1;
@@ -82,12 +87,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             btnGetSetExchangeRate.Click += new EventHandler(SetExchangeRateValue);
             cmbDetailTransactionCurrency.SelectedValueChanged += new System.EventHandler(ResetCurrencyExchangeRate);
+            cmbDetailTransactionCurrency.cmbCombobox.StickySelectedValueChanged += new EventHandler(StickyCurrencyChange);
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
         }
 
         private void RunOnceOnParentActivationManual()
         {
-            //Nothing to do here
+            if (FMainDS != null)
+            {
+                FLedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            }
         }
 
         /// <summary>
@@ -285,16 +294,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.TabStop = (!JournalRowIsNull);
 
-            if (JournalRowIsNull)
-            {
-                btnAdd.Focus();
-            }
-
             //Enable the transactions tab accordingly
             ((TFrmGLBatch)ParentForm).EnableTransactions(!JournalRowIsNull && (ARow.JournalStatus != MFinanceConstants.BATCH_CANCELLED));
 
             UpdateChangeableStatus();
-            RefreshCurrencyAndExchangeRate();
+
+            if (JournalRowIsNull)
+            {
+                btnAdd.Focus();
+            }
+            else
+            {
+                RefreshCurrencyAndExchangeRate();
+            }
         }
 
         private ABatchRow GetBatchRow()
@@ -388,7 +400,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.btnCancel.Enabled = IsChangeable && JournalUpdatable;
             this.btnAdd.Enabled = IsChangeable;
             this.btnGetSetExchangeRate.Enabled = IsChangeable && JournalUpdatable
-                                                 && (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
+                                                 && (FPreviouslySelectedDetailRow.TransactionCurrency != FLedgerBaseCurrency);
 
             pnlDetails.Enabled = IsChangeable && JournalUpdatable;
             pnlDetailsProtected = !IsChangeable;
@@ -433,12 +445,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ValidateDataDetailsManual(AJournalRow ARow)
         {
-            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
-
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_GL.ValidateGLJournalManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict, null, null, null, LedgerBaseCurrency);
+                FValidationControlsDict, null, null, null, FLedgerBaseCurrency);
 
             //TODO: remove this once database definition is set for Batch Description to be NOT NULL
             // Description is mandatory then make sure it is set
@@ -483,6 +493,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FFilterAndFindObject.FilterFindPanel.DisplayFindTab();
         }
 
+        // Fired by the currency combo box when the selected value changes
         private void ResetCurrencyExchangeRate(object sender, EventArgs e)
         {
             if (FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null)
@@ -491,44 +502,61 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if (FPreviouslySelectedDetailRow.TransactionCurrency != cmbDetailTransactionCurrency.GetSelectedString())
+            string newCurrency = cmbDetailTransactionCurrency.GetSelectedString();
+
+            if (FPreviouslySelectedDetailRow.TransactionCurrency != newCurrency)
             {
-                decimal exchangeRate;
-
-                FPreviouslySelectedDetailRow.TransactionCurrency = cmbDetailTransactionCurrency.GetSelectedString();
-
-                if (FPreviouslySelectedDetailRow.TransactionCurrency == FMainDS.ALedger[0].BaseCurrency)
-                {
-                    exchangeRate = 1.0m;
-                }
-                else
-                {
-                    exchangeRate = 0.0m;
-                }
-
-                FPreviouslySelectedDetailRow.ExchangeRateToBase = exchangeRate;
-                RefreshCurrencyAndExchangeRate(exchangeRate);
+                FPreviouslySelectedDetailRow.TransactionCurrency = newCurrency;
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = (newCurrency == FLedgerBaseCurrency) ? 1.0m : 0.0m;
+                RefreshCurrencyAndExchangeRate();
             }
         }
 
-        private void RefreshCurrencyAndExchangeRate(decimal AExchangeRate = -1)
+        /// <summary>
+        /// This event is fired when there is a currency change that 'sticks' for more than 1 second.
+        /// We use it to see if the server has a specific rate for this currency and date
+        /// </summary>
+        private void StickyCurrencyChange(object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            if (FPreviouslySelectedDetailRow.TransactionCurrency == FLedgerBaseCurrency)
             {
                 return;
             }
 
-            bool CurrencyIsLedger = (FPreviouslySelectedDetailRow.TransactionCurrency == FMainDS.ALedger[0].BaseCurrency);
+            decimal suggestedRate = 0.0m;
 
-            if (AExchangeRate >= 0)
+            if (dtpDetailDateEffective.Date.HasValue)
             {
-                txtDetailExchangeRateToBase.NumberValueDecimal = AExchangeRate;
+                FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
+
+                // get a specific single rate for the specific date
+                suggestedRate = TRemote.MFinance.GL.WebConnectors.GetDailyExchangeRate(
+                    FPreviouslySelectedDetailRow.TransactionCurrency, FLedgerBaseCurrency, dtpDetailDateEffective.Date.Value, 0, true);
+
+                FPetraUtilsObject.GetForm().Cursor = Cursors.Default;
             }
 
-            ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("JOURNAL");
+            // Is it different??
+            if (FPreviouslySelectedDetailRow.ExchangeRateToBase != suggestedRate)
+            {
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = suggestedRate;
+                RefreshCurrencyAndExchangeRate();
+            }
+        }
 
-            txtDetailExchangeRateToBase.BackColor = CurrencyIsLedger ? Color.LightPink : Color.Empty;
-            btnGetSetExchangeRate.Enabled = !CurrencyIsLedger;
+        private void RefreshCurrencyAndExchangeRate()
+        {
+            txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
+
+            txtDetailExchangeRateToBase.BackColor =
+                (FPreviouslySelectedDetailRow.TransactionCurrency == FLedgerBaseCurrency) ? Color.LightPink : Color.Empty;
+
+            btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FLedgerBaseCurrency);
+
+            if (FPreviouslySelectedDetailRow.ExchangeRateToBase > 0.0m)
+            {
+                ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("JOURNAL");
+            }
         }
 
         private void SetExchangeRateValue(Object sender, EventArgs e)
@@ -562,7 +590,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailExchangeRateToBase.NumberValueDecimal = SelectedExchangeRate;
             FPreviouslySelectedDetailRow.ExchangeRateTime = SelectedEffectiveTime;
 
-            RefreshCurrencyAndExchangeRate(SelectedExchangeRate);
+            RefreshCurrencyAndExchangeRate();
         }
 
         /// <summary>

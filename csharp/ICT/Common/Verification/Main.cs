@@ -71,6 +71,30 @@ namespace Ict.Common.Verification
 
     #endregion
 
+    #region TErrorProcessingMode
+
+    /// <summary>
+    /// There are three ways in which errors can be processed during validation
+    /// </summary>
+    public enum TErrorProcessingMode
+    {
+        /// <summary>
+        /// Do not process any errors
+        /// </summary>
+        Epm_None,
+
+        /// <summary>
+        /// Process errors but ignore non-critical errors unless there are critical errors
+        /// </summary>
+        Epm_IgnoreNonCritical,
+
+        /// <summary>
+        /// Process all errors
+        /// </summary>
+        Epm_All
+    };
+
+    #endregion
 
     #region IResultInterface
 
@@ -766,7 +790,7 @@ namespace Ict.Common.Verification
         /// critical or non-critical error.
         /// </summary>
         /// <remarks>Does not check/count any <see cref="TVerificationResult" /> whose
-        /// <see cref="TVerificationResult.ResultSeverity" /> </remarks> is <see cref="TResultSeverity.Resv_Info" />.
+        /// <see cref="TVerificationResult.ResultSeverity" /> is <see cref="TResultSeverity.Resv_Info" /></remarks> .
         public bool HasCriticalOrNonCriticalErrors
         {
             get
@@ -781,6 +805,28 @@ namespace Ict.Common.Verification
                 }
 
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks whether there is at least one <see cref="TVerificationResult" /> in the collection and, if so,
+        /// that it is /they are all non-critical.
+        /// </summary>
+        /// <remarks>Returns false if any <see cref="TVerificationResult" /> is not <see cref="TResultSeverity.Resv_Info" />.
+        /// Also returns false if there are no <see cref="TVerificationResult" />s at all.  Returns true otherwise.</remarks>.
+        public bool HasOnlyNonCriticalErrors
+        {
+            get
+            {
+                foreach (TVerificationResult v in List)
+                {
+                    if (v.ResultSeverity != TResultSeverity.Resv_Noncritical)
+                    {
+                        return false;
+                    }
+                }
+
+                return (List.Count > 0);
             }
         }
 

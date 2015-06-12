@@ -488,7 +488,7 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         private void ToggleFilterPanel(System.Object sender, EventArgs e)
         {
-            if (FCallerFormOrControl.DoValidation(true, true))
+            if (FCallerFormOrControl.DoValidation(true, TErrorProcessingMode.Epm_All))
             {
                 ToggleFilter();
 
@@ -655,7 +655,7 @@ namespace Ict.Petra.Client.CommonForms
             //   but not if it was ValidateAllData that is causing the argumentCtrlValue change by clearing the discretionary filters
             if (!FClearingDiscretionaryFilters)
             {
-                if (!FCallerFormOrControl.DoValidation(true, true))
+                if (!FCallerFormOrControl.DoValidation(true, TErrorProcessingMode.Epm_All))
                 {
                     // Remember who called us and why, so we can replay the event when the data becomes valid again
                     Control senderAsControl = (sender as Control);
@@ -761,7 +761,7 @@ namespace Ict.Petra.Client.CommonForms
 
         private void FucoFilterAndFind_ApplyFilterClicked(object sender, TUcoFilterAndFind.TContextEventExtControlArgs e)
         {
-            if (FCallerFormOrControl.DoValidation(true, true))
+            if (FCallerFormOrControl.DoValidation(true, TErrorProcessingMode.Epm_All))
             {
                 ApplyFilter();
                 int newRowAfterFiltering = FGrid.DataSourceRowToIndex2(
@@ -881,7 +881,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// The screen or control should perform the standard validation routine
         /// </summary>
-        bool DoValidation(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors);
+        bool DoValidation(bool ARecordChangeVerification, TErrorProcessingMode ADataValidationProcessingMode);
 
         /// <summary>
         /// Placeholder for optional additions to the data columns to handle LIKE comparisons for numbers

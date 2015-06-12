@@ -21,5 +21,15 @@
       <CustomField name="BatchPeriod" type="Int32" comment="The Batch Period of the Batch Year in which this row occurs."/>
       <PrimaryKey thisFields="FromCurrencyCode,ToCurrencyCode,DateEffectiveFrom,TimeEffectiveFrom,LedgerNumber,BatchNumber,JournalNumber"/>
     </Table>
+    <Table sqltable="a_ledger" name="ALedgerInfo">
+      <CustomField name="CurrentPeriodStartDate" type="DateTime" initial="DateTime.MinValue" comment="The start date for the current period in this ledger."/>
+      <CustomField name="CurrentPeriodEndDate" type="DateTime" initial="DateTime.MaxValue" comment="The end date for the current period in this ledger."/>
+      <CustomField name="ForwardPeriodEndDate" type="DateTime" initial="DateTime.MaxValue" comment="The end date for the last forward period in this ledger."/>
+      <PrimaryKey thisFields="LedgerNumber"/>
+    </Table>
+    <Table sqltable="a_daily_exchange_rate" name="ARawDailyExchangeRate">
+      <CustomField name="Unused" type="Int32" initial="0" comment="This unused field needs to be present for the auto-generate code to work."/>
+      <PrimaryKey thisFields="FromCurrencyCode,ToCurrencyCode,DateEffectiveFrom,TimeEffectiveFrom"/>
+    </Table>
   </DataSet>
 </PetraDataSets>

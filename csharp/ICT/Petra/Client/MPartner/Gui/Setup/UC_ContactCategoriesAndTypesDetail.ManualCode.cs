@@ -287,7 +287,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         public void SetCategoryCode(string ANewCode)
         {
             // Save the current data
-            ValidateAllData(true, false);
+            ValidateAllData(true, TErrorProcessingMode.Epm_None);
 
             // Save the current contact attribute in our member variable
             FContactCategory = ANewCode;

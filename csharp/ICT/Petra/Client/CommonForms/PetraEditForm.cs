@@ -115,8 +115,12 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>todoComment</summary>
         protected Boolean FSuppressChangeDetection;
 
-        /// <summary>todoComment</summary>
+        /// <summary>Called immediately after the Save action has been started</summary>
         public event TDataSavingStartHandler DataSavingStarted;
+
+        /// <summary>Called after the Save action has been started and the data has been successfully validated
+        /// but before working out the changes that need to be saved</summary>
+        public event TDataSavingValidatedHandler DataSavingValidated;
 
         /// <summary>Fired when any control is changed</summary>
         public event TValueChangedHandler ControlChanged;
@@ -851,7 +855,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// todoComment
+        /// The 'save' process has been initiated
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -860,6 +864,20 @@ namespace Ict.Petra.Client.CommonForms
             if (DataSavingStarted != null)
             {
                 DataSavingStarted(this, e);
+            }
+        }
+
+        /// <summary>
+        /// The 'save' process has been initiated, the current data has been validated but the changes have not yet been assembled.
+        /// The calling code can cancel the save.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnDataSavingValidated(System.Object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (DataSavingValidated != null)
+            {
+                DataSavingValidated(this, e);
             }
         }
 

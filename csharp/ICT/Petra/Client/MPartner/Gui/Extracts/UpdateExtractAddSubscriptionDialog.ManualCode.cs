@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            if (ucoSubscription.ValidateAllData(true, ucoSubscription))
+            if (ucoSubscription.ValidateAllData(TErrorProcessingMode.Epm_All, ucoSubscription))
             {
                 if (MessageBox.Show(Catalog.GetString("Are you sure that you want to add the selected subscription" +
                             "\r\nfor all partners in the extract?"),

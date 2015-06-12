@@ -43,6 +43,8 @@ using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MFinance.Gift.Validation;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -273,6 +275,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         AMethodOfGivingTable MethodOfGivingTable = AMethodOfGivingAccess.LoadAll(Transaction);
                         AMethodOfPaymentTable MethodOfPaymentTable = AMethodOfPaymentAccess.LoadAll(Transaction);
                         ACurrencyTable CurrencyTable = ACurrencyAccess.LoadAll(Transaction);
+                        PMailingTable MailingTable = PMailingAccess.LoadAll(Transaction);
 
                         if (LedgerTable.Rows.Count == 0)
                         {
@@ -481,6 +484,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                         MotivationDetailTable,
                                         MethodOfGivingTable,
                                         MethodOfPaymentTable,
+                                        MailingTable,
                                         ref NeedRecipientLedgerNumber,
                                         out giftDetails);
 
@@ -831,6 +835,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         AMotivationDetailTable MotivationDetailTable = AMotivationDetailAccess.LoadViaALedger(FLedgerNumber, Transaction);
                         AMethodOfGivingTable MethodOfGivingTable = AMethodOfGivingAccess.LoadAll(Transaction);
                         AMethodOfPaymentTable MethodOfPaymentTable = AMethodOfPaymentAccess.LoadAll(Transaction);
+                        PMailingTable MailingTable = PMailingAccess.LoadAll(Transaction);
 
                         AGiftBatchTable giftBatchTable = AGiftBatchAccess.LoadViaALedger(FLedgerNumber, Transaction);
                         DataView giftBatchDV = new DataView(giftBatchTable, String.Format("{0}={1}",
@@ -899,6 +904,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     MotivationDetailTable,
                                     MethodOfGivingTable,
                                     MethodOfPaymentTable,
+                                    MailingTable,
                                     ref NeedRecipientLedgerNumber,
                                     out giftDetails);
 
@@ -1217,7 +1223,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             TValidationControlsDict AValidationControlsDictGift, TValidationControlsDict AValidationControlsDictGiftDetail,
             ACostCentreTable AValidationCostCentreTable, AAccountTable AValidationAccountTable, AMotivationGroupTable AValidationMotivationGroupTable,
             AMotivationDetailTable AValidationMotivationDetailTable, AMethodOfGivingTable AValidationMethodOfGivingTable,
-            AMethodOfPaymentTable AValidationMethodOfPaymentTable,
+            AMethodOfPaymentTable AValidationMethodOfPaymentTable, PMailingTable AValidationMailingTable,
             ref GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber, out AGiftDetailRow AGiftDetails)
         {
             // Start parsing
@@ -1376,10 +1382,10 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftDetails.CommentOneType = commentOneType;
 
             SetCommentTypeCase(ref commentTwoType);
-            AGiftDetails.CommentOneType = commentTwoType;
+            AGiftDetails.CommentTwoType = commentTwoType;
 
             SetCommentTypeCase(ref commentThreeType);
-            AGiftDetails.CommentOneType = commentThreeType;
+            AGiftDetails.CommentThreeType = commentThreeType;
 
             if (AGiftDetails.MailingCode != null)
             {
@@ -1454,7 +1460,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 AGiftDetailValidation.Validate(this, AGiftDetails, ref AMessages, AValidationControlsDictGiftDetail);
                 TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, (GiftBatchTDSAGiftDetailRow)AGiftDetails,
                     ref AMessages, AValidationControlsDictGiftDetail, RecipientClass, AValidationCostCentreTable, AValidationAccountTable,
-                    AValidationMotivationGroupTable, AValidationMotivationDetailTable, AGiftDetails.RecipientKey);
+                    AValidationMotivationGroupTable, AValidationMotivationDetailTable, AValidationMailingTable, AGiftDetails.RecipientKey);
 
                 // Fix up the messages
                 for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)

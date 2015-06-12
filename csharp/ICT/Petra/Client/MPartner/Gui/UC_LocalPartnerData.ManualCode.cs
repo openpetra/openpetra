@@ -25,6 +25,7 @@ using System;
 using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MCommon;
@@ -126,8 +127,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
         /// the UserControl.</remarks>
-        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-        /// user, otherwise set it to false.</param>
+        /// <param name="ADataValidationProcessingMode">Set to TErrorProcessingMode.Epm_All if data validation errors should be shown to the
+        /// user, otherwise set it to TErrorProcessingMode.Epm_None.</param>
         /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
         /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
         /// <para>
@@ -137,7 +138,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </para>
         /// </param>
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        public bool ValidateAllData(TErrorProcessingMode ADataValidationProcessingMode, Control AValidateSpecificControl = null)
         {
             bool ReturnValue = true;
 
@@ -158,7 +159,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 //            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
 //            ValidateDataManual(FMainDS.PSubscription[0]);
 //
-//            if (AProcessAnyDataValidationErrors)
+//            if (ADataValidationProcessingMode != TErrorProcessingMode.Epm_None)
 //            {
 //                // Only process the Data Validations here if ControlToValidate is not null.
 //                // It can be null if this.ActiveControl yields null - this would happen if no Control

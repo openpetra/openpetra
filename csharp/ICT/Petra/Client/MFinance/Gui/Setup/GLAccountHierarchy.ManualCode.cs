@@ -656,7 +656,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            ValidateAllData(true, false);
+            ValidateAllData(true, TErrorProcessingMode.Epm_None);
             string newName = FNameForNewAccounts;
             Int32 countNewAccount = 0;
 
@@ -958,7 +958,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (FCurrentAccount != null)
             {
                 GetDetailsFromControls((GLSetupTDSAAccountRow)FCurrentAccount.AccountRow);
-                return ValidateAllData(true, true);
+                return ValidateAllData(true, TErrorProcessingMode.Epm_All);
             }
             else
             {

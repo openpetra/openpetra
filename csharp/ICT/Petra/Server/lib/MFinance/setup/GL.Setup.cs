@@ -3622,7 +3622,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Fields.Add(ALedgerTable.GetLedgerNameDBName());
             Fields.Add(ALedgerTable.GetLedgerNumberDBName());
             Fields.Add(ALedgerTable.GetBaseCurrencyDBName());
+            Fields.Add(ALedgerTable.GetIntlCurrencyDBName());
             Fields.Add(ALedgerTable.GetLedgerStatusDBName());
+            Fields.Add(ALedgerTable.GetCurrentPeriodDBName());
+            Fields.Add(ALedgerTable.GetNumberFwdPostingPeriodsDBName());
 
             TDBTransaction Transaction = null;
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,

@@ -30,7 +30,7 @@ RootNode:
             ControlsOrientation: horizontal
         btnNew: {Action=actNew, Width=120}
         btnDelete: {Action=actDelete, Width=120}
-        btnSubmitBatch: {Action=actSubmitBatch, Width=120, StartNewButtonGroup=true}
+        btnSubmitBatch: {Action=actSubmitBatch, Width=120, StartNewButtonGroup=true, Tooltip=Click to Submit the highlighted batch}
         grdDetails:
             Dock: Fill
             Columns: [BatchNumber, BatchDebitTotal, BatchCreditTotal, BatchControlTotal, BatchDescription]

@@ -32,8 +32,10 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Shared.MFinance.CrossLedger.Data;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Common.WebConnectors;
 using Ict.Petra.Server.MCommon.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.Common
@@ -420,7 +422,9 @@ namespace Ict.Petra.Server.MFinance.Common
     public class TExchangeRateTools
     {
         /// <summary>
-        /// get daily exchange rate for the given currencies and date;
+        /// Gets daily exchange rate for the given currencies and date.  There is no limit on how 'old' the rate can be.
+        /// If more than one rate exists on or before the specified date the latest one is returned.  This might be old or it might
+        /// be one of several on the same day.
         /// TODO: might even collect the latest exchange rate from the web
         /// </summary>
         /// <param name="ACurrencyFrom"></param>
@@ -429,11 +433,52 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns>Zero if no exchange rate found</returns>
         public static decimal GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
         {
+            return GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective, -1, false);
+        }
+
+        /// <summary>
+        /// Gets daily exchange rate for the given currencies and date. The APriorDaysAllwed parameter limits how 'old' the rate can be.
+        /// The unique rate parameter can ensure that a rate is only returned if there is only one to choose from.
+        /// TODO: might even collect the latest exchange rate from the web
+        /// </summary>
+        /// <param name="ACurrencyFrom"></param>
+        /// <param name="ACurrencyTo"></param>
+        /// <param name="ADateEffective"></param>
+        /// <param name="APriorDaysAllowed">Sets a limit on how many days prior to ADateEffective to search.  Use -1 for no limit,
+        /// 0 to imply that the rate must match for the specified date, 1 for the date and the day before and so on.</param>
+        /// <param name="AEnforceUniqueRate">If true the method will only return a value if there is one unique rate in the date range.
+        /// Otherwise it returns the latest rate.</param>
+        /// <returns>Zero if no exchange rate found</returns>
+        public static decimal GetDailyExchangeRate(string ACurrencyFrom,
+            string ACurrencyTo,
+            DateTime ADateEffective,
+            int APriorDaysAllowed,
+            Boolean AEnforceUniqueRate)
+        {
+            // TODO: collect exchange rate from the web; save to db
+            // see Mantis tracker case #87
+
+            // The rule is that we don't enforce finding a unique rate over the whole date range as that doesn't really make sense
+            if (AEnforceUniqueRate && (APriorDaysAllowed == -1))
+            {
+                throw new ArgumentException(
+                    "The GetDailyExchangeRate method does not allow 'AEnforceUniqueRate' to be true when 'APriorDaysAllowed' is -1. Unique rates should only be requested over a limited date range.");
+            }
+
             if (ACurrencyFrom == ACurrencyTo)
             {
                 return 1.0M;
             }
 
+            // Define our earliest date, if set
+            DateTime earliestDate = DateTime.MinValue;
+
+            if (APriorDaysAllowed >= 0)
+            {
+                earliestDate = ADateEffective.AddDays(-APriorDaysAllowed);
+            }
+
+            // Query the database...
             TDBTransaction transaction = null;
             bool oppositeRate = false;
             ADailyExchangeRateRow fittingRate = null;
@@ -443,54 +488,72 @@ namespace Ict.Petra.Server.MFinance.Common
                 ref transaction,
                 delegate
                 {
-                    // TODO: get the most recent exchange rate for the given date and currencies
-                    ADailyExchangeRateTable rates =
-                        ADailyExchangeRateAccess.LoadByPrimaryKey(ACurrencyFrom, ACurrencyTo, ADateEffective, 0, transaction);
+                    ExchangeRateTDS allRates = TCrossLedger.LoadDailyExchangeRateData(false, earliestDate, ADateEffective);
+                    ADailyExchangeRateTable rates = allRates.ADailyExchangeRate;
+                    ADailyExchangeRateRow uniqueFittingRow = null;
 
-                    if (rates.Count == 0)
+                    // sort rates by date, look for rate just before the date we are looking for
+                    string rowFilter = String.Format("{0}='{1}' AND {2}='{3}'",
+                        ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
+                        ACurrencyFrom,
+                        ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
+                        ACurrencyTo);
+
+                    rates.DefaultView.RowFilter = rowFilter;
+                    rates.DefaultView.Sort = String.Format("{0} DESC, {1} DESC",
+                        ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
+                        ADailyExchangeRateTable.GetTimeEffectiveFromDBName());
+
+                    // If we are after a unique row we need to remember the one from this view, if it exists
+                    if (AEnforceUniqueRate && (rates.DefaultView.Count == 1))
+                    {
+                        uniqueFittingRow = (ADailyExchangeRateRow)rates.DefaultView[0].Row;
+                    }
+
+                    if ((rates.DefaultView.Count == 0) || AEnforceUniqueRate)
                     {
                         // try other way round
-                        rates = ADailyExchangeRateAccess.LoadByPrimaryKey(ACurrencyTo, ACurrencyFrom, ADateEffective, 0, transaction);
+                        rowFilter = String.Format("{0}='{1}' AND {2}='{3}'",
+                            ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
+                            ACurrencyFrom,
+                            ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
+                            ACurrencyTo);
+
+                        rates.DefaultView.RowFilter = rowFilter;
                         oppositeRate = true;
-                    }
 
-                    if (rates.Count == 1)
-                    {
-                        fittingRate = rates[0];
-                    }
-                    else if (rates.Count == 0)
-                    {
-                        // TODO: collect exchange rate from the web; save to db
-                        // see tracker http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=87
-
-                        // Or look for most recent exchange rate???
-                        ADailyExchangeRateTable tempTable = new ADailyExchangeRateTable();
-                        ADailyExchangeRateRow templateRow = tempTable.NewRowTyped(false);
-                        templateRow.FromCurrencyCode = ACurrencyFrom;
-                        templateRow.ToCurrencyCode = ACurrencyTo;
-                        oppositeRate = false;
-                        rates = ADailyExchangeRateAccess.LoadUsingTemplate(templateRow, transaction);
-
-                        if (rates.Count == 0)
+                        if (AEnforceUniqueRate)
                         {
-                            templateRow.FromCurrencyCode = ACurrencyTo;
-                            templateRow.ToCurrencyCode = ACurrencyFrom;
-                            oppositeRate = true;
-                            rates = ADailyExchangeRateAccess.LoadUsingTemplate(templateRow, transaction);
-                        }
-
-                        if (rates.Count > 0)
-                        {
-                            // sort rates by date, look for rate just before the date we are looking for
-                            rates.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName();
-                            rates.DefaultView.RowFilter = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
-                                                          ADateEffective.ToString("yyyy-MM-dd") + "#";
-
-                            if (rates.DefaultView.Count > 0)
+                            if (rates.DefaultView.Count > 1)
                             {
-                                fittingRate = (ADailyExchangeRateRow)rates.DefaultView[rates.DefaultView.Count - 1].Row;
+                                // This way round does not have a unique rate
+                                uniqueFittingRow = null;
+                            }
+                            else if ((rates.DefaultView.Count == 1) && (uniqueFittingRow == null))
+                            {
+                                // we will use this as our unique rate
+                                uniqueFittingRow = (ADailyExchangeRateRow)rates.DefaultView[0].Row;
+                            }
+                            else
+                            {
+                                // put this variable back as it was
+                                oppositeRate = false;
                             }
                         }
+                    }
+
+                    if (AEnforceUniqueRate)
+                    {
+                        // Did we get a unique rate?
+                        if (uniqueFittingRow != null)
+                        {
+                            fittingRate = uniqueFittingRow;
+                        }
+                    }
+                    else if (rates.DefaultView.Count > 0)
+                    {
+                        // Just return the first in the list
+                        fittingRate = (ADailyExchangeRateRow)rates.DefaultView[0].Row;
                     }
                 });
 
@@ -498,13 +561,13 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (oppositeRate)
                 {
-                    return 1.0M / fittingRate.RateOfExchange;
+                    return GLRoutines.Divide(1.0m, fittingRate.RateOfExchange);
                 }
 
                 return fittingRate.RateOfExchange;
             }
 
-            TLogging.Log("Cannot find daily exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
+            TLogging.Log("Cannot find daily exchange rate for " + ACurrencyFrom + " " + ACurrencyTo + " for " + ADateEffective.ToString("yyyy-MM-dd"));
 
             //Returning 0 causes a validation error to force the user to select an exchange rate:
             return 0M;

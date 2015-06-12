@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -68,7 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void NewRow(System.Object sender, EventArgs e)
         {
             // This code derived from the auto-generated CreateNewACostCentreTypes(), because that doesn't cope with LedgerNumber.
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_IgnoreNonCritical))
             {
                 ACostCentreTypesRow NewRow = FMainDS.ACostCentreTypes.NewRowTyped();
                 NewRow.LedgerNumber = FLedgerNumber;
@@ -82,7 +83,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ACostCentreTypes.DefaultView);
 
                 SelectDetailRowByDataTableIndex(FMainDS.ACostCentreTypes.Rows.Count - 1);
-                ValidateAllData(true, false);
+                ValidateAllData(true, TErrorProcessingMode.Epm_None);
                 txtDetailCostCentreType.Focus();
             }
         }

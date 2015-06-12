@@ -174,19 +174,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
         /// the UserControl.</remarks>
-        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-        /// user, otherwise set it to false.</param>
+        /// <param name="ADataValidationProcessingMode">Set to Epm_All if data validation errors should be shown to the
+        /// user, otherwise set it to Epm_None.</param>
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
+        public bool ValidateAllData(TErrorProcessingMode ADataValidationProcessingMode)
         {
             bool ReturnValue = true;
 
-            if (!ucoField.ValidateAllData(AProcessAnyDataValidationErrors))
+            if (!ucoField.ValidateAllData(ADataValidationProcessingMode))
             {
                 ReturnValue = false;
             }
 
-            if (!ucoApplicant.ValidateAllData(AProcessAnyDataValidationErrors))
+            if (!ucoApplicant.ValidateAllData(ADataValidationProcessingMode))
             {
                 ReturnValue = false;
             }
@@ -271,7 +271,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FCurrentUserControl = ucoField;
 
-                if (!ucoField.ValidateAllData(true, FCurrentUserControl))
+                if (!ucoField.ValidateAllData(TErrorProcessingMode.Epm_All, FCurrentUserControl))
                 {
                     e.Cancel = true;
 
@@ -282,7 +282,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FCurrentUserControl = ucoApplicant;
 
-                if (!ucoApplicant.ValidateAllData(true, FCurrentUserControl))
+                if (!ucoApplicant.ValidateAllData(TErrorProcessingMode.Epm_All, FCurrentUserControl))
                 {
                     e.Cancel = true;
 

@@ -34,6 +34,7 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 
 namespace Ict.Petra.Shared.MFinance.Validation
 {
@@ -396,6 +397,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AAccounts">Optional - a Accounts table.  Is required for import validation. </param>
         /// <param name="AMotivationGroups">Optional - a MotivationGroups table.  Is required for import validation. </param>
         /// <param name="AMotivationDetails">Optional - a MotivationDetails table.  Is required for import validation. </param>
+        /// <param name="AMailingTable">Optional - a Mailing table.  Is required for import validation. </param>
         /// <param name="ARecipientField">Optional The recipient field for the gift.  Is required for import validation. </param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateGiftDetailManual(object AContext,
@@ -407,6 +409,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             AAccountTable AAccounts = null,
             AMotivationGroupTable AMotivationGroups = null,
             AMotivationDetailTable AMotivationDetails = null,
+            PMailingTable AMailingTable = null,
             Int64 ARecipientField = -1)
         {
             DataColumn ValidationColumn;
@@ -693,6 +696,29 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             VerifResultCollAddedCount++;
                         }
                     }
+                }
+            }
+
+            // Mailing code must exist
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMailingCodeId];
+            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (!ARow.IsMailingCodeNull() && (AMailingTable != null))
+            {
+                PMailingRow foundRow = (PMailingRow)AMailingTable.Rows.Find(ARow.MailingCode);
+
+                if ((foundRow == null) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                        AContext,
+                        new TVerificationResult(ValidationContext,
+                            String.Format(Catalog.GetString("Unknown mailing code '{0}'."),
+                                ARow.MailingCode),
+                            TResultSeverity.Resv_Critical),
+                        ValidationColumn))
+                {
+                    VerifResultCollAddedCount++;
                 }
             }
 

@@ -33,7 +33,6 @@ RootNode:
         pnlFilterAndFind:
             Dock: Left
             ExpandedWidth: 170
-            ShowApplyFilterButton: FilterContext.StandardFilterOnly
             ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
             FilterControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
             FindControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective]
@@ -46,7 +45,7 @@ RootNode:
             Controls: [btnAdd, btnCancel]
             ControlsOrientation: horizontal
         btnAdd: {Action=actNew, Width=120, Tooltip=Click to add a new journal}
-        btnCancel: {Action=actCancel, Width=120}
+        btnCancel: {Action=actCancel, Width=120, Tooltip=Click to Cancel the highlighted Journal}
         grdDetails:
             Dock: Fill
             Columns: [JournalNumber, JournalStatus, JournalDebitTotal, JournalCreditTotal, TransactionCurrency, JournalDescription, SubSystemCode, TransactionTypeCode]

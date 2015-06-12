@@ -212,7 +212,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (FActiveTab == tpgLedger)
             {
                 // Validate the ledger settings tab only
-                if (ValidateAllData(ucoGeneralLedgerSettings, true, true))
+                if (ValidateAllData(ucoGeneralLedgerSettings, true, TErrorProcessingMode.Epm_All))
                 {
                     FActiveTab = tabAllSettings.SelectedTab;
                 }
@@ -231,10 +231,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         // Method that allows us to get data and validate a particular tab
         private UserControl FSpecificControlToValidate = null;
-        private bool ValidateAllData(UserControl ASpecificControl, bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
+        private bool ValidateAllData(UserControl ASpecificControl, bool ARecordChangeVerification, TErrorProcessingMode ADataValidationProcessingMode)
         {
             FSpecificControlToValidate = ASpecificControl;
-            return ValidateAllData(ARecordChangeVerification, AProcessAnyDataValidationErrors);
+            return ValidateAllData(ARecordChangeVerification, ADataValidationProcessingMode);
         }
 
         /// <summary>

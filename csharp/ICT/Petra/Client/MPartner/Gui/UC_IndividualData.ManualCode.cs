@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -182,8 +183,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
         /// the UserControl.</remarks>
-        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-        /// user, otherwise set it to false.</param>
+        /// <param name="ADataValidationProcessingMode">Set to TErrorProcessingMode.Epm_All if data validation errors should be shown to the
+        /// user, otherwise set it to TErrorProcessingMode.Epm_None.</param>
         /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
         /// specific Control for which Data Validation errors might have been recorded. (Default=null).
         /// <para>
@@ -193,7 +194,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </para>
         /// </param>
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        public bool ValidateAllData(TErrorProcessingMode ADataValidationProcessingMode, Control AValidateSpecificControl = null)
         {
             bool ReturnValue = true;
 
@@ -205,7 +206,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_SpecialNeeds UCSpecialNeeds =
                         (TUC_IndividualData_SpecialNeeds)FUserControlSetup[TDynamicLoadableUserControls.dlucSpecialNeeds];
 
-                    if (!UCSpecialNeeds.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCSpecialNeeds.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -217,7 +218,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_PersonalLanguages UCPersonalLanguage =
                         (TUC_IndividualData_PersonalLanguages)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalLanguages];
 
-                    if (!UCPersonalLanguage.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCPersonalLanguage.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -229,7 +230,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_Abilities UCAbilities =
                         (TUC_IndividualData_Abilities)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalAbilities];
 
-                    if (!UCAbilities.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCAbilities.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -241,7 +242,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_Passport UCPassport =
                         (TUC_IndividualData_Passport)FUserControlSetup[TDynamicLoadableUserControls.dlucPassportDetails];
 
-                    if (!UCPassport.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCPassport.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -253,7 +254,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_PersonalData UCPersonalData =
                         (TUC_IndividualData_PersonalData)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalData];
 
-                    if (!UCPersonalData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCPersonalData.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -265,7 +266,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_EmergencyData UCEmergencyData =
                         (TUC_IndividualData_EmergencyData)FUserControlSetup[TDynamicLoadableUserControls.dlucEmergencyData];
 
-                    if (!UCEmergencyData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCEmergencyData.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -277,7 +278,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_ProgressReports UCProgressReport =
                         (TUC_IndividualData_ProgressReports)FUserControlSetup[TDynamicLoadableUserControls.dlucProgressReports];
 
-                    if (!UCProgressReport.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCProgressReport.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -289,7 +290,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_CommitmentPeriods UCCommitmentPeriod =
                         (TUC_IndividualData_CommitmentPeriods)FUserControlSetup[TDynamicLoadableUserControls.dlucCommitmentPeriods];
 
-                    if (!UCCommitmentPeriod.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCCommitmentPeriod.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -301,7 +302,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_PersonSkills UCPersonSkill =
                         (TUC_IndividualData_PersonSkills)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonSkills];
 
-                    if (!UCPersonSkill.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCPersonSkill.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -315,7 +316,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_PreviousExperience UCPreviousExperience =
                         (TUC_IndividualData_PreviousExperience)FUserControlSetup[TDynamicLoadableUserControls.dlucPreviousExperience];
 
-                    if (!UCPreviousExperience.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCPreviousExperience.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -327,7 +328,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_PersonalDocuments UCPersonalDocuments =
                         (TUC_IndividualData_PersonalDocuments)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalDocuments];
 
-                    if (!UCPersonalDocuments.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCPersonalDocuments.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -339,7 +340,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_JobAssignments UCJobAssignments =
                         (TUC_IndividualData_JobAssignments)FUserControlSetup[TDynamicLoadableUserControls.dlucJobAssignments];
 
-                    if (!UCJobAssignments.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    if (!UCJobAssignments.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                     {
                         ReturnValue = false;
                     }
@@ -352,7 +353,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     //    (TUC_IndividualData_LocalPersonnelData)FUserControlSetup[TDynamicLoadableUserControls.dlucLocalPersonnelData];
 
                     //TODO: no proper validation in place yet for local personnel data control
-                    //if (!UCLocalPersonnelData.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    //if (!UCLocalPersonnelData.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
                     //{
                     //    ReturnValue = false;
                     //}
@@ -2037,63 +2038,63 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (FUcoCommitmentPeriods != null)
                 {
-                    return FUcoCommitmentPeriods.ValidateAllData(true, true, FUcoCommitmentPeriods);
+                    return FUcoCommitmentPeriods.ValidateAllData(true, TErrorProcessingMode.Epm_All, FUcoCommitmentPeriods);
                 }
             }
             else if (FCurrentLinkLabel == llbJobAssignments)
             {
                 if (FUcoJobAssignments != null)
                 {
-                    return FUcoJobAssignments.ValidateAllData(true, true, FUcoJobAssignments);
+                    return FUcoJobAssignments.ValidateAllData(true, TErrorProcessingMode.Epm_All, FUcoJobAssignments);
                 }
             }
             else if (FCurrentLinkLabel == llbPassportDetails)
             {
                 if (FUcoPassportDetails != null)
                 {
-                    return FUcoPassportDetails.ValidateAllData(true, true, FUcoPassportDetails);
+                    return FUcoPassportDetails.ValidateAllData(true, TErrorProcessingMode.Epm_All, FUcoPassportDetails);
                 }
             }
             else if (FCurrentLinkLabel == llbPersonalDocuments)
             {
                 if (FUcoPersonalDocuments != null)
                 {
-                    return FUcoPersonalDocuments.ValidateAllData(true, true, FUcoPersonalDocuments);
+                    return FUcoPersonalDocuments.ValidateAllData(true, TErrorProcessingMode.Epm_All, FUcoPersonalDocuments);
                 }
             }
             else if (FCurrentLinkLabel == llbSpecialNeeds)
             {
                 if (FUcoSpecialNeeds != null)
                 {
-                    return FUcoSpecialNeeds.ValidateAllData(true, FUcoSpecialNeeds);
+                    return FUcoSpecialNeeds.ValidateAllData(TErrorProcessingMode.Epm_All, FUcoSpecialNeeds);
                 }
             }
             else if (FCurrentLinkLabel == llbLanguages)
             {
                 if (FUcoPersonalLanguages != null)
                 {
-                    return FUcoPersonalLanguages.ValidateAllData(true, true, FUcoPersonalLanguages);
+                    return FUcoPersonalLanguages.ValidateAllData(true, TErrorProcessingMode.Epm_All, FUcoPersonalLanguages);
                 }
             }
             else if (FCurrentLinkLabel == llbPersonSkills)
             {
                 if (FUcoPersonSkills != null)
                 {
-                    return FUcoPersonSkills.ValidateAllData(true, true, FUcoPersonSkills);
+                    return FUcoPersonSkills.ValidateAllData(true, TErrorProcessingMode.Epm_All, FUcoPersonSkills);
                 }
             }
             else if (FCurrentLinkLabel == llbPreviousExperience)
             {
                 if (FUcoPreviousExperience != null)
                 {
-                    return FUcoPreviousExperience.ValidateAllData(true, true, FUcoPreviousExperience);
+                    return FUcoPreviousExperience.ValidateAllData(true, TErrorProcessingMode.Epm_All, FUcoPreviousExperience);
                 }
             }
             else if (FCurrentLinkLabel == llbProgressReports)
             {
                 if (FUcoProgressReports != null)
                 {
-                    return FUcoProgressReports.ValidateAllData(true, true, FUcoProgressReports);
+                    return FUcoProgressReports.ValidateAllData(true, TErrorProcessingMode.Epm_All, FUcoProgressReports);
                 }
             }
             else if (FCurrentLinkLabel == llbLocalPersonnelData)
@@ -2107,7 +2108,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (FUcoPersonalData != null)
                 {
-                    return FUcoPersonalData.ValidateAllData(true, FUcoPersonalData);
+                    return FUcoPersonalData.ValidateAllData(TErrorProcessingMode.Epm_All, FUcoPersonalData);
                 }
             }
 

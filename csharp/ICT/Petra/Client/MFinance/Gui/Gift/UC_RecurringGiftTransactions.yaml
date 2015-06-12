@@ -111,7 +111,7 @@ RootNode:
                 Row10: [txtDetailRecipientKeyMinistry]
         dtpStartDonations: {Label=Don. Period From}
         dtpEndDonations: {Label=To}
-        chkDetailActive: {Label=Active Gift}
+        chkDetailActive: {Label=Active Gift, Tooltip=Check this box if this recurring gift is 'active'}
         txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
         txtDonorInfo: {NoLabel=true, ReadOnly=true, Width=450}
@@ -131,7 +131,7 @@ RootNode:
         cmbKeyMinistries: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}
         txtDetailRecipientKeyMinistry: {Label=Key Ministry}
         txtDetailGiftAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
-        chkDetailConfidentialGiftFlag: {Label=Confidential?}
+        chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if this gift is confidential}
         chkDetailTaxDeductible: {Label=Tax deductible?}
         txtDetailGiftCommentOne: {Label=Comment 1, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         txtDetailGiftCommentTwo: {Label=Comment 2, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}

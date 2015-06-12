@@ -743,7 +743,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FValidateBankingDetailsExtra = true;
 
             // first validate the currently selected row (if it exists)
-            if (!ValidateAllData(true, true))
+            if (!ValidateAllData(true, TErrorProcessingMode.Epm_All))
             {
                 return;
             }

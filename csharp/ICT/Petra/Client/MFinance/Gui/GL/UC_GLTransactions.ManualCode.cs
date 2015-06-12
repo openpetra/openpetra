@@ -1938,7 +1938,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ImportTransactionsFromFile(object sender, EventArgs e)
         {
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
             {
                 ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GLBatches_Import.TImportDataSourceEnum.FromFile);
                 // The import method refreshes the screen if the import is successful
@@ -1947,7 +1947,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ImportTransactionsFromClipboard(object sender, EventArgs e)
         {
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
             {
                 ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GLBatches_Import.TImportDataSourceEnum.FromClipboard);
                 // The import method refreshes the screen if the import is successful
