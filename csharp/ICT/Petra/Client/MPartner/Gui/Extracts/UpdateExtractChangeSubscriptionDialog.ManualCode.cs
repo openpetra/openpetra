@@ -130,6 +130,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void OnTickChangeItem(System.Object sender, EventArgs e)
         {
             CheckBox CheckBoxSender;
+
             //Control ChangeControl = null;
 
             // if check box is unticked then disable field, reset value and background colour,

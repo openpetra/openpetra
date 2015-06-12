@@ -69,6 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FStandardTabIndex = 0;
         private bool FLoadForImport = false;
         private bool FWarnAboutMissingIntlExchangeRate = true;
+        private bool FChangesDetected = false;
 
         // Variables that are used to select a specific batch on startup
         private Int32 FInitialBatchYear = -1;
@@ -350,6 +351,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AAllowRepeatEvent"></param>
         public void SelectTab(eGLTabs ATab, bool AAllowRepeatEvent = false)
         {
+            //Between the tab changing and seleted events changes are incorrectly detected on Journal controls
+            // TODO: find cause but use this field for now
+            if (!FChangesDetected && FPetraUtilsObject.HasChanges)
+            {
+                FPetraUtilsObject.HasChanges = false;
+                FPetraUtilsObject.DisableSaveButton();
+            }
+            else if (FChangesDetected && !FPetraUtilsObject.HasChanges)
+            {
+                FChangesDetected = false;
+            }
+
             try
             {
                 this.Cursor = Cursors.WaitCursor;
@@ -453,6 +466,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
             }
+
+            //Before the TabSelectionChanged event occurs, changes are incorrectly detected on Journal controls
+            // TODO: find cause but use this field for now
+            FChangesDetected = FPetraUtilsObject.HasChanges;
         }
 
         /// <summary>

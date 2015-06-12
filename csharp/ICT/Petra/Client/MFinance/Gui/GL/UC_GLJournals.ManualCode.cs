@@ -137,7 +137,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Load Journals
                 if (FMainDS.AJournal.DefaultView.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(FLedgerNumber, FBatchNumber));
+                    //FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(FLedgerNumber, FBatchNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, FBatchNumber));
                 }
 
                 if (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED)
@@ -250,19 +251,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void ShowDataManual()
         {
-            if (FLedgerNumber != -1)
+            try
             {
-                txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-                txtBatchNumber.Text = FBatchNumber.ToString();
-            }
+                FPetraUtilsObject.SuppressChangeDetection = true;
 
-            if (FPreviouslySelectedDetailRow != null)
+                if (FLedgerNumber != -1)
+                {
+                    txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+                    txtBatchNumber.Text = FBatchNumber.ToString();
+                }
+
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    txtDebit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalDebitTotal;
+                    txtCredit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalCreditTotal;
+                    txtControl.NumberValueDecimal =
+                        FPreviouslySelectedDetailRow.JournalDebitTotal -
+                        FPreviouslySelectedDetailRow.JournalCreditTotal;
+                }
+            }
+            finally
             {
-                txtDebit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalDebitTotal;
-                txtCredit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalCreditTotal;
-                txtControl.NumberValueDecimal =
-                    FPreviouslySelectedDetailRow.JournalDebitTotal -
-                    FPreviouslySelectedDetailRow.JournalCreditTotal;
+                FPetraUtilsObject.SuppressChangeDetection = false;
             }
         }
 
@@ -591,11 +601,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPreviouslySelectedDetailRow.ExchangeRateToBase != SelectedExchangeRate)
             {
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = SelectedExchangeRate;
                 //Enforce save needed condition
                 FPetraUtilsObject.SetChangedFlag();
             }
 
-            FPreviouslySelectedDetailRow.ExchangeRateToBase = SelectedExchangeRate;
             txtDetailExchangeRateToBase.NumberValueDecimal = SelectedExchangeRate;
             FPreviouslySelectedDetailRow.ExchangeRateTime = SelectedEffectiveTime;
 

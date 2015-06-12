@@ -259,7 +259,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (FMainDS.AJournal.DefaultView.Count > 0)
                 {
                     AJournalRow rJ = (AJournalRow)FMainDS.AJournal.DefaultView[0].Row;
-
                     EnableTransTab = (rJ.JournalStatus != MFinanceConstants.BATCH_CANCELLED);
                 }
             }
@@ -358,8 +357,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ParseHashTotal(ABatchRow ARow)
         {
-            decimal CorrectHashValue = 0m;
-
             if (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
             {
                 return;
@@ -367,16 +364,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if ((txtDetailBatchControlTotal.NumberValueDecimal == null) || !txtDetailBatchControlTotal.NumberValueDecimal.HasValue)
             {
-                CorrectHashValue = 0m;
-            }
-            else
-            {
-                CorrectHashValue = txtDetailBatchControlTotal.NumberValueDecimal.Value;
+                FPetraUtilsObject.SuppressChangeDetection = true;
+                txtDetailBatchControlTotal.NumberValueDecimal = 0m;
+                FPetraUtilsObject.SuppressChangeDetection = false;
             }
 
-            // AlanP: is this another case of needing to check for a real change??
-            txtDetailBatchControlTotal.NumberValueDecimal = CorrectHashValue;
-            ARow.BatchControlTotal = CorrectHashValue;
+            if (ARow.BatchControlTotal != txtDetailBatchControlTotal.NumberValueDecimal.Value)
+            {
+                ARow.BatchControlTotal = txtDetailBatchControlTotal.NumberValueDecimal.Value;
+            }
         }
 
         private void ShowDetailsManual(ABatchRow ARow)
@@ -531,11 +527,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ClearDetailControls()
         {
-            FPetraUtilsObject.DisableDataChangedEvent();
+            FPetraUtilsObject.SuppressChangeDetection = true;
             txtDetailBatchDescription.Text = string.Empty;
             txtDetailBatchControlTotal.NumberValueDecimal = 0;
             dtpDetailDateEffective.Date = FDefaultDate;
-            FPetraUtilsObject.EnableDataChangedEvent();
+            FPetraUtilsObject.SuppressChangeDetection = false;
         }
 
         private void UpdateBatchPeriod(object sender, EventArgs e)
@@ -547,40 +543,43 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             bool UpdateTransactionDates = false;
 
-            Int32 periodNumber = 0;
-            Int32 yearNumber = 0;
-            string aDate = string.Empty;
-            DateTime dateValue;
+            Int32 PeriodNumber = 0;
+            Int32 YearNumber = 0;
+            string EffectiveDateString = string.Empty;
+            DateTime EffectiveDateValue;
 
             try
             {
-                aDate = dtpDetailDateEffective.Date.ToString();
+                bool rowDataHasChanged = false;
 
-                if (DateTime.TryParse(aDate, out dateValue))
+                EffectiveDateString = dtpDetailDateEffective.Date.ToString();
+
+                if (DateTime.TryParse(EffectiveDateString, out EffectiveDateValue))
                 {
-                    if ((dateValue < FStartDateCurrentPeriod) || (dateValue > FEndDateLastForwardingPeriod))
+                    if ((EffectiveDateValue == FCurrentEffectiveDate)
+                        || (EffectiveDateValue < FStartDateCurrentPeriod)
+                        || (EffectiveDateValue > FEndDateLastForwardingPeriod))
                     {
                         return;
                     }
 
                     //GetDetailsFromControls will do this automatically if the user tabs
-                    //  passed the last control, but not if they clik on another control
-                    if (FCurrentEffectiveDate != dateValue)
+                    //  passed the last control, but not if they click on another control
+                    FCurrentEffectiveDate = EffectiveDateValue;
+
+                    if (FPreviouslySelectedDetailRow.DateEffective != EffectiveDateValue)
                     {
-                        FCurrentEffectiveDate = dateValue;
-                        FPreviouslySelectedDetailRow.DateEffective = dateValue;
-                    }
-                    else
-                    {
-                        return;
+                        FPreviouslySelectedDetailRow.DateEffective = EffectiveDateValue;
+                        rowDataHasChanged = true;
                     }
 
                     //Check if new date is in a different Batch period to the current one
-                    if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
+                    if (GetAccountingYearPeriodByDate(FLedgerNumber, EffectiveDateValue, out YearNumber, out PeriodNumber))
                     {
-                        if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
+                        if (FPreviouslySelectedDetailRow.BatchPeriod != PeriodNumber)
                         {
-                            FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+                            FPreviouslySelectedDetailRow.BatchPeriod = PeriodNumber;
+                            rowDataHasChanged = true;
 
                             //Update the Transaction effective dates
                             UpdateTransactionDates = true;
@@ -589,25 +588,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             {
                                 FLoadAndFilterLogicObject.YearIndex = 0;
                                 FLoadAndFilterLogicObject.PeriodIndex = 1;
-                                dtpDetailDateEffective.Date = dateValue;
+                                dtpDetailDateEffective.Date = EffectiveDateValue;
                                 dtpDetailDateEffective.Focus();
                             }
                             else if (FLoadAndFilterLogicObject.PeriodIndex != 1)
                             {
                                 FLoadAndFilterLogicObject.PeriodIndex = 1;
-                                dtpDetailDateEffective.Date = dateValue;
+                                dtpDetailDateEffective.Date = EffectiveDateValue;
                                 dtpDetailDateEffective.Focus();
                             }
                         }
                     }
 
+                    if (rowDataHasChanged)
+                    {
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("BATCH", UpdateTransactionDates);
-                    FPetraUtilsObject.SetChangedFlag();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
         }
 
@@ -908,9 +915,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     RetVal = false;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                RetVal = false;
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
             return RetVal;

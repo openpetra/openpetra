@@ -711,10 +711,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AUpdateTransDates"></param>
         public void UpdateTransactionTotals(string AUpdateLevel = "TRANSACTION", bool AUpdateTransDates = false)
         {
+            bool OriginalSaveButtonState = FPetraUtilsObject.HasChanges;
             bool TransactionRowActive = false;
-            bool GUIControlChanged = false;
             bool TransactionDataChanged = false;
             bool JournalDataChanged = false;
+
             int CurrentTransBatchNumber = 0;
             int CurrentTransJournalNumber = 0;
             int CurrentTransNumber = 0;
@@ -817,8 +818,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     {
                         jr.DateEffective = CurrentBatchRow.DateEffective;
                     }
-
-                    //AmountsChanged = true;
                 }
 
                 TransactionsToUpdateDV.RowFilter = String.Format("{0}={1} And {2}={3}",
@@ -847,8 +846,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         txtDebitTotalAmount.NumberValueDecimal = 0;
                         txtCreditTotalAmountBase.NumberValueDecimal = 0;
                         txtDebitTotalAmountBase.NumberValueDecimal = 0;
-
-                        GUIControlChanged = true;
                     }
                 }
 
@@ -878,6 +875,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     if (AUpdateTransDates
                         && (Convert.ToDateTime(drWork[ATransactionTable.ColumnTransactionDateId]) != CurrentBatchRow.DateEffective))
                     {
+                        //TODO: add if
                         drWork[ATransactionTable.ColumnTransactionDateId] = CurrentBatchRow.DateEffective;
 
                         TransactionDataChanged = true;
@@ -894,8 +892,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 txtCreditAmountBase.NumberValueDecimal = 0;
                                 txtCreditAmount.NumberValueDecimal = 0;
                                 FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtDebitAmount.NumberValueDecimal);
-
-                                GUIControlChanged = true;
                             }
                         }
                         else
@@ -907,8 +903,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 txtDebitAmountBase.NumberValueDecimal = 0;
                                 txtDebitAmount.NumberValueDecimal = 0;
                                 FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtCreditAmount.NumberValueDecimal);
-
-                                GUIControlChanged = true;
                             }
                         }
                     }
@@ -916,11 +910,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // recalculate the amount in base currency
                     if (jr.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
                     {
+                        //TODO: add if
                         AmtInBaseCurrency = GLRoutines.Divide(Convert.ToDecimal(
                                 drWork[ATransactionTable.ColumnTransactionAmountId]), jr.ExchangeRateToBase);
 
                         if (AmtInBaseCurrency != Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
                         {
+                            //TODO: add if
                             drWork[ATransactionTable.ColumnAmountInBaseCurrencyId] = AmtInBaseCurrency;
 
                             TransactionDataChanged = true;
@@ -974,8 +970,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]);
                                 txtDebitAmountBase.NumberValueDecimal = Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
                                 txtCreditAmountBase.NumberValueDecimal = 0;
-
-                                GUIControlChanged = true;
                             }
                         }
                     }
@@ -1000,8 +994,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]);
                                 txtCreditAmountBase.NumberValueDecimal = Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
                                 txtDebitAmountBase.NumberValueDecimal = 0;
-
-                                GUIControlChanged = true;
                             }
                         }
                     }
@@ -1036,8 +1028,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     txtDebitTotalAmount.NumberValueDecimal = AmtDebitTotal;
                     txtCreditTotalAmountBase.NumberValueDecimal = AmtCreditTotalBase;
                     txtDebitTotalAmountBase.NumberValueDecimal = AmtDebitTotalBase;
-
-                    GUIControlChanged = true;
                 }
             }   // next journal
 
@@ -1061,12 +1051,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ShowDataManual();
             }
 
-            if (GUIControlChanged)
+            if (!JournalDataChanged && (OriginalSaveButtonState != FPetraUtilsObject.HasChanges))
             {
-                FPetraUtilsObject.SetChangedFlag();
+                ((TFrmGLBatch)ParentForm).SaveChanges();
             }
-
-            if (JournalDataChanged && !FPetraUtilsObject.HasChanges)
+            else if (JournalDataChanged)
             {
                 // Automatically save the changes to Totals??
                 // For now we will just enable the save button which will give the user a surprise!
@@ -1672,10 +1661,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailNarrative.Clear();
             txtDetailReference.Clear();
             //Clear Numeric Textboxes
-            txtDebitAmount.NumberValueDecimal = 0;
-            txtCreditAmount.NumberValueDecimal = 0;
-            txtDebitAmountBase.NumberValueDecimal = 0;
-            txtCreditAmountBase.NumberValueDecimal = 0;
+            txtDebitAmount.NumberValueDecimal = 0M;
+            txtCreditAmount.NumberValueDecimal = 0M;
+            txtDebitAmountBase.NumberValueDecimal = 0M;
+            txtCreditAmountBase.NumberValueDecimal = 0M;
             //Refresh grids
             RefreshAnalysisAttributesGrid();
             //Enable data change detection
