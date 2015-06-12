@@ -48,6 +48,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ADelimiter">The delimiter</param>
         /// <param name="AColumnTitle"></param>
         /// <param name="ADataColumn"></param>
+        /// <param name="ARowNumber"></param>
+        /// <param name="AMessages"></param>
         /// <param name="AValidationColumnsDict"></param>
         /// <param name="ATreatEmptyStringAsText">When true the return value will be the empty string. When false the return value will be null.</param>
         /// <returns>The string value.  The AImportLine parameter will have been clipped.</returns>
@@ -55,6 +57,8 @@ namespace Ict.Petra.Server.MFinance.Common
             String ADelimiter,
             String AColumnTitle,
             DataColumn ADataColumn,
+            int ARowNumber,
+            TVerificationResultCollection AMessages,
             TValidationControlsDict AValidationColumnsDict,
             bool ATreatEmptyStringAsText = true)
         {
@@ -64,6 +68,13 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             String sReturn = StringHelper.GetNextCSV(ref AImportLine, ADelimiter);
+
+            if ((sReturn == StringHelper.CSV_STRING_FORMAT_ERROR) && (AMessages != null))
+            {
+                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
+                        Catalog.GetString("Could not parse the quoted string. Did you forget a quotation mark?"),
+                        TResultSeverity.Resv_Critical));
+            }
 
             if ((sReturn.Length == 0) && !ATreatEmptyStringAsText)
             {

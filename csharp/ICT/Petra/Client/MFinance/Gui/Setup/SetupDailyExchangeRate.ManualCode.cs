@@ -589,51 +589,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             return dlgResult;
         }
 
-        /// <summary>
-        /// Get the most recent exchange rate value of the interval.  This method does not display a dialog
-        /// </summary>
-        /// <param name="LedgerNumber">The ledger number from which the base currency (currency to) will be extracted</param>
-        /// <param name="dteStart">The start date for the date range</param>
-        /// <param name="dteEnd">The end date for the date range.</param>
-        /// <param name="strCurrencyFrom">The actual foreign currency used for the transaction</param>
-        /// <param name="ADateEffectiveFrom">The date when this exchange rate was entered or used.</param>
-        /// <returns>The most recent exchange rate in the specified date range</returns>
-        public decimal GetLastExchangeValueOfInterval(Int32 LedgerNumber, DateTime dteStart,
-            DateTime dteEnd,
-            string strCurrencyFrom,
-            out DateTime ADateEffectiveFrom)
-        {
-            ALedgerRow ledger =
-                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
-                     TCacheableFinanceTablesEnum.LedgerDetails, LedgerNumber))[0];
-
-            baseCurrencyOfLedger = ledger.BaseCurrency;
-            DateTime dateEnd2 = dteEnd.AddDays(1.0);
-
-            // Do not use local formats here!
-            string filter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' and {2}='{3}' and {4}<#{5}# and {6}>#{7}#",
-                ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
-                strCurrencyFrom,
-                ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
-                baseCurrencyOfLedger,
-                ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
-                dateEnd2.ToString("d", CultureInfo.InvariantCulture),
-                ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
-                dteStart.ToString("d", CultureInfo.InvariantCulture));
-            DataView myView = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
-
-            if (myView.Count > 0)
-            {
-                ADateEffectiveFrom = ((ADailyExchangeRateRow)(myView[0].Row)).DateEffectiveFrom;
-                return ((ADailyExchangeRateRow)(myView[0].Row)).RateOfExchange;
-            }
-            else
-            {
-                ADateEffectiveFrom = DateTime.Now;
-                return 1.0m;
-            }
-        }
-
         private void DefineModalSettings()
         {
             pnlModalButtons.Visible = true;
@@ -844,6 +799,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
+            // Actually the code in SetEnabledStates() should already have checked for this...
             DataRowView[] HighlightedRows = grdDetails.SelectedDataRowsAsDataRowView;
 
             foreach (DataRowView drv in HighlightedRows)
@@ -854,7 +810,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     string msg = Catalog.GetString(
                         "It is not possible to delete rows where the exchange rate is used.  You can be sure to only delete unused rows by clicking the 'Unused Rates' filter on the left of the window.");
-                    MessageBox.Show(msg, MCommonResourcestrings.StrGenericError, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(msg, MCommonResourcestrings.StrGenericWarning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
             }
@@ -1251,7 +1207,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 txtDetailRateOfExchange.Enabled = false;
                 txtDetailTimeEffectiveFrom.Enabled = false;
                 btnInvertExchangeRate.Enabled = false;
-                btnDelete.Enabled = true;
             }
             else
             {
@@ -1259,7 +1214,36 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 txtDetailRateOfExchange.Enabled = FIsRateUnused;
                 txtDetailTimeEffectiveFrom.Enabled = FIsRateUnused && !txtDetailTimeEffectiveFrom.ReadOnly;
                 btnInvertExchangeRate.Enabled = FIsRateUnused;
+            }
+
+            // Delete button is enabled if all the highlighted rows have unused rates
+            DataRowView[] highlightedRows = grdDetails.SelectedDataRowsAsDataRowView;
+            int rowCount = highlightedRows.GetLength(0);
+
+            if (rowCount == 1)
+            {
                 btnDelete.Enabled = FIsRateUnused;
+            }
+            else if (rowCount > 1)
+            {
+                bool isAllUnused = true;
+
+                foreach (DataRowView drv in highlightedRows)
+                {
+                    ExchangeRateTDSADailyExchangeRateRow rowToDelete = (ExchangeRateTDSADailyExchangeRateRow)drv.Row;
+
+                    if ((rowToDelete.JournalUsage > 0) || (rowToDelete.GiftBatchUsage > 0))
+                    {
+                        isAllUnused = false;
+                        break;
+                    }
+                }
+
+                btnDelete.Enabled = isAllUnused;
+            }
+            else
+            {
+                btnDelete.Enabled = false;
             }
         }
 

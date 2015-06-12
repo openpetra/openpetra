@@ -37,6 +37,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MPartner.Gui;
 
@@ -76,6 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private string FBatchStatus = string.Empty;
         private bool FBatchUnposted = false;
+        private bool FShowStatusDialogOnLoad = true;
         private string FBatchCurrencyCode = string.Empty;
         private decimal FBatchExchangeRateToBase = 1.0m;
         private bool FGLEffectivePeriodChanged = false;
@@ -101,6 +103,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Specifies that initial transactions have loaded into the dataset
         /// </summary>
         public bool FGiftTransactionsLoaded = false;
+
+        /// <summary>
+        /// Sets a flag to show the status dialog when transactions are loaded
+        /// </summary>
+        public Boolean ShowStatusDialogOnLoad
+        {
+            set
+            {
+                FShowStatusDialogOnLoad = value;
+            }
+        }
 
         private Boolean ViewMode
         {
@@ -391,6 +404,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //New set of transactions to be loaded
+            TFrmStatusDialog dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
+
+            if (FShowStatusDialogOnLoad == true)
+            {
+                dlgStatus.Show();
+                FShowStatusDialogOnLoad = false;
+                dlgStatus.Heading = String.Format(Catalog.GetString("Batch {0}"), ABatchNumber);
+                dlgStatus.CurrentStatus = Catalog.GetString("Loading transactions ...");
+            }
+
             FGiftTransactionsLoaded = false;
             FSuppressListChanged = true;
 
@@ -402,6 +425,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FirstGiftTransLoad || (FActiveOnly == (ViewMode || !FBatchUnposted)))
             {
                 FActiveOnly = !(ViewMode || !FBatchUnposted);
+                dlgStatus.CurrentStatus = Catalog.GetString("Initialising controls ...");
 
                 try
                 {
@@ -431,12 +455,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // otherwise we would overwrite transactions that have already been modified
             if (FMainDS.AGiftDetail.DefaultView.Count == 0)
             {
+                dlgStatus.CurrentStatus = Catalog.GetString("Requesting transactions from server ...");
                 LoadGiftDataForBatch(ALedgerNumber, ABatchNumber);
             }
 
             //Check if need to update batch period in each gift
             if (FBatchUnposted)
             {
+                dlgStatus.CurrentStatus = Catalog.GetString("Updating batch period ...");
                 ((TFrmGiftBatch)ParentForm).GetBatchControl().UpdateBatchPeriod();
             }
 
@@ -451,6 +477,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FSuppressListChanged = false;
 
+            dlgStatus.CurrentStatus = Catalog.GetString("Updating totals for the batch ...");
             UpdateTotals();
 
             if ((FPreviouslySelectedDetailRow != null) && (FBatchUnposted))
@@ -464,6 +491,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FGiftTransactionsLoaded = true;
+            dlgStatus.Close();
 
             return true;
         }

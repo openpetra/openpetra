@@ -275,19 +275,19 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.IsTrue(btnSave.Enabled, "The Save button should be enabled after adding a new row");
 
             // Work out our expectations
+            string expectedToCurrency = "USD";
             string baseCurrency = GetDefaultBaseCurrency();
-            string expectedFromCurrency = "USD";
 
             if (baseCurrency == "USD")
             {
-                expectedFromCurrency = "GBP";
+                baseCurrency = "GBP";
             }
 
             DateTime expectedDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             // Check the details panel after adding the new row
-            Assert.AreEqual(expectedFromCurrency, cmbFromCurrency.GetSelectedString());
-            Assert.AreEqual(baseCurrency, cmbToCurrency.GetSelectedString());
+            Assert.AreEqual(baseCurrency, cmbFromCurrency.GetSelectedString());
+            Assert.AreEqual(expectedToCurrency, cmbToCurrency.GetSelectedString());
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date);
             Assert.AreEqual(0.0m, txtExchangeRate.NumberValueDecimal);
 
@@ -300,17 +300,17 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(3, grdDetails.Rows.Count, "There should be 2 rows in the grid after saving a new row");
 
             // Even though an inverse row has been added we should still be highlighting the newly added row
-            Assert.AreEqual(expectedFromCurrency, cmbFromCurrency.GetSelectedString());
-            Assert.AreEqual(baseCurrency, cmbToCurrency.GetSelectedString());
+            Assert.AreEqual(baseCurrency, cmbFromCurrency.GetSelectedString());
+            Assert.AreEqual(expectedToCurrency, cmbToCurrency.GetSelectedString());
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date);
             Assert.AreEqual(2.0m, txtExchangeRate.NumberValueDecimal);
 
             // Now select the inverese row
-            SelectRowInGrid(2);
+            SelectRowInGrid(1);
 
             // Check the details are, in fact, the inverse
-            Assert.AreEqual(baseCurrency, cmbFromCurrency.GetSelectedString());
-            Assert.AreEqual(expectedFromCurrency, cmbToCurrency.GetSelectedString());
+            Assert.AreEqual(expectedToCurrency, cmbFromCurrency.GetSelectedString());
+            Assert.AreEqual(baseCurrency, cmbToCurrency.GetSelectedString());
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date);
             Assert.AreEqual(0.5m, txtExchangeRate.NumberValueDecimal);
 

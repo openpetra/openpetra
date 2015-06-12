@@ -759,10 +759,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (SubmitDS.AJournal != null)
             {
                 // Check whether we are saving any rows that are in foreign currency
-                DataView dv = new DataView(SubmitDS.AJournal,
-                    String.Format("{0}<>{1}", AJournalTable.GetTransactionCurrencyDBName(), AJournalTable.GetBaseCurrencyDBName()),
-                    String.Empty, DataViewRowState.CurrentRows);
-                FLatestSaveIncludedForex = (dv.Count > 0);
+                foreach (AJournalRow row in SubmitDS.AJournal.Rows)
+                {
+                    if (row.BaseCurrency != row.TransactionCurrency)
+                    {
+                        FLatestSaveIncludedForex = true;
+                        break;
+                    }
+                }
             }
 
             // Check if corporate exchange rate exists for any new batches or modified batches.

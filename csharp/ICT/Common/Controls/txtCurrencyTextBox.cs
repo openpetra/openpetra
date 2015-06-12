@@ -145,8 +145,6 @@ namespace Ict.Common.Controls
 
                     if (NumericStr != String.Empty)
                     {
-                        decimal? Ret = null;
-
                         if (((NumericStr.Length == 1) && (NumericStr.IndexOfAny(new char[] { '-', '.', ',' }) != -1)))
                         {
                             NumericStr = "0";
@@ -161,28 +159,15 @@ namespace Ict.Common.Controls
                             }
                         }
 
-                        try
-                        {
-                            Decimal LocalCultureVersion;
+                        Decimal LocalCultureVersion;
 
-                            if (Decimal.TryParse(NumericStr, out LocalCultureVersion))
-                            {
-                                Ret = LocalCultureVersion;
-                            }
-                            else
-                            {
-                                Ret = Convert.ToDecimal(NumericStr, FTxtNumeric.Culture);
-                            }
-                        }
-                        catch (Exception)
+                        if (Decimal.TryParse(NumericStr, System.Globalization.NumberStyles.Any, FTxtNumeric.Culture, out LocalCultureVersion))
                         {
+                            return LocalCultureVersion;
                         }
-                        return Ret;
                     }
-                    else
-                    {
-                        return null;
-                    }
+
+                    return null;
                 }
                 else
                 {
@@ -307,6 +292,23 @@ namespace Ict.Common.Controls
             set
             {
                 FTxtNumeric.ReadOnly = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets/sets whether the currency label is visible or not. Used for items like 'Hash Total' where the
+        /// text box is associated with a currency (so needs the correct format and d.p. but the number is not really in currency units.
+        /// </summary>
+        public bool HideLabel
+        {
+            get
+            {
+                return FLblCurrency.Visible;
+            }
+
+            set
+            {
+                FLblCurrency.Visible = value;
             }
         }
 

@@ -216,7 +216,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         if (GlmTable.DefaultView.Count > 0)
                         {
-                            RevaluateAccount(GlmTable.DefaultView, F_ExchangeRate[kCnt]);
+                            RevaluateAccount(GlmTable.DefaultView, F_ExchangeRate[kCnt], F_CurrencyCode[kCnt]);
                         }
                     }
                 }
@@ -225,7 +225,7 @@ namespace Ict.Petra.Server.MFinance.GL
             return CloseRevaluationAccountingBatch();
         }
 
-        private void RevaluateAccount(DataView GLMView, decimal AExchangeRate)
+        private void RevaluateAccount(DataView GLMView, decimal AExchangeRate, string ACurrencyCode)
         {
             foreach (DataRowView RowView in GLMView)
             {
@@ -282,7 +282,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     if (delta != 0)
                     {
                         // Now we have the relevant Cost Centre ...
-                        RevaluateCostCentre(glmRow.AccountCode, glmRow.CostCentreCode, delta, AExchangeRate);
+                        RevaluateCostCentre(glmRow.AccountCode, glmRow.CostCentreCode, delta, AExchangeRate, ACurrencyCode);
                     }
                     else
                     {
@@ -303,12 +303,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
         }
 
-        private void RevaluateCostCentre(string ARelevantAccount, string ACostCentre, decimal Adelta, decimal AExchangeRate)
+        private void RevaluateCostCentre(string ARelevantAccount, string ACostCentre, decimal Adelta, decimal AExchangeRate, string ACurrencyCode)
         {
             // In the very first run Batch and Journal shall be created ...
             if (F_GLDataset == null)
             {
-                InitBatchAndJournal();
+                InitBatchAndJournal(AExchangeRate, ACurrencyCode);
             }
 
             string strMessage;
@@ -335,7 +335,7 @@ namespace Ict.Petra.Server.MFinance.GL
             F_journal.JournalCreditTotal += Adelta;
         }
 
-        private void InitBatchAndJournal()
+        private void InitBatchAndJournal(decimal AExchangeRate, string ACurrencyCode)
         {
             F_GLDataset = TGLPosting.CreateABatch(F_LedgerNum);
             F_batch = F_GLDataset.ABatch[0];
@@ -352,6 +352,7 @@ namespace Ict.Petra.Server.MFinance.GL
             F_journal.BatchNumber = F_batch.BatchNumber;
             F_journal.JournalNumber = 1;
             F_journal.DateEffective = F_batch.DateEffective;
+            F_journal.ExchangeRateTime = 14400;             // revaluations are typically later than 'new rates'
             F_journal.JournalPeriod = F_batch.BatchPeriod;
             F_journal.TransactionCurrency = F_BaseCurrency;
             F_journal.JournalDescription = F_batch.BatchDescription;
@@ -361,6 +362,14 @@ namespace Ict.Petra.Server.MFinance.GL
             F_journal.DateOfEntry = DateTime.Now;
             F_journal.ExchangeRateToBase = 1.0M;
             F_GLDataset.AJournal.Rows.Add(F_journal);
+
+            ARevaluationRow revalRow = F_GLDataset.ARevaluation.NewRowTyped();
+            revalRow.LedgerNumber = F_journal.LedgerNumber;
+            revalRow.BatchNumber = F_journal.BatchNumber;
+            revalRow.JournalNumber = F_journal.JournalNumber;
+            revalRow.ExchangeRateToBase = AExchangeRate;
+            revalRow.RevaluationCurrency = ACurrencyCode;
+            F_GLDataset.ARevaluation.Rows.Add(revalRow);
         }
 
         private void CreateTransaction(string AMessage, string AAccount,

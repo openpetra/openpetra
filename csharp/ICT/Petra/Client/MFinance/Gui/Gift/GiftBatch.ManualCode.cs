@@ -259,10 +259,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (SubmitDS.AGiftBatch != null)
             {
                 // Check whether we are saving any rows that are in foreign currency
-                DataView dv = new DataView(SubmitDS.AGiftBatch,
-                    String.Format("{0}<>'{1}'", AGiftBatchTable.GetCurrencyCodeDBName(), FMainDS.ALedger[0].BaseCurrency),
-                    String.Empty, DataViewRowState.CurrentRows);
-                FLatestSaveIncludedForex = (dv.Count > 0);
+                foreach (AGiftBatchRow row in SubmitDS.AGiftBatch.Rows)
+                {
+                    if (row.CurrencyCode != FMainDS.ALedger[0].BaseCurrency)
+                    {
+                        FLatestSaveIncludedForex = true;
+                        break;
+                    }
+                }
             }
 
             // Now do the standard call to save the changes

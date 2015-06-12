@@ -33,6 +33,7 @@ using Ict.Petra.Client.CommonForms;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.CrossLedger.Data;
 
 using System.ComponentModel;
 using System.Drawing;
@@ -59,6 +60,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public partial class TGLRevaluation : IFrmPetra
     {
         private Int32 FLedgerNumber;
+        private string FLedgerBaseCurrency;
 
         private DateTime FperiodStart;
         private DateTime FperiodEnd;
@@ -80,14 +82,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FLedgerNumber = value;
 
+                string ledgerName;
+                GetLedgerInfo(FLedgerNumber, out ledgerName, out FLedgerBaseCurrency);
+
                 TRemote.MFinance.GL.WebConnectors.GetCurrentPeriodDates(FLedgerNumber, out FperiodStart, out FperiodEnd);
 
                 CreateDataGridHeader();
                 String currencyList = GetListOfRevaluationCurrencies();
 
-                this.lblAccountText.Text = Catalog.GetString("Ledger:");
-
-                lblAccountValue.Text = GetLedgerInfo(FLedgerNumber);
+                lblAccountText.Text = Catalog.GetString("Ledger:");
+                lblAccountValue.Text = String.Format("{0} - {1} [{2}]", FLedgerNumber, ledgerName, FLedgerBaseCurrency);
 
                 lblDateEnd.Text = Catalog.GetString("Revaluation Date:");
                 lblDateEndValue.Text = FperiodEnd.ToLongDateString();
@@ -105,8 +109,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private String GetListOfRevaluationCurrencies()
         {
-            TFrmSetupDailyExchangeRate frmExchangeRate =
-                new TFrmSetupDailyExchangeRate(this);
+            // Get all the exchange rate data for the accounting period of interest
+            ExchangeRateTDS exchangeRateData = TRemote.MFinance.Common.WebConnectors.LoadDailyExchangeRateData(true, FperiodStart, FperiodEnd);
 
             DataTable table = TDataCache.TMFinance.GetCacheableFinanceTable(
                 TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
@@ -124,20 +128,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (blnIsLedger && blnAccountActive && blnAccountForeign && blnAccountHasPostings)
                 {
+                    string strCurrencyCode = (string)row["a_foreign_currency_code_c"];
+
                     if (strRevaluationCurrencies == "")
                     {
-                        strRevaluationCurrencies = "[" + (string)row["a_foreign_currency_code_c"];
+                        strRevaluationCurrencies = "[" + strCurrencyCode;
                     }
                     else
                     {
-                        strRevaluationCurrencies += ("|" + (string)row["a_foreign_currency_code_c"]);
+                        strRevaluationCurrencies += ("|" + strCurrencyCode);
                     }
 
-                    string strCurrencyCode = (string)row["a_foreign_currency_code_c"];
-                    DateTime dateEffectiveFrom;
-                    decimal decExchangeRate = frmExchangeRate.GetLastExchangeValueOfInterval(FLedgerNumber,
-                        FperiodStart, FperiodEnd, strCurrencyCode, out dateEffectiveFrom);
-                    AddADataRow(RowIndex, AccountCode, strCurrencyCode, decExchangeRate, dateEffectiveFrom);
+                    // Get the best (most recent) rate for the selected currency and its effective date
+                    DateTime dateEffectiveFrom = DateTime.MinValue;
+                    decimal rateOfExchange = 0.0m;
+
+                    if (CommonRoutines.GetBestExchangeRate(exchangeRateData.ADailyExchangeRate, strCurrencyCode,
+                            FLedgerBaseCurrency, false, out rateOfExchange, out dateEffectiveFrom) == false)
+                    {
+                        // Don't think this should happen because we should have the rate the journal used already
+                    }
+
+                    AddADataRow(RowIndex, AccountCode, strCurrencyCode, rateOfExchange, dateEffectiveFrom);
                     ++RowIndex;
                 }
             }
@@ -199,16 +211,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             linkController.SetDataList(FcurrencyExchangeList);
         }
 
-        private String GetLedgerInfo(Int32 ALedgerNumber)
+        private void GetLedgerInfo(Int32 ALedgerNumber, out String ALedgerName, out String ALedgerBaseCurrency)
         {
             ALedgerRow ledger =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                      TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
-            String strBaseCurrency = ledger.BaseCurrency;
-            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
 
-            LedgerName = String.Format("{0} - {1} [{2}]", FLedgerNumber, LedgerName, strBaseCurrency);
-            return LedgerName;
+            ALedgerBaseCurrency = ledger.BaseCurrency;
+            ALedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
         }
 
         private void CancelRevaluation(object btn, EventArgs e)

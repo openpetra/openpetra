@@ -227,6 +227,23 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                     strSQL += Environment.NewLine;
 
                     strSQL += "SELECT ";
+                    strSQL += "  j.a_batch_number_i AS a_batch_number_i, ";
+                    strSQL += "  r.a_revaluation_currency_c AS a_from_currency_code_c, ";
+                    strSQL += "  ldg.a_base_currency_c AS a_to_currency_code_c, ";
+                    strSQL += "  j.a_date_effective_d AS a_date_effective_from_d, ";
+                    strSQL += "  r.a_exchange_rate_to_base_n AS a_rate_of_exchange_n ";
+                    strSQL += "FROM a_journal AS j ";
+                    strSQL += "JOIN a_ledger AS ldg ON ";
+                    strSQL += "  ldg.a_ledger_number_i = j.a_ledger_number_i ";
+                    strSQL += "JOIN a_revaluation r ON ";
+                    strSQL +=
+                        "  r.a_ledger_number_i = j.a_ledger_number_i AND r.a_batch_number_i=j.a_batch_number_i AND r.a_journal_number_i=j.a_journal_number_i ";
+
+                    strSQL += Environment.NewLine;
+                    strSQL += "UNION ALL ";
+                    strSQL += Environment.NewLine;
+
+                    strSQL += "SELECT ";
                     strSQL += "  gb.a_batch_number_i AS a_batch_number_i, ";
                     strSQL += "  gb.a_currency_code_c AS a_from_currency_code_c, ";
                     strSQL += "  ldg.a_base_currency_c AS a_to_currency_code_c, ";
@@ -285,6 +302,25 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                     strSQL += "  ldg.a_ledger_number_i = j.a_ledger_number_i ";
                     strSQL += "WHERE ";
                     strSQL += "  j.a_transaction_currency_c <> ldg.a_base_currency_c ";
+
+                    strSQL += Environment.NewLine;
+                    strSQL += "UNION ALL ";
+                    strSQL += Environment.NewLine;
+
+                    strSQL += "SELECT ";
+                    strSQL += "  1 AS journalUsage, ";
+                    strSQL += "  0 AS giftBatchUsage, ";
+                    strSQL += "  r.a_revaluation_currency_c AS a_from_currency_code_c, ";
+                    strSQL += "  ldg.a_base_currency_c AS a_to_currency_code_c, ";
+                    strSQL += "  j.a_date_effective_d AS a_date_effective_from_d, ";
+                    strSQL += "  j.a_exchange_rate_time_i AS a_time_effective_from_i, ";
+                    strSQL += "  r.a_exchange_rate_to_base_n AS a_rate_of_exchange_n ";
+                    strSQL += "FROM a_journal AS j ";
+                    strSQL += "JOIN a_ledger AS ldg ON ";
+                    strSQL += "  ldg.a_ledger_number_i = j.a_ledger_number_i ";
+                    strSQL += "JOIN a_revaluation r ON ";
+                    strSQL +=
+                        "  r.a_ledger_number_i = j.a_ledger_number_i AND r.a_batch_number_i=j.a_batch_number_i AND r.a_journal_number_i=j.a_journal_number_i ";
 
                     strSQL += Environment.NewLine;
                     strSQL += "UNION ALL ";
@@ -362,6 +398,37 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                     strSQL += "  ON b.a_batch_number_i = j.a_batch_number_i ";
                     strSQL += "  AND b.a_ledger_number_i = j.a_ledger_number_i ";
                     strSQL += "WHERE j.a_transaction_currency_c <> ldg.a_base_currency_c ";
+
+                    strSQL += Environment.NewLine;
+                    strSQL += "UNION ";
+                    strSQL += Environment.NewLine;
+
+                    //-- This part of the query returns the revaluation rows
+                    strSQL += "SELECT ";
+                    strSQL += "  r.a_revaluation_currency_c as a_from_currency_code_c, ";
+                    strSQL += "  ldg.a_base_currency_c AS a_to_currency_code_c, ";
+                    strSQL += "  r.a_exchange_rate_to_base_n AS a_rate_of_exchange_n, ";
+                    strSQL += "  j.a_date_effective_d AS a_date_effective_from_d, ";
+                    strSQL += "  j.a_exchange_rate_time_i AS a_time_effective_from_i, ";
+                    strSQL += String.Format(
+                        "  j.a_ledger_number_i AS {0}, j.a_batch_number_i AS {1}, j.a_journal_number_i AS {2}, b.a_batch_status_c AS {3}, j.a_journal_description_c AS {4}, b.a_batch_year_i AS {5}, b.a_batch_period_i AS {6}, 'J' AS {7} ",
+                        ExchangeRateTDSADailyExchangeRateUsageTable.GetLedgerNumberDBName(),
+                        ExchangeRateTDSADailyExchangeRateUsageTable.GetBatchNumberDBName(),
+                        ExchangeRateTDSADailyExchangeRateUsageTable.GetJournalNumberDBName(),
+                        ExchangeRateTDSADailyExchangeRateUsageTable.GetBatchStatusDBName(),
+                        ExchangeRateTDSADailyExchangeRateUsageTable.GetDescriptionDBName(),
+                        ExchangeRateTDSADailyExchangeRateUsageTable.GetBatchYearDBName(),
+                        ExchangeRateTDSADailyExchangeRateUsageTable.GetBatchPeriodDBName(),
+                        ExchangeRateTDSADailyExchangeRateUsageTable.GetTableSourceDBName());
+                    strSQL += "FROM a_journal j ";
+                    strSQL += "JOIN a_ledger ldg ";
+                    strSQL += "  ON ldg.a_ledger_number_i = j.a_ledger_number_i ";
+                    strSQL += "JOIN a_batch b ";
+                    strSQL += "  ON b.a_batch_number_i = j.a_batch_number_i ";
+                    strSQL += "  AND b.a_ledger_number_i = j.a_ledger_number_i ";
+                    strSQL += "JOIN a_revaluation r ";
+                    strSQL +=
+                        "  ON r.a_ledger_number_i = j.a_ledger_number_i AND r.a_batch_number_i=j.a_batch_number_i AND r.a_journal_number_i=j.a_journal_number_i ";
 
                     strSQL += Environment.NewLine;
                     strSQL += "UNION ";
@@ -506,9 +573,12 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                         // Load the Corporate exchange rate table using the usual method
                         ACorporateExchangeRateAccess.LoadAll(WorkingDS, Transaction);
                         // Load the daily exchange rate table as the 'raw' table.  The client needs this for adding new rows to check for constraints.
+                        // Note: April 2015.  The MissingSchemaAction was added because SQLite gave a mismatched DataType on a_effective_time_i.
+                        //   As a result the GUI tests failed on SQLite - as well as the screen not loading(!)
+                        //   There should be no difference with PostgreSQL, which worked fine without the parameter.
                         WorkingDS.ARawDailyExchangeRate.Merge(DBAccess.GDBAccessObj.SelectDT("SELECT *, 0 AS Unused FROM PUB_a_daily_exchange_rate",
                                 "a_raw_daily_exchange_rate",
-                                Transaction));
+                                Transaction), false, MissingSchemaAction.Ignore);
 
                         strSQL = "SELECT ";
                         strSQL += "  a_ledger_number_i, ";

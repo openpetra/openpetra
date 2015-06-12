@@ -207,13 +207,15 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ACurrencyTableRef">A reference to the Currency table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
         /// <param name="ACorporateExchangeTableRef">Corporate exchange rate table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
         /// <param name="ABaseCurrency">Ledger base currency.  Required when importing</param>
+        /// <param name="AIntlCurrency">Ledger international currency.  Required when importing</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateGLJournalManual(object AContext, AJournalRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
             GLSetupTDS AGLSetupDSRef = null,
             ACurrencyTable ACurrencyTableRef = null,
             ACorporateExchangeRateTable ACorporateExchangeTableRef = null,
-            String ABaseCurrency = null)
+            String ABaseCurrency = null,
+            String AIntlCurrency = null)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -287,29 +289,36 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
-            if ((ACorporateExchangeTableRef != null) && isValidTransactionCurrency && (ABaseCurrency != null)
-                && (ARow.TransactionCurrency != ABaseCurrency))
+            if ((ACorporateExchangeTableRef != null) && isValidTransactionCurrency && (ABaseCurrency != null) && (AIntlCurrency != null)
+                && !ARow.IsDateEffectiveNull() && (ABaseCurrency != AIntlCurrency))
             {
-                // For gifts in non-base currency there must be a corporate exchange rate
+                // For ledgers where the base currency and intl currency differ there must be a corporate exchange rate to the international currency
                 ValidationColumn = ARow.Table.Columns[AJournalTable.ColumnTransactionCurrencyId];
                 ValidationContext = ARow.JournalNumber.ToString() + " of Batch Number: " + ARow.BatchNumber.ToString();
 
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
-                    DateTime firstOfMonth = new DateTime(ARow.DateEffective.Year, ARow.DateEffective.Month, 1);
-                    ACorporateExchangeRateRow foundRow = (ACorporateExchangeRateRow)ACorporateExchangeTableRef.Rows.Find(
-                        new object[] { ARow.TransactionCurrency, ABaseCurrency, firstOfMonth });
+                    DateTime firstOfMonth;
 
-                    if ((foundRow == null)
-                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
-                            AContext,
-                            new TVerificationResult(ValidationContext,
-                                String.Format(Catalog.GetString("There is no Corporate Exchange Rate defined for the month starting on '{0}'."),
-                                    StringHelper.DateToLocalizedString(firstOfMonth)),
-                                TResultSeverity.Resv_Critical),
-                            ValidationColumn))
+                    if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ARow.LedgerNumber,
+                            ARow.DateEffective, out firstOfMonth))
                     {
-                        VerifResultCollAddedCount++;
+                        ACorporateExchangeRateRow foundRow = (ACorporateExchangeRateRow)ACorporateExchangeTableRef.Rows.Find(
+                            new object[] { ABaseCurrency, AIntlCurrency, firstOfMonth });
+
+                        if ((foundRow == null)
+                            && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                                AContext,
+                                new TVerificationResult(ValidationContext,
+                                    String.Format(Catalog.GetString(
+                                            "There is no Corporate Exchange Rate defined for '{0}' to '{1}' for the month starting on '{2}'."),
+                                        ABaseCurrency, AIntlCurrency,
+                                        StringHelper.DateToLocalizedString(firstOfMonth)),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
                     }
                 }
             }

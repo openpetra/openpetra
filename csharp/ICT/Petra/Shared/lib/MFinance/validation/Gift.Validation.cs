@@ -326,7 +326,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
                 // If the GL date was good we need to have a corporate exchange rate for base currency to Intl for the first day of the period
                 if ((VerificationResult == null) && (ACorporateExchangeTableRef != null) && !ARow.IsGlEffectiveDateNull()
-                    && (ABaseCurrency != AInternationalCurrency))
+                    && (ABaseCurrency != null) && (AInternationalCurrency != null) && (ABaseCurrency != AInternationalCurrency))
                 {
                     DateTime firstOfMonth;
 

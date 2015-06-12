@@ -1150,7 +1150,6 @@ namespace Ict.Common.Controls
                     switch (FControlMode)
                     {
                         case TNumericTextBoxMode.Decimal:
-                        case TNumericTextBoxMode.Currency:
 
                             if (FNumberPrecision == TNumberPrecision.Double)
                             {
@@ -1177,6 +1176,28 @@ namespace Ict.Common.Controls
                             {
                                 base.Text = base.Text + " %";
                             }
+
+                            break;
+
+                        case TNumericTextBoxMode.Currency:
+
+                            if (FNumberPrecision == TNumberPrecision.Double)
+                            {
+                                throw new NotSupportedException("Currency text boxes are expected to be associated with decimal values.");
+                            }
+
+                            if (decimal.TryParse(AValue, NumberStyles.Any, FCurrentCulture, out NumberValueDecimal) == false)
+                            {
+                                throw new ArgumentException(String.Format(Catalog.GetString(
+                                            "Could not convert text '{0}' to a decimal number using standard digits and either of the following separator pairs: {1}{2} / {3}{4}"),
+                                        CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator, FNumberDecimalSeparator,
+                                        CultureInfo.CurrentCulture.NumberFormat.CurrencyGroupSeparator, FCurrencyDecimalSeparator));
+                            }
+
+                            base.Text = NumberValueDecimal.ToString("N" + FDecimalPlaces, FCurrentCulture).Replace(
+                            FNumberDecimalSeparator, FCurrencyDecimalSeparator).Replace(
+                            CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator,
+                            CultureInfo.CurrentCulture.NumberFormat.CurrencyGroupSeparator);
 
                             break;
 
@@ -1211,7 +1232,7 @@ namespace Ict.Common.Controls
                                 }
                                 else
                                 {
-                                    if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator))
+                                    if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator) && !AValue.StartsWith("0" + FNumberDecimalSeparator))
                                     {
                                         if (FControlMode == TNumericTextBoxMode.Integer)
                                         {
@@ -1230,7 +1251,7 @@ namespace Ict.Common.Controls
                             }
                             else
                             {
-                                if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator))
+                                if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator) && !AValue.StartsWith("0" + FNumberDecimalSeparator))
                                 {
                                     if (FControlMode == TNumericTextBoxMode.Integer)
                                     {

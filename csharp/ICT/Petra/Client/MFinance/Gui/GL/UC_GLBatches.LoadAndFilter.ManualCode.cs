@@ -47,6 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public class TUC_GLBatches_LoadAndFilter
     {
         // Variables that are set by the constructor
+        private TFrmPetraEditUtils FPetraUtilsObject = null;
         private Int32 FLedgerNumber = 0;
         private GLBatchTDS FMainDS = null;
         private TFilterAndFindPanel FFilterFindPanelObject = null;
@@ -201,11 +202,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="APetraUtilsObject">Reference to the PetraUtilsObject for the form</param>
         /// <param name="ALedgerNumber">Ledger number</param>
         /// <param name="AMainDS">The main data set</param>
         /// <param name="AFilterFindPanelObject">The filter panel control object</param>
-        public TUC_GLBatches_LoadAndFilter(int ALedgerNumber, GLBatchTDS AMainDS, TFilterAndFindPanel AFilterFindPanelObject)
+        public TUC_GLBatches_LoadAndFilter(TFrmPetraEditUtils APetraUtilsObject,
+            int ALedgerNumber,
+            GLBatchTDS AMainDS,
+            TFilterAndFindPanel AFilterFindPanelObject)
         {
+            FPetraUtilsObject = APetraUtilsObject;
             FFilterFindPanelObject = AFilterFindPanelObject;
             FMainDS = AMainDS;
             FLedgerNumber = ALedgerNumber;
@@ -315,6 +321,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (!BatchYearIsLoaded(newYear))
             {
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, newYear, newPeriod));
+
+                // Set the flag on the transaction tab to show the status dialog again when the transactions are loaded for a new year
+                TFrmGLBatch glBatchForm = (TFrmGLBatch)FPetraUtilsObject.GetForm();
+                glBatchForm.GetTransactionsControl().ShowStatusDialogOnLoad = true;
             }
 
             if (FrbtEditing.Checked)

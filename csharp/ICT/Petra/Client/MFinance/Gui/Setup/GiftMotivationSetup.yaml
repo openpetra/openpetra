@@ -8,16 +8,26 @@ RootNode:
     FormType: edit
     Template: windowEdit
     WindowWidth: 760
-    WindowHeight: 720
+    WindowHeight: 600
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [sptContent]
             Dock: Fill
-        pnlGrid:
+        sptContent:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 180
+            Height: 600
             Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlDetailGrid
+            Panel2: sptDetails
+
+        pnlDetailGrid:
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
@@ -43,8 +53,19 @@ RootNode:
                 DetailMotivationStatus: {Label=Active, Type=Boolean}            
             SortOrder: DetailMotivationGroupCode ASC
             ActionFocusRow: FocusedRowChanged
+
+        sptDetails:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 220
+            Height: 400
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlDetails
+            Panel2: pnlFees
+
         pnlDetails:
-            Dock: Bottom
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls:
                 Row0: [cmbDetailMotivationGroupCode, txtDetailMotivationDetailCode]
                 Row1: [txtDetailShortCode, cmbReportColumn]
@@ -53,17 +74,15 @@ RootNode:
                 Row4: [cmbDetailAccountCode]
                 Row6: [txtDetailRecipientKey]
                 Row5: [pnlMoreChecks]
-                Row7: [lblFeePayable, lblFeeReceivable]
-                Row8: [clbDetailFeesPayable, clbDetailFeesReceivable]
         pnlMoreChecks:
             ControlsOrientation: horizontal
             ColSpan: 2
             Controls: [chkDetailAutopopdesc, chkDetailMotivationStatus, chkDetailReceipt, chkDetailTaxDeductible, chkDetailExportToIntranet]
         cmbDetailMotivationGroupCode: {Label=Group, List=UserDefinedList}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
-        txtDetailMotivationDetailDesc: {Label=Description, Width=230, OnChange=DescriptionTyped}
+        txtDetailMotivationDetailDesc: {Label=Description, Width=210, OnChange=DescriptionTyped}
         txtDetailShortCode: {Label=Short Code} 
-        txtDetailMotivationDetailDescLocal: {Label=Local Description, Width=230}
+        txtDetailMotivationDetailDescLocal: {Label=Local Description, Width=210, Stretch=Horizontally}
         cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Width=400, ColSpan=2}
         cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Width=300, ColSpan=2}
         chkDetailAutopopdesc: {Label=Populate Gift Description}
@@ -74,17 +93,26 @@ RootNode:
         cmbReportColumn:
             OptionalValues: [Worker, =Field]
         txtDetailRecipientKey: {Label=Key Ministry, Type=PartnerKey, PartnerClass=UNIT, Validation=true, ColSpan=2, Width=500}
+
+        pnlFees:
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
+            Controls:
+                Row0: [lblFeePayable, lblFeeReceivable]
+                Row1: [clbDetailFeesPayable, clbDetailFeesReceivable]
         lblFeePayable:
         lblFeeReceivable:
         clbDetailFeesPayable:
             NoLabel: true
             List: UserDefinedList
-            Height:140
+            Stretch: Vertically
+            Height:100
             Width:350
             Tooltip:Check the Fees Payable that apply
         clbDetailFeesReceivable:
             NoLabel: true
             List: UserDefinedList
-            Height:140
+            Stretch: Vertically
+            Height:100
             Width:350
             Tooltip:Check the Fees Receivable that apply

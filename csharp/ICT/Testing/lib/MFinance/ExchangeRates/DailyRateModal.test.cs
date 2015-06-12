@@ -46,7 +46,9 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.CrossLedger.Data;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This test suite will delete all the existing rows in the Daily Exchange rate table
@@ -137,18 +139,32 @@ namespace Tests.MFinance.Client.ExchangeRates
             DateTime dtStart = new DateTime(2000, 01, 01);
             DateTime dtEnd = new DateTime(2000, 12, 31);
             DateTime dateEffectiveFrom;
+            decimal rateOfExchange;
+
             // First test is with empty data - should return 1.0m
-            TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-            decimal result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP", out dateEffectiveFrom);
-            Assert.AreEqual(1.0m, result, "The result should be 1.0m when the table contains no data");
+            ExchangeRateTDS workDS = TRemote.MFinance.Common.WebConnectors.LoadDailyExchangeRateData(false, dtStart, dtEnd);
+            bool gotRate = CommonRoutines.GetBestExchangeRate(workDS.ADailyExchangeRate,
+                "GBP",
+                STANDARD_TEST_CURRENCY,
+                false,
+                out rateOfExchange,
+                out dateEffectiveFrom);
+            Assert.IsFalse(gotRate, "Should fail to get rate when table is empty");
+            Assert.AreEqual(0.0m, rateOfExchange, "The result should be 0.0m when GetBestExchangeRate returns no data");
 
             // Repeat test with data but outside the date range - again should return 1.0m
             FMainDS.InsertStandardModalRows();
             FMainDS.SaveChanges();
 
-            mainScreen = new TFrmSetupDailyExchangeRate(null);
-            result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP", out dateEffectiveFrom);
-            Assert.AreEqual(1.0m, result, "The result should be 1.0m because there is no data in the date range");
+            workDS = TRemote.MFinance.Common.WebConnectors.LoadDailyExchangeRateData(false, dtStart, dtEnd);
+            gotRate = CommonRoutines.GetBestExchangeRate(workDS.ADailyExchangeRate,
+                "GBP",
+                STANDARD_TEST_CURRENCY,
+                false,
+                out rateOfExchange,
+                out dateEffectiveFrom);
+            Assert.IsFalse(gotRate, "Should fail to get rate when table has no data in the date range");
+            Assert.AreEqual(0.0m, rateOfExchange, "The result should be 0.0m when GetBestExchangeRate returns no data");
 
             // Repeat again with data inside the range
             FMainDS.AddARow("GBP", STANDARD_TEST_CURRENCY, new DateTime(2000, 6, 1), 2.0m);
@@ -157,9 +173,16 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.AddARow("GBP", STANDARD_TEST_CURRENCY, new DateTime(2000, 6, 20), 2.10m);
             FMainDS.SaveChanges();
 
-            mainScreen = new TFrmSetupDailyExchangeRate(null);
-            result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP", out dateEffectiveFrom);
-            Assert.AreEqual(2.15m, result);
+            workDS = TRemote.MFinance.Common.WebConnectors.LoadDailyExchangeRateData(false, dtStart, dtEnd);
+            gotRate = CommonRoutines.GetBestExchangeRate(workDS.ADailyExchangeRate,
+                "GBP",
+                STANDARD_TEST_CURRENCY,
+                false,
+                out rateOfExchange,
+                out dateEffectiveFrom);
+            Assert.IsTrue(gotRate, "Expected to get a rate");
+            Assert.AreEqual(2.15m, rateOfExchange);
+            Assert.AreEqual(dateEffectiveFrom, new DateTime(2000, 6, 30), "Unexpected matching date");
         }
 
         #endregion

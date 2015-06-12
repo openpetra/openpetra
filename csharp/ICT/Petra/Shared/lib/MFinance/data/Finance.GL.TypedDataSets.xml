@@ -28,6 +28,7 @@
             <CustomField name="AnalysisAttributes" type="string"/>
         </Table>
         <Table sqltable="a_recurring_trans_anal_attrib" />	
+        <Table sqltable="a_revaluation" />	
     </DataSet>
 
     <DataSet name="GLPostingTDS">

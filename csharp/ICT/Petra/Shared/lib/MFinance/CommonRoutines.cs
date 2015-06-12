@@ -27,6 +27,9 @@ using System.Text.RegularExpressions;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.CrossLedger.Data;
 
 namespace Ict.Petra.Shared.MFinance
 {
@@ -560,6 +563,114 @@ namespace Ict.Petra.Shared.MFinance
             }
 
             return SB.ToString();
+        }
+
+        /// <summary>
+        /// Gets the best (latest) exchange rate for a pair of currencies from a table of rates.
+        /// </summary>
+        /// <param name="ADailyRateTable">A table of rates that has been obtained by calling LoadExchangeRateData for a period of interest.</param>
+        /// <param name="ACurrencyFrom">The 'from' currency</param>
+        /// <param name="ACurrencyTo">The 'to' currency</param>
+        /// <param name="AEnforceUniqueRate">If true the method will only return true if there is a unique rate for the specified currencies on the 'latest' date.
+        /// If false the method returns the rate for the latest 'time' on the latest date.</param>
+        /// <param name="ARateOfExchange">The returned rate</param>
+        /// <param name="AEffectiveDate">The date associated with the returned rate.</param>
+        /// <returns>True if a matching rate was found.  The rate and date are in the out parameters.</returns>
+        public static bool GetBestExchangeRate(ExchangeRateTDSADailyExchangeRateTable ADailyRateTable,
+            string ACurrencyFrom,
+            string ACurrencyTo,
+            Boolean AEnforceUniqueRate,
+            out decimal ARateOfExchange,
+            out DateTime AEffectiveDate)
+        {
+            ARateOfExchange = 0.0m;
+            AEffectiveDate = DateTime.MinValue;
+
+            ADailyExchangeRateRow uniqueFittingRow = null;
+            bool oppositeRate = false;
+
+            // sort rates by date, look for rate just before the date we are looking for
+            string rowFilter = String.Format("{0}='{1}' AND {2}='{3}'",
+                ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
+                ACurrencyFrom,
+                ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
+                ACurrencyTo);
+
+            ADailyRateTable.DefaultView.RowFilter = rowFilter;
+            ADailyRateTable.DefaultView.Sort = String.Format("{0} DESC, {1} DESC",
+                ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
+                ADailyExchangeRateTable.GetTimeEffectiveFromDBName());
+
+            // If we are after a unique row we need to remember the one from this view, if it exists
+            if (AEnforceUniqueRate && (ADailyRateTable.DefaultView.Count == 1))
+            {
+                uniqueFittingRow = (ADailyExchangeRateRow)ADailyRateTable.DefaultView[0].Row;
+            }
+
+            if ((ADailyRateTable.DefaultView.Count == 0) || AEnforceUniqueRate)
+            {
+                // try other way round
+                rowFilter = String.Format("{0}='{1}' AND {2}='{3}'",
+                    ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
+                    ACurrencyFrom,
+                    ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
+                    ACurrencyTo);
+
+                ADailyRateTable.DefaultView.RowFilter = rowFilter;
+                oppositeRate = true;
+
+                if (AEnforceUniqueRate)
+                {
+                    if (ADailyRateTable.DefaultView.Count > 1)
+                    {
+                        // This way round does not have a unique rate
+                        uniqueFittingRow = null;
+                    }
+                    else if ((ADailyRateTable.DefaultView.Count == 1) && (uniqueFittingRow == null))
+                    {
+                        // we will use this as our unique rate
+                        uniqueFittingRow = (ADailyExchangeRateRow)ADailyRateTable.DefaultView[0].Row;
+                    }
+                    else
+                    {
+                        // put this variable back as it was
+                        oppositeRate = false;
+                    }
+                }
+            }
+
+            ADailyExchangeRateRow fittingRate = null;
+
+            if (AEnforceUniqueRate)
+            {
+                // Did we get a unique rate?
+                if (uniqueFittingRow != null)
+                {
+                    fittingRate = uniqueFittingRow;
+                }
+            }
+            else if (ADailyRateTable.DefaultView.Count > 0)
+            {
+                // Just return the first in the list
+                fittingRate = (ADailyExchangeRateRow)ADailyRateTable.DefaultView[0].Row;
+            }
+
+            if (fittingRate != null)
+            {
+                if (oppositeRate)
+                {
+                    ARateOfExchange = GLRoutines.Divide(1.0m, fittingRate.RateOfExchange);
+                }
+                else
+                {
+                    ARateOfExchange = fittingRate.RateOfExchange;
+                }
+
+                AEffectiveDate = fittingRate.DateEffectiveFrom;
+            }
+
+            //Returning 0 causes a validation error to force the user to select an exchange rate:
+            return ARateOfExchange != 0.0m;
         }
     }
 }

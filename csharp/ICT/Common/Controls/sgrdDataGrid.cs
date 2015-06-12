@@ -28,6 +28,7 @@ using System.Drawing.Drawing2D;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows.Forms;
 using DevAge.ComponentModel;
 using Ict.Common.Exceptions;
@@ -1203,7 +1204,7 @@ namespace Ict.Common.Controls
         public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn, int AFractionDigits)
         {
             SourceGrid.Cells.Editors.TextBox CurrencyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(decimal));
-            CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.NumberTypeConverter(typeof(decimal), "N" + AFractionDigits.ToString());
+            CurrencyEditor.TypeConverter = new Ict.Common.TypeConverter.TCurrencyConverter(Thread.CurrentThread.CurrentCulture.NumberFormat);
 
             CurrencyEditor.EditableMode = EditableMode.None;
 

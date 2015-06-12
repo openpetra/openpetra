@@ -56,6 +56,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private String baseCurrencyOfLedger = null;
 
         /// <summary>
+        /// The International currency is used to initialize the "to" combobox
+        /// </summary>
+        private String intlCurrencyOfLedger = null;
+
+        /// <summary>
         /// A ledger table containing all the ledgers that this client has access to
         /// </summary>
         private ALedgerTable FAvailableLedgers = null;
@@ -89,6 +94,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                          TCacheableFinanceTablesEnum.LedgerDetails, value))[0];
                 baseCurrencyOfLedger = ledger.BaseCurrency;
+                intlCurrencyOfLedger = ledger.IntlCurrency;
 
                 mniImport.Enabled = true;
                 tbbImport.Enabled = true;
@@ -133,6 +139,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     // we default to the first one we find
                     baseCurrencyOfLedger = ((ALedgerRow)ledgerView[i].Row).BaseCurrency;
+                }
+
+                if (intlCurrencyOfLedger == null)
+                {
+                    // we default to the first one we find
+                    intlCurrencyOfLedger = ((ALedgerRow)ledgerView[i].Row).IntlCurrency;
                 }
 
                 // Get the accounting periods for this ledger
@@ -275,23 +287,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (FPreviouslySelectedDetailRow == null)
             {
                 // Corporate Exchange rates are not part of any ledger, so baseCurrencyOfLedger may be null...
-                if (baseCurrencyOfLedger == null)
+                if ((baseCurrencyOfLedger == null) || (intlCurrencyOfLedger == null) || (baseCurrencyOfLedger == intlCurrencyOfLedger))
                 {
                     ARow.FromCurrencyCode = "GBP";
                     ARow.ToCurrencyCode = "USD";
                 }
                 else
                 {
-                    if (baseCurrencyOfLedger == "USD")
-                    {
-                        ARow.FromCurrencyCode = "GBP";
-                    }
-                    else
-                    {
-                        ARow.FromCurrencyCode = "USD";
-                    }
-
-                    ARow.ToCurrencyCode = baseCurrencyOfLedger;
+                    ARow.FromCurrencyCode = baseCurrencyOfLedger;
+                    ARow.ToCurrencyCode = intlCurrencyOfLedger;
                 }
             }
             else

@@ -12175,6 +12175,60 @@
       <indexfield name="a_date_effective_d" order="ascending"/>
     </index>
   </table>
+  <table name="a_revaluation"
+         descr="Holds information used specifically in revaluations. The table extends the a_journal table."
+         area="Petra Data"
+         label="Revaluation"
+         dumpname="a_reval"
+         group="account">
+    <tablefield name="a_ledger_number_i"
+                type="integer"
+                descr="The revaluation journal belongs to this ledger."
+                format="&gt;&gt;&gt;9"
+                label="Ledger Number"
+                help="Enter the ledger number"
+                notnull="yes"
+                initial="0"/>
+    <tablefield name="a_batch_number_i"
+                type="integer"
+                descr="identifes which batch the revaluation journal belongs to."
+                format="&gt;&gt;&gt;&gt;&gt;9"
+                label="Batch Number"
+                help="The number of the batch containing this journal."
+                notnull="yes"
+                initial="0"/>
+    <tablefield name="a_journal_number_i"
+                type="integer"
+                descr="Identifies the revaluation journal within a batch (usually 1)"
+                format="&gt;&gt;&gt;&gt;&gt;9"
+                label="Journal Number"
+                help="The number of this journal."
+                notnull="yes"/>
+    <tablefield name="a_revaluation_currency_c"
+                type="varchar"
+                descr="This defines which revaluation currency the rate applies to"
+                format="X(8)"
+                label="Revaluation Currency"
+                notnull="yes"/>
+    <tablefield name="a_exchange_rate_to_base_n"
+                type="number"
+                length="24"
+                decimals="10"
+                descr="The rate of exchange from the revaluation currency (in a_revaluation_currency_c) to the ledger base currency."
+                format="&gt;,&gt;&gt;&gt;,&gt;&gt;9.99999999"
+                label="Exchange Rate to Base"
+                notnull="yes"
+                initial="0" />
+    <!-- Constraints on table a_revaluation -->
+    <primarykey name="a_revaluation_pk"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i, a_journal_number_i"/>
+    <foreignkey name="a_revaluation_fk1"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i"
+                otherTable="a_batch"
+                otherFields="a_ledger_number_i, a_batch_number_i"/>
+  </table>
   <table name="a_transaction"
          descr="Detailed information for each debit and credit in a general ledger journal."
          area="Petra Data"

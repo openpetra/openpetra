@@ -73,6 +73,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 TFinanceControls.InitialiseFeesReceivableList(ref clbDetailFeesReceivable, FLedgerNumber);
                 TFinanceControls.InitialiseFeesPayableList(ref clbDetailFeesPayable, FLedgerNumber);
 
+                // Set up auto-sizing
+                SourceGrid.AutoSizeMode sizeMode = SourceGrid.AutoSizeMode.EnableAutoSize | SourceGrid.AutoSizeMode.EnableStretch;
+
+                for (int colNum = 1; colNum <= 2; colNum++)
+                {
+                    clbDetailFeesPayable.Columns[colNum].AutoSizeMode = sizeMode;
+                    clbDetailFeesReceivable.Columns[colNum].AutoSizeMode = sizeMode;
+                }
+
+                // Sort the grid
                 DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
                 myDataView.AllowNew = false;
                 myDataView.Sort = String.Format("{0} ASC, {1} ASC",
@@ -182,6 +192,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         {
             // Get the current description
             FDescription = txtDetailMotivationDetailDesc.Text;
+            this.Resize += new EventHandler(TFrmGiftMotivationSetup_Resize);
+        }
+
+        private void TFrmGiftMotivationSetup_Resize(object sender, EventArgs e)
+        {
+            // Everything works out of the box except for the two checked list boxes which we want to keep centralised
+            // They already stretch vertically in the YAML
+            int fullWidth = pnlFees.Width;
+
+            clbDetailFeesPayable.Width = (fullWidth - 30) / 2;
+            clbDetailFeesReceivable.Width = (fullWidth - 30) / 2;
+            clbDetailFeesReceivable.Left = clbDetailFeesPayable.Width + 25;
+
+            lblFeePayable.Left = clbDetailFeesPayable.Left;
+            lblFeeReceivable.Left = clbDetailFeesReceivable.Left;
+
+            clbDetailFeesPayable.AutoSizeCells(new SourceGrid.Range(1, 1, clbDetailFeesPayable.Rows.Count - 1, 2));
+            clbDetailFeesReceivable.AutoSizeCells(new SourceGrid.Range(1, 1, clbDetailFeesReceivable.Rows.Count - 1, 2));
         }
 
         private void NewRowManual(ref AMotivationDetailRow ARow)

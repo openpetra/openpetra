@@ -478,99 +478,35 @@ namespace Ict.Petra.Server.MFinance.Common
                 earliestDate = ADateEffective.AddDays(-APriorDaysAllowed);
             }
 
-            // Query the database...
+            // Query the database using the specific period ...
             TDBTransaction transaction = null;
-            bool oppositeRate = false;
-            ADailyExchangeRateRow fittingRate = null;
+            ExchangeRateTDS allRates = null;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
                 delegate
                 {
-                    ExchangeRateTDS allRates = TCrossLedger.LoadDailyExchangeRateData(false, earliestDate, ADateEffective);
-                    ADailyExchangeRateTable rates = allRates.ADailyExchangeRate;
-                    ADailyExchangeRateRow uniqueFittingRow = null;
-
-                    // sort rates by date, look for rate just before the date we are looking for
-                    string rowFilter = String.Format("{0}='{1}' AND {2}='{3}'",
-                        ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
-                        ACurrencyFrom,
-                        ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
-                        ACurrencyTo);
-
-                    rates.DefaultView.RowFilter = rowFilter;
-                    rates.DefaultView.Sort = String.Format("{0} DESC, {1} DESC",
-                        ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
-                        ADailyExchangeRateTable.GetTimeEffectiveFromDBName());
-
-                    // If we are after a unique row we need to remember the one from this view, if it exists
-                    if (AEnforceUniqueRate && (rates.DefaultView.Count == 1))
-                    {
-                        uniqueFittingRow = (ADailyExchangeRateRow)rates.DefaultView[0].Row;
-                    }
-
-                    if ((rates.DefaultView.Count == 0) || AEnforceUniqueRate)
-                    {
-                        // try other way round
-                        rowFilter = String.Format("{0}='{1}' AND {2}='{3}'",
-                            ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
-                            ACurrencyFrom,
-                            ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
-                            ACurrencyTo);
-
-                        rates.DefaultView.RowFilter = rowFilter;
-                        oppositeRate = true;
-
-                        if (AEnforceUniqueRate)
-                        {
-                            if (rates.DefaultView.Count > 1)
-                            {
-                                // This way round does not have a unique rate
-                                uniqueFittingRow = null;
-                            }
-                            else if ((rates.DefaultView.Count == 1) && (uniqueFittingRow == null))
-                            {
-                                // we will use this as our unique rate
-                                uniqueFittingRow = (ADailyExchangeRateRow)rates.DefaultView[0].Row;
-                            }
-                            else
-                            {
-                                // put this variable back as it was
-                                oppositeRate = false;
-                            }
-                        }
-                    }
-
-                    if (AEnforceUniqueRate)
-                    {
-                        // Did we get a unique rate?
-                        if (uniqueFittingRow != null)
-                        {
-                            fittingRate = uniqueFittingRow;
-                        }
-                    }
-                    else if (rates.DefaultView.Count > 0)
-                    {
-                        // Just return the first in the list
-                        fittingRate = (ADailyExchangeRateRow)rates.DefaultView[0].Row;
-                    }
+                    allRates = TCrossLedger.LoadDailyExchangeRateData(false, earliestDate, ADateEffective);
                 });
 
-            if (fittingRate != null)
+            // Now work out the correct rate from the returned rows
+            if (allRates != null)
             {
-                if (oppositeRate)
-                {
-                    return GLRoutines.Divide(1.0m, fittingRate.RateOfExchange);
-                }
+                decimal rateOfExchange;
+                DateTime effectiveDate;
 
-                return fittingRate.RateOfExchange;
+                if (CommonRoutines.GetBestExchangeRate(allRates.ADailyExchangeRate, ACurrencyFrom, ACurrencyTo, AEnforceUniqueRate,
+                        out rateOfExchange, out effectiveDate))
+                {
+                    return rateOfExchange;
+                }
             }
 
             TLogging.Log("Cannot find daily exchange rate for " + ACurrencyFrom + " " + ACurrencyTo + " for " + ADateEffective.ToString("yyyy-MM-dd"));
 
             //Returning 0 causes a validation error to force the user to select an exchange rate:
-            return 0M;
+            return 0.0m;
         }
 
         /// <summary>

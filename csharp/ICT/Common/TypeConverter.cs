@@ -507,5 +507,86 @@ namespace Ict.Common
         }
 
         #endregion
+
+        #region TCurrencyConverter
+
+        /// <summary>
+        /// Converts a decimal number into a currency using the specified culture settings for currencies.
+        /// It may seem surprising that we need this but it is because some locales have a different thousands and decimal separator
+        ///   for currencies from the one used for numbers.
+        /// </summary>
+        public class TCurrencyConverter : System.ComponentModel.TypeConverter
+        {
+            private NumberFormatInfo FNumberFormatInfo = null;
+
+            /// <summary>
+            /// Test if we can convert from a given type to a currency
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="sourceType"></param>
+            /// <returns></returns>
+            public override Boolean CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+            {
+                return sourceType == typeof(string);
+            }
+
+            /// <summary>
+            /// Test if we can convert the decimal to a string
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="sourceType"></param>
+            /// <returns></returns>
+            public override Boolean CanConvertTo(ITypeDescriptorContext context, Type sourceType)
+            {
+                return sourceType == typeof(string);
+            }
+
+            /// <summary>
+            /// convert an object into a decimal
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="culture"></param>
+            /// <param name="value"></param>
+            /// <returns></returns>
+            public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+            {
+                if (value.GetType() == typeof(string))
+                {
+                    return value;
+                }
+
+                return null;
+            }
+
+            /// <summary>
+            /// convert a decimal into another type
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="culture"></param>
+            /// <param name="value"></param>
+            /// <param name="destinationType"></param>
+            /// <returns></returns>
+            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+            {
+                if (value.GetType() == typeof(Decimal))
+                {
+                    return ((decimal)value).ToString("N" + FNumberFormatInfo.CurrencyDecimalDigits).Replace(
+                        FNumberFormatInfo.NumberGroupSeparator, FNumberFormatInfo.CurrencyGroupSeparator).Replace(
+                        FNumberFormatInfo.NumberDecimalSeparator, FNumberFormatInfo.CurrencyDecimalSeparator);
+                }
+
+                return null;
+            }
+
+            /// <summary>
+            /// default constructor
+            /// </summary>
+            public TCurrencyConverter(NumberFormatInfo AFormatInfo) : base()
+            {
+                FNumberFormatInfo = AFormatInfo;
+            }
+        }
+
+        #endregion
     }
 }

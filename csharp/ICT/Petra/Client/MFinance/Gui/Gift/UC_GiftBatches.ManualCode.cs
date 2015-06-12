@@ -151,7 +151,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitialiseLogicObjects()
         {
-            FLoadAndFilterLogicObject = new TUC_GiftBatches_LoadAndFilter(FLedgerNumber, FMainDS, FFilterAndFindObject);
+            FLoadAndFilterLogicObject = new TUC_GiftBatches_LoadAndFilter(FPetraUtilsObject, FLedgerNumber, FMainDS, FFilterAndFindObject);
             FImportLogicObject = new TUC_GiftBatches_Import(FPetraUtilsObject, FLedgerNumber, this);
             FPostingLogicObject = new TUC_GiftBatches_Post(FPetraUtilsObject, FLedgerNumber, FMainDS);
             FReceiptingLogicObject = new TUC_GiftBatches_Receipt();
@@ -205,6 +205,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
             cmbDetailCurrencyCode.cmbCombobox.StickySelectedValueChanged += new EventHandler(StickyCurrencyChange);
+
+            txtDetailHashTotal.HideLabel = true;
 
             // Load the ledger table so we know the base currency
             FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadALedgerTable(FLedgerNumber));

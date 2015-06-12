@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void InitialiseLogicObjects()
         {
-            FLoadAndFilterLogicObject = new TUC_GLBatches_LoadAndFilter(FLedgerNumber, FMainDS, FFilterAndFindObject);
+            FLoadAndFilterLogicObject = new TUC_GLBatches_LoadAndFilter(FPetraUtilsObject, FLedgerNumber, FMainDS, FFilterAndFindObject);
             FImportLogicObject = new TUC_GLBatches_Import(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
             FCancelLogicObject = new TUC_GLBatches_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS);
             FPostLogicObject = new TUC_GLBatches_Post(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
@@ -770,6 +770,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
 
+            txtDetailBatchControlTotal.HideLabel = true;
+
             LoadBatchesForCurrentYear();
 
             SetInitialFocus();
@@ -872,14 +874,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // Before we re-load make a note of the 'last' batch number so we can work out which batches have been imported.
             DataView dv = new DataView(FMainDS.ABatch, String.Empty, String.Format("{0} DESC",
                     ABatchTable.GetBatchNumberDBName()), DataViewRowState.CurrentRows);
-            int lastBatchNumber = ((ABatchRow)dv[0].Row).BatchNumber;
+            int lastBatchNumber = (dv.Count == 0) ? 0 : ((ABatchRow)dv[0].Row).BatchNumber;
 
             // Merge the new batches into our data set
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, FCurrentLedgerYear, 0));
 
             // Go round each imported batch loading its journals
             // Start with the highest batch number and continue until we reach the 'old' last batch
-            for (int i = 0;; i++)
+            for (int i = 0; i < dv.Count; i++)
             {
                 int batchNumber = ((ABatchRow)dv[i].Row).BatchNumber;
 
