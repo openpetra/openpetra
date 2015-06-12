@@ -324,10 +324,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
             }
 
-            if (FMode == TMode.ecisSubtractMode
-                && txtBaseExtract.Text.Trim() == "")
+            if ((FMode == TMode.ecisSubtractMode)
+                && (txtBaseExtract.Text.Trim() == ""))
             {
-
             }
 
             if (FExtractMasterTable.Rows.Count > 0)

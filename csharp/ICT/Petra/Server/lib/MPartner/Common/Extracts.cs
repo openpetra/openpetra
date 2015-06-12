@@ -196,7 +196,9 @@ namespace Ict.Petra.Server.MPartner.Extracts
             Boolean ReturnValue = false;
             MExtractMasterRow TemplateRow;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref Transaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
                 delegate
                 {
                     // Check if there is already an extract with the extract name
@@ -242,7 +244,9 @@ namespace Ict.Petra.Server.MPartner.Extracts
             TDBTransaction Transaction = null;
             Int32 KeyCount = 0;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref Transaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
                 delegate
                 {
                     MExtractMasterTable ExtractDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId, Transaction);
@@ -253,12 +257,11 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     }
                     else
                     {
-                        KeyCount = - 1;
+                        KeyCount = -1;
                     }
                 });
 
             return KeyCount;
-
         }
 
         /// <summary>
