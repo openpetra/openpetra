@@ -376,7 +376,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             view.RowFilter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly, ABankAccountOnly);
 
-            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember, "a_account_type_c" });
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
             //Highlight inactive Accounts
@@ -395,7 +395,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 90);
-            AControl.AddTextColumn(Catalog.GetString("Account Description"), NewTable.Columns[DisplayMember], 232);
+            AControl.AddTextColumn(Catalog.GetString("Account Description"), NewTable.Columns[DisplayMember], 200);
             AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 

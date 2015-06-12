@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -91,6 +91,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         //
         // This will be called if the Fast Reports Wrapper loaded OK.
         // Returns True if the data apparently loaded OK and the report should be printed.
+        // (Returns FALSE if the user has selected "auto-email" and this method drives the email sending process itself, leaving nothing for the default process to do.)
         private bool LoadReportData(TRptCalculator ACalc)
         {
             Shared.MReporting.TParameterList parameters = ACalc.GetParameters();
@@ -150,17 +151,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String ReferenceFilter = "";
             String AnalysisTypeFilter = " ";
-            String GroupField = "a_account_code_c, a_cost_centre_code_c, TransactionDate";
+            String OrderByClause = "AccountCode, a_cost_centre_code_c, TransactionDate";
             String Sortby = parameters.Get("param_sortby").ToString();
 
             if (Sortby == "Cost Centre")
             {
-                GroupField = "a_cost_centre_code_c, a_account_code_c, TransactionDate";
+                OrderByClause = "a_cost_centre_code_c, AccountCode, TransactionDate";
             }
 
             if (Sortby == "Reference")
             {
-                GroupField = "a_reference_c, TransactionDate";
+                OrderByClause = "a_reference_c, a_cost_centre_code_c, AccountCode, TransactionDate";
                 String FilterItem = parameters.Get("param_reference_start").ToString();
 
                 if (FilterItem != "")
@@ -178,7 +179,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (Sortby == "Analysis Type")
             {
-                GroupField = "AnalysisTypeCode, AnalysisValue, TransactionDate";
+                OrderByClause = "AnalysisTypeCode, AnalysisValue, TransactionDate";
                 String FilterItem = parameters.Get("param_analyis_type_start").ToString();
 
                 if (FilterItem != "")
@@ -194,7 +195,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            parameters.Add("param_groupfield", GroupField);
+            parameters.Add("param_groupfield", OrderByClause);
 
             String Csv = "";
             Csv = StringHelper.AddCSV(Csv, "ALedger/SELECT * FROM a_ledger WHERE " + LedgerFilter);
@@ -207,8 +208,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 "ACostCentre/SELECT * FROM a_cost_centre WHERE " + LedgerFilter + CostCentreFilter +
                 " AND a_posting_cost_centre_flag_l=true AND a_cost_centre_active_flag_l=true");
 
-            Boolean InternationalCurrencySelected = parameters.Get("param_currency").ToString().StartsWith("Int");
-            String AmountField = InternationalCurrencySelected ? "a_amount_in_intl_currency_n" : "a_amount_in_base_currency_n";
+            String CurrencySelected = parameters.Get("param_currency").ToString();
+
+            String AmountField = CurrencySelected.StartsWith("Int") ? "a_amount_in_intl_currency_n" :
+                                 CurrencySelected.StartsWith("Trans") ? "a_transaction_amount_n" : "a_amount_in_base_currency_n";
+
+            String CurrencyField = CurrencySelected.StartsWith("Int") ? "a_ledger.a_intl_currency_c" :
+                                   CurrencySelected.StartsWith("Trans") ? "a_journal.a_transaction_currency_c" : "a_ledger.a_base_currency_c";
 
             if (Sortby == "Analysis Type")  // To sort by analysis type, I need a different (and more horible) query:
             {
@@ -219,18 +225,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     "a_transaction.a_cost_centre_code_c AS CostCentreCode," +
                     "a_transaction.a_transaction_date_d AS TransactionDate," +
                     "a_transaction." + AmountField + " AS Amount," +
-                    "a_journal.a_transaction_currency_c AS Currency," +
+                    CurrencyField + " AS Currency," +
                     "a_transaction.a_debit_credit_indicator_l AS Debit," +
                     "a_transaction.a_narrative_c AS Narrative," +
                     "a_transaction.a_reference_c AS Reference," +
                     "a_trans_anal_attrib.a_analysis_type_code_c AS AnalysisTypeCode," +
                     "a_analysis_type.a_analysis_type_description_c AS AnalysisTypeDescr," +
                     "a_trans_anal_attrib.a_analysis_attribute_value_c AS AnalysisValue" +
-                    " FROM a_transaction, a_journal, a_trans_anal_attrib, a_analysis_type" +
+                    " FROM a_transaction, a_journal, a_trans_anal_attrib, a_analysis_type, a_ledger, a_account" +
                     " WHERE a_transaction." + LedgerFilter +
+                    " AND a_transaction.a_ledger_number_i = a_account.a_ledger_number_i " +
+                    " AND a_transaction.a_account_code_c = a_account.a_account_code_c " +
+                    " AND a_transaction.a_ledger_number_i = a_ledger.a_ledger_number_i " +
                     " AND a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i " +
                     " AND a_transaction.a_batch_number_i = a_journal.a_batch_number_i " +
                     " AND a_transaction.a_journal_number_i = a_journal.a_journal_number_i " +
+                    " AND ((a_account.a_foreign_currency_flag_l=FALSE) OR (a_account.a_foreign_currency_code_c = a_journal.a_transaction_currency_c))"
+                    +
                     " AND a_trans_anal_attrib.a_ledger_number_i = a_transaction.a_ledger_number_i " +
                     " AND a_trans_anal_attrib.a_batch_number_i = a_transaction.a_batch_number_i" +
                     " AND a_trans_anal_attrib.a_journal_number_i = a_transaction.a_journal_number_i" +
@@ -239,32 +250,39 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     AnalysisTypeFilter +
                     TransAccountCodeFilter + TransCostCentreFilter + " AND " + TranctDateFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
-                    " ORDER BY " + GroupField + ", a_transaction_date_d");
+                    " ORDER BY " + OrderByClause + ", a_transaction_date_d");
             }
             else
             {
-                Csv = StringHelper.AddCSV(Csv, "Transactions/" +
+                Csv = StringHelper.AddCSV(
+                    Csv,
+                    "Transactions/" +
                     "SELECT a_transaction.a_account_code_c AS AccountCode," +
                     "a_transaction.a_cost_centre_code_c AS CostCentreCode," +
                     "a_transaction.a_transaction_date_d AS TransactionDate," +
                     "a_transaction." + AmountField + " AS Amount," +
-                    "a_journal.a_transaction_currency_c AS Currency," +
+                    CurrencyField + " AS Currency," +
                     "a_transaction.a_debit_credit_indicator_l AS Debit," +
                     "a_transaction.a_narrative_c AS Narrative," +
                     "a_transaction.a_reference_c AS Reference," +
                     "'' AS AnalysisTypeCode," +
                     "'' AS AnalysisTypeDescr," +
                     "'' AS AnalysisValue" +
-                    " FROM a_transaction, a_journal WHERE " +
+                    " FROM a_transaction, a_journal, a_ledger, a_account WHERE " +
                     " a_transaction." + LedgerFilter +
+                    " AND a_transaction.a_ledger_number_i = a_account.a_ledger_number_i " +
+                    " AND a_transaction.a_account_code_c = a_account.a_account_code_c " +
+                    " AND a_transaction.a_ledger_number_i = a_ledger.a_ledger_number_i " +
                     " AND a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i " +
                     " AND a_transaction.a_batch_number_i = a_journal.a_batch_number_i " +
                     " AND a_transaction.a_journal_number_i = a_journal.a_journal_number_i " +
+                    " AND ((a_account.a_foreign_currency_flag_l=FALSE) OR (a_account.a_foreign_currency_code_c = a_journal.a_transaction_currency_c))"
+                    +
                     TransAccountCodeFilter +
                     TransCostCentreFilter + " AND " +
                     TranctDateFilter + ReferenceFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
-                    " ORDER BY " + GroupField + ", a_transaction_date_d");
+                    " ORDER BY " + OrderByClause);
             }
 
             GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
@@ -289,7 +307,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ReportDs.Tables["Transactions"],
                 parameters.Get("param_start_period_i").ToInt32(),
                 parameters.Get("param_end_period_i").ToInt32(),
-                InternationalCurrencySelected
+                CurrencySelected
                 );
 
             if ((this.IsDisposed) || (Balances == null))

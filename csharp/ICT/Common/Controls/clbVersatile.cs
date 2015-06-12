@@ -49,6 +49,16 @@ namespace Ict.Common.Controls
         private List <String>FKeyColumns;
 
         /// <summary>
+        ///
+        /// </summary>
+        public DataTable BoundDataTable
+        {
+            get
+            {
+                return FDataTable;
+            }
+        }
+        /// <summary>
         /// the number of checked items
         /// </summary>
         public System.Int32 CheckedItemsCount

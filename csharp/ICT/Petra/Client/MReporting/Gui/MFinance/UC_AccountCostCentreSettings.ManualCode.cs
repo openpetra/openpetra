@@ -35,6 +35,7 @@ using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using SourceGrid.Selection;
+using System.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -366,6 +367,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             clbCostCentres.SetCheckedStringList(SelectedCostCentres);
         }
 
+        private void SelectAllExpenseAccounts(System.Object sender, System.EventArgs e)
+        {
+            String expenseAccounts = "";
+            DataTable AccountsTable = clbAccountCodes.BoundDataTable;
+
+            for (Int32 Idx = 0; Idx < AccountsTable.Rows.Count; Idx++)
+            {
+                if (AccountsTable.Rows[Idx]["a_account_type_c"].ToString() == "Expense")
+                {
+                    if (expenseAccounts != "")
+                    {
+                        expenseAccounts += ",";
+                    }
+
+                    expenseAccounts += AccountsTable.Rows[Idx]["a_account_code_c"].ToString();
+                }
+            }
+
+            clbAccountCodes.SetCheckedStringList(expenseAccounts);
+        }
+
         // Enable/disable btnSelectAllReportingCostCentres depending on value of cmbSummaryCostCentres.
         // Fired when rbtCostCentreFromList is selected or when a value is chosen from cmbSummaryCostCentres.
         private void SummaryCostCentresChanged(System.Object sender, System.EventArgs e)
@@ -383,16 +405,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         // fired when rbtCostCentreFromList is changed
         private void CostCentreChanged(System.Object sender, System.EventArgs e)
         {
+            btnUnselectAllCostCentres.Enabled = rbtCostCentreFromList.Checked;
+            cmbSummaryCostCentres.Enabled = rbtCostCentreFromList.Checked;
+
             if (rbtCostCentreFromList.Checked)
             {
-                btnUnselectAllCostCentres.Enabled = true;
-                cmbSummaryCostCentres.Enabled = true;
                 SummaryCostCentresChanged(this, null);
             }
             else
             {
-                btnUnselectAllCostCentres.Enabled = false;
-                cmbSummaryCostCentres.Enabled = false;
                 btnSelectAllReportingCostCentres.Enabled = false;
             }
         }
@@ -400,14 +421,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         // fired when rbtAccountFromList is changed
         private void AccountChanged(System.Object sender, System.EventArgs e)
         {
-            if (rbtAccountFromList.Checked)
-            {
-                btnUnselectAllAccountCodes.Enabled = true;
-            }
-            else
-            {
-                btnUnselectAllAccountCodes.Enabled = false;
-            }
+            btnAllExpenseAccounts.Enabled = rbtAccountFromList.Checked;
+            btnUnselectAllAccountCodes.Enabled = rbtAccountFromList.Checked;
         }
 
         #endregion

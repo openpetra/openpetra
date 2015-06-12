@@ -132,12 +132,26 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref ReadTransaction,
                 delegate
                 {
-                    String sql = "SELECT DISTINCT p_partner.p_partner_key_n, " +
-                                 "p_partner.p_partner_short_name_c AS FieldName" +
-                                 " FROM p_partner, p_partner_type" +
-                                 " WHERE p_partner_type.p_partner_key_n = p_partner.p_partner_key_n " +
-                                 " AND (p_partner_type.p_type_code_c = 'LEDGER' OR p_partner_type.p_type_code_c = 'COSTCENTRE')" +
-                                 " ORDER BY p_partner.p_partner_short_name_c";
+                    /*
+                     * This SQL retrieves all partners that have "LEDGER" or "COSTCENTRE" type
+                     * but this doesn't seem to be appropriate.
+                     * The new SQL retrieves all units with u_unit_type_code_c="F".
+                     *                                                        Tim Ingham, April 2015
+                     *
+                     *
+                     * String sql = "SELECT DISTINCT p_partner.p_partner_key_n, " +
+                     *              "p_partner.p_partner_short_name_c AS FieldName" +
+                     *              " FROM p_partner, p_partner_type" +
+                     *              " WHERE p_partner_type.p_partner_key_n = p_partner.p_partner_key_n " +
+                     *              " AND p_partner_type.p_type_code_c IN ('LEDGER','COSTCENTRE')" +
+                     *              " ORDER BY p_partner.p_partner_short_name_c";
+                     */
+
+                    String sql = "SELECT DISTINCT p_unit.p_partner_key_n," +
+                                 " p_unit.p_unit_name_c AS FieldName" +
+                                 " FROM p_unit" +
+                                 " WHERE p_unit.u_unit_type_code_c='F'" +
+                                 " ORDER BY p_unit.p_unit_name_c";
 
                     ReturnTable = DBAccess.GDBAccessObj.SelectDT(sql, "receivingFields", ReadTransaction);
                 });
@@ -380,7 +394,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// <param name="ATransactionsTbl"></param>
         /// <param name="AStartPeriod"></param>
         /// <param name="AEndPeriod"></param>
-        /// <param name="AInternational"></param>
+        /// <param name="ASelectedCurrency"></param>
         /// <returns>DataTable</returns>
         [RequireModulePermission("FINANCE-1")]
         public static DataTable GetPeriodBalances(String ALedgerFilter,
@@ -391,7 +405,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable ATransactionsTbl,
             Int32 AStartPeriod,
             Int32 AEndPeriod,
-            Boolean AInternational)
+            String ASelectedCurrency)
         {
             DataTable Results = new DataTable();
 
@@ -399,6 +413,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Results.Columns.Add(new DataColumn("a_account_code_c", typeof(string)));
             Results.Columns.Add(new DataColumn("OpeningBalance", typeof(Decimal)));
             Results.Columns.Add(new DataColumn("ClosingBalance", typeof(Decimal)));
+            Results.Columns.Add(new DataColumn("Currency", typeof(string)));
 
             Boolean FromStartOfYear = (AStartPeriod == 1);
             TReportingDbAdapter DbAdapter = new TReportingDbAdapter();
@@ -408,8 +423,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 AStartPeriod -= 1; // I want the closing balance of the previous period.
             }
 
-            String BalanceField = (AInternational) ? "glmp.a_actual_intl_n" : "glmp.a_actual_base_n";
-            String StartBalanceField = (AInternational) ? "glm.a_start_balance_intl_n" : "glm.a_start_balance_base_n";
+            String BalanceField = ASelectedCurrency.StartsWith("Int") ? "glmp.a_actual_intl_n" :
+                                  ASelectedCurrency.StartsWith("Trans") ? "glmp.a_actual_foreign_n" : "glmp.a_actual_base_n";
+
+            String StartBalanceField = ASelectedCurrency.StartsWith("Int") ? "glm.a_start_balance_intl_n" :
+                                       ASelectedCurrency.StartsWith("Trans") ? "glm.a_start_balance_foreign_n" : "glm.a_start_balance_base_n";
+
+            String CurrencyCodeField = ASelectedCurrency.StartsWith("Int") ? "a_ledger.a_intl_currency_c" :
+                                       ASelectedCurrency == "Base" ? "a_ledger.a_base_currency_c" :
+                                       "CASE WHEN a_account.a_foreign_currency_flag_l=TRUE THEN a_account.a_foreign_currency_code_c ELSE a_ledger.a_base_currency_c END";
             String GroupField = "";
 
             if (ASortBy == "Account")
@@ -429,11 +451,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String Query = "SELECT glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i, " +
                            "a_account.a_debit_credit_indicator_l AS Debit, " +
                            StartBalanceField + " AS start_balance, " +
-                           BalanceField + " AS balance " +
-                           " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
+                           BalanceField + " AS balance, " +
+                           CurrencyCodeField + " AS Currency " +
+                           " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre, a_ledger" +
                            " WHERE glm." + ALedgerFilter +
                            " AND a_account." + ALedgerFilter +
                            " AND a_cost_centre." + ALedgerFilter +
+                           " AND a_ledger." + ALedgerFilter +
                            " AND a_account.a_posting_status_l = TRUE" +
                            " AND a_cost_centre.a_posting_cost_centre_flag_l = TRUE" +
                            " AND glm.a_year_i = " + AFinancialYear +
@@ -476,6 +500,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 if ((row["a_cost_centre_code_c"].ToString() != CostCentre) || (row["a_account_code_c"].ToString() != AccountCode)) // a new CC/AC combination
                 {
                     NewRow = Results.NewRow();
+                    NewRow["Currency"] = row["Currency"].ToString();
 
                     CostCentre = row["a_cost_centre_code_c"].ToString();
                     NewRow["a_cost_centre_code_c"] = CostCentre;
@@ -1369,14 +1394,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                             AllGlmp +
 
                                             "GROUP BY AccountType, AccountCode, AccountName, DebitCredit, AccountTypeOrder " +
-                                            "ORDER BY AccountTypeOrder, AccountCode " +
                                             ") AS Summarised ";
 
 
                         String Query = "SELECT " +                                                          // This query adds extra columns to Summarised
 
-                                       " '" + Parts[0] + "' AS CostCentreCode," +
-                                       " '" + Parts[1] + "' AS CostCentreName," +
+                                       " '" + Parts[0].Replace("'", "''") + "' AS CostCentreCode," +
+                                       " '" + Parts[1].Replace("'",
+                            "''") + "' AS CostCentreName," +
 
                                        "Summarised.*, " +
                                        "ActualYtd - LastMonthYtd AS Actual, " +
@@ -1385,7 +1410,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                                        "FROM " +
                                        Summarised +
-                                       NoZeroesFilter;
+                                       NoZeroesFilter +
+                                       "ORDER BY AccountTypeOrder, AccountCode ";
 
                         FilteredResults.Merge(DbAdapter.RunQuery(Query, "IncomeExpense", ReadTrans));
 
@@ -3197,67 +3223,63 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         private static List <String>GetCostCentreList(Dictionary <String, TVariant>AParameters)
         {
             List <String>MatchingCostCentres = new List <String>();
-            String CostCentreOptions = AParameters["param_costcentreoptions"].ToString();
+            String CostCentreOptions =
+                AParameters.ContainsKey("param_costcentreoptions") ? AParameters["param_costcentreoptions"].ToString() : "Unspecified";
             Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+
+            String Query = // This "AllActiveCostCentres" query is the default, if CostCentreOptions isn't set properly:
+                           "SELECT a_cost_centre_code_c AS CC, a_cost_centre_name_c AS Name FROM a_cost_centre WHERE a_ledger_number_i= " +
+                           LedgerNumber +
+                           " AND a_cost_centre_active_flag_l=TRUE" +
+                           " AND a_posting_cost_centre_flag_l=TRUE" +
+                           " AND a_cost_centre_type_c='Local'";
 
             switch (CostCentreOptions)
             {
+                case "AllCostCentres":
+                {
+                    Query = "SELECT a_cost_centre_code_c AS CC, a_cost_centre_name_c AS Name FROM a_cost_centre WHERE a_ledger_number_i= " +
+                            LedgerNumber +
+                            " AND a_posting_cost_centre_flag_l=TRUE" +
+                            " AND a_cost_centre_type_c='Local'";
+                    break;
+                } // "AllCostCentres"
+
                 case "SelectedCostCentres":
+                {
                     String CostCentreList = AParameters["param_cost_centre_codes"].ToString();
                     CostCentreList = CostCentreList.Replace(",", "','");                           // SQL IN List items in single quotes
-                    {
-                        String Query =
-                            "SELECT a_cost_centre_code_c AS CC, a_cost_centre_name_c AS Name FROM a_cost_centre WHERE a_ledger_number_i= " +
+                    Query = "SELECT a_cost_centre_code_c AS CC, a_cost_centre_name_c AS Name FROM a_cost_centre WHERE a_ledger_number_i= " +
                             LedgerNumber +
                             " AND a_cost_centre_code_c in('" + CostCentreList + "')";
-                        TDBTransaction Transaction = null;
-
-                        DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                            TEnforceIsolationLevel.eilMinimum,
-                            ref Transaction,
-                            delegate
-                            {
-                                DataTable tbl = DBAccess.GDBAccessObj.SelectDT(Query, "CC", Transaction);
-
-                                foreach (DataRow Row in tbl.Rows)
-                                {
-                                    MatchingCostCentres.Add(Row["CC"].ToString() + "," + Row["Name"].ToString());
-                                }
-                            }); // Get NewOrExisting AutoReadTransaction
-
-
-                        break;
-                    }
+                    break;
+                } // "SelectedCostCentres"
 
                 case "CostCentreRange":
                 {
-                    String Query = "SELECT a_cost_centre_code_c AS CC, a_cost_centre_name_c AS Name FROM a_cost_centre WHERE a_ledger_number_i= " +
-                                   LedgerNumber +
-                                   " AND a_posting_cost_centre_flag_l=TRUE" +
-                                   " AND a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_start"].ToString() +
-                                   "' AND a_cost_centre_code_c <='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
-                    TDBTransaction Transaction = null;
-
-                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
-                        ref Transaction,
-                        delegate
-                        {
-                            DataTable tbl = DBAccess.GDBAccessObj.SelectDT(Query, "CC", Transaction);
-
-                            foreach (DataRow Row in tbl.Rows)
-                            {
-                                MatchingCostCentres.Add(Row["CC"].ToString() + "," + Row["Name"].ToString());
-                            }
-                        });     // Get NewOrExisting AutoReadTransaction
-
-
+                    Query = "SELECT a_cost_centre_code_c AS CC, a_cost_centre_name_c AS Name FROM a_cost_centre WHERE a_ledger_number_i= " +
+                            LedgerNumber +
+                            " AND a_posting_cost_centre_flag_l=TRUE" +
+                            " AND a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_start"].ToString() +
+                            "' AND a_cost_centre_code_c <='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
                     break;
-                }
+                } // "CostCentreRange"
+            } // switch
 
-                case "AllActiveCostCentres": // THIS IS NOT SET AT ALL!
-                    break;
-            }
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    DataTable tbl = DBAccess.GDBAccessObj.SelectDT(Query, "CC", Transaction);
+
+                    foreach (DataRow Row in tbl.Rows)
+                    {
+                        MatchingCostCentres.Add(Row["CC"].ToString() + "," + Row["Name"].ToString());
+                    }
+                }); // Get NewOrExisting AutoReadTransaction
 
             return MatchingCostCentres;
         }
