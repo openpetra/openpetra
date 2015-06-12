@@ -7,15 +7,15 @@ RootNode:
     FormType: edit
     Template: usercontrolUnbound
     Actions:
-        actEditFamily: {Label=Edit Family, ActionClick=EditFamily}
-        actChangeFamily: {Label=Change Family, ActionClick=ChangeFamily}
+        actEditFamily: {Label=E&dit Family, ActionClick=EditFamily}
+        actChangeFamily: {Label=&Change Family, ActionClick=ChangeFamily}
         actFamilyMemberPromote: {ActionClick=FamilyMemberPromote, Image: MoveDownArrow.ico}
         actFamilyMemberDemote: {ActionClick=FamilyMemberDemote, Image: MoveUpArrow.ico}
-        actEditFamilyID: {Label=Manual Edit, ActionClick=EditFamilyID}
-        actEditPerson: {Label=Edit Selected Person, ActionClick=EditPerson}
-        actMovePersonToOtherFamily: {Label=Move selected Person to other Family, ActionClick=MovePersonToOtherFamily}
-        actAddExistingPersonToThisFamily: {Label=Move existing Person to this Family, ActionClick=MovePersonToThisFamily}
-        actAddNewPersonToThisFamily: {Label=Create new Person for this Family, ActionClick=AddNewPersonToThisFamily}
+        actEditFamilyID: {Label=Manua&l Edit, ActionClick=EditFamilyID}
+        actEditPerson: {Label=Edi&t Selected Person, ActionClick=EditPerson}
+        actMovePersonToOtherFamily: {Label=M&ove selected Person to other Family, ActionClick=MovePersonToOtherFamily}
+        actAddExistingPersonToThisFamily: {Label=Mo&ve existing Person to this Family, ActionClick=MovePersonToThisFamily}
+        actAddNewPersonToThisFamily: {Label=C&reate new Person for this Family, ActionClick=AddNewPersonToThisFamily}
         actRefreshGrid: {ActionClick=RefreshFamilyMembersList, Image: Refresh.ico}
         actFamilyIDHelp: {ActionClick=FamilyIDHelp, Image: Help2.ico}
     Controls:

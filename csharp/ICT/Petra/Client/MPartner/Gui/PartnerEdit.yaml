@@ -82,7 +82,7 @@ RootNode:
             Dock: Fill            
     Menu:
         mniFile: 
-            mniFileNewPartner: {Label=&New Partner..., Action=actNewPartner, Order=AlwaysFirst}
+            mniFileNewPartner: {Label=&New Partner..., ShortcutKeys=Keys.N | Keys.Control, Action=actNewPartner, Order=AlwaysFirst}
             mniFileNewPartnerWithShepherd: {Label: N&ew Partner (Shepherd), Action=actFileNewPartnerWithShepherd, Order=AlwaysFirst, Image: NewPartner.ico}
                 mniFileNewPartnerWithShepherdPerson:
                 mniFileNewPartnerWithShepherdFamily:

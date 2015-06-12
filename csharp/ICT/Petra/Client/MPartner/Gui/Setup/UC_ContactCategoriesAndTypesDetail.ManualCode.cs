@@ -415,7 +415,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             else
             {
                 dtpDetailUnassignableDate.Date = DateTime.Now.Date;
-                dtpDetailUnassignableDate.Focus();
             }
         }
 

@@ -345,54 +345,124 @@ namespace Ict.Petra.Shared
         ]
         public const String ERR_INVALID_HYPERLINK_WITH_VALUE_JUST_CONTAINING_PLACEHOLDER = "PARTN.00034V";
 
-        /// <summary>No Primary Email Address has been set desipite current E-Mail Addresses are available.</summary>
-        [ErrCodeAttribute("Primary Email Address Not Set Desipite E-Mail Addresses on File",
+        /// <summary>No Primary E-mail Address has been set desipite current E-Mail Addresses are available.</summary>
+        [ErrCodeAttribute("Primary E-mail Address Not Set Desipite E-Mail Addresses on File",
              ErrorMessageText =
-                 "No Primary Email Address has been set although current E-Mail Addresses are available.  IMPORTANT: OpenPetra can't send emails to this Partner in automated situations unless a Primary Email Address has been chosen!")
+                 "No Primary E-mail Address has been set although current E-Mail Addresses are available.  IMPORTANT: OpenPetra can't send e-mails to this Partner in automated situations unless a Primary E-mail Address has been chosen!")
         ]
         public const String ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESIPITE_EMAIL_ADDR_AVAIL = "PARTN.00035N";
 
-        /// <summary>A Primary Email Address has been set but there are no current E-Mail Addresses available.</summary>
-        [ErrCodeAttribute("Primary Email Address Set But No E-Mail Addresses on File",
+        /// <summary>A Primary E-mail Address has been set but there are no current E-Mail Addresses available.</summary>
+        [ErrCodeAttribute("Primary E-mail Address Set But No E-Mail Addresses on File",
              ErrorMessageText =
-                 "A Primary Email Address was set, but there are no current E-Mail Addresses available. It has therefore been removed from the 'Primary E-Mail' choices and no 'Primary E-Mail' is set any longer!")
+                 "A Primary E-mail Address was set, but there are no current E-Mail Addresses available. It has therefore been removed from the 'Primary E-Mail' choices and no 'Primary E-Mail' is set any longer!")
         ]
         public const String ERR_PRIMARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00036V";
 
-        /// <summary>A Primary Email Address has been set but there are no current E-Mail Addresses available.</summary>
-        [ErrCodeAttribute("Primary Email Address Set But the E-Mail Addresses' record is not current",
+        /// <summary>A Primary E-mail Address has been set but there are no current E-Mail Addresses available.</summary>
+        [ErrCodeAttribute("Primary E-mail Address Set But the E-Mail Addresses' record is not current",
              ErrorMessageText =
-                 "A Primary Email Address is still set, but the corresponding E-Mail Address record is not current. Change the 'Primary Email' setting to a current E-Mail Address!")
+                 "A Primary E-mail Address is still set, but the corresponding E-Mail Address record is not current. Change the 'Primary E-mail' setting to a current E-Mail Address!")
         ]
         public const String ERR_PRIMARY_EMAIL_ADDR_SET_BUT_IT_ISNT_CURRENT = "PARTN.00037V";
 
-        /// <summary>A Primary Email Address has been set but it doesn't match any E-Mail Address records.</summary>
-        [ErrCodeAttribute("Primary Email Address Set But it Does Not Match any E-Mail Addresses' record",
+        /// <summary>A Primary E-mail Address has been set but it doesn't match any E-Mail Address records.</summary>
+        [ErrCodeAttribute("Primary E-mail Address Set But it Does Not Match any E-Mail Addresses' record",
              ErrorMessageText =
-                 "A Primary Email Address was set, but it did not match any of the E-Mail Addresss that are on file. It has therefore been removed from the 'Primary E-Mail' choices. Change the 'Primary Email' setting to a current E-Mail Address!")
+                 "A Primary E-mail Address was set, but it did not match any of the E-Mail Addresss that are on file. It has therefore been removed from the 'Primary E-Mail' choices. Change the 'Primary E-mail' setting to a current E-Mail Address!")
         ]
         public const String ERR_PRIMARY_EMAIL_ADDR_SET_BUT_NOT_AMONG_EMAIL_ADDR = "PARTN.00038V";
+
+        /// <summary>Secondary E-mail Address equals Primary E-Mail Address.</summary>
+        [ErrCodeAttribute("Secondary E-mail Address Equals Primary E-Mail Address",
+             ErrorMessageText =
+                 "The Secondary E-mail Address is identical to the Primary E-Mail Address ({0})! This doesn't make sense in most circumstances...")
+        ]
+        public const String ERR_SECONDARY_EMAIL_ADDR_EQUALS_PRIMARY_EMAIL_ADDR = "PARTN.00039N";
+
+        /// <summary>A Secondary E-mail Address has been set but there are no current E-Mail Addresses available.</summary>
+        [ErrCodeAttribute("Secondary E-mail Address Set But No E-Mail Addresses on File",
+             ErrorMessageText =
+                 "A Secondary E-mail Address was set, but there are no current E-Mail Addresses available. It has therefore been removed from the 'Secondary E-Mail' choices and no 'Secondary E-Mail' is set any longer!")
+        ]
+        public const String ERR_SECONDARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00040V";
+
+        /// <summary>A Secondary E-mail Address has been set but there are no current E-Mail Addresses available.</summary>
+        [ErrCodeAttribute("Secondary E-mail Address Set But the E-Mail Addresses' record is not current",
+             ErrorMessageText =
+                 "A Secondary E-mail Address is still set, but the corresponding E-Mail Address record is not current. Change the 'Secondary E-mail' setting to a current E-Mail Address!")
+        ]
+        public const String ERR_SECONDARY_EMAIL_ADDR_SET_BUT_IT_ISNT_CURRENT = "PARTN.00041V";
+
+        /// <summary>A Secondary E-mail Address has been set but it doesn't match any E-Mail Address records.</summary>
+        [ErrCodeAttribute("Secondary E-mail Address Set But it Does Not Match any E-Mail Addresses' record",
+             ErrorMessageText =
+                 "A Secondary E-mail Address was set, but it did not match any of the E-Mail Addresss that are on file. It has therefore been removed from the 'Secondary E-Mail' choices. Change the 'Secondary E-mail' setting to a current E-Mail Address!")
+        ]
+        public const String ERR_SECONDARY_EMAIL_ADDR_SET_BUT_NOT_AMONG_EMAIL_ADDR = "PARTN.00042V";
 
         /// <summary>A Primary Phone Number has been set but there are no current Phone Numbers available.</summary>
         [ErrCodeAttribute("Primary Phone Number Set But No Phone Numbers on File",
              ErrorMessageText =
                  "A Primary Phone Number was set, but there are no current Phone Numbers available. It has therefore been removed from the 'Primary Phone' choices and no 'Primary Phone' is set any longer!")
         ]
-        public const String ERR_PRIMARY_PHONE_NR_SET_DESIPITE_NO_PHONE_NR_AVAIL = "PARTN.00039V";
+        public const String ERR_PRIMARY_PHONE_NR_SET_DESIPITE_NO_PHONE_NR_AVAIL = "PARTN.00043V";
 
         /// <summary>A Primary Phone Number has been set but there are no current Phone Numbers available.</summary>
         [ErrCodeAttribute("Primary Phone Number Set But the Phone Numbers' record is not current",
              ErrorMessageText =
                  "A Primary Phone Number is still set, but the corresponding Phone Number record is not current. Change the 'Primary Phone' setting to a current Phone Number!")
         ]
-        public const String ERR_PRIMARY_PHONE_NR_SET_BUT_IT_ISNT_CURRENT = "PARTN.00040V";
+        public const String ERR_PRIMARY_PHONE_NR_SET_BUT_IT_ISNT_CURRENT = "PARTN.00044V";
 
         /// <summary>A Primary Phone Number has been set but it doesn't match any Phone Number records.</summary>
         [ErrCodeAttribute("Primary Phone Number Set But it Does Not Match any Phone Numbers' record",
              ErrorMessageText =
                  "A Primary Phone Number was set, but it did not match any of the Phone Numbers that are on file. It has therefore been removed from the 'Primary Phone' choices. Change the 'Primary Phone' setting to a current Phone Number!")
         ]
-        public const String ERR_PRIMARY_PHONE_NR_SET_BUT_NOT_AMONG_PHONE_NRS = "PARTN.00041V";
+        public const String ERR_PRIMARY_PHONE_NR_SET_BUT_NOT_AMONG_PHONE_NRS = "PARTN.00045V";
+
+        /// <summary>An Office E-mail Address has been set but it doesn't match any E-Mail Address records.</summary>
+        [ErrCodeAttribute("Office E-mail Address Set But it Does Not Match any E-Mail Addresses' record",
+             ErrorMessageText =
+                 "An Office E-mail Address was set, but it did not match any of the E-Mail Addresss that are on file. It has therefore been removed from the 'Office E-Mail' choices. Change the 'Office E-mail' setting to a current E-Mail Address!")
+        ]
+        public const String ERR_OFFICE_EMAIL_ADDR_SET_BUT_NOT_AMONG_EMAIL_ADDR = "PARTN.00046V";
+
+        /// <summary>An Office E-Mail Address has been set but there are no current E-Mail Addresses available.</summary>
+        [ErrCodeAttribute("Office E-Mail Address Set But No E-Mail Addresses on File",
+             ErrorMessageText =
+                 "An Office E-Mail Address was set, but there are no current E-Mail Addresses available. It has therefore been removed from the 'Office E-Mail' choices and no 'Office E-Mail' is set any longer!")
+        ]
+        public const String ERR_OFFICE_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00047V";
+
+        /// <summary>An Office E-mail Address has been set but there are no current E-Mail Addresses available.</summary>
+        [ErrCodeAttribute("Office E-mail Address Set But the E-Mail Addresses' record is not current",
+             ErrorMessageText =
+                 "An Office E-mail Address is still set, but the corresponding E-Mail Address record is not current. Change the 'Office E-mail' setting to a current E-Mail Address!")
+        ]
+        public const String ERR_OFFICE_EMAIL_ADDR_SET_BUT_IT_ISNT_CURRENT = "PARTN.00048V";
+
+        /// <summary>An Office Phone Number has been set but there are no current Phone Numbers available.</summary>
+        [ErrCodeAttribute("Office Phone Number Set But No Phone Numbers on File",
+             ErrorMessageText =
+                 "An Office Phone Number was set, but there are no current Phone Numbers available. It has therefore been removed from the 'Office Phone' choices and no 'Office Phone' is set any longer!")
+        ]
+        public const String ERR_OFFICE_PHONE_NR_SET_DESIPITE_NO_PHONE_NR_AVAIL = "PARTN.00049V";
+
+        /// <summary>An Office Phone Number has been set but there are no current Phone Numbers available.</summary>
+        [ErrCodeAttribute("Office Phone Number Set But the Phone Numbers' record is not current",
+             ErrorMessageText =
+                 "An Office Phone Number is still set, but the corresponding Phone Number record is not current. Change the 'Office Phone' setting to a current Phone Number!")
+        ]
+        public const String ERR_OFFICE_PHONE_NR_SET_BUT_IT_ISNT_CURRENT = "PARTN.00050V";
+
+        /// <summary>An Office Phone Number has been set but it doesn't match any Phone Number records.</summary>
+        [ErrCodeAttribute("Office Phone Number Set But it Does Not Match any Phone Numbers' record",
+             ErrorMessageText =
+                 "An Office Phone Number was set, but it did not match any of the Phone Numbers that are on file. It has therefore been removed from the 'Office Phone' choices. Change the 'Office Phone' setting to a current Phone Number!")
+        ]
+        public const String ERR_OFFICE_PHONE_NR_SET_BUT_NOT_AMONG_PHONE_NRS = "PARTN.00051V";
 
         #region Subscriptions
 

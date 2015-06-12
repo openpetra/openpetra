@@ -131,6 +131,8 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>todoComment</summary>
         public event TNoNoMasterDataToSaveHandler NoMasterDataToSave;
 
+        #region Properties
+
         /// <summary>Controls whether the SaveChanges function saves the changes or continues a begun save operation.</summary>
         public bool SubmitChangesContinue
         {
@@ -173,7 +175,7 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        /// Tells whether the Screen has changes that are not yet saved
+        /// <summary>Tells whether the Screen has changes that are not yet saved.</summary>
         public Boolean HasChanges
         {
             get
@@ -186,7 +188,7 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        /// Shows that the user answered no to the "Save changes before exit?" question.
+        /// <summary>Shows that the user answered no to the "Save changes before exit?" question.</summary>
         public Boolean ChangesWereAbandonded
         {
             get
@@ -199,9 +201,7 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        /// <summary>
-        /// Tells whether the check if the Form can be closed has already been run
-        /// </summary>
+        /// <summary>Tells whether the check if the Form can be closed has already been run.</summary>
         public Boolean CloseFormCheckRun
         {
             get
@@ -214,7 +214,7 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        /// Tells which mode the screen should be opened in
+        /// <summary>Tells which mode the screen should be opened in.</summary>
         public TScreenMode ScreenMode
         {
             get
@@ -227,8 +227,24 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        /// <summary>Tells whether the Screen is working with new data (is not editing existing data).</summary>
+        public bool HasNewData
+        {
+            get
+            {
+                return FHasNewData;
+            }
+
+            set
+            {
+                FHasNewData = value;
+            }
+        }
+
+        #endregion
+
         /// <summary>
-        /// constructor
+        /// Constructor.
         /// </summary>
         /// <param name="ACallerForm">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
@@ -1203,7 +1219,7 @@ namespace Ict.Petra.Client.CommonForms
 
 
         /// <summary>todoComment</summary>
-        protected void SetScreenCaption()
+        public void SetScreenCaption(string ACaptionPostFix = "")
         {
             String CaptionPrefix = "";
 
@@ -1212,7 +1228,7 @@ namespace Ict.Petra.Client.CommonForms
                 CaptionPrefix = StrFormCaptionPrefixNew;
             }
 
-            FWinForm.Text = CaptionPrefix + Catalog.GetString("New OpenPetra Screen");
+            FWinForm.Text = CaptionPrefix + FormTitle + ACaptionPostFix;
         }
 
         #endregion

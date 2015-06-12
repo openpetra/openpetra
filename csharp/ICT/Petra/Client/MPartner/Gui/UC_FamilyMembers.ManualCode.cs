@@ -302,6 +302,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // react to actions on grid
             grdFamilyMembers.DoubleClickCell += new TDoubleClickCellEventHandler(GrdFamilyMembers_DoubleClickCell);
             grdFamilyMembers.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GrdFamilyMembers_KeyDown);
+            grdFamilyMembers.KeyUp += new System.Windows.Forms.KeyEventHandler(this.GrdFamilyMembers_KeyUp);
 
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
@@ -351,6 +352,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // now changes to controls can trigger enabling of save button again
             FPetraUtilsObject.EnableDataChangedEvent();
+
+            grdFamilyMembers.Focus();
 
             ApplySecurity();
         }
@@ -497,6 +500,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 frm.SetParameters(TScreenMode.smEdit, FMainDS.PPerson[0].FamilyKey);
                 frm.Show();
+
+                // Set Partner to be the "Last Used Partner"
+                TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(FMainDS.PPerson[0].FamilyKey,
+                    TLastPartnerUse.lpuMailroomPartner,
+                    TPartnerClass.FAMILY);
             }
             finally
             {
@@ -567,7 +575,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnEditFamilyID.Focus();
 
                 /* looks stupid, but is necessary when the keyboard is used! */
-                btnEditFamilyID.Text = Catalog.GetString("Manual Edit");
+                btnEditFamilyID.Text = Catalog.GetString("Manua&l Edit");
                 this.EnableScreenParts(!FDeadlineEditMode);
                 DisableEditing();
                 this.PrepareArrowButtons();
@@ -646,7 +654,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// when double clicked datagrid, opens selected FamilyID for editing
+        /// When a Grid Row gets double-clicked the selected PERSON is opened in Partner Edit.
         /// </summary>
         /// <returns>void</returns>
         private void GrdFamilyMembers_DoubleClickCell(object Sender, CellContextEventArgs e)
@@ -661,7 +669,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// what to do, when down key is pressed within the DataGrid
+        /// Performs certain actions when certain keys get pressed within the DataGrid.
         /// </summary>
         /// <returns>void</returns>
         private void GrdFamilyMembers_KeyDown(System.Object sender, System.Windows.Forms.KeyEventArgs e)
@@ -669,9 +677,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             switch (e.KeyValue)
             {
                 case 116:
-                    this.RefreshGrid();
 
                     /* F5 key */
+                    this.RefreshGrid();
+
                     break;
 
                 case 38:
@@ -689,6 +698,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         PromoteFamilyID();
                     }
+
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Open the Partner Edit screen of a PERSON when the Enter key is pressed and released within the DataGrid.
+        /// </summary>
+        private void GrdFamilyMembers_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            switch (e.KeyValue)
+            {
+                case 13:
+
+                    /* ENTER key */
+                    GrdFamilyMembers_DoubleClickCell(null, null);
 
                     break;
             }
@@ -817,6 +842,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                                         frm.SetParameters(TScreenMode.smEdit, OtherFamilyKey, TPartnerEditTabPageEnum.petpFamilyMembers);
                                         frm.Show();
+
+                                        // Set Partner to be the "Last Used Partner"
+                                        TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(OtherFamilyKey,
+                                            TLastPartnerUse.lpuMailroomPartner,
+                                            TPartnerClass.FAMILY);
                                     }
                                     finally
                                     {
@@ -1502,6 +1532,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                                         frm.SetParameters(TScreenMode.smEdit, NewFamilyKey, TPartnerEditTabPageEnum.petpFamilyMembers);
                                         frm.Show();
+
+                                        // Set Partner to be the "Last Used Partner"
+                                        TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(NewFamilyKey,
+                                            TLastPartnerUse.lpuMailroomPartner,
+                                            TPartnerClass.FAMILY);
                                     }
                                     finally
                                     {

@@ -98,7 +98,7 @@ RootNode:
             Width: 255
         txtDetailSpecialLabel:
             Label: La&bel When for Business
-            Tooltip: Label that should be displayed/printed instead of the value of 'Contact Type' if a Partners' Contact Detail record is designated 'for Business'.
+            Tooltip: Label that should be displayed/printed instead of the value of 'Contact Type' if a Partner's Contact Detail record is designated 'for Business'.
             Width: 255            
         txtDetailDescription:
             Label: Descr&iption
@@ -108,8 +108,7 @@ RootNode:
             Label: &Unassignable
             Tooltip: Can this Contact Type be assigned?
             OnChange: EnableDisableUnassignableDate
-        dtpDetailUnassignableDate:
-            Label: Unassi&gnable Date
+        dtpDetailUnassignableDate: {Label=Unassi&gnable Date, Enabled=false}
         chkDetailDeletable: {ReadOnly=true}
         cmbDetailAttributeTypeValueKind: 
             Label: &Value Is

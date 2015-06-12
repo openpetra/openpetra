@@ -89,6 +89,8 @@ namespace Ict.Petra.Client.CommonForms
 
         private Form FCallerForm;
 
+        private string FFormTitle = String.Empty;
+
         /// This helper class handles the extensions to TFrmPetraUtils that deal with opening and closing windows
         /// and loading and saving window sizes, positions and states
         private TFrmPetraWindowExtensions FWindowExtensions;
@@ -147,6 +149,23 @@ namespace Ict.Petra.Client.CommonForms
             get
             {
                 return FMaxReferenceCountOnDelete;
+            }
+        }
+
+        /// <summary>
+        /// Sets the Forms' Title. 
+        /// </summary>
+        /// <remarks>Utilised by <see cref="TFrmPetraEditUtils.SetScreenCaption"/>.</remarks>
+        public string FormTitle
+        {
+            get
+            {
+                return FFormTitle;
+            }
+
+            set
+            {
+                FFormTitle = value;
             }
         }
 

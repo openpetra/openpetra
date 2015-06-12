@@ -46,6 +46,6 @@ RootNode:
                 Row2: [chkDetailDeletableFlag]
         txtDetailCode: {Label=Marital Status Code, Width=40}
         txtDetailDescription: {Width=335}
-        chkDetailAssignableFlag: {Label=Assignable, OnChange=EnableDisableAssignableDate}
+        chkDetailAssignableFlag: {Label=Assignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailAssignableDate: {Label=Unassignable Date, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}

@@ -95,8 +95,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>The Class of the Partner that the screen is working with</summary>
         private string FPartnerClass;
 
-        /// <summary>Tells whether the Partner that the screen is working with is a new Partner</summary>
-        private Boolean FNewPartner;
         private Int32 FNewPartnerFamilyLocationKey;
         private Int64 FNewPartnerSiteKey;
         private Int64 FNewPartnerPartnerKey;
@@ -909,7 +907,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             int RowIndex;
             int NumRows;
             Int32 MaxColumn;
-            Boolean SavedPartnerIsNewParter = false;
+            Boolean SavedPartnerIsNewPartner = false;
             bool PartnerAttributesOrRelationsChanged = false;
             System.Int32 ChangedColumns;
 #if SHOWCHANGES
@@ -938,6 +936,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (ValidateAllData())
             {
+                // Fire the DataSavingValidated event, which is the last chance to cancel the save
+                System.ComponentModel.CancelEventArgs eCancel = new System.ComponentModel.CancelEventArgs(false);
+                FPetraUtilsObject.OnDataSavingValidated(this, eCancel);
+
+                if (eCancel.Cancel == true)
+                {
+                    return false;
+                }
+
                 foreach (DataTable InspectDT in AInspectDS.Tables)
                 {
                     foreach (DataRow InspectDR in InspectDT.Rows)
@@ -1142,11 +1149,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         case TSubmitChangesResult.scrOK:
 
-                            SavedPartnerIsNewParter = IsNewPartner(AInspectDS);
+                            SavedPartnerIsNewPartner = IsNewPartner(AInspectDS);
 
                             // MessageBox.Show('DUMMY: ' + (SubmitDS.Tables['Locations'].Rows[0]['DUMMY']).ToString() );
                             if ((SharedTypes.PartnerClassStringToEnum(AInspectDS.PPartner[0].PartnerClass) == TPartnerClass.UNIT)
-                                && SavedPartnerIsNewParter)
+                                && SavedPartnerIsNewPartner)
                             {
                                 /*
                                  * A new Partner of PartnerClass UNIT has been created
@@ -1334,10 +1341,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                             this.Cursor = Cursors.Default;
                             EnableSave(false);
 
-                            // If Screen Title was for a NEW Partner, remove the 'NEW' indicator
-                            if (this.Text.StartsWith(TFrmPetraEditUtils.StrFormCaptionPrefixNew))
+                            // If the screen was opened for a NEW Partner, remove the 'NEW:' indicator from the Window Title Bar and 
+                            // set this Partner to be the "Last Used Partner".
+                            if (SavedPartnerIsNewPartner)
                             {
-                                this.Text = this.Text.Substring(TFrmPetraEditUtils.StrFormCaptionPrefixNew.Length);
+                                FPetraUtilsObject.HasNewData = false;
+                                SetScreenCaption();
+
+                                // Set Partner to be the "Last Used Partner"
+                                TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(AInspectDS.PPartner[0].PartnerKey, 
+                                    TLastPartnerUse.lpuMailroomPartner, SharedTypes.PartnerClassStringToEnum(FPartnerClass));
                             }
 
                             // We don't have unsaved changes anymore
@@ -1517,7 +1530,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 long FamilyPartnerKey;
                 String FamilyShortName;
 
-                if (SavedPartnerIsNewParter)
+                if (SavedPartnerIsNewPartner)
                 {
                     BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcNewPartnerSaved,
                         FCallerContext);
@@ -1967,9 +1980,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             HookupPartnerEditDataChangeEvents(TPartnerEditTabPageEnum.petpDefault);
-
-            // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
-            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.FormDataSavingStarted);
 
             // Hook up DataSaved Event to be able to run code after SaveChanges was run
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(this.FormDataSaved);
@@ -2594,6 +2604,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             PartnerEditTDSPPartnerLocationRow NewPartnerLocationRow;
 
+            FPetraUtilsObject.FormTitle = StrScreenCaption;
+
             if (FPetraUtilsObject.ScreenMode == TScreenMode.smNew)
             {
                 try
@@ -2612,7 +2624,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     // New Partner: retrieve default data for new Partner
-                    FNewPartner = true;
+                    FPetraUtilsObject.HasNewData = true;
 
                     if (!GetPartnerEditUIConnector(TUIConnectorType.uictNewPartner))
                     {
@@ -3461,9 +3473,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Application.DoEvents();
 
                 // MessageBox.Show('NewPartnerDialog: pressed OK, will exit again.');
-                FNewPartner = true;
+                FPetraUtilsObject.HasNewData = true;
 
-                // SetScreenCaption;
+                // SetScreenCaption;                
                 ReturnValue = true;
             }
 
@@ -3574,14 +3586,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void SetScreenCaption()
         {
-            String CaptionPrefix = "";
-
-            if (FNewPartner)
-            {
-                CaptionPrefix = TFrmPetraEditUtils.StrFormCaptionPrefixNew;
-            }
-
-            this.Text = CaptionPrefix + StrScreenCaption + " - " + ucoUpperPart.PartnerQuickInfo(true);
+            FPetraUtilsObject.SetScreenCaption(" - " + ucoUpperPart.PartnerQuickInfo(true));
         }
 
         /// <summary>
@@ -3627,19 +3632,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 EnableSave(false);
                 FPetraUtilsObject.HasChanges = false;
             }
-        }
-
-        /// <summary>
-        /// This Procedure will get called from the SaveChanges procedure before it
-        /// actually performs any saving operation.
-        /// </summary>
-        /// <param name="sender">The Object that throws this Event</param>
-        /// <param name="e">Event Arguments.
-        /// </param>
-        /// <returns>void</returns>
-        private void FormDataSavingStarted(System.Object sender, System.EventArgs e)
-        {
-// TODO            ucoPartnerTabSet.DataSavingStartedEventFired();
         }
 
         private void EnableSave(bool Enable)

@@ -203,8 +203,10 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         PrimaryContactAttributes = Calculations.DeterminePrimaryOrWithinOrgSettingsForPartner(
                             PartnerAttributeDT, AOverallContSettingKind);
 
-                        if ((AOverallContSettingKind & Calculations.TOverallContSettingKind.ocskPrimaryContactMethod) ==
-                            Calculations.TOverallContSettingKind.ocskPrimaryContactMethod)
+                        if (((AOverallContSettingKind & Calculations.TOverallContSettingKind.ocskPrimaryContactMethod) ==
+                             Calculations.TOverallContSettingKind.ocskPrimaryContactMethod)
+                            || ((AOverallContSettingKind & Calculations.TOverallContSettingKind.ocskSecondaryEmailAddress) ==
+                                Calculations.TOverallContSettingKind.ocskSecondaryEmailAddress))
                         {
                             if (PrimaryContactAttributes == null)
                             {
