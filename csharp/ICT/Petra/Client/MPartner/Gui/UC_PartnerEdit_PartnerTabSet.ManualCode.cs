@@ -880,12 +880,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
         {
+            SetCurrentlySelectedTabPage(ATabPageEventArgs.Tab);
+
             if (ATabPageEventArgs.Event == "InitialActivation")
             {
                 if (ATabPageEventArgs.Tab == tpgAddresses)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
-
                     // Hook up RecalculateScreenParts Event
                     FUcoAddresses.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
@@ -898,26 +898,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else if (ATabPageEventArgs.Tab == tpgContactDetails)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContactDetails;
-
                     FUcoContactDetails.SpecialInitUserControl();
                 }
                 else if (ATabPageEventArgs.Tab == tpgPartnerDetails)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpDetails;
-
                     // TODO
                 }
                 else if (ATabPageEventArgs.Tab == tpgFoundationDetails)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFoundationDetails;
-
                     // TODO
                 }
                 else if (ATabPageEventArgs.Tab == tpgSubscriptions)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpSubscriptions;
-
                     // Hook up RecalculateScreenParts Event
                     FUcoSubscriptions.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
@@ -930,8 +922,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else if (ATabPageEventArgs.Tab == tpgPartnerTypes)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerTypes;
-
                     // Hook up RecalculateScreenParts Event
                     FUcoPartnerTypes.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
@@ -944,8 +934,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else if (ATabPageEventArgs.Tab == tpgPartnerRelationships)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerRelationships;
-
                     // Hook up RecalculateScreenParts Event
                     FUcoPartnerRelationships.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
@@ -958,8 +946,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else if (ATabPageEventArgs.Tab == tpgFamilyMembers)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFamilyMembers;
-
                     // Hook up RecalculateScreenParts Event
                     FUcoFamilyMembers.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
@@ -975,15 +961,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else if (ATabPageEventArgs.Tab == tpgNotes)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpNotes;
-
                     // Hook up RecalculateScreenParts Event
                     FUcoNotes.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
                 }
                 else if (ATabPageEventArgs.Tab == tpgOfficeSpecific)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpOfficeSpecific;
-
                     FUcoOfficeSpecific.PartnerEditUIConnector = FPartnerEditUIConnector;
                     FUcoOfficeSpecific.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
 
@@ -1406,6 +1388,62 @@ namespace Ict.Petra.Client.MPartner.Gui
                 e.Cancel = true;
 
                 FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+            }
+        }
+
+        private void SetCurrentlySelectedTabPage(TabPage ATabPage)
+        {
+            if (ATabPage == tpgAddresses)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
+            }
+            else if (ATabPage == tpgContactDetails)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContactDetails;
+            }
+            else if (ATabPage == tpgPartnerDetails)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpDetails;
+            }
+            else if (ATabPage == tpgFoundationDetails)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFoundationDetails;
+            }
+            else if (ATabPage == tpgSubscriptions)
+            {
+                CurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpSubscriptions;
+            }
+            else if (ATabPage == tpgPartnerTypes)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerTypes;
+            }
+            else if (ATabPage == tpgPartnerRelationships)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerRelationships;
+            }
+            else if (ATabPage == tpgFamilyMembers)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFamilyMembers;
+            }
+            else if (ATabPage == tpgNotes)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpNotes;
+            }
+            else if (ATabPage == tpgOfficeSpecific)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpOfficeSpecific;
+            }
+            else if (ATabPage == tpgFinanceDetails)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFinanceDetails;
+            }
+            else if (ATabPage == tpgInterests)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpInterests;
+            }
+            else if (ATabPage == tpgContacts)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContacts;
             }
         }
 

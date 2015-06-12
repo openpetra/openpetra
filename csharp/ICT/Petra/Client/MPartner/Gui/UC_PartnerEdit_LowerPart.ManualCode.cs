@@ -43,7 +43,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private TPartnerEditScreenLogic.TModuleTabGroupEnum FCurrentModuleTabGroup;
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
-        private TPartnerEditTabPageEnum FCurrentlySelectedTabPage;
         private List <string>FInitialisedChildUCs = new List <string>(3);
 
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
@@ -152,17 +151,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        /// <summary>todoComment</summary>
+        /// <summary>Currently active TabPage (in any of the TabGroups). Read-only.</summary>
         public TPartnerEditTabPageEnum CurrentlySelectedTabPage
         {
             get
             {
-                return FCurrentlySelectedTabPage;
-            }
+                switch (FCurrentModuleTabGroup)
+                {
+                    case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
+                        return ucoPartnerTabSet.CurrentlySelectedTabPage;
 
-            set
-            {
-                FCurrentlySelectedTabPage = value;
+                    case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
+                        return ucoPersonnelTabSet.CurrentlySelectedTabPage;
+
+                    default:
+                        // Fallback
+                        return TPartnerEditTabPageEnum.petpAddresses;
+                }
             }
         }
 

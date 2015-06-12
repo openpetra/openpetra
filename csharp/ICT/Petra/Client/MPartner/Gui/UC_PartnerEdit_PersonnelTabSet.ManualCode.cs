@@ -247,18 +247,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
         {
+            SetCurrentlySelectedTabPage(ATabPageEventArgs.Tab);
+
             if (ATabPageEventArgs.Event == "InitialActivation")
             {
                 if (ATabPageEventArgs.Tab == tpgIndividualData)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelIndividualData;
-
                     CorrectDataGridWidthsAfterDataChange();
                 }
                 else if (ATabPageEventArgs.Tab == tpgApplications)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelApplications;
-
                     // Hook up RecalculateScreenParts Event
                     FUcoApplications.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
@@ -361,6 +359,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                 e.Cancel = true;
 
                 FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+            }
+        }
+
+        private void SetCurrentlySelectedTabPage(TabPage ATabPage)
+        {
+            if (ATabPage == tpgIndividualData)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelIndividualData;
+            }
+            else if (ATabPage == tpgApplications)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelApplications;
             }
         }
 

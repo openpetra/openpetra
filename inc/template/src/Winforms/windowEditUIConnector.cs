@@ -43,9 +43,10 @@ namespace {#NAMESPACE}
     private Control FPrimaryKeyControl = null;
     private string FDefaultDuplicateRecordHint = String.Empty;
 {#ENDIF MASTERTABLE OR DETAILTABLE}
-
+{#IFDEF UICONNECTORTYPE}
     /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
     private {#UICONNECTORTYPE} FUIConnector = null;
+{#ENDIF UICONNECTORTYPE}
 {#IFDEF SHOWDETAILS}
     private int FCurrentRow;
 {#ENDIF SHOWDETAILS}
@@ -71,8 +72,10 @@ namespace {#NAMESPACE}
       {#INITMANUALCODE}
       
       {#INITACTIONSTATE}
-      
+
+{#IFDEF UICONNECTORCREATE} 
       FUIConnector = {#UICONNECTORCREATE}();
+{#ENDIF UICONNECTORCREATE}
 {#IFDEF MASTERTABLE OR DETAILTABLE}
 
       BuildValidationControlsDict();
@@ -141,8 +144,10 @@ namespace {#NAMESPACE}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
+{#IFDEF UICONNECTORTYPE}
         // release the object
         FUIConnector = null;
+{#ENDIF UICONNECTORTYPE}
     }
 
 {#IFDEF SHOWDATA}

@@ -216,6 +216,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>Name of the currently active Tab Page in the lower part of the screen (in any of the TabGroups). Read-only.</summary>
+        public string CurrentlySelectedTabPageName
+        {
+            get
+            {
+                return Enum.GetName(typeof(TPartnerEditTabPageEnum), ucoLowerPart.CurrentlySelectedTabPage);
+            }
+        }
+
         /// <summary>
         /// Used in the 'Form Messaging' implementation in <see cref="SaveChanges(ref PartnerEditTDS)"></see>.
         /// </summary>
@@ -2123,6 +2132,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void Form_Closed(object sender, EventArgs e)
+        {
+            if (FPartnerEditUIConnector != null)
+            {
+                // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
+                TEnsureKeepAlive.UnRegister(FPartnerEditUIConnector);
+                FPartnerEditUIConnector = null;
+            }
+        }
+
         #endregion
 
 
@@ -3411,7 +3430,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ServerCallSuccessful = true;
                 });
 
-            if (!ServerCallSuccessful)
+            if (ServerCallSuccessful)
+            {
+                // Ensure Object is Un-Registered at the time the Form got closed
+                this.Closed += new System.EventHandler(this.Form_Closed);
+            }
+            else
             {
                 // ServerCallRetries must be equal to MAX_RETRIES when we get here!
                 if (TServerBusyHelperGui.ShowServerBusyDialogWhenOpeningForm(StrScreenCaption) == DialogResult.Retry)

@@ -26,6 +26,8 @@ RootNode:
             Controls: [ucoShortcutsNavigation]
         tpgFilter:
             Controls: [ucoShortcutsFilterFind]
+        tpgPartnerEditContactDetailsTab:
+            Controls: [ucoShortcutsPartnerEditContactDetailsTab]
 
         ucoShortcutsGeneral:
             Dock: Fill
@@ -37,6 +39,9 @@ RootNode:
             Dock: Fill
             Type: Ict.Petra.Client.CommonDialogs.TUC_Shortcuts
         ucoShortcutsFilterFind:
+            Dock: Fill
+            Type: Ict.Petra.Client.CommonDialogs.TUC_Shortcuts
+        ucoShortcutsPartnerEditContactDetailsTab:
             Dock: Fill
             Type: Ict.Petra.Client.CommonDialogs.TUC_Shortcuts
             

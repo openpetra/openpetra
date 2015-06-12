@@ -629,9 +629,35 @@ namespace Ict.Petra.Client.CommonForms
 
                 case eActionId.eKeyboardShortcuts:
                     System.Type shortcutsDialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmKeyboardShortcutsDialog");
+                    Type ActiveFormType = Form.ActiveForm.GetType();
 
                     using (Form shortcutsDialog = (Form)Activator.CreateInstance(shortcutsDialogType, new object[] { this.FWinForm }))
                     {
+                        //
+                        // For some Forms (and Tabs on these Forms) we show a specific Shortcut Tab
+                        //
+
+                        // Partner Edit Form
+                        if (ActiveFormType.FullName == "Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit")
+                        {
+                            // Inquire currently selected Tab
+                            object CurrentlySelectedTabPageNameObj = ActiveFormType.GetProperty("CurrentlySelectedTabPageName").GetValue(
+                                Form.ActiveForm,
+                                null);
+
+                            // If it is the Contact Details Tab: show Shortcut Tab that is specific to the Contact Details Tab
+                            if (CurrentlySelectedTabPageNameObj.ToString() == "petpContactDetails")
+                            {
+                                PropertyInfo InitiallySelectedTabProperty = shortcutsDialog.GetType().GetProperty("InitiallySelectedTab",
+                                    BindingFlags.Public | BindingFlags.Instance);
+
+                                if ((null != InitiallySelectedTabProperty) && InitiallySelectedTabProperty.CanWrite)
+                                {
+                                    InitiallySelectedTabProperty.SetValue(shortcutsDialog, "PartnerEditContactDetailsTab", null);
+                                }
+                            }
+                        }
+
                         shortcutsDialog.ShowDialog();
                     }
                     break;
