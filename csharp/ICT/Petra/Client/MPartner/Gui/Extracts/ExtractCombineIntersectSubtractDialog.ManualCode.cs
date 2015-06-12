@@ -95,16 +95,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 case TMode.ecisCombineMode:
                     lblExplanation.Text = Catalog.GetString("Please add extracts to the list that you want to combine and then click OK:");
                     FindForm().Text = "Combine Extracts";
+                    btnAdd.Select();
                     break;
 
                 case TMode.ecisIntersectMode:
                     lblExplanation.Text = Catalog.GetString("Please add extracts to the list that you want to intersect and then click OK:");
                     FindForm().Text = "Intersect Extracts";
+                    btnAdd.Select();
                     break;
 
                 case TMode.ecisSubtractMode:
                     lblExplanation.Text = Catalog.GetString("Please add extracts to the list to be subtracted from the one above:");
                     FindForm().Text = "Subtract Extracts";
+                    txtBaseExtract.Select();
                     break;
             }
         }

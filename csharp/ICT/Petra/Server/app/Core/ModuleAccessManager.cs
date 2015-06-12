@@ -256,6 +256,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                         ParameterName = ParameterName.Replace("System.Collections.Generic.Dictionary`2", "DICTIONARY");
                         ParameterName = ParameterName.Replace("Ict.Common.", string.Empty);
+                        ParameterName = ParameterName.Replace("Ict.Petra.Shared.MCommon.", string.Empty);
                         ParameterName = ParameterName.Replace("System.", string.Empty);
 
                         if (ParameterName.Contains("."))

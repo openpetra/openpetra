@@ -296,7 +296,13 @@ namespace Ict.Petra.Client.CommonForms
                 // The first group are the important controls, (actually used for data entry )
                 if (ctrl.GetType() == typeof(TextBox))
                 {
-                    ((TextBox)ctrl).TextChanged += new EventHandler(this.MultiEventHandler);
+                    // Some controls (TCmbLabelled, TTxtLabelledTextBox, TTxtPartnerKeyTextBox) contain
+                    // a control called lblDescription which we must not add an event handler for.
+                    // But all other TextBoxes need the event handler.
+                    if (!ctrl.Name.StartsWith("lblDescription"))
+                    {
+                        ((TextBox)ctrl).TextChanged += new EventHandler(this.MultiEventHandler);
+                    }
                 }
                 else if (ctrl.GetType() == typeof(TTxtMaskedTextBox))
                 {
