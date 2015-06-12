@@ -548,7 +548,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (DoExecuteableCode)
             {
-                Boolean PostedOk = yearEndBatch.CloseSaveAndPost(FverificationResults);
+                /* Boolean PostedOk = */ yearEndBatch.CloseSaveAndPost(FverificationResults);
 
 /*
  *              if (PostedOk)
@@ -721,7 +721,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private DataTable LoadTable(int ALedgerNumber, int AYear, TDBTransaction ATransaction)
         {
             AGeneralLedgerMasterTable typedTable = new AGeneralLedgerMasterTable();
-            string strSQL = "SELECT PUB_a_general_ledger_master.*" +
+            string strSQL = "SELECT DISTINCT PUB_a_general_ledger_master.*" +
                             " FROM PUB_a_general_ledger_master, PUB_a_account, PUB_a_cost_centre" +
                             " WHERE PUB_a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber +
                             " AND PUB_a_general_ledger_master.a_year_i = " + AYear +

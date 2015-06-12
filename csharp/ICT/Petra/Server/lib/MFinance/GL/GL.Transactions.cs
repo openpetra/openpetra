@@ -2083,11 +2083,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool GLTransTableInDataSet = (AInspectDS.ATransaction != null && AInspectDS.ATransaction.Count > 0);
             bool GLTransAttrTableInDataSet = (AInspectDS.ATransAnalAttrib != null && AInspectDS.ATransAnalAttrib.Count > 0);
 
-            int GLBatchCount = GLBatchTableInDataSet ? AInspectDS.ABatch.Count : 0;
-            int GLJournalCount = GLJournalTableInDataSet ? AInspectDS.AJournal.Count : 0;
-            int GLTransCount = GLTransTableInDataSet ? AInspectDS.ATransaction.Count : 0;
-            int GLTransAnalCount = GLTransAttrTableInDataSet ? AInspectDS.ATransAnalAttrib.Count : 0;
-
             bool RecurrGLBatchTableInDataSet = (AInspectDS.ARecurringBatch != null && AInspectDS.ARecurringBatch.Count > 0);
             bool RecurrGLJournalTableInDataSet = (AInspectDS.ARecurringJournal != null && AInspectDS.ARecurringJournal.Count > 0);
             bool RecurrGLTransTableInDataSet = (AInspectDS.ARecurringTransaction != null && AInspectDS.ARecurringTransaction.Count > 0);
@@ -2541,13 +2536,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             //bool AllValidationsOK = true;
 
             //Not needed as yet
-            //int RecurrBatchCount = ARecurringBatchTableInDataSet ? AInspectDS.ARecurringBatch.Count : 0;
-            int RecurrJournalCount = ARecurringJournalTableInDataSet ? AInspectDS.AJournal.Count : 0;
-            int RecurrTransCount = ARecurringTransTableInDataSet ? AInspectDS.ARecurringTransaction.Count : 0;
-            int RecurrTransAnalCount = ARecurringTransAnalTableInDataSet ? AInspectDS.ARecurringTransAnalAttrib.Count : 0;
+            // int RecurrBatchCount = ARecurringBatchTableInDataSet ? AInspectDS.ARecurringBatch.Count : 0;
+            // int RecurrJournalCount = ARecurringJournalTableInDataSet ? AInspectDS.AJournal.Count : 0;
+            // int RecurrTransCount = ARecurringTransTableInDataSet ? AInspectDS.ARecurringTransaction.Count : 0;
+            // int RecurrTransAnalCount = ARecurringTransAnalTableInDataSet ? AInspectDS.ARecurringTransAnalAttrib.Count : 0;
 
             //Get a list of all batches involved
-            List <Int32>ListAllGiftBatchesToProcess = new List <int>();
+            // List <Int32>ListAllGiftBatchesToProcess = new List <int>();
 
             ARecurringJournalTable JournalTable = new ARecurringJournalTable();
             ARecurringJournalRow TemplateJournalRow = JournalTable.NewRowTyped(false);

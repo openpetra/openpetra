@@ -75,8 +75,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     1), periodInfo.PeriodStartDate, "Calendar from base database should start with January 1st of this year");
 
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql", intLedgerNumber);
-            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql",
-                intLedgerNumber);
 
             TCommonAccountingTool commonAccountingTool =
                 new TCommonAccountingTool(intLedgerNumber, "NUNIT");
@@ -231,8 +229,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql", intLedgerNumber);
-            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql",
-                intLedgerNumber);
             TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
 
             for (int countYear = 0; countYear < 2; countYear++)
