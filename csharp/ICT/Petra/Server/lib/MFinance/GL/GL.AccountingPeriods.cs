@@ -98,8 +98,22 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
+
+                    int FirstPostingPeriod = -1;
+
+                    // If final month end has been run but year end has not yet been run
+                    // then we cannot post to the current period as it is actually closed.
+                    if (LedgerTable[0].ProvisionalYearEndFlag)
+                    {
+                        FirstPostingPeriod = LedgerTable[0].CurrentPeriod + 1;
+                    }
+                    else
+                    {
+                        FirstPostingPeriod = LedgerTable[0].CurrentPeriod;
+                    }
+
                     AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                        LedgerTable[0].CurrentPeriod,
+                        FirstPostingPeriod,
                         transaction);
 
                     StartDateCurrentPeriod = AccountingPeriodTable[0].PeriodStartDate;

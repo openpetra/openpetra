@@ -79,6 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private bool FShowStatusDialogOnLoad = true;
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
+        private bool FContainsSystemGenerated = false;
 
         /// <summary>
         /// Sets a flag to show the status dialog when transactions are loaded
@@ -217,6 +218,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber));
                 }
 
+                FContainsSystemGenerated = false;
+
+                // check if any of the rows are system generated (i.e. reversals)
+                foreach (DataRowView rv in FMainDS.ATransaction.DefaultView)
+                {
+                    if (((ATransactionRow)rv.Row).SystemGenerated)
+                    {
+                        FContainsSystemGenerated = true;
+                        break;
+                    }
+                }
+
                 // We need to call this because we have not called ShowData(), which would have set it.  This differs from the Gift screen.
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
 
@@ -278,12 +291,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 grdDetails.ResumeLayout();
                 FLoadCompleted = true;
 
+                UpdateChangeableStatus();
 
                 ShowData();
                 SelectRowInGrid(1);
                 ShowDetails(); //Needed because of how currency is handled
 
-                UpdateChangeableStatus();
                 UpdateRecordNumberDisplay();
                 FFilterAndFindObject.SetRecordNumberDisplayProperties();
 
@@ -381,7 +394,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (CreateNewATransaction())
             {
                 pnlTransAnalysisAttributes.Enabled = true;
-                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
+                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase) && !FContainsSystemGenerated;
 
                 //Needs to be called at end of addition process to process Analysis Attributes
                 AccountCodeDetailChanged(null, null);
@@ -418,8 +431,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FPreviouslySelectedDetailRow != null)
             {
                 ANewRow.CostCentreCode = FPreviouslySelectedDetailRow.CostCentreCode;
-                ANewRow.Narrative = FPreviouslySelectedDetailRow.Narrative;
-                ANewRow.Reference = FPreviouslySelectedDetailRow.Reference;
+
+                // don't want these copied over if previous transaction was a reversal
+                if (!FPreviouslySelectedDetailRow.SystemGenerated)
+                {
+                    ANewRow.Narrative = FPreviouslySelectedDetailRow.Narrative;
+                    ANewRow.Reference = FPreviouslySelectedDetailRow.Reference;
+                }
             }
         }
 
@@ -513,6 +531,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             RefreshAnalysisAttributesGrid();
+            UpdateChangeableStatus();
         }
 
         private void RefreshAnalysisAttributesGrid()
@@ -1288,17 +1307,35 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                               && (GetBatchRow() != null)
                               && (FIsUnposted)
                               && (FJournalRow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
-            bool canDeleteAll = (FFilterAndFindObject.IsActiveFilterEqualToBase);
+            bool canDeleteAll = (FFilterAndFindObject.IsActiveFilterEqualToBase && !FContainsSystemGenerated);
             bool rowsInGrid = (grdDetails.Rows.Count > 1);
 
             // pnlDetailsProtected must be changed first: when the enabled property of the control is changed, the focus changes, which triggers validation
             pnlDetailsProtected = !changeable;
             pnlDetails.Enabled = (changeable && rowsInGrid);
-            btnDelete.Enabled = (changeable && rowsInGrid);
             btnDeleteAll.Enabled = (changeable && canDeleteAll && rowsInGrid);
-            pnlTransAnalysisAttributes.Enabled = changeable;
+            pnlTransAnalysisAttributes.Enabled = changeable && (FPreviouslySelectedDetailRow == null || !FPreviouslySelectedDetailRow.SystemGenerated);
             //lblAnalAttributes.Enabled = (changeable && rowsInGrid);
             btnNew.Enabled = changeable;
+
+            // If transaction is a reversal then we want to only have the Transaction date control enabled.
+            // Only run this code if the journal contains at least one reversal transaction
+            // or there are no reversals but controls are disabled (from viewing previous batch) and need enabled
+            if (FContainsSystemGenerated || !cmbDetailCostCentreCode.Enabled)
+            {
+                foreach (Control cont in pnlDetails.Controls)
+                {
+                    if ((cont.Name != dtpDetailTransactionDate.Name) && (cont.Name != lblDetailTransactionDate.Name))
+                    {
+                        cont.Enabled = (FPreviouslySelectedDetailRow != null && !FPreviouslySelectedDetailRow.SystemGenerated)
+                                       || (FPreviouslySelectedDetailRow == null && changeable);
+                    }
+                    else
+                    {
+                        cont.Enabled = changeable;
+                    }
+                }
+            }
         }
 
         private void DeleteAllTrans(System.Object sender, EventArgs e)
@@ -1415,6 +1452,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPreviouslySelectedDetailRow != null)
             {
+                if (ARowToDelete.SystemGenerated)
+                {
+                    MessageBox.Show(string.Format(Catalog.GetString(
+                                "Transaction {0} cannot be deleted as it is a system generated transaction"), ARowToDelete.TransactionNumber),
+                        Catalog.GetString("Delete Transaction"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return false;
+                }
+
                 ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete transaction no. {0} from Journal {1}?"),
                     ARowToDelete.TransactionNumber,
                     ARowToDelete.JournalNumber);
@@ -1907,7 +1952,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             // If the grid list changes we might need to disable the Delete All button
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase) && !FContainsSystemGenerated;
         }
 
         private void TransDateChanged(object sender, EventArgs e)

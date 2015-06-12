@@ -854,6 +854,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 TPartnerMain.CancelExpiredSubscriptions(this.FindForm());
             }
+            else if (ClickedMenuItemName == "mniMailingDuplicateAddressCheck")
+            {
+                TFrmDuplicateAddressCheck dialog = new TFrmDuplicateAddressCheck(this.ParentForm);
+                dialog.Show();
+            }
             else
             {
                 throw new NotImplementedException();

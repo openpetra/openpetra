@@ -260,6 +260,22 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
+        /// Indicates whether GLM record with given parameters actually exists.
+        /// </summary>
+        public bool GLMExists
+        {
+            get
+            {
+                if ((FGLMTbl == null) || (FGLMTbl.Rows.Count == 0))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Reads the value of YtdActual and supports a default value of 0 if it not exists.
         /// </summary>
         public decimal YtdActual

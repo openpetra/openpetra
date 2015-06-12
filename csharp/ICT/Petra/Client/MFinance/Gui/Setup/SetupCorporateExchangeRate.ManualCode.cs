@@ -319,7 +319,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             // Check if corporate exchange rate can be deleted.
             // Cannot be deleted if it is effective for a period in the current year which has at least one batch.
-            if (!TRemote.MFinance.Common.ServerLookups.WebConnectors.CanDeleteCorporateExchangeRate(ARowToDelete.DateEffectiveFrom))
+            if (!TRemote.MFinance.Common.ServerLookups.WebConnectors.CanDeleteCorporateExchangeRate(
+                    ARowToDelete.DateEffectiveFrom, ARowToDelete.ToCurrencyCode, ARowToDelete.FromCurrencyCode))
             {
                 MessageBox.Show(Catalog.GetString("Corporate Exchange Rate cannot be deleted because there are still accounts with balances."),
                     Catalog.GetString("Delete Corporate Exchange Rate"), MessageBoxButtons.OK, MessageBoxIcon.Information);

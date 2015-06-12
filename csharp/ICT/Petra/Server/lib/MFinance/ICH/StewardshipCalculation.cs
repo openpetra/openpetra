@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -164,6 +165,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 TFinancialYear.GetStartAndEndDateOfPeriod(ALedgerNumber, APeriodNumber, out PeriodStartDate, out PeriodEndDate, DBTransaction);
                 String strPeriodStartDate = "#" + PeriodStartDate.ToString("yyyy-MM-dd") + "#";
                 String strPeriodEndDate = "#" + PeriodEndDate.ToString("yyyy-MM-dd") + "#";
+                int CurrentFinancialYear = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, DBTransaction)[0].CurrentFinancialYear;
 
                 AGiftBatchTable GiftBatchTable = new AGiftBatchTable();
                 String GiftQuery = "SELECT * FROM a_gift_batch WHERE " +
@@ -194,6 +196,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 BatchTemplateRow.LedgerNumber = ALedgerNumber;
                 BatchTemplateRow.BatchPeriod = APeriodNumber;
+                BatchTemplateRow.BatchYear = CurrentFinancialYear;
 
                 StringCollection Operators0 = StringHelper.InitStrArr(new string[] { "=", "=" });
                 StringCollection OrderList0 = new StringCollection();
@@ -571,8 +574,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         ICHStewardshipRow.LedgerNumber = ALedgerNumber;
                         ICHStewardshipRow.PeriodNumber = APeriodNumber;
                         ICHStewardshipRow.IchNumber = ICHProcessing;
-//                      ICHStewardshipRow.DateProcessed = DateTime.Today; // This would be strictly correct, but the Stewardship Reporting looks for
-                        ICHStewardshipRow.DateProcessed = PeriodEndDate;  // rows using a date filter.
+                        ICHStewardshipRow.DateProcessed = DateTime.Today;
                         ICHStewardshipRow.CostCentreCode = CostCentreRow.CostCentreCode;
                         ICHStewardshipRow.IncomeAmount = IncomeAmount;
                         ICHStewardshipRow.ExpenseAmount = ExpenseAmount;
@@ -649,7 +651,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         MainDS.ThrowAwayAfterSubmitChanges = true; // SubmitChanges will not return to me any changes made in MainDS.
                         GLBatchTDSAccess.SubmitChanges(MainDS);
-                        ALedgerAccess.SubmitChanges(PostingDS.ALedger, DBTransaction); // LastIchNumber has changed.
+                        ALedgerAccess.SubmitChanges(PostingDS.ALedger, DBTransaction);
+
+                        // refresh cached ICHStewardship table
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableFinanceTablesEnum.ICHStewardshipList.ToString());
 
                         IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
                     }

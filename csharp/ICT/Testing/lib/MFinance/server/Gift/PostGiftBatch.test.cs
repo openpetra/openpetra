@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 
@@ -30,6 +31,7 @@ using NUnit.Framework;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift;
@@ -840,5 +842,365 @@ namespace Tests.MFinance.Server.Gift
             Assert.That(Result, Is.EqualTo(
                     TSubmitChangesResult.scrOK), "SaveGiftBatchTDS failed: " + VerificationResult.BuildVerificationResultString());
         }
+
+        #region Test Argument Validation
+
+        /// <summary>
+        /// This will test argument validation for TGiftTransactionWebConnector.PostGiftBatch
+        /// </summary>
+        [Test]
+        public void TestPostGiftBatchArgumentValidation()
+        {
+            TVerificationResultCollection VerificationResult = null;
+
+            string Message = "Validation failed for posting a Gift Batch with ledger number less than 1.";
+
+            // Post a Gift Batch with ledger number less than 1
+            try
+            {
+                TGiftTransactionWebConnector.PostGiftBatch(-1, 1, out VerificationResult);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemInvalidLedgerNumberException e)
+            {
+                Assert.AreEqual(-1, e.LedgerNumber, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+
+            Message = "Validation failed for posting a Gift Batch with batch number less than 1.";
+
+            // Post a Gift Batch with batch number less than 1
+            try
+            {
+                TGiftTransactionWebConnector.PostGiftBatch(1, -1, out VerificationResult);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemInvalidBatchNumberException e)
+            {
+                Assert.AreEqual(1, e.LedgerNumber, Message);
+                Assert.AreEqual(-1, e.BatchNumber, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+        }
+
+        /// <summary>
+        /// This will test argument validation for TGiftTransactionWebConnector.PostGiftBatches
+        /// </summary>
+        [Test]
+        public void TestPostGiftBatchesArgumentValidation()
+        {
+            TVerificationResultCollection VerificationResult = null;
+
+            List <Int32>BatchNumbers = new List <int>();
+
+            string Message = "Validation failed for posting a Gift Batch with ledger number less than 1.";
+
+            // Post a Gift Batch with ledger number less than 1
+            try
+            {
+                TGiftTransactionWebConnector.PostGiftBatches(-1, BatchNumbers, out VerificationResult);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemInvalidLedgerNumberException e)
+            {
+                Assert.AreEqual(-1, e.LedgerNumber, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+
+            Message = "Validation failed for posting a Gift Batch without any batch numbers.";
+
+            // Post a Gift Batch without any batch numbers
+            try
+            {
+                TGiftTransactionWebConnector.PostGiftBatches(1, BatchNumbers, out VerificationResult);
+                Assert.Fail(Message);
+            }
+            catch (ArgumentException e)
+            {
+                Assert.AreEqual("Function:Post Gift Batches - The list of Batch numbers to post is empty!", e.Message,
+                    Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+
+            Message = "Validation failed for posting a Gift Batch with batch number less than 1.";
+            BatchNumbers.Add(-1);
+
+            // Post a Gift Batch with batch number less than 1
+            try
+            {
+                TGiftTransactionWebConnector.PostGiftBatches(1, BatchNumbers, out VerificationResult);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemInvalidBatchNumberException e)
+            {
+                Assert.AreEqual(1, e.LedgerNumber, Message);
+                Assert.AreEqual(-1, e.BatchNumber, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+        }
+
+        /// <summary>
+        /// This will test argument validation for TGiftTransactionWebConnector.PrepareGiftBatchForPosting
+        /// </summary>
+        [Test]
+        public void TestPrepareGiftBatchForPostingArgumentValidation()
+        {
+            TVerificationResultCollection VerificationResult = null;
+            TDBTransaction Transaction = null;
+
+            string Message = "Validation failed for PrepareGiftBatchForPosting with ledger number less than 1.";
+
+            // Prepare Gift Batch For Posting with ledger number less than 1
+            try
+            {
+                TGiftTransactionWebConnector.PrepareGiftBatchForPosting(-1, 1, ref Transaction, out VerificationResult);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemInvalidLedgerNumberException e)
+            {
+                Assert.AreEqual(-1, e.LedgerNumber, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+
+            Message = "Validation failed for PrepareGiftBatchForPosting with batch number less than 1.";
+
+            // Prepare Gift Batch For Posting with batch number less than 1
+            try
+            {
+                TGiftTransactionWebConnector.PrepareGiftBatchForPosting(1, -1, ref Transaction, out VerificationResult);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemInvalidBatchNumberException e)
+            {
+                Assert.AreEqual(1, e.LedgerNumber, Message);
+                Assert.AreEqual(-1, e.BatchNumber, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+
+            Message = "Validation failed for PrepareGiftBatchForPosting with null transaction.";
+
+            // Prepare Gift Batch For Posting with null transaction
+            try
+            {
+                TGiftTransactionWebConnector.PrepareGiftBatchForPosting(1, 1, ref Transaction, out VerificationResult);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemDBTransactionNullException e)
+            {
+                Assert.AreEqual("Function:Prepare Gift Batch For Posting - Database Transaction must not be NULL!", e.Message,
+                    Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+        }
+
+        /// <summary>
+        /// This will test argument validation for TGiftTransactionWebConnector.LoadAGiftBatchAndRelatedData
+        /// </summary>
+        [Test]
+        public void TestLoadAGiftBatchAndRelatedDataArgumentValidation()
+        {
+            bool ChangesToCommit;
+            TDBTransaction Transaction = null;
+
+            // Load Gift Batch with ledger number less than 1
+            string Message = "Validation failed for LoadAGiftBatchAndRelatedData with ledger number less than 1.";
+
+            try
+            {
+                TGiftTransactionWebConnector.LoadAGiftBatchAndRelatedData(-1, 1, Transaction, out ChangesToCommit);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemInvalidLedgerNumberException e)
+            {
+                Assert.AreEqual(-1, e.LedgerNumber, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+
+            Message = "Validation failed for LoadAGiftBatchAndRelatedData with batch number less than 1.";
+
+            // Load Gift Batch with batch number less than 1
+            try
+            {
+                TGiftTransactionWebConnector.LoadAGiftBatchAndRelatedData(1, -1, Transaction, out ChangesToCommit);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemInvalidBatchNumberException e)
+            {
+                Assert.AreEqual(1, e.LedgerNumber, Message);
+                Assert.AreEqual(-1, e.BatchNumber, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+
+            Message = "Validation failed for LoadAGiftBatchAndRelatedData with null transaction.";
+
+            // Load Gift Batch with null transaction
+            try
+            {
+                TGiftTransactionWebConnector.LoadAGiftBatchAndRelatedData(1, 1, Transaction, out ChangesToCommit);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemDBTransactionNullException e)
+            {
+                Assert.AreEqual("Function:Load A Gift Batch And Related Data - Database Transaction must not be NULL!", e.Message,
+                    Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+        }
+
+        /// <summary>
+        /// This will test argument validation for TGiftTransactionWebConnector.CalculateAdminFee
+        /// </summary>
+        [Test]
+        public void TestCalculateAdminFeeArgumentValidation()
+        {
+            TVerificationResultCollection VerificationResult = null;
+
+            string Message = "Validation failed for CalculateAdminFee with null dataset.";
+
+            // Calculate admin fee with null dataset
+            try
+            {
+                TGiftTransactionWebConnector.CalculateAdminFee(null, -1, "", 0, out VerificationResult);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemDataObjectNullOrEmptyException e)
+            {
+                Assert.AreEqual("Function:Calculate Admin Fee - The Gift Batch dataset is null!", e.Message, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+            Message = "Validation failed for CalculateAdminFee with ledger number less than 1.";
+
+            // Calculate admin fee with ledger number less than 1
+            try
+            {
+                TGiftTransactionWebConnector.CalculateAdminFee(MainDS, -1, "", 0, out VerificationResult);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemInvalidLedgerNumberException e)
+            {
+                Assert.AreEqual(-1, e.LedgerNumber, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+
+            Message = "Validation failed for CalculateAdminFee with blank fee code.";
+
+            // Calculate admin fee with blank admin fee
+            try
+            {
+                TGiftTransactionWebConnector.CalculateAdminFee(MainDS, 1, "", 0, out VerificationResult);
+                Assert.Fail(Message);
+            }
+            catch (ArgumentException e)
+            {
+                Assert.AreEqual("Function:Calculate Admin Fee - The Fee code is empty!", e.Message, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+        }
+
+        /// <summary>
+        /// This will test argument validation for TGiftTransactionWebConnector.AddToFeeTotals
+        /// </summary>
+        [Test]
+        public void TestAddToFeeTotalsArgumentValidation()
+        {
+            string Message = "Validation failed for AddToFeeTotals with null dataset.";
+
+            // AddToFeeTotals with null dataset
+            try
+            {
+                TGiftTransactionWebConnector.AddToFeeTotals(null, null, "", 0, 0);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemDataObjectNullOrEmptyException e)
+            {
+                Assert.AreEqual("Function:Add To Fee Totals - The Gift Batch dataset is null!", e.Message, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+            Message = "Validation failed for AddToFeeTotals with null datarow.";
+
+            // AddToFeeTotals with null datarow
+            try
+            {
+                TGiftTransactionWebConnector.AddToFeeTotals(MainDS, null, "", 0, 0);
+                Assert.Fail(Message);
+            }
+            catch (EFinanceSystemDataObjectNullOrEmptyException e)
+            {
+                Assert.AreEqual("Function:Add To Fee Totals - The Gift Detail row is null!", e.Message, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+
+            AGiftDetailRow GiftDetailRow = MainDS.AGiftDetail.NewRowTyped();
+            Message = "Validation failed for AddToFeeTotals with blank fee code.";
+
+            // AddToFeeTotals with blank admin fee
+            try
+            {
+                TGiftTransactionWebConnector.AddToFeeTotals(MainDS, GiftDetailRow, "", 0, 0);
+                Assert.Fail(Message);
+            }
+            catch (ArgumentException e)
+            {
+                Assert.AreEqual("Function:Add To Fee Totals - The Fee code is empty!", e.Message, Message);
+            }
+            catch
+            {
+                Assert.Fail(Message);
+            }
+        }
+
+        #endregion
     }
 }

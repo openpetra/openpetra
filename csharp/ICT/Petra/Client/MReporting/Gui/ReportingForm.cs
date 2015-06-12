@@ -562,6 +562,20 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="e"></param>
         public void MI_ShowTemplate_Click(System.Object sender, System.EventArgs e)
         {
+            // Find the currently active control
+            Control CurrentActiveControl;
+            ContainerControl ParentControl = GetForm();
+
+            do
+            {
+                CurrentActiveControl = ParentControl.ActiveControl;
+                ParentControl = CurrentActiveControl as ContainerControl;
+            } while (ParentControl != null);
+
+            // Momentarily remove focus from active control. This ensures OnLeave event is fired for control.
+            GetForm().ActiveControl = null;
+            GetForm().ActiveControl = CurrentActiveControl;
+
             if (FDelegateViewReportOverride != null)
             {
                 // read the settings and parameters from the controls
@@ -621,48 +635,69 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return;
             }
 
-            Boolean DoEditTemplate = ((Control.ModifierKeys & Keys.Control) == Keys.Control); // If the Control Key is pressed, I'll call the delegate that displays the report template.
+            // Find the currently active control
+            Control CurrentActiveControl;
+            ContainerControl ParentControl = GetForm();
 
-            // read the settings and parameters from the controls
-            if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
+            do
             {
-                return;
-            }
+                CurrentActiveControl = ParentControl.ActiveControl;
+                ParentControl = CurrentActiveControl as ContainerControl;
+            } while (ParentControl != null);
 
-            if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
-            {
-                FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
-            }
+            // Temporily remove focus from active control. This ensures OnLeave event is fired for control.
+            GetForm().ActiveControl = null;
 
-            this.FWinForm.Cursor = Cursors.WaitCursor;
-            FormCursor = FWinForm.Cursor;
-            TLogging.SetStatusBarProcedure(WriteToStatusBar);
+            try
+            {
+                Boolean DoEditTemplate = ((Control.ModifierKeys & Keys.Control) == Keys.Control); // If the Control Key is pressed, I'll call the delegate that displays the report template.
 
-            if (DoEditTemplate && (FDelegateViewReportOverride != null))
-            {
-                ((IFrmReporting)FTheForm).EnableBusy(true);
-                FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);
-                FGenerateReportThread.SetApartmentState(ApartmentState.STA);
-                FGenerateReportThread.Start(FDelegateViewReportOverride);
-            }
-            else if (FDelegateGenerateReportOverride != null)
-            {
-                ((IFrmReporting)FTheForm).EnableBusy(true);
-                FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);
-                FGenerateReportThread.SetApartmentState(ApartmentState.STA);
-                FGenerateReportThread.Start(FDelegateGenerateReportOverride);
-            }
-            else
-            {
-                MakeCancelButtonAvailable();
+                // read the settings and parameters from the controls
+                if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
+                {
+                    return;
+                }
 
-                if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
+                if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
+                {
+                    FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
+                }
+
+                this.FWinForm.Cursor = Cursors.WaitCursor;
+                FormCursor = FWinForm.Cursor;
+                TLogging.SetStatusBarProcedure(WriteToStatusBar);
+
+                if (DoEditTemplate && (FDelegateViewReportOverride != null))
                 {
                     ((IFrmReporting)FTheForm).EnableBusy(true);
-                    FGenerateReportThread = new Thread(GenerateReport);
-                    FGenerateReportThread.IsBackground = true;
-                    FGenerateReportThread.Start();
+                    FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);
+                    FGenerateReportThread.SetApartmentState(ApartmentState.STA);
+                    FGenerateReportThread.Start(FDelegateViewReportOverride);
                 }
+                else if (FDelegateGenerateReportOverride != null)
+                {
+                    ((IFrmReporting)FTheForm).EnableBusy(true);
+                    FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);
+                    FGenerateReportThread.SetApartmentState(ApartmentState.STA);
+                    FGenerateReportThread.Start(FDelegateGenerateReportOverride);
+                }
+                else
+                {
+                    MakeCancelButtonAvailable();
+
+                    if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
+                    {
+                        ((IFrmReporting)FTheForm).EnableBusy(true);
+                        FGenerateReportThread = new Thread(GenerateReport);
+                        FGenerateReportThread.IsBackground = true;
+                        FGenerateReportThread.Start();
+                    }
+                }
+            }
+            finally
+            {
+                // Return focus to control.
+                GetForm().ActiveControl = CurrentActiveControl;
             }
         }
 
@@ -678,59 +713,80 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return;
             }
 
-            // open dialog to prompt the user to enter a name for new extract
-            TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this.FWinForm);
-            string ExtractName;
-            string ExtractDescription;
+            // Find the currently active control
+            Control CurrentActiveControl;
+            ContainerControl ParentControl = GetForm();
 
-            ExtractNameDialog.ShowDialog();
-
-            if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            do
             {
-                /* Get values from the Dialog */
-                ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+                CurrentActiveControl = ParentControl.ActiveControl;
+                ParentControl = CurrentActiveControl as ContainerControl;
+            } while (ParentControl != null);
+
+            // Temporily remove focus from active control. This ensures OnLeave event is fired for control.
+            GetForm().ActiveControl = null;
+
+            try
+            {
+                // open dialog to prompt the user to enter a name for new extract
+                TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this.FWinForm);
+                string ExtractName;
+                string ExtractDescription;
+
+                ExtractNameDialog.ShowDialog();
+
+                if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                {
+                    /* Get values from the Dialog */
+                    ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+                }
+                else
+                {
+                    // dialog was cancelled, do not continue with extract generation
+                    return;
+                }
+
+                ExtractNameDialog.Dispose();
+
+                // read the settings and parameters from the controls
+                if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
+                {
+                    return;
+                }
+
+                // add extract name and description to parameter list
+                // (don't add it earlier as the list gets cleared while reading controls from screens)
+                FCalculator.AddParameter("param_extract_name", ExtractName);
+                FCalculator.AddParameter("param_extract_description", ExtractDescription);
+
+                if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
+                {
+                    FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
+                }
+
+                this.FWinForm.Cursor = Cursors.WaitCursor;
+                FormCursor = FWinForm.Cursor;
+                TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
+
+                // Open Extract Mast Screen if not already open.
+                // (If being opened, the screen will not actually be shown at theis stage.)
+                if (TCommonScreensForwarding.OpenExtractMasterScreen != null)
+                {
+                    TCommonScreensForwarding.OpenExtractMasterScreenHidden.Invoke(((ToolStripButton)sender).GetCurrentParent().FindForm());
+                }
+
+                if ((FGenerateExtractThread == null) || (!FGenerateExtractThread.IsAlive))
+                {
+                    ((IFrmReporting)FTheForm).EnableBusy(true);
+                    FGenerateExtractThread = new Thread(GenerateExtract);
+                    FGenerateExtractThread.IsBackground = true;
+                    FGenerateExtractThread.Start();
+                }
             }
-            else
+            finally
             {
-                // dialog was cancelled, do not continue with extract generation
-                return;
-            }
-
-            ExtractNameDialog.Dispose();
-
-            // read the settings and parameters from the controls
-            if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
-            {
-                return;
-            }
-
-            // add extract name and description to parameter list
-            // (don't add it earlier as the list gets cleared while reading controls from screens)
-            FCalculator.AddParameter("param_extract_name", ExtractName);
-            FCalculator.AddParameter("param_extract_description", ExtractDescription);
-
-            if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
-            {
-                FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
-            }
-
-            this.FWinForm.Cursor = Cursors.WaitCursor;
-            FormCursor = FWinForm.Cursor;
-            TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
-
-            // Open Extract Mast Screen if not already open.
-            // (If being opened, the screen will not actually be shown at theis stage.)
-            if (TCommonScreensForwarding.OpenExtractMasterScreen != null)
-            {
-                TCommonScreensForwarding.OpenExtractMasterScreenHidden.Invoke(((ToolStripButton)sender).GetCurrentParent().FindForm());
-            }
-
-            if ((FGenerateExtractThread == null) || (!FGenerateExtractThread.IsAlive))
-            {
-                ((IFrmReporting)FTheForm).EnableBusy(true);
-                FGenerateExtractThread = new Thread(GenerateExtract);
-                FGenerateExtractThread.IsBackground = true;
-                FGenerateExtractThread.Start();
+                // Return focus to control.
+                GetForm().ActiveControl = CurrentActiveControl;
             }
         }
 
@@ -1135,40 +1191,61 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return;
             }
 
-            // read the settings and parameters from the controls
-            if (!ReadControlsWithErrorHandling(TReportActionEnum.raSave))
+            // Find the currently active control
+            Control CurrentActiveControl;
+            ContainerControl ParentControl = GetForm();
+
+            do
             {
-                return;
+                CurrentActiveControl = ParentControl.ActiveControl;
+                ParentControl = CurrentActiveControl as ContainerControl;
+            } while (ParentControl != null);
+
+            // Temporily remove focus from active control. This ensures OnLeave event is fired for control.
+            GetForm().ActiveControl = null;
+
+            try
+            {
+                // read the settings and parameters from the controls
+                if (!ReadControlsWithErrorHandling(TReportActionEnum.raSave))
+                {
+                    return;
+                }
+
+                if (FCurrentSettingsName == "")
+                {
+                    FCurrentSettingsName = FCurrentReport;
+                }
+
+                TFrmSettingsSave SettingsDialog = new TFrmSettingsSave(FStoredSettings, FCurrentSettingsName);
+
+                if (SettingsDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    StringCollection RecentlyUsedSettings = null;
+
+                    FCurrentSettingsName = SettingsDialog.GetNewName();
+
+                    try
+                    {
+                        RecentlyUsedSettings = this.FStoredSettings.SaveSettings(FCurrentSettingsName, FCalculator.GetParameters());
+                        // set the title of the window
+                        SetWindowTitle();
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("Not a valid name. Please use letters numbers and underscores etc. Values not saved");
+                    }
+
+                    if (RecentlyUsedSettings != null)
+                    {
+                        UpdateLoadingMenu(RecentlyUsedSettings);
+                    }
+                }
             }
-
-            if (FCurrentSettingsName == "")
+            finally
             {
-                FCurrentSettingsName = FCurrentReport;
-            }
-
-            TFrmSettingsSave SettingsDialog = new TFrmSettingsSave(FStoredSettings, FCurrentSettingsName);
-
-            if (SettingsDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                StringCollection RecentlyUsedSettings = null;
-
-                FCurrentSettingsName = SettingsDialog.GetNewName();
-
-                try
-                {
-                    RecentlyUsedSettings = this.FStoredSettings.SaveSettings(FCurrentSettingsName, FCalculator.GetParameters());
-                    // set the title of the window
-                    SetWindowTitle();
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Not a valid name. Please use letters numbers and underscores etc. Values not saved");
-                }
-
-                if (RecentlyUsedSettings != null)
-                {
-                    UpdateLoadingMenu(RecentlyUsedSettings);
-                }
+                // Return focus to control.
+                GetForm().ActiveControl = CurrentActiveControl;
             }
         }
 
@@ -1190,17 +1267,38 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             else
             {
-                // read the settings and parameters from the controls
-                if (!ReadControlsWithErrorHandling(TReportActionEnum.raSave))
+                // Find the currently active control
+                Control CurrentActiveControl;
+                ContainerControl ParentControl = GetForm();
+
+                do
                 {
-                    return;
+                    CurrentActiveControl = ParentControl.ActiveControl;
+                    ParentControl = CurrentActiveControl as ContainerControl;
+                } while (ParentControl != null);
+
+                // Temporily remove focus from active control. This ensures OnLeave event is fired for control.
+                GetForm().ActiveControl = null;
+
+                try
+                {
+                    // read the settings and parameters from the controls
+                    if (!ReadControlsWithErrorHandling(TReportActionEnum.raSave))
+                    {
+                        return;
+                    }
+
+                    StringCollection RecentlyUsedSettings = this.FStoredSettings.SaveSettings(FCurrentSettingsName, FCalculator.GetParameters());
+
+                    if (RecentlyUsedSettings != null)
+                    {
+                        UpdateLoadingMenu(RecentlyUsedSettings);
+                    }
                 }
-
-                StringCollection RecentlyUsedSettings = this.FStoredSettings.SaveSettings(FCurrentSettingsName, FCalculator.GetParameters());
-
-                if (RecentlyUsedSettings != null)
+                finally
                 {
-                    UpdateLoadingMenu(RecentlyUsedSettings);
+                    // Return focus to control.
+                    GetForm().ActiveControl = CurrentActiveControl;
                 }
             }
         }

@@ -411,6 +411,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     {
                                         gift.ReceiptPrinted = true;
                                     }
+                                    else
+                                    {
+                                        gift.ReceiptPrinted = false;
+                                    }
 
                                     AGiftDS.AGift.Rows.Add(gift);
 

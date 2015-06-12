@@ -69,8 +69,22 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+                    int FirstPostingPeriod = -1;
+
+                    // If final month end has been run but year end has not yet been run
+                    // then we cannot post to the current period as it is actually closed.
+                    if (LedgerTable[0].ProvisionalYearEndFlag)
+                    {
+                        FirstPostingPeriod = LedgerTable[0].CurrentPeriod + 1;
+                    }
+                    else
+                    {
+                        FirstPostingPeriod = LedgerTable[0].CurrentPeriod;
+                    }
+
                     AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                        LedgerTable[0].CurrentPeriod,
+                        FirstPostingPeriod,
                         Transaction);
 
                     StartDateCurrentPeriod = AccountingPeriodTable[0].PeriodStartDate;
@@ -266,9 +280,11 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         /// Cannot be deleted if it is effective for a period in the current year which has at least one batch.
         /// </summary>
         /// <param name="ADateEffectiveFrom">Corporate Exchange Rate's Date Effective From</param>
+        /// <param name="AIntlCurrency"></param>
+        /// <param name="ATransactionCurrency"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool CanDeleteCorporateExchangeRate(DateTime ADateEffectiveFrom)
+        public static bool CanDeleteCorporateExchangeRate(DateTime ADateEffectiveFrom, string AIntlCurrency, string ATransactionCurrency)
         {
             bool ReturnValue = true;
             TDBTransaction ReadTransaction = null;
@@ -296,9 +312,16 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
                     // search for batches for the found accounting period
                     string Query2 = "SELECT CASE WHEN EXISTS (" +
-                                    "SELECT * FROM a_batch" +
+                                    "SELECT * FROM a_batch, a_journal, a_ledger" +
                                     " WHERE a_batch.a_date_effective_d <= '" + AccountingPeriodRow.PeriodEndDate + "'" +
                                     " AND a_batch.a_date_effective_d >= '" + AccountingPeriodRow.PeriodStartDate + "'" +
+                                    " AND a_journal.a_ledger_number_i = a_batch.a_ledger_number_i" +
+                                    " AND a_journal.a_batch_number_i = a_batch.a_batch_number_i" +
+                                    " AND a_ledger.a_ledger_number_i = a_batch.a_ledger_number_i" +
+                                    " AND ((a_journal.a_transaction_currency_c = '" + ATransactionCurrency + "'" +
+                                    " AND a_ledger.a_intl_currency_c = '" + AIntlCurrency + "')" +
+                                    " OR (a_journal.a_transaction_currency_c = '" + AIntlCurrency + "'" +
+                                    " AND a_ledger.a_intl_currency_c = '" + ATransactionCurrency + "'))" +
                                     ") THEN 'TRUE'" +
                                     " ELSE 'FALSE' END";
 

@@ -183,6 +183,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ALedgerRow LedgerRow = LedgerDetailsTable[0];
                 Boolean IsClosed = (!pm.Get("param_current_financial_year").ToBool() || (PeriodEnd < LedgerRow.CurrentPeriod));
                 ACalc.AddParameter("param_period_closed", IsClosed);
+                Boolean IsCurrent = (pm.Get("param_current_financial_year").ToBool() && (PeriodEnd == LedgerRow.CurrentPeriod));
+                ACalc.AddParameter("param_period_current", IsCurrent);
 
                 String PeriodTitle = " (" + DateStart.ToString("dd-MMM-yyyy") + " - " + DateEnd.ToString("dd-MMM-yyyy") + ")";
 

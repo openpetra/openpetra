@@ -381,7 +381,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 });
 
             costCentreTbl.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
-            costCentreTbl.DefaultView.RowFilter = "a_cost_centre_type_c='Local' AND a_posting_cost_centre_flag_l=TRUE";
+            costCentreTbl.DefaultView.RowFilter = "a_posting_cost_centre_flag_l=TRUE";
             return costCentreTbl;
         }
 
@@ -404,7 +404,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// (This has been re-written to iterate over Cost Centres, rather than over accounts.)
         ///
         /// I need an Account list: all profit / loss accounts, plus ICH,
-        /// and a Cost Centre list: all local Cost Centres.
+        /// and a Cost Centre list: all Cost Centres.
         ///
         /// For Each Cost Centre, I need to load GLMP entries so that I can find balances for each qualifying account.
         ///

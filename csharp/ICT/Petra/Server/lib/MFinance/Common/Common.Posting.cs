@@ -329,7 +329,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ATransaction"></param>
         /// <param name="AVerifications"></param>
         /// <returns>CANNOT return a Null dataset. Instead throws an error!</returns>
-        private static GLBatchTDS LoadGLBatchData(Int32 ALedgerNumber,
+        public static GLBatchTDS LoadGLBatchData(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             ref TDBTransaction ATransaction,
             ref TVerificationResultCollection AVerifications)
@@ -2023,7 +2023,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="APostingLevel"></param>
         /// <param name="ABatchPeriod"></param>
         /// <returns></returns>
-        private static GLPostingTDS PrepareGLBatchForPosting(out GLBatchTDS AMainDS,
+        public static GLPostingTDS PrepareGLBatchForPosting(out GLBatchTDS AMainDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             ref TDBTransaction ATransaction,
@@ -2797,7 +2797,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// Helper class for storing the amounts of a batch at posting level for account/costcentre combinations
-        private class TAmount
+        public class TAmount
         {
             /// Amount in the base currency of the ledger
             public decimal BaseAmount = 0.0M;

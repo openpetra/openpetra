@@ -221,11 +221,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                              " AND Recipient.p_partner_key_n = detail.p_recipient_key_n";
 
-                    if (ReportType == "List")
-                    {
-                        Query += " AND detail.p_recipient_key_n  <> 0";
-                    }
-
                     if (RecipientSelection == "One Recipient")
                     {
                         Query += " AND detail.p_recipient_key_n = " + AParameters["param_recipientkey"].ToInt64();
@@ -355,7 +350,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     string Query = "SELECT" +
                                    " gift.a_date_entered_d AS GiftDate," +
                                    " gift.p_donor_key_n AS DonorKey," +
-                                   " DonorPartner.p_partner_short_name_c AS DonorName," +
+                                   " CASE WHEN DonorPartner.p_partner_short_name_c NOT LIKE ''" +
+                                   " THEN DonorPartner.p_partner_short_name_c" +
+                                   " ELSE '" + Catalog.GetString("Unknown Donor") + "' END AS DonorName," +
                                    " DonorPartner.p_partner_class_c AS DonorClass," +
                                    " detail.p_recipient_key_n AS RecipientKey," +
                                    " detail.a_motivation_detail_code_c AS MotivationCode," +
@@ -462,6 +459,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                            " AND PUB_p_location.p_location_key_i = " + BestAddress.LocationKey;
 
                     Results.Merge(DbAdapter.RunQuery(QueryLocation, "DonorAddresses", Transaction));
+
+                    if (Results.Rows.Count == 0)
+                    {
+                        DataRow NewRow = Results.NewRow();
+                        NewRow["Locality"] = "UNKNOWN";
+                        Results.Rows.Add(NewRow);
+                    }
 
                     Results.Rows[0]["DonorKey"] = ADonorKey;
                 });

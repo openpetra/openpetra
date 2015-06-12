@@ -16,7 +16,7 @@
 		
 		<reportheader/>
 		<pageheader>
-			<field whichfield="title1"><value text ="Donor Report" /></field>
+			<field whichfield="title1"><value text ="Detail Donor Report" /></field>
 			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
 			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
 				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/></field>

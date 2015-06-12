@@ -59,4 +59,5 @@ RootNode:
         btnOK:
             Label: &Accept
             Action: actAccept
+            Enabled: false
         btnCancel: {Action=actClose}

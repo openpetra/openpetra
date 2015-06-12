@@ -1310,19 +1310,26 @@ namespace Ict.Petra.Client.MFinance.Logic
             DataTable newDataTable = ICHNumbers.DefaultView.ToTable(true, AIchStewardshipTable.GetIchNumberDBName(),
                 AIchStewardshipTable.GetDateProcessedDBName());
 
+            // New column with date as a string. (We do not want time part of date.)
+            newDataTable.Columns.Add("DateOnly");
+
+            foreach (DataRow Row in newDataTable.Rows)
+            {
+                Row["DateOnly"] = Convert.ToDateTime(Row[AIchStewardshipTable.GetDateProcessedDBName()]).ToShortDateString();
+            }
+
             // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour
             DataRow emptyRow = newDataTable.NewRow();
 
             emptyRow[0] = 0;  //selecting 0 will mean full HOSA reports for all cost centres
-            emptyRow[1] = DateTime.Today;
 
             newDataTable.Rows.Add(emptyRow);
 
             AControl.InitialiseUserControl(newDataTable,
                 AIchStewardshipTable.GetIchNumberDBName(),
-                AIchStewardshipTable.GetDateProcessedDBName(),
+                "DateOnly",
                 null);
-            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+            AControl.AppearanceSetup(new int[] { -1, 80 }, -1);
 
             //Alternative way to filter the contents of the combo
             //AControl.Filter = AIchStewardshipTable.GetPeriodNumberDBName() + " = " + APeriodNumber.ToString();

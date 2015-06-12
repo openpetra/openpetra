@@ -3219,10 +3219,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// Create GiftBatchTDS with the gift batch to post, and all gift transactions and details, and motivation details
+        /// Create GiftBatchTDS with the gift batch to post, and all gift transactions and details, and motivation details.
+        /// Public for tests
         /// </summary>
-        [RequireModulePermission("FINANCE-1")]
-        private static GiftBatchTDS LoadAGiftBatchAndRelatedData(Int32 ALedgerNumber,
+        //[RequireModulePermission("FINANCE-1")]
+        [NoRemoting]
+        public static GiftBatchTDS LoadAGiftBatchAndRelatedData(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             TDBTransaction ATransaction,
             out bool AChangesToCommit,
@@ -3783,6 +3785,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (feePayableRow == null)
                 {
+                    // this row will only exist if the gift's cc is foreign
                     AFeesReceivableRow feeReceivableRow = (AFeesReceivableRow)AMainDS.AFeesReceivable.Rows.Find(new object[] { ALedgerNumber,
                                                                                                                                AFeeCode });
 
@@ -3790,11 +3793,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     if (feeReceivableRow == null)
                     {
-                        throw new ArgumentException(String.Format(Catalog.GetString(
-                                    "Function:{0} - Fee Code {1} could not be found in Ledger {2}"),
-                                Utilities.GetMethodName(true),
-                                AFeeCode,
-                                ALedgerNumber));
+                        // i.e. this fee code is for a receivable fee but the gift's cc is local
+                        return FeeAmount;
                     }
 
                     #endregion Validate Data 1
@@ -3906,7 +3906,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return FeeAmount;
         }
 
-        private static void AddToFeeTotals(GiftBatchTDS AMainDS,
+        /// <summary>
+        /// Public for tests
+        /// </summary>
+        [NoRemoting]
+        public static void AddToFeeTotals(GiftBatchTDS AMainDS,
             AGiftDetailRow AGiftDetailRow,
             string AFeeCode,
             decimal AFeeAmount,
@@ -3933,9 +3937,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             #endregion Validate Arguments
-
-            // TODO CT
-            // see Add_To_Fee_Totals in gr1210.p
 
             try
             {
@@ -3977,7 +3978,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        private static GiftBatchTDS PrepareGiftBatchForPosting(Int32 ALedgerNumber,
+        /// <summary>
+        /// Prepares the gift batch for posting.
+        /// Public for test.
+        /// </summary>
+        [NoRemoting]
+        public static GiftBatchTDS PrepareGiftBatchForPosting(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             ref TDBTransaction ATransaction,
             out TVerificationResultCollection AVerifications)
@@ -4039,9 +4045,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AGiftBatchRow GiftBatchRow = MainDS.AGiftBatch[0];
 
             string BatchTransactionCurrency = GiftBatchRow.CurrencyCode;
-
-            // for calculation of admin fees
-            LoadAdminFeeTablesForGiftBatch(MainDS, ALedgerNumber, ABatchNumber, ATransaction);
 
             // check that the Gift Batch BatchPeriod matches the date effective
             DateTime GLEffectiveDate = GiftBatchRow.GlEffectiveDate;
@@ -4193,11 +4196,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.GiftAmountIntl = giftDetail.GiftTransactionAmount;
                 }
 
+                // for calculation of admin fees
+                LoadAdminFeeTablesForGiftDetail(MainDS, giftDetail, ATransaction);
+
                 // get all motivation detail fees for this gift
                 foreach (AMotivationDetailFeeRow motivationFeeRow in MainDS.AMotivationDetailFee.Rows)
                 {
-                    if ((motivationFeeRow.MotivationDetailCode == motivationRow.MotivationDetailCode)
-                        && (motivationFeeRow.MotivationGroupCode == motivationRow.MotivationGroupCode))
+                    // If the charge flag is not set, still process fees for GIF and ICT but do not process other fees.
+                    if (giftDetail.ChargeFlag
+                        || (motivationFeeRow.FeeCode == MFinanceConstants.ADMIN_FEE_GIF)
+                        || (motivationFeeRow.FeeCode == MFinanceConstants.ADMIN_FEE_ICT))
                     {
                         TVerificationResultCollection Verifications2;
 
@@ -4213,7 +4221,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             return null;
                         }
 
-                        AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, GiftBatchRow.BatchPeriod);
+                        if (FeeAmount != 0)
+                        {
+                            AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, GiftBatchRow.BatchPeriod);
+                        }
                     }
                 }
             }
@@ -4221,39 +4232,59 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return MainDS;
         }
 
-        private static void LoadAdminFeeTablesForGiftBatch(GiftBatchTDS AMainDS,
-            Int32 ALedgerNumber,
-            Int32 ABatchNumber,
+        /// <summary>
+        /// Loads tables needed for the calculation of admin fees for a gift detail.
+        /// </summary>
+        private static void LoadAdminFeeTablesForGiftDetail(GiftBatchTDS AMainDS,
+            AGiftDetailRow AGiftDetail,
             TDBTransaction ATransaction)
         {
-            // for calculation of admin fees
-            AMotivationDetailFeeAccess.LoadViaALedger(AMainDS, ALedgerNumber, ATransaction);
-            AFeesPayableAccess.LoadViaALedger(AMainDS, ALedgerNumber, ATransaction);
-            AFeesReceivableAccess.LoadViaALedger(AMainDS, ALedgerNumber, ATransaction);
-            AProcessedFeeAccess.LoadViaAGiftBatch(AMainDS, ALedgerNumber, ABatchNumber, ATransaction);
+            // only needs to be loaded once for the whole batch
+            if ((AMainDS.AProcessedFee == null) || (AMainDS.AProcessedFee.Rows.Count == 0))
+            {
+                AProcessedFeeAccess.LoadViaAGiftBatch(AMainDS, AGiftDetail.LedgerNumber, AGiftDetail.BatchNumber, ATransaction);
+            }
+
+            // only needs to be loaded once for the whole batch
+            if ((AMainDS.AFeesPayable == null) || (AMainDS.AFeesPayable.Rows.Count == 0))
+            {
+                AFeesPayableAccess.LoadViaALedger(AMainDS, AGiftDetail.LedgerNumber, ATransaction);
+            }
+
+            // if motivation detail has changed from the last gift detail
+            if ((AMainDS.AMotivationDetailFee == null) || (AMainDS.AMotivationDetailFee.Rows.Count == 0)
+                || (AMainDS.AMotivationDetailFee[0].MotivationGroupCode != AGiftDetail.MotivationGroupCode)
+                || (AMainDS.AMotivationDetailFee[0].MotivationDetailCode != AGiftDetail.MotivationDetailCode))
+            {
+                AMainDS.AMotivationDetailFee.Rows.Clear();
+                AMotivationDetailFeeAccess.LoadViaAMotivationDetail(
+                    AMainDS, AGiftDetail.LedgerNumber, AGiftDetail.MotivationGroupCode, AGiftDetail.MotivationDetailCode, ATransaction);
+            }
+
+            // If this gift is for the local field, don't charge the fee to itself. So we don't need the fees receivable.
+            string Query = "SELECT a_fees_receivable.* FROM a_fees_receivable" +
+                           " WHERE EXISTS (SELECT * FROM a_cost_centre" +
+                           " WHERE a_cost_centre.a_ledger_number_i = " + AGiftDetail.LedgerNumber +
+                           " AND a_cost_centre.a_cost_centre_code_c = '" + AGiftDetail.CostCentreCode + "'" +
+                           " AND a_cost_centre.a_cost_centre_type_c = '" + MFinanceConstants.FOREIGN_CC_TYPE + "')" +
+                           " AND a_fees_receivable.a_ledger_number_i = " + AGiftDetail.LedgerNumber;
+
+            AMainDS.AFeesReceivable.Rows.Clear();
+            AMainDS.AFeesReceivable.Merge(DBAccess.GDBAccessObj.SelectDT(Query, AFeesReceivableTable.GetTableDBName(), ATransaction));
 
             #region Validate Data
 
-            if ((AMainDS.AMotivationDetailFee == null) || (AMainDS.AMotivationDetailFee.Count == 0))
+            if ((AMainDS.AMotivationDetailFee != null) && (AMainDS.AMotivationDetailFee.Count > 0)
+                && ((AMainDS.AFeesPayable == null) || (AMainDS.AFeesPayable.Rows.Count == 0))
+                && ((AMainDS.AFeesReceivable == null) || (AMainDS.AFeesReceivable.Rows.Count == 0)))
             {
                 throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                            "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                            "Function:{0} - Admin fee data for Gift Detail {1}, from Gift {2} in Batch {3} and Ledger {4} does not exist or could not be accessed!"),
                         Utilities.GetMethodSignature(),
-                        ALedgerNumber));
-            }
-            else if ((AMainDS.AFeesPayable == null) || (AMainDS.AFeesPayable.Count == 0))
-            {
-                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                            "Function:{0} - Account data for Ledger number {1} does not exist or could not be accessed!"),
-                        Utilities.GetMethodSignature(),
-                        ALedgerNumber));
-            }
-            else if ((AMainDS.AFeesReceivable == null) || (AMainDS.AFeesReceivable.Count == 0))
-            {
-                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                            "Function:{0} - Cost Centre data for Ledger number {1} does not exist or could not be accessed!"),
-                        Utilities.GetMethodSignature(),
-                        ALedgerNumber));
+                        AGiftDetail.DetailNumber,
+                        AGiftDetail.GiftTransactionNumber,
+                        AGiftDetail.BatchNumber,
+                        AGiftDetail.LedgerNumber));
             }
 
             #endregion Validate Data
@@ -4294,7 +4325,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// post several gift batches at once
         /// </summary>
-        [RequireModulePermission("FINANCE-2")]
+        //[RequireModulePermission("FINANCE-2")]
+        [NoRemoting]
         public static bool PostGiftBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
         {
             #region Validate Arguments

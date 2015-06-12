@@ -20,7 +20,7 @@ RootNode:
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Actions:
-        actFilter: {Label=Filter List, ActionClick=FilterList}
+        actApplyFilter: {Label=Filter List, ActionClick=FilterList}
         actFieldDatesSelectionChanged: {ActionClick=FieldDatesSelectionChanged}
     Controls:
         tpgGeneralSettings: {ControlsOrientation=vertical}
@@ -28,7 +28,7 @@ RootNode:
             Controls: [pnlFilter, pnlMiddle, pnlBottom]
         pnlFilter: {ControlsOrientation=horizontal}
             Dock: Top
-            Controls: [txtFilter, btnFilter]
+            Controls: [txtFilter, btnApplyFilter]
         pnlMiddle: {ControlsOrientation=horizontal}
             Dock: Fill
             Controls: [pnlGrid, pnlOptions]
@@ -73,8 +73,8 @@ RootNode:
         txtFilter:
             NoLabel: true
             Width: 300
-        btnFilter:
-            Action: actFilter
+        btnApplyFilter:
+            Action: actApplyFilter
         ucoAddress:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
             Width: 500

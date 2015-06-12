@@ -1132,6 +1132,9 @@ namespace Ict.Petra.Client.CommonForms
          */
         public override void TFrmPetra_Closing(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Remove focus from active control. This ensures OnLeave event is fired for control.
+            GetForm().ActiveControl = null;
+
             if ((e != null) && !CloseFormCheckRun)
             {
                 if (!CloseFormCheck())

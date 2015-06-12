@@ -456,7 +456,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         ARow.BatchNumber,
                         ARow.JournalNumber);
 
-                    VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.TransactionAmount,
+                    VerificationResult = TNumericalChecks.IsPositiveOrZeroDecimal(ARow.TransactionAmount,
                         "Amount of " + ValidationContext,
                         AContext, ValidationColumn, AControl);
 

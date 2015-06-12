@@ -1041,7 +1041,8 @@ namespace Ict.Petra.Shared.MPartner
                 }
 
                 if ((!APPartnerAttributeDT[0].Current)
-                    || (APPartnerAttributeDT[0].Primary) || (APPartnerAttributeDT[0].WithinOrganisation))
+                    || (APPartnerAttributeDT[0].Primary)
+                    || (!APPartnerAttributeDT[0].IsWithinOrganisationNull() && APPartnerAttributeDT[0].WithinOrganisation))
                 {
                     // If the one record isn't Current then it can't possibly hold a 'Fax Number',
                     // also not if if is 'Primary' (as there are no 'Primary' Fax Numbers)

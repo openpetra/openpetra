@@ -279,7 +279,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + "," +
                 AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName();
 
-
             GetReportingAccounts(MainDS.AAccountHierarchyDetail, accountcodes, ASummaryAccountCodes, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD);
 
             string[] RemoveAccountsFromList = ARemoveAccountsFromList.Split(new char[] { ',' });
@@ -293,6 +292,72 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             }
 
             return StringHelper.StrMerge(accountcodes.ToArray(), ',');
+        }
+
+        // Returns reporting accounts as a comma separated string with each account encased in commas. Needed for SQL.
+        private static string GetFormattedReportingAccounts(int ALedgerNumber,
+            string ASummaryAccountCodes,
+            string AAccountHierarchy)
+        {
+            string ReturnValue = string.Empty;
+
+            string[] Accounts = ASummaryAccountCodes.Split(new char[] { ',' });
+
+            GLSetupTDS MainDS = TGLSetupWebConnector.LoadAccountHierarchies(ALedgerNumber);
+
+            MainDS.AAccountHierarchyDetail.DefaultView.Sort =
+                AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + "," +
+                AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName();
+
+            foreach (string account in Accounts)
+            {
+                DataRowView[] ReportingAccounts = MainDS.AAccountHierarchyDetail.DefaultView.FindRows(new object[] { AAccountHierarchy, account });
+
+                if (ReportingAccounts.Length == 0)
+                {
+                    ReturnValue += "'" + account + "', ";
+                }
+                else
+                {
+                    foreach (DataRowView rv in ReportingAccounts)
+                    {
+                        AAccountHierarchyDetailRow row = (AAccountHierarchyDetailRow)rv.Row;
+
+                        GetFormattedReportingAccounts(MainDS.AAccountHierarchyDetail, ref ReturnValue, row.ReportingAccountCode, AAccountHierarchy);
+                    }
+                }
+            }
+
+            ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - 2);
+
+            return ReturnValue;
+        }
+
+        private static void GetFormattedReportingAccounts(AAccountHierarchyDetailTable AAccountHierarchyDetail,
+            ref string AResult,
+            string ASummaryAccountCodes,
+            string AAccountHierarchy)
+        {
+            string[] Accounts = ASummaryAccountCodes.Split(new char[] { ',' });
+
+            foreach (string account in Accounts)
+            {
+                DataRowView[] ReportingAccounts = AAccountHierarchyDetail.DefaultView.FindRows(new object[] { AAccountHierarchy, account });
+
+                if (ReportingAccounts.Length == 0)
+                {
+                    AResult += "'" + account + "', ";
+                }
+                else
+                {
+                    foreach (DataRowView rv in ReportingAccounts)
+                    {
+                        AAccountHierarchyDetailRow row = (AAccountHierarchyDetailRow)rv.Row;
+
+                        GetFormattedReportingAccounts(AAccountHierarchyDetail, ref AResult, row.ReportingAccountCode, AAccountHierarchy);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -1908,33 +1973,139 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
                     Int32 IchNumber = AParameters["param_cmbICHNumber"].ToInt32();
                     Int32 period = AParameters["param_cmbReportPeriod"].ToInt32();
+                    Int32 Year = AParameters["param_cmbYearEnding"].ToInt32();
+                    Int32 CurrentFinancialYear = ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction)[0].CurrentFinancialYear;
+                    string AccountHierarchyCode = MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD;
+                    bool BaseCurrency = AParameters["param_currency"].ToString() == "Base";
+                    String Query = string.Empty;
 
-                    String StewardshipFilter = "a_ich_stewardship.a_ledger_number_i = " + LedgerNumber;
-
-                    if (IchNumber == 0)
+                    if (CurrentFinancialYear == Year) // if current year
                     {
-                        StewardshipFilter += " AND a_ich_stewardship.a_period_number_i = " + period;
+                        string IncomeAmount = string.Empty;
+                        string ExpenseAmount = string.Empty;
+                        string XferAmount = string.Empty;
+
+                        if (BaseCurrency)
+                        {
+                            IncomeAmount = "a_income_amount_n";
+                            ExpenseAmount = "a_expense_amount_n";
+                            XferAmount = "a_direct_xfer_amount_n";
+                        }
+                        else
+                        {
+                            IncomeAmount = "a_income_amount_intl_n";
+                            ExpenseAmount = "a_expense_amount_intl_n";
+                            XferAmount = "a_direct_xfer_amount_intl_n";
+                        }
+
+                        String StewardshipFilter = "a_ich_stewardship.a_ledger_number_i = " + LedgerNumber;
+
+                        if (IchNumber == 0)
+                        {
+                            StewardshipFilter += " AND a_ich_stewardship.a_period_number_i = " + period;
+                        }
+                        else
+                        {
+                            StewardshipFilter += " AND a_ich_stewardship.a_ich_number_i = " + IchNumber;
+                        }
+
+                        Query = "SELECT" +
+                                " a_ich_stewardship.a_cost_centre_code_c AS CostCentreCode, " +
+                                " a_cost_centre.a_cost_centre_name_c AS CostCentreName, " +
+                                " sum(a_ich_stewardship." + IncomeAmount + ") AS Income, " +
+                                " sum(a_ich_stewardship." + ExpenseAmount + ") AS Expense, " +
+                                " sum(a_ich_stewardship." + XferAmount + ") AS Xfer" +
+                                " FROM a_ich_stewardship, a_cost_centre WHERE " +
+                                StewardshipFilter +
+                                " AND a_cost_centre.a_ledger_number_i = a_ich_stewardship.a_ledger_number_i" +
+                                " AND a_cost_centre.a_cost_centre_code_c = a_ich_stewardship.a_cost_centre_code_c " +
+                                " AND a_cost_centre.a_cost_centre_type_c = '" + MFinanceConstants.FOREIGN_CC_TYPE + "'" +
+                                " GROUP BY CostCentreCode, CostCentreName " +
+                                " ORDER BY CostCentreCode";
                     }
-                    else
+                    else  // if past year
                     {
-                        StewardshipFilter += " AND a_ich_stewardship.a_ich_number_i = " + IchNumber;
+                        string ActualCurrency = string.Empty;
+
+                        if (BaseCurrency)
+                        {
+                            ActualCurrency = "a_actual_base_n";
+                        }
+                        else
+                        {
+                            ActualCurrency = "a_actual_intl_n";
+                        }
+
+                        string Actual = "GLMP1." + ActualCurrency;
+
+                        // if period is not 1 then we need to subract the actual for the previous period from the actual for the current period
+                        if (period > 1)
+                        {
+                            Actual = "(" + Actual + " - GLMP2." + ActualCurrency + ")";
+                        }
+
+                        // obtain accounts that report to account INC
+                        string IncomeAccountsString =
+                            GetFormattedReportingAccounts(LedgerNumber, MFinanceConstants.INCOME_HEADING, AccountHierarchyCode);
+
+                        // obtain accounts that report to account EXP
+                        string ExpenseAccountsString =
+                            GetFormattedReportingAccounts(LedgerNumber, MFinanceConstants.EXPENSE_HEADING, AccountHierarchyCode);
+
+                        Query = "SELECT" +
+                                " a_cost_centre.a_cost_centre_code_c AS CostCentreCode, " +
+                                " a_cost_centre.a_cost_centre_name_c AS CostCentreName, " +
+
+                                /* Revenue: Income received for the foreign ledger. */
+                                " (SUM(CASE WHEN GLM.a_account_code_c IN (" + IncomeAccountsString + ")" +
+                                " THEN " + Actual + " ELSE 0 END)) AS Income, " +
+
+                                /* Expenses: Fees & other expenses charged to the foreign ledger. */
+
+                                // Get "Direct Transfer" information. Set up for money that is not sent
+                                // through the clearing house but directly to a field. Really an expense account.
+                                " (SUM(CASE WHEN GLM.a_account_code_c = '" + MFinanceConstants.DIRECT_XFER_ACCT + "'" +
+                                " THEN " + Actual + " ELSE 0 END)) AS Xfer, " +
+
+                                // Get other expense information. Lookup in the gl master file the
+                                // summary heading of total EXPENSES for the entire cost centre.
+                                " ((SUM(CASE WHEN GLM.a_account_code_c IN (" + ExpenseAccountsString + ")" +
+                                " THEN " + Actual + " ELSE 0 END)) - " +
+                                // Subtract "Direct Transfer" information.
+                                " (SUM(CASE WHEN GLM.a_account_code_c = '" + MFinanceConstants.DIRECT_XFER_ACCT + "'" +
+                                " THEN " + Actual + " ELSE 0 END)) - " +
+                                // Subtract "ICH Settlement" information. The account used to balance out each foreign cost centre at the period end.
+                                // Set up as an expense account and thus must be removed from the total expenses.
+                                " (SUM(CASE WHEN GLM.a_account_code_c = '" + MFinanceConstants.ICH_ACCT_SETTLEMENT + "'" +
+                                " THEN " + Actual + " ELSE 0 END))) " + " AS Expense " +
+
+                                " FROM a_cost_centre" +
+
+                                " INNER JOIN a_general_ledger_master AS GLM" +
+                                " ON GLM.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c" +
+                                " AND GLM.a_account_code_c IN (" + IncomeAccountsString + ", " + ExpenseAccountsString + ", '" +
+                                MFinanceConstants.DIRECT_XFER_ACCT + "', '" + MFinanceConstants.ICH_ACCT_SETTLEMENT + "')" +
+                                " AND GLM.a_year_i = " + Year +
+
+                                " INNER JOIN a_general_ledger_master_period AS GLMP1" +
+                                " ON GLMP1.a_glm_sequence_i = GLM.a_glm_sequence_i" +
+                                " AND GLMP1.a_period_number_i = " + period;
+
+                        // if needed also get the GLMP record for the previous period
+                        if (period > 1)
+                        {
+                            Query += " INNER JOIN a_general_ledger_master_period AS GLMP2" +
+                                     " ON GLMP2.a_glm_sequence_i = GLM.a_glm_sequence_i" +
+                                     " AND GLMP2.a_period_number_i = " + (period - 1);
+                        }
+
+                        Query += " WHERE " +
+                                 " a_cost_centre.a_ledger_number_i = " + LedgerNumber +
+                                 " AND a_cost_centre.a_cost_centre_type_c = '" + MFinanceConstants.FOREIGN_CC_TYPE + "'" +
+                                 " GROUP BY CostCentreCode, CostCentreName " +
+                                 " ORDER BY CostCentreCode";
                     }
 
-                    String Query = "SELECT" +
-                                   " a_ich_stewardship.a_cost_centre_code_c AS CostCentreCode, " +
-                                   " a_cost_centre.a_cost_centre_name_c AS CostCentreName, " +
-                                   " sum(a_ich_stewardship.a_income_amount_n) AS Income, " +
-                                   " sum(a_ich_stewardship.a_expense_amount_n) AS Expense, " +
-                                   " sum(a_ich_stewardship.a_direct_xfer_amount_n) AS Xfer," +
-                                   " sum(a_ich_stewardship.a_income_amount_intl_n) AS IncomeIntl, " +
-                                   " sum(a_ich_stewardship.a_expense_amount_intl_n) AS ExpenseIntl, " +
-                                   " sum(a_ich_stewardship.a_direct_xfer_amount_intl_n) AS XferIntl " +
-                                   " FROM a_ich_stewardship, a_cost_centre WHERE " +
-                                   StewardshipFilter +
-                                   " AND a_cost_centre.a_ledger_number_i = a_ich_stewardship.a_ledger_number_i" +
-                                   " AND a_cost_centre.a_cost_centre_code_c = a_ich_stewardship.a_cost_centre_code_c " +
-                                   " GROUP BY CostCentreCode, CostCentreName " +
-                                   " ORDER BY CostCentreCode";
                     TLogging.Log(Catalog.GetString(""), TLoggingType.ToStatusBar);
                     resultsTable = DbAdapter.RunQuery(Query, "Stewardship", Transaction);
                 }); // Get NewOrExisting AutoReadTransaction

@@ -52,6 +52,8 @@ OpenPetra:
                         ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from a file or satellite database}
                     Subscriptions: {Label=Subscriptions}
                         CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions, Label=Cancel Subscriptions, Description=Cancel all expired Subscriptions}
+                    Addresses: {Label=Addresses}
+                        DuplicateAddressCheck: {ActionOpenScreen=TFrmDuplicateAddressCheck, Label=Duplicate Address Check, Description=Search addresses for possible duplicates}
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster, Singleton=true}

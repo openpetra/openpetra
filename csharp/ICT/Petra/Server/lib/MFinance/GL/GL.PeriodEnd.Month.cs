@@ -427,21 +427,24 @@ namespace Ict.Petra.Server.MFinance.GL
                             aSuspenseAccountRow.SuspenseAccountCode,
                             FledgerInfo.CurrentFinancialYear);
 
-                        TGlmpInfo get_GLMp_Info = new TGlmpInfo(FledgerInfo.LedgerNumber);
-                        get_GLMp_Info.LoadBySequence(get_GLM_Info.Sequence, FledgerInfo.CurrentPeriod);
-
-                        if (get_GLMp_Info.RowExists && (get_GLMp_Info.ActualBase != 0))
+                        if (get_GLM_Info.GLMExists)
                         {
-                            TVerificationResult tvr = new TVerificationResult(
-                                Catalog.GetString("Non Zero Suspense Account found"),
-                                String.Format(Catalog.GetString("Suspense account {0} has the balance value {1}. It is required to be zero."),
-                                    getSuspenseAccountInfo.ToString(),
-                                    get_GLMp_Info.ActualBase), "",
-                                TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Critical);
-                            FverificationResults.Add(tvr);
+                            TGlmpInfo get_GLMp_Info = new TGlmpInfo(FledgerInfo.LedgerNumber);
+                            get_GLMp_Info.LoadBySequence(get_GLM_Info.Sequence, FledgerInfo.CurrentPeriod);
 
-                            FHasCriticalErrors = true;
-                            FverificationResults.Add(tvr);
+                            if (get_GLMp_Info.RowExists && (get_GLMp_Info.ActualBase != 0))
+                            {
+                                TVerificationResult tvr = new TVerificationResult(
+                                    Catalog.GetString("Non Zero Suspense Account found"),
+                                    String.Format(Catalog.GetString("Suspense account {0} has the balance value {1}. It is required to be zero."),
+                                        getSuspenseAccountInfo.ToString(),
+                                        get_GLMp_Info.ActualBase), "",
+                                    TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Critical);
+                                FverificationResults.Add(tvr);
+
+                                FHasCriticalErrors = true;
+                                FverificationResults.Add(tvr);
+                            }
                         }
                     }
                 }

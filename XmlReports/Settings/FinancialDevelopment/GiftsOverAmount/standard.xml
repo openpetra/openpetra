@@ -13,7 +13,7 @@
   <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
   <Parameter id="param_ytd" column="0" value="eString:false" />
   <Parameter id="param_calculation" column="1" value="eString:Motivation Detail" />
-  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
   <Parameter id="param_ytd" column="1" value="eString:false" />
   <Parameter id="param_calculation" column="2" value="eString:Gift Recipient" />
   <Parameter id="ColumnWidth" column="2" value="eInteger:8" />

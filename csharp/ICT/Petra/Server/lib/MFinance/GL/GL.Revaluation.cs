@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Data;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -121,7 +122,7 @@ namespace Ict.Petra.Server.MFinance.GL
             String ACostCentre)
         {
             F_LedgerNum = ALedgerNum;
-            F_CurrencyCode = AForeignCurrency;
+            F_CurrencyCode = AForeignCurrency.Distinct().ToArray();
             F_ExchangeRate = ANewExchangeRate;
             F_CostCentre = ACostCentre;
             FVerificationCollection = new TVerificationResultCollection();
