@@ -10554,6 +10554,7 @@
                 type="varchar"
                 descr=""
                 format="X(8)"
+                notnull="yes"
                 label="Reference"/>
     <tablefield name="a_date_of_entry_d"
                 type="date"
@@ -12335,6 +12336,7 @@
                 type="varchar"
                 descr="Reference number/code for the transaction"
                 format="X(50)"
+                notnull="yes"
                 label="Reference"
                 help="(Optional) Enter a reference code."/>
     <tablefield name="a_source_reference_c"

@@ -280,7 +280,6 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         TLedgerInfo FledgerInfo;
         TAccountInfo FaccountInfo;
-        string FstrYearEnd = Catalog.GetString("YEAR-END");
 
         /// <summary>
         ///
@@ -533,12 +532,12 @@ namespace Ict.Petra.Server.MFinance.GL
                                 yearEndBatch.AddBaseCurrencyTransaction(
                                     accountCode, CCRow.CostCentreCode,
                                     String.Format(narrativeMessage, CCRow.CostCentreCode, accountCode, DestCC, CCRow.RetEarningsAccountCode),
-                                    FstrYearEnd, !isDebit, TransactionAmount);
+                                    "YEAR-END", !isDebit, TransactionAmount);
 
                                 yearEndBatch.AddBaseCurrencyTransaction(
                                     CCRow.RetEarningsAccountCode, DestCC,
                                     String.Format(narrativeMessage, CCRow.CostCentreCode, accountCode, DestCC, CCRow.RetEarningsAccountCode),
-                                    FstrYearEnd, isDebit, TransactionAmount);
+                                    "YEAR-END", isDebit, TransactionAmount);
                             }
                         } // foreach Account
 

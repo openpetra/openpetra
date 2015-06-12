@@ -1541,8 +1541,8 @@ namespace Ict.Petra.Server.MFinance.Common
         //
         // April 2015, Tim Ingham:
         //
-        // NOTE that the full summarization that includes all the summary levels is to be discontinued,
-        // since our reports only use the posting levels and calculate the summaries on the fly.
+        // NOTE that the full summarization that includes all the summary levels has been discontinued,
+        // since the Open Petra reports only use the posting levels and calculate the summaries on the fly.
         // This makes Ledger posting MUCH faster.
         //
         // The full SummarizeData method, and its supporting CalculateTrees method, is still present,
@@ -1571,8 +1571,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
             #endregion Validate Arguments
 
-            // We need the tree, because of the cost centre tree, which is not calculated by the balance sheet and other reports.
-            // for testing the balances, we don't need to calculate the whole tree
             if (ACalculatePostingTree)
             {
                 TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: CalculateTrees...");
@@ -1897,7 +1895,7 @@ namespace Ict.Petra.Server.MFinance.Common
                             mainDS.ThrowAwayAfterSubmitChanges = true;
                             GLBatchTDSAccess.SubmitChanges(mainDS);
 
-                            SummarizeInternal(ALedgerNumber, postingDS, PostingLevel, BatchPeriod, true);
+                            SummarizeInternal(ALedgerNumber, postingDS, PostingLevel, BatchPeriod, false); // No summarisation is performed, from April 2015, Tim Ingham
 
                             postingDS.ThrowAwayAfterSubmitChanges = true;
                             SubmitChanges(postingDS);

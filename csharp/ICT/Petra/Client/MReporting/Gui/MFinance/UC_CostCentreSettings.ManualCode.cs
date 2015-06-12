@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (rbtAllCostCentres.Checked || rbtAllActiveCostCentres.Checked)
             {
-                CostCentreListTitle = clbCostCentres.GetAllStringList();
+                CostCentreListTitle = clbCostCentres.GetAllStringList(false);
             }
             else
             {

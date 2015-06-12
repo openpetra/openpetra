@@ -561,7 +561,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             TDBTransaction Transaction = null;
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
-            string Currency = Currency = AParameters["param_currency"].ToString().ToUpper() == "BASE" ? "a_gift_amount_n" : "a_gift_amount_intl_n";
+            string Currency = AParameters["param_currency"].ToString().ToUpper() == "BASE" ? "a_gift_amount_n" : "a_gift_amount_intl_n";
 
             // create new datatable
             DataTable Results = new DataTable();

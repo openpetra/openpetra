@@ -728,7 +728,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
 
-
                 // perform checks that include 'Start Date' ----------------------------------------------------------------
                 if (chkChangeStartDate.Checked)
                 {
@@ -744,9 +743,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                             {
                                 VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                                                         (ARow.StartDate, ARow.ExpiryDate,
-                                                         ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                                                         this, ValidationColumn, ValidationControlsData.ValidationControl);
+                                                         (ARow.StartDate,
+                                                         ARow.ExpiryDate,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
 
                                 // Handle addition to/removal from TVerificationResultCollection
                                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
@@ -761,9 +764,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                             {
                                 VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                                                         (ARow.StartDate, ARow.SubscriptionRenewalDate,
-                                                         ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                                                         this, ValidationColumn, ValidationControlsData.ValidationControl);
+                                                         (ARow.StartDate,
+                                                         ARow.SubscriptionRenewalDate,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
 
                                 // Handle addition to/removal from TVerificationResultCollection
                                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
@@ -778,9 +785,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                             {
                                 VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                                                         (ARow.StartDate, ARow.DateCancelled,
-                                                         ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                                                         this, ValidationColumn, ValidationControlsData.ValidationControl);
+                                                         (ARow.StartDate,
+                                                         ARow.DateCancelled,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
 
                                 // Handle addition to/removal from TVerificationResultCollection
                                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
@@ -795,9 +806,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                             {
                                 VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                                                         (ARow.StartDate, ARow.DateNoticeSent,
-                                                         ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                                                         this, ValidationColumn, ValidationControlsData.ValidationControl);
+                                                         (ARow.StartDate,
+                                                         ARow.DateNoticeSent,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
 
                                 // Handle addition to/removal from TVerificationResultCollection
                                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
@@ -812,9 +827,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                             {
                                 VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                                                         (ARow.StartDate, ARow.FirstIssue,
-                                                         ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                                                         this, ValidationColumn, ValidationControlsData.ValidationControl);
+                                                         (ARow.StartDate,
+                                                         ARow.FirstIssue,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
 
                                 // Handle addition to/removal from TVerificationResultCollection
                                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
@@ -829,9 +848,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                             {
                                 VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                                                         (ARow.StartDate, ARow.LastIssue,
-                                                         ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                                                         this, ValidationColumn, ValidationControlsData.ValidationControl);
+                                                         (ARow.StartDate,
+                                                         ARow.LastIssue,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
 
                                 // Handle addition to/removal from TVerificationResultCollection
                                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
@@ -864,9 +887,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                             {
                                 VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                                                         (ARow.SubscriptionRenewalDate, ARow.ExpiryDate,
-                                                         ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                                                         this, ValidationColumn, ValidationControlsData.ValidationControl);
+                                                         (ARow.SubscriptionRenewalDate,
+                                                         ARow.ExpiryDate,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
 
                                 // Handle addition to/removal from TVerificationResultCollection
                                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
@@ -881,9 +908,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                             {
                                 VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                                                         (ARow.SubscriptionRenewalDate, ARow.DateNoticeSent,
-                                                         ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                                                         this, ValidationColumn, ValidationControlsData.ValidationControl);
+                                                         (ARow.SubscriptionRenewalDate,
+                                                         ARow.DateNoticeSent,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
 
                                 // Handle addition to/removal from TVerificationResultCollection
                                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
@@ -1003,7 +1034,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void PublicationStatusChanged(object sender, EventArgs e)
         {
-            if (   !(this.cmbPSubscriptionSubscriptionStatus.GetSelectedString() == MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED)
+            if (!(this.cmbPSubscriptionSubscriptionStatus.GetSelectedString() == MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED)
                 && !(this.cmbPSubscriptionSubscriptionStatus.GetSelectedString() == MPartnerConstants.SUBSCRIPTIONS_STATUS_EXPIRED))
             {
                 /* CANCELLED or EXPIRED */
@@ -1013,7 +1044,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 {
                     chkChangeReasonSubsCancelledCode.Checked = false;
                 }
-                
+
                 /* clear any previously supplied Date Ended */
                 if (chkChangeDateCancelled.Checked)
                 {

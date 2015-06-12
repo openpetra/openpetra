@@ -500,31 +500,6 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// </summary>
-        /// <returns></returns>
-        public string SetCarryForwardAccount()
-        {
-            FAccountRow = null;
-
-            if (FAccountPropertyHandler == null)
-            {
-                FAccountPropertyHandler = new THandleAccountPropertyInfo(FLedgerInfo);
-            }
-
-            string result = FAccountPropertyHandler.GetAccountCode("CARRYFORWARDCC");
-
-            string[] arrStrHelp = result.Split(new Char[] { ',' });
-
-            if (arrStrHelp.Length < 2)
-            {
-                return "";
-            }
-
-            AccountCode = arrStrHelp[0];
-            return arrStrHelp[1];
-        }
-
-        /// <summary>
         /// The Account code can be read and the result is the account code of the row
         /// which was selected before. <br />
         /// The Account can be written and this will change the selected row without any

@@ -79,12 +79,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             Int32 ParamNestingDepth = 99;
             String DepthOption = paramsDictionary["param_depth"].ToString();
 
-            if (DepthOption == "summary")
+            if (DepthOption == "Summary")
             {
                 ParamNestingDepth = 2;
             }
 
-            if (DepthOption == "standard")
+            if (DepthOption == "Standard")
             {
                 ParamNestingDepth = 3;
             }

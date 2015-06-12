@@ -644,7 +644,6 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ASubSystemCode"></param>
         public static void InitialiseTransactionTypeList(ref TCmbAutoPopulated AControl, Int32 ALedgerNumber, string ASubSystemCode)
         {
-            // TODO: use cached table for transaction types? use filter to get only appropriate types for subsystem?
             TTypedDataTable Table;
 
             TRemote.MCommon.DataReader.WebConnectors.GetData(TTypedDataTable.GetTableNameSQL(ATransactionTypeTable.TableId),
@@ -656,8 +655,12 @@ namespace Ict.Petra.Client.MFinance.Logic
                 },
                 out Table);
 
+            //
+            // REVAL is not to be offered to the user as an option:
+            Table.DefaultView.RowFilter = "a_transaction_type_code_c <> 'REVAL'";
+
             AControl.InitialiseUserControl(
-                Table,
+                Table.DefaultView.ToTable(),
                 ATransactionTypeTable.GetTransactionTypeCodeDBName(),
                 ATransactionTypeTable.GetTransactionTypeDescriptionDBName(),
                 null);

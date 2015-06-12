@@ -101,9 +101,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
+            String paramFields = clbFields.GetCheckedStringList(true);
+
             if ((AReportAction == TReportActionEnum.raGenerate)
                 && rbtSelectedFields.Checked
-                && (clbFields.GetCheckedStringList().Length == 0))
+                && (paramFields.Length == 0))
             {
                 TVerificationResult VerificationMessage = new TVerificationResult(
                     Catalog.GetString("Please select at least one field."),
@@ -113,8 +115,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if ((AReportAction == TReportActionEnum.raGenerate) && (rbtAllFields.Checked))
             {
-                ACalc.AddParameter("param_clbFields", this.clbFields.GetAllStringList());
+                paramFields = clbFields.GetAllStringList(true);
             }
+
+            paramFields = paramFields.Replace("\"", "'");           // single quotes for SQL field names.
+            ACalc.AddParameter("param_clbFields", paramFields);
 
             if ((AReportAction == TReportActionEnum.raGenerate)
                 && (dtpFromDate.Date > dtpToDate.Date))

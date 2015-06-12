@@ -184,8 +184,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     String Tbl = StringHelper.GetNextCSV(ref ADataSetFilterCsv, ",", "");
                     String[] part = Tbl.Split('/');
                     DataTable NewTbl = FDbAdapter.RunQuery(part[1], part[0], Transaction);
-                    //              MainDs.Tables[part[0]].Merge(FDbAdapter.RunQuery(part[1], part[0], Transaction));
-
                     MainDs.Merge(NewTbl);
                 }
 

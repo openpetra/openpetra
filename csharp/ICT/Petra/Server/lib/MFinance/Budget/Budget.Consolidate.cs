@@ -347,16 +347,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// </summary>
         private static void PostBudget(int ALedgerNumber, ABudgetRow ABudgetRow, List <ABudgetPeriodRow>ABudgetPeriodRows)
         {
-            //gb5300.p
-            string AccountCode = ABudgetRow.AccountCode;
-
-            string CostCentreList = ABudgetRow.CostCentreCode;              /* posting CC and parents */
-
-            //Populate list of affected Cost Centres
-            CostCentreParentsList(ALedgerNumber, ref CostCentreList);
-
             //Locate the row for the current account
-            AAccountRow AccountRow = (AAccountRow)GLPostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, AccountCode });
+            AAccountRow AccountRow = (AAccountRow)GLPostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, ABudgetRow.AccountCode });
 
             GLPostingDS.AGeneralLedgerMaster.DefaultView.Sort = String.Format("{0},{1},{2},{3}",
                 AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
@@ -364,105 +356,34 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 AGeneralLedgerMasterTable.GetAccountCodeDBName(),
                 AGeneralLedgerMasterTable.GetCostCentreCodeDBName());
 
-            /* calculate values for budgets and store them in a temp table; uses lb_budget */
-            ProcessAccountParent(
-                ALedgerNumber,
-                AccountCode,
-                AccountRow.DebitCreditIndicator,
-                CostCentreList,
-                ABudgetRow,
-                ABudgetPeriodRows);
-        }
+            int glmRowIndex = GLPostingDS.AGeneralLedgerMaster.DefaultView.Find(new object[] {
+                    ALedgerNumber,
+                    ABudgetRow.Year,
+                    ABudgetRow.AccountCode,
+                    ABudgetRow.CostCentreCode
+                });
 
-        /// <summary>
-        /// Process the account code parent codes
-        /// </summary>
-        private static void ProcessAccountParent(
-            int ALedgerNumber,
-            string CurrAccountCode,
-            bool ADebitCreditIndicator,
-            string ACostCentreList,
-            ABudgetRow ABudgetRow,
-            List <ABudgetPeriodRow>ABudgetPeriods)
-        {
-            AAccountRow AccountRow = (AAccountRow)GLPostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, CurrAccountCode });
-
-            AAccountHierarchyDetailRow AccountHierarchyDetailRow = (AAccountHierarchyDetailRow)GLPostingDS.AAccountHierarchyDetail.Rows.Find(
-                new object[] { ALedgerNumber, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD, CurrAccountCode });
-
-            if (AccountHierarchyDetailRow != null)
+            if (glmRowIndex == -1)
             {
-                string AccountCodeToReportTo = AccountHierarchyDetailRow.AccountCodeToReportTo;
-
-                if ((AccountCodeToReportTo != null) && (AccountCodeToReportTo != string.Empty))
-                {
-                    /* Recursively call this procedure. */
-                    ProcessAccountParent(
+                TGLPosting.CreateGLMYear(ref GLPostingDS,
+                    ALedgerNumber,
+                    ABudgetRow.Year,
+                    ABudgetRow.AccountCode,
+                    ABudgetRow.CostCentreCode);
+                glmRowIndex = GLPostingDS.AGeneralLedgerMaster.DefaultView.Find(new object[] {
                         ALedgerNumber,
-                        AccountCodeToReportTo,
-                        ADebitCreditIndicator,
-                        ACostCentreList,
-                        ABudgetRow,
-                        ABudgetPeriods);
-                }
+                        ABudgetRow.Year,
+                        ABudgetRow.AccountCode,
+                        ABudgetRow.CostCentreCode
+                    });
             }
 
-            int DebitCreditMultiply = 1;             /* needed if the debit credit indicator is not the same */
+            int GLMSequence = ((AGeneralLedgerMasterRow)GLPostingDS.AGeneralLedgerMaster.DefaultView[glmRowIndex].Row).GlmSequence;
 
-            /* If the account has the same db/cr indicator as the original
-             *         account for which the budget was created, add the budget amount.
-             *         Otherwise, subtract. */
-            if (AccountRow.DebitCreditIndicator != ADebitCreditIndicator)
+            /* Update totals for the General Ledger Master period record. */
+            foreach (ABudgetPeriodRow BPR in ABudgetPeriodRows)
             {
-                DebitCreditMultiply = -1;
-            }
-
-            string[] CostCentres = ACostCentreList.Split(':');
-            string AccCode = AccountRow.AccountCode;
-
-            /* For each associated Cost Centre, update the General Ledger Master. */
-            foreach (string CostCentreCode in CostCentres)
-            {
-                int glmRowIndex = GLPostingDS.AGeneralLedgerMaster.DefaultView.Find(new object[] { ALedgerNumber, ABudgetRow.Year, AccCode,
-                                                                                                   CostCentreCode });
-
-                if (glmRowIndex == -1)
-                {
-                    TGLPosting.CreateGLMYear(ref GLPostingDS, ALedgerNumber, ABudgetRow.Year, AccCode, CostCentreCode);
-                    glmRowIndex = GLPostingDS.AGeneralLedgerMaster.DefaultView.Find(new object[] { ALedgerNumber, ABudgetRow.Year, AccCode,
-                                                                                                   CostCentreCode });
-                }
-
-                int GLMSequence = ((AGeneralLedgerMasterRow)GLPostingDS.AGeneralLedgerMaster.DefaultView[glmRowIndex].Row).GlmSequence;
-
-                /* Update totals for the General Ledger Master period record. */
-                foreach (ABudgetPeriodRow BPR in ABudgetPeriods)
-                {
-                    AddBudgetValue(GLMSequence, BPR.PeriodNumber, DebitCreditMultiply * BPR.BudgetBase);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Return the list of parent cost centre codes
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ACurrentCostCentreList"></param>
-        private static void CostCentreParentsList(int ALedgerNumber, ref string ACurrentCostCentreList)
-        {
-            string ParentCostCentre;
-            string CostCentreList = ACurrentCostCentreList;
-
-            ACostCentreRow CostCentreRow = (ACostCentreRow)GLPostingDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, ACurrentCostCentreList });
-
-            ParentCostCentre = CostCentreRow.CostCentreToReportTo;
-
-            while (ParentCostCentre != string.Empty)
-            {
-                ACostCentreRow CCRow = (ACostCentreRow)GLPostingDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, ParentCostCentre });
-
-                CostCentreList += ":" + CCRow.CostCentreCode;
-                ParentCostCentre = CCRow.CostCentreToReportTo;
+                AddBudgetValue(GLMSequence, BPR.PeriodNumber, BPR.BudgetBase);
             }
         }
 

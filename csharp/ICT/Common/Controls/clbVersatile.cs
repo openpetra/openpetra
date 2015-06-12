@@ -278,9 +278,9 @@ namespace Ict.Common.Controls
 
                                 ReturnValue += (OptionalQuote + Row[KeyColumn].ToString() + OptionalQuote);
                                 // This was changed from AddCsv because
-                            }                // I need it to consistently add quotes to all of the values in the list
-                        }                    // (Or no quotes would also be fine, but not some with and some without!)
-                    }                        // AddCsv Adds quotes if the string has leading zeroes,
+                            }   // I need it to consistently add quotes to all of the values in the list
+                        }       // (Or no quotes would also be fine, but not some with and some without!)
+                    }           // AddCsv Adds quotes if the string has leading zeroes,
 
                     // so for example it adds quotes to Cost Code "0300" but not 3000.
                     // Tim Ingham, Nov 2013, Jan 2014
@@ -291,29 +291,40 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This function returns the comma separated list of all row,
+        /// This function returns the comma separated list of all rows,
         /// identified by their codes (using FKeyColumns)
         ///
         /// </summary>
         /// <returns>String</returns>
-        public String GetAllStringList()
+        public String GetAllStringList(Boolean AddQuotes = false)
         {
-            String ReturnValue;
-
-            ReturnValue = "";
+            String ReturnValue = "";
+            Boolean RetEmpty = true;
+            String OptionalQuote = AddQuotes ? "\"" : "";
 
             if (FDataView != null)
             {
                 foreach (DataRowView Row in FDataView)
                 {
-                    // notice: the value in the string list might be in pairs, comma separated; addCSV will put quotes around it
-                    // eg. motivation group and detail
                     foreach (String KeyColumn in FKeyColumns)
                     {
-                        ReturnValue = StringHelper.AddCSV(ReturnValue, Row[KeyColumn].ToString());
-                    }
-                }
-            }
+                        if (!RetEmpty)
+                        {
+                            ReturnValue += ",";
+                        }
+
+                        RetEmpty = false;
+
+                        ReturnValue += (OptionalQuote + Row[KeyColumn].ToString() + OptionalQuote);
+                        // This was changed from AddCsv because
+                    }   // I need it to consistently add quotes to all of the values in the list
+
+                }       // (Or no quotes would also be fine, but not some with and some without!)
+
+            }           // AddCsv Adds quotes if the string has leading zeroes,
+
+            // so for example it adds quotes to Cost Code "0300" but not 3000.
+            // Tim Ingham, Apr 2015
 
             return ReturnValue;
         }

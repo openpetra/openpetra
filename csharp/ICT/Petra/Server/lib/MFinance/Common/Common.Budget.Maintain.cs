@@ -273,9 +273,12 @@ namespace Ict.Petra.Server.MFinance.Common
                     if (!((APeriodNumber == (ANumberAccountingPeriods + 1)) && incExpAccountFwdPeriod)
                         && !((APeriodNumber == (ANumberAccountingPeriods + 1)) && (ACurrentFinancialYear > AThisYear)))
                     {
-                        /* if it is an income expense acount, and we are in a forward period, nothing needs to be subtracted,
+                        /* if it is an income expense acount, and we are in period 13, nothing needs to be subtracted,
                          * because that was done in correcting the amount in the block above;
-                         * if we are in a previous year, in a forward period, don't worry about subtracting.
+                         * if we are in a previous year, in period 13, don't worry about subtracting.
+                         *
+                         * THIS IS CLEARLY INCORRECT - THE CONDITION ABOVE APPLIES *ONLY* IN THE FIRST FORWARDING PERIOD, NOT IN EVERY FORWARDING PERIOD.
+                         * IF THE METHOD IS ONLY CALLED FROM AUTOGENERATE BUDGETS, THIS IS PROBABLY INCONSEQUENTIAL.
                          */
                         currencyAmount -= GetActualInternal(ALedgerNumber,
                             AGLMSeqThisYear,

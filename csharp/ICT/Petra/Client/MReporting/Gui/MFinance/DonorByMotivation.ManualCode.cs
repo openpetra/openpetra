@@ -243,7 +243,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 if (AddedMotivationGroups.Count > 0)
                 {
-                    List <String>AllMotivationDetails = new List <String>(clbMotivationDetail.GetAllStringList().Split(','));
+                    List <String>AllMotivationDetails = new List <String>(clbMotivationDetail.GetAllStringList(false).Split(','));
 
                     /* Key contains two columns: Group and Detail code. Keys at odd positions are Group Code
                      * and at even positions Detail Code. Find added groups and add pair of group and detail code */

@@ -155,9 +155,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                         Row["KeyMin"] = mPartnerShortName;
                     }
                 }
-            }
+            } // foreach
 
-            ReportingEngine.RegisterData(FMainDS.AMotivationDetail, "MotivationDetail");
+            //
+            // Ensure the proper sorting for the printout:
+
+            FMainDS.AMotivationDetail.DefaultView.Sort = "a_motivation_group_code_c, a_motivation_detail_code_c";
+            ReportingEngine.RegisterData(FMainDS.AMotivationDetail.DefaultView.ToTable(), "MotivationDetail");
             TRptCalculator Calc = new TRptCalculator();
             ALedgerRow LedgerRow = FMainDS.ALedger[0];
             Calc.AddParameter("param_ledger_number_i", LedgerRow.LedgerNumber);
@@ -268,7 +272,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 {
                     AMotivationDetailFeeRow detailFeeRow = (AMotivationDetailFeeRow)rv.Row;
 
-                    if (StringHelper.StrSplit(clbDetailFeesPayable.GetAllStringList(), ",").Contains(detailFeeRow.FeeCode))
+                    if (StringHelper.StrSplit(clbDetailFeesPayable.GetAllStringList(false), ",").Contains(detailFeeRow.FeeCode))
                     {
                         FeesPayable = StringHelper.AddCSV(FeesPayable, detailFeeRow.FeeCode);
                     }
