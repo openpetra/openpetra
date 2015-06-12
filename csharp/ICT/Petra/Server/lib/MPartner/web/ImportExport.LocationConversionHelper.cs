@@ -86,7 +86,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             foreach (PPartnerLocationRow PartnerLocationDR in AMainDS.PPartnerLocation.Rows)
             {
-                PartnerLocationsDT = PartnerLocationsTables[PartnerLocationDR.PartnerKey % TPartnerContactDetails.NumberOfTables];
+                PartnerLocationsDT = PartnerLocationsTables[Math.Abs(PartnerLocationDR.PartnerKey) % TPartnerContactDetails.NumberOfTables];
 
                 // Phone Extension: Ignore if value in the dumped data is either null or 0
                 if (PartnerLocationDR.IsExtensionNull())
