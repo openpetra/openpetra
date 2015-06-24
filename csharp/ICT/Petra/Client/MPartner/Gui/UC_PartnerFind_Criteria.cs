@@ -1202,18 +1202,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (CriteriaValue != String.Empty)
                 {
                     // There is still a valid CriteriaValue
-                    FFindCriteriaDataTable.Rows[0].BeginEdit();
-                    ACriteriaControl.SelectedValue = Enum.GetName(typeof(TMatches), NewMatchValue);
-                    FFindCriteriaDataTable.Rows[0].EndEdit();
-
-                    //TODO: It seems databinding is broken on this control
-                    // this needs to happen in the SplitButton control really
-                    string fieldname = ((SplitButton)ACriteriaControl).DataBindings[0].BindingMemberInfo.BindingMember;
-                    FFindCriteriaDataTable.Rows[0][fieldname] = Enum.GetName(typeof(TMatches), NewMatchValue);
-
-                    //TODO: DataBinding is really doing strange things here; we have to
-                    //assign the just entered Text again, otherwise it is lost!!!
-                    ATextBox.Text = TextBoxText;
+                    PutNewMatchValueIntoFindCriteriaDT(ACriteriaControl, NewMatchValue, ATextBox, TextBoxText);
                 }
                 else
                 {
@@ -1221,6 +1210,29 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ATextBox.Text = String.Empty;
                 }
             }
+            else
+            {
+                // Ensure that 'BEGINS' is restored in case the user used the '*' joker before but
+                // has cleared it now!
+                PutNewMatchValueIntoFindCriteriaDT(ACriteriaControl, NewMatchValue, ATextBox, TextBoxText);
+            }
+        }
+
+        private void PutNewMatchValueIntoFindCriteriaDT(SplitButton ACriteriaControl, TMatches NewMatchValue,
+            TextBox ATextBox, string ATextBoxText)
+        {
+            FFindCriteriaDataTable.Rows[0].BeginEdit();
+            ACriteriaControl.SelectedValue = Enum.GetName(typeof(TMatches), NewMatchValue);
+            FFindCriteriaDataTable.Rows[0].EndEdit();
+
+            //TODO: It seems databinding is broken on this control
+            // this needs to happen in the SplitButton control really
+            string fieldname = ((SplitButton)ACriteriaControl).DataBindings[0].BindingMemberInfo.BindingMember;
+            FFindCriteriaDataTable.Rows[0][fieldname] = Enum.GetName(typeof(TMatches), NewMatchValue);
+
+            //TODO: DataBinding is really doing strange things here; we have to
+            //assign the just entered Text again, otherwise it is lost!!!
+            ATextBox.Text = ATextBoxText;
         }
 
         private void RemoveJokersFromTextBox(SplitButton ASplitButton,
@@ -2634,7 +2646,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 pnlLeftColumn.Controls.Clear();
             }
 
-            MatchButtonsSetting = TUserDefaults.GetBooleanDefault(TUserDefaults.PARTNER_FINDOPTIONS_SHOWMATCHBUTTONS, true);
+            // Always hide the 'match buttons' Controls as we don't have a replacement for the 'split button' Control that
+            // would be necessary to make those Buttons useful (Bug #4049)
+            //MatchButtonsSetting = TUserDefaults.GetBooleanDefault(TUserDefaults.PARTNER_FINDOPTIONS_SHOWMATCHBUTTONS, true);
+            MatchButtonsSetting = false;
 
             if (CriteriaFieldsRightControls.Count != 0)
             {
@@ -2663,23 +2678,25 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             foreach (Control TempControl in p.Controls)
             {
-                // tempcontroll
                 foreach (Control TempInnerControl in TempControl.Controls)
                 {
-                    // tempInnerControl
                     if (TempInnerControl.GetType() == typeof(SplitButton))
                     {
-                        // tempInnerControl.Type =      SplitButton
                         TempInnerControl.Visible = WithMatchButtons;
                     }
-
-                    // tempInnerControl.Type =     SplitButton
+                    else if (TempInnerControl.GetType() == typeof(TextBox))
+                    {
+                        if (!WithMatchButtons)
+                        {
+                            TempInnerControl.Width = TempInnerControl.Width + MatchButtonWidth + GapWidth - 2;
+                        }
+                        else
+                        {
+                            TempInnerControl.Width = 112;
+                        }
+                    }
                 }
-
-                // tempInnerControl
             }
-
-            // tempcontroll
         }
 
         /// <summary>
