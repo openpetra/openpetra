@@ -450,7 +450,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.btnLocationKey.Text = Catalog.GetString("Location Key");
-            this.chkWorkerFamOnly.Text = Catalog.GetString("Worker Families O&nly");
+            this.chkWorkerFamOnly.Text = Catalog.GetString("Worker Families Only");
             this.lblPartnerClass.Text = Catalog.GetString("Partner C&lass") + ":";
             this.txtPartnerKey.Text = Catalog.GetString("0000000000");
             this.lblPartnerKey.Text = Catalog.GetString("Partner &Key") + ":";
@@ -463,8 +463,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblAddress3.Text = Catalog.GetString("Address &3") + ":";
             this.lblAddress2.Text = Catalog.GetString("Address &2") + ":";
             this.lblEmail.Text = Catalog.GetString("&Email") + ":";
-            this.lblPartnerName.Text = Catalog.GetString("Pa&rtner Name") + ":";
-            this.lblPersonalName.Text = Catalog.GetString("Personal &(First) Name") + ":";
+            this.lblPartnerName.Text = Catalog.GetString("&Partner Name") + ":";
+            this.lblPersonalName.Text = Catalog.GetString("Personal (First) &Name") + ":";
             this.lblPreviousName.Text = Catalog.GetString("Previous Name") + ":";
             this.lblAddress1.Text = Catalog.GetString("Address &1") + ":";
             this.lblPostCode.Text = Catalog.GetString("P&ost Code") + ":";
