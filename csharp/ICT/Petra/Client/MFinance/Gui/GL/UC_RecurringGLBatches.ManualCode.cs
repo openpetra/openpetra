@@ -416,7 +416,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
 
-            txtDetailBatchControlTotal.HideLabel = true;
+            txtDetailBatchControlTotal.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
 
             LoadBatches(FLedgerNumber);
 

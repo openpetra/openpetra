@@ -80,14 +80,23 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             }
 
             // display currency (if currency code in PUnit has changed then use that over the currency code in PcConference)
-            if ((FMainDS.PUnit.Rows.Count == 0)
-                || (((PUnitRow)FMainDS.PUnit.Rows[0]).OutreachCostCurrencyCode == ((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode))
+            if (FMainDS.PUnit.Rows.Count == 0)
             {
                 cmbCurrency.SetSelectedString(((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode, -1);
             }
             else
             {
-                cmbCurrency.SetSelectedString(((PUnitRow)FMainDS.PUnit.Rows[0]).OutreachCostCurrencyCode, -1);
+                // There is a PUnit row
+                if ((((PUnitRow)FMainDS.PUnit.Rows[0]).OutreachCostCurrencyCode != ((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode)
+                    && (((PUnitRow)FMainDS.PUnit.Rows[0]).OutreachCostCurrencyCode != String.Empty))
+                {
+                    // It is probably more up to date
+                    cmbCurrency.SetSelectedString(((PUnitRow)FMainDS.PUnit.Rows[0]).OutreachCostCurrencyCode, -1);
+                }
+                else
+                {
+                    cmbCurrency.SetSelectedString(((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode, -1);
+                }
             }
 
             // set radio buttons and checkbox

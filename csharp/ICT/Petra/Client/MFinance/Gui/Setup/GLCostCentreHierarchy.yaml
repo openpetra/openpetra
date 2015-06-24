@@ -111,7 +111,7 @@ RootNode:
             Width:100
         txtDetailProjectConstraintAmount:
             Label: Max Spend
-            Format: Decimal(2)
+            Format: Currency
             Width:100
 
     Toolbar:

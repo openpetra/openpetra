@@ -393,6 +393,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 Catalog.GetString("At year end, how will this Cost Centre be rolled up to the Standard Cost Centre?"));
             FPetraUtilsObject.SetStatusBarText(chkChildrenLocked, Catalog.GetString("All children also have these Equity / Roll-up settings"));
             FIAmUpdating = 0;
+
+            ALedgerRow LedgerRow =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+            txtDetailProjectConstraintAmount.CurrencyCode = LedgerRow.BaseCurrency;
+
             FInitialised = true;
         }
 

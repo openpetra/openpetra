@@ -21,12 +21,12 @@ RootNode:
                 Row0: [txtCurrentPeriod] 
                 Row1: [txtLedgerNumber, txtBatchNumber]
                 Row2: [txtDebit, txtCredit, txtControl]
-        txtCurrentPeriod: {ReadOnly=true, Label=Current Period, Align=right, Unbound=true, SuppressChangeDetection=true}
+        txtCurrentPeriod: {ReadOnly=true, Label=Current Period, TextAlign=Right, Unbound=true, SuppressChangeDetection=true}
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true, SuppressChangeDetection=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true, SuppressChangeDetection=true}
-        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true, Format=Decimal, Width=150, SuppressChangeDetection=true}
-        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true, Format=Decimal, Width=150, SuppressChangeDetection=true}
-        txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Decimal, Width=147, SuppressChangeDetection=true}
+        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true, Format=Currency, AlwaysHideLabel=true, Width=150, SuppressChangeDetection=true}
+        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true, Format=Currency, AlwaysHideLabel=true, Width=150, SuppressChangeDetection=true}
+        txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Currency, AlwaysHideLabel=true, Width=147, SuppressChangeDetection=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlDetailButtons, grdDetails]
@@ -81,6 +81,6 @@ RootNode:
         cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList, OnChange=TransactionTypeCodeChanged}
         cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
-        txtDetailExchangeRateToBase: {Label=Exchange Rate to Base, ReadOnly=true, Validation=true, Format=Decimal(10), Width=130}
+        txtDetailExchangeRateToBase: {Label=Exchange Rate to Base, ReadOnly=true, Validation=true, Format=Decimal(10), Width=150}
         btnGetSetExchangeRate: {Label= Get/Set Exchange Rate}
         btnAddAllocations: {Action=actAddAllocations, Visible=false, Width=120}

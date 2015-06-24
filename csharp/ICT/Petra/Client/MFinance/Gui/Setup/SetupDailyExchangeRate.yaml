@@ -87,7 +87,7 @@ RootNode:
             Dock: Fill
             Columns: [DetailFromCurrencyCode, DetailToCurrencyCode, DetailDateEffectiveFrom, DetailTimeEffectiveFrom, DetailRateOfExchange, DetailJournalUsage, DetailGiftBatchUsage]
             CustomColumns:
-                DetailRateOfExchange: {Label=Rate of Exchange, Type=Currency(10)}
+                DetailRateOfExchange: {Label=Rate of Exchange, Type=Decimal(10)}
                 DetailTimeEffectiveFrom: {Label=Time, Type=ShortTime}
                 DetailJournalUsage: {Label=Journals}
                 DetailGiftBatchUsage: {Label=Gift Batches}
@@ -126,7 +126,7 @@ RootNode:
         chkHideOthers: {OnlySetOnce=true, CheckBoxAttachedLabel=right, Label=&Hide other 'To' currencies, Tooltip=Check to hide all 'To' currencies except the current one}
         dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate Effective, Validation=true}
         txtDetailTimeEffectiveFrom: {Label=Time Effective, Width=70, Type=ShortTime, Tooltip=The time the rate becomes effective on the specified date, Validation=true}
-        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100, Validation=true}
+        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), NullValueAllowed=true, Width=160, Validation=true}
         btnInvertExchangeRate: {Label=&Invert value, Tooltip=Click to set the inverse of the displayed rate of exchange}
         lblValueOneDirection: {ColSpan=2}
         lblValueOtherDirection: {ColSpan=2}

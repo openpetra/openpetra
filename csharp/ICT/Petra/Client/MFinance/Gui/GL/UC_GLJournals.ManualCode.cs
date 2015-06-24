@@ -76,6 +76,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         // Logic Objects
         private TUC_GLJournals_Cancel FCancelLogicObject = null;
 
+        /// <summary>Sets the ledger base currency</summary>
+        public string LedgerBaseCurrency
+        {
+            set
+            {
+                FLedgerBaseCurrency = value;
+            }
+        }
+
         /// <summary>
         /// WorkAroundInitialization
         /// </summary>
@@ -85,14 +94,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             cmbDetailTransactionCurrency.SelectedValueChanged += new System.EventHandler(ResetCurrencyExchangeRate);
             cmbDetailTransactionCurrency.cmbCombobox.StickySelectedValueChanged += new EventHandler(StickyCurrencyChange);
             btnGetSetExchangeRate.Click += new EventHandler(SetExchangeRateValue);
-        }
-
-        private void RunOnceOnParentActivationManual()
-        {
-            if (FMainDS != null)
-            {
-                FLedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
-            }
         }
 
         /// <summary>
@@ -204,6 +205,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             UpdateRecordNumberDisplay();
             FFilterAndFindObject.SetRecordNumberDisplayProperties();
+
+            txtControl.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
+            txtCredit.CurrencyCode = FLedgerBaseCurrency;
+            txtDebit.CurrencyCode = FLedgerBaseCurrency;
 
             FJournalsLoaded = true;
         }

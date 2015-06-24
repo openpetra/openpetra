@@ -122,9 +122,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.SetStatusBarText(grdDetails, Catalog.GetString("Use the mouse or navigation keys to select a data row to view"));
 
             // set the currency code to be blank initially
-            txtGiftTotal.CurrencyCode = "   ";
+            txtGiftTotal.CurrencyCode = String.Empty;
+            txtGiftTotal.NumberValueDecimal = 0.0m;
 
             lblRecordCounter.Text = "";
+            pnlPostedOnlyNote.Top = 0;
 
             // correct the tab indexes
             int TabOrder = dtpDateFrom.TabIndex;
@@ -521,10 +523,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 txtNumberOfGifts.Text = (grdDetails.Rows.Count - 1).ToString();
+
+                txtGiftTotal.CurrencyCode = FMainDS.ALedger[0].BaseCurrency;
             }
 
             txtGiftTotal.NumberValueDecimal = sum;
-            txtGiftTotal.CurrencyCode = FMainDS.ALedger[0].BaseCurrency;
             txtGiftTotal.ReadOnly = true;
         }
 

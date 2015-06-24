@@ -36,7 +36,7 @@ RootNode:
         dtpEffectiveDate: {Label=Enter the GL Batch Date to use, OnLeave=CheckBatchEffectiveDate, Validation=true}
         txtCurrencyCodeFrom: {Label=From, ReadOnly=true}
         txtCurrencyCodeTo: {Label=To, ReadOnly=true}
-        txtExchangeRateToBase: {Label=Exchange Rate, ReadOnly=true, Type=Decimal}
+        txtExchangeRateToBase: {Label=Exchange Rate, ReadOnly=true, Format=Decimal(10), Width=150}
         btnGetSetExchangeRate: {Label=..., Height=22, Action=actSetExchangeRate}
     Toolbar:
         

@@ -510,6 +510,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FSelectedBatchNumber = -1;
                 UpdateChangeableStatus();
+                txtDetailHashTotal.CurrencyCode = String.Empty;
                 return;
             }
 

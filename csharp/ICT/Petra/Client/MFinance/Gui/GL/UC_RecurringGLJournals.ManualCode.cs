@@ -86,10 +86,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunOnceOnParentActivationManual()
         {
-            if (FMainDS != null)
-            {
-                FLedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
-            }
+            ALedgerRow LedgerRow =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+
+            txtCredit.CurrencyCode = LedgerRow.BaseCurrency;
+            txtDebit.CurrencyCode = LedgerRow.BaseCurrency;
+            txtControl.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
         }
 
         /// <summary>

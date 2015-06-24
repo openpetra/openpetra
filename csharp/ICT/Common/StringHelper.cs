@@ -48,6 +48,28 @@ namespace Ict.Common
         /// </summary>
         public static readonly string CSV_STRING_FORMAT_ERROR = Catalog.GetString(">>STRING FORMAT ERROR<<");
 
+        #region User Default Keys used in Ict.Common
+
+        /// <summary>Show money amounts in currency format on finance screens (default is true)</summary>
+        public const String FINANCE_CURRENCY_FORMAT_AS_CURRENCY = "FinanceShowCurrencyAsCurrency";
+
+        /// <summary>Show other decimal entities in currency format on finance screens (default is true)</summary>
+        public const String FINANCE_DECIMAL_FORMAT_AS_CURRENCY = "FinanceShowDecimalAsCurrency";
+
+        /// <summary>Show thousands separator for financial entities on finance screens (default is true)</summary>
+        public const String FINANCE_CURRENCY_SHOW_THOUSANDS = "FinanceCurrencyShowThousands";
+
+        /// <summary>Show money amounts in currency format on partner/conference/personnel screens (default is false)</summary>
+        public const String PARTNER_CURRENCY_FORMAT_AS_CURRENCY = "PartnerShowCurrencyAsCurrency";
+
+        /// <summary>Show other decimal entities in currency format on partner screens (default is false)</summary>
+        public const String PARTNER_DECIMAL_FORMAT_AS_CURRENCY = "PartnerShowDecimalAsCurrency";
+
+        /// <summary>Show thousands separator for financial entities on partner/conference/personnel screens (default is true)</summary>
+        public const String PARTNER_CURRENCY_SHOW_THOUSANDS = "PartnerCurrencyShowThousands";
+
+        #endregion
+
         /// <summary>
         /// convert an array of strings into a StringCollection
         /// </summary>

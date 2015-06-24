@@ -37,7 +37,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     /// generator for the SourceGrid data grid
     public class SourceGridGenerator : TControlGenerator
     {
-        Int16 FDecimalPrecision = 2;
+        //Int16 FDecimalPrecision = 2;
 
         private Int16 FColumnIndex = -1;
         private string FPrevControlName = String.Empty;
@@ -73,7 +73,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string TrueString = string.Empty;
             string FalseString = string.Empty;
             string HeaderTooltip = (AHeaderTooltip == string.Empty) ? ALabel : AHeaderTooltip;
+            Int16 DecimalPrecision = 2;
 
+            // Valid types are: Text, DateTime, Currency, Decimal, Boolean, PartnerKey and Short/LongTime
             if (AColumnType.Contains("DateTime"))
             {
                 ColumnType = "Date";
@@ -82,23 +84,49 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 ColumnType = "Currency";
 
-                if (AColumnType.Contains("Currency("))
+                if (AColumnType.Contains("Currency(") && AColumnType.Contains(")"))
                 {
                     PotentialDecimalPrecision = AColumnType.Substring(AColumnType.IndexOf('(') + 1,
                         AColumnType.IndexOf(')') - AColumnType.IndexOf('(') - 1);
-
-//Console.WriteLine("AddColumnToGrid: PotentialDecimalPrecision: " + PotentialDecimalPrecision);
 
                     if (PotentialDecimalPrecision != String.Empty)
                     {
                         try
                         {
-                            FDecimalPrecision = Convert.ToInt16(PotentialDecimalPrecision);
+                            DecimalPrecision = Convert.ToInt16(PotentialDecimalPrecision);
                         }
                         catch (System.FormatException)
                         {
                             throw new ApplicationException(
                                 "Grid Column with currency formatting: The specifier for the currency precision '" + PotentialDecimalPrecision +
+                                "' is not a number!");
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
+                    }
+                }
+            }
+            else if (AColumnType.Contains("Decimal"))
+            {
+                ColumnType = "Decimal";
+
+                if (AColumnType.Contains("Decimal(") && AColumnType.Contains(")"))
+                {
+                    PotentialDecimalPrecision = AColumnType.Substring(AColumnType.IndexOf('(') + 1,
+                        AColumnType.IndexOf(')') - AColumnType.IndexOf('(') - 1);
+
+                    if (PotentialDecimalPrecision != String.Empty)
+                    {
+                        try
+                        {
+                            DecimalPrecision = Convert.ToInt16(PotentialDecimalPrecision);
+                        }
+                        catch (System.FormatException)
+                        {
+                            throw new ApplicationException(
+                                "Grid Column with decimal formatting: The specifier for the decimal precision '" + PotentialDecimalPrecision +
                                 "' is not a number!");
                         }
                         catch (Exception)
@@ -144,30 +172,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ATableName + ".Column" +
                     AColumnName + ", Catalog.GetString(\"" + TrueString + "\"), Catalog.GetString(\"" + FalseString + "\"));" + Environment.NewLine);
             }
-            else if ((ColumnType != "Currency")
-                     || ((ColumnType == "Currency") && (FDecimalPrecision == 2)))
+            else if (((ColumnType == "Currency") || (ColumnType == "Decimal")) && (DecimalPrecision != 2))
             {
+                // Currency or decimal with non-standard decimal digits
                 writer.Template.AddToCodelet("INITMANUALCODE",
                     AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
-                    AColumnName + ");" + Environment.NewLine);
-            }
-            else if (ColumnType == "PartnerKey")
-            {
-                writer.Template.AddToCodelet("INITMANUALCODE",
-                    AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
-                    "FMainDS." +
-                    ATableName + ".Column" +
-                    AColumnName + ");" + Environment.NewLine);
+                    AColumnName + ", " + DecimalPrecision.ToString() + ");" + Environment.NewLine);
             }
             else
             {
+                // General case for most types
                 writer.Template.AddToCodelet("INITMANUALCODE",
                     AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
-                    AColumnName + ", " + FDecimalPrecision.ToString() + ");" + Environment.NewLine);
+                    AColumnName + ");" + Environment.NewLine);
             }
 
             // Are we still working with the same grid?  If not reset our tracking variables back to the first column
@@ -308,7 +329,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if (field != null)
                     {
                         AddColumnToGrid(writer, ctrl.controlName,
-                            field.iDecimals == 10 && field.iLength == 24 ? "Currency" : field.GetDotNetType(),
+                            field.iDecimals == 10 && field.iLength == 24 ? "Decimal" : field.GetDotNetType(),
                             field.strLabel.Length > 0 ? field.strLabel : field.strName,
                             String.Empty,
                             TTable.NiceTableName(field.strTableName),

@@ -203,6 +203,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FPublicationCostDT = (PPublicationCostTable)TDataCache.TMPartner.GetCacheableSubscriptionsTable(
                 TCacheableSubscriptionsTablesEnum.PublicationCostList);
+            txtPublicationCost.CurrencyCode = String.Empty;
         }
 
         private void GetDataFromControlsManual(PSubscriptionRow ARow)

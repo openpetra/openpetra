@@ -128,6 +128,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FCurrentLedgerPeriod = LedgerRow.CurrentPeriod;
             FLoadAndFilterLogicObject.CurrentLedgerYear = FCurrentLedgerYear;
             FLoadAndFilterLogicObject.CurrentLedgerPeriod = FCurrentLedgerPeriod;
+
+            TFrmGLBatch myParentForm = (TFrmGLBatch) this.ParentForm;
+            myParentForm.GetJournalsControl().LedgerBaseCurrency = LedgerRow.BaseCurrency;
         }
 
         /// <summary>
@@ -510,9 +513,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
 
-            txtDetailBatchControlTotal.HideLabel = true;
-
             LoadBatchesForCurrentYear();
+
+            txtDetailBatchControlTotal.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
 
             SetInitialFocus();
 

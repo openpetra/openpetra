@@ -21,9 +21,9 @@ RootNode:
                 Row1: [txtDebit, txtCredit, txtControl]
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true, SuppressChangeDetection=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true, SuppressChangeDetection=true}
-        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true, Format=Decimal, Width=150, SuppressChangeDetection=true}
-        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true, Format=Decimal, Width=150, SuppressChangeDetection=true}
-        txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Decimal, Width=147, SuppressChangeDetection=true}
+        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true, Format=Currency, AlwaysHideLabel=true, Width=150, SuppressChangeDetection=true}
+        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true, Format=Currency, AlwaysHideLabel=true, Width=150, SuppressChangeDetection=true}
+        txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Currency, AlwaysHideLabel=true, Width=147, SuppressChangeDetection=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]

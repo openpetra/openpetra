@@ -8,14 +8,51 @@ RootNode:
 
     Controls:
         pnlContent:
-            Controls: [grpNewPartners]
+            Controls: [grpNewPartners, grpNumberFormatting]
         grpNewPartners:
             Controls: [pnlNewPartners]
             Width: 430
             Height: 80
+        grpNumberFormatting:
+            Controls: [pnlNumberFormatting]
+            Label: Number Formatting For Partner, Personnel and Conference
+            Width: 430
+            Height: 190
         pnlNewPartners:
             Controls: [cmbAcquisitionCode, cmbLanguageCode]
             Width: 410
             Height: 60
         cmbAcquisitionCode: {List=AcquisitionCodeList}
         cmbLanguageCode: {List=LanguageCodeList}
+        pnlNumberFormatting:
+            Controls: [chkMoneyFormat, chkDecimalFormat, chkShowThousands, pnlExamples]
+            Width: 410
+            Height: 165
+        chkMoneyFormat:
+            CheckBoxAttachedLabel: right
+            Label: Show currency amounts in the regional currency format
+            Width: 390
+            OnChange: ExampleCheckChanged
+        chkDecimalFormat:
+            CheckBoxAttachedLabel: right
+            Label: Show other decimal entities in the regional currency format
+            Width: 390
+            OnChange: ExampleCheckChanged
+        chkShowThousands:
+            CheckBoxAttachedLabel: right
+            Label: Show thousands separator in currency amounts
+            Width: 390
+            OnChange: ExampleCheckChanged
+        pnlExamples:
+            Controls: [lblExamples, txtNumericExample, txtCostExample]
+            Width: 410
+            Height: 80
+        lblExamples:
+        txtNumericExample:
+            Label: Height in meters
+            Format: Decimal
+            Width: 116
+        txtCostExample:
+            Label: Publication cost
+            Format: Currency
+            Width: 150

@@ -283,6 +283,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 MessageBox.Show(verificationResult.BuildVerificationResultString(),
                     Catalog.GetString("Revaluation success"));
+
+                // Notify the exchange rate screen, if it is there
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
             }
 
             this.Close();

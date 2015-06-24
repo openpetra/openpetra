@@ -75,6 +75,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private DateTime FLatestAccountingPeriodEndDate = DateTime.MaxValue;
         private DateTime FEarliestAccountingPeriodStartDate = DateTime.MinValue;
         private bool FSkipValidation = false;
+        private bool FUseCurrencyFormatForDecimal = true;
 
         // Testing
         private bool FShowUnusedRatesAtStartup = false;
@@ -195,6 +196,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             tbbImport.Enabled = true;
             blnIsInModalMode = false;
             chkHideOthers.Left = cmbDetailToCurrencyCode.Left;
+
+            FUseCurrencyFormatForDecimal = TUserDefaults.GetBooleanDefault(Ict.Common.StringHelper.FINANCE_DECIMAL_FORMAT_AS_CURRENCY, true);
 
             // Fix up the usage grid and columns
             FPetraUtilsObject.SetStatusBarText(grdRateUsage,
@@ -438,6 +441,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 DataView dv = new DataView(FMainDS.ADailyExchangeRate, String.Empty,
                     String.Format("{0} DESC", ADailyExchangeRateTable.GetDateEffectiveFromDBName()), DataViewRowState.CurrentRows);
                 DateTime lastDbDate = ((ADailyExchangeRateRow)dv[0].Row).DateEffectiveFrom;
+
+                if (maxModalEffectiveDate < lastDbDate)
+                {
+                    lastDbDate = maxModalEffectiveDate;
+                }
 
                 TtxtPetraDate dateFilter = (TtxtPetraDate)FFilterAndFindObject.FilterPanelControls.FindControlByName("dtpDetailDateEffectiveFrom");
                 dateFilter.Date = lastDbDate.AddDays(-60);
@@ -1006,11 +1014,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 TSetupExchangeRates.SetExchangeRateLabels(cmbDetailFromCurrencyCode.GetSelectedString(),
                     cmbDetailToCurrencyCode.GetSelectedString(), FPreviouslySelectedDetailRow,
-                    txtDetailRateOfExchange.NumberValueDecimal.Value, lblValueOneDirection, lblValueOtherDirection);
+                    txtDetailRateOfExchange.NumberValueDecimal.Value, FUseCurrencyFormatForDecimal, lblValueOneDirection, lblValueOtherDirection);
             }
             else
             {
-                TSetupExchangeRates.SetExchangeRateLabels(String.Empty, String.Empty, null, 1.0m, lblValueOneDirection, lblValueOtherDirection);
+                TSetupExchangeRates.SetExchangeRateLabels(String.Empty,
+                    String.Empty,
+                    null,
+                    1.0m,
+                    FUseCurrencyFormatForDecimal,
+                    lblValueOneDirection,
+                    lblValueOtherDirection);
             }
         }
 

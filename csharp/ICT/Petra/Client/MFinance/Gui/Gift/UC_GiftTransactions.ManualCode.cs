@@ -974,8 +974,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FPreviouslySelectedDetailRow == null)
             {
-                if ((txtGiftTotal.NumberValueDecimal.Value != 0)
-                    || (txtBatchTotal.NumberValueDecimal.Value != 0))
+                if ((txtGiftTotal.NumberValueDecimal.HasValue && (txtGiftTotal.NumberValueDecimal.Value != 0))
+                    || (txtBatchTotal.NumberValueDecimal.HasValue && (txtBatchTotal.NumberValueDecimal.Value != 0)))
                 {
                     txtGiftTotal.NumberValueDecimal = 0;
                     txtBatchTotal.NumberValueDecimal = 0;
@@ -1024,7 +1024,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
-                if (txtGiftTotal.NumberValueDecimal.Value != SumTransactions)
+                if ((txtGiftTotal.NumberValueDecimal.HasValue == false) || (txtGiftTotal.NumberValueDecimal.Value != SumTransactions))
                 {
                     txtGiftTotal.NumberValueDecimal = SumTransactions;
                 }

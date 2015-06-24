@@ -73,6 +73,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // set currency codes
                 txtFromTransactionAmount.CurrencyCode = FJournal.TransactionCurrency;
                 txtDetailTransactionAmount.CurrencyCode = FJournal.TransactionCurrency;
+                txtFromTransactionAmount.NumberValueDecimal = 0.0m;
+
+                FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FJournal.BatchNumber, FJournal.JournalNumber);
 
                 if (FLedgerNumber != FJournal.LedgerNumber)
                 {
@@ -89,14 +92,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     Thread thread = new Thread(SetupComboboxes);
                     thread.Start();
+
+                    //SetupComboboxes();
                 }
 
                 txtBatchNumber.Text = FJournal.BatchNumber.ToString();
 
                 // LastTransactionNumber + 1 is reserved for 'from' Reallocation
                 FNextTransactionNumber = FJournal.LastTransactionNumber + 2;
-
-                FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FJournal.BatchNumber, FJournal.JournalNumber);
 
                 SetupAnalysisAttributeGrid(grdFromAnalAttributes, ref FcmbFromAnalAttribValues);
                 SetupAnalysisAttributeGrid(grdToAnalAttributes, ref FcmbToAnalAttribValues);

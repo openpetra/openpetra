@@ -393,6 +393,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FLedgerRow =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FDocumentLedgerNumber))[0];
             txtDetailBaseAmount.CurrencyCode = FLedgerRow.BaseCurrency;
+            //txtExchangeRateToBase.SetControlProperties(10);
 
             //
             // If this document's currency is that of my own ledger,

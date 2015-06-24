@@ -206,8 +206,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
             cmbDetailCurrencyCode.cmbCombobox.StickySelectedValueChanged += new EventHandler(StickyCurrencyChange);
 
-            txtDetailHashTotal.HideLabel = true;
-
             // Load the ledger table so we know the base currency
             FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadALedgerTable(FLedgerNumber));
             FLedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
@@ -534,6 +532,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FSelectedBatchNumber = -1;
                 dtpDetailGlEffectiveDate.Date = FDefaultDate;
                 UpdateChangeableStatus();
+                txtDetailHashTotal.CurrencyCode = String.Empty;
                 return;
             }
 

@@ -29,13 +29,17 @@ using System.Xml;
 using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -74,6 +78,47 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             TSharedPartnerValidation_Partner.ValidateMailingSetup(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            // We need to set the number of decimal places for the Mailing Cost
+            // We check all the ledgers to see which one has the highest number of decimal places.
+            ALedgerTable ledgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
+            ACurrencyTable currencyTable = (ACurrencyTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList);
+            int numDecimalPlaces = 0;
+
+            if (ledgers.Count == 0)
+            {
+                txtDetailMailingCost.CurrencyCode = "USD";
+            }
+            else
+            {
+                for (int i = 0; i < ledgers.Count; i++)
+                {
+                    string code = ledgers[i].BaseCurrency;
+                    ACurrencyRow row = (ACurrencyRow)currencyTable.Rows.Find(code);
+
+                    if (row != null)
+                    {
+                        int decimals = StringHelper.DecimalPlacesForCurrency(code);
+
+                        if (decimals > numDecimalPlaces)
+                        {
+                            numDecimalPlaces = decimals;
+                        }
+                    }
+                }
+
+                if (numDecimalPlaces == 0)
+                {
+                    txtDetailMailingCost.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_0_DP;
+                }
+                else
+                {
+                    txtDetailMailingCost.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
+                }
+            }
         }
     }
 }

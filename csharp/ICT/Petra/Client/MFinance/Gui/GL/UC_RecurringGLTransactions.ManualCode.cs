@@ -151,8 +151,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     && (FTransactionCurrency == ACurrencyCode)
                     && (FMainDS.ARecurringTransaction.DefaultView.Count > 0))
                 {
-                    FShowStatusDialogOnLoad = false;
-
                     //Same as previously selected
                     if (GetSelectedRowIndex() > 0)
                     {
@@ -177,9 +175,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 //Handle dialog
                 dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
-                dlgStatus.Show();
-                dlgStatus.Heading = String.Format(Catalog.GetString("Recurring Batch {0}, Journal {1}"), ABatchNumber, AJournalNumber);
-                dlgStatus.CurrentStatus = Catalog.GetString("Loading transactions ...");
+
+                if (FShowStatusDialogOnLoad)
+                {
+                    dlgStatus.Show();
+                    FShowStatusDialogOnLoad = false;
+                    dlgStatus.Heading = String.Format(Catalog.GetString("Recurring Batch {0}, Journal {1}"), ABatchNumber, AJournalNumber);
+                    dlgStatus.CurrentStatus = Catalog.GetString("Loading transactions ...");
+                }
 
                 FLedgerNumber = ALedgerNumber;
                 FBatchNumber = ABatchNumber;

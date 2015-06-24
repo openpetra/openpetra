@@ -24,6 +24,7 @@
 using System;
 using System.Reflection;
 using System.Windows.Forms;
+using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core;
 
@@ -35,6 +36,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private int FCurrentLedger;
         private bool FNewDonorWarning = true;
         private bool FAutoSave = false;
+        private bool FShowMoneyAsCurrency = true;
+        private bool FShowDecimalsAsCurrency = true;
+        private bool FShowThousands = true;
 
         private void InitializeManualCode()
         {
@@ -56,6 +60,25 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             FAutoSave = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_AUTO_SAVE_GIFT_SCREEN, false);
             chkAutoSave.Checked = FAutoSave;
+
+            FShowMoneyAsCurrency = TUserDefaults.GetBooleanDefault(StringHelper.FINANCE_CURRENCY_FORMAT_AS_CURRENCY, true);
+            chkMoneyFormat.Checked = FShowMoneyAsCurrency;
+
+            FShowDecimalsAsCurrency = TUserDefaults.GetBooleanDefault(StringHelper.FINANCE_DECIMAL_FORMAT_AS_CURRENCY, true);
+            chkDecimalFormat.Checked = FShowDecimalsAsCurrency;
+
+            FShowThousands = TUserDefaults.GetBooleanDefault(StringHelper.FINANCE_CURRENCY_SHOW_THOUSANDS, true);
+            chkShowThousands.Checked = FShowThousands;
+
+            // Examples
+            txtMoneyExample.Context = ".MFinance";
+            txtMoneyExample.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            txtMoneyExample.CurrencyCode = "USD";
+            txtMoneyExample.NumberValueDecimal = 12345.67m;
+
+            txtExchangeRateExample.Context = ".MFinance";
+            txtExchangeRateExample.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
+            txtExchangeRateExample.NumberValueDecimal = 6.789m;
         }
 
         /// <summary>
@@ -98,7 +121,31 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 TUserDefaults.SetDefault(TUserDefaults.FINANCE_AUTO_SAVE_GIFT_SCREEN, FAutoSave);
             }
 
+            if (FShowMoneyAsCurrency != chkMoneyFormat.Checked)
+            {
+                FShowMoneyAsCurrency = chkMoneyFormat.Checked;
+                TUserDefaults.SetDefault(StringHelper.FINANCE_CURRENCY_FORMAT_AS_CURRENCY, FShowMoneyAsCurrency);
+            }
+
+            if (FShowDecimalsAsCurrency != chkDecimalFormat.Checked)
+            {
+                FShowDecimalsAsCurrency = chkDecimalFormat.Checked;
+                TUserDefaults.SetDefault(StringHelper.FINANCE_DECIMAL_FORMAT_AS_CURRENCY, FShowDecimalsAsCurrency);
+            }
+
+            if (FShowThousands != chkShowThousands.Checked)
+            {
+                FShowThousands = chkShowThousands.Checked;
+                TUserDefaults.SetDefault(StringHelper.FINANCE_CURRENCY_SHOW_THOUSANDS, FShowThousands);
+            }
+
             return false;
+        }
+
+        private void ExampleCheckChanged(object sender, EventArgs e)
+        {
+            txtMoneyExample.OverrideNormalFormatting(!chkMoneyFormat.Checked, chkShowThousands.Checked);
+            txtExchangeRateExample.OverrideNormalFormatting(!chkDecimalFormat.Checked, chkShowThousands.Checked);
         }
     }
 }

@@ -31,11 +31,13 @@ using Ict.Common.Data;
 using Ict.Common.Conversion;
 using Ict.Common.Verification;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
@@ -52,6 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         ALedgerRow FLedgerRow = null;
         AccountsPayableTDSAApPaymentRow FSelectedPaymentRow = null;
         AccountsPayableTDSAApDocumentPaymentRow FSelectedDocumentRow = null;
+        ACurrencyTable FCurrencyTable = null;
 
 
         private void RunOnceOnActivationManual()
@@ -60,7 +63,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             chkClaimDiscount.Visible = false;
             txtExchangeRate.TextChanged += new EventHandler(UpdateTotalAmount);
 
+            ALedgerRow LedgerRow =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+            FCurrencyTable = (ACurrencyTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList);
+
+            //txtExchangeRate.SetControlProperties(10);
+            txtBaseAmount.CurrencyCode = LedgerRow.BaseCurrency;
+
             TExchangeRateCache.ResetCache();
+            FocusedRowChanged(null, null);
         }
 
         private void LookupExchangeRate(Object sender, EventArgs e)
@@ -114,7 +125,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdPayments.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AApPayment.DefaultView);
             grdPayments.Refresh();
             grdPayments.Selection.SelectRow(1, true);
-            FocusedRowChanged(null, null);
 
             // If this payment has a payment number, it's because it's already been paid, so I need to display it read-only.
             if ((FMainDS.AApPayment.Rows.Count > 0) && (FMainDS.AApPayment[0].PaymentNumber > 0))
@@ -314,7 +324,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FSelectedDocumentRow.Amount = FSelectedDocumentRow.InvoiceTotal;
             }
 
-            txtAmountToPay.Text = FSelectedDocumentRow.Amount.ToString("N2");
+            txtAmountToPay.NumberValueDecimal = FSelectedDocumentRow.Amount;
             CalculateTotalPayment();
         }
 
@@ -330,6 +340,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     AApSupplierRow supplier = TFrmAPMain.GetSupplier(FMainDS.AApSupplier, FSelectedPaymentRow.SupplierKey);
                     txtCurrency.Text = supplier.CurrencyCode;
+
+                    if (FCurrencyTable != null)
+                    {
+                        ACurrencyRow row = (ACurrencyRow)FCurrencyTable.Rows.Find(supplier.CurrencyCode);
+                        txtTotalAmount.CurrencyCode = row.CurrencyCode;
+                        txtAmountToPay.CurrencyCode = row.CurrencyCode;
+                    }
 
                     decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(supplier.CurrencyCode,
                         FLedgerRow.BaseCurrency,
@@ -368,7 +385,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (FSelectedDocumentRow != null)  // unload amount to pay into currently selected record
             {
-                FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
+                //FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
+                FSelectedDocumentRow.Amount = txtAmountToPay.NumberValueDecimal.Value;
             }
 
             if (SelectedGridRow.Length == 0)
@@ -447,7 +465,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void MakePayment(object sender, EventArgs e)
         {
-            FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
+            //FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
+            FSelectedDocumentRow.Amount = txtAmountToPay.NumberValueDecimal.Value;
             FSelectedPaymentRow.BankAccount = cmbBankAccount.GetSelectedString();
             AccountsPayableTDSAApPaymentTable AApPayment = FMainDS.AApPayment;
 

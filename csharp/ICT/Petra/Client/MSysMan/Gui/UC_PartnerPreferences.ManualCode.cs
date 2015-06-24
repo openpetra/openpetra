@@ -37,6 +37,10 @@ namespace Ict.Petra.Client.MSysMan.Gui
     /// manual methods for the generated window
     public partial class TUC_PartnerPreferences
     {
+        private bool FShowMoneyAsCurrency = false;
+        private bool FShowDecimalsAsCurrency = false;
+        private bool FShowThousands = true;
+
         private void InitializeManualCode()
         {
             // Hide invalid Acquisition Codes
@@ -45,6 +49,23 @@ namespace Ict.Petra.Client.MSysMan.Gui
             // set values for controls
             cmbAcquisitionCode.SetSelectedString(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_ACQUISITIONCODE, "MAILROOM"));
             cmbLanguageCode.SetSelectedString(TUserDefaults.GetStringDefault(MSysManConstants.PARTNER_LANGUAGECODE, "99"));
+
+            FShowMoneyAsCurrency = TUserDefaults.GetBooleanDefault(StringHelper.PARTNER_CURRENCY_FORMAT_AS_CURRENCY, false);
+            chkMoneyFormat.Checked = FShowMoneyAsCurrency;
+
+            FShowDecimalsAsCurrency = TUserDefaults.GetBooleanDefault(StringHelper.PARTNER_DECIMAL_FORMAT_AS_CURRENCY, false);
+            chkDecimalFormat.Checked = FShowDecimalsAsCurrency;
+
+            FShowThousands = TUserDefaults.GetBooleanDefault(StringHelper.PARTNER_CURRENCY_SHOW_THOUSANDS, true);
+            chkShowThousands.Checked = FShowThousands;
+
+            // Examples
+            txtCostExample.Context = ".MPartner";
+            txtCostExample.CurrencyCode = "USD";
+            txtCostExample.NumberValueDecimal = 1234.56m;
+
+            txtNumericExample.Context = ".MPartner";
+            txtNumericExample.NumberValueDecimal = 1.75m;
         }
 
         /// <summary>
@@ -63,6 +84,30 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             TUserDefaults.SetDefault(TUserDefaults.PARTNER_ACQUISITIONCODE, cmbAcquisitionCode.GetSelectedString());
             TUserDefaults.SetDefault(TUserDefaults.PARTNER_LANGUAGECODE, cmbLanguageCode.GetSelectedString());
+
+            if (FShowMoneyAsCurrency != chkMoneyFormat.Checked)
+            {
+                FShowMoneyAsCurrency = chkMoneyFormat.Checked;
+                TUserDefaults.SetDefault(StringHelper.PARTNER_CURRENCY_FORMAT_AS_CURRENCY, FShowMoneyAsCurrency);
+            }
+
+            if (FShowDecimalsAsCurrency != chkDecimalFormat.Checked)
+            {
+                FShowDecimalsAsCurrency = chkDecimalFormat.Checked;
+                TUserDefaults.SetDefault(StringHelper.PARTNER_DECIMAL_FORMAT_AS_CURRENCY, FShowDecimalsAsCurrency);
+            }
+
+            if (FShowThousands != chkShowThousands.Checked)
+            {
+                FShowThousands = chkShowThousands.Checked;
+                TUserDefaults.SetDefault(StringHelper.PARTNER_CURRENCY_SHOW_THOUSANDS, FShowThousands);
+            }
+        }
+
+        private void ExampleCheckChanged(object sender, EventArgs e)
+        {
+            txtCostExample.OverrideNormalFormatting(!chkMoneyFormat.Checked, chkShowThousands.Checked);
+            txtNumericExample.OverrideNormalFormatting(!chkDecimalFormat.Checked, chkShowThousands.Checked);
         }
     }
 }

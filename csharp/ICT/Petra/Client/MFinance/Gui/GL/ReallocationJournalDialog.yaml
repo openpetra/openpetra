@@ -95,7 +95,7 @@ RootNode:
             Columns: [DetailPercentage, DetailTransactionAmount, DetailCostCentreCode, DetailAccountCode]
             CustomColumns:
                 DetailPercentage: {Label=%, Type=Decimal(2)}
-                DetailTransactionAmount: {Label=Amount, Type=Decimal(2)}
+                DetailTransactionAmount: {Label=Amount, Type=Currency(2)}
                 DetailCostCentreCode: {Label=Cost Centre}
                 DetailAccountCode: {Label=Account}
 

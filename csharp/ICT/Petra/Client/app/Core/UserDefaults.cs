@@ -344,6 +344,9 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>Whether or not the Gift Batch screen should be auto saved when creating a new gifts or adding a gift detail</summary>
         public const String FINANCE_AUTO_SAVE_GIFT_SCREEN = "AutoSaveGiftScreen";
 
+        /* Other Finance User Defaults are in StringHelper because they are used in Ict.Common */
+
+
         /*------------------------------------------------------------------------------
          *  Conference Default Constants
          * -------------------------------------------------------------------------------*/

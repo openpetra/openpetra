@@ -25,6 +25,7 @@ using System;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace Ict.Common.Controls
@@ -34,6 +35,16 @@ namespace Ict.Common.Controls
     /// </summary>
     public partial class TTxtCurrencyTextBox : UserControl
     {
+        #region Public Currency Constants
+
+        /// <summary>Currency code that uses no decimal digits.  Set to Japanese Yen.</summary>
+        public const string CURRENCY_STANDARD_0_DP = "Y";
+
+        /// <summary>Currency code that uses 2 decimal places.  Set to US Dollars.</summary>
+        public const string CURRENCY_STANDARD_2_DP = "USD";
+
+        #endregion
+
         private const string COLUMNNAME_CURRENCY_NAME = "a_currency_name_c";
         private const string COLUMNNAME_DISPLAYFORMAT_NAME = "a_display_format_c";
 
@@ -43,9 +54,11 @@ namespace Ict.Common.Controls
 
         private static TRetrieveCurrencyList FRetrieveCurrencyList;
         private static DataTable GCurrencyList;
-        string FCurrencyDisplayFormat = "->>>,>>>,>>>,>>9.99";
+        private string FCurrencyDisplayFormat = "->>>,>>>,>>>,>>9.99";
 
-        bool FSuppressTextChangeDetection = false;
+        private bool FSuppressTextChangeDetection = false;
+        private bool FAlwaysHideLabel = false;
+
         #region Properties (handed through to TTxtNumericTextBox!)
 
         /// <summary>
@@ -153,7 +166,7 @@ namespace Ict.Common.Controls
                             {
                                 FSuppressTextChangeDetection = true;
 
-                                FTxtNumeric.SetCurrencyValue(0, FCurrencyDisplayFormat);
+                                FTxtNumeric.NumberValueDecimal = 0m;
 
                                 FSuppressTextChangeDetection = false;
                             }
@@ -179,7 +192,7 @@ namespace Ict.Common.Controls
             {
                 if (value != null)
                 {
-                    FTxtNumeric.SetCurrencyValue(value.Value, FCurrencyDisplayFormat);
+                    FTxtNumeric.NumberValueDecimal = value;
                 }
                 else
                 {
@@ -296,10 +309,54 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Sets the context for the numerictext box that is part of the Currency TextBox.  This is set automatically by the designer file.
+        /// </summary>
+        public object Context
+        {
+            set
+            {
+                FTxtNumeric.Context = value;
+            }
+        }
+
+        /// <summary>
+        /// Sets the control mode of the text box.  This is set automatically by the designer file.
+        /// The value is always set to Currency but may be modified by user preferences.
+        /// </summary>
+        public TTxtNumericTextBox.TNumericTextBoxMode ControlMode
+        {
+            set
+            {
+                FTxtNumeric.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            }
+        }
+
+        /// <summary>
+        /// Gets/Sets the current thread's culture
+        /// </summary>
+        public CultureInfo Culture
+        {
+            get
+            {
+                return FTxtNumeric.Culture;
+            }
+
+            set
+            {
+                FTxtNumeric.Culture = value;
+            }
+        }
+
+        #endregion
+
+        #region Currency Text Box Properties
+
+        /// <summary>
         /// Gets/sets whether the currency label is visible or not. Used for items like 'Hash Total' where the
         /// text box is associated with a currency (so needs the correct format and d.p. but the number is not really in currency units.
+        /// This property is usually set by the Designer when the YAML 'HideLabel=true' attribute is set.
         /// </summary>
-        public bool HideLabel
+        public bool ShowLabel
         {
             get
             {
@@ -308,22 +365,54 @@ namespace Ict.Common.Controls
 
             set
             {
-                FLblCurrency.Visible = value;
+                if (value == true)
+                {
+                    FLblCurrency.Visible = !FAlwaysHideLabel;
+                }
+                else
+                {
+                    FLblCurrency.Visible = false;
+                }
             }
         }
 
-        #endregion
+        /// <summary>
+        /// Gets/sets a value that deals with the visble state of the currency label.  When true the label is always hidden.
+        /// When false (default) the label is hidden if the CurrencyCode string is empty text and visible if there is a currency code.
+        /// Use this property in order to be able to set specific currency codes and get the correct number of decimal places
+        /// while keeping the code label hidden.  This is used in GL screen hash codes because the currencies in a batch may be mixed.
+        /// </summary>
+        public bool AlwaysHideLabel
+        {
+            get
+            {
+                return FAlwaysHideLabel;
+            }
 
-        #region Properties
+            set
+            {
+                FAlwaysHideLabel = value;
+
+                if (FAlwaysHideLabel)
+                {
+                    FLblCurrency.Visible = false;
+                }
+            }
+        }
 
         /// <summary>
-        /// Determines the currency symbol.
+        /// Determines the currency symbol and the number of decimal places.
+        /// The value can be set to an empty string, in which case the label will be hidden and we will use 2 decimal places.
+        /// You should only set the value to empty string under special circumstances, such as screen load or a data row contains
+        /// a currency code of empty text but other rows can be expected to have defined values.
+        /// If you want to have a box with no label but with a defined currency code in order to have the correct number of decimal places
+        /// you should set 'AlwaysHideLabel = true' in YAML or code.
         /// </summary>
         [Category("NumericTextBox"),
          RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
          DefaultValue("###"),
          Browsable(true),
-         Description("Determines the currency symbol.")]
+         Description("Determines the currency format and symbol.")]
         public string CurrencyCode
         {
             get
@@ -337,11 +426,17 @@ namespace Ict.Common.Controls
 
                 if (value == String.Empty)
                 {
-                    FLblCurrency.Visible = false;
+                    // The value can be empty string.  In that case we hide the label and use a currency format with 2 d.p.
+                    ShowLabel = false;
+                    FCurrencyName = String.Empty;
+                    tipCurrencyName.SetToolTip(FLblCurrency, String.Empty);
+                    FCurrencyDisplayFormat = "->>>,>>>,>>>,>>9.99";
+                    this.DecimalPlaces = 2;
+                    return;
                 }
-                else
+                else if (!FAlwaysHideLabel)
                 {
-                    FLblCurrency.Visible = true;
+                    ShowLabel = true;
                 }
 
                 if (GCurrencyList != null)
@@ -351,9 +446,6 @@ namespace Ict.Common.Controls
                     if (CurrencyDR != null)
                     {
                         FCurrencyName = (string)CurrencyDR[COLUMNNAME_CURRENCY_NAME];
-
-                        tipCurrencyName.SetToolTip(FLblCurrency, FCurrencyName);
-
                         FCurrencyDisplayFormat = (string)CurrencyDR[COLUMNNAME_DISPLAYFORMAT_NAME];
                         int DecimalSeparatorPos = FCurrencyDisplayFormat.LastIndexOf('.');
 
@@ -370,7 +462,10 @@ namespace Ict.Common.Controls
                     {
                         FCurrencyName = String.Empty;
                         FCurrencyDisplayFormat = "->>>,>>>,>>>,>>9.99";
+                        this.DecimalPlaces = 2;
                     }
+
+                    tipCurrencyName.SetToolTip(FLblCurrency, FCurrencyName);
                 }
             }
         }
@@ -464,6 +559,8 @@ namespace Ict.Common.Controls
                     GCurrencyList = FRetrieveCurrencyList();
                 }
             }
+
+            FTxtNumeric.IsCurrencyTextBox = true;
         }
 
         #endregion
@@ -478,6 +575,14 @@ namespace Ict.Common.Controls
             FTxtNumeric.SelectAll();
         }
 
+        /// <summary>
+        /// Clears the content of the text box (sets the value to 0 in the current culture and user preference format)
+        /// </summary>
+        public void ClearBox()
+        {
+            FTxtNumeric.ClearBox();
+        }
+
         #endregion
 
         #region Private Methods
@@ -489,6 +594,14 @@ namespace Ict.Common.Controls
         {
             FOriginalTxtNumericWidth = FLblCurrency.Left + 4;
             FTxtNumeric.Width = FOriginalTxtNumericWidth;
+        }
+
+        /// <summary>
+        /// This method overrides the normal user formatting.  It is used by UserPreferences to show examples of formatting options
+        /// </summary>
+        public void OverrideNormalFormatting(bool AUseNumberFormatForCurrency, bool AShowThousands)
+        {
+            FTxtNumeric.OverrideNormalFormatting(AUseNumberFormatForCurrency, AShowThousands);
         }
 
         #endregion
@@ -519,7 +632,7 @@ namespace Ict.Common.Controls
                 MaintainLayoutOfContainedControls();
             }
 
-            if (FLblCurrency.Text != String.Empty)
+            if (ShowLabel)
             {
                 FTxtNumeric.Width = FOriginalTxtNumericWidth;
             }

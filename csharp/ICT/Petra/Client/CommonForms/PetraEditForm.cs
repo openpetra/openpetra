@@ -581,7 +581,7 @@ namespace Ict.Petra.Client.CommonForms
                 }
                 else if (AControlToClear.GetType() == typeof(Ict.Common.Controls.TTxtCurrencyTextBox))
                 {
-                    ((Ict.Common.Controls.TTxtCurrencyTextBox)AControlToClear).NumberValueDecimal = 0;
+                    ((Ict.Common.Controls.TTxtCurrencyTextBox)AControlToClear).ClearBox();
                     ReturnValue = true;
                 }
             }

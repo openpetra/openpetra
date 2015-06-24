@@ -37,6 +37,24 @@ namespace Tests.Common.Controls
     [TestFixture]
     public class TTestNumericTextBox
     {
+        /***************************************************************************************************************************
+         * /// IMPORTANT NOTE ON THE USE OF DIFFERING CULTURES
+         * /// Written by AlanP April 2015
+         * ///
+         * /// I believe the following to be correct from my experience using Win7
+         * ///
+         * /// If you assign a new Culture to the CurrentThread and it is the Culture that you use for your working PC
+         * /// the values for the format information will be the values for your PC and not necessarily the values shipped by Microsoft
+         * /// when you installed Windows.  In my case, specifically for testing the GUI screens I have set my regional formats to use
+         * /// apostrophe/dot for currency group/decimal and space/comma for numeric group/decimal.  This is very helpful in checking we
+         * /// get the correct displays.  However, when I run the tests it means that my en-GB culture has these settings.  A similar
+         * /// situation would arise if your default culture is de-DE say.
+         * ///
+         * /// This means that these tests only work if we do not check for actual text in numeric/currency boxes in the en-GB culture.
+         * /// We can check for text in any other culture - and that is what these tests do.
+         * ///
+         * **************************************************************************************************************************/
+
         /// <summary>
         /// Testing decimal currency values in numeric text box
         /// Modified July 13 Tim Ingham to use CurrencyCode,
@@ -46,6 +64,7 @@ namespace Tests.Common.Controls
         [Test]
         public void TestCurrencyValues()
         {
+            // See IMPORTANT NOTE at the top of this file
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
             TTxtCurrencyTextBox txtBox = new TTxtCurrencyTextBox();
             txtBox.CurrencyCode = "GBP";
@@ -53,18 +72,18 @@ namespace Tests.Common.Controls
             txtBox.NumberValueDecimal = 1410.95M;
             Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "decimal value stored in British culture");
 
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE"); // Changing the Culture like this is really not a good idea,
-                                                                            // but there's a tweak in the CurrencyTextBox that attempts to compensate!
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
+            txtBox.Culture = Thread.CurrentThread.CurrentCulture;
             txtBox.NumberValueDecimal = 0.0M;
             txtBox.NumberValueDecimal = 1410.95M;
 
-            //Assert.AreEqual("1.410,95",
-            //    txtBox.Text,
-            //    "After changing Culture, so text text should be formatted according to new culture.");
-            //Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "Text box was created with British culture, switch culture, value can be read back.");
+            Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "Text box was created with British culture, switch culture, value can be read back.");
+            Assert.AreEqual("1.410,95",
+                txtBox.Text,
+                "After changing Culture, so currency text should be formatted according to new culture.");
 
             TTxtCurrencyTextBox txtDEBox = new TTxtCurrencyTextBox();
-            txtBox.CurrencyCode = "EUR";
+            txtDEBox.CurrencyCode = "EUR";
             txtDEBox.NumberValueDecimal = 0.0M;
             txtDEBox.NumberValueDecimal = 1410.95M;
             Assert.AreEqual("1.410,95", txtDEBox.Text, "text value stored as Euros");
@@ -103,6 +122,7 @@ namespace Tests.Common.Controls
         [Test]
         public void TestDecimalValues()
         {
+            // See IMPORTANT NOTE at the top of this file
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
             TTxtNumericTextBox txtBox = new TTxtNumericTextBox();
             txtBox.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
@@ -112,12 +132,13 @@ namespace Tests.Common.Controls
             Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "decimal value stored in british culture");
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
+            txtBox.Culture = Thread.CurrentThread.CurrentCulture;
             txtBox.NumberValueDecimal = 0.0M;
             txtBox.NumberValueDecimal = 1410.95M;
-            //Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "decimal value stored in german culture, switching culture, same txt object");
-            //Assert.AreEqual("1,410.95",
-            //    txtBox.Text,
-            //    "text value stored in german culture, switching culture, same txt object, therefore still british format");
+            Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "decimal value stored in german culture, switching culture, same txt object");
+            Assert.AreEqual("1.410,95",
+                txtBox.Text,
+                "After changing Culture, so decimal text should be formatted according to new culture.");
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
             TTxtNumericTextBox txtDEBox = new TTxtNumericTextBox();
@@ -149,6 +170,7 @@ namespace Tests.Common.Controls
         [Test]
         public void TestDoubleValues()
         {
+            // See IMPORTANT NOTE at the top of this file
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
             TTxtNumericTextBox txtBox = new TTxtNumericTextBox();
             txtBox.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
@@ -158,12 +180,13 @@ namespace Tests.Common.Controls
             Assert.AreEqual(1410.95, txtBox.NumberValueDouble, "double value stored in british culture");
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
+            txtBox.Culture = Thread.CurrentThread.CurrentCulture;
             txtBox.NumberValueDouble = 0.0;
             txtBox.NumberValueDouble = 1410.95;
-            //Assert.AreEqual(1410.95, txtBox.NumberValueDouble, "double value stored in german culture, switching culture, same txt object");
-            //Assert.AreEqual("1,410.95",
-            //    txtBox.Text,
-            //    "text value stored in german culture, switching culture, same txt object, therefore still british format");
+            Assert.AreEqual(1410.95, txtBox.NumberValueDouble, "double value stored in german culture, switching culture, same txt object");
+            Assert.AreEqual("1.410,95",
+                txtBox.Text,
+                "After changing Culture, so decimal text should be formatted according to new culture.");
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
             TTxtNumericTextBox txtDEBox = new TTxtNumericTextBox();

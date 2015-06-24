@@ -45,7 +45,7 @@ RootNode:
                 FeeCode: {Label=Fee Code}
                 FeeDescription: {Label=Description}
                 ChargeOption: {Label=Charge Option}
-                ChargePercentage: {Label=Charge Percentage, Type=Currency(2)}
+                ChargePercentage: {Label=Charge Percentage, Type=Decimal(2)}
                 ChargeAmount: {Label=Charge Amount, Type=Currency(2)}                
                 DrAccountCode: {Label=DR Account Code}
                 CostCentreCode: {Label=Cost Centre Code}
@@ -63,7 +63,7 @@ RootNode:
         cmbDetailChargeOption:  {Label=Charge Option, OnChange=ChargeOptionChanged, Width=100}
             OptionalValues: [Minimum, Maximum, Fixed, Percentage]
         txtDetailChargePercentage:  {Label=Charge Percentage, Format=PercentDecimal}
-        txtDetailChargeAmount:  {Label=Charge Amount, Format=Decimal, Width=111, LabelWidth=120}
+        txtDetailChargeAmount:  {Label=Charge Amount, Format=Currency, Width=111, LabelWidth=120}
         cmbDetailCostCentreCode:  {NoLabel=True, List=UserDefinedList}
         cmbDetailAccountCode:  {NoLabel=True, List=UserDefinedList, Width=250}
         cmbDetailDrAccountCode:  {Label=Account, List=UserDefinedList}

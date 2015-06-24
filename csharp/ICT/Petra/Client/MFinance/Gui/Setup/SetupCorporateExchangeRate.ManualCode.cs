@@ -71,6 +71,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private int FAlternativeFirstDayInMonth = 1;
 
         /// <summary>
+        /// Holds the value of the user preference for display format of exchange rates
+        /// </summary>
+        private bool FUseCurrencyFormatForDecimal = true;
+
+        /// <summary>
         /// We use this to hold inverse exchange rate items that will need saving at the end
         /// </summary>
         private struct tInverseItem
@@ -99,6 +104,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 mniImport.Enabled = true;
                 tbbImport.Enabled = true;
             }
+        }
+
+        private void InitializeManualCode()
+        {
+            FUseCurrencyFormatForDecimal = TUserDefaults.GetBooleanDefault(Ict.Common.StringHelper.FINANCE_DECIMAL_FORMAT_AS_CURRENCY, true);
         }
 
         private void RunOnceOnActivationManual()
@@ -359,11 +369,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 TSetupExchangeRates.SetExchangeRateLabels(cmbDetailFromCurrencyCode.GetSelectedString(),
                     cmbDetailToCurrencyCode.GetSelectedString(), GetSelectedDetailRow(),
-                    txtDetailRateOfExchange.NumberValueDecimal.Value, lblValueOneDirection, lblValueOtherDirection);
+                    txtDetailRateOfExchange.NumberValueDecimal.Value, FUseCurrencyFormatForDecimal, lblValueOneDirection, lblValueOtherDirection);
             }
             else
             {
-                TSetupExchangeRates.SetExchangeRateLabels(String.Empty, String.Empty, null, 1.0m, lblValueOneDirection, lblValueOtherDirection);
+                TSetupExchangeRates.SetExchangeRateLabels(String.Empty,
+                    String.Empty,
+                    null,
+                    1.0m,
+                    FUseCurrencyFormatForDecimal,
+                    lblValueOneDirection,
+                    lblValueOtherDirection);
             }
         }
 

@@ -63,7 +63,6 @@ namespace Ict.Common.Controls
             // FTxtNumeric
             //
             this.FTxtNumeric.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.FTxtNumeric.ControlMode = Ict.Common.Controls.TTxtNumericTextBox.TNumericTextBoxMode.Currency;
             this.FTxtNumeric.Font =
                 new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FTxtNumeric.Location = new System.Drawing.Point(0, 0);
