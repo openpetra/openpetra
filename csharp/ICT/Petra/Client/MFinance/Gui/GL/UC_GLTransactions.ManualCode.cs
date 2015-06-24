@@ -274,7 +274,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 grdAnalAttributes.SetHeaderTooltip(1, Catalog.GetString("Value"));
 
                 // if this form is readonly or batch is posted, then we need all account and cost centre codes, because old codes might have been used
-                bool ActiveOnly = (this.Enabled && FIsUnposted);
+                bool ActiveOnly = (this.Enabled && FIsUnposted && !FContainsSystemGenerated);
 
                 if (requireControlSetup || (FActiveOnly != ActiveOnly))
                 {
@@ -1184,26 +1184,37 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SetupExtraGridFunctionality()
         {
-            DataTable TempTbl1 = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
+            DataTable CostCentreListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
 
-            if ((TempTbl1 == null) || (TempTbl1.Rows.Count == 0))
+            ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
+            FMainDS.Tables.Add(tmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref CostCentreListTable, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpCostCentreTable.TableName);
+
+            if ((CostCentreListTable == null) || (CostCentreListTable.Rows.Count == 0))
             {
                 FCostCentreList = null;
             }
             else
             {
-                FCostCentreList = (ACostCentreTable)TempTbl1;
+                FCostCentreList = (ACostCentreTable)CostCentreListTable;
             }
 
-            DataTable TempTbl2 = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+            DataTable AccountListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
 
-            if ((TempTbl2 == null) || (TempTbl2.Rows.Count == 0))
+            AAccountTable tmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(tmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref AccountListTable, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpAccountTable.TableName);
+
+            if ((AccountListTable == null) || (AccountListTable.Rows.Count == 0))
             {
                 FAccountList = null;
             }
             else
             {
-                FAccountList = (AAccountTable)TempTbl2;
+                FAccountList = (AAccountTable)AccountListTable;
             }
 
             //Prepare grid to highlight inactive accounts/cost centres

@@ -647,26 +647,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void SetAccountCostCentreTableVariables()
         {
             //Populate CostCentreList variable
-            DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+            DataTable CostCentreListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
                 FLedgerNumber);
 
             ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
 
             FMainDS.Tables.Add(tmpCostCentreTable);
-            DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            DataUtilities.ChangeDataTableToTypedDataTable(ref CostCentreListTable, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
             FMainDS.RemoveTable(tmpCostCentreTable.TableName);
 
-            FCostCentreTable = (ACostCentreTable)costCentreList;
+            FCostCentreTable = (ACostCentreTable)CostCentreListTable;
 
             //Populate AccountList variable
-            DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+            DataTable AccountListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
 
             AAccountTable tmpAccountTable = new AAccountTable();
             FMainDS.Tables.Add(tmpAccountTable);
-            DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            DataUtilities.ChangeDataTableToTypedDataTable(ref AccountListTable, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
             FMainDS.RemoveTable(tmpAccountTable.TableName);
 
-            FAccountTable = (AAccountTable)accountList;
+            FAccountTable = (AAccountTable)AccountListTable;
         }
 
         private bool AnalysisCodeIsActive(String AAccountCode, String AAnalysisCode = "")

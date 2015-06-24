@@ -307,7 +307,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //On populating key ministry
-            if (DisableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+            if (DisableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).DataRowColumnsHaveChanged(FBatchRow))
             {
                 FPetraUtilsObject.DisableSaveButton();
             }
@@ -484,7 +484,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
 
-                if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+                if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).DataRowColumnsHaveChanged(FBatchRow))
                 {
                     FPetraUtilsObject.DisableSaveButton();
                 }

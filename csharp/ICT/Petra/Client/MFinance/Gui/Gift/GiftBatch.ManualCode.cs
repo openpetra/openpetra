@@ -651,47 +651,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // For GL Batch we will get a mix of some batches, gifts and gift details.
             List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
-            int allChangesCount = 0;
+            int AllChangesCount = 0;
 
             foreach (DataTable dt in FMainDS.Tables)
             {
-                if (dt != null)
+                if ((dt != null) && (dt.Rows.Count > 0)
+                    && ((dt.TableName == FMainDS.AGiftBatch.TableName) || (dt.TableName == FMainDS.AGift.TableName)
+                        || (dt.TableName == FMainDS.AGiftDetail.TableName)))
                 {
                     int tableChangesCount = 0;
 
                     foreach (DataRow dr in dt.Rows)
                     {
-                        if ((dr.RowState != DataRowState.Unchanged) && (dr.RowState != DataRowState.Deleted) && (dr.RowState != DataRowState.Added))
-                        {
-                            //Check if fields have actually changed
-                            bool fieldDifferenceDetected = false;
-
-                            for (int i = 0; i < dt.Columns.Count; i++)
-                            {
-                                string originalValue = dr[i, DataRowVersion.Original].ToString();
-                                string currentValue = dr[i, DataRowVersion.Current].ToString();
-
-                                if (originalValue != currentValue)
-                                {
-                                    fieldDifferenceDetected = true;
-                                    break;
-                                }
-                            }
-
-                            if (!fieldDifferenceDetected)
-                            {
-                                dr.RejectChanges();
-                            }
-                            else
-                            {
-                                tableChangesCount++;
-                                allChangesCount++;
-                            }
-                        }
-                        else if ((dr.RowState == DataRowState.Deleted) || (dr.RowState == DataRowState.Added))
+                        if (DataRowColumnsHaveChanged(dr))
                         {
                             tableChangesCount++;
-                            allChangesCount++;
+                            AllChangesCount++;
                         }
                     }
 
@@ -821,43 +796,54 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
             }
 
-            return allChangesCount;
+            return AllChangesCount;
         }
 
         /// <summary>
         /// Check if batch columns have actually changed
         /// </summary>
-        /// <param name="ABatchRow"></param>
+        /// <param name="ADataRow"></param>
         /// <returns></returns>
-        public bool BatchColumnsHaveChanged(AGiftBatchRow ABatchRow)
+        public bool DataRowColumnsHaveChanged(DataRow ADataRow)
         {
-            bool RetVal = false;
+            bool ColumnValueHasChanged = false;
 
-            if (ABatchRow.RowState != DataRowState.Unchanged)
+            if ((ADataRow.RowState != DataRowState.Unchanged) && (ADataRow.RowState != DataRowState.Deleted)
+                && (ADataRow.RowState != DataRowState.Added))
             {
-                bool columnValueChanged = false;
+                string columnName = string.Empty;
 
-                for (int i = 0; i < FMainDS.AGiftBatch.Columns.Count; i++)
+                for (int i = 0; i < ADataRow.Table.Columns.Count; i++)
                 {
-                    string originalValue = ABatchRow[i, DataRowVersion.Original].ToString();
-                    string currentValue = ABatchRow[i, DataRowVersion.Current].ToString();
+                    columnName = ADataRow.Table.Columns[i].ColumnName;
+
+                    //Ignore the system and temporary fields, all other fields are their SQL name, e.g. a_ledger_number_i
+                    if (columnName.StartsWith("s_") || !columnName.Contains("_"))
+                    {
+                        continue;
+                    }
+
+                    string originalValue = ADataRow[i, DataRowVersion.Original].ToString();
+                    string currentValue = ADataRow[i, DataRowVersion.Current].ToString();
 
                     if (originalValue != currentValue)
                     {
-                        columnValueChanged = true;
+                        ColumnValueHasChanged = true;
                         break;
                     }
                 }
 
-                if (!columnValueChanged)
+                if (!ColumnValueHasChanged)
                 {
-                    ABatchRow.RejectChanges();
+                    ADataRow.RejectChanges();
                 }
-
-                RetVal = columnValueChanged;
+            }
+            else if ((ADataRow.RowState == DataRowState.Deleted) || (ADataRow.RowState == DataRowState.Added))
+            {
+                ColumnValueHasChanged = true;
             }
 
-            return RetVal;
+            return ColumnValueHasChanged;
         }
 
         /// <summary>
