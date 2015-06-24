@@ -1569,8 +1569,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             DateTime APostingDate,
             out TVerificationResultCollection AVerificationResult)
         {
-            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
             AccountsPayableTDS MainDS = AMainDS;
+
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
 
             AVerificationResult = VerificationResult;
 

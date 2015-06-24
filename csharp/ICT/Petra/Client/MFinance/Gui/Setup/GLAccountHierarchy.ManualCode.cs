@@ -1160,11 +1160,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     if (strOldDetailAccountCode.IndexOf(FNameForNewAccounts) < 0) // If they're just changing this from the initial value, don't show warning.
                     {
                         if (MessageBox.Show(String.Format(Catalog.GetString(
-                                        "You have changed the Account Code from '{0}' to '{1}'.\r\n\r\n" +
-                                        "Please confirm that you want to rename this account by choosing 'OK'.\r\n\r\n" +
+                                        "You have changed the Account Code from '{0}' to '{1}'.{2}{2}" +
+                                        "Please confirm that you want to rename this account by choosing 'OK'.{2}{2}" +
                                         "(Renaming will take a few moments, then the form will be re-loaded.)"),
                                     strOldDetailAccountCode,
-                                    strNewDetailAccountCode),
+                                    strNewDetailAccountCode,
+                                    Environment.NewLine),
                                 Catalog.GetString("Rename Account: Confirmation"), MessageBoxButtons.OKCancel,
                                 MessageBoxIcon.Warning) != DialogResult.OK)
                         {

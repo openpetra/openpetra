@@ -261,7 +261,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FBatchNumber, FJournalNumber);
 
-                FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(FMainDS, FActiveOnly);
+                FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(FMainDS);
                 FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
                 grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
                 grdAnalAttributes.SetHeaderTooltip(0, Catalog.GetString("Type"));
@@ -309,22 +309,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Check for missing analysis attributes and their values
                 if (FIsUnposted && (grdDetails.Rows.Count > 1))
                 {
-                    dlgStatus.CurrentStatus = Catalog.GetString("Checking analysis attributes ...");
-                    string updatedTransactions;
+                    string updatedTransactions = string.Empty;
 
-                    FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref FMainDS, FCacheDS, out updatedTransactions);
+                    dlgStatus.CurrentStatus = Catalog.GetString("Checking analysis attributes ...");
+
+                    FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(FMainDS, FCacheDS, out updatedTransactions);
 
                     if (updatedTransactions.Length > 0)
                     {
                         //Remove trailing comma
                         updatedTransactions = updatedTransactions.Remove(updatedTransactions.Length - 2);
                         MessageBox.Show(String.Format(Catalog.GetString(
-                                    "Analysis Attributes have been fixed in transaction(s): {0}.{1}{1}You will need to set their values before posting!"),
+                                    "Analysis Attributes have been updated in transaction(s): {0}.{1}{1}Remeber to set their values before posting!"),
                                 updatedTransactions,
                                 Environment.NewLine),
                             "Analysis Attributes",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
+
                         FPetraUtilsObject.SetChangedFlag();
                     }
                 }
@@ -561,7 +563,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(FMainDS, FActiveOnly, FTransactionNumber);
+            FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(FMainDS, FTransactionNumber);
 
             grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
 
@@ -1178,10 +1180,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             DataTable TempTbl1 = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
 
-            FCostCentreList = (ACostCentreTable)TempTbl1;
+            if ((TempTbl1 == null) || (TempTbl1.Rows.Count == 0))
+            {
+                FCostCentreList = null;
+            }
+            else
+            {
+                FCostCentreList = (ACostCentreTable)TempTbl1;
+            }
 
             DataTable TempTbl2 = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
-            FAccountList = (AAccountTable)TempTbl2;
+
+            if ((TempTbl2 == null) || (TempTbl2.Rows.Count == 0))
+            {
+                FAccountList = null;
+            }
+            else
+            {
+                FAccountList = (AAccountTable)TempTbl2;
+            }
 
             //Prepare grid to highlight inactive accounts/cost centres
             // Create a cell view for special conditions
@@ -1837,7 +1854,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((FPreviouslySelectedDetailRow.TransactionNumber == FTransactionNumber)
                 && (FTransactionNumber != -1))
             {
-                FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref FMainDS, FCacheDS,
+                FAnalysisAttributesLogic.TransAnalAttrRequiredUpdating(FMainDS, FCacheDS,
                     cmbDetailAccountCode.GetSelectedString(), FTransactionNumber);
                 RefreshAnalysisAttributesGrid();
             }

@@ -186,7 +186,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ATempCombo);
             }
 
-            FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(DS, true);
+            FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(DS);
             DS.ATransAnalAttrib.DefaultView.AllowNew = false;
             AGrid.DataSource = new DevAge.ComponentModel.BoundDataView(DS.ATransAnalAttrib.DefaultView);
             AGrid.SetHeaderTooltip(0, Catalog.GetString("Type"));
@@ -573,7 +573,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCurrentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
             }
 
-            FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref DS, null,
+            FAnalysisAttributesLogic.TransAnalAttrRequiredUpdating(DS, null,
                 ((TCmbAutoPopulated)sender).GetSelectedString(), TransactionNumber);
             RefreshAnalysisAttributesGrid((TCmbAutoPopulated)sender, DS);
         }
@@ -802,7 +802,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(ADS, true, TransactionNumber);
+            FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(ADS, TransactionNumber);
 
             Grid.DataSource = new DevAge.ComponentModel.BoundDataView(ADS.ATransAnalAttrib.DefaultView);
 

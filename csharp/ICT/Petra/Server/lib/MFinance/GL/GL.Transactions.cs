@@ -1517,14 +1517,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             #endregion Validate Arguments
 
-            GLBatchTDS MainDS = new GLBatchTDS();
+            string AnalysisAttrList = string.Empty;
 
+            GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = null;
 
             try
             {
-                string analAttrList = string.Empty;
-
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
@@ -1554,25 +1553,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         ATransAnalAttribTable.GetTransactionNumberDBName(),
                         transRow.TransactionNumber);
 
-                    foreach (DataRowView rv in MainDS.ATransAnalAttrib.DefaultView)
+                    foreach (DataRowView drv in MainDS.ATransAnalAttrib.DefaultView)
                     {
-                        ATransAnalAttribRow Row = (ATransAnalAttribRow)rv.Row;
+                        ATransAnalAttribRow transAnalAttrRow = (ATransAnalAttribRow)drv.Row;
 
-                        if (analAttrList.Length > 0)
+                        if (AnalysisAttrList.Length > 0)
                         {
-                            analAttrList += ", ";
+                            AnalysisAttrList += ", ";
                         }
 
-                        analAttrList += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                        AnalysisAttrList += (transAnalAttrRow.AnalysisTypeCode + "=" + transAnalAttrRow.AnalysisAttributeValue);
                     }
 
-                    if (transRow.AnalysisAttributes != analAttrList)
+                    if (transRow.AnalysisAttributes != AnalysisAttrList)
                     {
-                        transRow.AnalysisAttributes = analAttrList;
+                        transRow.AnalysisAttributes = AnalysisAttrList;
                     }
 
                     //reset the attributes string
-                    analAttrList = string.Empty;
+                    AnalysisAttrList = string.Empty;
                 }
 
                 MainDS.ATransAnalAttrib.DefaultView.RowFilter = string.Empty;
@@ -1748,7 +1747,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             #endregion Validate Arguments
 
             GLBatchTDS MainDS = new GLBatchTDS();
-
             TDBTransaction Transaction = null;
 
             try
@@ -1796,7 +1794,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             #endregion Validate Arguments
 
             GLSetupTDS MainDS = new GLSetupTDS();
-
             TDBTransaction Transaction = null;
 
             try
@@ -2235,10 +2232,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             #endregion Validate Arguments
 
-            string AnalAttrList = string.Empty;
+            string AnalysisAttrList = string.Empty;
 
             GLBatchTDS MainDS = new GLBatchTDS();
-
             TDBTransaction Transaction = null;
 
             try
@@ -2250,20 +2246,20 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     {
                         ARecurringTransactionAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
                         ARecurringTransAnalAttribAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
-
-                        #region Validate Data
-
-                        if ((MainDS.ARecurringTransaction.Count == 0) && (MainDS.ARecurringTransAnalAttrib.Count > 0))
-                        {
-                            throw new ApplicationException(String.Format(Catalog.GetString(
-                                        "Function:{0} - Orphaned GL Transaction Analysis Attributes exist in Recurring GL Batch {1} in Ledger {2}!"),
-                                    Utilities.GetMethodName(true),
-                                    ABatchNumber,
-                                    ALedgerNumber));
-                        }
-
-                        #endregion Validate Data
                     });
+
+                #region Validate Data
+
+                if ((MainDS.ARecurringTransaction.Count == 0) && (MainDS.ARecurringTransAnalAttrib.Count > 0))
+                {
+                    throw new ApplicationException(String.Format(Catalog.GetString(
+                                "Function:{0} - Orphaned GL Transaction Analysis Attributes exist in Recurring GL Batch {1} in Ledger {2}!"),
+                            Utilities.GetMethodName(true),
+                            ABatchNumber,
+                            ALedgerNumber));
+                }
+
+                #endregion Validate Data
 
                 foreach (GLBatchTDSARecurringTransactionRow transRow in MainDS.ARecurringTransaction.Rows)
                 {
@@ -2271,22 +2267,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
                         transRow.TransactionNumber);
 
-                    foreach (DataRowView rv in MainDS.ARecurringTransAnalAttrib.DefaultView)
+                    foreach (DataRowView drv in MainDS.ARecurringTransAnalAttrib.DefaultView)
                     {
-                        ARecurringTransAnalAttribRow Row = (ARecurringTransAnalAttribRow)rv.Row;
+                        ARecurringTransAnalAttribRow recurrTransAnalAttrRow = (ARecurringTransAnalAttribRow)drv.Row;
 
-                        if (AnalAttrList.Length > 0)
+                        if (AnalysisAttrList.Length > 0)
                         {
-                            AnalAttrList += ", ";
+                            AnalysisAttrList += ", ";
                         }
 
-                        AnalAttrList += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                        AnalysisAttrList += (recurrTransAnalAttrRow.AnalysisTypeCode + "=" + recurrTransAnalAttrRow.AnalysisAttributeValue);
                     }
 
-                    transRow.AnalysisAttributes = AnalAttrList;
+                    if (transRow.AnalysisAttributes != AnalysisAttrList)
+                    {
+                        transRow.AnalysisAttributes = AnalysisAttrList;
+                    }
 
                     //clear the attributes string and table
-                    AnalAttrList = string.Empty;
+                    AnalysisAttrList = string.Empty;
                 }
 
                 MainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = string.Empty;
@@ -2480,7 +2479,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool RecurrGLAttrTableInDataSet = (AInspectDS.ARecurringTransAnalAttrib != null && AInspectDS.ARecurringTransAnalAttrib.Count > 0);
 
             //Check if saving recurring tables
-            if (RecurrGLBatchTableInDataSet || RecurrGLJournalTableInDataSet || RecurrGLTransTableInDataSet)
+            if (RecurrGLBatchTableInDataSet || RecurrGLJournalTableInDataSet || RecurrGLTransTableInDataSet || RecurrGLAttrTableInDataSet)
             {
                 if (GLBatchTableInDataSet || GLJournalTableInDataSet || GLTransTableInDataSet || GLTransAttrTableInDataSet)
                 {
@@ -2778,8 +2777,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         ex.Message));
                 throw ex;
             }
-
-            AVerificationResult = VerificationResult;
 
             if (AVerificationResult.Count > 0)
             {

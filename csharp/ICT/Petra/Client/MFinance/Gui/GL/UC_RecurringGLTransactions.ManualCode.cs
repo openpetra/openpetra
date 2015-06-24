@@ -278,21 +278,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Check for missing analysis attributes and their values
                 if (grdDetails.Rows.Count > 1)
                 {
-                    string updatedTransactions;
+                    string updatedTransactions = string.Empty;
 
-                    FAnalysisAttributesLogic.ReconcileRecurringTransAnalysisAttributes(ref FMainDS, out updatedTransactions);
+                    FAnalysisAttributesLogic.ReconcileRecurringTransAnalysisAttributes(FMainDS, out updatedTransactions);
 
                     if (updatedTransactions.Length > 0)
                     {
                         //Remove trailing comma
                         updatedTransactions = updatedTransactions.Remove(updatedTransactions.Length - 2);
                         MessageBox.Show(String.Format(Catalog.GetString(
-                                    "Analysis Attributes have been fixed in transaction(s): {0}.{1}{1}Remember to set their values."),
+                                    "Analysis Attributes have been updated in transaction(s): {0}.{1}{1}Remember to check their values."),
                                 updatedTransactions,
                                 Environment.NewLine),
                             "Analysis Attributes",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
+
                         FPetraUtilsObject.SetChangedFlag();
                     }
                 }
@@ -990,10 +991,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             DataTable TempTbl1 = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
 
-            FCostCentreList = (ACostCentreTable)TempTbl1;
+            if ((TempTbl1 == null) || (TempTbl1.Rows.Count == 0))
+            {
+                FCostCentreList = null;
+            }
+            else
+            {
+                FCostCentreList = (ACostCentreTable)TempTbl1;
+            }
 
             DataTable TempTbl2 = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
-            FAccountList = (AAccountTable)TempTbl2;
+
+            if ((TempTbl2 == null) || (TempTbl2.Rows.Count == 0))
+            {
+                FAccountList = null;
+            }
+            else
+            {
+                FAccountList = (AAccountTable)TempTbl2;
+            }
 
             //Prepare grid to highlight inactive accounts/cost centres
             // Create a cell view for special conditions
@@ -1619,7 +1635,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((FPreviouslySelectedDetailRow.TransactionNumber == FTransactionNumber)
                 && (FTransactionNumber != -1))
             {
-                FAnalysisAttributesLogic.ReconcileRecurringTransAnalysisAttributes(ref FMainDS,
+                FAnalysisAttributesLogic.RecurringTransAnalAttrRequiredUpdating(FMainDS,
                     cmbDetailAccountCode.GetSelectedString(), FTransactionNumber);
                 RefreshAnalysisAttributesGrid();
             }

@@ -398,6 +398,20 @@ namespace Ict.Petra.Shared.MFinance
         public const string SUPPORT_GIFTS_LOCAL = "0100S";
         /// Summary account
         public const string SUPPORT_GIFTS_FOREIGN = "1100S";
+
+
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_SUSP_ACC = "SUSP-ACCT";
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_BUDGET = "BUDGET";
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_CURRENCY = "CURRENCY";
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_INTL_CURRENCY = "INTL-CURRENCY";
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_CURRENT_PERIOD = "CURRENT-PERIOD";
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_CAL = "CAL";
     }
 
     /// <summary>

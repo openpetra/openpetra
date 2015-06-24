@@ -461,14 +461,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             String ATransactionCurrency,
             bool AFromBatchTab)
         {
-            this.ucoTransactions.LoadTransactions(
-                FLedgerNumber,
-                ABatchNumber,
-                AJournalNumber,
-                ATransactionCurrency,
-                AFromBatchTab,
-                ABatchStatus,
-                AJournalStatus);
+            try
+            {
+                this.ucoTransactions.LoadTransactions(FLedgerNumber,
+                    ABatchNumber,
+                    AJournalNumber,
+                    ATransactionCurrency,
+                    AFromBatchTab,
+                    ABatchStatus,
+                    AJournalStatus);
+            }
+            catch (Exception ex)
+            {
+                string methodName = Utilities.GetMethodName(true);
+
+                string errorMsg = String.Format(Catalog.GetString("Unexpected error in {0}!{1}{1}Try closing this form and restarting OpenPetra."),
+                    methodName,
+                    Environment.NewLine);
+
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}{1}{1} - {3}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message,
+                        ex.InnerException.Message));
+
+                MessageBox.Show(errorMsg, methodName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
