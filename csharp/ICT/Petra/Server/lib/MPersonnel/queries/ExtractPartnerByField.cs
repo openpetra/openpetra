@@ -238,7 +238,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
             // now run the database query
-            TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+            TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
             DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
 
@@ -252,7 +252,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 return false;
             }
 
-            TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+            TLogging.Log("Preparing the extract...", TLoggingType.ToStatusBar);
 
             // create an extract with the given name in the parameters
             TExtractsHandling.ExtendExtractFromListOfPartnerKeys(
@@ -300,7 +300,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
             // now run the database query
-            TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+            TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
             partnerkeys.Clear();
             partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
@@ -315,7 +315,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 return false;
             }
 
-            TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+            TLogging.Log("Preparing the extract...", TLoggingType.ToStatusBar);
 
             // create an extract with the given name in the parameters
             TExtractsHandling.ExtendExtractFromListOfPartnerKeys(
@@ -422,7 +422,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
             // now run the database query
-            TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+            TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
             DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
 
@@ -436,7 +436,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 return false;
             }
 
-            TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+            TLogging.Log("Preparing the extract...", TLoggingType.ToStatusBar);
 
             // create an extract with the given name in the parameters
             ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(

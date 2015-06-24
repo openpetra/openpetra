@@ -377,6 +377,15 @@ namespace Ict.Common.Remoting.Client
             return ExportPath;
         }
 
+        /// get export path in the user directory. used eg. by GL Batch or Gift Batch export
+        /// will create the directory if it does not exist yet.
+        public static string GetTempPath()
+        {
+            UPathTemp = GetUserPath("OpenPetra.PathTemp", Path.GetTempPath());
+
+            return UPathTemp;
+        }
+
         /// <summary>
         /// Used only by the automatic application tests for passing parameters to the individual Test.
         /// </summary>

@@ -100,7 +100,7 @@ namespace Ict.Petra.Server.MFinance.queries
                     AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
                     // now run the database query
-                    TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+                    TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
                     giftdetails = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction,
                         SqlParameterList.ToArray());
 
@@ -111,7 +111,7 @@ namespace Ict.Petra.Server.MFinance.queries
                         return;
                     }
 
-                    TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+                    TLogging.Log("Preparing the extract...", TLoggingType.ToStatusBar);
 
                     // With the result of the original query process the data and identify the partner keys for
                     // the extract.

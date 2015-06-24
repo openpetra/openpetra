@@ -466,9 +466,11 @@ OpenPetra:
                     Security:
                         Groups: {Label=Groups, Description=Maintain Security-related Groups, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmSecurityGroupSetup}
             Database:
-                ImportExport: {DontShowNestedTasksAsLinks=true}
-                    ExportAllData: {ActionClick=TSysManMain.ExportAllData}
-                    RestoreDatabaseFromBackup: {ActionClick=TSysManMain.RestoreDatabase, Description=Replaces all existing data with backed-up data}
+                Database: {DontShowNestedTasksAsLinks=true}
+                    ExportDatabase: {DontShowNestedTasksAsLinks=true}
+                        ExportAllData: {ActionClick=TSysManMain.ExportAllData}
+                    RestoreDatabase:
+                        RestoreDatabaseFromBackup: {ActionClick=TSysManMain.RestoreDatabase, Description=Replaces all existing data with backed-up data}
             Auditing:
                 Logs: {DontShowNestedTasksAsLinks=true}
                     #ErrorLog

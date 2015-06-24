@@ -64,21 +64,20 @@
 							PUB_p_partner.p_partner_class_c AS PartnerClass
 						FROM
 							 PUB_a_gift as gift, 
-							 PUB_a_gift_detail as detail,
-							 PUB_a_motivation_detail,
 							 PUB_p_partner
 						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND gift.a_date_entered_d BETWEEN {#param_start_date#} AND {#param_end_date#}
+								gift.a_date_entered_d BETWEEN {#param_start_date#} AND {#param_end_date#}
 							AND gift.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n 
 							
-							AND PUB_a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c
-							AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
-							AND PUB_a_motivation_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_motivation_detail.a_receipt_l = 1
+							AND EXISTS (SELECT * FROM PUB_a_gift_detail, PUB_a_motivation_detail
+								WHERE PUB_a_gift_detail.a_ledger_number_i = gift.a_ledger_number_i
+								AND PUB_a_gift_detail.a_batch_number_i = gift.a_batch_number_i
+								AND PUB_a_gift_detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+								AND PUB_a_motivation_detail.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
+								AND PUB_a_motivation_detail.a_motivation_detail_code_c = PUB_a_gift_detail.a_motivation_detail_code_c
+								AND PUB_a_motivation_detail.a_ledger_number_i = {{param_ledger_number_i}}
+								AND PUB_a_motivation_detail.a_receipt_l = 1)
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_exclude_anonymous_donors}, true)">

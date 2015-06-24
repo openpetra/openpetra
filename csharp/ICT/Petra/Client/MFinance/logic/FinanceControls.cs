@@ -676,12 +676,61 @@ namespace Ict.Petra.Client.MFinance.Logic
             DataTable groupTable =
                 (AMotivationGroupTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationGroupList, ALedgerNumber);
 
+            groupTable.Columns.Add("Active", typeof(Boolean));
+
             AControl.InitialiseUserControl(groupTable,
                 AMotivationGroupTable.GetMotivationGroupCodeDBName(),
                 AMotivationGroupTable.GetMotivationGroupDescriptionDBName(),
                 null);
 
             AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
+
+            if (AActiveOnly)
+            {
+                DataTable detailTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, ALedgerNumber);
+
+                // motivation group is deemed active if it contains at least one active motivation detail
+                foreach (DataRow groupRow in groupTable.Rows)
+                {
+                    bool ContainsActive = false;
+
+                    foreach (DataRow detailRow in detailTable.Rows)
+                    {
+                        if ((detailRow[AMotivationDetailTable.GetMotivationGroupCodeDBName()].ToString()
+                             == groupRow[AMotivationGroupTable.GetMotivationGroupCodeDBName()].ToString())
+                            && (Convert.ToBoolean(detailRow[AMotivationDetailTable.GetMotivationStatusDBName()]) == true))
+                        {
+                            ContainsActive = true;
+                            break;
+                        }
+                    }
+
+                    groupRow["Active"] = ContainsActive;
+                }
+
+                AControl.Filter = "Active = true";
+            }
+            else
+            {
+                AControl.Filter = string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// change the filter of the motivation detail combobox when a different motivation group gets selected
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="AMotivationGroup"></param>
+        public static void ChangeFilterMotivationGroupList(ref TCmbAutoPopulated AControl, bool AActiveOnly)
+        {
+            if (AActiveOnly)
+            {
+                AControl.Filter = "Active = true";
+            }
+            else
+            {
+                AControl.Filter = string.Empty;
+            }
         }
 
         /// <summary>
@@ -722,6 +771,25 @@ namespace Ict.Petra.Client.MFinance.Logic
             string newFilter = String.Empty;
 
             if ((AControl.Filter != null) && AControl.Filter.StartsWith(AMotivationDetailTable.GetMotivationStatusDBName() + " = true"))
+            {
+                newFilter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true And ";
+            }
+
+            newFilter += AMotivationDetailTable.GetMotivationGroupCodeDBName() + " = '" + AMotivationGroup + "'";
+
+            AControl.Filter = newFilter;
+        }
+
+        /// <summary>
+        /// change the filter of the motivation detail combobox when a different motivation group gets selected
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="AMotivationGroup"></param>
+        public static void ChangeFilterMotivationDetailList(ref TCmbAutoPopulated AControl, String AMotivationGroup, bool AActiveOnly)
+        {
+            string newFilter = String.Empty;
+
+            if (AActiveOnly)
             {
                 newFilter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true And ";
             }

@@ -248,7 +248,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enter += new EventHandler(BeginEditMode);
             pnlDetails.Leave += new EventHandler(EndEditMode);
 
-            TUC_GiftTransactions_Recipient.SetTextBoxOverlayOnKeyMinistryCombo(FPreviouslySelectedDetailRow, FActiveOnly, cmbKeyMinistries,
+            bool ShowGiftDetail = EditableGiftDetail(FPreviouslySelectedDetailRow);
+
+            TUC_GiftTransactions_Recipient.SetTextBoxOverlayOnKeyMinistryCombo(FPreviouslySelectedDetailRow, ShowGiftDetail, cmbKeyMinistries,
                 cmbDetailMotivationDetailCode, txtDetailRecipientKeyMinistry, ref FMotivationDetail, FInEditMode, FBatchUnposted);
         }
 
@@ -279,6 +281,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FLedgerNumber,
                 FPetraUtilsObject,
                 cmbKeyMinistries,
+                ref cmbDetailMotivationGroupCode,
                 ref cmbDetailMotivationDetailCode,
                 txtDetailRecipientKey,
                 FRecipientKey,
@@ -316,8 +319,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void EndEditMode(object sender, EventArgs e)
         {
             FInEditMode = false;
-            TUC_GiftTransactions_Recipient.OnEndEditMode(FPreviouslySelectedDetailRow, cmbKeyMinistries, cmbDetailMotivationDetailCode,
-                txtDetailRecipientKeyMinistry, ref FMotivationDetail, FActiveOnly, FInEditMode, FBatchUnposted);
+            bool ShowGiftDetail = EditableGiftDetail(FPreviouslySelectedDetailRow);
+
+            TUC_GiftTransactions_Recipient.OnEndEditMode(FPreviouslySelectedDetailRow,
+                cmbKeyMinistries,
+                cmbDetailMotivationGroupCode,
+                cmbDetailMotivationDetailCode,
+                txtDetailRecipientKeyMinistry,
+                ref FMotivationGroup,
+                ref FMotivationDetail,
+                ShowGiftDetail,
+                FInEditMode,
+                FBatchUnposted);
         }
 
         /// <summary>
@@ -1304,8 +1317,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            if (TUC_GiftTransactions_Recipient.OnStartShowDetailsManual(ARow, cmbKeyMinistries, cmbDetailMotivationDetailCode,
-                    txtDetailRecipientKeyMinistry, ref FMotivationDetail, FActiveOnly, FGiftTransactionsLoaded, FInEditMode, FBatchUnposted))
+            if ((ARow != null) && FActiveOnly)
+            {
+                // if selected gift has changed to being a reversal gift
+                if ((ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0)
+                    && !string.IsNullOrEmpty(cmbDetailMotivationGroupCode.Filter))
+                {
+                    TFinanceControls.ChangeFilterMotivationGroupList(ref cmbDetailMotivationGroupCode, false);
+                    cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode, -1);
+                }
+                // if selected gift has changed to being a non reversal gift
+                else if (!((ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0))
+                         && string.IsNullOrEmpty(cmbDetailMotivationGroupCode.Filter))
+                {
+                    TFinanceControls.ChangeFilterMotivationGroupList(ref cmbDetailMotivationGroupCode, true);
+                    cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode, -1);
+                }
+            }
+
+            bool ShowGiftDetail = EditableGiftDetail(FPreviouslySelectedDetailRow);
+
+            if (TUC_GiftTransactions_Recipient.OnStartShowDetailsManual(ARow, cmbKeyMinistries, cmbDetailMotivationGroupCode,
+                    cmbDetailMotivationDetailCode,
+                    txtDetailRecipientKeyMinistry, ref FMotivationGroup, ref FMotivationDetail, ShowGiftDetail, FGiftTransactionsLoaded, FInEditMode,
+                    FBatchUnposted))
             {
                 try
                 {
@@ -1368,6 +1403,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     this.Cursor = Cursors.Default;
                 }
             }
+        }
+
+        private bool EditableGiftDetail(GiftBatchTDSAGiftDetailRow ARow)
+        {
+            if (ARow != null)
+            {
+                if (!FActiveOnly || (ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            return FActiveOnly;
         }
 
         /// <summary>

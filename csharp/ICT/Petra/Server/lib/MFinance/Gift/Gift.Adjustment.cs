@@ -428,7 +428,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                             && (!Function.Equals(GiftAdjustmentFunctionEnum.ReverseGiftDetail)
                                                 || (oldGiftDetail.DetailNumber == GiftDetailNumber)))
                                         {
-                                            AddDuplicateGiftDetailToGift(ref AGiftDS, ref gift, oldGiftDetail, cycle == 0, null, requestParams);
+                                            AddDuplicateGiftDetailToGift(ref AGiftDS, ref gift, oldGiftDetail, cycle == 0, null, Transaction,
+                                                requestParams);
 
                                             batchGiftTotal += oldGiftDetail.GiftTransactionAmount * ((cycle == 0) ? -1 : 1);
 
@@ -545,6 +546,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AGiftDetailRow AOldGiftDetail,
             bool AReversal,
             string AGiftCommentOne,
+            TDBTransaction ATransaction,
             Hashtable ARequestParams = null)
         {
             bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
@@ -556,7 +558,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             DataUtilities.CopyAllColumnValuesWithoutPK(AOldGiftDetail, giftDetail);
 
-            giftDetail.DetailNumber = ++AGift.LastDetailNumber;
+            giftDetail.DetailNumber = AGift.LastDetailNumber + 1;
             AGift.LastDetailNumber++;
 
             giftDetail.LedgerNumber = AGift.LedgerNumber;
@@ -614,6 +616,38 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             else
             {
                 giftDetail.ModifiedDetail = false;
+
+                // Make sure the motivation detail is still active. If not then we need a new one.
+                AMotivationDetailTable MotivationDetailTable = AMotivationDetailAccess.LoadViaAMotivationGroup(
+                    giftDetail.LedgerNumber, giftDetail.MotivationGroupCode, ATransaction);
+                DataRow CurrentMotivationDetail = MotivationDetailTable.Rows.Find(
+                    new object[] { giftDetail.LedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
+
+                // Motivation detail has been made inactive (or doesn't exist) then use default
+                if (!((MotivationDetailTable != null) && (MotivationDetailTable.Rows.Count > 0) && (CurrentMotivationDetail != null))
+                    || !Convert.ToBoolean(CurrentMotivationDetail[AMotivationDetailTable.GetMotivationStatusDBName()]))
+                {
+                    bool ActiveRowFound = false;
+
+                    // search for first alternative active detail that is part of the same group
+                    foreach (AMotivationDetailRow Row in MotivationDetailTable.Rows)
+                    {
+                        if ((Row.MotivationDetailCode != giftDetail.MotivationDetailCode) && Row.MotivationStatus)
+                        {
+                            ActiveRowFound = true;
+                            giftDetail.MotivationGroupCode = Row.MotivationGroupCode;
+                            giftDetail.MotivationDetailCode = Row.MotivationDetailCode;
+                            break;
+                        }
+                    }
+
+                    // if none found then use default group and detail
+                    if (!ActiveRowFound)
+                    {
+                        giftDetail.MotivationGroupCode = MFinanceConstants.MOTIVATION_GROUP_GIFT;
+                        giftDetail.MotivationDetailCode = MFinanceConstants.GROUP_DETAIL_SUPPORT;
+                    }
+                }
             }
 
             AMainDS.AGiftDetail.Rows.Add(giftDetail);

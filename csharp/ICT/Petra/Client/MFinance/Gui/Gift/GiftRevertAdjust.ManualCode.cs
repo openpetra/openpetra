@@ -261,10 +261,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (string.IsNullOrEmpty(dtpEffectiveDate.Text))
                 {
                     MessageBox.Show(Catalog.GetString("Please enter a date for the new Gift Batch."));
-                }
 
-                dtpEffectiveDate.Focus();
-                return;
+                    dtpEffectiveDate.Focus();
+                    return;
+                }
             }
 
             AddParam("NewBatchSelected", rbtExistingBatch.Checked);

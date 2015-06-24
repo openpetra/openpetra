@@ -166,7 +166,7 @@ namespace Ict.Petra.Server.MPartner.queries
                         });
                     TableNames = ", pub_p_church";
                     WhereClause = " AND pub_p_church.p_partner_key_n = pub_p_partner.p_partner_key_n" +
-                                  " AND pub_p_church.p_denomination_c = ?";
+                                  " AND pub_p_church.p_denomination_code_c = ?";
                 }
             }
 

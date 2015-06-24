@@ -100,7 +100,7 @@ namespace ICT.Tools.DataMigrateStatistics
                 Console.WriteLine();
                 Console.WriteLine("--- Total number of rows loaded ---");
                 Console.WriteLine(totalRows + " out of " + totalCheckRows + " rows loaded successfully.");
-                string percentage = (((double)totalRows / totalCheckRows) * 100).ToString("#.##");
+                string percentage = (decimal.Divide(totalRows * 100, totalCheckRows)).ToString("#.##");
                 Console.WriteLine(percentage + "%");
                 Console.WriteLine();
 

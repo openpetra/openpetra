@@ -226,7 +226,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             try
             {
                 // now run the database query
-                TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+                TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
                 DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "result", Transaction,
                     SqlParameterList.ToArray());
 
