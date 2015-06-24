@@ -325,7 +325,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         return;
                     }
 
-                    importString = File.ReadAllText(dialog.FileName);
+                    importString = File.ReadAllText(dialog.FileName, Encoding.Default);
 
                     String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                     FdlgSeparator.DateFormat = dateFormatString;

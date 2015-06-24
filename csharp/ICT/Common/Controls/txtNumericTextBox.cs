@@ -1064,6 +1064,14 @@ namespace Ict.Common.Controls
                                     }
                                     else
                                     {
+                                        // Decimal point entered and we have one already.  If the current position is the dp we just move the selection on by one.
+                                        // Otherwise we do nothing because you can't have two dp's!!
+                                        if (intSelStart == intActDecPlace)
+                                        {
+                                            this.SelectionStart = intSelStart + 1;
+                                            this.SelectionLength = 0;
+                                        }
+
                                         e.Handled = true;
                                     }
                                 }
@@ -1228,30 +1236,84 @@ namespace Ict.Common.Controls
                     try
                     {
                         String str = (String)(clip.GetData(DataFormats.Text));
-                        String NumberPattern = "0123456789-+%" + FNumberDecimalSeparator + FCurrencyDecimalSeparator;
+                        String NumberPattern = "0123456789-+%";
+                        int maxPatternPos = NumberPattern.Length - 1;
+
+                        if ((this.ControlMode == TNumericTextBoxMode.Decimal) || (this.ControlMode == TNumericTextBoxMode.Currency))
+                        {
+                            // We can include decimal separators in our pattern
+                            if (((this.Text.Contains(FNumberDecimalSeparator) == false) && (this.Text.Contains(FCurrencyDecimalSeparator) == false)) ||
+                                this.SelectedText.Contains(FNumberDecimalSeparator) || this.SelectedText.Contains(FCurrencyDecimalSeparator))
+                            {
+                                // Include the decimal/currency separators as well
+                                NumberPattern += (FNumberDecimalSeparator + FCurrencyDecimalSeparator);
+                            }
+                        }
+
                         String OkStr = "";
+                        Boolean alreadyPastedDecimalSep = false;
 
                         for (int i = 0; i < str.Length; i++)
                         {
-                            if (NumberPattern.IndexOf(str[i]) >= 0)
+                            int pos = NumberPattern.IndexOf(str[i]);
+
+                            if (pos > maxPatternPos)
+                            {
+                                // It is a decimal separator
+                                if (alreadyPastedDecimalSep == false)
+                                {
+                                    OkStr += str[i];
+                                    alreadyPastedDecimalSep = true;
+                                }
+                            }
+                            else if (pos >= 0)
                             {
                                 OkStr += str[i];
                             }
                         }
 
-                        if (this.SelectionLength > 0)
+                        int intPrevSelStart = this.SelectionStart;
+                        int newSelStart = 0;
+                        string newText;
+
+                        newText = this.Text.Substring(0, this.SelectionStart) + OkStr + this.Text.Substring(this.SelectionStart + this.SelectedText.Length);
+                        newSelStart = intPrevSelStart + OkStr.Length;
+
+                        // We may need to truncate the text if we now exceed the specified number of decimal places
+                        if (ControlMode == TNumericTextBoxMode.Decimal || ControlMode == TNumericTextBoxMode.Currency)
                         {
-                            this.SelectedText = OkStr;
-//                              ProcessChangedText(this.Text);
+                            // find the position of the decimal separator
+                            int decimalPos = newText.IndexOf(FNumberDecimalSeparator);
+
+                            if (decimalPos == -1)
+                            {
+                                decimalPos = newText.IndexOf(FCurrencyDecimalSeparator);
+                            }
+
+                            if (decimalPos >= 0)
+                            {
+                                if (decimalPos == newText.Length - 1)
+                                {
+                                    // string ends in a decimal point, so chop it off
+                                    newText = newText.Substring(0, newText.Length - 1);
+                                }
+                                else if (newText.Length - decimalPos - 1 > DecimalPlaces)
+                                {
+                                    // Too many decimal digits so truncate
+                                    newText = newText.Substring(0, decimalPos + DecimalPlaces + 1);
+                                }
+
+                                if (newSelStart > newText.Length)
+                                {
+                                    newSelStart = newText.Length;
+                                }
+                            }
                         }
-                        else if (this.SelectionStart > 0)
-                        {
-                            base.Text = this.Text.Substring(0, this.SelectionStart) + OkStr + this.Text.Substring(this.SelectionStart);
-                        }
-                        else
-                        {
-                            base.Text = OkStr;
-                        }
+
+                        base.Text = newText;
+                        this.SelectionStart = newSelStart;
+                        this.SelectionLength = 0;
+
                     }
                     catch (Exception Exp)
                     {
@@ -1279,8 +1341,10 @@ namespace Ict.Common.Controls
                         }
                         else
                         {
-                            this.SelectedText = new String('0', this.SelectedText.Length);
-//                            ProcessChangedText(this.Text);
+                            int intPrevSelStart = this.SelectionStart;
+                            base.Text = this.Text.Substring(0, this.SelectionStart) + this.Text.Substring(this.SelectionStart + this.SelectedText.Length);
+                            this.SelectionStart = intPrevSelStart;
+                            this.SelectionLength = 0;
                         }
                     }
                 }
