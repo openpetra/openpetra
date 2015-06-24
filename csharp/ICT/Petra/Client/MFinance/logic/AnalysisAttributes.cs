@@ -576,9 +576,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 }
 
                 //Populate current codes and which ones to add or delete
-                //SetTransAnalAttributeDefaultView(AGLBatchDS, true, ATransactionNumber,
-                //    TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'"));
-                //Check if loading required
+                // (Check if loading required)
                 SetTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber);
 
                 if (AGLBatchDS.ATransAnalAttrib.DefaultView.Count == 0)
@@ -799,8 +797,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 }
 
                 //Populate current codes and which ones to add or delete
-                //SetTransAnalAttributeDefaultView(AGLBatchDS, true, ATransactionNumber,
-                //    TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'"));
+                // (Check if loading required)
                 SetRecurringTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber);
 
                 //First check if loading required

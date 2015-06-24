@@ -200,11 +200,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // It gets the right sort order
                 SetTransactionDefaultView();
 
+                //Set the Analysis attributes filter as well
+                FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FBatchNumber, FJournalNumber);
+                FAnalysisAttributesLogic.SetRecurringTransAnalAttributeDefaultView(FMainDS);
+                FMainDS.ARecurringTransAnalAttrib.DefaultView.AllowNew = false;
+
                 //Load from server if necessary
                 if (FMainDS.ARecurringTransaction.DefaultView.Count == 0)
                 {
                     dlgStatus.CurrentStatus = Catalog.GetString("Requesting transactions from server...");
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber,
+                            AJournalNumber));
+                }
+                else if (FMainDS.ARecurringTransAnalAttrib.DefaultView.Count == 0) // just in case transactions have been loaded in a separate process without analysis attributes
+                {
+                    dlgStatus.CurrentStatus = Catalog.GetString("Requesting analysis attributes from server...");
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransAnalAttribForJournal(ALedgerNumber, ABatchNumber,
                             AJournalNumber));
                 }
 
@@ -232,10 +243,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     grdAnalAttributes.Columns[0].Width = 99;
                 }
 
-                FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FBatchNumber, FJournalNumber);
-
-                FAnalysisAttributesLogic.SetRecurringTransAnalAttributeDefaultView(FMainDS);
-                FMainDS.ARecurringTransAnalAttrib.DefaultView.AllowNew = false;
                 grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringTransAnalAttrib.DefaultView);
                 grdAnalAttributes.SetHeaderTooltip(0, Catalog.GetString("Type"));
                 grdAnalAttributes.SetHeaderTooltip(1, Catalog.GetString("Value"));

@@ -64,6 +64,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             None
         };
 
+        /// GL contains 3 levels
+        public enum eGLLevel
+        {
+            /// batch level
+            Batch,
+
+            /// journal level
+            Journal,
+
+            /// transaction level
+            Transaction,
+
+            /// analysis attribute level
+            Analysis
+        };
+
         private eGLTabs FPreviouslySelectedTab = eGLTabs.None;
         private Int32 FLedgerNumber = -1;
         private Int32 FStandardTabIndex = 0;

@@ -863,7 +863,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         FPetraUtilsObject.SetChangedFlag();
                     }
 
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("BATCH", UpdateTransactionDates);
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TFrmGLBatch.eGLLevel.Batch, UpdateTransactionDates);
                 }
             }
             catch (Exception ex)

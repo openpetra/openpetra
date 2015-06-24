@@ -164,7 +164,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     if (jr.DateEffective != BatchDateEffective)
                     {
-                        ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("BATCH", true);
+                        ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TFrmGLBatch.eGLLevel.Batch, true);
                         break;
                     }
                 }
@@ -557,7 +557,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPreviouslySelectedDetailRow.ExchangeRateToBase > 0.0m)
             {
-                ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("JOURNAL");
+                ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TFrmGLBatch.eGLLevel.Journal);
             }
         }
 

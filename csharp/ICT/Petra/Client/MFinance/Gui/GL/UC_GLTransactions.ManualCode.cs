@@ -216,11 +216,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // It gets the right sort order
                 SetTransactionDefaultView();
 
+                //Set the Analysis attributes filter as well
+                FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FBatchNumber, FJournalNumber);
+                FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(FMainDS);
+                FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
+
                 //Load from server if necessary
                 if (FMainDS.ATransaction.DefaultView.Count == 0)
                 {
                     dlgStatus.CurrentStatus = Catalog.GetString("Requesting transactions from server...");
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber));
+                }
+                else if (FMainDS.ATransAnalAttrib.DefaultView.Count == 0) // just in case transactions have been loaded in a separate process without analysis attributes
+                {
+                    dlgStatus.CurrentStatus = Catalog.GetString("Requesting analysis attributes from server...");
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttribForJournal(ALedgerNumber, ABatchNumber, AJournalNumber));
                 }
 
                 FContainsSystemGenerated = false;
@@ -259,10 +269,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     grdAnalAttributes.Columns[0].Width = 99;
                 }
 
-                FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FBatchNumber, FJournalNumber);
-
-                FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(FMainDS);
-                FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
                 grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
                 grdAnalAttributes.SetHeaderTooltip(0, Catalog.GetString("Type"));
                 grdAnalAttributes.SetHeaderTooltip(1, Catalog.GetString("Value"));
@@ -816,7 +822,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="AUpdateLevel"></param>
         /// <param name="AUpdateTransDates"></param>
-        public void UpdateTransactionTotals(string AUpdateLevel = "TRANSACTION", bool AUpdateTransDates = false)
+        public void UpdateTransactionTotals(TFrmGLBatch.eGLLevel AUpdateLevel = TFrmGLBatch.eGLLevel.Transaction, bool AUpdateTransDates = false)
         {
             bool OriginalSaveButtonState = false;
             bool TransactionRowActive = false;
@@ -845,13 +851,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DataView JournalsToUpdateDV = null;
             DataView TransactionsToUpdateDV = null;
 
-            bool BatchLevelUpdate = (AUpdateLevel.ToUpper() == "BATCH");
-            bool JournalLevelUpdate = (AUpdateLevel.ToUpper() == "JOURNAL");
-            bool TransLevelUpdate = (AUpdateLevel.ToUpper() == "TRANSACTION");
+            bool BatchLevel = (AUpdateLevel == TFrmGLBatch.eGLLevel.Batch);
+            bool JournalLevel = (AUpdateLevel == TFrmGLBatch.eGLLevel.Journal);
+            bool TransLevel = (AUpdateLevel == TFrmGLBatch.eGLLevel.Transaction);
 
-            if (!(BatchLevelUpdate || JournalLevelUpdate || TransLevelUpdate))
+            if (AUpdateLevel == TFrmGLBatch.eGLLevel.Analysis)
             {
-                TLogging.Log("UC_GLTransactions-UpdateTransactionAmounts() called with wrong first argument");
+                TLogging.Log(String.Format("{0} called with wrong first argument!", Utilities.GetMethodSignature()));
                 return;
             }
 
@@ -875,7 +881,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TransactionsToUpdateDV = new DataView(FMainDS.ATransaction);
 
             //If called at the batch level, clear the current selections
-            if (BatchLevelUpdate)
+            if (BatchLevel)
             {
                 CurrentJournalNumber = 0;
 
@@ -893,13 +899,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 CurrentJournalNumber = CurrentJournalRow.JournalNumber;
             }
 
-            if (JournalLevelUpdate)
+            if (JournalLevel)
             {
                 ClearCurrentSelection();
                 //Ensure that when the Trans tab is opened, the data is reloaded.
                 FBatchNumber = -1;
             }
-            else if (TransLevelUpdate && (FPreviouslySelectedDetailRow != null))
+            else if (TransLevel && (FPreviouslySelectedDetailRow != null))
             {
                 TransactionRowActive = true;
 
@@ -925,7 +931,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 IsTransactionInIntlCurrency = (jr.TransactionCurrency == LedgerIntlCurrency);
 
-                if (BatchLevelUpdate)
+                if (BatchLevel)
                 {
                     //Journal row is active
                     if (jr.DateEffective != CurrentBatchRow.DateEffective)

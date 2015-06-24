@@ -93,6 +93,12 @@ namespace Ict.Petra.Shared.MFinance
                 ATransactionTable.GetJournalNumberDBName(),
                 ACurrentJournal.JournalNumber);
 
+            if (TransDataView.Count == 0)
+            {
+                //do not update totals as nor transactions loaded as yet so no need to update journal total
+                return RetVal;
+            }
+
             TransDataView.Sort = string.Format("{0} DESC",
                 ATransactionTable.GetTransactionNumberDBName());
 
@@ -196,6 +202,11 @@ namespace Ict.Petra.Shared.MFinance
                 ACurrentJournal.BatchNumber,
                 ARecurringTransactionTable.GetJournalNumberDBName(),
                 ACurrentJournal.JournalNumber);
+
+            if (TransDataView.Count == 0)
+            {
+                return RetVal;
+            }
 
             TransDataView.Sort = string.Format("{0} DESC",
                 ARecurringTransactionTable.GetTransactionNumberDBName());
