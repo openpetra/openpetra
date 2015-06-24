@@ -165,12 +165,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void InitialiseLedgerControls()
         {
             // Load Motivation detail in this central place; it will be used by UC_GiftTransactions
-            AMotivationDetailTable motivationDetail = (AMotivationDetailTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+            AMotivationDetailTable MotivationDetail = (AMotivationDetailTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                 TCacheableFinanceTablesEnum.MotivationList,
                 FLedgerNumber);
 
-            motivationDetail.TableName = FMainDS.AMotivationDetail.TableName;
-            FMainDS.Merge(motivationDetail);
+            MotivationDetail.TableName = FMainDS.AMotivationDetail.TableName;
+            FMainDS.Merge(MotivationDetail);
 
             FMainDS.AcceptChanges();
 
@@ -180,7 +180,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 );
 
             SetupExtraGridFunctionality();
-            FAccountAndCostCentreLogicObject.RefreshBankAccountAndCostCentreData(FLoadAndFilterLogicObject);
+            FAccountAndCostCentreLogicObject.RefreshBankAccountAndCostCentreData(FLoadAndFilterLogicObject, out FCostCentreTable, out FAccountTable);
 
             // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
@@ -348,36 +348,36 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void LoadBatchesForCurrentYear()
         {
-            TFrmGiftBatch myParentForm = (TFrmGiftBatch) this.ParentForm;
-            bool performStandardLoad = true;
+            TFrmGiftBatch MyParentForm = (TFrmGiftBatch) this.ParentForm;
+            bool PerformStandardLoad = true;
 
-            if (myParentForm.InitialBatchYear >= 0)
+            if (MyParentForm.InitialBatchYear >= 0)
             {
                 FLoadAndFilterLogicObject.StatusAll = true;
 
-                int yearIndex = FLoadAndFilterLogicObject.FindYearAsIndex(myParentForm.InitialBatchYear);
+                int yearIndex = FLoadAndFilterLogicObject.FindYearAsIndex(MyParentForm.InitialBatchYear);
 
                 if (yearIndex >= 0)
                 {
                     FLoadAndFilterLogicObject.YearIndex = yearIndex;
 
-                    if (myParentForm.InitialBatchPeriod >= 0)
+                    if (MyParentForm.InitialBatchPeriod >= 0)
                     {
-                        FLoadAndFilterLogicObject.PeriodIndex = FLoadAndFilterLogicObject.FindPeriodAsIndex(myParentForm.InitialBatchPeriod);
+                        FLoadAndFilterLogicObject.PeriodIndex = FLoadAndFilterLogicObject.FindPeriodAsIndex(MyParentForm.InitialBatchPeriod);
                     }
                     else
                     {
-                        FLoadAndFilterLogicObject.PeriodIndex = (myParentForm.InitialBatchYear == FMainDS.ALedger[0].CurrentFinancialYear) ? 1 : 0;
+                        FLoadAndFilterLogicObject.PeriodIndex = (MyParentForm.InitialBatchYear == FMainDS.ALedger[0].CurrentFinancialYear) ? 1 : 0;
                     }
 
-                    performStandardLoad = false;
+                    PerformStandardLoad = false;
                 }
 
                 // Reset the start-up value
-                myParentForm.InitialBatchYear = -1;
+                MyParentForm.InitialBatchYear = -1;
             }
 
-            myParentForm.ClearCurrentSelections();
+            MyParentForm.ClearCurrentSelections();
 
             if (ViewMode)
             {
@@ -385,7 +385,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FLoadAndFilterLogicObject.DisableYearAndPeriod(true);
             }
 
-            if (performStandardLoad)
+            if (PerformStandardLoad)
             {
                 // Set up for current year with current and forwarding periods (on initial load this will already be set so will not fire a change)
                 FLoadAndFilterLogicObject.YearIndex = 0;
@@ -398,7 +398,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FBatchLoaded = true;
         }
 
-        private void SetupAccountAndCostCentreCombos(bool AActiveOnly = true, AGiftBatchRow ARow = null)
+        private void SetupAccountAndCostCentreCombos(bool AActiveOnly, AGiftBatchRow ARow = null)
         {
             if (!FBatchLoaded || (FActiveOnly != AActiveOnly))
             {
@@ -536,17 +536,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            bool Unposted = (ARow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
             if (!FPostingLogicObject.PostingInProgress)
             {
-                bool ActiveOnly = (ARow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+                bool ActiveOnly = Unposted;
                 RefreshBankAccountAndCostCentreFilters(ActiveOnly, ARow);
             }
 
             FLedgerNumber = ARow.LedgerNumber;
             FSelectedBatchNumber = ARow.BatchNumber;
 
-            FPetraUtilsObject.DetailProtectedMode =
-                (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
+            FPetraUtilsObject.DetailProtectedMode = (!Unposted || ViewMode);
             UpdateChangeableStatus();
 
             //Update the batch period if necessary
@@ -554,21 +555,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             RefreshCurrencyAndExchangeRateControls();
 
-            //Check for inactive cost centre and/or account codes
-            if (!cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1))
+            if (Unposted)
             {
-                MessageBox.Show(String.Format(Catalog.GetString("Batch {0} - the Cost Centre: '{1}' is no longer active and so cannot be used."),
-                        ARow.BatchNumber,
-                        ARow.BankCostCentre),
-                    Catalog.GetString("Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+                //Check for inactive cost centre and/or account codes
+                if (!cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1))
+                {
+                    MessageBox.Show(String.Format(Catalog.GetString("Batch {0} - the Cost Centre: '{1}' is no longer active and so cannot be used."),
+                            ARow.BatchNumber,
+                            ARow.BankCostCentre),
+                        Catalog.GetString("Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
 
-            if (!cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1))
-            {
-                MessageBox.Show(String.Format(Catalog.GetString("Batch {0} - the Bank Account: '{1}' is no longer active and so cannot be used."),
-                        ARow.BatchNumber,
-                        ARow.BankAccountCode),
-                    Catalog.GetString("Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (!cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1))
+                {
+                    MessageBox.Show(String.Format(Catalog.GetString("Batch {0} - the Bank Account: '{1}' is no longer active and so cannot be used."),
+                            ARow.BatchNumber,
+                            ARow.BankAccountCode),
+                        Catalog.GetString("Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
 

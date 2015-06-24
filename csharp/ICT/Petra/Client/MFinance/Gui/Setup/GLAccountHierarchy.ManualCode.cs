@@ -330,6 +330,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 mnuMain.Items.Remove(mniImportHierarchy);
                 mnuMain.Items.Remove(mniExportHierarchy);
             }
+
+            this.Text += String.Format(" for Ledger {0}", FLedgerNumber);
         }
 
         /// <summary>If the user sets this strangely, I'll just warn her...</summary>

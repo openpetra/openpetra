@@ -1242,8 +1242,8 @@ namespace Ict.Common.Controls
                         if ((this.ControlMode == TNumericTextBoxMode.Decimal) || (this.ControlMode == TNumericTextBoxMode.Currency))
                         {
                             // We can include decimal separators in our pattern
-                            if (((this.Text.Contains(FNumberDecimalSeparator) == false) && (this.Text.Contains(FCurrencyDecimalSeparator) == false)) ||
-                                this.SelectedText.Contains(FNumberDecimalSeparator) || this.SelectedText.Contains(FCurrencyDecimalSeparator))
+                            if (((this.Text.Contains(FNumberDecimalSeparator) == false) && (this.Text.Contains(FCurrencyDecimalSeparator) == false))
+                                || this.SelectedText.Contains(FNumberDecimalSeparator) || this.SelectedText.Contains(FCurrencyDecimalSeparator))
                             {
                                 // Include the decimal/currency separators as well
                                 NumberPattern += (FNumberDecimalSeparator + FCurrencyDecimalSeparator);
@@ -1276,11 +1276,12 @@ namespace Ict.Common.Controls
                         int newSelStart = 0;
                         string newText;
 
-                        newText = this.Text.Substring(0, this.SelectionStart) + OkStr + this.Text.Substring(this.SelectionStart + this.SelectedText.Length);
+                        newText = this.Text.Substring(0, this.SelectionStart) + OkStr + this.Text.Substring(
+                            this.SelectionStart + this.SelectedText.Length);
                         newSelStart = intPrevSelStart + OkStr.Length;
 
                         // We may need to truncate the text if we now exceed the specified number of decimal places
-                        if (ControlMode == TNumericTextBoxMode.Decimal || ControlMode == TNumericTextBoxMode.Currency)
+                        if ((ControlMode == TNumericTextBoxMode.Decimal) || (ControlMode == TNumericTextBoxMode.Currency))
                         {
                             // find the position of the decimal separator
                             int decimalPos = newText.IndexOf(FNumberDecimalSeparator);
@@ -1313,7 +1314,6 @@ namespace Ict.Common.Controls
                         base.Text = newText;
                         this.SelectionStart = newSelStart;
                         this.SelectionLength = 0;
-
                     }
                     catch (Exception Exp)
                     {
@@ -1342,7 +1342,8 @@ namespace Ict.Common.Controls
                         else
                         {
                             int intPrevSelStart = this.SelectionStart;
-                            base.Text = this.Text.Substring(0, this.SelectionStart) + this.Text.Substring(this.SelectionStart + this.SelectedText.Length);
+                            base.Text = this.Text.Substring(0, this.SelectionStart) + this.Text.Substring(
+                                this.SelectionStart + this.SelectedText.Length);
                             this.SelectionStart = intPrevSelStart;
                             this.SelectionLength = 0;
                         }

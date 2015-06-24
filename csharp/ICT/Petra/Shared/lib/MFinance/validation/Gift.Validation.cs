@@ -86,7 +86,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
-            bool isImporting = AContext.ToString().Contains("Importing");
+            bool IsImporting = AContext.ToString().Contains("Importing");
 
             // Bank Account Code must be active
             ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnBankAccountCodeId];
@@ -269,7 +269,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 {
                     VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
                         ValidationControlsData.ValidationControlLabel +
-                        (isImporting ? String.Empty : " of Batch Number " + ValidationContext.ToString()),
+                        (IsImporting ? String.Empty : " of Batch Number " + ValidationContext.ToString()),
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition/removal to/from TVerificationResultCollection
@@ -311,7 +311,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.GlEffectiveDate,
                     StartDateCurrentPeriod,
                     EndDateLastForwardingPeriod,
-                    ValidationControlsData.ValidationControlLabel + (isImporting ? String.Empty : " of Batch Number " + ValidationContext.ToString()),
+                    ValidationControlsData.ValidationControlLabel + (IsImporting ? String.Empty : " of Batch Number " + ValidationContext.ToString()),
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     AContext,

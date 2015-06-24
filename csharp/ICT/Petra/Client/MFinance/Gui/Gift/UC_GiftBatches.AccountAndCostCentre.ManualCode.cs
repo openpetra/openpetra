@@ -169,31 +169,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Call this to initialise the 'Lists' (tables) for the ComboBoxes
         /// </summary>
         /// <param name="ALoadAndFilterLogicObject">Supply a reference to the Filter Logic object because it needs a reference to the same Lists</param>
-        public void RefreshBankAccountAndCostCentreData(TUC_GiftBatches_LoadAndFilter ALoadAndFilterLogicObject)
+        /// <param name="ACostCentreTab"></param>
+        /// <param name="AAccountTab"></param>
+        public void RefreshBankAccountAndCostCentreData(TUC_GiftBatches_LoadAndFilter ALoadAndFilterLogicObject,
+            out ACostCentreTable ACostCentreTab,
+            out AAccountTable AAccountTab)
         {
             //Populate CostCentreList variable
-            DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+            DataTable CostCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
                 FLedgerNumber);
 
-            ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+            ACostCentreTable TmpCostCentreTable = new ACostCentreTable();
 
-            FMainDS.Tables.Add(tmpCostCentreTable);
-            DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
-            FMainDS.RemoveTable(tmpCostCentreTable.TableName);
+            FMainDS.Tables.Add(TmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref CostCentreList, FMainDS.Tables[TmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(TmpCostCentreTable.TableName);
 
-            FCostCentreTable = (ACostCentreTable)costCentreList;
+            FCostCentreTable = (ACostCentreTable)CostCentreList;
             ALoadAndFilterLogicObject.CostCentreTable = FCostCentreTable;
+            ACostCentreTab = FCostCentreTable;
 
             //Populate AccountList variable
-            DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+            DataTable AccountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
 
-            AAccountTable tmpAccountTable = new AAccountTable();
-            FMainDS.Tables.Add(tmpAccountTable);
-            DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
-            FMainDS.RemoveTable(tmpAccountTable.TableName);
+            AAccountTable TmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(TmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref AccountList, FMainDS.Tables[TmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(TmpAccountTable.TableName);
 
-            FAccountTable = (AAccountTable)accountList;
+            FAccountTable = (AAccountTable)AccountList;
             ALoadAndFilterLogicObject.AccountTable = FAccountTable;
+            AAccountTab = FAccountTable;
         }
 
         /// <summary>

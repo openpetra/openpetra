@@ -4329,6 +4329,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [NoRemoting]
         public static bool PostGiftBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
         {
+            //Used in validation of arguments
+            AVerifications = new TVerificationResultCollection();
+
             #region Validate Arguments
 
             if (ALedgerNumber <= 0)
@@ -4339,8 +4342,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (ABatchNumbers.Count == 0)
             {
-                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The list of Batch numbers to post is empty!"),
-                        Utilities.GetMethodName(true)));
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting Gift Batch",
+                        "No Gift Batches to post",
+                        TResultSeverity.Resv_Noncritical));
+                return false;
             }
 
             foreach (Int32 batchNumber in ABatchNumbers)
@@ -4358,7 +4365,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             List <Int32>GLBatchNumbers = new List <int>();
             Dictionary <Int32, String>BatchCurrencyCode = new Dictionary <Int32, String>();
 
-            AVerifications = new TVerificationResultCollection();
             //For use in transaction delegate
             TVerificationResultCollection VerificationResult = AVerifications;
             TVerificationResultCollection SingleVerificationResultCollection;

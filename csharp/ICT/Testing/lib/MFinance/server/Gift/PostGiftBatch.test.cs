@@ -916,24 +916,6 @@ namespace Tests.MFinance.Server.Gift
                 Assert.Fail(Message);
             }
 
-            Message = "Validation failed for posting a Gift Batch without any batch numbers.";
-
-            // Post a Gift Batch without any batch numbers
-            try
-            {
-                TGiftTransactionWebConnector.PostGiftBatches(1, BatchNumbers, out VerificationResult);
-                Assert.Fail(Message);
-            }
-            catch (ArgumentException e)
-            {
-                Assert.AreEqual("Function:Post Gift Batches - The list of Batch numbers to post is empty!", e.Message,
-                    Message);
-            }
-            catch
-            {
-                Assert.Fail(Message);
-            }
-
             Message = "Validation failed for posting a Gift Batch with batch number less than 1.";
             BatchNumbers.Add(-1);
 

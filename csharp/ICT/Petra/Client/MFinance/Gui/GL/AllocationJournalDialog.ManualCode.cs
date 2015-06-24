@@ -577,8 +577,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCurrentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
             }
 
-            FAnalysisAttributesLogic.AllocationAnalAttrRequiredUpdating(DS, null,
-                ((TCmbAutoPopulated)sender).GetSelectedString(), TransactionNumber);
+            FAnalysisAttributesLogic.TransAnalAttrRequiredUpdating(DS, null,
+                ((TCmbAutoPopulated)sender).GetSelectedString(), TransactionNumber, false);
             RefreshAnalysisAttributesGrid((TCmbAutoPopulated)sender, DS);
         }
 

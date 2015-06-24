@@ -1827,6 +1827,9 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public static bool PostGLBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
         {
+            //Used in validation of arguments
+            AVerifications = new TVerificationResultCollection();
+
             #region Validate Arguments
 
             if (ALedgerNumber <= 0)
@@ -1837,8 +1840,12 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             else if (ABatchNumbers.Count == 0)
             {
-                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The list of GL Batch numbers to post is empty!"),
-                        Utilities.GetMethodName(true)));
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting GL Batch",
+                        "No GL Batches to post",
+                        TResultSeverity.Resv_Noncritical));
+                return false;
             }
 
             foreach (Int32 batchNumber in ABatchNumbers)
@@ -1854,7 +1861,6 @@ namespace Ict.Petra.Server.MFinance.Common
             #endregion Validate Arguments
 
             // TODO: get a lock on this ledger, no one else is allowed to change anything.
-            AVerifications = new TVerificationResultCollection();
             //For use in transaction delegate
             TVerificationResultCollection VerificationResult = AVerifications;
             TVerificationResultCollection SingleVerificationResultCollection;
