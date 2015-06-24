@@ -974,7 +974,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // Get a new time and rate for the date
 
             // We need to protect the situation where our saving code has auto-deleted a row.  In that case we will be leaving in order to select an existing row.
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Detached) || (FPreviouslySelectedDetailRow.RowState == DataRowState.Deleted))
+
+            if ((FPreviouslySelectedDetailRow == null)
+                || (FPreviouslySelectedDetailRow.RowState == DataRowState.Detached) || (FPreviouslySelectedDetailRow.RowState == DataRowState.Deleted))
             {
                 return;
             }

@@ -1074,17 +1074,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>
         /// Changes any * character(s) in the middle of a Search Criteria's text into % character(s)
-        /// for all textual Search Criteria into which the user can type text. This is to make the 
+        /// for all textual Search Criteria into which the user can type text. This is to make the
         /// SQL-92 'LIKE' operator do what the user intended. The only case when this isn't done is
         /// when the Search Criteria's text starts with || AND ends with ||. This signalises that the
         /// Search Criteria's text is to be taken absolutely literally, that is, wild card characters are
         /// to be processed as the characters they really are, and not as wildcards.
         /// </summary>
-        /// <remarks>IMPORTANT: The Method must work with a *copy* of ACriteriaDT and apply data changes only in there as 
-        /// otherwise the Search Criterias' text on the screen gets updated (eg. * characters would get replaced with % 
+        /// <remarks>IMPORTANT: The Method must work with a *copy* of ACriteriaDT and apply data changes only in there as
+        /// otherwise the Search Criterias' text on the screen gets updated (eg. * characters would get replaced with %
         /// characters on screen)!</remarks>
         /// <param name="ACriteriaDT">DataTable holding the one DataRow that contains the Search Criteria data.</param>
-        /// <returns>New DataTable holding the one DataRow that contains the Search Criteria Data in which the wildcard 
+        /// <returns>New DataTable holding the one DataRow that contains the Search Criteria Data in which the wildcard
         /// and 'stops' processing was applied to the relevant Search Criteria.</returns>
         private DataTable ProcessWildCardsAndStops(DataTable ACriteriaDT)
         {
@@ -1125,14 +1125,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // In case the Search Criteria's text is not to be taken absolutely literally:
             if (!(ASearchCriteria.StartsWith("||")
-                && ASearchCriteria.EndsWith("||")))
-            {                
+                  && ASearchCriteria.EndsWith("||")))
+            {
                 for (int Counter = 1; Counter < ASearchCriteria.Length - 1; Counter++)
                 {
                     if (ASearchCriteria[Counter] == '*')
                     {
                         ASearchCriteria = ASearchCriteria.Substring(0, Counter) +
-                            '%' + ASearchCriteria.Substring(Counter + 1, ASearchCriteria.Length - (Counter + 1));
+                                          '%' + ASearchCriteria.Substring(Counter + 1, ASearchCriteria.Length - (Counter + 1));
                     }
                 }
             }

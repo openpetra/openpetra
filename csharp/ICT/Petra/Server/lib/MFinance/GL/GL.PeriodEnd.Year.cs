@@ -158,6 +158,56 @@ namespace Ict.Petra.Server.MFinance.GL
             FledgerInfo = ALedgerInfo;
         }
 
+        private void PurgeProcessedFeeTable()
+        {
+            TDBTransaction Transaction = null;
+            Boolean ShouldCommit = true;
+
+            if (!FInfoMode)
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    ref ShouldCommit,
+                    delegate
+                    {
+                        String Query = "DELETE FROM a_processed_fee WHERE" +
+                                       " a_ledger_number_i=" + FledgerInfo.LedgerNumber +
+                                       " AND a_period_number_i<=" + FledgerInfo.NumberOfAccountingPeriods;
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+
+                        Query = "UPDATE a_processed_fee SET a_period_number_i = a_period_number_i-" + FledgerInfo.NumberOfAccountingPeriods +
+                                " WHERE a_ledger_number_i=" + FledgerInfo.LedgerNumber;
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+                    });
+            }
+        }
+
+        private void PurgeIchStewardshipTable()
+        {
+            TDBTransaction Transaction = null;
+            Boolean ShouldCommit = true;
+
+            if (!FInfoMode)
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    ref ShouldCommit,
+                    delegate
+                    {
+                        String Query = "DELETE FROM a_ich_stewardship WHERE" +
+                                       " a_ledger_number_i=" + FledgerInfo.LedgerNumber +
+                                       " AND a_period_number_i<=" + FledgerInfo.NumberOfAccountingPeriods;
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+
+                        Query = "UPDATE a_ich_stewardship SET a_period_number_i = a_period_number_i-" + FledgerInfo.NumberOfAccountingPeriods +
+                                " WHERE a_ledger_number_i=" + FledgerInfo.LedgerNumber;
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+                    });
+            }
+        }
+
         /// <summary>
         /// Master routine ...
         /// </summary>
@@ -215,6 +265,9 @@ namespace Ict.Petra.Server.MFinance.GL
 
             RunPeriodEndSequence(new TResetForwardPeriodICH(FledgerInfo),
                 Catalog.GetString("Re-base last year's forward-posted ICH Stewardship to the new year."));
+
+            PurgeProcessedFeeTable();
+            PurgeIchStewardshipTable();
 
             if (!FInfoMode && !FHasCriticalErrors)
             {

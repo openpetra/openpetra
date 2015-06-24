@@ -348,11 +348,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         txtAmountToPay.CurrencyCode = row.CurrencyCode;
                     }
 
-                    decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(supplier.CurrencyCode,
-                        FLedgerRow.BaseCurrency,
-                        DateTime.Today,
-                        false);
-                    txtExchangeRate.NumberValueDecimal = CurrentRate;
+/*
+ *                  decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(supplier.CurrencyCode,
+ *                      FLedgerRow.BaseCurrency,
+ *                      DateTime.Today,
+ *                      false);
+ */
+                    txtExchangeRate.NumberValueDecimal = FSelectedPaymentRow.ExchangeRateToBase;
                     cmbPaymentType.SetSelectedString(supplier.PaymentType);
 
                     if (txtCurrency.Text == FLedgerRow.BaseCurrency)

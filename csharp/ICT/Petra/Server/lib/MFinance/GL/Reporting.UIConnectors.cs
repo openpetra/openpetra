@@ -2761,6 +2761,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DateTime PeriodEnd = AParameters["param_to_date"].ToDate();
             String PeriodRange = "BETWEEN '" + PeriodStart.ToString("yyyy-MM-dd") + "' AND '" + PeriodEnd.ToString("yyyy-MM-dd") + "'";
             Int32 PeriodYear = PeriodEnd.Year;
+            String amountField = (AParameters["param_currency"].ToString().StartsWith("Int")) ? "a_gift_amount_intl_n" : "a_gift_amount_n";
 
             DateTime Year = new DateTime(AParameters["param_year0"].ToInt32(), 1, 1);
             String Year1Range = "BETWEEN '" + Year.ToString("yyyy-MM-dd") + "' AND '" + Year.AddYears(1).AddDays(-1).ToString("yyyy-MM-dd") + "'";
@@ -2793,11 +2794,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 + " partnerrecipient.p_partner_key_n AS RecipientKey," +
                 " partnerrecipient.p_partner_short_name_c AS RecipientName," +
                 " partnerrecipient.p_partner_class_c AS RecipientClass," +
-                " SUM(CASE WHEN gift.a_date_entered_d " + PeriodRange + " THEN detail.a_gift_amount_n ELSE 0 END) AS AmountPeriod," +
-                " SUM(CASE WHEN gift.a_date_entered_d " + Year1Range + " THEN detail.a_gift_amount_n ELSE 0 END) AS AmountYear1," +
-                " SUM(CASE WHEN gift.a_date_entered_d " + Year2Range + " THEN detail.a_gift_amount_n ELSE 0 END) AS AmountYear2," +
-                " SUM(CASE WHEN gift.a_date_entered_d " + Year3Range + " THEN detail.a_gift_amount_n ELSE 0 END) AS AmountYear3," +
-                " SUM(CASE WHEN gift.a_date_entered_d " + Year4Range + " THEN detail.a_gift_amount_n ELSE 0 END) AS AmountYear4"
+                " SUM(CASE WHEN gift.a_date_entered_d " + PeriodRange + " THEN detail." + amountField + " ELSE 0 END) AS AmountPeriod," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + Year1Range + " THEN detail." + amountField + " ELSE 0 END) AS AmountYear1," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + Year2Range + " THEN detail." + amountField + " ELSE 0 END) AS AmountYear2," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + Year3Range + " THEN detail." + amountField + " ELSE 0 END) AS AmountYear3," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + Year4Range + " THEN detail." + amountField + " ELSE 0 END) AS AmountYear4"
 
                 + " FROM" +
                 " PUB_p_partner as partnerfield," +

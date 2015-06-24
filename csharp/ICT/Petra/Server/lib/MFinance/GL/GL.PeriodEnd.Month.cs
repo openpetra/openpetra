@@ -305,11 +305,22 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void CheckIfRevaluationIsDone()
         {
-            if ((new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
-                     TLedgerInitFlagEnum.Revaluation).Flag))
+            if (!FInfoMode)
             {
-                return; // Revaluation has been performed for the current period.
+                return;
             }
+
+            /*
+             * I'm no longer looking at this flag,
+             * since it can be set even though some accounts are left requiring revaluation.
+             * See Mantis 0004059
+             *
+             * if ((new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
+             *       TLedgerInitFlagEnum.Revaluation).Flag))
+             * {
+             *  return; // Revaluation has been performed for the current period.
+             * }
+             */
 
             TDBTransaction Transaction = null;
 
@@ -329,9 +340,9 @@ namespace Ict.Petra.Server.MFinance.GL
                     if (ForeignAccountCount > 0)
                     {
                         TVerificationResult tvr = new TVerificationResult(
-                            Catalog.GetString("Ledger revaluation"),
+                            Catalog.GetString("Currency revaluation"),
                             Catalog.GetString(
-                                "A foreign currency revaluation is required for this ledger,\r\nalthough you may choose to proceed without it."), "",
+                                "Before proceeding you may want to revalue the foreign currency accounts."), "",
                             TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Noncritical);
                         // Error is non-critical - the user can choose to continue.
                         FverificationResults.Add(tvr);

@@ -143,13 +143,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     DateTime dateEffectiveFrom = DateTime.MinValue;
                     decimal rateOfExchange = 0.0m;
 
-                    if (CommonRoutines.GetBestExchangeRate(exchangeRateData.ADailyExchangeRate, strCurrencyCode,
-                            FLedgerBaseCurrency, false, out rateOfExchange, out dateEffectiveFrom) == false)
-                    {
-                        // Don't think this should happen because we should have the rate the journal used already
-                    }
+                    Boolean InitiallyActive = CommonRoutines.GetBestExchangeRate(exchangeRateData.ADailyExchangeRate, strCurrencyCode,
+                        FLedgerBaseCurrency, false, out rateOfExchange, out dateEffectiveFrom);
 
-                    AddADataRow(RowIndex, AccountCode, strCurrencyCode, rateOfExchange, dateEffectiveFrom);
+                    AddADataRow(RowIndex, AccountCode, strCurrencyCode, rateOfExchange, dateEffectiveFrom, InitiallyActive);
                     ++RowIndex;
                 }
             }
@@ -196,9 +193,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void AddADataRow(int AIndex, String AAccountCode, string ACurrencyValue, decimal AExchangeRate, DateTime AdateEffectiveFrom)
+        private void AddADataRow(int AIndex,
+            String AAccountCode,
+            string ACurrencyValue,
+            decimal AExchangeRate,
+            DateTime AdateEffectiveFrom,
+            Boolean ADoRevaluation)
         {
-            CurrencyExchange ce = new CurrencyExchange(AAccountCode, ACurrencyValue, AExchangeRate, AdateEffectiveFrom);
+            CurrencyExchange ce = new CurrencyExchange(AAccountCode, ACurrencyValue, AExchangeRate, AdateEffectiveFrom, ADoRevaluation);
 
             FcurrencyExchangeList.Add(ce);
             FBoundList = new DevAge.ComponentModel.BoundList <CurrencyExchange>
@@ -252,7 +254,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            string[] currencies = new string[intUsedEntries];
+            string[] foreignAccounts = new string[intUsedEntries];
             decimal[] rates = new decimal[intUsedEntries];
             int j = 0;
 
@@ -260,7 +262,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (FcurrencyExchangeList[i].DoRevaluation)
                 {
-                    currencies[j] = FcurrencyExchangeList[i].Currency;
+                    foreignAccounts[j] = FcurrencyExchangeList[i].AccountCode;
                     rates[j] = FcurrencyExchangeList[i].mExchangeRate;
                     j++;
                 }
@@ -271,18 +273,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TVerificationResultCollection verificationResult;
             bool blnRevalutationState =
                 TRemote.MFinance.GL.WebConnectors.Revaluate(FLedgerNumber,
-                    currencies, rates, ToCostCentre, out verificationResult);
+                    foreignAccounts, rates, ToCostCentre, out verificationResult);
             this.Cursor = Cursors.Default;
+
+            String Message = verificationResult.BuildVerificationResultString();
+
+            if (Message == "")
+            {
+                Message = Catalog.GetString("Revaluation Successful.");
+            }
 
             if (blnRevalutationState)
             {
-                MessageBox.Show(verificationResult.BuildVerificationResultString(),
-                    Catalog.GetString("Revaluation error"));
+                MessageBox.Show(Message, Catalog.GetString("Revaluation"));
             }
             else
             {
-                MessageBox.Show(verificationResult.BuildVerificationResultString(),
-                    Catalog.GetString("Revaluation success"));
+                MessageBox.Show(Message, Catalog.GetString("Revaluation"));
 
                 // Notify the exchange rate screen, if it is there
                 TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
@@ -408,16 +415,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     intStatus = DO_NO_REVALUATION;
                     mDoRevaluation = false;
                 }
-
-                if (mExchangeRate == 1.0m)
-                {
-                    intStatus = IS_NOT_INITIALIZED;
-                    mDoRevaluation = false;
-                }
                 else
                 {
-                    intStatus = DO_REVALUATION;
-                    mDoRevaluation = true;
+                    if (mExchangeRate == 1.0m)
+                    {
+                        intStatus = IS_NOT_INITIALIZED;
+                        mDoRevaluation = false;
+                    }
+                    else
+                    {
+                        intStatus = DO_REVALUATION;
+                        mDoRevaluation = true;
+                    }
                 }
             }
 
@@ -428,10 +437,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /// <param name="ACurrency">Defines the foreign currency</param>
             /// <param name="AExchangeRate">Defines the exchange rate and 0 is the value to define a invalid rate.</param>
             /// <param name="AdateEffectiveFrom">How old is this Exchange Rate</param>
-            public CurrencyExchange(String AAccountCode, string ACurrency, decimal AExchangeRate, DateTime AdateEffectiveFrom)
+            /// <param name="ADoRevaluation">Initially set this row active</param>
+            public CurrencyExchange(String AAccountCode, string ACurrency, decimal AExchangeRate, DateTime AdateEffectiveFrom, Boolean ADoRevaluation)
             {
                 FAccountCode = AAccountCode;
                 mCurrency = ACurrency;
+                mDoRevaluation = ADoRevaluation;
                 SetRateAndStatus(AExchangeRate, AdateEffectiveFrom);
             }
 

@@ -23,7 +23,7 @@
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [uco_GeneralSettings]
+            Controls: [uco_GeneralSettings, rgrDepth]
         uco_GeneralSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
             Height:270
@@ -37,7 +37,7 @@
         
         tpgAdditionalSettings:
             Label: Additional Settings
-            Controls: [rgrFormatCurrency, rgrDepth]
+            Controls: [rgrFormatCurrency]
         rgrFormatCurrency:
             ParameterName: param_currency_format
             Label: Format currency numbers:
@@ -54,15 +54,14 @@
         rgrDepth:
             ParameterName: param_depth
             Label: Depth
-            Controls: [rbtDetail, rbtStandard, rbtSummary]
+            Controls: [rbtStandard, rbtDetail]
         rbtDetail:
             Label: Detail
             ParameterValue: detail
         rbtStandard:
             ParameterValue: standard
-        rbtSummary:
-            ParameterValue: summary
-        
+
+
     ReportParameters:{ColumnFunction=TFinanceColumnFunction}
         Para0:
             Name: Actual Selected Year

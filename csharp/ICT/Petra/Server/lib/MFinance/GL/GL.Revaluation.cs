@@ -57,11 +57,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     {
         /// <summary>
         /// Main Revaluate Routine!
-        /// A single call of this routine creates a batch, a journal and a twin set of transactions
-        /// for each account number - cost center combination which holds a foreign currency value
+        /// A single call of this routine creates a batch, a journal and 2 transactions
+        /// for each account number/cost center combination that holds a foreign currency value
         /// </summary>
         /// <param name="ALedgerNum">Number of the Ledger to be revaluated</param>
-        /// <param name="AForeignCurrency">Types (Array) of the foreign currency account</param>
+        /// <param name="AForeignAccount">Account Codes (Array) of the selected foreign currency accounts</param>
         /// <param name="ANewExchangeRate">Array of the exchange rates</param>
         /// <param name="ACostCentre">Which Cost Centre should win / lose money in this process</param>
         /// <param name="AVerificationResult">A TVerificationResultCollection for possible error messages</param>
@@ -69,13 +69,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool Revaluate(
             int ALedgerNum,
-            string[] AForeignCurrency,
+            string[] AForeignAccount,
             decimal[] ANewExchangeRate,
             String ACostCentre,
             out TVerificationResultCollection AVerificationResult)
         {
             CLSRevaluation revaluation = new CLSRevaluation(ALedgerNum,
-                AForeignCurrency, ANewExchangeRate, ACostCentre);
+                AForeignAccount, ANewExchangeRate, ACostCentre);
 
             bool blnReturn = revaluation.RunRevaluation();
 
@@ -94,7 +94,7 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         private int F_LedgerNum;
         private int F_AccountingPeriod;
-        private string[] F_CurrencyCode;
+        private string[] F_ForeignAccount;
         private decimal[] F_ExchangeRate;
         String F_CostCentre;
 
@@ -117,12 +117,12 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Constructor to initialize a variable set.
         /// </summary>
         public CLSRevaluation(int ALedgerNum,
-            string[] AForeignCurrency,
+            string[] AForeignAccount,
             decimal[] ANewExchangeRate,
             String ACostCentre)
         {
             F_LedgerNum = ALedgerNum;
-            F_CurrencyCode = AForeignCurrency.Distinct().ToArray();
+            F_ForeignAccount = AForeignAccount;
             F_ExchangeRate = ANewExchangeRate;
             F_CostCentre = ACostCentre;
             FVerificationCollection = new TVerificationResultCollection();
@@ -147,12 +147,12 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             try
             {
-                TLedgerInfo gli = new TLedgerInfo(F_LedgerNum);
-                F_BaseCurrency = gli.BaseCurrency;
+                TLedgerInfo ledger = new TLedgerInfo(F_LedgerNum);
+                F_BaseCurrency = ledger.BaseCurrency;
                 F_BaseCurrencyDigits = new TCurrencyInfo(F_BaseCurrency).digits;
-                F_RevaluationAccCode = gli.RevaluationAccount;
-                F_FinancialYear = gli.CurrentFinancialYear;
-                F_AccountingPeriod = gli.CurrentPeriod;
+                F_RevaluationAccCode = ledger.RevaluationAccount;
+                F_FinancialYear = ledger.CurrentFinancialYear;
+                F_AccountingPeriod = ledger.CurrentPeriod;
 
                 if (!RunRevaluationIntern())
                 {
@@ -162,7 +162,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 if (F_resultSeverity != TResultSeverity.Resv_Critical)
                 {
                     new TLedgerInitFlagHandler(F_LedgerNum,
-                        TLedgerInitFlagEnum.Revaluation).Flag = true;
+                        TLedgerInitFlagEnum.Revaluation).Flag = true; // Set the REVALUATION flag on the Ledger. THIS FLAG IS NOW IGNORED.
                 }
             }
             catch (EVerificationException terminate)
@@ -174,64 +174,35 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private Boolean RunRevaluationIntern()
         {
-            AAccountTable AccountTable = new AAccountTable();
-            AGeneralLedgerMasterTable GlmTable = new AGeneralLedgerMasterTable();
-
             TDBTransaction Transaction = null;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 delegate
                 {
-                    AAccountRow accountTemplate = (AAccountRow)AccountTable.NewRowTyped(false);
-
-                    accountTemplate.LedgerNumber = F_LedgerNum;
-                    accountTemplate.AccountActiveFlag = true;
-                    accountTemplate.ForeignCurrencyFlag = true;
-                    AccountTable = AAccountAccess.LoadUsingTemplate(accountTemplate, Transaction);
-
-                    AGeneralLedgerMasterRow glmTemplate = (AGeneralLedgerMasterRow)GlmTable.NewRowTyped(false);
-                    glmTemplate.LedgerNumber = F_LedgerNum;
-                    glmTemplate.Year = F_FinancialYear;
-                    GlmTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(glmTemplate, Transaction);
-                });
-
-            if (AccountTable.Rows.Count == 0) // not using any foreign accounts?
-            {
-                FVerificationCollection.Add(new TVerificationResult(
-                        strStatusContent, Catalog.GetString("No foreign currency accounts are used in this ledger."), TResultSeverity.Resv_Status));
-                return true;
-            }
-
-            for (int iCnt = 0; iCnt < AccountTable.Rows.Count; ++iCnt)
-            {
-                AAccountRow accountRow = (AAccountRow)AccountTable[iCnt];
-
-                for (int kCnt = 0; kCnt < F_CurrencyCode.Length; ++kCnt)
-                {
-                    // AForeignCurrency[] and ANewExchangeRate[] shall support a value
-                    // for this account resp. for the currency of the account
-                    if (accountRow.ForeignCurrencyCode.Equals(F_CurrencyCode[kCnt]))
+                    for (Int32 i = 0; i < F_ForeignAccount.Length; i++)
                     {
-                        GlmTable.DefaultView.RowFilter = "a_account_code_c = '" + accountRow.AccountCode + "'";
+                        AGeneralLedgerMasterTable GlmTable = new AGeneralLedgerMasterTable();
+                        AGeneralLedgerMasterRow glmTemplate = (AGeneralLedgerMasterRow)GlmTable.NewRowTyped(false);
+                        glmTemplate.LedgerNumber = F_LedgerNum;
+                        glmTemplate.Year = F_FinancialYear;
+                        glmTemplate.AccountCode = F_ForeignAccount[i];
+                        GlmTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(glmTemplate, Transaction);
 
-                        if (GlmTable.DefaultView.Count > 0)
+                        if (GlmTable.Rows.Count > 0)
                         {
-                            RevaluateAccount(GlmTable.DefaultView, F_ExchangeRate[kCnt], F_CurrencyCode[kCnt]);
+                            RevaluateAccount(GlmTable, F_ExchangeRate[i], F_ForeignAccount[i]);
                         }
                     }
-                }
-            }
+                });
 
             return CloseRevaluationAccountingBatch();
         }
 
-        private void RevaluateAccount(DataView GLMView, decimal AExchangeRate, string ACurrencyCode)
+        private void RevaluateAccount(AGeneralLedgerMasterTable AGlmTbl, decimal AExchangeRate, string ACurrencyCode)
         {
-            foreach (DataRowView RowView in GLMView)
+            foreach (AGeneralLedgerMasterRow glmRow in AGlmTbl.Rows)
             {
-                AGeneralLedgerMasterRow glmRow = (AGeneralLedgerMasterRow)RowView.Row;
-                ACostCentreTable tempTbl = null;
                 AGeneralLedgerMasterPeriodTable glmpTbl = null;
 
                 TDBTransaction transaction = null;
@@ -241,21 +212,8 @@ namespace Ict.Petra.Server.MFinance.GL
                     ref transaction,
                     delegate
                     {
-                        tempTbl = ACostCentreAccess.LoadByPrimaryKey(F_LedgerNum, glmRow.CostCentreCode, transaction);
                         glmpTbl = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(glmRow.GlmSequence, F_AccountingPeriod, transaction);
                     });
-
-                if (tempTbl.Rows.Count == 0)
-                {
-                    continue; // I really don't expect this, but if it does happen, this will prevent a crash!
-                }
-
-                ACostCentreRow tempRow = tempTbl[0];
-
-                if (!tempRow.PostingCostCentreFlag)
-                {
-                    continue; // I do expect this - many rows are not "posting" cost centres.
-                }
 
                 try
                 {

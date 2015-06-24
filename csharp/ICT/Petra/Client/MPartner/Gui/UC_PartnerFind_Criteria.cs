@@ -1154,7 +1154,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             TMatches NewMatchValue = TMatches.BEGINS;
             string TextBoxText = ATextBox.Text;
             string CriteriaValue;
-            
+
             //            TLogging.Log("GeneralLeaveHandler for " + ATextBox.Name + ". SplitButton: " + ACriteriaControl.Name);
 
             if (TextBoxText.Contains("*")
@@ -1168,20 +1168,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                     NewMatchValue = TMatches.ENDS;
                 }
                 else if (TextBoxText.EndsWith("||")
-                    && (TextBoxText.StartsWith("||")))
+                         && (TextBoxText.StartsWith("||")))
                 {
 //                        TLogging.Log(ATextBox.Name + " begins with || and ends with ||  = EXACT");
-                        NewMatchValue = TMatches.EXACT;
+                    NewMatchValue = TMatches.EXACT;
                 }
                 else if (TextBoxText.EndsWith("*")
-                    && !(TextBoxText.StartsWith("*")))
+                         && !(TextBoxText.StartsWith("*")))
                 {
 //                    TLogging.Log(ATextBox.Name + " ends with *  = BEGINS");
                     NewMatchValue = TMatches.BEGINS;
                 }
                 else if ((TextBoxText.EndsWith("*")
-                    && (TextBoxText.StartsWith("*")))
-                    || (TextBoxText.StartsWith("*")))
+                          && (TextBoxText.StartsWith("*")))
+                         || (TextBoxText.StartsWith("*")))
                 {
 //                    TLogging.Log(ATextBox.Name + " begins and ends with *, or begins with *  = CONTAINS");
                     NewMatchValue = TMatches.CONTAINS;
