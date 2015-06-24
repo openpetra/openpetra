@@ -58,8 +58,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 || !dtpStartDate.ValidDate(false))
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("No valid date."),
-                    Catalog.GetString("Please enter a valid date."),
+                    Catalog.GetString("Date format problem"),
+                    Catalog.GetString("Please check the date entry."),
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }

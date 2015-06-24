@@ -438,7 +438,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 yearEndBatch.SubSystemCode = CommonAccountingSubSystemsEnum.GL;
             }
 
-            string narrativeTo = Catalog.GetString("Year end re-allocation to {2}-{3}");
             string narrativeFromTo = Catalog.GetString("Year end re-allocation from {0}-{1} to {2}-{3}");
             DataTable accountBalanceTable = new DataTable();
             TDBTransaction transaction = null;
@@ -451,7 +450,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     foreach (DataRowView rv in costCentreTbl.DefaultView)
                     {
-                        String narrativeMessage = narrativeTo;
                         ACostCentreRow CCRow = (ACostCentreRow)rv.Row;
                         String Query = "SELECT DISTINCT a_general_ledger_master.a_account_code_c AS Account," +
                                        " a_general_ledger_master_period.a_actual_base_n AS Balance," +
@@ -493,7 +491,6 @@ namespace Ict.Petra.Server.MFinance.GL
                                     || ((TotalForCostCentre > 0) && (RollupStyle == CCRollupStyleEnum.Deficit)))    // Or I should rollup deficit, but I didn't get one,
                                 {
                                     DestCC = CCRow.CostCentreCode;                                              // I'll keep the balance in the same CC.
-                                    narrativeMessage = narrativeFromTo;
                                 }
                             }
                             else
@@ -501,7 +498,6 @@ namespace Ict.Petra.Server.MFinance.GL
                                 if (RollupStyle == CCRollupStyleEnum.Never)                                     // Or if I've been told never to roll up
                                 {
                                     DestCC = CCRow.CostCentreCode;                                              // I'll keep the balance in the same CC.
-                                    narrativeMessage = narrativeFromTo;
                                 }
                             }
                         }
@@ -529,15 +525,17 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             if (DoExecuteableCode)
                             {
-                                yearEndBatch.AddBaseCurrencyTransaction(
+                                ATransactionRow transRow = yearEndBatch.AddBaseCurrencyTransaction(
                                     accountCode, CCRow.CostCentreCode,
-                                    String.Format(narrativeMessage, CCRow.CostCentreCode, accountCode, DestCC, CCRow.RetEarningsAccountCode),
+                                    String.Format(narrativeFromTo, CCRow.CostCentreCode, accountCode, DestCC, CCRow.RetEarningsAccountCode),
                                     "YEAR-END", !isDebit, TransactionAmount);
+                                transRow.SystemGenerated = true;
 
-                                yearEndBatch.AddBaseCurrencyTransaction(
+                                transRow = yearEndBatch.AddBaseCurrencyTransaction(
                                     CCRow.RetEarningsAccountCode, DestCC,
-                                    String.Format(narrativeMessage, CCRow.CostCentreCode, accountCode, DestCC, CCRow.RetEarningsAccountCode),
+                                    String.Format(narrativeFromTo, CCRow.CostCentreCode, accountCode, DestCC, CCRow.RetEarningsAccountCode),
                                     "YEAR-END", isDebit, TransactionAmount);
+                                transRow.SystemGenerated = true;
                             }
                         } // foreach Account
 

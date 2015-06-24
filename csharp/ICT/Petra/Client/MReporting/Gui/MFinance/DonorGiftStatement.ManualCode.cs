@@ -50,46 +50,53 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            if ((AReportAction == TReportActionEnum.raGenerate)
-                && (rbtPartner.Checked && (txtDonor.Text == "0000000000")))
+            if (AReportAction == TReportActionEnum.raGenerate)
             {
-                TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("No donor selected."),
-                    Catalog.GetString("Please select a donor."),
-                    TResultSeverity.Resv_Critical);
+                if (rbtPartner.Checked && (txtDonor.Text == "0000000000"))
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("No donor selected."),
+                        Catalog.GetString("Please select a donor."),
+                        TResultSeverity.Resv_Critical);
 
-                FPetraUtilsObject.AddVerificationResult(VerificationResult);
-            }
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
 
-            if ((AReportAction == TReportActionEnum.raGenerate)
-                && rbtExtract.Checked
-                && (txtExtract.Text == ""))
-            {
-                TVerificationResult VerificationMessage = new TVerificationResult(
-                    Catalog.GetString("Enter an extract name"),
-                    Catalog.GetString("No extract name entered!"), TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationMessage);
-            }
+                if (rbtExtract.Checked && (txtExtract.Text == ""))
+                {
+                    TVerificationResult VerificationMessage = new TVerificationResult(
+                        Catalog.GetString("Enter an extract name"),
+                        Catalog.GetString("No extract name entered!"), TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationMessage);
+                }
 
-            if ((AReportAction == TReportActionEnum.raGenerate)
-                && (txtMinAmount.NumberValueInt > txtMaxAmount.NumberValueInt))
-            {
-                TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("Gift Limit wrong."),
-                    Catalog.GetString("Minimum Amount can't be greater than Maximum Amount."),
-                    TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationResult);
-            }
+                if (txtMinAmount.NumberValueInt > txtMaxAmount.NumberValueInt)
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("Gift Limit wrong."),
+                        Catalog.GetString("Minimum Amount can't be greater than Maximum Amount."),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
 
-            if ((AReportAction == TReportActionEnum.raGenerate)
-                && (cmbReportType.SelectedItem.ToString() == "Complete")
-                && (dtpFromDate.Date > dtpToDate.Date))
-            {
-                TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("From date is later than to date."),
-                    Catalog.GetString("Please change from date or to date."),
-                    TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                if (!dtpFromDate.ValidDate() || !dtpToDate.ValidDate())
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("Date format problem"),
+                        Catalog.GetString("Please check the date entry."),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+
+                if ((cmbReportType.SelectedItem.ToString() == "Complete")
+                    && (dtpFromDate.Date > dtpToDate.Date))
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("From date is later than to date."),
+                        Catalog.GetString("Please change from date or to date."),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
             }
 
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);

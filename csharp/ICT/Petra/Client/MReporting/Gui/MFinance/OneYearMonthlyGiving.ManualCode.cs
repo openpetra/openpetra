@@ -90,21 +90,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
 
-            if ((!dtpFromDate.Date.HasValue) || (!dtpToDate.Date.HasValue))
+            if (AReportAction == TReportActionEnum.raGenerate)
             {
-                if (AReportAction == TReportActionEnum.raGenerate)
+                if (!dtpFromDate.ValidDate() || !dtpToDate.ValidDate())
                 {
                     TVerificationResult VerificationResult = new TVerificationResult(
-                        Catalog.GetString("Invalid dates."),
-                        Catalog.GetString("Provide values for From date and To date."),
+                        Catalog.GetString("Date format problem"),
+                        Catalog.GetString("Please check the date entry."),
                         TResultSeverity.Resv_Critical);
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
-            }
-            else
-            {
-                if ((AReportAction == TReportActionEnum.raGenerate)
-                    && (dtpFromDate.Date > dtpToDate.Date))
+
+                if (dtpFromDate.Date > dtpToDate.Date)
                 {
                     TVerificationResult VerificationResult = new TVerificationResult(
                         Catalog.GetString("From date is later than to date."),
@@ -117,8 +114,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     && (dtpFromDate.Date.Value.Year != dtpToDate.Date.Value.Year))
                 {
                     TVerificationResult VerificationResult = new TVerificationResult(
-                        Catalog.GetString("Year value in from-date is different than from year value in to-date."),
-                        Catalog.GetString("Please use the same year."),
+                        Catalog.GetString("Date problem."),
+                        Catalog.GetString("From Date and To Date must be in the same year."),
                         TResultSeverity.Resv_Critical);
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }

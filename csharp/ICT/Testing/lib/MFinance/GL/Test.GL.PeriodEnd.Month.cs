@@ -275,26 +275,27 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
 
             TVerificationResultCollection verificationResult;
-            bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
-                FLedgerNumber, true, out verificationResult);
-            bool blnStatusArrived = false;
 
-            for (int i = 0; i < verificationResult.Count; ++i)
-            {
-                if (verificationResult[i].ResultCode.Equals(
-                        TPeriodEndErrorAndStatusCodes.PEEC_05.ToString()))
-                {
-                    blnStatusArrived = true;
-                    Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
-                        "A critical error is required: need to run revaluation first ...");
-                }
-            }
-
-            Assert.IsTrue(blnStatusArrived, "Status message has been shown");
-            Assert.IsTrue(blnHasErrors, "should fail because revaluation needs to be run first");
+/*
+ * This error is no longer critical - it's OK to run month end even if a reval is required. (Mantis# 03905)
+ *
+ *          bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+ *              FLedgerNumber, true, out verificationResult);
+ *
+ *          for (int i = 0; i < verificationResult.Count; ++i)
+ *          {
+ *              if (verificationResult[i].ResultCode.Equals(
+ *                      TPeriodEndErrorAndStatusCodes.PEEC_05.ToString()))
+ *              {
+ *                  blnStatusArrived = true;
+ *                  Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
+ *                      "A critical error is required: need to run revaluation first ...");
+ *              }
+ *          }
+ */
 
             // run revaluation
-            blnHasErrors = TRevaluationWebConnector.Revaluate(FLedgerNumber, new string[] { "GBP" }, new decimal[] { 1.2m },
+            Boolean blnHasErrors = TRevaluationWebConnector.Revaluate(FLedgerNumber, new string[] { "GBP" }, new decimal[] { 1.2m },
                 TLedgerInfo.GetStandardCostCentre(FLedgerNumber),
                 out verificationResult);
 

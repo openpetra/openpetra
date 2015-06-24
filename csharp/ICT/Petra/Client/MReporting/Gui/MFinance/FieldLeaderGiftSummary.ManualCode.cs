@@ -103,33 +103,43 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             String paramFields = clbFields.GetCheckedStringList(true);
 
-            if ((AReportAction == TReportActionEnum.raGenerate)
-                && rbtSelectedFields.Checked
-                && (paramFields.Length == 0))
+            if (AReportAction == TReportActionEnum.raGenerate)
             {
-                TVerificationResult VerificationMessage = new TVerificationResult(
-                    Catalog.GetString("Please select at least one field."),
-                    Catalog.GetString("No fields selected!"), TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationMessage);
-            }
+                if (rbtSelectedFields.Checked && (paramFields.Length == 0))
+                {
+                    TVerificationResult VerificationMessage = new TVerificationResult(
+                        Catalog.GetString("Please select at least one field."),
+                        Catalog.GetString("No fields selected!"), TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationMessage);
+                }
 
-            if ((AReportAction == TReportActionEnum.raGenerate) && (rbtAllFields.Checked))
-            {
-                paramFields = clbFields.GetAllStringList(true);
+                if (rbtAllFields.Checked)
+                {
+                    paramFields = clbFields.GetAllStringList(true);
+                }
+
+                if (!dtpFromDate.ValidDate() || !dtpToDate.ValidDate())
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("Date format problem"),
+                        Catalog.GetString("Please check the date entry."),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+
+                if (dtpFromDate.Date > dtpToDate.Date)
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("From date is later than to date."),
+                        Catalog.GetString("Please change from date or to date."),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
             }
 
             paramFields = paramFields.Replace("\"", "'");           // single quotes for SQL field names.
             ACalc.AddParameter("param_clbFields", paramFields);
 
-            if ((AReportAction == TReportActionEnum.raGenerate)
-                && (dtpFromDate.Date > dtpToDate.Date))
-            {
-                TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("From date is later than to date."),
-                    Catalog.GetString("Please change from date or to date."),
-                    TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationResult);
-            }
 
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             //

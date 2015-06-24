@@ -32,10 +32,7 @@
                 initial="no"/>
     <tablefield name="p_deletable_l"
                 type="bit"
-                descr="This defines if the language code can be deleted.
-&lt;br/&gt;This can only be updated by the system manager.
-&lt;br/&gt;At the risk of serious operational integrity.
-&lt;br/&gt;Default to Yes"
+                descr="This defines if the language code can be deleted."
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -7684,8 +7681,10 @@
                 type="integer"
                 descr="Order to display the account or heading on the Balance Sheet &amp; Income Statement report."
                 format="&gt;&gt;9"
-                label="Report Order"/>
-    <!-- Constraints on table a_account_hierarchy_detail -->
+                label="Report Order"
+                initial="0"
+                notnull="yes"/>
+      <!-- Constraints on table a_account_hierarchy_detail -->
     <primarykey name="a_account_hierarchy_detail_pk"
                 descr=""
                 thisFields="a_ledger_number_i, a_account_hierarchy_code_c, a_reporting_account_code_c"/>
@@ -8185,18 +8184,21 @@
                 descr=""
                 format="&gt;&gt;9"
                 label="Actuals Data Retention Period"
+                help="How many years to retain GL data."
                 initial="0"/>
     <tablefield name="a_budget_data_retention_i"
                 type="integer"
                 descr=""
                 format="&gt;&gt;9"
                 label="Budget Data Retention Period"
+                help="How many years to retain budget data."
                 initial="0"/>
     <tablefield name="a_number_fwd_posting_periods_i"
                 type="integer"
                 descr=""
                 format="&gt;,&gt;&gt;&gt;,&gt;&gt;9"
                 label="Number Fwd Posting Periods"
+                help="How many periods can be kept open."
                 initial="0"/>
     <tablefield name="a_ledger_number_i"
                 type="integer"
@@ -10380,7 +10382,7 @@
                 descr="This defines which currency is being used"
                 format="X(8)"
                 label="Transaction Currency"
-                help="Enter a currency code"
+                help="Currency code for this transaction"
                 notnull="yes"/>
     <!-- Constraints on table a_recurring_journal -->
     <primarykey name="a_recurring_journal_pk"
@@ -10470,7 +10472,7 @@
                 descr="This defines which currency is being used"
                 format="X(8)"
                 label="Transaction Currency"
-                help="Enter a currency code"/>
+                help="Currency code for this transaction"/>
     <tablefield name="a_transaction_amount_n"
                 type="number"
                 length="24"
@@ -10486,7 +10488,7 @@
                 descr="This defines which currency is being used"
                 format="X(8)"
                 label="Base Currency"
-                help="Enter a currency code"/>
+                help="Ledger currency code"/>
     <tablefield name="a_exchange_rate_to_base_n"
                 type="number"
                 length="24"
@@ -12704,7 +12706,7 @@
                 descr="This defines which currency is being used"
                 format="x(8)"
                 label="Currency Code"
-                help="Enter a currency code"
+                help="Currency code"
                 notnull="yes"/>
     <tablefield name="p_language_code_c"
                 type="varchar"

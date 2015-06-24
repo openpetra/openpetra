@@ -317,32 +317,26 @@ namespace Ict.Petra.Server.MFinance.GL
                 ref Transaction,
                 delegate
                 {
-                    try
-                    {
-                        // TODO: could also check for the balance in this month of the foreign currency account. if all balances are zero, no revaluation is needed.
-                        string testForForeignKeyAccount =
-                            String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
-                                AAccountTable.GetLedgerNumberDBName(),
-                                FledgerInfo.LedgerNumber,
-                                AAccountTable.GetForeignCurrencyFlagDBName());
+                    // TODO: could also check for the balance in this month of the foreign currency account. if all balances are zero, no revaluation is needed.
+                    string testForForeignKeyAccount =
+                        String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
+                            AAccountTable.GetLedgerNumberDBName(),
+                            FledgerInfo.LedgerNumber,
+                            AAccountTable.GetForeignCurrencyFlagDBName());
 
-                        if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, Transaction)) != 0)
-                        {
-                            TVerificationResult tvr = new TVerificationResult(
-                                Catalog.GetString("Ledger revaluation"),
-                                Catalog.GetString("Please run a foreign currency revaluation first."), "",
-                                TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
-                            // Error is critical but additional checks can still be done
-                            FverificationResults.Add(tvr);
-                            FHasCriticalErrors = true;
-                        }
-                    }
-                    catch (Exception ex)
+                    Int32 ForeignAccountCount = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, Transaction));
+
+                    if (ForeignAccountCount > 0)
                     {
-                        TLogging.Log("Unexpected error in CheckIfRevaluationIsDone(): " + ex.Message);
-                        throw ex;
+                        TVerificationResult tvr = new TVerificationResult(
+                            Catalog.GetString("Ledger revaluation"),
+                            Catalog.GetString(
+                                "A foreign currency revaluation is required for this ledger,\r\nalthough you may choose to proceed without it."), "",
+                            TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Noncritical);
+                        // Error is non-critical - the user can choose to continue.
+                        FverificationResults.Add(tvr);
                     }
-                });
+                }); // Get NewOrExisting AutoReadTransaction
         }
 
         private void CheckForUnpostedBatches()
