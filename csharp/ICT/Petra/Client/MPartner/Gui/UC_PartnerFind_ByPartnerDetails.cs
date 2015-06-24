@@ -1060,16 +1060,96 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Start the asynchronous search operation on the PetraServer
             if (!FBankDetailsTab)
             {
-                FPartnerFindObject.PerformSearch(FCriteriaData, chkDetailedResults.Checked);
+                FPartnerFindObject.PerformSearch(ProcessWildCardsAndStops(FCriteriaData), chkDetailedResults.Checked);
             }
             else
             {
-                FPartnerFindObject.PerformSearchByBankDetails(FCriteriaData);
+                FPartnerFindObject.PerformSearchByBankDetails(ProcessWildCardsAndStops(FCriteriaData));
             }
 
             // Start thread that checks for the end of the search operation on the PetraServer
             FinishedCheckThread = new Thread(new ThreadStart(SearchFinishedCheckThread));
             FinishedCheckThread.Start();
+        }
+
+        /// <summary>
+        /// Changes any * character(s) in the middle of a Search Criteria's text into % character(s)
+        /// for all textual Search Criteria into which the user can type text. This is to make the 
+        /// SQL-92 'LIKE' operator do what the user intended. The only case when this isn't done is
+        /// when the Search Criteria's text starts with || AND ends with ||. This signalises that the
+        /// Search Criteria's text is to be taken absolutely literally, that is, wild card characters are
+        /// to be processed as the characters they really are, and not as wildcards.
+        /// </summary>
+        /// <remarks>IMPORTANT: The Method must work with a *copy* of ACriteriaDT and apply data changes only in there as 
+        /// otherwise the Search Criterias' text on the screen gets updated (eg. * characters would get replaced with % 
+        /// characters on screen)!</remarks>
+        /// <param name="ACriteriaDT">DataTable holding the one DataRow that contains the Search Criteria data.</param>
+        /// <returns>New DataTable holding the one DataRow that contains the Search Criteria Data in which the wildcard 
+        /// and 'stops' processing was applied to the relevant Search Criteria.</returns>
+        private DataTable ProcessWildCardsAndStops(DataTable ACriteriaDT)
+        {
+            DataTable ReturnValue = ACriteriaDT.Copy();
+            DataRow IndividualDR = ReturnValue.Rows[0];
+
+            IndividualDR["PartnerName"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["PartnerName"].ToString());
+            IndividualDR["PersonalName"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["PersonalName"].ToString());
+            IndividualDR["PreviousName"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["PreviousName"].ToString());
+            IndividualDR["Address1"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["Address1"].ToString());
+            IndividualDR["Address2"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["Address2"].ToString());
+            IndividualDR["Address3"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["Address3"].ToString());
+            IndividualDR["City"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["City"].ToString());
+            IndividualDR["PostCode"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["PostCode"].ToString());
+            IndividualDR["County"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["County"].ToString());
+            IndividualDR["Email"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["Email"].ToString());
+            IndividualDR["PhoneNumber"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["PhoneNumber"].ToString());
+
+            IndividualDR["AccountName"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["AccountName"].ToString());
+            IndividualDR["AccountNumber"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["AccountNumber"].ToString());
+            IndividualDR["Iban"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["Iban"].ToString());
+            IndividualDR["Bic"] = ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(IndividualDR["Bic"].ToString());
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Replaces any * character(s) in the middle of a Search Criteria's text with % character(s)
+        /// to make the SQL-92 'LIKE' operator do what the user intended. The only case when this isn't done is
+        /// when the Search Criteria's text starts with || AND ends with ||. This signalises that the
+        /// Search Criteria's text is to be taken absolutely literally, that is, wild card characters are
+        /// to be taken as the characters they really are, and not as wildcards. Also removes any leading or
+        /// trailing || characters ('stops').
+        /// </summary>
+        /// <param name="ASearchCriteria">Text value of a Search Criteria.</param>
+        /// <returns>Text value of a Search Criteria with all necessary replacements applied.</returns>
+        private string ReplaceWildCardsInMiddleOfSearchCriteriaAndRemoveStops(string ASearchCriteria)
+        {
+            // In case the Search Criteria's text is not to be taken absolutely literally:
+            if (!(ASearchCriteria.StartsWith("||")
+                && ASearchCriteria.EndsWith("||")))
+            {                
+                for (int Counter = 1; Counter < ASearchCriteria.Length - 1; Counter++)
+                {
+                    if (ASearchCriteria[Counter] == '*')
+                    {
+                        ASearchCriteria = ASearchCriteria.Substring(0, Counter) +
+                            '%' + ASearchCriteria.Substring(Counter + 1, ASearchCriteria.Length - (Counter + 1));
+                    }
+                }
+            }
+
+            // Remove any leading || character sequence occurence (used only when the Search Criteria's text starts with || AND ends with ||)
+            if (ASearchCriteria.StartsWith("||"))
+            {
+                ASearchCriteria = ASearchCriteria.Substring(2);
+            }
+
+            // Remove any trailing || character sequence occurence (used to signalise that no % should be appended automatically to the Search Criteria's text)
+            if (ASearchCriteria.EndsWith("||"))
+            {
+                ASearchCriteria = ASearchCriteria.Substring(0, ASearchCriteria.Length - 2);
+            }
+
+            return ASearchCriteria;
         }
 
         /// <summary>

@@ -1154,42 +1154,37 @@ namespace Ict.Petra.Client.MPartner.Gui
             TMatches NewMatchValue = TMatches.BEGINS;
             string TextBoxText = ATextBox.Text;
             string CriteriaValue;
-
+            
             //            TLogging.Log("GeneralLeaveHandler for " + ATextBox.Name + ". SplitButton: " + ACriteriaControl.Name);
 
             if (TextBoxText.Contains("*")
-                || (TextBoxText.Contains("%")))
+                || (TextBoxText.Contains("%"))
+                || (TextBoxText.EndsWith("||")))
             {
-                if (TextBoxText.StartsWith("*")
-                    && !(TextBoxText.EndsWith("*")))
+                if (TextBoxText.EndsWith("||")
+                    && !(TextBoxText.StartsWith("||")))
                 {
-                    //                    TLogging.Log(ATextBox.Name + " starts with *");
+//                    TLogging.Log(ATextBox.Name + " ends with ||  = ENDS");
                     NewMatchValue = TMatches.ENDS;
                 }
-                else if (TextBoxText.EndsWith("*")
-                         && !(TextBoxText.StartsWith("*")))
+                else if (TextBoxText.EndsWith("||")
+                    && (TextBoxText.StartsWith("||")))
                 {
-                    //                    TLogging.Log(ATextBox.Name + " ends with *");
+//                        TLogging.Log(ATextBox.Name + " begins with || and ends with ||  = EXACT");
+                        NewMatchValue = TMatches.EXACT;
+                }
+                else if (TextBoxText.EndsWith("*")
+                    && !(TextBoxText.StartsWith("*")))
+                {
+//                    TLogging.Log(ATextBox.Name + " ends with *  = BEGINS");
                     NewMatchValue = TMatches.BEGINS;
                 }
-                else if (TextBoxText.EndsWith("*")
-                         && (TextBoxText.StartsWith("*")))
+                else if ((TextBoxText.EndsWith("*")
+                    && (TextBoxText.StartsWith("*")))
+                    || (TextBoxText.StartsWith("*")))
                 {
-                    //                    TLogging.Log(ATextBox.Name + " contains *");
+//                    TLogging.Log(ATextBox.Name + " begins and ends with *, or begins with *  = CONTAINS");
                     NewMatchValue = TMatches.CONTAINS;
-                }
-
-                /*
-                 * Replace * character(s) in the middle of the text with % character(s)
-                 * to make the SQL-92 'LIKE' operator do what the user intended...
-                 */
-                for (int Counter = 1; Counter < TextBoxText.Length - 1; Counter++)
-                {
-                    if (TextBoxText[Counter] == '*')
-                    {
-                        TextBoxText = TextBoxText.Substring(0, Counter) +
-                                      '%' + TextBoxText.Substring(Counter + 1, TextBoxText.Length - (Counter + 1));
-                    }
                 }
 
                 /*
