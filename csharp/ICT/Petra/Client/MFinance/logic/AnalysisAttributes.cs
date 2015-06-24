@@ -568,12 +568,6 @@ namespace Ict.Petra.Client.MFinance.Logic
                         true);
                 }
 
-                if (requiredAnalAttrCodes.Count == 0)
-                {
-                    //Nothing to do
-                    return false;
-                }
-
                 //Populate current codes and which ones to add or delete
                 // (Check if loading required)
                 SetTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber);
@@ -591,7 +585,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                     string analAttrCode = transAnalAttrRow.AnalysisTypeCode;
                     currentAnalAttrCodes.Add(analAttrCode);
 
-                    if (!requiredAnalAttrCodes.Contains(analAttrCode))
+                    if ((requiredAnalAttrCodes.Count == 0) || !requiredAnalAttrCodes.Contains(analAttrCode))
                     {
                         //Populate the invalid codes string collection
                         analAttrCodesToDelete.Add(analAttrCode);
@@ -759,12 +753,6 @@ namespace Ict.Petra.Client.MFinance.Logic
                     AAccountCode,
                     true);
 
-                if (requiredAnalAttrCodes.Count == 0)
-                {
-                    //Nothing to do
-                    return false;
-                }
-
                 //Populate current codes and which ones to add or delete
                 // (Check if loading required)
                 SetRecurringTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber);
@@ -785,7 +773,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                     //Populate the current codes string collection
                     currentAnalAttrCodes.Add(analAttrCode);
 
-                    if (!requiredAnalAttrCodes.Contains(analAttrCode))
+                    if ((requiredAnalAttrCodes.Count == 0) || !requiredAnalAttrCodes.Contains(analAttrCode))
                     {
                         //Populate the invalid codes string collection
                         analAttrCodesToDelete.Add(analAttrCode);
