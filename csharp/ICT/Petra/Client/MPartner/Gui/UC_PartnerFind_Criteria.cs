@@ -1882,6 +1882,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ShowOrHidePartnerKeyMatchInfoText();
 
+            // Due to the Contact Details implementation the previous ways in which
+            // Email and Phone Number were found are no longer working -> disable
+            // those Criteria until they work again... (Bug #4048)!
+            txtEmail.Enabled = false;
+            txtPhoneNumber.Enabled = false;
+
             // put focus on txtPartnerName on screen load
             this.ActiveControl = txtPartnerName;
         }
