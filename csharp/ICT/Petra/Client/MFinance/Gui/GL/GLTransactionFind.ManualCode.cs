@@ -495,6 +495,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         btnSearch.Enabled = true;
                         Application.DoEvents();
                     }
+
+                    // enable or disable btnView
+                    if (FPagedDataTable.Rows.Count > 0)
+                    {
+                        btnView.Enabled = true;
+                    }
+                    else
+                    {
+                        btnView.Enabled = false;
+                    }
                 }
             }
         }
@@ -521,16 +531,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FGLTransactionFindObject != null)
             {
                 ReturnValue = FGLTransactionFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
-
-                // enable or disable btnView
-                if (ATotalPages > 0)
-                {
-                    btnView.Enabled = true;
-                }
-                else
-                {
-                    btnView.Enabled = false;
-                }
             }
 
             return ReturnValue;

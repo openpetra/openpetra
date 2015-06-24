@@ -483,7 +483,14 @@ namespace Ict.Petra.Server.MFinance.GL
                                 {
                                     if (accountList.Contains(accountBalanceRow["Account"].ToString()))
                                     {
-                                        TotalForCostCentre += Convert.ToDecimal(accountBalanceRow["Balance"]);
+                                        if (Convert.ToBoolean(accountBalanceRow["Debit"]))
+                                        {
+                                            TotalForCostCentre -= Convert.ToDecimal(accountBalanceRow["Balance"]);
+                                        }
+                                        else
+                                        {
+                                            TotalForCostCentre += Convert.ToDecimal(accountBalanceRow["Balance"]);
+                                        }
                                     }
                                 }
 

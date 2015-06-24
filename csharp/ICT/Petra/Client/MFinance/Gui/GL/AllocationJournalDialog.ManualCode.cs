@@ -72,8 +72,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtDetailTransactionAmount.CurrencyCode = FJournal.TransactionCurrency;
                 txtTotalAmount.NumberValueDecimal = 0.0m;
 
-                FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FJournal.BatchNumber, FJournal.JournalNumber);
-
                 if (FLedgerNumber != FJournal.LedgerNumber)
                 {
                     FLedgerNumber = FJournal.LedgerNumber;
@@ -85,16 +83,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, true);
                     }
 
-                    Thread thread = new Thread(SetupComboboxes);
-                    thread.Start();
-
-                    //SetupComboboxes();
+                    this.cmbFromAccountCode.SelectedValueChanged -= new System.EventHandler(this.AccountCodeDetailChanged);
+                    this.cmbDetailAccountCode.SelectedValueChanged -= new System.EventHandler(this.AccountCodeDetailChanged);
+                    SetupComboboxes();
+                    this.cmbFromAccountCode.SelectedValueChanged += new System.EventHandler(this.AccountCodeDetailChanged);
+                    this.cmbDetailAccountCode.SelectedValueChanged += new System.EventHandler(this.AccountCodeDetailChanged);
                 }
 
                 txtBatchNumber.Text = FJournal.BatchNumber.ToString();
 
                 // LastTransactionNumber + 1 is reserved for 'from' allocation
                 FNextTransactionNumber = FJournal.LastTransactionNumber + 2;
+
+                FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FJournal.BatchNumber, FJournal.JournalNumber);
 
                 SetupAnalysisAttributeGrid(grdFromAnalAttributes, ref FcmbFromAnalAttribValues);
                 SetupAnalysisAttributeGrid(grdToAnalAttributes, ref FcmbToAnalAttribValues);
@@ -262,7 +263,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCurrentTransactionNumber = ARow.TransactionNumber;
             }
 
-            RefreshAnalysisAttributesGrid(cmbDetailAccountCode, FMainDS);
+            if (FLedgerNumber != -1)
+            {
+                RefreshAnalysisAttributesGrid(cmbDetailAccountCode, FMainDS);
+            }
         }
 
         #region Events
@@ -573,7 +577,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCurrentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
             }
 
-            FAnalysisAttributesLogic.TransAnalAttrRequiredUpdating(DS, null,
+            FAnalysisAttributesLogic.AllocationAnalAttrRequiredUpdating(DS, null,
                 ((TCmbAutoPopulated)sender).GetSelectedString(), TransactionNumber);
             RefreshAnalysisAttributesGrid((TCmbAutoPopulated)sender, DS);
         }

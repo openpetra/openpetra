@@ -699,6 +699,129 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// There may or may not already be attribute assignments for this transaction.
         /// </summary>
         /// <param name="AGLBatchDS"></param>
+        /// <param name="AGLSetupDS">Can be null.  If supplied the code will use this to discover the required attributes without making a trip to the server.
+        /// Otherwise a server request is made.</param>
+        /// <param name="AAccountCode"></param>
+        /// <param name="ATransactionNumber"></param>
+        /// <returns></returns>
+        public bool AllocationAnalAttrRequiredUpdating(GLBatchTDS AGLBatchDS,
+            GLSetupTDS AGLSetupDS,
+            string AAccountCode,
+            int ATransactionNumber)
+        {
+            #region Validate Arguments
+
+            if (AGLBatchDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AGLBatchDS.ATransAnalAttrib == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The GL Transaction Analysis Attributes table in the dataset is null or empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AAccountCode.Length == 0)
+            {
+                return false;
+            }
+            else if (ATransactionNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Transaction number must be greater than 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            bool RetVal = false;
+
+            if (string.IsNullOrEmpty(AAccountCode))
+            {
+                return RetVal;
+            }
+
+            StringCollection RequiredAnalAttrCodes = new StringCollection();
+
+            if (AGLSetupDS != null)
+            {
+                // This makes use of the supplied SetupTDS, which is useful if it has been loaded prior to a loop
+                AGLSetupDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                    AAnalysisAttributeTable.GetAccountCodeDBName(),
+                    AAccountCode);
+
+                foreach (DataRowView drv in AGLSetupDS.AAnalysisAttribute.DefaultView)
+                {
+                    RequiredAnalAttrCodes.Add(drv.Row[AAnalysisAttributeTable.ColumnAnalysisTypeCodeId].ToString());
+                }
+            }
+            else
+            {
+                // Should only run once if needed
+                RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+                    AAccountCode, true);
+            }
+
+            SetTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber);
+
+            // If the AnalysisType list I'm currently using is the same as the list of required types, I can keep it (with any existing values).
+            bool existingListIsOk = (RequiredAnalAttrCodes.Count == AGLBatchDS.ATransAnalAttrib.DefaultView.Count);
+
+            if (existingListIsOk)
+            {
+                foreach (DataRowView rv in AGLBatchDS.ATransAnalAttrib.DefaultView)
+                {
+                    ATransAnalAttribRow row = (ATransAnalAttribRow)rv.Row;
+
+                    if (!RequiredAnalAttrCodes.Contains(row.AnalysisTypeCode))
+                    {
+                        existingListIsOk = false;
+                        break;
+                    }
+                }
+            }
+
+            if (existingListIsOk)
+            {
+                return RetVal;
+            }
+
+            // Delete any existing Analysis Type records and re-create the list (Removing any prior selections by the user).
+            //First show all attribute rows for current transaction
+            SetTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber);
+
+            foreach (DataRowView rv in AGLBatchDS.ATransAnalAttrib.DefaultView)
+            {
+                ATransAnalAttribRow attrRowCurrent = (ATransAnalAttribRow)rv.Row;
+                attrRowCurrent.Delete();
+
+                RetVal = true;
+            }
+
+            foreach (String analysisTypeCode in RequiredAnalAttrCodes)
+            {
+                ATransAnalAttribRow newRow = AGLBatchDS.ATransAnalAttrib.NewRowTyped(true);
+                newRow.LedgerNumber = FLedgerNumber;
+                newRow.BatchNumber = FBatchNumber;
+                newRow.JournalNumber = FJournalNumber;
+                newRow.TransactionNumber = ATransactionNumber;
+                newRow.AnalysisTypeCode = analysisTypeCode;
+                newRow.AccountCode = AAccountCode;
+
+                AGLBatchDS.ATransAnalAttrib.Rows.Add(newRow);
+
+                RetVal = true;
+            }
+
+            return RetVal;
+        }
+
+        /// <summary>
+        /// Need to ensure that the Analysis Attributes grid has all the entries
+        /// that are required for the selected account.
+        /// There may or may not already be attribute assignments for this transaction.
+        /// </summary>
+        /// <param name="AGLBatchDS"></param>
         /// <param name="ATransactionNumbers"></param>
         public void ReconcileRecurringTransAnalysisAttributes(GLBatchTDS AGLBatchDS, out string ATransactionNumbers)
         {

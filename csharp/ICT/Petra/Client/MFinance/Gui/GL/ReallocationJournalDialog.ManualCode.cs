@@ -75,8 +75,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtDetailTransactionAmount.CurrencyCode = FJournal.TransactionCurrency;
                 txtFromTransactionAmount.NumberValueDecimal = 0.0m;
 
-                FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FJournal.BatchNumber, FJournal.JournalNumber);
-
                 if (FLedgerNumber != FJournal.LedgerNumber)
                 {
                     FLedgerNumber = FJournal.LedgerNumber;
@@ -90,16 +88,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     SetupGrdAccounts();
 
-                    Thread thread = new Thread(SetupComboboxes);
-                    thread.Start();
-
-                    //SetupComboboxes();
+                    SetupComboboxes();
                 }
 
                 txtBatchNumber.Text = FJournal.BatchNumber.ToString();
 
                 // LastTransactionNumber + 1 is reserved for 'from' Reallocation
                 FNextTransactionNumber = FJournal.LastTransactionNumber + 2;
+
+                FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FJournal.BatchNumber, FJournal.JournalNumber);
 
                 SetupAnalysisAttributeGrid(grdFromAnalAttributes, ref FcmbFromAnalAttribValues);
                 SetupAnalysisAttributeGrid(grdToAnalAttributes, ref FcmbToAnalAttribValues);
@@ -297,7 +294,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCurrentTransactionNumber = ARow.TransactionNumber;
             }
 
-            RefreshAnalysisAttributesGrid(cmbDetailAccountCode, FMainDS);
+            if (FLedgerNumber != -1)
+            {
+                RefreshAnalysisAttributesGrid(cmbDetailAccountCode, FMainDS);
+            }
         }
 
         #region Events
@@ -696,7 +696,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCurrentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
             }
 
-            FAnalysisAttributesLogic.TransAnalAttrRequiredUpdating(DS, null, AccountCode, TransactionNumber);
+            FAnalysisAttributesLogic.AllocationAnalAttrRequiredUpdating(DS, null, AccountCode, TransactionNumber);
             RefreshAnalysisAttributesGrid(sender, DS);
         }
 
