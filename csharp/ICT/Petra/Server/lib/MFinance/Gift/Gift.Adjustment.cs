@@ -540,6 +540,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AOldGiftDetail"></param>
         /// <param name="AReversal">True for reverse or false for straight duplicate</param>
         /// <param name="AGiftCommentOne"></param>
+        /// <param name="ATransaction"></param>
         /// <param name="ARequestParams"></param>
         private static void AddDuplicateGiftDetailToGift(ref GiftBatchTDS AMainDS,
             ref AGiftRow AGift,

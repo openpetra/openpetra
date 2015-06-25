@@ -8867,6 +8867,13 @@
                 label="Form Description"
                 columnlabel="Form Description"
                 help="Enter the description of the form"/>
+    <tablefield name="a_form_file_name_c"
+                type="varchar"
+                descr="File name used for the form. Includes path information."
+                format="X(1000)"
+                label="File Name"
+                columnlabel="File Name"
+                help="Enter the file name used for the form"/>
     <tablefield name="a_form_type_code_c"
                 type="varchar"
                 descr="If there are several types of form then it can be specified here.  Eg an annual receipt and an individual receipt."

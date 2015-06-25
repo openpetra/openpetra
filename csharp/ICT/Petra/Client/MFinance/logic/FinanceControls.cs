@@ -720,7 +720,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// change the filter of the motivation detail combobox when a different motivation group gets selected
         /// </summary>
         /// <param name="AControl"></param>
-        /// <param name="AMotivationGroup"></param>
+        /// <param name="AActiveOnly"></param>
         public static void ChangeFilterMotivationGroupList(ref TCmbAutoPopulated AControl, bool AActiveOnly)
         {
             if (AActiveOnly)
@@ -785,6 +785,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AControl"></param>
         /// <param name="AMotivationGroup"></param>
+        /// <param name="AActiveOnly"></param>
         public static void ChangeFilterMotivationDetailList(ref TCmbAutoPopulated AControl, String AMotivationGroup, bool AActiveOnly)
         {
             string newFilter = String.Empty;
