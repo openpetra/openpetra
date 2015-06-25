@@ -50,6 +50,7 @@ using Ict.Petra.Server.MPartner;
 
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MFinance.GL;
+using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 using Ict.Petra.Server.MReporting.WebConnectors;
 using Ict.Petra.Server.MFinance.Common;
@@ -86,6 +87,7 @@ namespace Ict.Petra.Server.App.Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TPartnerServerLookups.VerifyPartner;
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookups.GetCurrentPostingRangeDates;
+            TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
             TMonthEnd.StewardshipCalculationDelegate = @TStewardshipCalculationWebConnector.PerformStewardshipCalculation;
             TGLPosting.PrintReportOnClientDelegate = @TReportingWebConnector.GenerateReportOnClient;
             TIntranetExportWebConnector.GetPrimaryEmailAndPrimaryPhoneDelegate = @TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhone;

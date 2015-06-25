@@ -275,19 +275,19 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.IsTrue(btnSave.Enabled, "The Save button should be enabled after adding a new row");
 
             // Work out our expectations
+            string expectedToCurrency = "USD";
             string baseCurrency = GetDefaultBaseCurrency();
-            string expectedFromCurrency = "USD";
 
             if (baseCurrency == "USD")
             {
-                expectedFromCurrency = "GBP";
+                baseCurrency = "GBP";
             }
 
             DateTime expectedDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             // Check the details panel after adding the new row
-            Assert.AreEqual(expectedFromCurrency, cmbFromCurrency.GetSelectedString());
-            Assert.AreEqual(baseCurrency, cmbToCurrency.GetSelectedString());
+            Assert.AreEqual(baseCurrency, cmbFromCurrency.GetSelectedString());
+            Assert.AreEqual(expectedToCurrency, cmbToCurrency.GetSelectedString());
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date);
             Assert.AreEqual(0.0m, txtExchangeRate.NumberValueDecimal);
 
@@ -300,17 +300,17 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(3, grdDetails.Rows.Count, "There should be 2 rows in the grid after saving a new row");
 
             // Even though an inverse row has been added we should still be highlighting the newly added row
-            Assert.AreEqual(expectedFromCurrency, cmbFromCurrency.GetSelectedString());
-            Assert.AreEqual(baseCurrency, cmbToCurrency.GetSelectedString());
+            Assert.AreEqual(baseCurrency, cmbFromCurrency.GetSelectedString());
+            Assert.AreEqual(expectedToCurrency, cmbToCurrency.GetSelectedString());
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date);
             Assert.AreEqual(2.0m, txtExchangeRate.NumberValueDecimal);
 
             // Now select the inverese row
-            SelectRowInGrid(2);
+            SelectRowInGrid(1);
 
             // Check the details are, in fact, the inverse
-            Assert.AreEqual(baseCurrency, cmbFromCurrency.GetSelectedString());
-            Assert.AreEqual(expectedFromCurrency, cmbToCurrency.GetSelectedString());
+            Assert.AreEqual(expectedToCurrency, cmbFromCurrency.GetSelectedString());
+            Assert.AreEqual(baseCurrency, cmbToCurrency.GetSelectedString());
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date);
             Assert.AreEqual(0.5m, txtExchangeRate.NumberValueDecimal);
 
@@ -662,54 +662,56 @@ namespace Tests.MFinance.Client.ExchangeRates
             TVerificationResultCollection results = new TVerificationResultCollection();
             string resultText;
             string firstResultCode;
+            Boolean gotDateWarning;
 
-            RunTestImport("corporate-csv/GoodImport.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("corporate-csv/GoodImport.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
+            Assert.IsTrue(gotDateWarning, "Expected a warning about dates");
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ACorporateExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             FMainDS.DeleteAllRows();
-            RunTestImport("corporate-csv/BadCurrencyImport.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("corporate-csv/BadCurrencyImport.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             FMainDS.DeleteAllRows();
-            RunTestImport("corporate-csv/BadDateImport.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("corporate-csv/BadDateImport.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             FMainDS.DeleteAllRows();
-            RunTestImport("corporate-csv/BadRateImport.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("corporate-csv/BadRateImport.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             // Test for a missing column
             FMainDS.DeleteAllRows();
-            RunTestImport("corporate-csv/MissingColumn.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("corporate-csv/MissingColumn.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             // Run the test(s) that have duplicates
             FMainDS.DeleteAllRows();
             FMainDS.InsertStandardRows();
-            RunTestImport("corporate-csv/GoodImport-WithDuplicates.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("corporate-csv/GoodImport-WithDuplicates.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(12, FMainDS.ACorporateExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             // And Headers
             FMainDS.DeleteAllRows();
-            RunTestImport("corporate-csv/GoodImport-WithHeader.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("corporate-csv/GoodImport-WithHeader.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ACorporateExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             // Test a date/rate only file - this is tab separated
             FMainDS.DeleteAllRows();
-            RunTestImport("corporate-csv/USD_EUR.csv", "\t", results, out resultText, out firstResultCode);
+            RunTestImport("corporate-csv/USD_EUR.csv", "\t", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ACorporateExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             // Test a file with its own inverses
             FMainDS.DeleteAllRows();
-            RunTestImport("corporate-csv/GoodImport-WithInverses.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("corporate-csv/GoodImport-WithInverses.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(4, FMainDS.ACorporateExchangeRate.Rows.Count, "Wrong number of rows after successful import");
         }
@@ -806,7 +808,8 @@ namespace Tests.MFinance.Client.ExchangeRates
             string ACSVSeparator,
             TVerificationResultCollection AResults,
             out string AResultText,
-            out string AFirstResultCode)
+            out string AFirstResultCode,
+            out Boolean AGotDateWarning)
         {
             string TestFile = Path.GetFullPath(TAppSettingsManager.GetValue("Testing.Path") + "/lib/MFinance/ExchangeRates/" + AFileName);
 
@@ -816,10 +819,18 @@ namespace Tests.MFinance.Client.ExchangeRates
             TImportExchangeRates.ImportCurrencyExRates(FMainDS.ACorporateExchangeRate, TestFile, ACSVSeparator, "Corporate", AResults);
 
             AResultText = String.Empty;
+            AGotDateWarning = false;
 
             for (int i = 0; i < AResults.Count; i++)
             {
-                AResultText += String.Format("{0}: {1}{2}", i.ToString(), AResults[i].ResultText, Environment.NewLine);
+                if (AResults[i].ResultText.Contains("Warning:") && AResults[i].ResultText.Contains("before the current accounting period"))
+                {
+                    AGotDateWarning = true;
+                }
+                else
+                {
+                    AResultText += String.Format("{0}: {1}{2}", i.ToString(), AResults[i].ResultText, Environment.NewLine);
+                }
             }
 
             if (AResultText.Length > 0)

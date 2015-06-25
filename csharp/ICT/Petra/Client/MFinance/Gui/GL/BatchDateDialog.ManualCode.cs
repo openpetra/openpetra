@@ -67,7 +67,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             txtMessage.Text = string.Format(Catalog.GetString("Enter date for Reversal of Batch {0}. (Between {1} and {2}.)"),
                 ABatchNumber, AStartDateCurrentPeriod.ToShortDateString(), AEndDateLastForwardingPeriod.ToShortDateString());
-            dtpReversalDate.Date = AStartDateCurrentPeriod;
+
+            // set default date for a new batch
+            if (DateTime.Today > AEndDateLastForwardingPeriod)
+            {
+                dtpReversalDate.Date = AEndDateLastForwardingPeriod;
+            }
+            else if (DateTime.Today < AStartDateCurrentPeriod)
+            {
+                dtpReversalDate.Date = AStartDateCurrentPeriod;
+            }
+            else
+            {
+                dtpReversalDate.Date = DateTime.Today;
+            }
         }
 
         private void BtnOK_Click(Object Sender, EventArgs e)

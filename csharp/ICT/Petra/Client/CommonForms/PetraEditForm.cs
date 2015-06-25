@@ -115,8 +115,12 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>todoComment</summary>
         protected Boolean FSuppressChangeDetection;
 
-        /// <summary>todoComment</summary>
+        /// <summary>Called immediately after the Save action has been started</summary>
         public event TDataSavingStartHandler DataSavingStarted;
+
+        /// <summary>Called after the Save action has been started and the data has been successfully validated
+        /// but before working out the changes that need to be saved</summary>
+        public event TDataSavingValidatedHandler DataSavingValidated;
 
         /// <summary>Fired when any control is changed</summary>
         public event TValueChangedHandler ControlChanged;
@@ -126,6 +130,8 @@ namespace Ict.Petra.Client.CommonForms
 
         /// <summary>todoComment</summary>
         public event TNoNoMasterDataToSaveHandler NoMasterDataToSave;
+
+        #region Properties
 
         /// <summary>Controls whether the SaveChanges function saves the changes or continues a begun save operation.</summary>
         public bool SubmitChangesContinue
@@ -169,7 +175,7 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        /// Tells whether the Screen has changes that are not yet saved
+        /// <summary>Tells whether the Screen has changes that are not yet saved.</summary>
         public Boolean HasChanges
         {
             get
@@ -182,7 +188,7 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        /// Shows that the user answered no to the "Save changes before exit?" question.
+        /// <summary>Shows that the user answered no to the "Save changes before exit?" question.</summary>
         public Boolean ChangesWereAbandonded
         {
             get
@@ -195,9 +201,7 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        /// <summary>
-        /// Tells whether the check if the Form can be closed has already been run
-        /// </summary>
+        /// <summary>Tells whether the check if the Form can be closed has already been run.</summary>
         public Boolean CloseFormCheckRun
         {
             get
@@ -210,7 +214,7 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        /// Tells which mode the screen should be opened in
+        /// <summary>Tells which mode the screen should be opened in.</summary>
         public TScreenMode ScreenMode
         {
             get
@@ -223,8 +227,24 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        /// <summary>Tells whether the Screen is working with new data (is not editing existing data).</summary>
+        public bool HasNewData
+        {
+            get
+            {
+                return FHasNewData;
+            }
+
+            set
+            {
+                FHasNewData = value;
+            }
+        }
+
+        #endregion
+
         /// <summary>
-        /// constructor
+        /// Constructor.
         /// </summary>
         /// <param name="ACallerForm">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
@@ -276,7 +296,13 @@ namespace Ict.Petra.Client.CommonForms
                 // The first group are the important controls, (actually used for data entry )
                 if (ctrl.GetType() == typeof(TextBox))
                 {
-                    ((TextBox)ctrl).TextChanged += new EventHandler(this.MultiEventHandler);
+                    // Some controls (TCmbLabelled, TTxtLabelledTextBox, TTxtPartnerKeyTextBox) contain
+                    // a control called lblDescription which we must not add an event handler for.
+                    // But all other TextBoxes need the event handler.
+                    if (!ctrl.Name.StartsWith("lblDescription"))
+                    {
+                        ((TextBox)ctrl).TextChanged += new EventHandler(this.MultiEventHandler);
+                    }
                 }
                 else if (ctrl.GetType() == typeof(TTxtMaskedTextBox))
                 {
@@ -555,7 +581,7 @@ namespace Ict.Petra.Client.CommonForms
                 }
                 else if (AControlToClear.GetType() == typeof(Ict.Common.Controls.TTxtCurrencyTextBox))
                 {
-                    ((Ict.Common.Controls.TTxtCurrencyTextBox)AControlToClear).NumberValueDecimal = 0;
+                    ((Ict.Common.Controls.TTxtCurrencyTextBox)AControlToClear).ClearBox();
                     ReturnValue = true;
                 }
             }
@@ -851,7 +877,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// todoComment
+        /// The 'save' process has been initiated
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -860,6 +886,20 @@ namespace Ict.Petra.Client.CommonForms
             if (DataSavingStarted != null)
             {
                 DataSavingStarted(this, e);
+            }
+        }
+
+        /// <summary>
+        /// The 'save' process has been initiated, the current data has been validated but the changes have not yet been assembled.
+        /// The calling code can cancel the save.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnDataSavingValidated(System.Object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (DataSavingValidated != null)
+            {
+                DataSavingValidated(this, e);
             }
         }
 
@@ -1114,6 +1154,9 @@ namespace Ict.Petra.Client.CommonForms
          */
         public override void TFrmPetra_Closing(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Remove focus from active control. This ensures OnLeave event is fired for control.
+            GetForm().ActiveControl = null;
+
             if ((e != null) && !CloseFormCheckRun)
             {
                 if (!CloseFormCheck())
@@ -1182,7 +1225,7 @@ namespace Ict.Petra.Client.CommonForms
 
 
         /// <summary>todoComment</summary>
-        protected void SetScreenCaption()
+        public void SetScreenCaption(string ACaptionPostFix = "")
         {
             String CaptionPrefix = "";
 
@@ -1191,7 +1234,7 @@ namespace Ict.Petra.Client.CommonForms
                 CaptionPrefix = StrFormCaptionPrefixNew;
             }
 
-            FWinForm.Text = CaptionPrefix + Catalog.GetString("New OpenPetra Screen");
+            FWinForm.Text = CaptionPrefix + FormTitle + ACaptionPostFix;
         }
 
         #endregion

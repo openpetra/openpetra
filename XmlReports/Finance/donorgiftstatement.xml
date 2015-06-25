@@ -125,14 +125,14 @@
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, Base)">
 						<value>
-							AND detail.a_gift_amount_n &gt;= {{param_min_amount}}
-							AND detail.a_gift_amount_n &lt;= {{param_max_amount}}
+							AND ABS(detail.a_gift_amount_n) &gt;= {{param_min_amount}}
+							AND ABS(detail.a_gift_amount_n) &lt;= {{param_max_amount}}
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, International)">
 						<value>
-							AND detail.a_gift_amount_intl_n &gt;= {{param_min_amount}}
-							AND detail.a_gift_amount_intl_n &lt;= {{param_max_amount}}
+							AND ABS(detail.a_gift_amount_intl_n) &gt;= {{param_min_amount}}
+							AND ABS(detail.a_gift_amount_intl_n) &lt;= {{param_max_amount}}
 						 </value>
 					</queryDetail>
 					<!--queryDetail condition="not(eq({param_report_type}, List)">
@@ -286,14 +286,14 @@
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, Base)">
 						<value>
-							AND detail.a_gift_amount_n &gt;= {{param_min_amount}}
-							AND detail.a_gift_amount_n &lt;= {{param_max_amount}}
+							AND ABS(detail.a_gift_amount_n) &gt;= {{param_min_amount}}
+							AND ABS(detail.a_gift_amount_n) &lt;= {{param_max_amount}}
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, International)">
 						<value>
-							AND detail.a_gift_amount_intl_n &gt;= {{param_min_amount}}
-							AND detail.a_gift_amount_intl_n &lt;= {{param_max_amount}}
+							AND ABS(detail.a_gift_amount_intl_n) &gt;= {{param_min_amount}}
+							AND ABS(detail.a_gift_amount_intl_n) &lt;= {{param_max_amount}}
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_report_type}, Complete)">

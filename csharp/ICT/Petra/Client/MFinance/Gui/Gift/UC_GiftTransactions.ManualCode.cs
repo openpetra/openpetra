@@ -37,6 +37,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MPartner.Gui;
 
@@ -76,6 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private string FBatchStatus = string.Empty;
         private bool FBatchUnposted = false;
+        private bool FShowStatusDialogOnLoad = true;
         private string FBatchCurrencyCode = string.Empty;
         private decimal FBatchExchangeRateToBase = 1.0m;
         private bool FGLEffectivePeriodChanged = false;
@@ -101,6 +103,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Specifies that initial transactions have loaded into the dataset
         /// </summary>
         public bool FGiftTransactionsLoaded = false;
+
+        /// <summary>
+        /// Sets a flag to show the status dialog when transactions are loaded
+        /// </summary>
+        public Boolean ShowStatusDialogOnLoad
+        {
+            set
+            {
+                FShowStatusDialogOnLoad = value;
+            }
+        }
 
         private Boolean ViewMode
         {
@@ -235,7 +248,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enter += new EventHandler(BeginEditMode);
             pnlDetails.Leave += new EventHandler(EndEditMode);
 
-            TUC_GiftTransactions_Recipient.SetTextBoxOverlayOnKeyMinistryCombo(FPreviouslySelectedDetailRow, FActiveOnly, cmbKeyMinistries,
+            bool ShowGiftDetail = EditableGiftDetail(FPreviouslySelectedDetailRow);
+
+            TUC_GiftTransactions_Recipient.SetTextBoxOverlayOnKeyMinistryCombo(FPreviouslySelectedDetailRow, ShowGiftDetail, cmbKeyMinistries,
                 cmbDetailMotivationDetailCode, txtDetailRecipientKeyMinistry, ref FMotivationDetail, FInEditMode, FBatchUnposted);
         }
 
@@ -256,7 +271,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void BeginEditMode(object sender, EventArgs e)
         {
-            bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
+            bool DisableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
 
             FInEditMode = true;
 
@@ -266,6 +281,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FLedgerNumber,
                 FPetraUtilsObject,
                 cmbKeyMinistries,
+                ref cmbDetailMotivationGroupCode,
                 ref cmbDetailMotivationDetailCode,
                 txtDetailRecipientKey,
                 FRecipientKey,
@@ -294,7 +310,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //On populating key ministry
-            if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+            if (DisableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).DataRowColumnsHaveChanged(FBatchRow))
             {
                 FPetraUtilsObject.DisableSaveButton();
             }
@@ -303,8 +319,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void EndEditMode(object sender, EventArgs e)
         {
             FInEditMode = false;
-            TUC_GiftTransactions_Recipient.OnEndEditMode(FPreviouslySelectedDetailRow, cmbKeyMinistries, cmbDetailMotivationDetailCode,
-                txtDetailRecipientKeyMinistry, ref FMotivationDetail, FActiveOnly, FInEditMode, FBatchUnposted);
+            bool ShowGiftDetail = EditableGiftDetail(FPreviouslySelectedDetailRow);
+
+            TUC_GiftTransactions_Recipient.OnEndEditMode(FPreviouslySelectedDetailRow,
+                cmbKeyMinistries,
+                cmbDetailMotivationGroupCode,
+                cmbDetailMotivationDetailCode,
+                txtDetailRecipientKeyMinistry,
+                ref FMotivationGroup,
+                ref FMotivationDetail,
+                ShowGiftDetail,
+                FInEditMode,
+                FBatchUnposted);
         }
 
         /// <summary>
@@ -391,6 +417,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //New set of transactions to be loaded
+            TFrmStatusDialog dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
+
+            if (FShowStatusDialogOnLoad == true)
+            {
+                dlgStatus.Show();
+                FShowStatusDialogOnLoad = false;
+                dlgStatus.Heading = String.Format(Catalog.GetString("Batch {0}"), ABatchNumber);
+                dlgStatus.CurrentStatus = Catalog.GetString("Loading transactions ...");
+            }
+
             FGiftTransactionsLoaded = false;
             FSuppressListChanged = true;
 
@@ -402,6 +438,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FirstGiftTransLoad || (FActiveOnly == (ViewMode || !FBatchUnposted)))
             {
                 FActiveOnly = !(ViewMode || !FBatchUnposted);
+                dlgStatus.CurrentStatus = Catalog.GetString("Initialising controls ...");
 
                 try
                 {
@@ -431,12 +468,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // otherwise we would overwrite transactions that have already been modified
             if (FMainDS.AGiftDetail.DefaultView.Count == 0)
             {
+                dlgStatus.CurrentStatus = Catalog.GetString("Requesting transactions from server ...");
                 LoadGiftDataForBatch(ALedgerNumber, ABatchNumber);
             }
 
             //Check if need to update batch period in each gift
             if (FBatchUnposted)
             {
+                dlgStatus.CurrentStatus = Catalog.GetString("Updating batch period ...");
                 ((TFrmGiftBatch)ParentForm).GetBatchControl().UpdateBatchPeriod();
             }
 
@@ -451,19 +490,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FSuppressListChanged = false;
 
+            dlgStatus.CurrentStatus = Catalog.GetString("Updating totals for the batch ...");
             UpdateTotals();
 
             if ((FPreviouslySelectedDetailRow != null) && (FBatchUnposted))
             {
                 bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
 
-                if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+                if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).DataRowColumnsHaveChanged(FBatchRow))
                 {
                     FPetraUtilsObject.DisableSaveButton();
                 }
             }
 
             FGiftTransactionsLoaded = true;
+            dlgStatus.Close();
 
             return true;
         }
@@ -931,28 +972,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void UpdateTotals()
         {
-            Decimal sum = 0;
-            Decimal sumBatch = 0;
-            Int32 GiftNumber = 0;
-            bool disableSaveButton = false;
-
             if (FPetraUtilsObject == null)
             {
                 return;
             }
 
-            //Sometimes a change in this unbound textbox causes a data changed condition
-            disableSaveButton = !FPetraUtilsObject.HasChanges;
+            Decimal SumTransactions = 0;
+            Decimal SumBatch = 0;
+            Int32 GiftNumber = 0;
+
+            //Sometimes a change in an unbound textbox causes a data changed condition
+            bool SaveButtonWasEnabled = FPetraUtilsObject.HasChanges;
+            bool DataChanges = false;
 
             if (FPreviouslySelectedDetailRow == null)
             {
-                txtGiftTotal.NumberValueDecimal = 0;
-                txtBatchTotal.NumberValueDecimal = 0;
+                if ((txtGiftTotal.NumberValueDecimal.HasValue && (txtGiftTotal.NumberValueDecimal.Value != 0))
+                    || (txtBatchTotal.NumberValueDecimal.HasValue && (txtBatchTotal.NumberValueDecimal.Value != 0)))
+                {
+                    txtGiftTotal.NumberValueDecimal = 0;
+                    txtBatchTotal.NumberValueDecimal = 0;
+                }
 
                 //If all details have been deleted
                 if ((FLedgerNumber != -1) && (FBatchRow != null) && (grdDetails.Rows.Count == 1))
                 {
-                    ((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(0, FBatchRow.BatchNumber);
+                    //((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(0, FBatchRow.BatchNumber);
+                    //Now we look at the batch and update the batch data
+                    if (FBatchRow.BatchTotal != SumBatch)
+                    {
+                        FBatchRow.BatchTotal = SumBatch;
+                        DataChanges = true;
+                    }
                 }
             }
             else
@@ -969,33 +1020,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             {
                                 if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
                                 {
-                                    sum += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
-                                    sumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                                    SumTransactions += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                                    SumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
                                 }
                                 else
                                 {
-                                    sum += gdr.GiftTransactionAmount;
-                                    sumBatch += gdr.GiftTransactionAmount;
+                                    SumTransactions += gdr.GiftTransactionAmount;
+                                    SumBatch += gdr.GiftTransactionAmount;
                                 }
                             }
                             else
                             {
-                                sumBatch += gdr.GiftTransactionAmount;
+                                SumBatch += gdr.GiftTransactionAmount;
                             }
                         }
                     }
                 }
 
-                txtGiftTotal.NumberValueDecimal = sum;
+                if ((txtGiftTotal.NumberValueDecimal.HasValue == false) || (txtGiftTotal.NumberValueDecimal.Value != SumTransactions))
+                {
+                    txtGiftTotal.NumberValueDecimal = SumTransactions;
+                }
+
                 txtGiftTotal.CurrencyCode = txtDetailGiftTransactionAmount.CurrencyCode;
                 txtGiftTotal.ReadOnly = true;
-                //this is here because at the moment the generator does not generate this
-                txtBatchTotal.NumberValueDecimal = sumBatch;
+
                 //Now we look at the batch and update the batch data
-                ((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(sumBatch, FBatchRow.BatchNumber);
+                if (FBatchRow.BatchTotal != SumBatch)
+                {
+                    FBatchRow.BatchTotal = SumBatch;
+                    DataChanges = true;
+                }
             }
 
-            if (disableSaveButton && FPetraUtilsObject.HasChanges)
+            if (txtBatchTotal.NumberValueDecimal.Value != SumBatch)
+            {
+                txtBatchTotal.NumberValueDecimal = SumBatch;
+            }
+
+            if (!DataChanges && !SaveButtonWasEnabled && FPetraUtilsObject.HasChanges)
             {
                 FPetraUtilsObject.DisableSaveButton();
             }
@@ -1254,8 +1317,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            if (TUC_GiftTransactions_Recipient.OnStartShowDetailsManual(ARow, cmbKeyMinistries, cmbDetailMotivationDetailCode,
-                    txtDetailRecipientKeyMinistry, ref FMotivationDetail, FActiveOnly, FGiftTransactionsLoaded, FInEditMode, FBatchUnposted))
+            if ((ARow != null) && FActiveOnly)
+            {
+                // if selected gift has changed to being a reversal gift
+                if ((ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0)
+                    && !string.IsNullOrEmpty(cmbDetailMotivationGroupCode.Filter))
+                {
+                    TFinanceControls.ChangeFilterMotivationGroupList(ref cmbDetailMotivationGroupCode, false);
+                    cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode, -1);
+                }
+                // if selected gift has changed to being a non reversal gift
+                else if (!((ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0))
+                         && string.IsNullOrEmpty(cmbDetailMotivationGroupCode.Filter))
+                {
+                    TFinanceControls.ChangeFilterMotivationGroupList(ref cmbDetailMotivationGroupCode, true);
+                    cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode, -1);
+                }
+            }
+
+            bool ShowGiftDetail = EditableGiftDetail(FPreviouslySelectedDetailRow);
+
+            if (TUC_GiftTransactions_Recipient.OnStartShowDetailsManual(ARow, cmbKeyMinistries, cmbDetailMotivationGroupCode,
+                    cmbDetailMotivationDetailCode,
+                    txtDetailRecipientKeyMinistry, ref FMotivationGroup, ref FMotivationDetail, ShowGiftDetail, FGiftTransactionsLoaded, FInEditMode,
+                    FBatchUnposted))
             {
                 try
                 {
@@ -1318,6 +1403,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     this.Cursor = Cursors.Default;
                 }
             }
+        }
+
+        private bool EditableGiftDetail(GiftBatchTDSAGiftDetailRow ARow)
+        {
+            if (ARow != null)
+            {
+                if (!FActiveOnly || (ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            return FActiveOnly;
         }
 
         /// <summary>
@@ -2554,7 +2654,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ImportTransactionsFromFile(object sender, EventArgs e)
         {
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
             {
                 if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromFile))
                 {
@@ -2565,7 +2665,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ImportTransactionsFromClipboard(object sender, EventArgs e)
         {
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
             {
                 if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromClipboard))
                 {

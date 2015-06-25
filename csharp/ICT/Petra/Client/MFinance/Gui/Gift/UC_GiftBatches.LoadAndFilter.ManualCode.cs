@@ -49,6 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public class TUC_GiftBatches_LoadAndFilter
     {
         // Variables that are set by the constructor
+        private TFrmPetraEditUtils FPetraUtilsObject = null;
         private Int32 FLedgerNumber = 0;
         private GiftBatchTDS FMainDS = null;
         private TFilterAndFindPanel FFilterFindPanelObject = null;
@@ -220,11 +221,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="APetraUtilsObject">Reference to the PetraUtilsObject for the form</param>
         /// <param name="ALedgerNumber">Ledger number</param>
         /// <param name="AMainDS">The main data set</param>
         /// <param name="AFilterFindPanelObject">The filter panel control object</param>
-        public TUC_GiftBatches_LoadAndFilter(int ALedgerNumber, GiftBatchTDS AMainDS, TFilterAndFindPanel AFilterFindPanelObject)
+        public TUC_GiftBatches_LoadAndFilter(TFrmPetraEditUtils APetraUtilsObject,
+            int ALedgerNumber,
+            GiftBatchTDS AMainDS,
+            TFilterAndFindPanel AFilterFindPanelObject)
         {
+            FPetraUtilsObject = APetraUtilsObject;
             FLedgerNumber = ALedgerNumber;
             FMainDS = AMainDS;
             FFilterFindPanelObject = AFilterFindPanelObject;
@@ -314,37 +320,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            string workingFilter = String.Empty;
-            string additionalFilter = String.Empty;
-            bool showingAllPeriods = false;
+            string WorkingFilter = String.Empty;
+            string AdditionalFilter = String.Empty;
+            bool ShowingAllPeriods = false;
 
             // Remove the old base filter
             if (FPrevBaseFilter.Length > 0)
             {
                 // The additional filter is the part that is coming from the extra filter panel
-                additionalFilter = AFilterString.Substring(FPrevBaseFilter.Length);
+                AdditionalFilter = AFilterString.Substring(FPrevBaseFilter.Length);
 
-                if (additionalFilter.StartsWith(CommonJoinString.JOIN_STRING_SQL_AND))
+                if (AdditionalFilter.StartsWith(CommonJoinString.JOIN_STRING_SQL_AND))
                 {
-                    additionalFilter = additionalFilter.Substring(CommonJoinString.JOIN_STRING_SQL_AND.Length);
+                    AdditionalFilter = AdditionalFilter.Substring(CommonJoinString.JOIN_STRING_SQL_AND.Length);
                 }
             }
 
-            int newYear = FcmbYearEnding.GetSelectedInt32();
+            int NewYear = FcmbYearEnding.GetSelectedInt32();
 
-            if (newYear != FPrevYearEnding)
+            if (NewYear != FPrevYearEnding)
             {
-                FPrevYearEnding = newYear;
+                FPrevYearEnding = NewYear;
 
                 // This will trigger a re-entrant call to this method
-                RefreshPeriods(newYear);
+                RefreshPeriods(NewYear);
 
                 // Apply the last good filter as we unwind the nesting
                 AFilterString = FPrevFilter;
                 return;
             }
 
-            int newPeriod = FcmbPeriod.GetSelectedInt32();
+            int NewPeriod = FcmbPeriod.GetSelectedInt32();
 
             ALedgerRow LedgerRow =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
@@ -352,40 +358,44 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int CurrentLedgerYear = LedgerRow.CurrentFinancialYear;
             int CurrentLedgerPeriod = LedgerRow.CurrentPeriod;
 
-            if (newYear == -1)
+            if (NewYear == -1)
             {
-                newYear = CurrentLedgerYear;
+                NewYear = CurrentLedgerYear;
 
-                workingFilter = String.Format("{0} = {1}", AGiftBatchTable.GetBatchYearDBName(), newYear);
-                showingAllPeriods = true;
+                WorkingFilter = String.Format("{0} = {1}", AGiftBatchTable.GetBatchYearDBName(), NewYear);
+                ShowingAllPeriods = true;
             }
             else
             {
-                workingFilter = String.Format("{0} = {1}", AGiftBatchTable.GetBatchYearDBName(), newYear);
+                WorkingFilter = String.Format("{0} = {1}", AGiftBatchTable.GetBatchYearDBName(), NewYear);
 
-                if (newPeriod == 0)  //All periods for year
+                if (NewPeriod == 0)  //All periods for year
                 {
                     //Nothing to add to filter
-                    showingAllPeriods = true;
+                    ShowingAllPeriods = true;
                 }
-                else if (newPeriod == -1)  //Current and forwarding
+                else if (NewPeriod == -1)  //Current and forwarding
                 {
-                    workingFilter += String.Format(" AND {0} >= {1}", AGiftBatchTable.GetBatchPeriodDBName(), CurrentLedgerPeriod);
+                    WorkingFilter += String.Format(" AND {0} >= {1}", AGiftBatchTable.GetBatchPeriodDBName(), CurrentLedgerPeriod);
                 }
-                else if (newPeriod > 0)  //Specific period
+                else if (NewPeriod > 0)  //Specific period
                 {
-                    workingFilter += String.Format(" AND {0} = {1}", AGiftBatchTable.GetBatchPeriodDBName(), newPeriod);
+                    WorkingFilter += String.Format(" AND {0} = {1}", AGiftBatchTable.GetBatchPeriodDBName(), NewPeriod);
                 }
             }
 
-            if (!BatchYearIsLoaded(newYear))
+            if (!BatchYearIsLoaded(NewYear))
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchForYearPeriod(FLedgerNumber, newYear, newPeriod));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchForYearPeriod(FLedgerNumber, NewYear, NewPeriod));
+
+                // Set the flag on the transaction tab to show the status dialog again when the transactions are loaded for a new year
+                TFrmGiftBatch giftBatchForm = (TFrmGiftBatch)FPetraUtilsObject.GetForm();
+                giftBatchForm.GetTransactionsControl().ShowStatusDialogOnLoad = true;
             }
 
             if (FrbtEditing.Checked)
             {
-                StringHelper.JoinAndAppend(ref workingFilter, String.Format("{0} = '{1}'",
+                StringHelper.JoinAndAppend(ref WorkingFilter, String.Format("{0} = '{1}'",
                         AGiftBatchTable.GetBatchStatusDBName(),
                         MFinanceConstants.BATCH_UNPOSTED),
                     CommonJoinString.JOIN_STRING_SQL_AND);
@@ -393,7 +403,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (FrbtPosting.Checked)
             {
                 // note: batches
-                StringHelper.JoinAndAppend(ref workingFilter, String.Format("({0} = '{1}') AND ({2} > 0) AND (({4} = 0) OR ({4} = {3}))",
+                StringHelper.JoinAndAppend(ref WorkingFilter, String.Format("({0} = '{1}') AND ({2} > 0) AND (({4} = 0) OR ({4} = {3}))",
                         AGiftBatchTable.GetBatchStatusDBName(),
                         MFinanceConstants.BATCH_UNPOSTED,
                         AGiftBatchTable.GetLastGiftNumberDBName(),
@@ -405,11 +415,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
             }
 
-            FFilterFindPanelObject.FilterPanelControls.SetBaseFilter(workingFilter, FrbtAll.Checked && showingAllPeriods);
-            FPrevBaseFilter = workingFilter;
+            FFilterFindPanelObject.FilterPanelControls.SetBaseFilter(WorkingFilter, FrbtAll.Checked && ShowingAllPeriods);
+            FPrevBaseFilter = WorkingFilter;
 
-            AFilterString = workingFilter;
-            StringHelper.JoinAndAppend(ref AFilterString, additionalFilter, CommonJoinString.JOIN_STRING_SQL_AND);
+            AFilterString = WorkingFilter;
+            StringHelper.JoinAndAppend(ref AFilterString, AdditionalFilter, CommonJoinString.JOIN_STRING_SQL_AND);
 
             FPrevFilter = AFilterString;
 

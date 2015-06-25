@@ -53,5 +53,5 @@ RootNode:
         txtDetailCode: {Label=Document Type Category, CharacterCasing=Upper, Width=120}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         txtDetailDescription: {Width=300}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Validation=true}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}

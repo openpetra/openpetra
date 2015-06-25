@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
     public partial class TFrmUpdateExtractChangeSubscriptionDialog : System.Windows.Forms.Form
     {
         private PartnerEditTDS FMainDS;
-        private System.Drawing.Color ChangeControlBackgroundColor = System.Drawing.Color.Yellow;
+        //private System.Drawing.Color ChangeControlBackgroundColor = System.Drawing.Color.Pink;
         private String ExtractName;
 
         /// <summary>
@@ -130,7 +130,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void OnTickChangeItem(System.Object sender, EventArgs e)
         {
             CheckBox CheckBoxSender;
-            Control ChangeControl = null;
+
+            //Control ChangeControl = null;
 
             // if check box is unticked then disable field, reset value and background colour,
             // otherwise enable field and emphasize background colour
@@ -144,7 +145,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             if (sender == chkChangeSubscriptionStatus)
             {
-                ChangeControl = cmbPSubscriptionSubscriptionStatus;
+                //ChangeControl = cmbPSubscriptionSubscriptionStatus;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -155,7 +156,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeGratisSubscription)
             {
-                ChangeControl = chkPSubscriptionGratisSubscription;
+                //ChangeControl = chkPSubscriptionGratisSubscription;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -166,7 +167,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeNumberComplimentary)
             {
-                ChangeControl = txtPSubscriptionNumberComplimentary;
+                //ChangeControl = txtPSubscriptionNumberComplimentary;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -177,7 +178,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangePublicationCopies)
             {
-                ChangeControl = txtPSubscriptionPublicationCopies;
+                //ChangeControl = txtPSubscriptionPublicationCopies;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -188,7 +189,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeReasonSubsGivenCode)
             {
-                ChangeControl = cmbPSubscriptionReasonSubsGivenCode.cmbCombobox;
+                //ChangeControl = cmbPSubscriptionReasonSubsGivenCode.cmbCombobox;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -199,7 +200,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeReasonSubsCancelledCode)
             {
-                ChangeControl = cmbPSubscriptionReasonSubsCancelledCode.cmbCombobox;
+                //ChangeControl = cmbPSubscriptionReasonSubsCancelledCode.cmbCombobox;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -210,7 +211,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeGiftFromKey)
             {
-                ChangeControl = txtPSubscriptionGiftFromKey;
+                //ChangeControl = txtPSubscriptionGiftFromKey;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -221,7 +222,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeStartDate)
             {
-                ChangeControl = dtpPSubscriptionStartDate;
+                //ChangeControl = dtpPSubscriptionStartDate;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -232,7 +233,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeExpiryDate)
             {
-                ChangeControl = dtpPSubscriptionExpiryDate;
+                //ChangeControl = dtpPSubscriptionExpiryDate;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -243,7 +244,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeRenewalDate)
             {
-                ChangeControl = dtpPSubscriptionSubscriptionRenewalDate;
+                //ChangeControl = dtpPSubscriptionSubscriptionRenewalDate;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -254,7 +255,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeDateNoticeSent)
             {
-                ChangeControl = dtpPSubscriptionDateNoticeSent;
+                //ChangeControl = dtpPSubscriptionDateNoticeSent;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -265,7 +266,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeDateCancelled)
             {
-                ChangeControl = dtpPSubscriptionDateCancelled;
+                //ChangeControl = dtpPSubscriptionDateCancelled;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -276,7 +277,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeNumberIssuesReceived)
             {
-                ChangeControl = txtPSubscriptionNumberIssuesReceived;
+                //ChangeControl = txtPSubscriptionNumberIssuesReceived;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -287,7 +288,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeFirstIssue)
             {
-                ChangeControl = dtpPSubscriptionFirstIssue;
+                //ChangeControl = dtpPSubscriptionFirstIssue;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -298,7 +299,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else if (sender == chkChangeLastIssue)
             {
-                ChangeControl = dtpPSubscriptionLastIssue;
+                //ChangeControl = dtpPSubscriptionLastIssue;
 
                 if (!CheckBoxSender.Checked)
                 {
@@ -308,18 +309,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 dtpPSubscriptionLastIssue.Enabled = CheckBoxSender.Checked;
             }
 
+            // don't change background colour at the moment (left code here in case we need to change it later)
             // now change background colour of selected field
-            if (ChangeControl != null)
-            {
-                if (!CheckBoxSender.Checked)
-                {
-                    ChangeControl.ResetBackColor();
-                }
-                else
-                {
-                    ChangeControl.BackColor = ChangeControlBackgroundColor;
-                }
-            }
+            //if (ChangeControl != null)
+            //{
+            //    if (!CheckBoxSender.Checked)
+            //    {
+            //        ChangeControl.ResetBackColor();
+            //    }
+            //    else
+            //    {
+            //        ChangeControl.BackColor = ChangeControlBackgroundColor;
+            //    }
+            //}
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
@@ -616,7 +618,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void ValidateDataManual(PSubscriptionRow ARow)
         {
             DataColumn ValidationColumn;
+            DataColumn ValidationColumn2;
             TValidationControlsData ValidationControlsData;
+            TValidationControlsData ValidationControlsData2;
             TVerificationResult VerificationResult = null;
             bool NoClearingOfVerificationResult = false;
 
@@ -724,6 +728,298 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+
+                // perform checks that include 'Start Date' ----------------------------------------------------------------
+                if (chkChangeStartDate.Checked)
+                {
+                    ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnStartDateId];
+
+                    if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        // 'Start Date' must not be later than 'Expiry Date'
+                        if (chkChangeExpiryDate.Checked)
+                        {
+                            ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnExpiryDateId];
+
+                            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                            {
+                                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                         (ARow.StartDate,
+                                                         ARow.ExpiryDate,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
+
+                                // Handle addition to/removal from TVerificationResultCollection
+                                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                            }
+                        }
+
+                        // 'Start Date' must not be later than 'Renewal Date'
+                        if (chkChangeRenewalDate.Checked)
+                        {
+                            ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnSubscriptionRenewalDateId];
+
+                            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                            {
+                                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                         (ARow.StartDate,
+                                                         ARow.SubscriptionRenewalDate,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
+
+                                // Handle addition to/removal from TVerificationResultCollection
+                                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                            }
+                        }
+
+                        // 'Start Date' must not be later than 'End Date'
+                        if (chkChangeDateCancelled.Checked)
+                        {
+                            ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnDateCancelledId];
+
+                            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                            {
+                                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                         (ARow.StartDate,
+                                                         ARow.DateCancelled,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
+
+                                // Handle addition to/removal from TVerificationResultCollection
+                                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                            }
+                        }
+
+                        // 'Start Date' must not be later than 'Notice Sent'
+                        if (chkChangeDateNoticeSent.Checked)
+                        {
+                            ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnDateNoticeSentId];
+
+                            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                            {
+                                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                         (ARow.StartDate,
+                                                         ARow.DateNoticeSent,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
+
+                                // Handle addition to/removal from TVerificationResultCollection
+                                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                            }
+                        }
+
+                        // 'Start Date' must not be later than 'First Sent'
+                        if (chkChangeFirstIssue.Checked)
+                        {
+                            ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnFirstIssueId];
+
+                            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                            {
+                                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                         (ARow.StartDate,
+                                                         ARow.FirstIssue,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
+
+                                // Handle addition to/removal from TVerificationResultCollection
+                                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                            }
+                        }
+
+                        // 'Start Date' must not be later than 'Last Date'
+                        if (chkChangeLastIssue.Checked)
+                        {
+                            ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnLastIssueId];
+
+                            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                            {
+                                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                         (ARow.StartDate,
+                                                         ARow.LastIssue,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
+
+                                // Handle addition to/removal from TVerificationResultCollection
+                                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                            }
+                        }
+                    }
+                }
+
+                // perform checks that include 'Date Renewed' ----------------------------------------------------------------
+                if (chkChangeRenewalDate.Checked)
+                {
+                    ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnSubscriptionRenewalDateId];
+
+                    if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        // 'Date Renewed' must not be later than today
+                        VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                 (ARow.SubscriptionRenewalDate, DateTime.Today,
+                                                 ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                                                 this, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+
+                        // 'Date Renewed' must not be later than 'Date Expired'
+                        if (chkChangeExpiryDate.Checked)
+                        {
+                            ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnExpiryDateId];
+
+                            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                            {
+                                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                         (ARow.SubscriptionRenewalDate,
+                                                         ARow.ExpiryDate,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
+
+                                // Handle addition to/removal from TVerificationResultCollection
+                                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                            }
+                        }
+
+                        // 'Date Renewed' must not be later than 'Date Notice Sent'
+                        if (chkChangeDateNoticeSent.Checked)
+                        {
+                            ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnDateNoticeSentId];
+
+                            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                            {
+                                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                         (ARow.SubscriptionRenewalDate,
+                                                         ARow.DateNoticeSent,
+                                                         ValidationControlsData.ValidationControlLabel,
+                                                         ValidationControlsData2.ValidationControlLabel,
+                                                         this,
+                                                         ValidationColumn,
+                                                         ValidationControlsData.ValidationControl);
+
+                                // Handle addition to/removal from TVerificationResultCollection
+                                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                            }
+                        }
+                    }
+                }
+
+                // 'Date Cancelled' must not be before today
+                if (chkChangeDateCancelled.Checked)
+                {
+                    ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnDateCancelledId];
+
+                    if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                 (ARow.DateCancelled, DateTime.Today,
+                                                 ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                                                 this, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                    }
+                }
+
+                // 'First Sent' must not be later than 'Last Sent'
+                if (chkChangeFirstIssue.Checked
+                    && chkChangeLastIssue.Checked)
+                {
+                    ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnFirstIssueId];
+
+                    if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnLastIssueId];
+
+                        if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                        {
+                            VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                     (ARow.FirstIssue, ARow.LastIssue,
+                                                     ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                                     this, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                            // Handle addition to/removal from TVerificationResultCollection
+                            VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                        }
+                    }
+                }
+
+                // 'First Sent' must not be later than today
+                if (chkChangeFirstIssue.Checked)
+                {
+                    ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnFirstIssueId];
+
+                    if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                 (ARow.FirstIssue, DateTime.Today,
+                                                 ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                                                 this, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                    }
+                }
+
+                // 'Date Started' must not be later than 'First Sent'
+                if (chkChangeFirstIssue.Checked
+                    && chkChangeStartDate.Checked)
+                {
+                    ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnStartDateId];
+
+                    if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnFirstIssueId];
+
+                        if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                        {
+                            VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                     (ARow.StartDate, ARow.FirstIssue,
+                                                     ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                                     this, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                            // Handle addition to/removal from TVerificationResultCollection
+                            VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                        }
+                    }
+                }
+
+                // 'Last Sent' must not be later than today
+                if (chkChangeLastIssue.Checked)
+                {
+                    ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnLastIssueId];
+
+                    if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                                 (ARow.LastIssue, DateTime.Today,
+                                                 ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                                                 this, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                    }
+                }
             }
         }
 

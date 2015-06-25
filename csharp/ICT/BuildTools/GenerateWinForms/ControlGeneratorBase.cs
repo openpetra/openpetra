@@ -370,7 +370,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.Template.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION", ctrl.controlName + ".RunOnceOnParentActivation();" + Environment.NewLine);
             writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
             writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
-            writer.Template.AddToCodelet("USERCONTROLVALIDATION", ctrl.controlName + ".ValidateAllData(false, false);" + Environment.NewLine);
+            writer.Template.AddToCodelet("USERCONTROLVALIDATION",
+                ctrl.controlName + ".ValidateAllData(false, TErrorProcessingMode.Epm_None);" + Environment.NewLine);
             writer.Template.SetCodelet("PERFORMUSERCONTROLVALIDATION", "true");
         }
 

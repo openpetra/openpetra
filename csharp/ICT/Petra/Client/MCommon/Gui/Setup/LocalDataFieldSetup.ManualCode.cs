@@ -397,7 +397,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 }
 
                 // Check all the boxes
-                clbUsedBy.SetCheckedStringList(clbUsedBy.GetAllStringList());
+                clbUsedBy.SetCheckedStringList(clbUsedBy.GetAllStringList(true));
             }
             else
             {

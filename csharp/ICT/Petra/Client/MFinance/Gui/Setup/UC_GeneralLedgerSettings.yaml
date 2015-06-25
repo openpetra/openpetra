@@ -19,7 +19,7 @@ RootNode:
         grpAccountingPeriods: {Label=Accounting Periods, Width=550, Stretch=horizontally}
             Controls: [rgrCalendarModeRadio, nudNumberOfAccountingPeriods, dtpFinancialYearStartDate, nudCurrentPeriod, btnViewCalendar, nudNumberFwdPostingPeriods]
         grpMiscellaneousFlags: {Label=Miscellaneous, Width=550, Stretch=horizontally}
-            Controls: [chkSuspenseAccountFlag, chkBudgetControlFlag, chkBranchProcessing]
+            Controls: [chkSuspenseAccountFlag, chkBudgetControlFlag]
         grpDataRetention: {Label=Data Retention, Width=550, Stretch=horizontally}
             Controls: [nudActualsDataRetention, nudGiftDataRetention]
             
@@ -46,7 +46,6 @@ RootNode:
         chkSuspenseAccountFlag: {Label=Allow use of suspense accounts, CheckBoxAttachedLabel=right, Validation=true}
         chkBudgetControlFlag: {Label=Budget control, CheckBoxAttachedLabel=right}
         nudNumberFwdPostingPeriods: {Label=Forward Posting Periods, Width=60, Validation=true}
-        chkBranchProcessing: {Label=Branch processing, CheckBoxAttachedLabel=right}
         nudActualsDataRetention: {Label=Actuals Data Retention Period, Width=60}
         #nudBudgetDataRetention: {Label=Budget Data Retention Period}
         nudGiftDataRetention: {Label=Gift Data Retention Period, Width=60}

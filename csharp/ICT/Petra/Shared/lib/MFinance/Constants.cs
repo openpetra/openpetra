@@ -216,6 +216,12 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Used in Admin Grants Payable and Receivable</summary>
         public const string ADMIN_FEE_EXPENSE_ACCT = "4900";
 
+        /// <summary>Used in Admin Grants Payable and Receivable</summary>
+        public const string ADMIN_FEE_GIF = "GIF";
+
+        /// <summary>Used in Admin Grants Payable and Receivable</summary>
+        public const string ADMIN_FEE_ICT = "ICT";
+
         /// <summary>Used in Admin Fee Charge Options</summary>
         public const string ADMIN_CHARGE_OPTION_MAX = "MAXIMUM";
 
@@ -392,6 +398,20 @@ namespace Ict.Petra.Shared.MFinance
         public const string SUPPORT_GIFTS_LOCAL = "0100S";
         /// Summary account
         public const string SUPPORT_GIFTS_FOREIGN = "1100S";
+
+
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_SUSP_ACC = "SUSP-ACCT";
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_BUDGET = "BUDGET";
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_CURRENCY = "CURRENCY";
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_INTL_CURRENCY = "INTL-CURRENCY";
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_CURRENT_PERIOD = "CURRENT-PERIOD";
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_CAL = "CAL";
     }
 
     /// <summary>
@@ -604,5 +624,31 @@ namespace Ict.Petra.Shared.MFinance
         /// TaxDeductiblePct adjustment for a number of gifts from the same recipient but (potentially) over different batches and even ledgers
         /// </summary>
             TaxDeductiblePctAdjust
+    }
+
+    /// <summary>
+    /// How should Cost Centres be 'rolled up' to the Standard Cost Centre at year end?
+    /// </summary>
+    public enum CCRollupStyleEnum
+    {
+        /// <summary>
+        /// Don't roll up Cost Centre
+        /// </summary>
+        Never,
+
+        /// <summary>
+        /// Roll up Surplus, but not Deficit
+        /// </summary>
+            Surplus,
+
+        /// <summary>
+        /// Roll up Deficit, but not Surplus
+        /// </summary>
+            Deficit,
+
+        /// <summary>
+        /// Always Roll up Cost Centre to Standard Cost Centre
+        /// </summary>
+            Always
     }
 }

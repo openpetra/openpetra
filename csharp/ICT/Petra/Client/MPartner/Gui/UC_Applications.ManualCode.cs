@@ -145,7 +145,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_IgnoreNonCritical))
             {
                 // we create the table locally, no dataset
                 IndividualDataTDSPmGeneralApplicationRow NewRowGeneralApp = FMainDS.PmGeneralApplication.NewRowTyped(true);
@@ -194,7 +194,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_IgnoreNonCritical))
             {
                 // we create the table locally, no dataset
                 IndividualDataTDSPmGeneralApplicationRow NewRowGeneralApp = FMainDS.PmGeneralApplication.NewRowTyped(true);
@@ -556,11 +556,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (IsEventApplication(ARow))
             {
-                ucoApplicationEvent.ValidateAllData(false);
+                ucoApplicationEvent.ValidateAllData(TErrorProcessingMode.Epm_None);
             }
             else
             {
-                ucoApplicationField.ValidateAllData(false);
+                ucoApplicationField.ValidateAllData(TErrorProcessingMode.Epm_None);
             }
 
             // Since this is a special case of OpenPetra UI (a UserControl in a UserControl)

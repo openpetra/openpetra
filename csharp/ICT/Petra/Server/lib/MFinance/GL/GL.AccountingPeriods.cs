@@ -92,12 +92,28 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DateTime StartDateCurrentPeriod = new DateTime();
             DateTime EndDateLastForwardingPeriod = new DateTime();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
+
+                    int FirstPostingPeriod = -1;
+
+                    // If final month end has been run but year end has not yet been run
+                    // then we cannot post to the current period as it is actually closed.
+                    if (LedgerTable[0].ProvisionalYearEndFlag)
+                    {
+                        FirstPostingPeriod = LedgerTable[0].CurrentPeriod + 1;
+                    }
+                    else
+                    {
+                        FirstPostingPeriod = LedgerTable[0].CurrentPeriod;
+                    }
+
                     AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                        LedgerTable[0].CurrentPeriod,
+                        FirstPostingPeriod,
                         transaction);
 
                     StartDateCurrentPeriod = AccountingPeriodTable[0].PeriodStartDate;
@@ -236,18 +252,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TCacheable CachePopulator = new TCacheable();
             DateTime ReturnValue = DateTime.Now;
             GetRealPeriod(ALedgerNumber, ADiffPeriod, AYear, APeriod, out RealPeriod, out RealYear);
-            DataTable CachedDataTable = CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
+            DataTable UntypedTable = CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
                 "",
                 false,
                 ALedgerNumber,
                 out typeofTable);
-            string whereClause = AAccountingPeriodTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString() + " and " +
-                                 AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod.ToString();
-            DataRow[] filteredRows = CachedDataTable.Select(whereClause);
+            AAccountingPeriodTable CachedDataTable = (AAccountingPeriodTable)UntypedTable;
+            CachedDataTable.DefaultView.RowFilter = AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod;
 
-            if (filteredRows.Length > 0)
+            if (CachedDataTable.DefaultView.Count > 0)
             {
-                ReturnValue = ((AAccountingPeriodRow)filteredRows[0]).PeriodEndDate;
+                ReturnValue = ((AAccountingPeriodRow)CachedDataTable.DefaultView[0].Row).PeriodEndDate;
 
                 ALedgerTable Ledger = (ALedgerTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
                     "",

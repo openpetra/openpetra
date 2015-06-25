@@ -293,9 +293,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.chkWorkerFamOnly.DataBindings.Add(new System.Windows.Forms.Binding("Checked", this.FFindCriteriaDataTable, "WorkerFamOnly", true));
             this.chkWorkerFamOnly.Location = new System.Drawing.Point(150, 22);
             this.chkWorkerFamOnly.Name = "chkWorkerFamOnly";
-            this.chkWorkerFamOnly.Size = new System.Drawing.Size(126, 17);
+            this.chkWorkerFamOnly.Size = new System.Drawing.Size(180, 17);
             this.chkWorkerFamOnly.TabIndex = 2;
-            this.chkWorkerFamOnly.Text = "Worker Families O&nly";
+            this.chkWorkerFamOnly.Text = "Worker Families Only";
 
             //
             // cmbPartnerClass
@@ -742,7 +742,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerName.Name = "lblPartnerName";
             this.lblPartnerName.Size = new System.Drawing.Size(142, 23);
             this.lblPartnerName.TabIndex = 0;
-            this.lblPartnerName.Text = "Pa&rtner Name:";
+            this.lblPartnerName.Text = "&Partner Name:";
             this.lblPartnerName.TextAlign = System.Drawing.ContentAlignment.TopRight;
 
             //
@@ -795,7 +795,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPersonalName.Name = "lblPersonalName";
             this.lblPersonalName.Size = new System.Drawing.Size(142, 22);
             this.lblPersonalName.TabIndex = 0;
-            this.lblPersonalName.Text = "Personal &(First) Name:";
+            this.lblPersonalName.Text = "Personal (First) &Name:";
             this.lblPersonalName.TextAlign = System.Drawing.ContentAlignment.TopRight;
 
             //

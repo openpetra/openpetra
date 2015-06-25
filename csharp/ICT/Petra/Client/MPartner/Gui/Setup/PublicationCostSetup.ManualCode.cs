@@ -34,11 +34,14 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
     public partial class TFrmPublicationCostSetup
     {
+        private string FLedgerBaseCurrency = "USD";
+
         private void NewRowManual(ref PPublicationCostRow ARow)
         {
             // Deal with primary key.  It is combination of a code and a effective date
@@ -82,6 +85,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                     }
                 }
             }
+
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                ARow.CurrencyCode = FLedgerBaseCurrency;
+            }
+            else
+            {
+                ARow.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
+            }
         }
 
         private void NewRecord(Object sender, EventArgs e)
@@ -99,6 +111,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 lblDetailDateEffective.Text,
                 dtpDetailDateEffective.Date.Value.ToString("dd-MMM-yyyy").ToUpper());
             return true;
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            ALedgerTable ledgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
+
+            if (ledgers.Count > 0)
+            {
+                FLedgerBaseCurrency = ledgers[0].BaseCurrency;
+            }
+        }
+
+        private void CurrencyCodeChanged(object sender, EventArgs e)
+        {
+            txtDetailPublicationCost.CurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
+            txtDetailPostageCost.CurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
         }
     }
 }

@@ -399,5 +399,14 @@ namespace Ict.Petra.Client.CommonControls
         {
             return TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList);
         }
+
+        /// <summary>
+        /// Retrieves a boolean user default value from the TUserDefaults.
+        /// </summary>
+        /// <returns></returns>
+        public static Boolean RetrieveUserDefaultBoolean(String AKey, Boolean ADefault)
+        {
+            return TUserDefaults.GetBooleanDefault(AKey, ADefault);
+        }
     }
 }

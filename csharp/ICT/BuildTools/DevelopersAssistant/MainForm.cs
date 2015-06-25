@@ -1316,11 +1316,16 @@ namespace Ict.Tools.DevelopersAssistant
                 si.Arguments = task.GetBazaarArgs(BranchLocation, linkLabel_LaunchpadUrl.Text);
                 si.UseShellExecute = false;     // OS needs this because we access environment variables
                 si.WorkingDirectory = BranchLocation;
+                bool waitForExit = (si.Arguments.IndexOf("--ui-mode") > 0);
 
                 try
                 {
                     Process p = Process.Start(si);
-                    p.WaitForExit();
+
+                    if (waitForExit)
+                    {
+                        p.WaitForExit();
+                    }
                 }
                 catch (Exception ex)
                 {

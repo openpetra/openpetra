@@ -27,6 +27,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner.Logic;
@@ -42,7 +43,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private TPartnerEditScreenLogic.TModuleTabGroupEnum FCurrentModuleTabGroup;
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
-        private TPartnerEditTabPageEnum FCurrentlySelectedTabPage;
         private List <string>FInitialisedChildUCs = new List <string>(3);
 
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
@@ -151,17 +151,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        /// <summary>todoComment</summary>
+        /// <summary>Currently active TabPage (in any of the TabGroups). Read-only.</summary>
         public TPartnerEditTabPageEnum CurrentlySelectedTabPage
         {
             get
             {
-                return FCurrentlySelectedTabPage;
-            }
+                switch (FCurrentModuleTabGroup)
+                {
+                    case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
+                        return ucoPartnerTabSet.CurrentlySelectedTabPage;
 
-            set
-            {
-                FCurrentlySelectedTabPage = value;
+                    case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
+                        return ucoPersonnelTabSet.CurrentlySelectedTabPage;
+
+                    default:
+                        // Fallback
+                        return TPartnerEditTabPageEnum.petpAddresses;
+                }
             }
         }
 
@@ -351,16 +357,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
         /// the UserControl.</remarks>
-        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-        /// user, otherwise set it to false.</param>
+        /// <param name="ADataValidationProcessingMode">Set to TErrorProcessingMode.Epm_All if data validation errors should be shown to the
+        /// user, otherwise set it to TErrorProcessingMode.Epm_None.</param>
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
+        public bool ValidateAllData(TErrorProcessingMode ADataValidationProcessingMode)
         {
             bool ReturnValue = true;
 
-            ReturnValue = ucoPartnerTabSet.ValidateAllData(AProcessAnyDataValidationErrors);
+            ReturnValue = ucoPartnerTabSet.ValidateAllData(ADataValidationProcessingMode);
 
-            if (!ucoPersonnelTabSet.ValidateAllData(AProcessAnyDataValidationErrors))
+            if (!ucoPersonnelTabSet.ValidateAllData(ADataValidationProcessingMode))
             {
                 ReturnValue = false;
             }
@@ -381,11 +387,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             switch (CurrentModuleTabGroup)
             {
                 case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
-                    ucoPartnerTabSet.ValidateAllData(false);
+                    ucoPartnerTabSet.ValidateAllData(TErrorProcessingMode.Epm_None);
                     break;
 
                 case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
-                    ucoPersonnelTabSet.ValidateAllData(false);
+                    ucoPersonnelTabSet.ValidateAllData(TErrorProcessingMode.Epm_None);
                     break;
 
                 default:

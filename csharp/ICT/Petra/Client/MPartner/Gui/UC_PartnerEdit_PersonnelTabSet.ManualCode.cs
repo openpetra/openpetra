@@ -27,6 +27,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Exceptions;
+using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
@@ -143,8 +144,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
         /// the UserControl.</remarks>
-        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-        /// user, otherwise set it to false.</param>
+        /// <param name="ADataValidationProcessingMode">Set to TErrorProcessingMode.Epm_All if data validation errors should be shown to the
+        /// user, otherwise set it to TErrorProcessingMode.Epm_None.</param>
         /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
         /// specific Control for which Data Validation errors might have been recorded. (Default=null).
         /// <para>
@@ -154,7 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </para>
         /// </param>
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        public bool ValidateAllData(TErrorProcessingMode ADataValidationProcessingMode, Control AValidateSpecificControl = null)
         {
             bool ReturnValue = true;
 
@@ -163,7 +164,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TUC_IndividualData UCIndividualData =
                     (TUC_IndividualData)FTabSetup[TDynamicLoadableUserControls.dlucIndividualData];
 
-                if (!UCIndividualData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCIndividualData.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -174,7 +175,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TUC_ApplicationData UCApplicationData =
                     (TUC_ApplicationData)FTabSetup[TDynamicLoadableUserControls.dlucApplications];
 
-                if (!UCApplicationData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCApplicationData.ValidateAllData(ADataValidationProcessingMode, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -246,18 +247,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
         {
+            SetCurrentlySelectedTabPage(ATabPageEventArgs.Tab);
+
             if (ATabPageEventArgs.Event == "InitialActivation")
             {
                 if (ATabPageEventArgs.Tab == tpgIndividualData)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelIndividualData;
-
                     CorrectDataGridWidthsAfterDataChange();
                 }
                 else if (ATabPageEventArgs.Tab == tpgApplications)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelApplications;
-
                     // Hook up RecalculateScreenParts Event
                     FUcoApplications.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
@@ -339,7 +338,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!ValidateAllData(false))
+            if (!ValidateAllData(TErrorProcessingMode.Epm_None))
             {
                 //TODO WB: temporary lines as false may be returned from validation wrongly
                 if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
@@ -360,6 +359,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                 e.Cancel = true;
 
                 FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+            }
+        }
+
+        private void SetCurrentlySelectedTabPage(TabPage ATabPage)
+        {
+            if (ATabPage == tpgIndividualData)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelIndividualData;
+            }
+            else if (ATabPage == tpgApplications)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelApplications;
             }
         }
 

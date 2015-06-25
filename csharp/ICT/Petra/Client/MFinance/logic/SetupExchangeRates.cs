@@ -23,6 +23,8 @@
 //
 using System;
 using System.Data;
+using System.Threading;
+using System.Globalization;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -41,11 +43,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AToCurrencyCode">Currency Code to convert to.</param>
         /// <param name="AExchangeRateRow">DataRow that contains the data.</param>
         /// <param name="AExchangeRate">Exchange Rate.</param>
+        /// <param name="AUseInternationalCurrencyFormat">If true the international Currency Format will be used.  If false the international Number Format will be used</param>
         /// <param name="AValueOneDirectionLabel">Label that shows the exchange rate information in one direction (gets updated).</param>
         /// <param name="AValueOtherDirectionLabel">Label that shows the exchange rate information in the other direction (gets updated).</param>
-        public static void SetExchangeRateLabels(String AFromCurrencyCode, String AToCurrencyCode,
-            DataRow AExchangeRateRow, decimal AExchangeRate, Label AValueOneDirectionLabel, Label AValueOtherDirectionLabel)
+        public static void SetExchangeRateLabels(String AFromCurrencyCode, String AToCurrencyCode, DataRow AExchangeRateRow,
+            decimal AExchangeRate, bool AUseInternationalCurrencyFormat, Label AValueOneDirectionLabel, Label AValueOtherDirectionLabel)
         {
+            NumberFormatInfo nfi = Thread.CurrentThread.CurrentCulture.NumberFormat;
+
             string StrLabelText = Catalog.GetString("For {0} {1} one will get {2} {3}.");
 
             if (AExchangeRateRow == null)
@@ -61,6 +66,11 @@ namespace Ict.Petra.Client.MFinance.Logic
                         AExchangeRate.ToString("N10"),
                         AFromCurrencyCode
                         );
+
+                if (AUseInternationalCurrencyFormat)
+                {
+                    AValueOneDirectionLabel.Text = AValueOneDirectionLabel.Text.Replace(nfi.NumberDecimalSeparator, nfi.CurrencyDecimalSeparator);
+                }
             }
 
             if (AExchangeRate != 0)
@@ -81,6 +91,11 @@ namespace Ict.Petra.Client.MFinance.Logic
                         AExchangeRate.ToString("N10"),
                         AToCurrencyCode
                         );
+
+                if (AUseInternationalCurrencyFormat)
+                {
+                    AValueOtherDirectionLabel.Text = AValueOtherDirectionLabel.Text.Replace(nfi.NumberDecimalSeparator, nfi.CurrencyDecimalSeparator);
+                }
             }
         }
     }

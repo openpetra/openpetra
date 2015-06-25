@@ -50,11 +50,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Manage the overlay
         /// </summary>
-        public static void SetTextBoxOverlayOnKeyMinistryCombo(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, bool AActiveOnly,
+        public static void SetTextBoxOverlayOnKeyMinistryCombo(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, bool AShowGiftDetail,
             TCmbAutoPopulated ACmbKeyMinistries, TCmbAutoPopulated ACmbMotivationDetailCode, TextBox ATxtDetailRecipientKeyMinistry,
             ref string AMotivationDetail, bool AInEditModeFlag, bool ABatchUnpostedFlag, bool AReadComboValue = false)
         {
-            ResetMotivationDetailCodeFilter(ACmbMotivationDetailCode, ref AMotivationDetail, AActiveOnly);
+            ResetMotivationDetailCodeFilter(ACmbMotivationDetailCode, ref AMotivationDetail, AShowGiftDetail);
 
             // Always enabled initially. Combobox may be diabled later once populated.
             ACmbKeyMinistries.Enabled = true;
@@ -88,18 +88,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Call from ShowDetailsManual
         /// </summary>
-        public static bool OnStartShowDetailsManual(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, TCmbAutoPopulated ACmbKeyMinistries,
-            TCmbAutoPopulated ACmbMotivationDetailCode, TextBox ATxtDetailRecipientKeyMinistry,
-            ref string AMotivationDetail, bool AActiveOnly, bool ATransactionsLoadedFlag, bool AInEditModeFlag, bool ABatchUnpostedFlag)
+        public static bool OnStartShowDetailsManual(GiftBatchTDSAGiftDetailRow ACurrentDetailRow,
+            TCmbAutoPopulated ACmbKeyMinistries,
+            TCmbAutoPopulated ACmbMotivationGroupCode,
+            TCmbAutoPopulated ACmbMotivationDetailCode,
+            TextBox ATxtDetailRecipientKeyMinistry,
+            ref string AMotivationGroup,
+            ref string AMotivationDetail,
+            bool AShowGiftDetail,
+            bool ATransactionsLoadedFlag,
+            bool AInEditModeFlag,
+            bool ABatchUnpostedFlag)
         {
             if (!ATxtDetailRecipientKeyMinistry.Visible)
             {
-                SetTextBoxOverlayOnKeyMinistryCombo(ACurrentDetailRow, AActiveOnly, ACmbKeyMinistries, ACmbMotivationDetailCode,
+                SetTextBoxOverlayOnKeyMinistryCombo(ACurrentDetailRow, AShowGiftDetail, ACmbKeyMinistries, ACmbMotivationDetailCode,
                     ATxtDetailRecipientKeyMinistry, ref AMotivationDetail, AInEditModeFlag, ABatchUnpostedFlag, true);
             }
             else if (!ATransactionsLoadedFlag)
             {
-                SetTextBoxOverlayOnKeyMinistryCombo(ACurrentDetailRow, AActiveOnly, ACmbKeyMinistries, ACmbMotivationDetailCode,
+                SetTextBoxOverlayOnKeyMinistryCombo(ACurrentDetailRow, AShowGiftDetail, ACmbKeyMinistries, ACmbMotivationDetailCode,
                     ATxtDetailRecipientKeyMinistry, ref AMotivationDetail, AInEditModeFlag, ABatchUnpostedFlag);
             }
 
@@ -675,6 +683,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int32 ALedgerNumber,
             TFrmPetraEditUtils APetraUtilsObject,
             TCmbAutoPopulated ACmbKeyMinistries,
+            ref TCmbAutoPopulated ACmbMotivationGroupCode,
             ref TCmbAutoPopulated ACmbMotivationDetailCode,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
             Int64 ARecipientKey,
@@ -745,13 +754,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// OnEndEditMode
         /// </summary>
         public static void OnEndEditMode(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, TCmbAutoPopulated ACmbKeyMinistries,
-            TCmbAutoPopulated ACmbMotivationDetailCode, TextBox ATxtDetailRecipientKeyMinistry,
-            ref string AMotivationDetail, bool AActiveOnly, bool AInEditModeFlag, bool ABatchUnpostedFlag)
+            TCmbAutoPopulated ACmbMotivationGroupCode, TCmbAutoPopulated ACmbMotivationDetailCode, TextBox ATxtDetailRecipientKeyMinistry,
+            ref string AMotivationGroup, ref string AMotivationDetail, bool AShowGiftDetail, bool AInEditModeFlag, bool ABatchUnpostedFlag)
         {
             if (!ATxtDetailRecipientKeyMinistry.Visible)
             {
                 SetTextBoxOverlayOnKeyMinistryCombo(ACurrentDetailRow,
-                    AActiveOnly,
+                    AShowGiftDetail,
                     ACmbKeyMinistries,
                     ACmbMotivationDetailCode,
                     ATxtDetailRecipientKeyMinistry,
@@ -1001,7 +1010,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private static void ResetMotivationDetailCodeFilter(TCmbAutoPopulated ACmbMotivationDetailCode,
             ref string AMotivationDetail,
-            bool AActiveOnly)
+            bool AShowGiftDetail)
         {
             if ((ACmbMotivationDetailCode.Count == 0) && (ACmbMotivationDetailCode.Filter != null)
                 && (!ACmbMotivationDetailCode.Filter.Contains("1 = 2")))
@@ -1009,7 +1018,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AMotivationDetail = string.Empty;
                 ACmbMotivationDetailCode.RefreshLabel();
 
-                if (AActiveOnly)
+                if (AShowGiftDetail)
                 {
                     //This is needed as the code in TFinanceControls.ChangeFilterMotivationDetailList looks for presence of the active only prefix
                     ACmbMotivationDetailCode.Filter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true And 1 = 2";
@@ -1027,7 +1036,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AMotivationDetail = ACmbMotivationDetailCode.GetSelectedString();
             }
 
-            if (AActiveOnly)
+            if (AShowGiftDetail)
             {
                 ACmbMotivationDetailCode.Filter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true";
             }

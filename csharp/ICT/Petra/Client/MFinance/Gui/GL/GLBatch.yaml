@@ -16,7 +16,6 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [tabGLBatch]
-            Tooltip: Use the tabs on this panel
             Dock: Fill
         tabGLBatch: {Dock=Fill, DragTabPageEnabled=false}
         tpgBatches:

@@ -2116,7 +2116,7 @@ namespace Ict.Common.DB
                 {
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
-                        Console.WriteLine("GetNewOrExistingTransaction: creating new transaction. IsolationLevel: " + ADesiredIsolationLevel.ToString());
+                        TLogging.Log("GetNewOrExistingTransaction: creating new transaction. IsolationLevel: " + ADesiredIsolationLevel.ToString());
                     }
 
                     TheTransaction = BeginTransaction(ADesiredIsolationLevel, false);
@@ -2132,7 +2132,7 @@ namespace Ict.Common.DB
 
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "GetNewOrExistingTransaction: using existing transaction. IsolationLevel: " + TheTransaction.IsolationLevel.ToString());
                     }
                 }
@@ -3501,7 +3501,7 @@ namespace Ict.Common.DB
                 //   1) no unhandled Exception was thrown;
                 //   2) an unhandled Exception was thrown.
 
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
+                // The next Method that gets called will know whether an unhandled Exception has be thrown (or not) by inspecting the
                 // 'ExceptionThrown' Variable and will act accordingly!
                 AutoTransCommitOrRollback(ExceptionThrown, ASubmissionOK, NewTransaction && ACommitTransaction);
             }
@@ -4268,11 +4268,13 @@ namespace Ict.Common.DB
                 // While everthing is fine, the calling code might decide not to Commit the DB Transaction!
                 if (ACommitTransaction)
                 {
+                    TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRACE, "AutoTransCommitOrRollback: Commit");
                     CommitTransaction();
                 }
             }
             else
             {
+                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRACE, "AutoTransCommitOrRollback: Rollback");
                 RollbackTransaction();
             }
         }
@@ -4296,11 +4298,13 @@ namespace Ict.Common.DB
                 // While everthing is fine, the calling code might decide not to Commit the DB Transaction!
                 if (ACommitTransaction)
                 {
+                    TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, "AutoTransCommitOrRollback: Commit");
                     CommitTransaction();
                 }
             }
             else
             {
+                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, "AutoTransCommitOrRollback: Rollback");
                 RollbackTransaction();
             }
         }

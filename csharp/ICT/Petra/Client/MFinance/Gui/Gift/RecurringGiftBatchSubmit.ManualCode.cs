@@ -110,12 +110,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FCurrencyCode == FBaseCurrencyCode)
             {
-                txtExchangeRateToBase.Enabled = false;
+                btnGetSetExchangeRate.Enabled = false;
                 txtExchangeRateToBase.BackColor = Color.LightPink;
             }
             else
             {
-                txtExchangeRateToBase.Enabled = true;
+                btnGetSetExchangeRate.Enabled = true;
                 txtExchangeRateToBase.BackColor = Color.Empty;
             }
 
@@ -127,9 +127,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
                 FBatchRow.CurrencyCode,
                 FMainDS.ALedger[0].BaseCurrency,
-                ADate);
+                ADate, true);
 
-            txtExchangeRateToBase.Text = FExchangeRateToBase.ToString();
+            txtExchangeRateToBase.NumberValueDecimal = FExchangeRateToBase;
 
             FExchangeRateIntlToBase = InternationalCurrencyExchangeRate(ADate);
         }
@@ -206,8 +206,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            FExchangeRateToBase = selectedExchangeRate;
-            txtExchangeRateToBase.Text = FExchangeRateToBase.ToString();
+            if (selectedExchangeRate > 0.0m)
+            {
+                FExchangeRateToBase = selectedExchangeRate;
+                txtExchangeRateToBase.NumberValueDecimal = FExchangeRateToBase;
+            }
         }
 
         /// <summary>
@@ -216,13 +219,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void SubmitBatch(object sender, EventArgs e)
         {
-            decimal ExchRateToBase = 0;
-
-            if (!(Decimal.TryParse(txtExchangeRateToBase.Text, out ExchRateToBase) && (ExchRateToBase > 0)))
+            // This should never happen - but ...
+            if (txtExchangeRateToBase.NumberValueDecimal <= 0.0m)
             {
-                MessageBox.Show(Catalog.GetString("The exchange rate must be a number greater than 0."));
-                txtExchangeRateToBase.Focus();
-                txtExchangeRateToBase.SelectAll();
+                MessageBox.Show(Catalog.GetString("The exchange rate must be a number greater than 0.0"));
+                btnGetSetExchangeRate.Enabled = true;
                 return;
             }
 

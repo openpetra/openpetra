@@ -30,7 +30,8 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Logic
 {
-    /// cache for daily exchange rates
+    /// Cache for daily exchange rates
+    /// Be sure to clear the cache regularly and always at the beginning of an operation, because there is no automatic update mechanism.
     public class TExchangeRateCache
     {
         private static SortedList <string, decimal>FCachedExchangeRates = new SortedList <string, decimal>();
@@ -42,13 +43,16 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
-        /// get exchange rate valid at the given date; uses cache to avoid too many roundtrips to the server
+        /// get exchange rate valid at the given date; uses cache to avoid too many roundtrips to the server.
+        /// Be sure to clear the cache regularly and always at the beginning of an operation, because there is no automatic update mechanism.
         /// </summary>
         /// <param name="ACurrencyFrom"></param>
         /// <param name="ACurrencyTo"></param>
         /// <param name="ADateEffective"></param>
+        /// <param name="AAllowFuzzyMatch">Set this to true to allow the database to return the rate on any date on or prior to ADateEffective.
+        /// Set to false to force the database to apply the date strictly.</param>
         /// <returns></returns>
-        public static decimal GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
+        public static decimal GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective, Boolean AAllowFuzzyMatch)
         {
             string key = ACurrencyFrom + ACurrencyTo + ADateEffective.ToShortDateString();
 
@@ -62,7 +66,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 return 1.0M;
             }
 
-            decimal rate = TRemote.MFinance.GL.WebConnectors.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
+            decimal rate = TRemote.MFinance.GL.WebConnectors.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective,
+                AAllowFuzzyMatch ? -1 : 0, false);
 
             //
             // Don't cache a zero rate:
@@ -75,6 +80,29 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
 
             return rate;
+        }
+
+        /// <summary>
+        /// Puts a new value into the cache or updates an existing one.  Exchange rates of 0.0 and rates for currencies that are the same
+        /// are ignored.
+        /// </summary>
+        public static void SetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective, decimal AExchangeRate)
+        {
+            if ((ACurrencyFrom == ACurrencyTo) || (AExchangeRate == 0.0m))
+            {
+                return;
+            }
+
+            string key = ACurrencyFrom + ACurrencyTo + ADateEffective.ToShortDateString();
+
+            if (FCachedExchangeRates.ContainsKey(key))
+            {
+                FCachedExchangeRates[key] = AExchangeRate;
+            }
+            else
+            {
+                FCachedExchangeRates.Add(key, AExchangeRate);
+            }
         }
     }
 }

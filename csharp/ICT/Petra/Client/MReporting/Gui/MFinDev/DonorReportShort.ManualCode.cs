@@ -57,8 +57,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 || !dtpStartDate.ValidDate(false))
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("No valid date."),
-                    Catalog.GetString("Please enter a valid date."),
+                    Catalog.GetString("Date format problem"),
+                    Catalog.GetString("Please check the date entry."),
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
@@ -78,7 +78,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("param_extract_name", txtExtract.Text);
+
+            ACalc.AddParameter("param_all_partners", rbtAllPartners.Checked);
+            ACalc.AddParameter("param_extract", rbtExtract.Checked);
+
+            if (rbtExtract.Checked)
+            {
+                ACalc.AddParameter("param_extract_name", txtExtract.Text);
+            }
 
             if ((AReportAction == TReportActionEnum.raGenerate)
                 && rbtExtract.Checked
@@ -90,6 +97,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                     TResultSeverity.Resv_Critical);
 
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
+
+            int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
+
+            for (int Counter = 0; Counter <= MaxColumns; ++Counter)
+            {
+                String ColumnName = ACalc.GetParameters().Get("param_calculation", Counter, 0).ToString();
+
+                if (ColumnName == "Total Given")
+                {
+                    ACalc.AddParameter("param_gift_amount_column", Counter);
+                }
             }
         }
 

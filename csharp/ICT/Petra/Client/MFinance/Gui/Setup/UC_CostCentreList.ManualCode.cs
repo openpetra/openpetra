@@ -140,6 +140,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void Selection_SelectionChanged(object sender, SourceGrid.RangeRegionChangedEventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             if (FParentForm.FIAmUpdating == 0)
             {
                 int previousRowId = FPrevRowChangedRow;
@@ -172,6 +174,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 FPrevRowChangedRow = newRowId;
             }
+
+            this.Cursor = Cursors.Default;
         }
 
         /// <summary>

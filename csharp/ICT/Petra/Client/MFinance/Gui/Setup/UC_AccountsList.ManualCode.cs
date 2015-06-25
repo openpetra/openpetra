@@ -151,7 +151,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
 
                     FParentForm.FIAmUpdating++;
+                    grdAccounts.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(grdAccounts_FocusRowLeaving);
                     grdAccounts.SelectRowInGrid(RowIdx);
+                    grdAccounts.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(grdAccounts_FocusRowLeaving);
                     FParentForm.FIAmUpdating--;
                 }
             }
@@ -185,6 +187,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void Selection_SelectionChanged(object sender, SourceGrid.RangeRegionChangedEventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             if (FParentForm.FIAmUpdating == 0)
             {
                 int previousRowId = FPrevRowChangedRow;
@@ -221,6 +225,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 Console.WriteLine("Skipping selection_changed...");
             }
+
+            this.Cursor = Cursors.Default;
         }
 
         /// <summary>

@@ -192,8 +192,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             // GetCacheableFinanceTable returns a DataTable with a bank flag
             if (ABankAccountOnly)
             {
-                Filter += " AND (" + GLSetupTDSAAccountTable.GetBankAccountFlagDBName() + " = true OR " +
-                          GLSetupTDSAAccountTable.GetCashAccountFlagDBName() + " = true)";
+                Filter += " AND (" + GLSetupTDSAAccountTable.GetBankAccountFlagDBName() + " = true)";
             }
 
             // AForeignCurrencyName.Equals("") means use default or do nothing!
@@ -377,7 +376,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             view.RowFilter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly, ABankAccountOnly);
 
-            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember, "a_account_type_c" });
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
             //Highlight inactive Accounts
@@ -396,7 +395,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 90);
-            AControl.AddTextColumn(Catalog.GetString("Account Description"), NewTable.Columns[DisplayMember], 232);
+            AControl.AddTextColumn(Catalog.GetString("Account Description"), NewTable.Columns[DisplayMember], 200);
             AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
@@ -545,6 +544,93 @@ namespace Ict.Petra.Client.MFinance.Logic
                 ABankAccountOnly, AForeignCurrencyName);
         }
 
+        private static Boolean AccountIsDescendantOf(DataView View, String ParentAccount, AAccountHierarchyDetailRow Row)
+        {
+            if (Row.AccountCodeToReportTo == ParentAccount)
+            {
+                return true;
+            }
+
+            Int32 Idx = View.Find(Row.AccountCodeToReportTo);
+
+            if (Idx < 0)
+            {
+                return false; // This account has no parent
+            }
+
+            return AccountIsDescendantOf(View, ParentAccount, (AAccountHierarchyDetailRow)View[Idx].Row);
+        }
+
+        /// <summary>
+        /// Clearing accounts are any and all posting accounts that are descendants of 8500S
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAccountHierarchyCode"></param>
+        public static void InitialiseClearingAccountList(ref TCmbAutoPopulated AControl, Int32 ALedgerNumber, String AAccountHierarchyCode)
+        {
+            GLSetupTDS DS = TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(ALedgerNumber);
+
+            DS.AAccount.DefaultView.Sort = "a_account_code_c";
+            DS.AAccountHierarchyDetail.DefaultView.RowFilter =
+                "a_ledger_number_i=" + ALedgerNumber + " AND a_account_hierarchy_code_c='" + AAccountHierarchyCode + "'";
+            DS.AAccountHierarchyDetail.DefaultView.Sort = "a_reporting_account_code_c";
+
+            DataTable Options = new DataTable();
+            Options.Columns.Add("AccountCode", typeof(String));
+            Options.Columns.Add("AccountDescr", typeof(String));
+
+            foreach (DataRowView rv in DS.AAccountHierarchyDetail.DefaultView)
+            {
+                AAccountHierarchyDetailRow Row = (AAccountHierarchyDetailRow)rv.Row;
+
+                if (AccountIsDescendantOf(DS.AAccountHierarchyDetail.DefaultView, "8500S", Row))
+                {
+                    //
+                    // This account is a descendant of 8500S. I also require it to be a Posting Account.
+                    Int32 Idx = DS.AAccount.DefaultView.Find(Row.ReportingAccountCode);
+
+                    if (Idx >= 0)
+                    {
+                        AAccountRow Account = (AAccountRow)DS.AAccount.DefaultView[Idx].Row;
+
+                        if (Account.PostingStatus == true)
+                        {
+                            DataRow NewRow = Options.NewRow();
+                            NewRow["AccountCode"] = Account.AccountCode;
+                            NewRow["AccountDescr"] = Account.AccountCodeShortDesc;
+                            Options.Rows.Add(NewRow);
+                        }
+                    }
+                }
+            }
+
+            AControl.InitialiseUserControl(Options,
+                "AccountCode",
+                "AccountDescr",
+                null);
+        }
+
+        /// <summary>
+        /// Equity accounts are any and all posting accounts that have a_account_type_c == 'Equity'
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        public static void InitialiseRetEarningsAccountAccountList(ref TCmbAutoPopulated AControl, Int32 ALedgerNumber)
+        {
+            AAccountTable Account = (AAccountTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
+                ALedgerNumber);
+
+            Account.DefaultView.RowFilter = "a_posting_status_l=TRUE AND a_account_type_c='Equity'";
+            Account.DefaultView.Sort = "a_account_code_c";
+            DataTable Options = Account.DefaultView.ToTable();
+
+            AControl.InitialiseUserControl(Options,
+                "a_account_code_c",
+                "a_account_code_short_desc_c",
+                null);
+        }
+
         /// <summary>
         /// fill combobox values with list of transaction types
         /// </summary>
@@ -553,7 +639,6 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ASubSystemCode"></param>
         public static void InitialiseTransactionTypeList(ref TCmbAutoPopulated AControl, Int32 ALedgerNumber, string ASubSystemCode)
         {
-            // TODO: use cached table for transaction types? use filter to get only appropriate types for subsystem?
             TTypedDataTable Table;
 
             TRemote.MCommon.DataReader.WebConnectors.GetData(TTypedDataTable.GetTableNameSQL(ATransactionTypeTable.TableId),
@@ -565,8 +650,12 @@ namespace Ict.Petra.Client.MFinance.Logic
                 },
                 out Table);
 
+            //
+            // REVAL is not to be offered to the user as an option:
+            Table.DefaultView.RowFilter = "a_transaction_type_code_c <> 'REVAL'";
+
             AControl.InitialiseUserControl(
-                Table,
+                Table.DefaultView.ToTable(),
                 ATransactionTypeTable.GetTransactionTypeCodeDBName(),
                 ATransactionTypeTable.GetTransactionTypeDescriptionDBName(),
                 null);
@@ -587,12 +676,61 @@ namespace Ict.Petra.Client.MFinance.Logic
             DataTable groupTable =
                 (AMotivationGroupTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationGroupList, ALedgerNumber);
 
+            groupTable.Columns.Add("Active", typeof(Boolean));
+
             AControl.InitialiseUserControl(groupTable,
                 AMotivationGroupTable.GetMotivationGroupCodeDBName(),
                 AMotivationGroupTable.GetMotivationGroupDescriptionDBName(),
                 null);
 
             AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
+
+            if (AActiveOnly)
+            {
+                DataTable detailTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, ALedgerNumber);
+
+                // motivation group is deemed active if it contains at least one active motivation detail
+                foreach (DataRow groupRow in groupTable.Rows)
+                {
+                    bool ContainsActive = false;
+
+                    foreach (DataRow detailRow in detailTable.Rows)
+                    {
+                        if ((detailRow[AMotivationDetailTable.GetMotivationGroupCodeDBName()].ToString()
+                             == groupRow[AMotivationGroupTable.GetMotivationGroupCodeDBName()].ToString())
+                            && (Convert.ToBoolean(detailRow[AMotivationDetailTable.GetMotivationStatusDBName()]) == true))
+                        {
+                            ContainsActive = true;
+                            break;
+                        }
+                    }
+
+                    groupRow["Active"] = ContainsActive;
+                }
+
+                AControl.Filter = "Active = true";
+            }
+            else
+            {
+                AControl.Filter = string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// change the filter of the motivation detail combobox when a different motivation group gets selected
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="AActiveOnly"></param>
+        public static void ChangeFilterMotivationGroupList(ref TCmbAutoPopulated AControl, bool AActiveOnly)
+        {
+            if (AActiveOnly)
+            {
+                AControl.Filter = "Active = true";
+            }
+            else
+            {
+                AControl.Filter = string.Empty;
+            }
         }
 
         /// <summary>
@@ -633,6 +771,26 @@ namespace Ict.Petra.Client.MFinance.Logic
             string newFilter = String.Empty;
 
             if ((AControl.Filter != null) && AControl.Filter.StartsWith(AMotivationDetailTable.GetMotivationStatusDBName() + " = true"))
+            {
+                newFilter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true And ";
+            }
+
+            newFilter += AMotivationDetailTable.GetMotivationGroupCodeDBName() + " = '" + AMotivationGroup + "'";
+
+            AControl.Filter = newFilter;
+        }
+
+        /// <summary>
+        /// change the filter of the motivation detail combobox when a different motivation group gets selected
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="AMotivationGroup"></param>
+        /// <param name="AActiveOnly"></param>
+        public static void ChangeFilterMotivationDetailList(ref TCmbAutoPopulated AControl, String AMotivationGroup, bool AActiveOnly)
+        {
+            string newFilter = String.Empty;
+
+            if (AActiveOnly)
             {
                 newFilter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true And ";
             }
@@ -1216,19 +1374,26 @@ namespace Ict.Petra.Client.MFinance.Logic
             DataTable newDataTable = ICHNumbers.DefaultView.ToTable(true, AIchStewardshipTable.GetIchNumberDBName(),
                 AIchStewardshipTable.GetDateProcessedDBName());
 
+            // New column with date as a string. (We do not want time part of date.)
+            newDataTable.Columns.Add("DateOnly");
+
+            foreach (DataRow Row in newDataTable.Rows)
+            {
+                Row["DateOnly"] = Convert.ToDateTime(Row[AIchStewardshipTable.GetDateProcessedDBName()]).ToShortDateString();
+            }
+
             // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour
             DataRow emptyRow = newDataTable.NewRow();
 
             emptyRow[0] = 0;  //selecting 0 will mean full HOSA reports for all cost centres
-            emptyRow[1] = DateTime.Today;
 
             newDataTable.Rows.Add(emptyRow);
 
             AControl.InitialiseUserControl(newDataTable,
                 AIchStewardshipTable.GetIchNumberDBName(),
-                AIchStewardshipTable.GetDateProcessedDBName(),
+                "DateOnly",
                 null);
-            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+            AControl.AppearanceSetup(new int[] { -1, 80 }, -1);
 
             //Alternative way to filter the contents of the combo
             //AControl.Filter = AIchStewardshipTable.GetPeriodNumberDBName() + " = " + APeriodNumber.ToString();

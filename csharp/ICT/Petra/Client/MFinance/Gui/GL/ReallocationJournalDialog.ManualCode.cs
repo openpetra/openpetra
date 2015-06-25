@@ -73,6 +73,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // set currency codes
                 txtFromTransactionAmount.CurrencyCode = FJournal.TransactionCurrency;
                 txtDetailTransactionAmount.CurrencyCode = FJournal.TransactionCurrency;
+                txtFromTransactionAmount.NumberValueDecimal = 0.0m;
 
                 if (FLedgerNumber != FJournal.LedgerNumber)
                 {
@@ -87,8 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     SetupGrdAccounts();
 
-                    Thread thread = new Thread(SetupComboboxes);
-                    thread.Start();
+                    SetupComboboxes();
                 }
 
                 txtBatchNumber.Text = FJournal.BatchNumber.ToString();
@@ -209,7 +209,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ATempCombo);
             }
 
-            FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(DS, true);
+            FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(DS);
             DS.ATransAnalAttrib.DefaultView.AllowNew = false;
             AGrid.DataSource = new DevAge.ComponentModel.BoundDataView(DS.ATransAnalAttrib.DefaultView);
             AGrid.SetHeaderTooltip(0, Catalog.GetString("Type"));
@@ -294,7 +294,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCurrentTransactionNumber = ARow.TransactionNumber;
             }
 
-            RefreshAnalysisAttributesGrid(cmbDetailAccountCode, FMainDS);
+            if (FLedgerNumber != -1)
+            {
+                RefreshAnalysisAttributesGrid(cmbDetailAccountCode, FMainDS);
+            }
         }
 
         #region Events
@@ -308,7 +311,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // enables extra validation (i.e. data not in grid)
             FValidateEverything = true;
 
-            if (ValidateAllData(false, true))
+            if (ValidateAllData(false, TErrorProcessingMode.Epm_All))
             {
                 // Create the transaction to take the given amount OUT of the "allocate from" account & cost centre.
                 GLBatchTDSATransactionRow NewRow = FMainDS.ATransaction.NewRowTyped(true);
@@ -693,7 +696,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCurrentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
             }
 
-            FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref DS, null, AccountCode, TransactionNumber);
+            FAnalysisAttributesLogic.TransAnalAttrRequiredUpdating(DS, null, AccountCode, TransactionNumber, false);
             RefreshAnalysisAttributesGrid(sender, DS);
         }
 
@@ -926,7 +929,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(ADS, true, TransactionNumber);
+            FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(ADS, TransactionNumber);
 
             Grid.DataSource = new DevAge.ComponentModel.BoundDataView(ADS.ATransAnalAttrib.DefaultView);
 

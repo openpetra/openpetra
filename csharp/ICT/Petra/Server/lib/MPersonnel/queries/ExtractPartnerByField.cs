@@ -124,9 +124,6 @@ namespace Ict.Petra.Server.MPersonnel.queries
             // for sending fields only commitments are taken into account
             ReturnValue = ProcessCommitments(false, AParameters, ATransaction, out AExtractId);
 
-            // if result was true then commit transaction, otherwise rollback
-            TExtractsHandling.FinishExtractFromListOfPartnerKeys(ReturnValue);
-
             return ReturnValue;
         }
 
@@ -156,8 +153,6 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             if (ReturnValue == false)
             {
-                // if result was false then rollback transaction
-                TExtractsHandling.FinishExtractFromListOfPartnerKeys(false);
                 return ReturnValue;
             }
 
@@ -243,7 +238,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
             // now run the database query
-            TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+            TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
             DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
 
@@ -257,7 +252,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 return false;
             }
 
-            TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+            TLogging.Log("Preparing the extract...", TLoggingType.ToStatusBar);
 
             // create an extract with the given name in the parameters
             TExtractsHandling.ExtendExtractFromListOfPartnerKeys(
@@ -265,7 +260,6 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 partnerkeys,
                 0,
                 AddressFilterAdded,
-                false,
                 false);
 
             // ----------------------------------------------------------------------------------------
@@ -306,7 +300,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
             // now run the database query
-            TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+            TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
             partnerkeys.Clear();
             partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
@@ -321,7 +315,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 return false;
             }
 
-            TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+            TLogging.Log("Preparing the extract...", TLoggingType.ToStatusBar);
 
             // create an extract with the given name in the parameters
             TExtractsHandling.ExtendExtractFromListOfPartnerKeys(
@@ -329,13 +323,9 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 partnerkeys,
                 0,
                 AddressFilterAdded,
-                false,
                 false);
 
             ReturnValue = true;
-
-            // if result was true then commit transaction, otherwise rollback
-            TExtractsHandling.FinishExtractFromListOfPartnerKeys(ReturnValue);
 
             return ReturnValue;
         }
@@ -432,7 +422,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
             // now run the database query
-            TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+            TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
             DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
 
@@ -446,7 +436,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 return false;
             }
 
-            TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+            TLogging.Log("Preparing the extract...", TLoggingType.ToStatusBar);
 
             // create an extract with the given name in the parameters
             ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
@@ -455,8 +445,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 out AExtractId,
                 partnerkeys,
                 0,
-                AddressFilterAdded,
-                false);
+                AddressFilterAdded);
 
             return ReturnValue;
         }

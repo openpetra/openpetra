@@ -680,6 +680,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             PartnersOvrlCS = TContactDetailsAggregate.GetPartnersOverallCS(APartnerKey,
                 Calculations.TOverallContSettingKind.ocskPrimaryContactMethod |
                 Calculations.TOverallContSettingKind.ocskPrimaryEmailAddress |
+                Calculations.TOverallContSettingKind.ocskSecondaryEmailAddress |
                 Calculations.TOverallContSettingKind.ocskPrimaryPhoneNumber |
                 Calculations.TOverallContSettingKind.ocskEmailAddressWithinOrg |
                 Calculations.TOverallContSettingKind.ocskPhoneNumberWithinOrg);
@@ -698,7 +699,15 @@ namespace Ict.Petra.Server.MReporting.MPartner
                                             PartnersOvrlCS.PrimaryEmailAddress + SEPARATOR;
                 }
 
-                if (PartnerClass == TPartnerClass.PERSON)
+                if (PartnerClass == TPartnerClass.FAMILY)
+                {
+                    if (PartnersOvrlCS.SecondaryEmailAddress != null)
+                    {
+                        AllContactDetailsStr += Catalog.GetString("Secondary Email Address: ") +
+                                                PartnersOvrlCS.SecondaryEmailAddress + SEPARATOR;
+                    }
+                }
+                else if (PartnerClass == TPartnerClass.PERSON)
                 {
                     if (PartnersOvrlCS.PhoneNumberWithinOrg != null)
                     {

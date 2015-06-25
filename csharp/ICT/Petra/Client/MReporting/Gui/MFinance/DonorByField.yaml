@@ -20,14 +20,14 @@
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Actions:
-        actFilter: {Label=Filter List, ActionClick=FilterList}
+        actApplyFilter: {Label=Filter List, ActionClick=FilterList}
     Controls:
         tpgGeneralSettings: {ControlsOrientation=vertical}
             Label: General Settings
             Controls: [pnlFilter, pnlMiddle, pnlBottom]
         pnlFilter: {ControlsOrientation=horizontal}
             Dock: Top
-            Controls: [txtFilter, btnFilter]
+            Controls: [txtFilter, btnApplyFilter]
         pnlMiddle: {ControlsOrientation=horizontal}
             Dock: Fill
             Controls: [clbLedger, grpOptions]
@@ -36,7 +36,6 @@
             Controls: 
                 Row0: [chkAllLedgers]
                 Row1: [ucoAddress, ucoChkFilter]
-            Height: 200
         grpOptions:
             Label: Selection Criteria
             Dock: Right
@@ -54,8 +53,8 @@
         txtFilter:
             NoLabel: true
             Width: 300
-        btnFilter:
-            Action: actFilter
+        btnApplyFilter:
+            Action: actApplyFilter
         cmbReceiptLetterFrequency: {Label=Receipt Letter Frequency, List=FrequencyList, ParameterName=param_receipt_letter_frequency}            
         chkNewDonorsOnly: {Label=New Donors only, ParameterName=param_new_donors_only}
         chkReceiptEachGiftOnly: {Label=Receipt each Gift only, ParameterName=param_receipt_each_gift_only}

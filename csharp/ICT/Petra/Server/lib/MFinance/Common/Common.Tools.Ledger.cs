@@ -367,18 +367,6 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         ///
         /// </summary>
-        public bool BranchProcessing
-        {
-            get
-            {
-                return FLedgerRow.BranchProcessing;
-            }
-        }
-
-
-        /// <summary>
-        ///
-        /// </summary>
         public bool IltProcessingCentre
         {
             get
@@ -535,18 +523,11 @@ namespace Ict.Petra.Server.MFinance.Common
     public enum TLedgerInitFlagEnum
     {
         /// <summary>
-        /// Revaluation is a process which has to be done once each month. So the value
+        /// Revaluation is a process that has to be done once each month. So the value
         /// a) is set to true if a revaluation is done,
-        /// b) set to false if the month end process was done successful.
-        /// c) is used bevor the month end process to remember the user for the outstanding
-        /// revaluation.
+        /// b) is checked before the month end process to remind the user that revaluation is required.
         /// </summary>
-        Revaluation,
-
-        /// <summary>
-        ///
-        /// </summary>
-        DatabaseAllocation
+        Revaluation
     }
 
     /// <summary>
@@ -619,46 +600,6 @@ namespace Ict.Petra.Server.MFinance.Common
             }
         }
 
-
-        /// <summary>
-        /// Set Flag and Name
-        /// </summary>
-        public void SetFlagAndName() //string AName
-        {
-            //TODO: Delete? Argument string AName was never used! neither is this method called
-
-            TDBTransaction Transaction = null;
-            Boolean SubmissionOK = false;
-
-            try
-            {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
-                    delegate
-                    {
-                        ALedgerInitFlagTable ledgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                            FLedgerNumber, FFlagName, Transaction);
-
-                        ALedgerInitFlagRow ledgerInitFlagRow = (ALedgerInitFlagRow)ledgerInitFlagTable.NewRow();
-
-                        ledgerInitFlagRow.LedgerNumber = FLedgerNumber;
-                        ledgerInitFlagRow.InitOptionName = FFlagName;
-
-                        ledgerInitFlagTable.Rows.Add(ledgerInitFlagRow);
-
-                        ALedgerInitFlagAccess.SubmitChanges(ledgerInitFlagTable, Transaction);
-
-                        SubmissionOK = true;
-                    });
-            }
-            catch (Exception ex)
-            {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
-            }
-        }
 
         private bool FindRecord()
         {

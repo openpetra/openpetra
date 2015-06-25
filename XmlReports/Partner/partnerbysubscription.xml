@@ -48,12 +48,15 @@
                     SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
                     PUB_p_partner.p_partner_short_name_c AS ShortName,
                     PUB_p_partner.p_partner_class_c AS PartnerClass
-                    FROM   PUB_p_partner, pub_p_partner_location, pub_p_location, PUB_p_subscription as psub
+                    FROM   PUB_p_partner, pub_p_partner_location, pub_p_location, PUB_p_subscription as psub, PUB_p_partner_status
                     WHERE psub.p_partner_key_n = PUB_p_partner.p_partner_key_n
                       AND NOT PUB_p_partner.p_partner_key_n = 0
+                      AND PUB_p_partner_status.p_status_code_c = PUB_p_partner.p_status_code_c
+                      AND PUB_p_partner_status.p_partner_is_active_l = 'true'
                       AND psub.p_start_date_d &lt;= {#param_date_effective#}
                       AND (psub.p_date_cancelled_d IS NULL OR psub.p_date_cancelled_d &gt; {#param_date_effective#})
                       AND (psub.p_expiry_date_d IS NULL OR psub.p_expiry_date_d &gt; {#param_date_effective#})
+					  AND psub.p_subscription_status_c != 'EXPIRED' AND psub.p_subscription_status_c != 'CANCELLED'
 					  AND pub_p_partner_location.p_partner_key_n = pub_p_partner.p_partner_key_n
 					  AND pub_p_partner_location.p_location_key_i = pub_p_location.p_location_key_i
                 </value></queryDetail>

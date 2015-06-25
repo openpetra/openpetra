@@ -28,6 +28,7 @@ using System.Drawing.Drawing2D;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows.Forms;
 using DevAge.ComponentModel;
 using Ict.Common.Exceptions;
@@ -1181,6 +1182,37 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// add a column that shows a decimal value.
+        /// aligns the value to the right.
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        public void AddDecimalColumn(String AColumnTitle, DataColumn ADataColumn)
+        {
+            AddDecimalColumn(AColumnTitle, ADataColumn, 2);
+        }
+
+        /// <summary>
+        /// add a column that shows a decimal value.
+        /// aligns the value to the right.
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="ADecimalDigits">Number of digits after the numeric decimal point</param>
+        public void AddDecimalColumn(String AColumnTitle, DataColumn ADataColumn, int ADecimalDigits)
+        {
+            SourceGrid.Cells.Editors.TextBox DecimalEditor = new SourceGrid.Cells.Editors.TextBox(typeof(decimal));
+            DecimalEditor.TypeConverter = new Ict.Common.TypeConverter.TDecimalConverter(
+                ADataColumn.ColumnName, Thread.CurrentThread.CurrentCulture.NumberFormat, ADecimalDigits);
+            DecimalEditor.EditableMode = EditableMode.None;
+
+            SourceGrid.Cells.Views.Cell view = new SourceGrid.Cells.Views.Cell();
+            view.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleRight;
+
+            AddTextColumn(AColumnTitle, ADataColumn, -1, null, DecimalEditor, null, view, null);
+        }
+
+        /// <summary>
         /// add a column that shows a currency value.
         /// aligns the value to the right.
         /// prints number in red if it is negative
@@ -1199,11 +1231,12 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
-        /// <param name="AFractionDigits">Number of digits after the decimal point</param>
-        public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn, int AFractionDigits)
+        /// <param name="ADecimalDigits">Number of digits after the currency decimal point</param>
+        public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn, int ADecimalDigits)
         {
             SourceGrid.Cells.Editors.TextBox CurrencyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(decimal));
-            CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.NumberTypeConverter(typeof(decimal), "N" + AFractionDigits.ToString());
+            CurrencyEditor.TypeConverter = new Ict.Common.TypeConverter.TCurrencyConverter(
+                ADataColumn.ColumnName, Thread.CurrentThread.CurrentCulture.NumberFormat, ADecimalDigits);
 
             CurrencyEditor.EditableMode = EditableMode.None;
 

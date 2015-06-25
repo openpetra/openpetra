@@ -44,6 +44,33 @@ namespace Ict.Common
         };
 
         /// <summary>
+        /// This string is returned by the CSV parser if it cannot successfully parse a text CSV field - usually due to mis-matched quote marks.
+        /// </summary>
+        public static readonly string CSV_STRING_FORMAT_ERROR = Catalog.GetString(">>STRING FORMAT ERROR<<");
+
+        #region User Default Keys used in Ict.Common
+
+        /// <summary>Show money amounts in currency format on finance screens (default is true)</summary>
+        public const String FINANCE_CURRENCY_FORMAT_AS_CURRENCY = "FinanceShowCurrencyAsCurrency";
+
+        /// <summary>Show other decimal entities in currency format on finance screens (default is true)</summary>
+        public const String FINANCE_DECIMAL_FORMAT_AS_CURRENCY = "FinanceShowDecimalAsCurrency";
+
+        /// <summary>Show thousands separator for financial entities on finance screens (default is true)</summary>
+        public const String FINANCE_CURRENCY_SHOW_THOUSANDS = "FinanceCurrencyShowThousands";
+
+        /// <summary>Show money amounts in currency format on partner/conference/personnel screens (default is false)</summary>
+        public const String PARTNER_CURRENCY_FORMAT_AS_CURRENCY = "PartnerShowCurrencyAsCurrency";
+
+        /// <summary>Show other decimal entities in currency format on partner screens (default is false)</summary>
+        public const String PARTNER_DECIMAL_FORMAT_AS_CURRENCY = "PartnerShowDecimalAsCurrency";
+
+        /// <summary>Show thousands separator for financial entities on partner/conference/personnel screens (default is true)</summary>
+        public const String PARTNER_CURRENCY_SHOW_THOUSANDS = "PartnerCurrencyShowThousands";
+
+        #endregion
+
+        /// <summary>
         /// convert an array of strings into a StringCollection
         /// </summary>
         /// <param name="list">array of strings</param>
@@ -542,19 +569,35 @@ namespace Ict.Common
                     }
                     else if (list[position] == '"')
                     {
-                        // TODO: no substring???
-                        string quotedstring = list.Substring(position + 1, FindMatchingQuote(list, position) - position);
-
-                        if (value.Length == 0)
+                        try
                         {
-                            value.Append(quotedstring);
-                        }
-                        else
-                        {
-                            value.Append("\"").Append(quotedstring).Append("\"");
-                        }
+                            string quotedstring = list.Substring(position + 1, FindMatchingQuote(list, position) - position);
 
-                        position += quotedstring.Length + 2;
+                            if (value.Length == 0)
+                            {
+                                value.Append(quotedstring);
+                            }
+                            else
+                            {
+                                value.Append("\"").Append(quotedstring).Append("\"");
+                            }
+
+                            position += quotedstring.Length + 2;
+                        }
+                        catch (IndexOutOfRangeException)
+                        {
+                            // No matching quote was found
+                            if (value.Length == 0)
+                            {
+                                value.Append(CSV_STRING_FORMAT_ERROR);
+                            }
+                            else
+                            {
+                                value.Append("\"").Append(CSV_STRING_FORMAT_ERROR).Append("\"");
+                            }
+
+                            position = list.Length;
+                        }
 
                         // If we are not to add trailing spaces we set isFinalisedQuotedText = true
                         if (ARemoveLeadingAndTrailingSpaces)
@@ -654,19 +697,36 @@ namespace Ict.Common
                     else if (list[position] == '"')
                     {
                         // TODO: no substring???
-                        char[] quotedstring = new char[FindMatchingQuote(list, position) - position];
-                        list.CopyTo(position + 1, quotedstring, 0, quotedstring.Length);
-
-                        if (value.Length == 0)
+                        try
                         {
-                            value.Append(quotedstring);
-                        }
-                        else
-                        {
-                            value.Append("\"").Append(quotedstring).Append("\"");
-                        }
+                            char[] quotedstring = new char[FindMatchingQuote(list, position) - position];
+                            list.CopyTo(position + 1, quotedstring, 0, quotedstring.Length);
 
-                        position += quotedstring.Length + 2;
+                            if (value.Length == 0)
+                            {
+                                value.Append(quotedstring);
+                            }
+                            else
+                            {
+                                value.Append("\"").Append(quotedstring).Append("\"");
+                            }
+
+                            position += quotedstring.Length + 2;
+                        }
+                        catch (IndexOutOfRangeException)
+                        {
+                            // Problem with matching quotes...
+                            if (value.Length == 0)
+                            {
+                                value.Append(CSV_STRING_FORMAT_ERROR);
+                            }
+                            else
+                            {
+                                value.Append("\"").Append(CSV_STRING_FORMAT_ERROR).Append("\"");
+                            }
+
+                            position = list.Length;
+                        }
 
                         // If we are not to add trailing spaces we set isFinalisedQuotedText = true
                         if (ARemoveLeadingAndTrailingSpaces)

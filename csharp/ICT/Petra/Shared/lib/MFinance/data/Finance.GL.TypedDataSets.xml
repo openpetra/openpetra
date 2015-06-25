@@ -8,8 +8,8 @@
         <Table sqltable="a_ledger"/>
         <Table sqltable="a_batch"/>
         <Table sqltable="a_journal">
-            <CustomField name="JournalDebitTotalBase" type="decimal"/>
-            <CustomField name="JournalCreditTotalBase" type="decimal"/>
+            <CustomField name="JournalDebitTotalBase" type="decimal" initial="0"/>
+            <CustomField name="JournalCreditTotalBase" type="decimal" initial="0"/>
         </Table>
         <Table sqltable="a_transaction">
             <CustomField name="DateEntered" type="DateTime"/>
@@ -20,14 +20,15 @@
 
         <Table sqltable="a_recurring_batch"/>
         <Table sqltable="a_recurring_journal">
-            <CustomField name="JournalDebitTotalBase" type="decimal"/>
-            <CustomField name="JournalCreditTotalBase" type="decimal"/>
+            <CustomField name="JournalDebitTotalBase" type="decimal" initial="0"/>
+            <CustomField name="JournalCreditTotalBase" type="decimal" initial="0"/>
         </Table>
         <Table sqltable="a_recurring_transaction">
             <CustomField name="DateEntered" type="DateTime"/>
             <CustomField name="AnalysisAttributes" type="string"/>
         </Table>
         <Table sqltable="a_recurring_trans_anal_attrib" />	
+        <Table sqltable="a_revaluation" />	
     </DataSet>
 
     <DataSet name="GLPostingTDS">

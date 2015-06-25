@@ -110,7 +110,7 @@ RootNode:
     #todo: popup menu for address grid
     Menu:
         mniFile:
-            mniFileWorkWithLastPartner: {Label=&Work with Last Partner...}
+            mniFileWorkWithLastPartner: {Label=&Work with Last Partner..., ShortcutKeys=Keys.L | Keys.Control}
             mniFileRecentPartners: 
                 Label:&Recent Partners
                 mniFileRecentPartner1: {Label=0}

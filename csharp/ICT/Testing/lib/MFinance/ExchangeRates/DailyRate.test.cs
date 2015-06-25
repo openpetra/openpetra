@@ -404,7 +404,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
             {
                 MessageBoxTester tester = new MessageBoxTester(hWnd);
-                tester.SendCommand(MessageBoxTester.Command.No);
+                tester.SendCommand(MessageBoxTester.Command.Yes);
             };
             btnNew.Click();
 
@@ -422,7 +422,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
             {
                 MessageBoxTester tester = new MessageBoxTester(hWnd);
-                tester.SendCommand(MessageBoxTester.Command.No);
+                tester.SendCommand(MessageBoxTester.Command.Yes);
             };
             // We have added 2 new rows but the same rate at different times of day
             // When we save the duplicate row will get removed, so we will end up with 10 data rows
@@ -503,7 +503,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.SaveChanges();
 
             // Create a corporate rate valid from yesterday
-            FCorporateDS.CreateCorporateRate("GBP", "USD", DateTime.Today.AddDays(-1), 0.515m);
+            FCorporateDS.CreateCorporateRate("EUR", "USD", DateTime.Today.AddDays(-1), 0.515m);
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             mainScreen.Show();
@@ -772,31 +772,16 @@ namespace Tests.MFinance.Client.ExchangeRates
             btnDeleteTester.Click();
             Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
 
-            // Should still be on row 1 with 7 grid rows now that 2 have gone
+            // Should still be on row 1 with 5 grid rows now that 2 have gone with their inverses as well (4 deleted in total)
             Assert.AreEqual(1, mainScreen.GetSelectedRowIndex());
-            Assert.IsTrue(btnDeleteTester.Properties.Enabled);
-            Assert.AreEqual(7, grdDetails.Rows.Count);
-
-            // Delete rows starting at the bottom
-            SelectRowInGrid(6);
-            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
-            {
-                MessageBoxTester tester = new MessageBoxTester(hWnd);
-                tester.SendCommand(MessageBoxTester.Command.Yes);
-            };
-            btnDeleteTester.Click();
-            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
-            {
-                MessageBoxTester tester = new MessageBoxTester(hWnd);
-                tester.SendCommand(MessageBoxTester.Command.Yes);
-            };
-            btnDeleteTester.Click();
-
-            Assert.AreEqual(4, mainScreen.GetSelectedRowIndex());
             Assert.IsTrue(btnDeleteTester.Properties.Enabled);
             Assert.AreEqual(5, grdDetails.Rows.Count);
 
-            // Save the new settings - deleting does not remove inverse rows when saved
+            // Go to the bottom row
+            SelectRowInGrid(4);
+            Assert.IsTrue(btnDeleteTester.Properties.Enabled);
+
+            // Save the new settings
             Assert.IsTrue(btnSaveTester.Properties.Enabled);
             btnSaveTester.Click();
             Assert.IsFalse(btnSaveTester.Properties.Enabled);
@@ -955,58 +940,60 @@ namespace Tests.MFinance.Client.ExchangeRates
             TVerificationResultCollection results = new TVerificationResultCollection();
             string resultText;
             string firstResultCode;
+            Boolean gotDateWarning;
 
-            RunTestImport("daily-csv/GoodImport-NoTime.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("daily-csv/GoodImport-NoTime.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
+            Assert.IsTrue(gotDateWarning, "Expected a warning about dates");
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             FMainDS.DeleteAllRows();
-            RunTestImport("daily-csv/GoodImport-WithTime.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("daily-csv/GoodImport-WithTime.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             FMainDS.DeleteAllRows();
-            RunTestImport("daily-csv/BadCurrencyImport.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("daily-csv/BadCurrencyImport.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             FMainDS.DeleteAllRows();
-            RunTestImport("daily-csv/BadDateImport.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("daily-csv/BadDateImport.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             FMainDS.DeleteAllRows();
-            RunTestImport("daily-csv/BadRateImport.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("daily-csv/BadRateImport.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             FMainDS.DeleteAllRows();
-            RunTestImport("daily-csv/BadTimeImport.csv", "\t", results, out resultText, out firstResultCode);
+            RunTestImport("daily-csv/BadTimeImport.csv", "\t", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
             // Run the test(s) that have duplicates
             FMainDS.DeleteAllRows();
             FMainDS.InsertStandardRows();
-            RunTestImport("daily-csv/GoodImport-WithDuplicates.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("daily-csv/GoodImport-WithDuplicates.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
-            Assert.AreEqual(12, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
+            Assert.AreEqual(16, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             // And Headers
             FMainDS.DeleteAllRows();
-            RunTestImport("daily-csv/GoodImport-WithTimeAndHeader.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("daily-csv/GoodImport-WithTimeAndHeader.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             // Test a date/rate only file - this is tab separated
             FMainDS.DeleteAllRows();
-            RunTestImport("daily-csv/USD_EUR.csv", "\t", results, out resultText, out firstResultCode);
+            RunTestImport("daily-csv/USD_EUR.csv", "\t", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             // Test a file with its own inverses
             FMainDS.DeleteAllRows();
-            RunTestImport("daily-csv/GoodImport-WithInverses.csv", ",", results, out resultText, out firstResultCode);
+            RunTestImport("daily-csv/GoodImport-WithInverses.csv", ",", results, out resultText, out firstResultCode, out gotDateWarning);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(4, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
         }
@@ -1143,7 +1130,8 @@ namespace Tests.MFinance.Client.ExchangeRates
             string ACSVSeparator,
             TVerificationResultCollection AResults,
             out string AResultText,
-            out string AFirstResultCode)
+            out string AFirstResultCode,
+            out Boolean AGotDateWarning)
         {
             string TestFile = Path.GetFullPath(TAppSettingsManager.GetValue("Testing.Path") + "/lib/MFinance/ExchangeRates/" + AFileName);
 
@@ -1153,10 +1141,18 @@ namespace Tests.MFinance.Client.ExchangeRates
             TImportExchangeRates.ImportCurrencyExRates(FMainDS.ADailyExchangeRate, TestFile, ACSVSeparator, "Daily", AResults);
 
             AResultText = String.Empty;
+            AGotDateWarning = false;
 
             for (int i = 0; i < AResults.Count; i++)
             {
-                AResultText += String.Format("{0}: {1}{2}", i.ToString(), AResults[i].ResultText, Environment.NewLine);
+                if (AResults[i].ResultText.Contains("Warning:") && AResults[i].ResultText.Contains("before the current accounting period"))
+                {
+                    AGotDateWarning = true;
+                }
+                else
+                {
+                    AResultText += String.Format("{0}: {1}{2}", i.ToString(), AResults[i].ResultText, Environment.NewLine);
+                }
             }
 
             if (AResultText.Length > 0)

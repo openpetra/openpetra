@@ -381,6 +381,16 @@ namespace Ict.Tools.DevelopersAssistant
                         this["CompilationComboID"] = MiscellaneousComboID.ToString();
                     }
                 }
+
+                if ((nPrevAppVersion <= 1000500) && (nPrevAppVersion > 0))
+                {
+                    // We added 'Pull' in position 11 and 'Update' in position 12 after 1.0.5.0
+                    if (SourceCodeComboID >= 11)
+                    {
+                        SourceCodeComboID += 2;
+                        this["SourceCodeComboID"] = SourceCodeComboID.ToString();
+                    }
+                }
             }
 
             // Set up the OS environment variables

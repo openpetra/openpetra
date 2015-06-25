@@ -259,10 +259,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (SubmitDS.AGiftBatch != null)
             {
                 // Check whether we are saving any rows that are in foreign currency
-                DataView dv = new DataView(SubmitDS.AGiftBatch,
-                    String.Format("{0}<>'{1}'", AGiftBatchTable.GetCurrencyCodeDBName(), FMainDS.ALedger[0].BaseCurrency),
-                    String.Empty, DataViewRowState.CurrentRows);
-                FLatestSaveIncludedForex = (dv.Count > 0);
+                foreach (AGiftBatchRow row in SubmitDS.AGiftBatch.Rows)
+                {
+                    if (row.CurrencyCode != FMainDS.ALedger[0].BaseCurrency)
+                    {
+                        FLatestSaveIncludedForex = true;
+                        break;
+                    }
+                }
             }
 
             // Now do the standard call to save the changes
@@ -349,6 +353,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             mniFileSave.Click -= FileSave;
             tbbSave.Click += FileSaveManual;
             mniFileSave.Click += FileSaveManual;
+
+            // Add a GotFocus event for the tabs so we can display a help message
+            tabGiftBatch.GotFocus += new EventHandler(tabGiftBatch_GotFocus);
+        }
+
+        private void tabGiftBatch_GotFocus(object sender, EventArgs e)
+        {
+            FPetraUtilsObject.WriteToStatusBar(Catalog.GetString(
+                    "Use the left or right arrow keys to switch between Batches and Details"));
         }
 
         /// <summary>
@@ -476,7 +489,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!ValidateAllData(false, true))
+            if (!ValidateAllData(false, TErrorProcessingMode.Epm_All))
             {
                 e.Cancel = true;
 
@@ -500,36 +513,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
-        /// <param name="ARepeatEvent"></param>
-        public void SelectTab(eGiftTabs ATab, bool ARepeatEvent = false)
+        /// <param name="AAllowRepeatEvent"></param>
+        public void SelectTab(eGiftTabs ATab, bool AAllowRepeatEvent = false)
         {
             FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
 
             if (ATab == eGiftTabs.Batches)
             {
-                if ((FPreviouslySelectedTab == eGiftTabs.Batches) && !ARepeatEvent)
+                if ((FPreviouslySelectedTab == eGiftTabs.Batches) && !AAllowRepeatEvent)
                 {
                     //Repeat event
                     return;
                 }
 
                 FPreviouslySelectedTab = eGiftTabs.Batches;
+
                 this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                 this.ucoBatches.SetFocusToGrid();
             }
             else if (ATab == eGiftTabs.Transactions)
             {
-                if ((FPreviouslySelectedTab == eGiftTabs.Transactions) && !ARepeatEvent)
+                if ((FPreviouslySelectedTab == eGiftTabs.Transactions) && !AAllowRepeatEvent)
                 {
                     //Repeat event
                     return;
                 }
 
-                FPreviouslySelectedTab = eGiftTabs.Transactions;
-
                 if (this.tpgTransactions.Enabled)
                 {
+                    FPreviouslySelectedTab = eGiftTabs.Transactions;
+
                     // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
                     this.tabGiftBatch.SelectedTab = this.tpgTransactions;
 
@@ -635,24 +649,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private int GetChangedRecordCountManual(out string AMessage)
         {
-            // For Gift Batch we will
-            //  either get a change to N Batches
-            //  or get changes to M transactions in N Batches
+            // For GL Batch we will get a mix of some batches, gifts and gift details.
             List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
-            int allChangesCount = 0;
+            int AllChangesCount = 0;
 
             foreach (DataTable dt in FMainDS.Tables)
             {
-                if (dt != null)
+                if ((dt != null) && (dt.Rows.Count > 0)
+                    && ((dt.TableName == FMainDS.AGiftBatch.TableName) || (dt.TableName == FMainDS.AGift.TableName)
+                        || (dt.TableName == FMainDS.AGiftDetail.TableName)))
                 {
                     int tableChangesCount = 0;
 
                     foreach (DataRow dr in dt.Rows)
                     {
-                        if (dr.RowState != DataRowState.Unchanged)
+                        if (DataRowColumnsHaveChanged(dr))
                         {
                             tableChangesCount++;
-                            allChangesCount++;
+                            AllChangesCount++;
                         }
                     }
 
@@ -670,19 +684,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (TableAndCountList.Count == 1)
                 {
-                    // Only saving changes to batches
                     Tuple <string, int>TableAndCount = TableAndCountList[0];
 
-                    AMessage = String.Format(Catalog.GetString("    You have made changes to the details of {0} {1}.{2}"),
-                        TableAndCount.Item2,
-                        Catalog.GetPluralString("batch", "batches", TableAndCount.Item2),
-                        Environment.NewLine);
+                    string tableName = TableAndCount.Item1;
+
+                    if (TableAndCount.Item1.Equals(AGiftBatchTable.GetTableName()))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to the details of {0} {1}.{2}"),
+                            TableAndCount.Item2,
+                            Catalog.GetPluralString("batch", "batches", TableAndCount.Item2),
+                            Environment.NewLine);
+                    }
+                    else if (TableAndCount.Item1.Equals(AGiftTable.GetTableName()))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to the details of {0} {1}.{2}"),
+                            TableAndCount.Item2,
+                            Catalog.GetPluralString("gift", "gifts", TableAndCount.Item2),
+                            Environment.NewLine);
+                    }
+                    else //if (TableAndCount.Item1.Equals(AGiftDetailTable.GetTableName()))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            TableAndCount.Item2,
+                            Catalog.GetPluralString("gift detail", "gift details", TableAndCount.Item2),
+                            Environment.NewLine);
+                    }
                 }
                 else
                 {
-                    // Saving changes to transactions as well
                     int nBatches = 0;
-                    int nTransactions = 0;
+                    int nGifts = 0;
+                    int nGiftDetails = 0;
 
                     foreach (Tuple <string, int>TableAndCount in TableAndCountList)
                     {
@@ -690,26 +722,73 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         {
                             nBatches = TableAndCount.Item2;
                         }
-                        else if (TableAndCount.Item2 > nTransactions)
+                        else if (TableAndCount.Item1.Equals(AGiftTable.GetTableName()))
                         {
-                            nTransactions = TableAndCount.Item2;
+                            nGifts = TableAndCount.Item2;
+                        }
+                        else //if (TableAndCount.Item1.Equals(AGiftDetailTable.GetTableName()))
+                        {
+                            nGiftDetails = TableAndCount.Item2;
                         }
                     }
 
-                    if (nBatches == 0)
+                    if ((nBatches > 0) && (nGifts > 0) && (nGiftDetails > 0))
                     {
-                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
-                            nTransactions,
-                            Catalog.GetPluralString("transaction", "transactions", nTransactions),
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}, {2} {3} and {4} {5}.{6}"),
+                            nBatches,
+                            Catalog.GetPluralString("batch", "batches", nBatches),
+                            nGifts,
+                            Catalog.GetPluralString("gift", "gifts", nGifts),
+                            nGiftDetails,
+                            Catalog.GetPluralString("gift detail", "gift details", nGiftDetails),
                             Environment.NewLine);
                     }
-                    else
+                    else if ((nBatches > 0) && (nGifts > 0) && (nGiftDetails == 0))
                     {
                         AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1} and {2} {3}.{4}"),
                             nBatches,
                             Catalog.GetPluralString("batch", "batches", nBatches),
-                            nTransactions,
-                            Catalog.GetPluralString("transaction", "transactions", nTransactions),
+                            nGifts,
+                            Catalog.GetPluralString("gift", "gifts", nGifts),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches > 0) && (nGifts == 0) && (nGiftDetails > 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1} and {2} {3}.{4}"),
+                            nBatches,
+                            Catalog.GetPluralString("batch", "batches", nBatches),
+                            nGiftDetails,
+                            Catalog.GetPluralString("gift detail", "gift details", nGiftDetails),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches > 0) && (nGifts == 0) && (nGiftDetails == 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            nBatches,
+                            Catalog.GetPluralString("batch", "batches", nBatches),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches == 0) && (nGifts > 0) && (nGiftDetails > 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1} and {2} {3}.{4}"),
+                            nGifts,
+                            Catalog.GetPluralString("gift", "gifts", nGifts),
+                            nGiftDetails,
+                            Catalog.GetPluralString("gift detail", "gift details", nGiftDetails),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches == 0) && (nGifts > 0) && (nGiftDetails == 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            nGifts,
+                            Catalog.GetPluralString("gift", "gifts", nGiftDetails),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches == 0) && (nGifts == 0) && (nGiftDetails > 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            nGiftDetails,
+                            Catalog.GetPluralString("gift detail", "gift details", nGiftDetails),
                             Environment.NewLine);
                     }
                 }
@@ -717,43 +796,54 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
             }
 
-            return allChangesCount;
+            return AllChangesCount;
         }
 
         /// <summary>
         /// Check if batch columns have actually changed
         /// </summary>
-        /// <param name="ABatchRow"></param>
+        /// <param name="ADataRow"></param>
         /// <returns></returns>
-        public bool BatchColumnsHaveChanged(AGiftBatchRow ABatchRow)
+        public bool DataRowColumnsHaveChanged(DataRow ADataRow)
         {
-            bool RetVal = false;
+            bool ColumnValueHasChanged = false;
 
-            if (ABatchRow.RowState != DataRowState.Unchanged)
+            if ((ADataRow.RowState != DataRowState.Unchanged) && (ADataRow.RowState != DataRowState.Deleted)
+                && (ADataRow.RowState != DataRowState.Added))
             {
-                bool columnValueChanged = false;
+                string columnName = string.Empty;
 
-                for (int i = 0; i < FMainDS.AGiftBatch.Columns.Count; i++)
+                for (int i = 0; i < ADataRow.Table.Columns.Count; i++)
                 {
-                    string originalValue = ABatchRow[i, DataRowVersion.Original].ToString();
-                    string currentValue = ABatchRow[i, DataRowVersion.Current].ToString();
+                    columnName = ADataRow.Table.Columns[i].ColumnName;
+
+                    //Ignore the system and temporary fields, all other fields are their SQL name, e.g. a_ledger_number_i
+                    if (columnName.StartsWith("s_") || !columnName.Contains("_"))
+                    {
+                        continue;
+                    }
+
+                    string originalValue = ADataRow[i, DataRowVersion.Original].ToString();
+                    string currentValue = ADataRow[i, DataRowVersion.Current].ToString();
 
                     if (originalValue != currentValue)
                     {
-                        columnValueChanged = true;
+                        ColumnValueHasChanged = true;
                         break;
                     }
                 }
 
-                if (!columnValueChanged)
+                if (!ColumnValueHasChanged)
                 {
-                    ABatchRow.RejectChanges();
+                    ADataRow.RejectChanges();
                 }
-
-                RetVal = columnValueChanged;
+            }
+            else if ((ADataRow.RowState == DataRowState.Deleted) || (ADataRow.RowState == DataRowState.Added))
+            {
+                ColumnValueHasChanged = true;
             }
 
-            return RetVal;
+            return ColumnValueHasChanged;
         }
 
         /// <summary>

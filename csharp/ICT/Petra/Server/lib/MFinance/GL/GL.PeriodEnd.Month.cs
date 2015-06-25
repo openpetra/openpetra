@@ -305,11 +305,22 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void CheckIfRevaluationIsDone()
         {
-            if ((new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
-                     TLedgerInitFlagEnum.Revaluation).Flag))
+            if (!FInfoMode)
             {
-                return; // Revaluation has been performed for the current period.
+                return;
             }
+
+            /*
+             * I'm no longer looking at this flag,
+             * since it can be set even though some accounts are left requiring revaluation.
+             * See Mantis 0004059
+             *
+             * if ((new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
+             *       TLedgerInitFlagEnum.Revaluation).Flag))
+             * {
+             *  return; // Revaluation has been performed for the current period.
+             * }
+             */
 
             TDBTransaction Transaction = null;
 
@@ -317,32 +328,26 @@ namespace Ict.Petra.Server.MFinance.GL
                 ref Transaction,
                 delegate
                 {
-                    try
-                    {
-                        // TODO: could also check for the balance in this month of the foreign currency account. if all balances are zero, no revaluation is needed.
-                        string testForForeignKeyAccount =
-                            String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
-                                AAccountTable.GetLedgerNumberDBName(),
-                                FledgerInfo.LedgerNumber,
-                                AAccountTable.GetForeignCurrencyFlagDBName());
+                    // TODO: could also check for the balance in this month of the foreign currency account. if all balances are zero, no revaluation is needed.
+                    string testForForeignKeyAccount =
+                        String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
+                            AAccountTable.GetLedgerNumberDBName(),
+                            FledgerInfo.LedgerNumber,
+                            AAccountTable.GetForeignCurrencyFlagDBName());
 
-                        if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, Transaction)) != 0)
-                        {
-                            TVerificationResult tvr = new TVerificationResult(
-                                Catalog.GetString("Ledger revaluation"),
-                                Catalog.GetString("Please run a foreign currency revaluation first."), "",
-                                TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
-                            // Error is critical but additional checks can still be done
-                            FverificationResults.Add(tvr);
-                            FHasCriticalErrors = true;
-                        }
-                    }
-                    catch (Exception ex)
+                    Int32 ForeignAccountCount = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, Transaction));
+
+                    if (ForeignAccountCount > 0)
                     {
-                        TLogging.Log("Unexpected error in CheckIfRevaluationIsDone(): " + ex.Message);
-                        throw ex;
+                        TVerificationResult tvr = new TVerificationResult(
+                            Catalog.GetString("Currency revaluation"),
+                            Catalog.GetString(
+                                "Before proceeding you may want to revalue the foreign currency accounts."), "",
+                            TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Noncritical);
+                        // Error is non-critical - the user can choose to continue.
+                        FverificationResults.Add(tvr);
                     }
-                });
+                }); // Get NewOrExisting AutoReadTransaction
         }
 
         private void CheckForUnpostedBatches()
@@ -427,23 +432,24 @@ namespace Ict.Petra.Server.MFinance.GL
                             aSuspenseAccountRow.SuspenseAccountCode,
                             FledgerInfo.CurrentFinancialYear);
 
-                        TGlmpInfo get_GLMp_Info = new TGlmpInfo(
-                            -1, -1,
-                            get_GLM_Info.Sequence,
-                            FledgerInfo.CurrentPeriod);
-
-                        if (get_GLMp_Info.RowExists && (get_GLMp_Info.ActualBase != 0))
+                        if (get_GLM_Info.GLMExists)
                         {
-                            TVerificationResult tvr = new TVerificationResult(
-                                Catalog.GetString("Non Zero Suspense Account found"),
-                                String.Format(Catalog.GetString("Suspense account {0} has the balance value {1}. It is required to be zero."),
-                                    getSuspenseAccountInfo.ToString(),
-                                    get_GLMp_Info.ActualBase), "",
-                                TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Critical);
-                            FverificationResults.Add(tvr);
+                            TGlmpInfo get_GLMp_Info = new TGlmpInfo(FledgerInfo.LedgerNumber);
+                            get_GLMp_Info.LoadBySequence(get_GLM_Info.Sequence, FledgerInfo.CurrentPeriod);
 
-                            FHasCriticalErrors = true;
-                            FverificationResults.Add(tvr);
+                            if (get_GLMp_Info.RowExists && (get_GLMp_Info.ActualBase != 0))
+                            {
+                                TVerificationResult tvr = new TVerificationResult(
+                                    Catalog.GetString("Non Zero Suspense Account found"),
+                                    String.Format(Catalog.GetString("Suspense account {0} has the balance value {1}. It is required to be zero."),
+                                        getSuspenseAccountInfo.ToString(),
+                                        get_GLMp_Info.ActualBase), "",
+                                    TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Critical);
+                                FverificationResults.Add(tvr);
+
+                                FHasCriticalErrors = true;
+                                FverificationResults.Add(tvr);
+                            }
                         }
                     }
                 }

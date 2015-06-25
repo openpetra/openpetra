@@ -231,7 +231,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception ex)
             {
+                string msg = (String.Format(Catalog.GetString("Unexpected error occurred during the posting of a Gift Batch!{0}{1}{2}{1}    {3}"),
+                                  Utilities.GetMethodSignature(),
+                                  Environment.NewLine,
+                                  ex.Message,
+                                  ex.InnerException.Message));
+
+                TLogging.Log(msg);
                 throw ex;
+                //MessageBox.Show(msg, "Post Gift Batch Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {

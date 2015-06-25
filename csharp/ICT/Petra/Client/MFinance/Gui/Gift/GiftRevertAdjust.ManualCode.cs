@@ -161,6 +161,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     out DefaultDate);
                 lblValidDateRange.Text = String.Format(Catalog.GetString("(Must be between {0} and {1}.)"),
                     StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
+
+                // set default date for a new batch
+                if (DateTime.Today > EndDateLastForwardingPeriod)
+                {
+                    dtpEffectiveDate.Date = EndDateLastForwardingPeriod;
+                }
+                else if (DateTime.Today < StartDateCurrentPeriod)
+                {
+                    dtpEffectiveDate.Date = StartDateCurrentPeriod;
+                }
+                else
+                {
+                    dtpEffectiveDate.Date = DateTime.Today;
+                }
             }
         }
 
@@ -241,11 +255,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (rbtNewBatch.Checked
-                && string.IsNullOrEmpty(dtpEffectiveDate.Text) && !dtpEffectiveDate.ValidDate())
+            if (rbtNewBatch.Checked)
             {
-                dtpEffectiveDate.Focus();
-                return;
+                // if date is empty (if not empty the date is validated elsewhere)
+                if (string.IsNullOrEmpty(dtpEffectiveDate.Text))
+                {
+                    MessageBox.Show(Catalog.GetString("Please enter a date for the new Gift Batch."));
+
+                    dtpEffectiveDate.Focus();
+                    return;
+                }
             }
 
             AddParam("NewBatchSelected", rbtExistingBatch.Checked);
@@ -261,7 +280,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     || (dtpEffectiveDate.Date > EndDateLastForwardingPeriod)
                     )
                 {
-                    //dtpEffectiveDate.Date = StartDateCurrentPeriod;
                     MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
                     dtpEffectiveDate.Focus();
                     dtpEffectiveDate.SelectAll();

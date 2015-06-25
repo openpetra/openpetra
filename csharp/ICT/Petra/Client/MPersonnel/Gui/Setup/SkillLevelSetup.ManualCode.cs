@@ -72,6 +72,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             if (!chkDetailUnassignableFlag.Checked)
             {
                 dtpDetailUnassignableDate.Date = null;
+
+                // Hide any shown Data Validation ToolTip as the Data Validation ToolTip for an
+                // empty Unassignable Date might otherwise be left shown
+                FPetraUtilsObject.ValidationToolTip.RemoveAll();
             }
             else
             {

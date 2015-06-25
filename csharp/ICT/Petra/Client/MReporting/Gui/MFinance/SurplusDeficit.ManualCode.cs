@@ -64,10 +64,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
-            Shared.MReporting.TParameterList pm = ACalc.GetParameters();
-            pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
-
             ArrayList reportParam = ACalc.GetParameters().Elems;
+
             Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
 
             foreach (Shared.MReporting.TParameter p in reportParam)

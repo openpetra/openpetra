@@ -100,6 +100,9 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>todoComment</summary>
         public static readonly string StrFormHasUnsavedChangesQuestion = Catalog.GetString("Save changes before closing?");
 
+        /// <summary>todoComment</summary>
+        public static readonly string StrFormSaveDataAnywayQuestion = Catalog.GetString("Save changes before closing?");
+
         /// <summary>Shown while data is being saved.</summary>
         public static readonly string StrSavingDataInProgress = Catalog.GetString("Saving data...");
 
@@ -230,6 +233,9 @@ namespace Ict.Petra.Client.MCommon
 
         /// <summary>todoComment</summary>
         public static readonly string StrPleaseEnterDescription = Catalog.GetString("PLEASE ENTER DESCRIPTION");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrCreateNewRowAnywayQuestion = Catalog.GetString("Do you want to create a new row anyway?");
 
         #endregion
 

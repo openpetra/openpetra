@@ -91,6 +91,11 @@ namespace PetraClientShutdown
                     MessageBoxIcon.Error);
             }
 
+            if (ASaveUserDefaultsAndDisconnect)
+            {
+                Shutdown.SaveUserDefaultsAndDisconnect();
+            }
+
             if (TClientSettings.RunAsStandalone == true)
             {
                 StopServers();

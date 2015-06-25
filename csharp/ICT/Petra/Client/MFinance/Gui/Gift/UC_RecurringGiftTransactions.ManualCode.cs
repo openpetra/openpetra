@@ -1897,7 +1897,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ARecurringGiftRow CurrentGiftRow = null;
             bool IsEmptyGrid = (grdDetails.Rows.Count == 1);
 
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_IgnoreNonCritical))
             {
                 if (!ACompletelyNewGift)  //i.e. a gift detail
                 {

@@ -164,7 +164,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         return;
                     }
 
-                    importString = File.ReadAllText(dialog.FileName);
+                    importString = File.ReadAllText(dialog.FileName, Encoding.Default);
 
                     String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                     FdlgSeparator.DateFormat = dateFormatString;
@@ -325,7 +325,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         return;
                     }
 
-                    importString = File.ReadAllText(dialog.FileName);
+                    importString = File.ReadAllText(dialog.FileName, Encoding.Default);
 
                     String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                     FdlgSeparator.DateFormat = dateFormatString;
@@ -593,7 +593,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         TExchangeRateCache.GetDailyExchangeRate(
                             ARefJournalRow.TransactionCurrency,
                             FMainDS.ALedger[0].BaseCurrency,
-                            NewTransaction.TransactionDate));
+                            NewTransaction.TransactionDate,
+                            false));
                     //
                     // The International currency calculation is changed to "Base -> International", because it's likely
                     // we won't have a "Transaction -> International" conversion rate defined.
@@ -602,7 +603,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         TExchangeRateCache.GetDailyExchangeRate(
                             FMainDS.ALedger[0].BaseCurrency,
                             FMainDS.ALedger[0].IntlCurrency,
-                            NewTransaction.TransactionDate));
+                            NewTransaction.TransactionDate,
+                            false));
                 }
             } while (!dataFile.EndOfStream);
 
@@ -636,12 +638,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     TExchangeRateCache.GetDailyExchangeRate(
                         ARefJournalRow.TransactionCurrency,
                         FMainDS.ALedger[0].IntlCurrency,
-                        BalancingTransaction.TransactionDate));
+                        BalancingTransaction.TransactionDate,
+                        false));
                 BalancingTransaction.AmountInBaseCurrency = GLRoutines.Multiply(BalancingTransaction.TransactionAmount,
                     TExchangeRateCache.GetDailyExchangeRate(
                         ARefJournalRow.TransactionCurrency,
                         FMainDS.ALedger[0].BaseCurrency,
-                        BalancingTransaction.TransactionDate));
+                        BalancingTransaction.TransactionDate,
+                        false));
                 BalancingTransaction.Narrative = Catalog.GetString("Automatically generated balancing transaction");
                 BalancingTransaction.CostCentreCode = TXMLParser.GetAttribute(ARootNode, "CashCostCentre");
                 BalancingTransaction.AccountCode = TXMLParser.GetAttribute(ARootNode, "CashAccount");

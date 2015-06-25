@@ -206,6 +206,25 @@ namespace Ict.Petra.Server.MFinance.Common
             out DateTime APeriodEndDate,
             TDBTransaction ATransaction)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            // ATransaction can be null
+            //else if (ATransaction == null)
+            //{
+            //    throw new EFinanceSystemDBTransactionNullException(String.Format(Catalog.GetString(
+            //                "Function:{0} - Database Transaction must not be NULL!"),
+            //            Utilities.GetMethodName(true)));
+            //}
+
+            #endregion Validate Arguments
+
             // invalid period
             if (APeriodNumber == -1)
             {
@@ -215,6 +234,20 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             AAccountingPeriodTable AccPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, ATransaction);
+
+            #region Validate Data
+
+            if ((AccPeriodTable == null) || (AccPeriodTable.Count == 0))
+            {
+                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                            "Function:{0} - Accounting Period data for period {1} in Ledger number {2} does not exist or could not be accessed!"),
+                        Utilities.GetMethodName(true),
+                        APeriodNumber,
+                        ALedgerNumber));
+            }
+
+            #endregion Validate Data
+
             AAccountingPeriodRow AccPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[0];
 
             APeriodStartDate = AccPeriodRow.PeriodStartDate;
@@ -231,6 +264,23 @@ namespace Ict.Petra.Server.MFinance.Common
             int APeriodNumberToTest,
             TDBTransaction ATransaction)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ATransaction == null)
+            {
+                throw new EFinanceSystemDBTransactionNullException(String.Format(Catalog.GetString(
+                            "Function:{0} - Database Transaction must not be NULL!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             int YearNr;
             int PeriodNumber;
 

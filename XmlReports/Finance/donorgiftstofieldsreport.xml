@@ -299,7 +299,7 @@
 							
 							AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
 							AND PUB_a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c
-							AND PUB_a_motivation_detail.a_ledger_number_i  = {{param_ledger_number_i}{
+							AND PUB_a_motivation_detail.a_ledger_number_i  = {{param_ledger_number_i}}
 				
 						 </value>
 					</queryDetail>

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       berndr, peters
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,11 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Windows.Forms;
+
 using Ict.Common.Verification;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
@@ -29,6 +34,9 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MReporting;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -45,6 +53,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 FLedgerNumber = value;
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
+
+                FPetraUtilsObject.LoadDefaultSettings();
+                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+            }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+            {
+                this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // Columns page not supported in the FastReports based solution.
             }
         }
 
@@ -71,21 +90,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
 
-            if ((!dtpFromDate.Date.HasValue) || (!dtpToDate.Date.HasValue))
+            if (AReportAction == TReportActionEnum.raGenerate)
             {
-                if (AReportAction == TReportActionEnum.raGenerate)
+                if (!dtpFromDate.ValidDate() || !dtpToDate.ValidDate())
                 {
                     TVerificationResult VerificationResult = new TVerificationResult(
-                        Catalog.GetString("Invalid dates."),
-                        Catalog.GetString("Provide values for From date and To date."),
+                        Catalog.GetString("Date format problem"),
+                        Catalog.GetString("Please check the date entry."),
                         TResultSeverity.Resv_Critical);
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
-            }
-            else
-            {
-                if ((AReportAction == TReportActionEnum.raGenerate)
-                    && (dtpFromDate.Date > dtpToDate.Date))
+
+                if (dtpFromDate.Date > dtpToDate.Date)
                 {
                     TVerificationResult VerificationResult = new TVerificationResult(
                         Catalog.GetString("From date is later than to date."),
@@ -98,8 +114,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     && (dtpFromDate.Date.Value.Year != dtpToDate.Date.Value.Year))
                 {
                     TVerificationResult VerificationResult = new TVerificationResult(
-                        Catalog.GetString("Year value in from-date is different than from year value in to-date."),
-                        Catalog.GetString("Please use the same year."),
+                        Catalog.GetString("Date problem."),
+                        Catalog.GetString("From Date and To Date must be in the same year."),
                         TResultSeverity.Resv_Critical);
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
@@ -109,27 +125,99 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("param_recipient_key", txtRecipient.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);
+
+            TParameterList Params = ACalc.GetParameters();
+            String RecipientType = Params.Get("param_recipient").ToString();
+
+            if (RecipientType == "Extract")
+            {
+                RecipientType = ("Recipients from extract: " + Params.Get("param_extract_name").ToString());
+            }
+
+            if (RecipientType == "One Recipient")
+            {
+                RecipientType = ("One Recipient: " + txtRecipient.Text + " " + txtRecipient.LabelText);
+                ACalc.AddParameter("param_recipientkey", txtRecipient.Text);
+            }
+
+            ACalc.AddParameter("param_recipient_title", RecipientType);
 
             if (this.cmbCurrency.SelectedItem == null)
             {
                 this.cmbCurrency.SelectedIndex = 0;  // I don't mind what you select - just don't select nothing!
             }
 
-            int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
-
-            for (int Counter = 0; Counter <= MaxColumns; ++Counter)
-            {
-                String ColumnName = ACalc.GetParameters().Get("param_calculation", Counter, 0).ToString();
-                ACalc.AddParameter(ColumnName, Counter);
-            }
+/*
+ *          int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
+ *
+ *          for (int Counter = 0; Counter <= MaxColumns; ++Counter)
+ *          {
+ *              String ColumnName = ACalc.GetParameters().Get("param_calculation", Counter, 0).ToString();
+ *              ACalc.AddParameter(ColumnName, Counter);
+ *          }
+ */
         }
 
         private void SetControlsManual(TParameterList AParameters)
         {
             txtRecipient.Text = AParameters.Get("param_recipient_key").ToString();
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();
+        }
+
+        private Boolean LoadReportData(TRptCalculator ACalc)
+        {
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation") && !paramsDictionary.ContainsKey(p.name))
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+            // get data for this report
+            DataSet ReportDataSet = TRemote.MReporting.WebConnectors.GetOneYearMonthGivingDataSet(paramsDictionary);
+
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled() || this.IsDisposed)
+            {
+                return false;
+            }
+
+            // if no recipients
+            if (ReportDataSet.Tables["Recipients"] == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("No recipients found for this report period.");
+                return false;
+            }
+
+            // register datatables with the report
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Recipients"], "Recipients");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Donors"], "Donors");
+
+            //
+            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
+            ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
+            ALedgerRow Row = LedgerDetailsTable[0];
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            String CurrencyName = (cmbCurrency.SelectedItem.ToString() == "Base") ? Row.BaseCurrency : Row.IntlCurrency;
+            ACalc.AddStringParameter("param_currency_name", CurrencyName);
+
+            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+
+            Boolean HasData = ReportDataSet.Tables["Recipients"].Rows.Count > 0;
+
+            if (!HasData)
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "No Recipients found."), "Recipient Gift Statement");
+            }
+
+            return HasData;
         }
     }
 }

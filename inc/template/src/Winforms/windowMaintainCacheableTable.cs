@@ -62,6 +62,7 @@ namespace {#NAMESPACE}
     private Control FPrimaryKeyControl = null;
     private Label FPrimaryKeyLabel = null;
     private string FDefaultDuplicateRecordHint = String.Empty;
+    private bool FIgnoreFocusRowLeaving = false;
 {#ENDIF SHOWDETAILS}
 {#IFDEF DATASETTYPE}
     private {#DATASETTYPE} FMainDS;
@@ -230,8 +231,25 @@ namespace {#NAMESPACE}
     /// <returns>True if the existing Details data was validated successfully and the new row was added.</returns>
     public bool CreateNew{#DETAILTABLE}()
     {
-        if(ValidateAllData(true, true))
+        if(ValidateAllData(true, TErrorProcessingMode.Epm_IgnoreNonCritical))
         {
+            FIgnoreFocusRowLeaving = false;
+
+            if (FPetraUtilsObject.VerificationResultCollection.HasOnlyNonCriticalErrors)
+            {
+			    // Some non-critical warnings exist
+                if (TDataValidation.ProcessAnyDataValidationWarnings(FPetraUtilsObject.VerificationResultCollection,
+                    MCommonResourcestrings.StrCreateNewRowAnywayQuestion, this.GetType()) == false)
+                {
+				    // Client cancelled
+                    return false;
+                }
+
+                // Client wants to continue
+				// We can ignore FocusRowLeaving because we have just displayed the message as a Yes/No dialog
+                FIgnoreFocusRowLeaving = true;
+            }
+            
             {#DETAILTABLE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
             {#INITNEWROWMANUAL}
             FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
@@ -277,7 +295,7 @@ namespace {#NAMESPACE}
                         {
                             // Set the default text for the first TextBox whose name contains 'Desc'
                             c.Text = MCommonResourcestrings.StrPleaseEnterDescription;
-                            ValidateAllData(true, false);
+                            ValidateAllData(true, TErrorProcessingMode.Epm_None);
                             break;
                         }
                     }
@@ -291,6 +309,7 @@ namespace {#NAMESPACE}
             UpdateRecordNumberDisplay();
 {#ENDIF BUTTONPANEL}
 
+            FIgnoreFocusRowLeaving = false;
             return true;
         }
         else
@@ -436,10 +455,10 @@ namespace {#NAMESPACE}
     /// </summary>
     /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing 
     /// to another record, otherwise set it to false.</param>
-    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-    /// user, otherwise set it to false.</param>
-    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
-    private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
+    /// <param name="ADataValidationProcessingMode">Set to <see cref="TErrorProcessingMode.Epm_None"/> if no data validation errors should be shown to the user,
+    /// otherwise set it to one of <see cref="TErrorProcessingMode.Epm_IgnoreNonCritical"/> or <see cref="TErrorProcessingMode.Epm_All"/>.</param>
+    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+    private bool ValidateAllData(bool ARecordChangeVerification, TErrorProcessingMode ADataValidationProcessingMode)
     {
         bool ReturnValue = false;
         // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
@@ -463,11 +482,13 @@ namespace {#NAMESPACE}
 
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
 
-        if (AProcessAnyDataValidationErrors)
-        {
-            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                this.GetType(), null);
-        }
+		if (ADataValidationProcessingMode != TErrorProcessingMode.Epm_None)
+		{
+			bool ignoreWarnings = (ADataValidationProcessingMode == TErrorProcessingMode.Epm_IgnoreNonCritical) &&
+				!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors;
+			ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+				this.GetType(), null, ignoreWarnings);
+		}
 {#ENDIFN SHOWDETAILS}
 {#IFDEF SHOWDETAILS}       
         if (FPreviouslySelectedDetailRow != null)
@@ -578,10 +599,12 @@ namespace {#NAMESPACE}
             {#USERCONTROLVALIDATION}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
 
-            if (AProcessAnyDataValidationErrors)
+            if (ADataValidationProcessingMode != TErrorProcessingMode.Epm_None)
             {
+                bool ignoreWarnings = (ADataValidationProcessingMode == TErrorProcessingMode.Epm_IgnoreNonCritical) &&
+                    !FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors;
                 ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                    this.GetType(), null);
+                    this.GetType(), null, ignoreWarnings);
             }
         }
         else
@@ -721,6 +744,7 @@ namespace {#NAMESPACE}
     private void grdDetails_RowSelected(object sender, RangeRegionChangedEventArgs e)
     {
         int gridRow = grdDetails.Selection.ActivePosition.Row;
+
         if (grdDetails.Sorting)
         {
             // No need to ShowDetails - just update our (obsolete) variable
@@ -731,17 +755,19 @@ namespace {#NAMESPACE}
             if ((gridRow == FPrevRowChangedRow) && grdDetails.IsMouseDown)
             {
                 // This deals with the special case where the user edits a detail and then clicks on the same row in the grid
-                // When this happens we do not get a control validated event for the control that we leave
-                // We just want to treat this the same as tabbing round the controls - show any validation tooltips but do not stop the user leaving the row.
-                ValidateAllData(true, false);
+                // If the change(s) were to control(s) that have no validation we will not have had a call to get the details from the controls.
+                // So we do that here so that the grid will update and reflect the changes made.
+                ValidateAllData(true, TErrorProcessingMode.Epm_None);
             }
-            else
-            {
-                // This deals with all other cases - including the special case where, on a sorted grid, the row may be the same but contains different details
-                //  because this event fires from SelectRowInGrid, even when the selected row hasn't changed but the data has.
-                ShowDetails(gridRow);
-                //Console.WriteLine("{0}: RowSelected: ShowDetails() for row {1}", DateTime.Now.Millisecond, gridRow);
-            }
+
+            // In all other cases we need to ShowDetails, even if the active row is the same as it was before.  This covers the following cases:
+            // - the row has changed
+            // - the special case where, on a sorted grid, the row may be the same but contains different details
+            //     because this event fires from SelectRowInGrid, even when the selected row hasn't changed but the data has.
+            // - the case of SHIFT+click.  In that case the selected row stays the same but if the number of highlighted rows
+            //     is different we may need to (for example) alter the enabled state of the delete button.
+            ShowDetails(gridRow);
+            //Console.WriteLine("{0}: RowSelected: ShowDetails() for row {1}", DateTime.Now.Millisecond, gridRow);
         }
     }
 
@@ -751,7 +777,12 @@ namespace {#NAMESPACE}
     private void grdDetails_FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
     {        
         //Console.WriteLine("{0}: FocusRowLeaving: from {1} to {2}", DateTime.Now.Millisecond, e.Row, e.ProposedRow);
-        if (!ValidateAllData(true, true))
+        if (FIgnoreFocusRowLeaving)
+        {
+            return;
+        }
+
+        if (!ValidateAllData(true, TErrorProcessingMode.Epm_All))
         {
             e.Cancel = true;
         }
@@ -1046,164 +1077,197 @@ namespace {#NAMESPACE}
     {
         bool ReturnValue = false;
 
-        FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
+        // Find the currently active control
+        Control CurrentActiveControl;
+        ContainerControl ParentControl = this;
 
-        // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
-        FPetraUtilsObject.VerificationResultCollection.Clear();
-
-        if (ValidateAllData(false, true))
-        {       
-            foreach (DataRow InspectDR in FMainDS.{#DETAILTABLE}.Rows)
-            {
-                InspectDR.EndEdit();
-            }
-
-            if (FPetraUtilsObject.HasChanges)
-            {
-                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataInProgress);
-                this.Cursor = Cursors.WaitCursor;
-
-                TSubmitChangesResult SubmissionResult;
-                TVerificationResultCollection VerificationResult = null;
-
-                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.{#DETAILTABLE}.GetChangesTyped();
-
-                if (SubmitDT == null)
-                {
-                    TNoMasterDataToSaveEventArgs EvArgs = new TNoMasterDataToSaveEventArgs();
-                    EvArgs.SubmitChangesResult = TSubmitChangesResult.scrNothingToBeSaved;
-                    
-                    FPetraUtilsObject.OnNoMasterDataToSave(this, EvArgs);
-                    
-                    switch (EvArgs.SubmitChangesResult) 
-                    {
-                        case TSubmitChangesResult.scrOK:
-                            TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS.{#DETAILTABLE}, EvArgs.ChildDataTableWhoseDataGotSaved,
-                                FPetraUtilsObject, VerificationResult, SetPrimaryKeyReadOnly, false, false);
-                        
-                            return true;
-                            
-                        case TSubmitChangesResult.scrError:
-                            this.Cursor = Cursors.Default;
-                            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
-        
-                            FPetraUtilsObject.SubmitChangesContinue = false;
-                            
-                            ReturnValue = false;
-                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-    
-                            return ReturnValue;                            
-                            
-                        case TSubmitChangesResult.scrInfoNeeded:                          
-                            // TODO scrInfoNeeded
-                            this.Cursor = Cursors.Default;
-                            
-                            ReturnValue = false;
-                            
-                            return ReturnValue;
-
-                        case TSubmitChangesResult.scrNothingToBeSaved:
-                            TCommonSaveChangesFunctions.ProcessSubmitChangesResultNothingToBeSaved(this, FPetraUtilsObject, false);
-
-                            ReturnValue = true;                            
-
-                            return ReturnValue;
-                    }                    
-                }
-
-                // Submit changes to the PETRAServer
-                try
-                {
-                    SubmissionResult = TDataCache.{#CACHEABLETABLESAVEMETHOD}({#CACHEABLETABLE}, ref SubmitDT{#CACHEABLETABLESPECIFICFILTERSAVE}, out VerificationResult);
-                }
-                catch (ESecurityDBTableAccessDeniedException Exp)
-                {
-                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
-                    this.Cursor = Cursors.Default;
-
-                    TMessages.MsgSecurityException(Exp, this.GetType());
-                    
-                    ReturnValue = false;
-                    FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return ReturnValue;
-                }
-                catch (EDBConcurrencyException Exp)
-                {
-                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
-                    this.Cursor = Cursors.Default;
-
-                    TMessages.MsgDBConcurrencyException(Exp, this.GetType());
-                    
-                    ReturnValue = false;
-                    FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return ReturnValue;
-                }
-                catch (Exception)
-                {
-                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
-                    this.Cursor = Cursors.Default;
-                    
-                    FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));                    
-                    throw;
-                }
-
-                switch (SubmissionResult)
-                {
-                    case TSubmitChangesResult.scrOK:
-                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS.{#DETAILTABLE}, SubmitDT,
-                            FPetraUtilsObject, VerificationResult, SetPrimaryKeyReadOnly, true, false, true);
-
-                        ReturnValue = true;
-
-                        break;
-
-                    case TSubmitChangesResult.scrError:
-                        this.Cursor = Cursors.Default;
-                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
-
-                        TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
-                            this.GetType(), null);
-
-                        FPetraUtilsObject.SubmitChangesContinue = false;
-                        
-                        ReturnValue = false;
-                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                        break;
-
-                    case TSubmitChangesResult.scrNothingToBeSaved:
-                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultNothingToBeSaved(this, FPetraUtilsObject, false);
-
-                        ReturnValue = true;
-                        
-                        break;
-
-                    case TSubmitChangesResult.scrInfoNeeded:
-
-                        // TODO scrInfoNeeded
-                        this.Cursor = Cursors.Default;
-                        break;
-                }
-            }
-            else
-            {
-                // Update UI
-                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
-                this.Cursor = Cursors.Default;
-                FPetraUtilsObject.DisableSaveButton();
-
-                // We don't have unsaved changes anymore
-                FPetraUtilsObject.HasChanges = false;
-
-                ReturnValue = true;
-                FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-            }                
-        }
-        else
+        do
         {
-            // validation failed
-            ReturnValue = false;
-            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+            CurrentActiveControl = ParentControl.ActiveControl;
+            ParentControl = CurrentActiveControl as ContainerControl;
         }
+        while (ParentControl != null);
+
+        // Momentarily remove focus from active control. This ensures OnLeave event is fired for control.
+        this.ActiveControl = null;
+		this.ActiveControl = CurrentActiveControl;
+
+		FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
+
+		// Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+		FPetraUtilsObject.VerificationResultCollection.Clear();
+
+		// Validate the data ignoring non-critical warnings if they are the only ones
+		if (ValidateAllData(false, TErrorProcessingMode.Epm_IgnoreNonCritical))
+		{       
+			// Ask the user about non-critical warnings, if they are the only 'errors' in the collection
+			if (FPetraUtilsObject.VerificationResultCollection.HasOnlyNonCriticalErrors &&
+				(TDataValidation.ProcessAnyDataValidationWarnings(FPetraUtilsObject.VerificationResultCollection,
+					MCommonResourcestrings.StrFormSaveDataAnywayQuestion, this.GetType()) == false))
+			{
+				return false;
+			}
+
+			// Fire the DataSavingValidated event, which is the last chance to cancel the save
+			System.ComponentModel.CancelEventArgs eCancel = new System.ComponentModel.CancelEventArgs(false);
+			FPetraUtilsObject.OnDataSavingValidated(this, eCancel);
+
+			if (eCancel.Cancel == true)
+			{
+				return false;
+			}
+
+			foreach (DataRow InspectDR in FMainDS.{#DETAILTABLE}.Rows)
+			{
+				InspectDR.EndEdit();
+			}
+
+			if (FPetraUtilsObject.HasChanges)
+			{
+				FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataInProgress);
+				this.Cursor = Cursors.WaitCursor;
+
+				TSubmitChangesResult SubmissionResult;
+				TVerificationResultCollection VerificationResult = null;
+
+				Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.{#DETAILTABLE}.GetChangesTyped();
+
+				if (SubmitDT == null)
+				{
+					TNoMasterDataToSaveEventArgs EvArgs = new TNoMasterDataToSaveEventArgs();
+					EvArgs.SubmitChangesResult = TSubmitChangesResult.scrNothingToBeSaved;
+					
+					FPetraUtilsObject.OnNoMasterDataToSave(this, EvArgs);
+					
+					switch (EvArgs.SubmitChangesResult) 
+					{
+						case TSubmitChangesResult.scrOK:
+							TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS.{#DETAILTABLE}, EvArgs.ChildDataTableWhoseDataGotSaved,
+								FPetraUtilsObject, VerificationResult, SetPrimaryKeyReadOnly, false, false);
+						
+							return true;
+							
+						case TSubmitChangesResult.scrError:
+							this.Cursor = Cursors.Default;
+							FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
+		
+							FPetraUtilsObject.SubmitChangesContinue = false;
+							
+							ReturnValue = false;
+							FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+	
+							return ReturnValue;                            
+							
+						case TSubmitChangesResult.scrInfoNeeded:                          
+							// TODO scrInfoNeeded
+							this.Cursor = Cursors.Default;
+							
+							ReturnValue = false;
+							
+							return ReturnValue;
+
+						case TSubmitChangesResult.scrNothingToBeSaved:
+							TCommonSaveChangesFunctions.ProcessSubmitChangesResultNothingToBeSaved(this, FPetraUtilsObject, false);
+
+							ReturnValue = true;                            
+
+							return ReturnValue;
+					}                    
+				}
+
+				// Submit changes to the PETRAServer
+				try
+				{
+					SubmissionResult = TDataCache.{#CACHEABLETABLESAVEMETHOD}({#CACHEABLETABLE}, ref SubmitDT{#CACHEABLETABLESPECIFICFILTERSAVE}, out VerificationResult);
+				}
+				catch (ESecurityDBTableAccessDeniedException Exp)
+				{
+					FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
+					this.Cursor = Cursors.Default;
+
+					TMessages.MsgSecurityException(Exp, this.GetType());
+					
+					ReturnValue = false;
+					FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+					return ReturnValue;
+				}
+				catch (EDBConcurrencyException Exp)
+				{
+					FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
+					this.Cursor = Cursors.Default;
+
+					TMessages.MsgDBConcurrencyException(Exp, this.GetType());
+					
+					ReturnValue = false;
+					FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+					return ReturnValue;
+				}
+				catch (Exception)
+				{
+					FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
+					this.Cursor = Cursors.Default;
+					
+					FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));                    
+					throw;
+				}
+
+				switch (SubmissionResult)
+				{
+					case TSubmitChangesResult.scrOK:
+						TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS.{#DETAILTABLE}, SubmitDT,
+							FPetraUtilsObject, VerificationResult, SetPrimaryKeyReadOnly, true, false, true);
+
+						ReturnValue = true;
+
+						break;
+
+					case TSubmitChangesResult.scrError:
+						this.Cursor = Cursors.Default;
+						FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
+
+						TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
+							this.GetType(), null);
+
+						FPetraUtilsObject.SubmitChangesContinue = false;
+						
+						ReturnValue = false;
+						FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+						break;
+
+					case TSubmitChangesResult.scrNothingToBeSaved:
+						TCommonSaveChangesFunctions.ProcessSubmitChangesResultNothingToBeSaved(this, FPetraUtilsObject, false);
+
+						ReturnValue = true;
+						
+						break;
+
+					case TSubmitChangesResult.scrInfoNeeded:
+
+						// TODO scrInfoNeeded
+						this.Cursor = Cursors.Default;
+						break;
+				}
+			}
+			else
+			{
+				// Update UI
+				FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
+				this.Cursor = Cursors.Default;
+				FPetraUtilsObject.DisableSaveButton();
+
+				// We don't have unsaved changes anymore
+				FPetraUtilsObject.HasChanges = false;
+
+				ReturnValue = true;
+				FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+			}                
+		}
+		else
+		{
+			// validation failed
+			ReturnValue = false;
+			FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+		}
 
         return ReturnValue;
     }
@@ -1257,7 +1321,7 @@ namespace {#NAMESPACE}
     {
         TScreenVerificationResult SingleVerificationResult;
         
-        ValidateAllData(true, false);
+        ValidateAllData(true, TErrorProcessingMode.Epm_None);
         
         FPetraUtilsObject.ValidationToolTip.RemoveAll();
         
@@ -1400,7 +1464,7 @@ return (({#DETAILTABLE}Row)ARowToDelete).{#DELETEABLEFLAG};
 {##SNIPCANDELETESELECTION}
 
     /// <summary>
-    /// Returns true if all the selected rows can be deleted.
+    /// Returns true if one of the selected rows can be deleted.
     /// </summary>
     private bool CanDeleteSelection()
     {

@@ -220,7 +220,7 @@ namespace {#NAMESPACE}
 
 #region Empty Code to assist Compilation
     /// auto generated
-	public bool ValidateAllData(bool ADummy1, bool ADummy2)
+	public bool ValidateAllData(bool ADummy1, TErrorProcessingMode ADummy2)
 	{
 		return true;
 	}

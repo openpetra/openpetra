@@ -118,6 +118,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -225,6 +226,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -292,6 +294,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -385,6 +388,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -461,6 +465,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -528,6 +533,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -588,6 +594,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -671,6 +678,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -738,6 +746,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -749,7 +758,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         if ((MainDS.AJournal.Count == 0) && (MainDS.ATransaction.Count > 0))
                         {
                             throw new ApplicationException(String.Format(Catalog.GetString(
-                                        "Function:{0} - Orphaned GL Transactions exist in GL Batch {1} in Ledger {2}!"),
+                                        "Function:{0} - Orphaned transactions exist in GL Batch {1} in Ledger {2}!"),
                                     Utilities.GetMethodName(true),
                                     ABatchNumber,
                                     ALedgerNumber));
@@ -805,6 +814,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -1053,6 +1063,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -1073,6 +1084,156 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         #endregion Validate Data
 
                         ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// load the specified journal with its transactions.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadARecurringJournalARecurringTransaction(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ARecurringJournalAccess.LoadViaARecurringBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+                        ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
+                        ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
+                        TemplateTransactionRow.LedgerNumber = ALedgerNumber;
+                        TemplateTransactionRow.BatchNumber = ABatchNumber;
+                        ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);
+
+                        #region Validate Data
+
+                        if ((MainDS.ARecurringJournal.Count == 0) && (MainDS.ARecurringTransaction.Count > 0))
+                        {
+                            throw new ApplicationException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Orphaned transactions exist in Recurring GL Batch {1} in Ledger {2}!"),
+                                    Utilities.GetMethodName(true),
+                                    ABatchNumber,
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// load the specified journal with its transactions.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadARecurringJournalARecurringTransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+            else if (AJournalNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Recurring Journal number must be greater than 0!"),
+                        Utilities.GetMethodName(true),
+                        AJournalNumber));
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ARecurringJournalAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+
+                        #region Validate Data
+
+                        if ((MainDS.ARecurringJournal == null) || (MainDS.ARecurringJournal.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Recurring GL Journal data for Journal {1} Batch {2} in Ledger {3} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    AJournalNumber,
+                                    ABatchNumber,
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
+
+                        ARecurringTransactionAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
                     });
 
                 MainDS.AcceptChanges();
@@ -1129,10 +1290,72 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
                         ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// Load the transactions for the specified journal.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadARecurringTransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+            else if (AJournalNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Recurring Journal number must be greater than 0!"),
+                        Utilities.GetMethodName(true),
+                        AJournalNumber));
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ARecurringTransactionAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
                     });
 
                 MainDS.AcceptChanges();
@@ -1182,10 +1405,69 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
                         ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// Loads a list of transactions for the given ledger and batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadARecurringTransactionForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
+                        ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
+                        TemplateTransactionRow.LedgerNumber = ALedgerNumber;
+                        TemplateTransactionRow.BatchNumber = ABatchNumber;
+                        ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);
                     });
 
                 MainDS.AcceptChanges();
@@ -1235,14 +1517,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             #endregion Validate Arguments
 
-            GLBatchTDS MainDS = new GLBatchTDS();
+            string AnalysisAttrList = string.Empty;
 
+            GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = null;
 
             try
             {
-                string analAttrList = string.Empty;
-
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
@@ -1272,25 +1553,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         ATransAnalAttribTable.GetTransactionNumberDBName(),
                         transRow.TransactionNumber);
 
-                    foreach (DataRowView rv in MainDS.ATransAnalAttrib.DefaultView)
+                    foreach (DataRowView drv in MainDS.ATransAnalAttrib.DefaultView)
                     {
-                        ATransAnalAttribRow Row = (ATransAnalAttribRow)rv.Row;
+                        ATransAnalAttribRow transAnalAttrRow = (ATransAnalAttribRow)drv.Row;
 
-                        if (analAttrList.Length > 0)
+                        if (AnalysisAttrList.Length > 0)
                         {
-                            analAttrList += ", ";
+                            AnalysisAttrList += ", ";
                         }
 
-                        analAttrList += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                        AnalysisAttrList += (transAnalAttrRow.AnalysisTypeCode + "=" + transAnalAttrRow.AnalysisAttributeValue);
                     }
 
-                    if (transRow.AnalysisAttributes != analAttrList)
+                    if (transRow.AnalysisAttributes != AnalysisAttrList)
                     {
-                        transRow.AnalysisAttributes = analAttrList;
+                        transRow.AnalysisAttributes = AnalysisAttrList;
                     }
 
                     //reset the attributes string
-                    analAttrList = string.Empty;
+                    AnalysisAttrList = string.Empty;
                 }
 
                 MainDS.ATransAnalAttrib.DefaultView.RowFilter = string.Empty;
@@ -1356,6 +1637,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -1410,10 +1692,71 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
                         ATransAnalAttribAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of attributes for the given Batch (identified by ledger,batch)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadATransAnalAttribForJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+            else if (AJournalNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Journal number must be greater than 0!"),
+                        Utilities.GetMethodName(true),
+                        AJournalNumber));
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ATransAnalAttribAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
                     });
 
                 MainDS.AcceptChanges();
@@ -1451,7 +1794,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             #endregion Validate Arguments
 
             GLSetupTDS MainDS = new GLSetupTDS();
-
             TDBTransaction Transaction = null;
 
             try
@@ -1524,6 +1866,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -1796,6 +2139,67 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// loads a list of recurring journals for the given ledger and batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadARecurringJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+            else if (AJournalNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Journal number must be greater than 0!"),
+                        Utilities.GetMethodName(true),
+                        AJournalNumber));
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ARecurringJournalAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a list of transactions for the given ledger and batch and journal with analysis attributes
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -1828,10 +2232,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             #endregion Validate Arguments
 
-            string AnalAttrList = string.Empty;
+            string AnalysisAttrList = string.Empty;
 
             GLBatchTDS MainDS = new GLBatchTDS();
-
             TDBTransaction Transaction = null;
 
             try
@@ -1843,20 +2246,20 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     {
                         ARecurringTransactionAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
                         ARecurringTransAnalAttribAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
-
-                        #region Validate Data
-
-                        if ((MainDS.ARecurringTransaction.Count == 0) && (MainDS.ARecurringTransAnalAttrib.Count > 0))
-                        {
-                            throw new ApplicationException(String.Format(Catalog.GetString(
-                                        "Function:{0} - Orphaned GL Transaction Analysis Attributes exist in Recurring GL Batch {1} in Ledger {2}!"),
-                                    Utilities.GetMethodName(true),
-                                    ABatchNumber,
-                                    ALedgerNumber));
-                        }
-
-                        #endregion Validate Data
                     });
+
+                #region Validate Data
+
+                if ((MainDS.ARecurringTransaction.Count == 0) && (MainDS.ARecurringTransAnalAttrib.Count > 0))
+                {
+                    throw new ApplicationException(String.Format(Catalog.GetString(
+                                "Function:{0} - Orphaned GL Transaction Analysis Attributes exist in Recurring GL Batch {1} in Ledger {2}!"),
+                            Utilities.GetMethodName(true),
+                            ABatchNumber,
+                            ALedgerNumber));
+                }
+
+                #endregion Validate Data
 
                 foreach (GLBatchTDSARecurringTransactionRow transRow in MainDS.ARecurringTransaction.Rows)
                 {
@@ -1864,22 +2267,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
                         transRow.TransactionNumber);
 
-                    foreach (DataRowView rv in MainDS.ARecurringTransAnalAttrib.DefaultView)
+                    foreach (DataRowView drv in MainDS.ARecurringTransAnalAttrib.DefaultView)
                     {
-                        ARecurringTransAnalAttribRow Row = (ARecurringTransAnalAttribRow)rv.Row;
+                        ARecurringTransAnalAttribRow recurrTransAnalAttrRow = (ARecurringTransAnalAttribRow)drv.Row;
 
-                        if (AnalAttrList.Length > 0)
+                        if (AnalysisAttrList.Length > 0)
                         {
-                            AnalAttrList += ", ";
+                            AnalysisAttrList += ", ";
                         }
 
-                        AnalAttrList += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                        AnalysisAttrList += (recurrTransAnalAttrRow.AnalysisTypeCode + "=" + recurrTransAnalAttrRow.AnalysisAttributeValue);
                     }
 
-                    transRow.AnalysisAttributes = AnalAttrList;
+                    if (transRow.AnalysisAttributes != AnalysisAttrList)
+                    {
+                        transRow.AnalysisAttributes = AnalysisAttrList;
+                    }
 
                     //clear the attributes string and table
-                    AnalAttrList = string.Empty;
+                    AnalysisAttrList = string.Empty;
                 }
 
                 MainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = string.Empty;
@@ -2014,6 +2420,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
@@ -2066,18 +2473,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool GLTransTableInDataSet = (AInspectDS.ATransaction != null && AInspectDS.ATransaction.Count > 0);
             bool GLTransAttrTableInDataSet = (AInspectDS.ATransAnalAttrib != null && AInspectDS.ATransAnalAttrib.Count > 0);
 
-            int GLBatchCount = GLBatchTableInDataSet ? AInspectDS.ABatch.Count : 0;
-            int GLJournalCount = GLJournalTableInDataSet ? AInspectDS.AJournal.Count : 0;
-            int GLTransCount = GLTransTableInDataSet ? AInspectDS.ATransaction.Count : 0;
-            int GLTransAnalCount = GLTransAttrTableInDataSet ? AInspectDS.ATransAnalAttrib.Count : 0;
-
             bool RecurrGLBatchTableInDataSet = (AInspectDS.ARecurringBatch != null && AInspectDS.ARecurringBatch.Count > 0);
             bool RecurrGLJournalTableInDataSet = (AInspectDS.ARecurringJournal != null && AInspectDS.ARecurringJournal.Count > 0);
             bool RecurrGLTransTableInDataSet = (AInspectDS.ARecurringTransaction != null && AInspectDS.ARecurringTransaction.Count > 0);
             bool RecurrGLAttrTableInDataSet = (AInspectDS.ARecurringTransAnalAttrib != null && AInspectDS.ARecurringTransAnalAttrib.Count > 0);
 
             //Check if saving recurring tables
-            if (RecurrGLBatchTableInDataSet || RecurrGLJournalTableInDataSet || RecurrGLTransTableInDataSet)
+            if (RecurrGLBatchTableInDataSet || RecurrGLJournalTableInDataSet || RecurrGLTransTableInDataSet || RecurrGLAttrTableInDataSet)
             {
                 if (GLBatchTableInDataSet || GLJournalTableInDataSet || GLTransTableInDataSet || GLTransAttrTableInDataSet)
                 {
@@ -2376,8 +2778,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 throw ex;
             }
 
-            AVerificationResult = VerificationResult;
-
             if (AVerificationResult.Count > 0)
             {
                 // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
@@ -2390,75 +2790,488 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 return TSubmitChangesResult.scrError;
             }
 
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrOK;
+            TSubmitChangesResult SubmissionResult;
 
             if (AllValidationsOK)
             {
                 //Need to save changes before deleting any transactions
                 GLBatchTDSAccess.SubmitChanges(AInspectDS);
 
-                if (GLTransTableInDataSet && (AInspectDS.ATransaction.Rows.Count > 0))
-                {
-                    //Accept deletion of Attributes to allow deletion of transactions
-                    if (GLTransAttrTableInDataSet)
-                    {
-                        AInspectDS.ATransAnalAttrib.AcceptChanges();
-                    }
-
-                    AInspectDS.ATransaction.AcceptChanges();
-
-                    if (AInspectDS.ATransaction.Count > 0)
-                    {
-                        ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
-
-                        Int32 currentLedger = tranR.LedgerNumber;
-                        Int32 currentBatch = tranR.BatchNumber;
-                        Int32 currentJournal = tranR.JournalNumber;
-                        Int32 transToDelete = 0;
-
-                        try
-                        {
-                            //Check if any records have been marked for deletion
-                            DataRow[] foundTransactionForDeletion = AInspectDS.ATransaction.Select(String.Format("{0} = '{1}'",
-                                    ATransactionTable.GetSubTypeDBName(),
-                                    MFinanceConstants.MARKED_FOR_DELETION));
-
-                            if (foundTransactionForDeletion.Length > 0)
-                            {
-                                ATransactionRow transRowClient = null;
-
-                                for (int i = 0; i < foundTransactionForDeletion.Length; i++)
-                                {
-                                    transRowClient = (ATransactionRow)foundTransactionForDeletion[i];
-
-                                    transToDelete = transRowClient.TransactionNumber;
-                                    TLogging.Log(String.Format("Transaction to Delete: {0} from Journal: {1} in Batch: {2}",
-                                            transToDelete,
-                                            currentJournal,
-                                            currentBatch));
-
-                                    transRowClient.Delete();
-                                }
-
-                                //Submit all changes
-                                GLBatchTDSAccess.SubmitChanges(AInspectDS);
-
-                                SubmissionResult = TSubmitChangesResult.scrOK;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                                    Utilities.GetMethodSignature(),
-                                    Environment.NewLine,
-                                    ex.Message));
-                            throw ex;
-                        }
-                    }
-                }
+                SubmissionResult = TSubmitChangesResult.scrOK;
+            }
+            else
+            {
+                SubmissionResult = TSubmitChangesResult.scrError;
             }
 
             return SubmissionResult;
+        }
+
+        /// <summary>
+        /// Delete transactions and attributes and renumber accordingly
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="AHighestTransactionNumber"></param>
+        /// <param name="ATransactionToDelete"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS ProcessTransAndAttributesForDeletion(GLBatchTDS AMainDS,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
+            Int32 AHighestTransactionNumber,
+            Int32 ATransactionToDelete)
+        {
+            #region Validate Arguments
+
+            if (AMainDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+            else if (AJournalNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Journal number must be greater than 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AHighestTransactionNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Function:{0} - The highest Transaction number in the Journal must be greater than 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ATransactionToDelete <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Function:{0} - The number of the Transaction to delete must be greater than 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS TempDS = (GLBatchTDS)AMainDS.Copy();
+            TempDS.Merge(AMainDS);
+            TempDS.AcceptChanges();
+
+            GLBatchTDS SubmitDS = (GLBatchTDS)AMainDS.Copy();
+            SubmitDS.Merge(AMainDS);
+            SubmitDS.AcceptChanges();
+
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
+
+            try
+            {
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                    ref Transaction,
+                    ref SubmissionOK,
+                    delegate
+                    {
+                        //Delete current row+ (attributes first).
+                        DataView attributesDV = new DataView(TempDS.ATransAnalAttrib);
+                        attributesDV.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}>={5}",
+                            ATransAnalAttribTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ATransAnalAttribTable.GetJournalNumberDBName(),
+                            AJournalNumber,
+                            ATransAnalAttribTable.GetTransactionNumberDBName(),
+                            ATransactionToDelete);
+
+                        foreach (DataRowView attrDRV in attributesDV)
+                        {
+                            ATransAnalAttribRow attrRow = (ATransAnalAttribRow)attrDRV.Row;
+                            attrRow.Delete();
+                        }
+
+                        DataView transactionsDV = new DataView(TempDS.ATransaction);
+                        transactionsDV.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}>={5}",
+                            ATransactionTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ATransactionTable.GetJournalNumberDBName(),
+                            AJournalNumber,
+                            ATransactionTable.GetTransactionNumberDBName(),
+                            ATransactionToDelete);
+
+                        foreach (DataRowView transDRV in transactionsDV)
+                        {
+                            ATransactionRow tranRow = (ATransactionRow)transDRV.Row;
+                            tranRow.Delete();
+                        }
+
+                        //Need to save changes before deleting any transactions
+                        GLBatchTDSAccess.SubmitChanges(TempDS);
+
+                        //Remove unaffected attributes and transactions from SubmitDS
+                        DataView attributesDV1 = new DataView(SubmitDS.ATransAnalAttrib);
+                        attributesDV1.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}<={5}",
+                            ATransAnalAttribTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ATransAnalAttribTable.GetJournalNumberDBName(),
+                            AJournalNumber,
+                            ATransAnalAttribTable.GetTransactionNumberDBName(),
+                            ATransactionToDelete);
+
+                        foreach (DataRowView attrDRV in attributesDV1)
+                        {
+                            ATransAnalAttribRow attrRow = (ATransAnalAttribRow)attrDRV.Row;
+                            attrRow.Delete();
+                        }
+
+                        DataView transactionsDV1 = new DataView(SubmitDS.ATransaction);
+                        transactionsDV1.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}<={5}",
+                            ATransactionTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ATransactionTable.GetJournalNumberDBName(),
+                            AJournalNumber,
+                            ATransactionTable.GetTransactionNumberDBName(),
+                            ATransactionToDelete);
+
+                        foreach (DataRowView transDRV in transactionsDV1)
+                        {
+                            ATransactionRow tranRow = (ATransactionRow)transDRV.Row;
+                            tranRow.Delete();
+                        }
+
+                        //GLBatchTDSAccess.SubmitChanges(MainDS);
+                        SubmitDS.AcceptChanges();
+
+                        //Renumber the transactions and attributes in SubmitDS
+                        DataView attributesDV2 = new DataView(SubmitDS.ATransAnalAttrib);
+                        attributesDV2.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                            ATransAnalAttribTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ATransAnalAttribTable.GetJournalNumberDBName(),
+                            AJournalNumber);
+                        attributesDV2.Sort = String.Format("{0} ASC", ATransAnalAttribTable.GetTransactionNumberDBName());
+
+                        foreach (DataRowView attrDRV in attributesDV2)
+                        {
+                            ATransAnalAttribRow attrRow = (ATransAnalAttribRow)attrDRV.Row;
+                            attrRow.TransactionNumber--;
+                        }
+
+                        DataView transactionsDV2 = new DataView(SubmitDS.ATransaction);
+                        transactionsDV2.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                            ATransactionTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ATransactionTable.GetJournalNumberDBName(),
+                            AJournalNumber);
+                        transactionsDV2.Sort = String.Format("{0} ASC", ATransactionTable.GetTransactionNumberDBName());
+
+                        foreach (DataRowView transDRV in transactionsDV2)
+                        {
+                            ATransactionRow tranRow = (ATransactionRow)transDRV.Row;
+                            tranRow.TransactionNumber--;
+                        }
+
+                        SubmitDS.AcceptChanges();
+
+                        TempDS.Merge(SubmitDS.ATransaction);
+                        TempDS.AcceptChanges();
+
+                        DataView transactionsDV3 = new DataView(TempDS.ATransaction);
+                        transactionsDV3.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}>={5}",
+                            ATransactionTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ATransactionTable.GetJournalNumberDBName(),
+                            AJournalNumber,
+                            ATransactionTable.GetTransactionNumberDBName(),
+                            ATransactionToDelete);
+
+                        foreach (DataRowView transDRV in transactionsDV3)
+                        {
+                            ATransactionRow tranRow = (ATransactionRow)transDRV.Row;
+                            tranRow.SetAdded();
+                        }
+
+                        //Need to save changes before deleting any transactions
+                        GLBatchTDSAccess.SubmitChanges(TempDS);
+
+                        TempDS.Merge(SubmitDS.ATransAnalAttrib);
+                        TempDS.AcceptChanges();
+
+                        DataView attributesDV3 = new DataView(TempDS.ATransAnalAttrib);
+                        attributesDV3.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}>={5}",
+                            ATransAnalAttribTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ATransAnalAttribTable.GetJournalNumberDBName(),
+                            AJournalNumber,
+                            ATransAnalAttribTable.GetTransactionNumberDBName(),
+                            ATransactionToDelete);
+
+                        foreach (DataRowView attrDRV in attributesDV3)
+                        {
+                            ATransAnalAttribRow attrRow = (ATransAnalAttribRow)attrDRV.Row;
+                            attrRow.SetAdded();
+                        }
+
+                        //Need to save changes before deleting any transactions
+                        GLBatchTDSAccess.SubmitChanges(TempDS);
+                        TempDS.AcceptChanges();
+
+                        SubmissionOK = true;
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
+            return TempDS;
+        }
+
+        /// <summary>
+        /// Delete transactions and attributes and renumber accordingly
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="AHighestTransactionNumber"></param>
+        /// <param name="ATransactionToDelete"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS ProcessRecurringTransAndAttributesForDeletion(GLBatchTDS AMainDS,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
+            Int32 AHighestTransactionNumber,
+            Int32 ATransactionToDelete)
+        {
+            #region Validate Arguments
+
+            if (AMainDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+            else if (AJournalNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Journal number must be greater than 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AHighestTransactionNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Function:{0} - The highest Transaction number in the Journal must be greater than 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ATransactionToDelete <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Function:{0} - The number of the Transaction to delete must be greater than 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS TempDS = (GLBatchTDS)AMainDS.Copy();
+            TempDS.Merge(AMainDS);
+            TempDS.AcceptChanges();
+
+            GLBatchTDS SubmitDS = (GLBatchTDS)AMainDS.Copy();
+            SubmitDS.Merge(AMainDS);
+            SubmitDS.AcceptChanges();
+
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
+
+            try
+            {
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                    ref Transaction,
+                    ref SubmissionOK,
+                    delegate
+                    {
+                        //Delete current row+ (attributes first).
+                        DataView attributesDV = new DataView(TempDS.ARecurringTransAnalAttrib);
+                        attributesDV.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}>={5}",
+                            ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                            AJournalNumber,
+                            ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                            ATransactionToDelete);
+
+                        foreach (DataRowView attrDRV in attributesDV)
+                        {
+                            ARecurringTransAnalAttribRow attrRow = (ARecurringTransAnalAttribRow)attrDRV.Row;
+                            attrRow.Delete();
+                        }
+
+                        DataView transactionsDV = new DataView(TempDS.ARecurringTransaction);
+                        transactionsDV.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}>={5}",
+                            ARecurringTransactionTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ARecurringTransactionTable.GetJournalNumberDBName(),
+                            AJournalNumber,
+                            ARecurringTransactionTable.GetTransactionNumberDBName(),
+                            ATransactionToDelete);
+
+                        foreach (DataRowView transDRV in transactionsDV)
+                        {
+                            ARecurringTransactionRow tranRow = (ARecurringTransactionRow)transDRV.Row;
+                            tranRow.Delete();
+                        }
+
+                        //Need to save changes before deleting any transactions
+                        GLBatchTDSAccess.SubmitChanges(TempDS);
+
+                        //Remove unaffected attributes and transactions from SubmitDS
+                        DataView attributesDV1 = new DataView(SubmitDS.ARecurringTransAnalAttrib);
+                        attributesDV1.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}<={5}",
+                            ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                            AJournalNumber,
+                            ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                            ATransactionToDelete);
+
+                        foreach (DataRowView attrDRV in attributesDV1)
+                        {
+                            ARecurringTransAnalAttribRow attrRow = (ARecurringTransAnalAttribRow)attrDRV.Row;
+                            attrRow.Delete();
+                        }
+
+                        DataView transactionsDV1 = new DataView(SubmitDS.ARecurringTransaction);
+                        transactionsDV1.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}<={5}",
+                            ARecurringTransactionTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ARecurringTransactionTable.GetJournalNumberDBName(),
+                            AJournalNumber,
+                            ARecurringTransactionTable.GetTransactionNumberDBName(),
+                            ATransactionToDelete);
+
+                        foreach (DataRowView transDRV in transactionsDV1)
+                        {
+                            ARecurringTransactionRow tranRow = (ARecurringTransactionRow)transDRV.Row;
+                            tranRow.Delete();
+                        }
+
+                        //GLBatchTDSAccess.SubmitChanges(MainDS);
+                        SubmitDS.AcceptChanges();
+
+                        //Renumber the transactions and attributes in SubmitDS
+                        DataView attributesDV2 = new DataView(SubmitDS.ARecurringTransAnalAttrib);
+                        attributesDV2.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                            ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                            AJournalNumber);
+                        attributesDV2.Sort = String.Format("{0} ASC", ARecurringTransAnalAttribTable.GetTransactionNumberDBName());
+
+                        foreach (DataRowView attrDRV in attributesDV2)
+                        {
+                            ARecurringTransAnalAttribRow attrRow = (ARecurringTransAnalAttribRow)attrDRV.Row;
+                            attrRow.TransactionNumber--;
+                        }
+
+                        DataView transactionsDV2 = new DataView(SubmitDS.ARecurringTransaction);
+                        transactionsDV2.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                            ARecurringTransactionTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ARecurringTransactionTable.GetJournalNumberDBName(),
+                            AJournalNumber);
+                        transactionsDV2.Sort = String.Format("{0} ASC", ARecurringTransactionTable.GetTransactionNumberDBName());
+
+                        foreach (DataRowView transDRV in transactionsDV2)
+                        {
+                            ARecurringTransactionRow tranRow = (ARecurringTransactionRow)transDRV.Row;
+                            tranRow.TransactionNumber--;
+                        }
+
+                        SubmitDS.AcceptChanges();
+
+                        TempDS.Merge(SubmitDS.ARecurringTransaction);
+                        TempDS.AcceptChanges();
+
+                        DataView transactionsDV3 = new DataView(TempDS.ARecurringTransaction);
+                        transactionsDV3.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}>={5}",
+                            ARecurringTransactionTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ARecurringTransactionTable.GetJournalNumberDBName(),
+                            AJournalNumber,
+                            ARecurringTransactionTable.GetTransactionNumberDBName(),
+                            ATransactionToDelete);
+
+                        foreach (DataRowView transDRV in transactionsDV3)
+                        {
+                            ARecurringTransactionRow tranRow = (ARecurringTransactionRow)transDRV.Row;
+                            tranRow.SetAdded();
+                        }
+
+                        //Need to save changes before deleting any transactions
+                        GLBatchTDSAccess.SubmitChanges(TempDS);
+
+                        TempDS.Merge(SubmitDS.ARecurringTransAnalAttrib);
+                        TempDS.AcceptChanges();
+
+                        DataView attributesDV3 = new DataView(TempDS.ARecurringTransAnalAttrib);
+                        attributesDV3.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}>={5}",
+                            ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                            ABatchNumber,
+                            ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                            AJournalNumber,
+                            ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                            ATransactionToDelete);
+
+                        foreach (DataRowView attrDRV in attributesDV3)
+                        {
+                            ARecurringTransAnalAttribRow attrRow = (ARecurringTransAnalAttribRow)attrDRV.Row;
+                            attrRow.SetAdded();
+                        }
+
+                        //Need to save changes before deleting any transactions
+                        GLBatchTDSAccess.SubmitChanges(TempDS);
+                        TempDS.AcceptChanges();
+
+                        SubmissionOK = true;
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
+            return TempDS;
         }
 
         private static void CheckTransactionAccountAndCostCentre(Int32 ALedgerNumber,
@@ -2524,13 +3337,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             //bool AllValidationsOK = true;
 
             //Not needed as yet
-            //int RecurrBatchCount = ARecurringBatchTableInDataSet ? AInspectDS.ARecurringBatch.Count : 0;
-            int RecurrJournalCount = ARecurringJournalTableInDataSet ? AInspectDS.AJournal.Count : 0;
-            int RecurrTransCount = ARecurringTransTableInDataSet ? AInspectDS.ARecurringTransaction.Count : 0;
-            int RecurrTransAnalCount = ARecurringTransAnalTableInDataSet ? AInspectDS.ARecurringTransAnalAttrib.Count : 0;
+            // int RecurrBatchCount = ARecurringBatchTableInDataSet ? AInspectDS.ARecurringBatch.Count : 0;
+            // int RecurrJournalCount = ARecurringJournalTableInDataSet ? AInspectDS.AJournal.Count : 0;
+            // int RecurrTransCount = ARecurringTransTableInDataSet ? AInspectDS.ARecurringTransaction.Count : 0;
+            // int RecurrTransAnalCount = ARecurringTransAnalTableInDataSet ? AInspectDS.ARecurringTransAnalAttrib.Count : 0;
 
             //Get a list of all batches involved
-            List <Int32>ListAllGiftBatchesToProcess = new List <int>();
+            // List <Int32>ListAllGiftBatchesToProcess = new List <int>();
 
             ARecurringJournalTable JournalTable = new ARecurringJournalTable();
             ARecurringJournalRow TemplateJournalRow = JournalTable.NewRowTyped(false);
@@ -2975,10 +3788,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             "Function:{0} - The Exchange Rate from Journal currency to Base currency must be greater than 0!"),
                         Utilities.GetMethodName(true)));
             }
-            else if (AExchangeRateIntlToBase <= 0)
+            else if (AExchangeRateIntlToBase < 0)
             {
                 throw new ArgumentException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Exchange Rate from International currency to Base currency must be greater than 0!"),
+                            "Function:{0} - The Exchange Rate from International currency to Base currency cannot be a negative number!"),
                         Utilities.GetMethodName(true)));
             }
 
@@ -3096,9 +3909,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                                                 if (!TransactionInIntlCurrency)
                                                 {
-                                                    TransactionRow.AmountInIntlCurrency =
-                                                        GLRoutines.Divide((decimal)TransactionRow.AmountInBaseCurrency,
-                                                            AExchangeRateIntlToBase);
+                                                    TransactionRow.AmountInIntlCurrency = ((AExchangeRateIntlToBase == 0) ? 0 :
+                                                                                           GLRoutines.Divide((decimal)TransactionRow.
+                                                                                               AmountInBaseCurrency,
+                                                                                               AExchangeRateIntlToBase));
                                                 }
                                                 else
                                                 {
@@ -3143,8 +3957,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             }
                         }
 
-                        ABatchAccess.SubmitChanges(GLMainDS.ABatch, Transaction);
                         ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+                        ABatchAccess.SubmitChanges(GLMainDS.ABatch, Transaction);
                         AJournalAccess.SubmitChanges(GLMainDS.AJournal, Transaction);
                         ATransactionAccess.SubmitChanges(GLMainDS.ATransaction, Transaction);
                         ATransAnalAttribAccess.SubmitChanges(GLMainDS.ATransAnalAttrib, Transaction);
@@ -3177,7 +3991,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-        /// get daily exchange rate for the given currencies and date;
+        /// Gets daily exchange rate for the given currencies and date.  There is no limit on how 'old' the rate can be.
+        /// If more than one rate exists on or before the specified date the latest one is returned.  This might be old or it might
+        /// be one of several on the same day.
         /// TODO: might even collect the latest exchange rate from the web
         /// </summary>
         /// <param name="ACurrencyFrom"></param>
@@ -3188,6 +4004,29 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static decimal GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
         {
             return TExchangeRateTools.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
+        }
+
+        /// <summary>
+        /// Gets daily exchange rate for the given currencies and date. The APriorDaysAllwed parameter limits how 'old' the rate can be.
+        /// The unique rate parameter can ensure that a rate is only returned if there is only one to choose from.
+        /// TODO: might even collect the latest exchange rate from the web
+        /// </summary>
+        /// <param name="ACurrencyFrom"></param>
+        /// <param name="ACurrencyTo"></param>
+        /// <param name="ADateEffective"></param>
+        /// <param name="APriorDaysAllowed">Sets a limit on how many days prior to ADateEffective to search.  Use -1 for no limit,
+        /// 0 to imply that the rate must match for the specified date, 1 for the date and the day before and so on.</param>
+        /// <param name="AEnforceUniqueRate">If true the method will only return a value if there is one unique rate in the date range.
+        /// Otherwise it returns the latest rate.</param>
+        /// <returns></returns>
+        [RequireModulePermission("NONE")]
+        public static decimal GetDailyExchangeRate(string ACurrencyFrom,
+            string ACurrencyTo,
+            DateTime ADateEffective,
+            int APriorDaysAllowed,
+            Boolean AEnforceUniqueRate)
+        {
+            return TExchangeRateTools.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective, APriorDaysAllowed, AEnforceUniqueRate);
         }
 
         /// <summary>
@@ -3284,281 +4123,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-        /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
-        ///   Assumes that the dataset has all batch, journal and transaction data loaded.
-        /// </summary>
-        /// <param name="AMainDS"></param>
-        /// <param name="ACurrentBatch"></param>
-        [RequireModulePermission("FINANCE-1")]
-        public static void UpdateTotalsOfBatch(ref GLBatchTDS AMainDS,
-            ABatchRow ACurrentBatch)
-        {
-            #region Validate Arguments
-
-            if (AMainDS == null)
-            {
-                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
-                        Utilities.GetMethodName(true)));
-            }
-            else if (ACurrentBatch == null)
-            {
-                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
-                            "Function:{0} - The current GL Batch row does not exist or is empty!"),
-                        Utilities.GetMethodName(true)));
-            }
-
-            #endregion Validate Arguments
-
-            decimal SumDebits = 0.0M;
-            decimal SumCredits = 0.0M;
-
-            DataView JournalDV = new DataView(AMainDS.AJournal);
-
-            JournalDV.RowFilter = String.Format("{0}={1}",
-                AJournalTable.GetBatchNumberDBName(),
-                ACurrentBatch.BatchNumber);
-
-            foreach (DataRowView journalview in JournalDV)
-            {
-                GLBatchTDSAJournalRow journalrow = (GLBatchTDSAJournalRow)journalview.Row;
-
-                UpdateTotalsOfJournal(ref AMainDS, journalrow);
-
-                SumDebits += journalrow.JournalDebitTotal;
-                SumCredits += journalrow.JournalCreditTotal;
-            }
-
-            ACurrentBatch.BatchDebitTotal = SumDebits;
-            ACurrentBatch.BatchCreditTotal = SumCredits;
-            ACurrentBatch.BatchRunningTotal = Math.Round(SumDebits - SumCredits, 2);
-        }
-
-        /// <summary>
-        /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
-        ///   Assumes that the dataset has all batch, and journal data loaded.
-        /// </summary>
-        /// <param name="AMainDS"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AJournalNumber"></param>
-        [RequireModulePermission("FINANCE-1")]
-        public static void UpdateTotalsOfBatchFromJournals(ref GLBatchTDS AMainDS,
-            int ABatchNumber, int AJournalNumber = 0)
-        {
-            #region Validate Arguments
-
-            if (AMainDS == null)
-            {
-                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
-                        Utilities.GetMethodName(true)));
-            }
-            else if ((AMainDS.ABatch == null) || (AMainDS.ABatch.Count == 0))
-            {
-                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
-                            "Function:{0} - The GL Batch table is null or empty!"),
-                        Utilities.GetMethodName(true)));
-            }
-            else if (ABatchNumber <= 0)
-            {
-                int ledgerNumber = ((ABatchRow)AMainDS.ABatch.Rows[0]).LedgerNumber;
-
-                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Batch number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ledgerNumber, ABatchNumber);
-            }
-            else if (AJournalNumber < 0)
-            {
-                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Journal number cannot be a negative number!"),
-                        Utilities.GetMethodName(true)));
-            }
-
-            #endregion Validate Arguments
-
-            int CurrentLedger = ((ABatchRow)AMainDS.ABatch.Rows[0]).LedgerNumber;
-
-            decimal SumDebits = 0.0M;
-            decimal SumCredits = 0.0M;
-
-            //Locate the current Batch
-            ABatchRow BatchRow = (ABatchRow)AMainDS.ABatch.Rows.Find(new object[] { CurrentLedger, ABatchNumber });
-
-            if (BatchRow == null)
-            {
-                return;
-            }
-
-            //If journal number is given, then update the specified journal according to the transaction values in the dataset
-            if (AJournalNumber > 0)
-            {
-                GLBatchTDSAJournalRow journalRow = (GLBatchTDSAJournalRow)AMainDS.AJournal.Rows.Find(new object[] { CurrentLedger, ABatchNumber,
-                                                                                                                    AJournalNumber });
-
-                if (journalRow != null)
-                {
-                    //Update the totals of the current journal from the transactions.
-                    UpdateTotalsOfJournal(ref AMainDS, journalRow);
-                }
-            }
-
-            //Iterate through all journals in the current Batch
-            DataView JournalDV = new DataView(AMainDS.AJournal);
-
-            JournalDV.RowFilter = String.Format("{0}={1}",
-                AJournalTable.GetBatchNumberDBName(),
-                ABatchNumber);
-
-            //Recalculate the Batch totals
-            foreach (DataRowView journalview in JournalDV)
-            {
-                GLBatchTDSAJournalRow journalrow = (GLBatchTDSAJournalRow)journalview.Row;
-
-                SumDebits += journalrow.JournalDebitTotal;
-                SumCredits += journalrow.JournalCreditTotal;
-            }
-
-            BatchRow.BatchDebitTotal = SumDebits;
-            BatchRow.BatchCreditTotal = SumCredits;
-            BatchRow.BatchRunningTotal = Math.Round(SumDebits - SumCredits, 2);
-        }
-
-        /// <summary>
-        /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        [RequireModulePermission("FINANCE-1")]
-        public static void UpdateTotalsOfBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            #region Validate Arguments
-
-            if (ALedgerNumber <= 0)
-            {
-                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
-            }
-            else if (ABatchNumber <= 0)
-            {
-                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Batch number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
-            }
-
-            #endregion Validate Arguments
-
-            //TVerificationResultCollection AVerificationResult = new TVerificationResultCollection();
-            GLBatchTDS BatchDS = new GLBatchTDS();
-
-            decimal SumDebits = 0.0M;
-            decimal SumCredits = 0.0M;
-
-            //Load all Batch, Journal and Transaction records
-            BatchDS.Merge(LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber));
-
-            try
-            {
-                ABatchRow currentBatch = (ABatchRow)BatchDS.ABatch.Rows[0];
-
-                BatchDS.AJournal.DefaultView.RowFilter = string.Empty;
-
-                foreach (DataRowView journalview in BatchDS.AJournal.DefaultView)
-                {
-                    GLBatchTDSAJournalRow journalrow = (GLBatchTDSAJournalRow)journalview.Row;
-
-                    UpdateTotalsOfJournal(ref BatchDS, journalrow);
-
-                    SumDebits += journalrow.JournalDebitTotal;
-                    SumCredits += journalrow.JournalCreditTotal;
-                }
-
-                currentBatch.BatchDebitTotal = SumDebits;
-                currentBatch.BatchCreditTotal = SumCredits;
-                currentBatch.BatchRunningTotal = Math.Round(SumDebits - SumCredits, 2);
-
-                GLBatchTDSAccess.SubmitChanges(BatchDS);
-            }
-            catch (Exception ex)
-            {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Calculate the base amount for the transactions, and update the totals for the current journal
-        ///   Assumes that transactions are already loaded into the Dataset
-        /// </summary>
-        /// <param name="AMainDS">ATransactions are filtered on current journal</param>
-        /// <param name="ACurrentJournal"></param>
-        [RequireModulePermission("FINANCE-1")]
-        public static void UpdateTotalsOfJournal(ref GLBatchTDS AMainDS,
-            GLBatchTDSAJournalRow ACurrentJournal)
-        {
-            #region Validate Arguments
-
-            if (AMainDS == null)
-            {
-                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
-                        Utilities.GetMethodName(true)));
-            }
-            else if (ACurrentJournal == null)
-            {
-                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
-                            "Function:{0} - The current GL Journal row does not exist or is empty!"),
-                        Utilities.GetMethodName(true)));
-            }
-            else if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
-                     && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
-            {
-                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - Batch {1} Journal {2} has invalid exchange rate to base!"),
-                        Utilities.GetMethodName(true),
-                        ACurrentJournal.BatchNumber,
-                        ACurrentJournal.JournalNumber));
-            }
-
-            #endregion Validate Arguments
-
-            ACurrentJournal.JournalDebitTotal = 0.0M;
-            ACurrentJournal.JournalDebitTotalBase = 0.0M;
-            ACurrentJournal.JournalCreditTotal = 0.0M;
-            ACurrentJournal.JournalCreditTotalBase = 0.0M;
-
-            DataView TransactionDV = new DataView(AMainDS.ATransaction);
-
-            TransactionDV.RowFilter = String.Format("{0} = {1} And {2} = {3}",
-                ATransactionTable.GetBatchNumberDBName(),
-                ACurrentJournal.BatchNumber,
-                ATransactionTable.GetJournalNumberDBName(),
-                ACurrentJournal.JournalNumber);
-
-            // transactions are filtered for this journal; add up the total amounts
-            foreach (DataRowView tdrv in TransactionDV)
-            {
-                ATransactionRow trn = (ATransactionRow)tdrv.Row;
-
-                // recalculate the amount in base currency
-
-                if (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
-                {
-                    trn.AmountInBaseCurrency = GLRoutines.Divide(trn.TransactionAmount, ACurrentJournal.ExchangeRateToBase);
-                }
-
-                if (trn.DebitCreditIndicator)
-                {
-                    ACurrentJournal.JournalDebitTotal += trn.TransactionAmount;
-                    ACurrentJournal.JournalDebitTotalBase += trn.AmountInBaseCurrency;
-                }
-                else
-                {
-                    ACurrentJournal.JournalCreditTotal += trn.TransactionAmount;
-                    ACurrentJournal.JournalCreditTotalBase += trn.AmountInBaseCurrency;
-                }
-            }
-        }
-
-        /// <summary>
         /// Get current accounts and their current balances for use in the Reallocation Journal dialog
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -3618,369 +4182,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             return NewTable;
-        }
-
-        //Currently not used
-        private static void UpdateTotalsOfBatchesAndJournals(ref GLBatchTDS AInspectDS,
-            Int32 ALedgerNumber,
-            int[] ABatchNumbers,
-            bool ABatchTableInDataSet,
-            bool AJournalTableInDataSet)
-        {
-            Int32 currJournalNumber = -1;
-
-            ABatchRow currentBatchRow = null;
-
-            foreach (int currBatchNumber in ABatchNumbers)
-            {
-                if (!ABatchTableInDataSet && !AJournalTableInDataSet)
-                {
-                    if (AInspectDS.ATransaction.Count > 0)
-                    {
-                        AInspectDS.ATransaction.DefaultView.RowFilter = String.Format("{0} = {1}",
-                            ATransactionTable.GetBatchNumberDBName(),
-                            currBatchNumber);
-
-                        List <int>journalNums = new List <int>();
-
-                        foreach (DataRowView dr in AInspectDS.ATransaction.DefaultView)
-                        {
-                            ATransactionRow tr = (ATransactionRow)dr.Row;
-
-                            currJournalNumber = tr.JournalNumber;
-
-                            if (!journalNums.Contains(currJournalNumber))
-                            {
-                                journalNums.Add(currJournalNumber);
-                            }
-                        }
-
-                        if (journalNums.Count == 1)
-                        {
-                            AInspectDS.Merge(LoadABatch(ALedgerNumber, currBatchNumber), true);
-                            AInspectDS.Merge(LoadAJournalATransaction(ALedgerNumber, currBatchNumber, currJournalNumber), true);
-                        }
-                        else
-                        {
-                            //Multiple journals
-                            AInspectDS.Merge(LoadABatchAJournalATransaction(ALedgerNumber, currBatchNumber), true);
-                        }
-                    }
-                    else
-                    {
-                        AInspectDS.Merge(LoadABatchAJournalATransaction(ALedgerNumber, currBatchNumber), true);
-                    }
-                }
-                else if (!ABatchTableInDataSet)
-                {
-                    AInspectDS.AJournal.DefaultView.RowFilter = String.Format("{0} = {1}",
-                        AJournalTable.GetBatchNumberDBName(),
-                        currBatchNumber);
-
-                    if (AInspectDS.AJournal.DefaultView.Count == 1)
-                    {
-                        currJournalNumber = ((AJournalRow)AInspectDS.AJournal.DefaultView[0].Row).JournalNumber;
-                        AInspectDS.Merge(LoadABatch(ALedgerNumber, currBatchNumber), true);
-                        AInspectDS.Merge(LoadAJournalATransaction(ALedgerNumber, currBatchNumber, currJournalNumber), true);
-                    }
-                    else
-                    {
-                        AInspectDS.Merge(LoadABatchAJournalATransaction(ALedgerNumber, currBatchNumber), true);
-                    }
-                }
-                else if (!AJournalTableInDataSet)
-                {
-                    if (AInspectDS.ATransaction.Count > 0)
-                    {
-                        AInspectDS.ATransaction.DefaultView.RowFilter = String.Format("{0} = {1}",
-                            ATransactionTable.GetBatchNumberDBName(),
-                            currBatchNumber);
-
-                        List <int>journalNums = new List <int>();
-
-                        foreach (DataRowView dr in AInspectDS.ATransaction.DefaultView)
-                        {
-                            ATransactionRow tr = (ATransactionRow)dr.Row;
-
-                            currJournalNumber = tr.JournalNumber;
-
-                            if (!journalNums.Contains(currJournalNumber))
-                            {
-                                journalNums.Add(currJournalNumber);
-                            }
-                        }
-
-                        if (journalNums.Count == 1)
-                        {
-                            AInspectDS.Merge(LoadAJournalATransaction(ALedgerNumber, currBatchNumber, currJournalNumber), true);
-                        }
-                        else
-                        {
-                            //Multiple journals
-                            AInspectDS.Merge(LoadAJournalATransaction(ALedgerNumber, currBatchNumber), true);
-                        }
-                    }
-                    else
-                    {
-                        AInspectDS.Merge(LoadAJournalATransaction(ALedgerNumber, currBatchNumber), true);
-                    }
-                }
-                else
-                {
-                    AInspectDS.AJournal.DefaultView.RowFilter = String.Format("{0} = {1}",
-                        AJournalTable.GetBatchNumberDBName(),
-                        currBatchNumber);
-
-                    if (AInspectDS.AJournal.DefaultView.Count == 1)
-                    {
-                        currJournalNumber = ((AJournalRow)AInspectDS.AJournal.DefaultView[0].Row).JournalNumber;
-                        AInspectDS.Merge(LoadATransaction(ALedgerNumber, currBatchNumber, currJournalNumber), true);
-                    }
-                    else
-                    {
-                        //Multiple journals
-                        AInspectDS.Merge(LoadATransactionForBatch(ALedgerNumber, currBatchNumber), true);
-                    }
-                }
-
-                //Read current batch and update totals
-                currentBatchRow = (ABatchRow)AInspectDS.ABatch.Rows.Find(new object[] { ALedgerNumber, currBatchNumber });
-
-                UpdateTotalsOfBatch(ref AInspectDS, currentBatchRow);
-            }
-        }
-
-        //Currently not used
-        private static void CheckTransAnalysisAttributes(ref GLBatchTDS AInspectDS,
-            int ALedgerNumber,
-            int ABatchNumber,
-            int AJournalNumber,
-            ref TSubmitChangesResult ASubmissionResult)
-        {
-            //check if the necessary rows for the given account are there, automatically add/update account
-            GLSetupTDS glSetupCacheDS = LoadAAnalysisAttributes(ALedgerNumber);
-
-            //Account Number for AnalysisTable lookup
-            int currentTransactionNumber = 0;
-            string currentTransAccountCode = String.Empty;
-
-            if (glSetupCacheDS == null)
-            {
-                return;
-            }
-
-            //Reference all transactions in dataset
-            DataView allTransView = AInspectDS.ATransaction.DefaultView;
-            DataView transAnalAttrView = AInspectDS.ATransAnalAttrib.DefaultView;
-
-            transAnalAttrView.RowFilter = string.Empty;
-
-            allTransView.RowFilter = String.Format("{0}={1} and {2}={3}",
-                ATransactionTable.GetBatchNumberDBName(),
-                ABatchNumber,
-                ATransactionTable.GetJournalNumberDBName(),
-                AJournalNumber);
-
-            foreach (DataRowView transRowView in allTransView)
-            {
-                ATransactionRow currentTransactionRow = (ATransactionRow)transRowView.Row;
-
-                currentTransactionNumber = currentTransactionRow.TransactionNumber;
-                currentTransAccountCode = currentTransactionRow.AccountCode;
-
-                //If this account code is used need to delete it from TransAnal table.
-                //Delete any existing rows with old code
-                transAnalAttrView.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5} AND {6} <> '{7}'",
-                    ATransAnalAttribTable.GetBatchNumberDBName(),
-                    ABatchNumber,
-                    ATransAnalAttribTable.GetJournalNumberDBName(),
-                    AJournalNumber,
-                    ATransAnalAttribTable.GetTransactionNumberDBName(),
-                    currentTransactionNumber,
-                    ATransAnalAttribTable.GetAccountCodeDBName(),
-                    currentTransAccountCode);
-
-                foreach (DataRowView dv in transAnalAttrView)
-                {
-                    ATransAnalAttribRow tr = (ATransAnalAttribRow)dv.Row;
-
-                    tr.Delete();
-                }
-
-                transAnalAttrView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
-                    ATransAnalAttribTable.GetBatchNumberDBName(),
-                    ABatchNumber,
-                    ATransAnalAttribTable.GetJournalNumberDBName(),
-                    AJournalNumber,
-                    ATransAnalAttribTable.GetTransactionNumberDBName(),
-                    currentTransactionNumber);
-
-                //Retrieve the analysis attributes for the supplied account
-                DataView analAttrView = glSetupCacheDS.AAnalysisAttribute.DefaultView;
-                analAttrView.RowFilter = String.Format("{0} = '{1}'",
-                    AAnalysisAttributeTable.GetAccountCodeDBName(),
-                    currentTransAccountCode);
-
-                if (analAttrView.Count > 0)
-                {
-                    for (int i = 0; i < analAttrView.Count; i++)
-                    {
-                        //Read the Type Code for each attribute row
-                        AAnalysisAttributeRow analAttrRow = (AAnalysisAttributeRow)analAttrView[i].Row;
-                        string analysisTypeCode = analAttrRow.AnalysisTypeCode;
-
-                        //Check if the attribute type code exists in the Transaction Analysis Attributes table
-                        ATransAnalAttribRow transAnalAttrRow =
-                            (ATransAnalAttribRow)AInspectDS.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber,
-                                                                                                      currentTransactionNumber,
-                                                                                                      analysisTypeCode });
-
-                        if (transAnalAttrRow == null)
-                        {
-                            //Create a new TypeCode for this account
-                            ATransAnalAttribRow newRow = AInspectDS.ATransAnalAttrib.NewRowTyped(true);
-                            newRow.LedgerNumber = ALedgerNumber;
-                            newRow.BatchNumber = ABatchNumber;
-                            newRow.JournalNumber = AJournalNumber;
-                            newRow.TransactionNumber = currentTransactionNumber;
-                            newRow.AnalysisTypeCode = analysisTypeCode;
-                            newRow.AccountCode = currentTransAccountCode;
-
-                            AInspectDS.ATransAnalAttrib.Rows.Add(newRow);
-                        }
-                        else if (transAnalAttrRow.AccountCode != currentTransAccountCode)
-                        {
-                            //Check account code is correct
-                            transAnalAttrRow.AccountCode = currentTransAccountCode;
-                        }
-                    }
-                }
-
-                GLBatchTDSAccess.SubmitChanges(AInspectDS);
-
-                ASubmissionResult = TSubmitChangesResult.scrOK;
-
-                AInspectDS.ATransAnalAttrib.AcceptChanges();
-            }
-
-            transAnalAttrView.RowFilter = string.Empty;
-        }
-
-        //Currently not used
-        private static void CheckRecurringTransAnalysisAttributes(ref GLBatchTDS AInspectDS,
-            int ALedgerNumber,
-            int ABatchNumber,
-            int AJournalNumber,
-            ref TSubmitChangesResult ASubmissionResult)
-        {
-            //check if the necessary rows for the given account are there, automatically add/update account
-            GLSetupTDS glSetupCacheDS = LoadAAnalysisAttributes(ALedgerNumber);
-
-            //Account Number for AnalysisTable lookup
-            int currentTransactionNumber = 0;
-            string currentTransAccountCode = String.Empty;
-
-            if (glSetupCacheDS == null)
-            {
-                return;
-            }
-
-            //Reference all transactions in dataset
-            DataView allTransView = AInspectDS.ARecurringTransaction.DefaultView;
-            DataView transAnalAttrView = AInspectDS.ARecurringTransAnalAttrib.DefaultView;
-
-            transAnalAttrView.RowFilter = string.Empty;
-
-            allTransView.RowFilter = String.Format("{0}={1} and {2}={3}",
-                ARecurringTransactionTable.GetBatchNumberDBName(),
-                ABatchNumber,
-                ARecurringTransactionTable.GetJournalNumberDBName(),
-                AJournalNumber);
-
-            foreach (DataRowView transRowView in allTransView)
-            {
-                ARecurringTransactionRow currentTransactionRow = (ARecurringTransactionRow)transRowView.Row;
-
-                currentTransactionNumber = currentTransactionRow.TransactionNumber;
-                currentTransAccountCode = currentTransactionRow.AccountCode;
-
-                //If this account code is used need to delete it from TransAnal table.
-                //Delete any existing rows with old code
-                transAnalAttrView.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5} AND {6} <> '{7}'",
-                    ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
-                    ABatchNumber,
-                    ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
-                    AJournalNumber,
-                    ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
-                    currentTransactionNumber,
-                    ARecurringTransAnalAttribTable.GetAccountCodeDBName(),
-                    currentTransAccountCode);
-
-                foreach (DataRowView dv in transAnalAttrView)
-                {
-                    ARecurringTransAnalAttribRow tr = (ARecurringTransAnalAttribRow)dv.Row;
-
-                    tr.Delete();
-                }
-
-                transAnalAttrView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
-                    ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
-                    ABatchNumber,
-                    ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
-                    AJournalNumber,
-                    ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
-                    currentTransactionNumber);
-
-                //Retrieve the analysis attributes for the supplied account
-                DataView analAttrView = glSetupCacheDS.AAnalysisAttribute.DefaultView;
-                analAttrView.RowFilter = String.Format("{0} = '{1}'",
-                    AAnalysisAttributeTable.GetAccountCodeDBName(),
-                    currentTransAccountCode);
-
-                if (analAttrView.Count > 0)
-                {
-                    for (int i = 0; i < analAttrView.Count; i++)
-                    {
-                        //Read the Type Code for each attribute row
-                        AAnalysisAttributeRow analAttrRow = (AAnalysisAttributeRow)analAttrView[i].Row;
-                        string analysisTypeCode = analAttrRow.AnalysisTypeCode;
-
-                        //Check if the attribute type code exists in the Transaction Analysis Attributes table
-                        ARecurringTransAnalAttribRow transAnalAttrRow =
-                            (ARecurringTransAnalAttribRow)AInspectDS.ARecurringTransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber,
-                                                                                                                        AJournalNumber,
-                                                                                                                        currentTransactionNumber,
-                                                                                                                        analysisTypeCode });
-
-                        if (transAnalAttrRow == null)
-                        {
-                            //Create a new TypeCode for this account
-                            ARecurringTransAnalAttribRow newRow = AInspectDS.ARecurringTransAnalAttrib.NewRowTyped(true);
-                            newRow.LedgerNumber = ALedgerNumber;
-                            newRow.BatchNumber = ABatchNumber;
-                            newRow.JournalNumber = AJournalNumber;
-                            newRow.TransactionNumber = currentTransactionNumber;
-                            newRow.AnalysisTypeCode = analysisTypeCode;
-                            newRow.AccountCode = currentTransAccountCode;
-
-                            AInspectDS.ARecurringTransAnalAttrib.Rows.Add(newRow);
-                        }
-                        else if (transAnalAttrRow.AccountCode != currentTransAccountCode)
-                        {
-                            //Check account code is correct
-                            transAnalAttrRow.AccountCode = currentTransAccountCode;
-                        }
-                    }
-                }
-
-                GLBatchTDSAccess.SubmitChanges(AInspectDS);
-
-                ASubmissionResult = TSubmitChangesResult.scrOK;
-
-                AInspectDS.ARecurringTransAnalAttrib.AcceptChanges();
-            }
-
-            transAnalAttrView.RowFilter = string.Empty;
         }
     }
 }

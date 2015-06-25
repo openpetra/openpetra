@@ -61,9 +61,9 @@ RootNode:
             Controls: [btnNew, btnCancel, btnTestPostBatch, btnPostBatch]
             ControlsOrientation: horizontal
         btnNew: {Action=actNew, Width=120}
-        btnCancel: {Action=actCancel, Width=120}
-        btnTestPostBatch: {Width=120, StartNewButtonGroup=true}
-        btnPostBatch: {Action=actPostBatch, Width=120}
+        btnCancel: {Action=actCancel, Width=120, Tooltip=Click to Cancel the highlighted Batch}
+        btnTestPostBatch: {Width=120, StartNewButtonGroup=true, Tooltip=Click to Test the Posting of the highlighted Batch}
+        btnPostBatch: {Action=actPostBatch, Width=120, Tooltip=Click to Post the highlighted Batch}
         grdDetails:
             Dock: Fill
             Columns: [BatchNumber, BatchStatus, DateEffective, BatchDebitTotal, BatchCreditTotal, BatchControlTotal, BatchDescription]
@@ -87,7 +87,7 @@ RootNode:
                 Row1: [txtDetailBatchControlTotal]
                 Row2: [dtpDetailDateEffective, lblValidDateRange]
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
-        txtDetailBatchControlTotal: {Label=Batch Hash Total, Format=Decimal, Width=115, NullValueAllowed=false}
+        txtDetailBatchControlTotal: {Label=Batch Hash Total, Format=Currency, AlwaysHideLabel=true, Width=115, NullValueAllowed=false}
         lblValidDateRange: {Width=300}
         dtpDetailDateEffective: {Label=Effective Date, OnChange=UpdateBatchPeriod, Validation = true}
         tbrTabPage: {NoAttribute=true}

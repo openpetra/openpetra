@@ -745,6 +745,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             // Note: the control defaults to 'ShowLabel' true, so this doesn't need to be set to 'true' in code.
 
+            // Order is important: set Context before ControlMode and before DecimalPlaces
+            writer.SetControlProperty(ctrl, "Context", "this");
             writer.SetControlProperty(ctrl, "ControlMode", "TTxtNumericTextBox.TNumericTextBoxMode." + FControlMode);
             writer.SetControlProperty(ctrl, "DecimalPlaces", FDecimalPrecision.ToString());
             writer.SetControlProperty(ctrl, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
@@ -770,7 +772,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
     /// </summary>
     public class TTxtCurrencyTextBoxGenerator : TControlGenerator
     {
-        Int16 FDecimalPrecision = 2;
         bool FNullValueAllowed = true;
 
         /// <summary>constructor</summary>
@@ -897,12 +898,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
 
-            if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
+            if ((ctrl.HasAttribute("AlwaysHideLabel") && (ctrl.GetAttribute("AlwaysHideLabel").ToLower() == "true")))
+            {
+                writer.SetControlProperty(ctrl, "AlwaysHideLabel", "true");
+            }
+            else if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
             {
                 writer.SetControlProperty(ctrl, "ShowLabel", "false");
             }
 
-            writer.SetControlProperty(ctrl, "DecimalPlaces", FDecimalPrecision.ToString());
+            // Order is important: set Context before ControlMode and before CurrencyCode
+            writer.SetControlProperty(ctrl, "Context", "this");
+            writer.SetControlProperty(ctrl, "ControlMode", "TTxtNumericTextBox.TNumericTextBoxMode.Currency");
             writer.SetControlProperty(ctrl, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
             writer.SetControlProperty(ctrl, "CurrencyCode", "\"###\"");
 

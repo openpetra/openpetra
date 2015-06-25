@@ -95,17 +95,47 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 case TMode.ecisCombineMode:
                     lblExplanation.Text = Catalog.GetString("Please add extracts to the list that you want to combine and then click OK:");
                     FindForm().Text = "Combine Extracts";
+                    btnAdd.Select();
                     break;
 
                 case TMode.ecisIntersectMode:
                     lblExplanation.Text = Catalog.GetString("Please add extracts to the list that you want to intersect and then click OK:");
                     FindForm().Text = "Intersect Extracts";
+                    btnAdd.Select();
                     break;
 
                 case TMode.ecisSubtractMode:
                     lblExplanation.Text = Catalog.GetString("Please add extracts to the list to be subtracted from the one above:");
                     FindForm().Text = "Subtract Extracts";
+                    txtBaseExtract.Select();
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Pre-select an extract to be displayed in the grid.
+        /// </summary>
+        /// <param name="ARow"></param>
+        public void PreSelectExtract(MExtractMasterRow ARow)
+        {
+            if (FMode == TMode.ecisSubtractMode)
+            {
+                txtBaseExtract.Text = ARow.ExtractName;
+            }
+            else
+            {
+                MExtractMasterRow NewRow = FExtractMasterTable.NewRowTyped();
+                NewRow.ExtractId = ARow.ExtractId;
+                NewRow.ExtractName = ARow.ExtractName;
+                NewRow.ExtractDesc = ARow.ExtractDesc;
+                NewRow.KeyCount = ARow.KeyCount;
+                NewRow.CreatedBy = ARow.CreatedBy;
+                NewRow.DateCreated = ARow.DateCreated;
+
+                FExtractMasterTable.Rows.Add(NewRow);
+
+                grdExtracts.SelectRowInGrid(1);
+                btnRemove.Enabled = true;
             }
         }
 
@@ -288,9 +318,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     break;
             }
 
-            // check if user tries to subtract extract from itself
             if (FMode == TMode.ecisSubtractMode)
             {
+                // check if user tries to subtract extract from itself
                 foreach (DataRow ExtractRow in FExtractMasterTable.Rows)
                 {
                     if (((MExtractMasterRow)ExtractRow).ExtractName == txtBaseExtract.Text)
@@ -302,6 +332,31 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         return;
                     }
                 }
+
+                // check if a base extract is entered
+                if (txtBaseExtract.Text.Trim() == "")
+                {
+                    MessageBox.Show(Catalog.GetString("You must choose an extract to subtract from!"),
+                        TitleText,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+
+                // check that the base extract actually exists
+                if (!TRemote.MPartner.Partner.WebConnectors.ExtractExists(txtBaseExtract.Text))
+                {
+                    MessageBox.Show(Catalog.GetString("The extract you chose to subtract from does not exist!"),
+                        TitleText,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            if ((FMode == TMode.ecisSubtractMode)
+                && (txtBaseExtract.Text.Trim() == ""))
+            {
             }
 
             if (FExtractMasterTable.Rows.Count > 0)

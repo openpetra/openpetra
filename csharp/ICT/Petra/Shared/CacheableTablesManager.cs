@@ -687,7 +687,8 @@ namespace Ict.Petra.Shared
         {
             Boolean ReturnValue;
 
-            TLogging.LogAtLevel(9, "TCacheableTablesManager.IsTableCached: got called in AppDomain '" + AppDomain.CurrentDomain.FriendlyName +
+            TLogging.LogAtLevel(9,
+                "TCacheableTablesManager.IsTableCached(String): got called in AppDomain '" + AppDomain.CurrentDomain.FriendlyName +
                 "'. Instance hash is " + this.GetHashCode().ToString());
 
             // Thread.GetDomain.FriendlyName
@@ -703,6 +704,34 @@ namespace Ict.Petra.Shared
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Returns true if the DataTable with the specified TableName is in the DataCache.
+        /// If it returns true the AIsUpToDate parameter will indicate if the cached table is up-to-date.
+        /// This method is required by the client-side manager only.
+        ///
+        /// </summary>
+        /// <param name="ACacheableTableName">Name of the DataTable</param>
+        /// <param name="AIsUpToDate">Will be true if the table is in the cache and up-to-date. False otherwise</param>
+        /// <returns>true if the DataTable with the specified TableName is in the DataCache</returns>
+        public Boolean IsTableCached(String ACacheableTableName, out Boolean AIsUpToDate)
+        {
+            AIsUpToDate = false;
+
+            TLogging.LogAtLevel(9,
+                "TCacheableTablesManager.IsTableCached(String, out Boolean): got called in AppDomain '" + AppDomain.CurrentDomain.FriendlyName +
+                "'. Instance hash is " + this.GetHashCode().ToString());
+
+            // Thread.GetDomain.FriendlyName
+            CacheableTablesTDSContentsRow contentsRow = GetContentsEntry(ACacheableTableName);
+
+            if (contentsRow != null)
+            {
+                AIsUpToDate = contentsRow.DataUpToDate;
+            }
+
+            return contentsRow != null;
         }
 
         /// <summary>

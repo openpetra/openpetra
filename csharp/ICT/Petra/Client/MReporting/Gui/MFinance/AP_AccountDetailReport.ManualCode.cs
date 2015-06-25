@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       berndr
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,14 +57,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            if ((AReportAction == TReportActionEnum.raGenerate)
-                && (dtpFromDate.Date > dtpToDate.Date))
+            if (AReportAction == TReportActionEnum.raGenerate)
             {
-                TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("From date is later than to date."),
-                    Catalog.GetString("Please change from date or to date."),
-                    TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                if (!dtpFromDate.ValidDate() || !dtpToDate.ValidDate())
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("Date format problem"),
+                        Catalog.GetString("Please check the date entry."),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+
+                if (dtpFromDate.Date > dtpToDate.Date)
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("From date is later than to date."),
+                        Catalog.GetString("Please change from date or to date."),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
             }
 
             ACalc.AddParameter("param_currency", "Base");

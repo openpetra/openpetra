@@ -56,6 +56,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             // populate list with data to be loaded
             this.LoadListData("");
+
+            // allow 'any' selection for receipt frequency
+            DataRow emptyRow = cmbReceiptLetterFrequency.Table.NewRow();
+            emptyRow[0] = string.Empty;
+            emptyRow[1] = Catalog.GetString("Any Frequency");
+            cmbReceiptLetterFrequency.Table.Rows.Add(emptyRow);
         }
 
         private void LoadListData(string AFilter)
@@ -80,11 +86,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             clbLedger.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
 
-            // allow 'any' selection for receipt frequency
-            DataRow emptyRow = cmbReceiptLetterFrequency.Table.NewRow();
-            emptyRow[0] = string.Empty;
-            emptyRow[1] = Catalog.GetString("Any Frequency");
-            cmbReceiptLetterFrequency.Table.Rows.Add(emptyRow);
+            clbLedger.SetCheckedStringList("");
         }
 
         private void FilterList(System.Object sender, EventArgs e)

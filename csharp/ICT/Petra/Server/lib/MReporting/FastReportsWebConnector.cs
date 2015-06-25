@@ -184,8 +184,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     String Tbl = StringHelper.GetNextCSV(ref ADataSetFilterCsv, ",", "");
                     String[] part = Tbl.Split('/');
                     DataTable NewTbl = FDbAdapter.RunQuery(part[1], part[0], Transaction);
-                    //              MainDs.Tables[part[0]].Merge(FDbAdapter.RunQuery(part[1], part[0], Transaction));
-
                     MainDs.Merge(NewTbl);
                 }
 
@@ -301,6 +299,43 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             ReturnDataSet.Tables.Add(RecipientTotals);
             ReturnDataSet.Tables.Add(Donors);
             ReturnDataSet.Tables.Add(DonorAddresses);
+
+            return (FDbAdapter.IsCancelled) ? null : ReturnDataSet;
+        }
+
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// </summary>
+        [RequireModulePermission("none")]
+        public static DataSet GetOneYearMonthGivingDataSet(Dictionary <String, TVariant>AParameters)
+        {
+            FDbAdapter = new TReportingDbAdapter();
+            TLogging.SetStatusBarProcedure(WriteToStatusBar);
+            DataSet ReturnDataSet = new DataSet();
+
+            // get recipients
+            DataTable Recipients = TFinanceReportingWebConnector.RecipientGiftStatementRecipientTable(AParameters, FDbAdapter);
+
+            if (FDbAdapter.IsCancelled || (Recipients == null))
+            {
+                return null;
+            }
+
+            DataTable Donors = new DataTable("Donors");
+
+            foreach (DataRow Row in Recipients.Rows)
+            {
+                // get donor information for each recipient
+                Donors.Merge(TFinanceReportingWebConnector.OneYearMonthGivingDonorTable(AParameters, (Int64)Row["RecipientKey"], FDbAdapter));
+
+                if (FDbAdapter.IsCancelled)
+                {
+                    return null;
+                }
+            }
+
+            ReturnDataSet.Tables.Add(Recipients);
+            ReturnDataSet.Tables.Add(Donors);
 
             return (FDbAdapter.IsCancelled) ? null : ReturnDataSet;
         }

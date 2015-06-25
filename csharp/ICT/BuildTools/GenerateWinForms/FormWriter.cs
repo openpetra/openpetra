@@ -1527,9 +1527,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             XmlNode rootNode = (XmlNode)FCodeStorage.FXmlNodes[TParseYAMLFormsDefinition.ROOTNODEYML];
 
-            if (TYml2Xml.HasAttribute(rootNode, "UIConnectorType") && TYml2Xml.HasAttribute(rootNode, "UIConnectorCreate"))
+            if (TYml2Xml.HasAttribute(rootNode, "UIConnectorType"))
             {
                 FTemplate.AddToCodelet("UICONNECTORTYPE", TYml2Xml.GetAttribute(rootNode, "UIConnectorType"));
+            }
+
+            if (TYml2Xml.HasAttribute(rootNode, "UIConnectorCreate"))
+            {
                 FTemplate.AddToCodelet("UICONNECTORCREATE", TYml2Xml.GetAttribute(rootNode, "UIConnectorCreate"));
             }
 

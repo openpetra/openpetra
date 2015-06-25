@@ -67,6 +67,9 @@ namespace Ict.Common.Controls
         private TNumericTextBoxMode FControlMode = TNumericTextBoxMode.Decimal;
         private TNumberPrecision FNumberPrecision = TNumberPrecision.Decimal;
         private int FDecimalPlaces = 2;
+        private String FContext = null;
+
+        private bool FIsCurrencyTextBox = false;    // True if this numeric text box is associated with a TTxtCurrencyTextBox control
 
         /// <summary>
         /// Is it OK to show {null} in this control?
@@ -80,10 +83,15 @@ namespace Ict.Common.Controls
 
         private string FNumberDecimalSeparator = ".";
         private string FCurrencyDecimalSeparator = ".";
+        private string FCurrencyDisplayFormat = "";
         private CultureInfo FCurrentCulture;
         private bool FShowPercentSign = false;
         private string FNumberPositiveSign = "+";
         private string FNumberNegativeSign = "-";
+
+        // User preferences
+        private static TRetrieveUserDefaultBoolean FRetrieveUserDefaultBoolean;
+        private bool FShowCurrencyThousands = true;
 
         /// <summary>
         /// todoComment
@@ -144,18 +152,18 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// set currency values with format
-        /// </summary>
-        public void SetCurrencyValue(decimal AValue, string ACurrencyFormat)
-        {
-            base.Text = StringHelper.FormatCurrency(new TVariant(AValue), ACurrencyFormat);
-        }
-
-        /// <summary>
         /// This Culture came originally from the thread (ie from the user's locale setup)
         /// </summary>
         public CultureInfo Culture
         {
+            set
+            {
+                // This gets modified as a test but I don't think we dynamically switch cultures in a given text box in a real screen situation (yet?)
+                FCurrentCulture = value;
+                FNumberDecimalSeparator = FCurrentCulture.NumberFormat.NumberDecimalSeparator;     // TODO: make this customisable in Client .config file
+                FCurrencyDecimalSeparator = FCurrentCulture.NumberFormat.CurrencyDecimalSeparator; // TODO: make this customisable in Client .config file
+            }
+
             get
             {
                 return FCurrentCulture;
@@ -164,6 +172,9 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// Determines what input the Control accepts and how it formats it.
+        /// Note that a ControlMode of Currency does not always imply that the box is a currency text box.
+        /// A ControlMode of Currency means that the system currency format (decimal and thousands) is used to format the text.
+        /// A ControlMode of decimal means that the system number format (decimal and thousands) is used to format the decimal point and separator.
         /// </summary>
         [Category("NumericTextBox"),
          RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
@@ -179,6 +190,68 @@ namespace Ict.Common.Controls
             set
             {
                 FControlMode = value;
+
+                if ((value == TNumericTextBoxMode.Decimal) || (value == TNumericTextBoxMode.Currency))
+                {
+                    // The proposed mode may be modified by the user settings and by the context
+                    if (FRetrieveUserDefaultBoolean != null)
+                    {
+                        // At the time of doing this all finance reports are in Partner, so this IF statement is good
+                        // enough to find Finance screens as opposed to Partner/Personnel and Conference
+                        if (FContext.Contains(".MFinance") && !FContext.Contains("MReporting"))
+                        {
+                            // The context is a Finance screen
+                            if (FIsCurrencyTextBox)
+                            {
+                                if (FRetrieveUserDefaultBoolean(StringHelper.FINANCE_CURRENCY_FORMAT_AS_CURRENCY, true))
+                                {
+                                    FControlMode = TNumericTextBoxMode.Currency;
+                                }
+                                else
+                                {
+                                    FControlMode = TNumericTextBoxMode.Decimal;
+                                }
+                            }
+                            else
+                            {
+                                if (FRetrieveUserDefaultBoolean(StringHelper.FINANCE_DECIMAL_FORMAT_AS_CURRENCY, true))
+                                {
+                                    FControlMode = TNumericTextBoxMode.Currency;
+                                }
+                                else
+                                {
+                                    FControlMode = TNumericTextBoxMode.Decimal;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // The context is Partner/Personnel/Conference
+                            if (FIsCurrencyTextBox)
+                            {
+                                if (FRetrieveUserDefaultBoolean(StringHelper.PARTNER_CURRENCY_FORMAT_AS_CURRENCY, false))
+                                {
+                                    FControlMode = TNumericTextBoxMode.Currency;
+                                }
+                                else
+                                {
+                                    FControlMode = TNumericTextBoxMode.Decimal;
+                                }
+                            }
+                            else
+                            {
+                                if (FRetrieveUserDefaultBoolean(StringHelper.PARTNER_DECIMAL_FORMAT_AS_CURRENCY, false))
+                                {
+                                    FControlMode = TNumericTextBoxMode.Currency;
+                                }
+                                else
+                                {
+                                    FControlMode = TNumericTextBoxMode.Decimal;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 if ((value == TNumericTextBoxMode.NormalTextBox)
                     || (value == TNumericTextBoxMode.Integer)
@@ -273,6 +346,34 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Sets the context for this control - the class of Form or UserControl on which it has been placed.
+        /// The designer file sets this value automatically
+        /// </summary>
+        public object Context
+        {
+            set
+            {
+                FContext = value.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Gets/sets if the text box is associated with a TTxtCurrencyTextBox.  This is set automatically.
+        /// </summary>
+        public Boolean IsCurrencyTextBox
+        {
+            get
+            {
+                return FIsCurrencyTextBox;
+            }
+
+            set
+            {
+                FIsCurrencyTextBox = value;
+            }
+        }
+
+        /// <summary>
         /// Determines whether the control allows a negative value, or not. Default = true.
         /// </summary>
         [Category("NumericTextBox"),
@@ -314,15 +415,14 @@ namespace Ict.Common.Controls
                             && (CleanedfromNonNumeralChars != ".")
                             && (CleanedfromNonNumeralChars != String.Empty))
                         {
-                            decimal? Ret = null;
-                            try
+                            decimal Ret;
+
+                            if (decimal.TryParse(CleanedfromNonNumeralChars, NumberStyles.Any, FCurrentCulture, out Ret))
                             {
-                                Ret = Convert.ToDecimal(CleanedfromNonNumeralChars, FCurrentCulture);
+                                return Ret;
                             }
-                            catch (Exception)
-                            {
-                            }
-                            return Ret;
+
+                            return null;
                         }
                         else
                         {
@@ -346,11 +446,7 @@ namespace Ict.Common.Controls
                 {
                     FNumberPrecision = TNumberPrecision.Decimal;
 
-                    if (value != null)
-                    {
-                        base.Text = ((decimal)value).ToString(FCurrentCulture);
-                    }
-                    else
+                    if (value == null)
                     {
                         if (FNullValueAllowed)
                         {
@@ -364,7 +460,37 @@ namespace Ict.Common.Controls
                         }
                     }
 
+                    base.Text = ((decimal)value).ToString(FCurrentCulture);
                     FormatValue(RemoveNonNumeralChars());
+                }
+                else if (FControlMode == TNumericTextBoxMode.Currency)
+                {
+                    // The box is using currency format for decimal point but may be a plain numeric text box
+                    if (value == null)
+                    {
+                        if (FNullValueAllowed)
+                        {
+                            base.Text = String.Empty;
+                            return;
+                        }
+                        else
+                        {
+                            throw new ArgumentNullException(
+                                "The 'NumberValueDecimal' Property must not be set to null if the 'NullValueAllowed' Property is false.");
+                        }
+                    }
+
+                    if (FIsCurrencyTextBox)
+                    {
+                        // Currency formatted currency box
+                        base.Text = StringHelper.FormatCurrency(new TVariant(value), FCurrencyDisplayFormat);
+                    }
+                    else
+                    {
+                        // Currency formatted decimal numeric box
+                        base.Text = ((decimal)value).ToString(FCurrentCulture);
+                        FormatValue(RemoveNonNumeralChars());
+                    }
                 }
 
 // Sharp Developer Designer Bug makes Integer mode unusable
@@ -621,6 +747,17 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Used by the User Settings dialog to dynamically show examples.  Not for general use.
+        /// </summary>
+        public bool ShowThousands
+        {
+            set
+            {
+                FShowCurrencyThousands = value;
+                FormatValue(RemoveNonNumeralChars());
+            }
+        }
 
         #endregion
 
@@ -805,28 +942,67 @@ namespace Ict.Common.Controls
                                     if ((this.SelectionLength == 0)
                                         && (intSelStart > intActDecPlace))
                                     {
-                                        // Decimalplace validation
-                                        if (ControlMode == TNumericTextBoxMode.Decimal)
+                                        // Decimalplace validation ...
+                                        // This checks to see if the inserted character would fit within the number of allowable decimal places.
+                                        // If so, insert the character and push the remaining decimal places to the right.
+                                        // The least significant digit will fall off the end
+                                        if ((ControlMode == TNumericTextBoxMode.Decimal) || (ControlMode == TNumericTextBoxMode.Currency))
                                         {
                                             if (!ShowPercentSign)
                                             {
                                                 bolDecimalplaceInvalid = (this.Text.Length - intActDecPlace) > FDecimalPlaces;
+
+                                                if (bolDecimalplaceInvalid && (intSelStart < this.Text.Length))
+                                                {
+                                                    base.Text = this.Text.Substring(0, intSelStart) + chrKeyPressed +
+                                                                this.Text.Substring(intSelStart, this.Text.Length - intSelStart - 1);
+                                                    this.SelectionStart = intSelStart + 1;
+                                                    e.Handled = true;
+                                                    return;
+                                                }
                                             }
                                             else
                                             {
                                                 if (this.Text.EndsWith(" %"))
                                                 {
                                                     bolDecimalplaceInvalid = (this.Text.Length - intActDecPlace - 2) > FDecimalPlaces;
+
+                                                    if (bolDecimalplaceInvalid && (intSelStart < this.Text.Length - 2))
+                                                    {
+                                                        base.Text = this.Text.Substring(0, intSelStart) + chrKeyPressed +
+                                                                    this.Text.Substring(intSelStart, this.Text.Length - intSelStart - 3) + " %";
+                                                        this.SelectionStart = intSelStart + 1;
+                                                        e.Handled = true;
+                                                        return;
+                                                    }
                                                 }
                                                 else if ((this.Text.EndsWith("%")
                                                           || (this.Text.EndsWith(" "))))
                                                 {
                                                     bolDecimalplaceInvalid = (this.Text.Length - intActDecPlace - 1) > FDecimalPlaces;
+
+                                                    if (bolDecimalplaceInvalid && (intSelStart < this.Text.Length - 1))
+                                                    {
+                                                        base.Text = this.Text.Substring(0, intSelStart) + chrKeyPressed +
+                                                                    this.Text.Substring(intSelStart, this.Text.Length - intSelStart - 2) + "%";
+                                                        this.SelectionStart = intSelStart + 1;
+                                                        e.Handled = true;
+                                                        return;
+                                                    }
                                                 }
                                                 else
                                                 {
                                                     // same as if !ShowPercentSign
                                                     bolDecimalplaceInvalid = (this.Text.Length - intActDecPlace) > FDecimalPlaces;
+
+                                                    if (bolDecimalplaceInvalid && (intSelStart < this.Text.Length))
+                                                    {
+                                                        base.Text = this.Text.Substring(0, intSelStart) + chrKeyPressed +
+                                                                    this.Text.Substring(intSelStart, this.Text.Length - intSelStart - 1);
+                                                        this.SelectionStart = intSelStart + 1;
+                                                        e.Handled = true;
+                                                        return;
+                                                    }
                                                 }
                                             }
                                         }
@@ -888,6 +1064,14 @@ namespace Ict.Common.Controls
                                     }
                                     else
                                     {
+                                        // Decimal point entered and we have one already.  If the current position is the dp we just move the selection on by one.
+                                        // Otherwise we do nothing because you can't have two dp's!!
+                                        if (intSelStart == intActDecPlace)
+                                        {
+                                            this.SelectionStart = intSelStart + 1;
+                                            this.SelectionLength = 0;
+                                        }
+
                                         e.Handled = true;
                                     }
                                 }
@@ -1004,6 +1188,7 @@ namespace Ict.Common.Controls
                         break;
 
                     case TNumericTextBoxMode.Decimal:
+                    case TNumericTextBoxMode.Currency:
                         FormatValue("0" + FNumberDecimalSeparator + "00");
                         break;
                 }
@@ -1051,30 +1236,84 @@ namespace Ict.Common.Controls
                     try
                     {
                         String str = (String)(clip.GetData(DataFormats.Text));
-                        String NumberPattern = "0123456789-+%" + FNumberDecimalSeparator + FCurrencyDecimalSeparator;
+                        String NumberPattern = "0123456789-+%";
+                        int maxPatternPos = NumberPattern.Length - 1;
+
+                        if ((this.ControlMode == TNumericTextBoxMode.Decimal) || (this.ControlMode == TNumericTextBoxMode.Currency))
+                        {
+                            // We can include decimal separators in our pattern
+                            if (((this.Text.Contains(FNumberDecimalSeparator) == false) && (this.Text.Contains(FCurrencyDecimalSeparator) == false))
+                                || this.SelectedText.Contains(FNumberDecimalSeparator) || this.SelectedText.Contains(FCurrencyDecimalSeparator))
+                            {
+                                // Include the decimal/currency separators as well
+                                NumberPattern += (FNumberDecimalSeparator + FCurrencyDecimalSeparator);
+                            }
+                        }
+
                         String OkStr = "";
+                        Boolean alreadyPastedDecimalSep = false;
 
                         for (int i = 0; i < str.Length; i++)
                         {
-                            if (NumberPattern.IndexOf(str[i]) >= 0)
+                            int pos = NumberPattern.IndexOf(str[i]);
+
+                            if (pos > maxPatternPos)
+                            {
+                                // It is a decimal separator
+                                if (alreadyPastedDecimalSep == false)
+                                {
+                                    OkStr += str[i];
+                                    alreadyPastedDecimalSep = true;
+                                }
+                            }
+                            else if (pos >= 0)
                             {
                                 OkStr += str[i];
                             }
                         }
 
-                        if (this.SelectionLength > 0)
+                        int intPrevSelStart = this.SelectionStart;
+                        int newSelStart = 0;
+                        string newText;
+
+                        newText = this.Text.Substring(0, this.SelectionStart) + OkStr + this.Text.Substring(
+                            this.SelectionStart + this.SelectedText.Length);
+                        newSelStart = intPrevSelStart + OkStr.Length;
+
+                        // We may need to truncate the text if we now exceed the specified number of decimal places
+                        if ((ControlMode == TNumericTextBoxMode.Decimal) || (ControlMode == TNumericTextBoxMode.Currency))
                         {
-                            this.SelectedText = OkStr;
-//                              ProcessChangedText(this.Text);
+                            // find the position of the decimal separator
+                            int decimalPos = newText.IndexOf(FNumberDecimalSeparator);
+
+                            if (decimalPos == -1)
+                            {
+                                decimalPos = newText.IndexOf(FCurrencyDecimalSeparator);
+                            }
+
+                            if (decimalPos >= 0)
+                            {
+                                if (decimalPos == newText.Length - 1)
+                                {
+                                    // string ends in a decimal point, so chop it off
+                                    newText = newText.Substring(0, newText.Length - 1);
+                                }
+                                else if (newText.Length - decimalPos - 1 > DecimalPlaces)
+                                {
+                                    // Too many decimal digits so truncate
+                                    newText = newText.Substring(0, decimalPos + DecimalPlaces + 1);
+                                }
+
+                                if (newSelStart > newText.Length)
+                                {
+                                    newSelStart = newText.Length;
+                                }
+                            }
                         }
-                        else if (this.SelectionStart > 0)
-                        {
-                            base.Text = this.Text.Substring(0, this.SelectionStart) + OkStr + this.Text.Substring(this.SelectionStart);
-                        }
-                        else
-                        {
-                            base.Text = OkStr;
-                        }
+
+                        base.Text = newText;
+                        this.SelectionStart = newSelStart;
+                        this.SelectionLength = 0;
                     }
                     catch (Exception Exp)
                     {
@@ -1102,8 +1341,11 @@ namespace Ict.Common.Controls
                         }
                         else
                         {
-                            this.SelectedText = new String('0', this.SelectedText.Length);
-//                            ProcessChangedText(this.Text);
+                            int intPrevSelStart = this.SelectionStart;
+                            base.Text = this.Text.Substring(0, this.SelectionStart) + this.Text.Substring(
+                                this.SelectionStart + this.SelectedText.Length);
+                            this.SelectionStart = intPrevSelStart;
+                            this.SelectionLength = 0;
                         }
                     }
                 }
@@ -1136,6 +1378,7 @@ namespace Ict.Common.Controls
         {
             double NumberValueDouble;
             decimal NumberValueDecimal;
+            string workText;
 
             if (AValue != String.Empty)
             {
@@ -1152,31 +1395,70 @@ namespace Ict.Common.Controls
                         case TNumericTextBoxMode.Decimal:
                         case TNumericTextBoxMode.Currency:
 
+                            // When the ControlMode is Decimal we use the number format for decimal point.
+                            //   In this situation this control may be a numeric or currency text box because we offer the option
+                            //   to display currency amounts in numeric format in non-finance screens
+                            // When the ControlMode is Currency we use the currency format for decimal point.
+                            //   In this situation this control may be associated with a numeric text box, since we do offer
+                            //   the option to display a decimal numeric box in currency format in finance screens
+
+                            workText = String.Empty;
+
                             if (FNumberPrecision == TNumberPrecision.Double)
                             {
-                                NumberValueDouble = Convert.ToDouble(AValue, FCurrentCulture);
-                                //                CultureInfo ci = CultureInfo.CreateSpecificCulture("en-US");
-                                //                NumberFormatInfo ni = ci.NumberFormat;
+                                if (FIsCurrencyTextBox)
+                                {
+                                    throw new NotSupportedException("Currency text boxes are expected to be associated with decimal values.");
+                                }
+                                else
+                                {
+                                    // Convert to a double value and then format using numeric specifiers
+                                    NumberValueDouble = Convert.ToDouble(AValue, FCurrentCulture);
 
-                                base.Text = NumberValueDouble.ToString("N" + FDecimalPlaces, FCurrentCulture);
-                                //                string strnumformat = d.ToString("c", ni);
-                                //                this.Text = strnumformat.Remove(0, 1);
+                                    workText = NumberValueDouble.ToString("N" + FDecimalPlaces, FCurrentCulture);
+                                }
                             }
                             else if (FNumberPrecision == TNumberPrecision.Decimal)
                             {
-                                NumberValueDecimal = Convert.ToDecimal(AValue, FCurrentCulture);
-                                //                CultureInfo ci = CultureInfo.CreateSpecificCulture("en-US");
-                                //                NumberFormatInfo ni = ci.NumberFormat;
+                                // Convert to a decimal and then format using numeric specifiers and then adjust for currencies/percents if needed
+                                if (decimal.TryParse(AValue, NumberStyles.Any, FCurrentCulture, out NumberValueDecimal) == false)
+                                {
+                                    throw new ArgumentException(String.Format(Catalog.GetString(
+                                                "Could not convert text '{0}' to a decimal number using standard digits and either of the following separator pairs: {1}{2} / {3}{4}"),
+                                            CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator, FNumberDecimalSeparator,
+                                            CultureInfo.CurrentCulture.NumberFormat.CurrencyGroupSeparator, FCurrencyDecimalSeparator));
+                                }
 
-                                base.Text = NumberValueDecimal.ToString("N" + FDecimalPlaces, FCurrentCulture);
-                                //                string strnumformat = d.ToString("c", ni);
-                                //                this.Text = strnumformat.Remove(0, 1);
+                                workText = NumberValueDecimal.ToString("N" + FDecimalPlaces, FCurrentCulture);
+
+                                if (FControlMode == TNumericTextBoxMode.Currency)
+                                {
+                                    // Use the currency separator
+                                    workText = workText.Replace(FNumberDecimalSeparator, FCurrencyDecimalSeparator);
+                                }
                             }
 
-                            if (FShowPercentSign)
+                            if (FIsCurrencyTextBox)
                             {
-                                base.Text = base.Text + " %";
+                                if (FShowCurrencyThousands)
+                                {
+                                    // use the correct thousands separator
+                                    workText = workText.Replace(CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator,
+                                        CultureInfo.CurrentCulture.NumberFormat.CurrencyGroupSeparator);
+                                }
+                                else
+                                {
+                                    // or no separator
+                                    workText = workText.Replace(
+                                        CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator, String.Empty);
+                                }
                             }
+                            else if (FShowPercentSign)
+                            {
+                                workText = workText + " %";
+                            }
+
+                            base.Text = workText;
 
                             break;
 
@@ -1211,7 +1493,7 @@ namespace Ict.Common.Controls
                                 }
                                 else
                                 {
-                                    if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator))
+                                    if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator) && !AValue.StartsWith("0" + FNumberDecimalSeparator))
                                     {
                                         if (FControlMode == TNumericTextBoxMode.Integer)
                                         {
@@ -1230,7 +1512,7 @@ namespace Ict.Common.Controls
                             }
                             else
                             {
-                                if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator))
+                                if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator) && !AValue.StartsWith("0" + FNumberDecimalSeparator))
                                 {
                                     if (FControlMode == TNumericTextBoxMode.Integer)
                                     {
@@ -1278,6 +1560,17 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// This method overrides the normal user formatting.  It is used by UserPreferences to show examples of formatting options
+        /// </summary>
+        public void OverrideNormalFormatting(bool AUseNumberFormatForCurrency, bool AShowThousands)
+        {
+            FShowCurrencyThousands = AShowThousands;
+            FControlMode = AUseNumberFormatForCurrency ? TNumericTextBoxMode.Decimal : TNumericTextBoxMode.Currency;
+
+            FormatValue(RemoveNonNumeralChars());
+        }
+
+        /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="sender"></param>
@@ -1307,7 +1600,8 @@ namespace Ict.Common.Controls
 
             if (((FControlMode == TNumericTextBoxMode.Integer)
                  || (FControlMode == TNumericTextBoxMode.LongInteger)
-                 || (FControlMode == TNumericTextBoxMode.Decimal))
+                 || (FControlMode == TNumericTextBoxMode.Decimal)
+                 || (FControlMode == TNumericTextBoxMode.Currency))
                 && (this.Text != String.Empty))
             {
                 ReturnValue = this.Text.TrimEnd(new char[] { ' ', '%' });
@@ -1328,6 +1622,27 @@ namespace Ict.Common.Controls
         protected void OnEntering(object sender, EventArgs e)
         {
             this.SelectAll();
+        }
+
+        /// <summary>
+        /// Declaration of a delegate to retrieve a boolean value from the user defaults
+        /// </summary>
+        public delegate Boolean TRetrieveUserDefaultBoolean(String AKey, Boolean ADefault);
+
+        /// <summary>
+        /// Get/set the function pointer for retrieving a boolean user default
+        /// </summary>
+        public static TRetrieveUserDefaultBoolean RetrieveUserDefaultBoolean
+        {
+            get
+            {
+                return FRetrieveUserDefaultBoolean;
+            }
+
+            set
+            {
+                FRetrieveUserDefaultBoolean = value;
+            }
         }
     }
 }

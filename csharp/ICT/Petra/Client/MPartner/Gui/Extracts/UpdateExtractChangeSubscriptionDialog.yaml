@@ -8,8 +8,8 @@ RootNode:
     MasterTable: PSubscription
     FormType: dialog
     Template: window
-    WindowWidth: 921
-    WindowHeight: 400
+    WindowWidth: 865
+    WindowHeight: 350
     
     Events:
         Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
@@ -29,40 +29,44 @@ RootNode:
 
         grpSubscription: {Label=Change Subscription}
             Controls: 
-                Row0: [pnlChangeSubscription, pnlSubscription]
-        pnlChangeSubscription:
-            Controls: [chkChangePublicationCode, chkChangeSubscriptionStatus, chkChangeGratisSubscription]
-        pnlSubscription:
-            Controls: [cmbPSubscriptionPublicationCode, cmbPSubscriptionSubscriptionStatus, chkPSubscriptionGratisSubscription]
+                Row0: [chkChangePublicationCode, cmbPSubscriptionPublicationCode]
+                Row1: [chkChangeSubscriptionStatus, cmbPSubscriptionSubscriptionStatus]
+                Row2: [chkChangeGratisSubscription, chkPSubscriptionGratisSubscription]
+            TabOrder: Horizontal
+            Stretch: horizontally
 
         grpMisc: {Label=Change Miscellaneous}
             Controls: 
-                Row0: [pnlChangeMisc, pnlMisc]
-        pnlChangeMisc: {Stretch=horizontally}
-            Controls: [chkChangeNumberComplimentary, chkChangePublicationCopies, chkChangeReasonSubsGivenCode, chkChangeReasonSubsCancelledCode, chkChangeGiftFromKey]
-        pnlMisc: {Stretch=horizontally}
-            Controls: [txtPSubscriptionNumberComplimentary, txtPSubscriptionPublicationCopies, cmbPSubscriptionReasonSubsGivenCode, cmbPSubscriptionReasonSubsCancelledCode, txtPSubscriptionGiftFromKey]
+                Row0: [chkChangeNumberComplimentary, txtPSubscriptionNumberComplimentary]
+                Row1: [chkChangePublicationCopies, txtPSubscriptionPublicationCopies]
+                Row2: [chkChangeReasonSubsGivenCode, cmbPSubscriptionReasonSubsGivenCode]
+                Row3: [chkChangeReasonSubsCancelledCode, cmbPSubscriptionReasonSubsCancelledCode]
+                Row4: [chkChangeGiftFromKey, txtPSubscriptionGiftFromKey]
+            TabOrder: Horizontal
+            Stretch: horizontally
 
         grpDates: {Label=Change Dates}
-            Width: 289
+            #Width: 289
             Controls: 
-                Row0: [pnlChangeDates, pnlDates]
-        pnlChangeDates: {Stretch=horizontally}
-            Controls: [chkChangeStartDate, chkChangeExpiryDate, chkChangeRenewalDate, chkChangeDateNoticeSent, chkChangeDateCancelled]
-        pnlDates: {Stretch=horizontally}
-            Controls: [dtpPSubscriptionStartDate, dtpPSubscriptionExpiryDate, dtpPSubscriptionSubscriptionRenewalDate, dtpPSubscriptionDateNoticeSent, dtpPSubscriptionDateCancelled]
+                Row0: [chkChangeStartDate, dtpPSubscriptionStartDate]
+                Row1: [chkChangeExpiryDate, dtpPSubscriptionExpiryDate]
+                Row2: [chkChangeRenewalDate, dtpPSubscriptionSubscriptionRenewalDate]
+                Row3: [chkChangeDateNoticeSent, dtpPSubscriptionDateNoticeSent]
+                Row4: [chkChangeDateCancelled, dtpPSubscriptionDateCancelled]
+            TabOrder: Horizontal
+            Stretch: horizontally
 
         grpIssues: {Label=Change Issues}
             Controls: 
-                Row0: [pnlChangeIssues, pnlIssues]
-        pnlChangeIssues: {Stretch=horizontally}
-            Controls: [chkChangeNumberIssuesReceived, chkChangeFirstIssue, chkChangeLastIssue]
-        pnlIssues: {Stretch=horizontally}
-            Controls: [txtPSubscriptionNumberIssuesReceived, dtpPSubscriptionFirstIssue, dtpPSubscriptionLastIssue]
+                Row0: [chkChangeNumberIssuesReceived, txtPSubscriptionNumberIssuesReceived]
+                Row1: [chkChangeFirstIssue, dtpPSubscriptionFirstIssue]
+                Row2: [chkChangeLastIssue, dtpPSubscriptionLastIssue]
+            TabOrder: Horizontal
 
         cmbPSubscriptionPublicationCode: {List=PublicationInfoList}
             Label: Pub&lication Code
-        cmbPSubscriptionSubscriptionStatus:
+            Width: 370
+        cmbPSubscriptionSubscriptionStatus: 
             Label: S&ubscription Status
             OptionalValues: [=PERMANENT, PROVISIONAL, GIFT, CANCELLED, EXPIRED]
         chkPSubscriptionGratisSubscription:
@@ -78,11 +82,14 @@ RootNode:
             Label: &Copies
         cmbPSubscriptionReasonSubsGivenCode: {List=ReasonSubscriptionGivenList}
             Label: Reason &Given
+            Width: 370
         cmbPSubscriptionReasonSubsCancelledCode: {List=ReasonSubscriptionCancelledList}
             Label: Reason Ended
+            Width: 370
         txtPSubscriptionGiftFromKey:
             Label: Gift Given By
             Type: PartnerKey
+            Width: 370
 
         chkChangeNumberComplimentary: {NoLabel=true, OnChange=OnTickChangeItem}
         chkChangePublicationCopies: {NoLabel=true, OnChange=OnTickChangeItem}

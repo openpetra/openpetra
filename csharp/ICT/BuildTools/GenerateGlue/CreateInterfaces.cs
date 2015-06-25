@@ -34,6 +34,7 @@ using NamespaceHierarchy;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
+using System.Threading;
 
 namespace GenerateSharedCode
 {

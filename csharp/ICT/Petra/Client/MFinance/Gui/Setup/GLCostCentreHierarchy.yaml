@@ -51,7 +51,10 @@ RootNode:
                 Row1: [cmbDetailCostCentreType]
                 Row2: [txtDetailCostCentreName]
                 Row3: [pnlFlags]
-                Row4: [pnlStatus]
+                Row4: [grpClearing]
+                Row5: [pnlStatus]
+                Row6: [grpEquitySettings]
+                Row7: [grpProjectStatusBox]
         txtDetailCostCentreCode: {CharacterCasing=Upper }
         btnRename:
         cmbDetailCostCentreType:
@@ -61,16 +64,55 @@ RootNode:
             Controls: [chkDetailCostCentreActiveFlag,chkDetailSummaryFlag]
         chkDetailCostCentreActiveFlag: {Label=Active}
         chkDetailSummaryFlag: {Label=Summary}
+        grpClearing:
+            Height: 170
+            Width: 350
+            Controls: [cmbDetailClearingAccount]
+        grpEquitySettings:
+            Height: 170
+            Width: 350
+            Label: Equity / Roll-up Settings
+            Controls: [cmbDetailRetEarningsAccountCode, cmbRollupStyleManual, chkChildrenLocked,lblLockedMessage]
+        grpProjectStatusBox:
+            Height: 95
+            Width: 350
+            Label: Project Status
+            Controls: [chkDetailProjectStatus, dtpDetailProjectConstraintDate,txtDetailProjectConstraintAmount]
         pnlStatus:
             Controls: [txtStatus]
-            Height: 250
-            Width: 280
+            Height: 130
+            Width: 350
         txtStatus:
             Dock: Fill
             Multiline:true
             ScrollBars:Vertical
             ReadOnly:true
-
+        cmbDetailRetEarningsAccountCode:
+            List: UserDefinedList
+            Label: Ret Earn Account
+            Width:200
+            ComboBoxWidth:70
+        cmbRollupStyleManual:
+            Label: Rollup Style
+            Width:70
+        chkChildrenLocked:
+            Label: All children have these settings
+            LabelWidth:120
+        lblLockedMessage:
+            Width:300
+        cmbDetailClearingAccount:
+            List: UserDefinedList
+            Width:200
+            ComboBoxWidth:70
+        chkDetailProjectStatus:
+            Label: Track Status
+        dtpDetailProjectConstraintDate:
+            Label: End Date
+            Width:100
+        txtDetailProjectConstraintAmount:
+            Label: Max Spend
+            Format: Currency
+            Width:100
 
     Toolbar:
         tbbAddNewCostCentre:

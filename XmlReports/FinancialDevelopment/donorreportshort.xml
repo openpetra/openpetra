@@ -16,7 +16,7 @@
 		
 		<reportheader/>
 		<pageheader>
-			<field whichfield="title1"><value text ="Donor Report" /></field>
+			<field whichfield="title1"><value text ="Short Donor Report" /></field>
 			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
 			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
 				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/></field>
@@ -31,11 +31,20 @@
 			</field>
 			<field whichfield="descr1">
 				<value text="Sorted by: "></value>
-				<value variable="param_sortby_readable"></value>
+				<value variable="param_rgrSorting"></value>
 			</field>
 			<field whichfield="descr2">
 				<value text="Currency: "/>
 				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+			</field>
+			<field whichfield="descr3">
+				<fielddetail condition="eq({param_all_partners}, true)">
+					<value text="All Partners"/>
+				</fielddetail>
+				<fielddetail condition="eq({param_extract}, true)">
+					<value text="Donors from extract: "/>
+					<value variable="param_extract_name"/>
+				</fielddetail>
 			</field>
 		</pageheader>
 
@@ -100,6 +109,22 @@
 							AND batch.a_batch_status_c = 'Posted'
 							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n 
 							GROUP BY gift.p_donor_key_n, PUB_p_partner.p_partner_short_name_c, PUB_p_partner.p_partner_class_c
+						</value>
+					</queryDetail>
+					
+					<queryDetail condition="eq({param_rgrSorting}, Donor Name)">
+						<value>
+							ORDER BY ShortName
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_rgrSorting}, Partner Key)">
+						<value>
+							ORDER BY DonorKey
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_rgrSorting}, 	Amount)">
+						<value>
+							ORDER BY TotalGiven
 						</value>
 					</queryDetail>
 				</query>
@@ -263,15 +288,19 @@
 		<levels>		
 			<level name="main">
 				<detail>
-					<lowerLevelReport level="DonorDetailLevel" calculation="Select Donors and Totals">
-					</lowerLevelReport>
+					<lowerLevelReport level="Donors"></lowerLevelReport>
 				</detail>
 			</level>
 			
 			<level name="Donors" identification="DonorKey">
 				<detail>
-					<lowerLevelReport level="DonorDetailLevel"></lowerLevelReport>
+					<lowerLevelReport level="DonorDetailLevel" calculation="Select Donors and Totals"></lowerLevelReport>
 				</detail>
+				<footer space="above">
+					<field whichfield="column {param_gift_amount_column}" pos="indented" line="above">
+						<value function="getSumLowerReport({{lineId}}, {{param_gift_amount_column}})"/>
+					</field>
+				</footer>
 			</level>
 			
 			<level name="DonorDetailLevel">

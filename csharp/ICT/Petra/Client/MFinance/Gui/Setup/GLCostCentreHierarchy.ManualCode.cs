@@ -81,6 +81,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>All the nodes share this Ledger Number</summary>
         public static Int32 FLedgerNumber;
 
+        /// <summary>If lock is applied, some details of child Cost Centres cannot be changed.</summary>
+        public Boolean IsLocked;
+
         /// <summary>
         /// The information for this node is initially unknown (to save load-up time).
         /// This method fills in the details.
@@ -150,6 +153,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private string FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
         string FnameForNewCostCentre;
         private CostCentreNodeDetails FCurrentCostCentre;
+        private Boolean FInitialised = false;
 
         /// <summary>
         /// Setup the CostCentre hierarchy of this ledger
@@ -252,6 +256,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        private void ShowEquityOrClearingControls(CostCentreNodeDetails AnewSelection)
+        {
+            FPetraUtilsObject.SuppressChangeDetection = true;
+            grpClearing.Visible = (AnewSelection.CostCentreRow.CostCentreType == "Foreign");
+            grpEquitySettings.Visible =
+                ((!grpClearing.Visible) && (AnewSelection.CostCentreRow.CostCentreCode != MFinanceConstants.INTER_LEDGER_HEADING));
+            grpProjectStatusBox.Visible = grpEquitySettings.Visible && AnewSelection.CostCentreRow.PostingCostCentreFlag;
+            grpEquitySettings.Height = grpProjectStatusBox.Visible ? 70 : 170;
+            FPetraUtilsObject.SuppressChangeDetection = false;
+        }
+
         /// <summary>
         /// Called from the user controls when the user selects a row,
         /// this common method keeps both user controls in sync.
@@ -264,6 +279,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ucoCostCentreTree.SelectedCostCentre = AnewSelection;
 
             pnlDetails.Enabled = (AnewSelection != null);
+            ShowEquityOrClearingControls(FCurrentCostCentre);
 
             if (pnlDetails.Enabled)
             {
@@ -301,6 +317,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void RunOnceOnActivationManual()
         {
+            if (FInitialised) // By the time this is called by infrastructure, I've already called it!
+            {
+                return;
+            }
+
+            FIAmUpdating++;
             FPetraUtilsObject.UnhookControl(pnlDetails, true); // I don't want changes in these values to cause SetChangedFlag - I'll set it myself.
             FPetraUtilsObject.UnhookControl(txtStatus, false); // This control is not to be spied on!
 
@@ -320,6 +342,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             mniFilePrint.Enabled = true;
 
             chkDetailSummaryFlag.CheckedChanged += chkDetailSummaryFlag_CheckedChanged;
+            chkDetailProjectStatus.CheckedChanged += chkDetailProjectStatus_CheckedChanged;
 
             if (TAppSettingsManager.GetBoolean("OmBuild", false)) // In OM, no-one needs to see the import or export functions:
             {
@@ -331,6 +354,223 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                  * mnuMain.Items.Remove(mniExportHierarchy);
                  */
             }
+
+            //
+            // I have two group boxes, for "Clearing" "Equity Settings" controls.
+            // Since any given Cost Centre will have either one or the other, the two groups of controls share the same space,
+            // and either one group or the other is shown when a particular Cost Centre is selected.
+
+            grpEquitySettings.Location = grpClearing.Location;
+
+            //
+            // I also have the "Project Status" box, which I only show on local, posting Cost Centres.
+            // When it is visible, it displays over the bottom half of the Equity Settings group.
+
+            grpProjectStatusBox.Location = grpClearing.Location;
+            grpProjectStatusBox.Location = new Point(grpProjectStatusBox.Location.X, grpProjectStatusBox.Location.Y + 75);
+
+            // cmbDetailClearingAccount is a choice of accounts that are descendants of 8500X:
+            TFinanceControls.InitialiseClearingAccountList(ref cmbDetailClearingAccount, FLedgerNumber, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD);
+
+            // cmbDetailRetEarningsAccountCode is a choice of Equity accounts:
+            TFinanceControls.InitialiseRetEarningsAccountAccountList(ref cmbDetailRetEarningsAccountCode, FLedgerNumber);
+
+            String[] RollupOptions = Enum.GetNames(typeof(CCRollupStyleEnum));
+            cmbRollupStyleManual.Items.AddRange(RollupOptions);
+
+            cmbRollupStyleManual.SelectedIndexChanged += cmbRollupStyleManual_SelectedIndexChanged;
+            cmbDetailRetEarningsAccountCode.SelectedValueChanged += cmbDetailRetEarningsAccountCode_SelectedValueChanged;
+            cmbDetailClearingAccount.SelectedValueChanged += cmbDetailClearingAccount_SelectedValueChanged;
+            chkChildrenLocked.CheckedChanged += chkChildrenLocked_CheckedChanged;
+
+            btnRename.Left = 290;
+
+            lblChildrenLocked.Height += 17; // This control wants two lines of text, which YAML doesn't give me.
+            lblLockedMessage.Top += 20;
+            lblLockedMessage.Height += 17;
+
+            FPetraUtilsObject.SetStatusBarText(cmbRollupStyleManual,
+                Catalog.GetString("At year end, how will this Cost Centre be rolled up to the Standard Cost Centre?"));
+            FPetraUtilsObject.SetStatusBarText(chkChildrenLocked, Catalog.GetString("All children also have these Equity / Roll-up settings"));
+            FIAmUpdating = 0;
+
+            ALedgerRow LedgerRow =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+            txtDetailProjectConstraintAmount.CurrencyCode = LedgerRow.BaseCurrency;
+
+            FInitialised = true;
+        }
+
+        void chkDetailProjectStatus_CheckedChanged(object sender, EventArgs e)
+        {
+            dtpDetailProjectConstraintDate.Enabled = chkDetailProjectStatus.Checked;
+            txtDetailProjectConstraintAmount.Enabled = chkDetailProjectStatus.Checked;
+        }
+
+        void cmbRollupStyleManual_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (FIAmUpdating != 0)
+            {
+                return;
+            }
+
+            CCRollupStyleEnum RollupStyle;
+            Enum.TryParse <CCRollupStyleEnum>(((String)cmbRollupStyleManual.SelectedItem), out RollupStyle);
+
+            String RollupStyleMsg = "FAULT: Bad Rollup Style.";
+
+            if (chkDetailSummaryFlag.Checked)
+            {
+                switch (RollupStyle)
+                {
+                    case CCRollupStyleEnum.Never:
+                        RollupStyleMsg =
+                            String.Format(Catalog.GetString("At Year End, any balance in children of {0} will remain in the same Cost Centre."),
+                                FCurrentCostCentre.CostCentreRow.CostCentreCode);
+                        break;
+
+                    case CCRollupStyleEnum.Always:
+                        RollupStyleMsg = String.Format(Catalog.GetString("At Year End, any balance in children of {0} will be rolled up to {1}00"),
+                        FCurrentCostCentre.CostCentreRow.CostCentreCode, FLedgerNumber);
+                        break;
+
+                    case CCRollupStyleEnum.Surplus:
+                        RollupStyleMsg =
+                            String.Format(Catalog.GetString(
+                                    "At Year End, any surplus in children of {0} will be rolled up to {1}00, but any deficit will remain in the same Cost Centre."),
+                                FCurrentCostCentre.CostCentreRow.CostCentreCode, FLedgerNumber);
+                        break;
+
+                    case CCRollupStyleEnum.Deficit:
+                        RollupStyleMsg =
+                            String.Format(Catalog.GetString(
+                                    "At Year End, any deficit in children of {0} will be rolled up to {1}00, but any surplus will remain in the same Cost Centre."),
+                                FCurrentCostCentre.CostCentreRow.CostCentreCode, FLedgerNumber);
+                        break;
+                }
+            }
+            else
+            {
+                switch (RollupStyle)
+                {
+                    case CCRollupStyleEnum.Never:
+                        RollupStyleMsg = String.Format(Catalog.GetString("At Year End, any balance in {0} will remain in {0}"),
+                        FCurrentCostCentre.CostCentreRow.CostCentreCode);
+                        break;
+
+                    case CCRollupStyleEnum.Always:
+                        RollupStyleMsg = String.Format(Catalog.GetString("At Year End, any balance in {0} will be rolled up to {1}00"),
+                        FCurrentCostCentre.CostCentreRow.CostCentreCode, FLedgerNumber);
+                        break;
+
+                    case CCRollupStyleEnum.Surplus:
+                        RollupStyleMsg =
+                            String.Format(Catalog.GetString(
+                                    "At Year End, any surplus in {0} will be rolled up to {1}00, but any deficit will remain in {0}."),
+                                FCurrentCostCentre.CostCentreRow.CostCentreCode, FLedgerNumber);
+                        break;
+
+                    case CCRollupStyleEnum.Deficit:
+                        RollupStyleMsg =
+                            String.Format(Catalog.GetString(
+                                    "At Year End, any deficit in {0} will be rolled up to {1}00, but any surplus will remain in {0}."),
+                                FCurrentCostCentre.CostCentreRow.CostCentreCode, FLedgerNumber);
+                        break;
+                }
+            }
+
+            MessageBox.Show(RollupStyleMsg, "Roll-up style", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            if (FCurrentCostCentre.CostCentreRow.RollupStyle.IndexOf("LOCK_") == 0)
+            {
+                GetDataFromControlsManual();
+                MakeMyChildrenLikeMe(FCurrentCostCentre.linkedTreeNode);
+            }
+        }
+
+        void cmbDetailRetEarningsAccountCode_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (FIAmUpdating != 0)
+            {
+                return;
+            }
+
+            if (FCurrentCostCentre.CostCentreRow.RollupStyle.IndexOf("LOCK_") == 0)
+            {
+                GetDataFromControlsManual();
+                MakeMyChildrenLikeMe(FCurrentCostCentre.linkedTreeNode);
+            }
+        }
+
+        void cmbDetailClearingAccount_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (FIAmUpdating != 0)
+            {
+                return;
+            }
+
+            if (cmbDetailClearingAccount.GetSelectedString() != MFinanceConstants.ICH_ACCT_ICH)
+            {
+                MessageBox.Show(String.Format("NOTE that changing from {0} means that this Cost Centre is excluded from Stewardship processing.",
+                        MFinanceConstants.ICH_ACCT_ICH),
+                    "Clearing Account", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        }
+
+        /// <summary>The Equity / roll-up settings for this Summary node will be copied to all its children.
+        ///          METHOD IS RECURSIVE
+        /// </summary>
+        /// <param name="Parent"></param>
+        void MakeMyChildrenLikeMe(TreeNode Parent)
+        {
+            ACostCentreRow MyRow = ((CostCentreNodeDetails)Parent.Tag).CostCentreRow;
+            String RollupStyle = MyRow.RollupStyle;
+
+            if (RollupStyle.IndexOf("LOCK_") == 0) // Child nodes will not be locked (apart from by me)
+            {
+                RollupStyle = RollupStyle.Substring(5);
+            }
+
+            foreach (TreeNode ChildNode in Parent.Nodes)
+            {
+                ACostCentreRow ChildRow = ((CostCentreNodeDetails)ChildNode.Tag).CostCentreRow;
+                ChildRow.RetEarningsAccountCode = MyRow.RetEarningsAccountCode;
+                ChildRow.RollupStyle = RollupStyle;
+                MakeMyChildrenLikeMe(ChildNode);
+            }
+        }
+
+        void chkChildrenLocked_CheckedChanged(object sender, EventArgs e)
+        {
+            if (FIAmUpdating != 0)
+            {
+                return;
+            }
+
+            FIAmUpdating++;
+
+            if (chkChildrenLocked.Checked)
+            {
+                if (MessageBox.Show("Settings in Child Cost Centres will be overwritten with these settings.", "Lock Children",
+                        MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation)
+                    == System.Windows.Forms.DialogResult.OK)
+                {
+                    GetDataFromControlsManual();
+                    MakeMyChildrenLikeMe(FCurrentCostCentre.linkedTreeNode);
+                }
+                else
+                {
+                    chkChildrenLocked.Checked = false;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Child Cost Centres can be set individually.", "Unlock Children");
+            }
+
+            FIAmUpdating--;
+            GetDataFromControls();
+            ShowDetails(FCurrentCostCentre.CostCentreRow);
         }
 
         void txtDetailCostCentreCode_Leave(object sender, EventArgs e)
@@ -388,6 +628,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ucoCostCentreTree.SetNodeLabel(txtDetailCostCentreCode.Text, txtDetailCostCentreName.Text);
         }
 
+        private String IsLockedByParent(CostCentreNodeDetails ThisNode)
+        {
+            TreeNode Parent = ThisNode.linkedTreeNode.Parent;
+
+            if (Parent == null)
+            {
+                return "";
+            }
+
+            CostCentreNodeDetails ParentNode = (CostCentreNodeDetails)Parent.Tag;
+
+            if (ParentNode.CostCentreRow.RollupStyle.IndexOf("LOCK_") == 0)
+            {
+                return ParentNode.CostCentreRow.CostCentreCode;
+            }
+            else
+            {
+                return IsLockedByParent(ParentNode);
+            }
+        }
+
         private void ShowDetailsManual(ACostCentreRow ARow)
         {
             if (ARow != null)
@@ -399,6 +660,58 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 btnRename.Visible = false;
                 chkDetailSummaryFlag.Checked = !ARow.PostingCostCentreFlag;
                 chkDetailSummaryFlag.Enabled = !ARow.SystemCostCentreFlag;
+
+                String ParentLock = IsLockedByParent(FCurrentCostCentre);
+
+                if (ParentLock != "") // Equity / Roll-up Controls cannot be changed:
+                {
+                    grpEquitySettings.Enabled = false;
+                    lblLockedMessage.Text = "These settings are derived from " + ParentLock;
+                }
+                else
+                {
+                    grpEquitySettings.Enabled = true;
+                    lblLockedMessage.Text = "";
+                }
+
+                //
+                // The value of ARow.RollupStyle may contain "LOCK_" in addition to the enum value.
+                // This means that all children are constrained to have this value.
+                String RollupStyle = ARow.RollupStyle;
+
+                if (RollupStyle.IndexOf("LOCK_") == 0)
+                {
+                    RollupStyle = RollupStyle.Substring(5);
+                    FCurrentCostCentre.IsLocked = true;
+
+                    if (ParentLock == "")
+                    {
+                        lblLockedMessage.Text = "These settings apply to child Cost Centres.";
+                    }
+                }
+                else
+                {
+                    FCurrentCostCentre.IsLocked = false;
+
+                    if ((ParentLock == "") && (!ARow.PostingCostCentreFlag))
+                    {
+                        lblLockedMessage.Text = "THESE SETTINGS ARE NOT USED:\n  child Cost Centres have individual settings.";
+                    }
+                }
+
+                chkChildrenLocked.Visible = (!ARow.PostingCostCentreFlag);
+                lblChildrenLocked.Visible = (!ARow.PostingCostCentreFlag);
+
+                chkChildrenLocked.Checked = FCurrentCostCentre.IsLocked;
+                CCRollupStyleEnum cmbVal;
+
+                if (!Enum.TryParse <CCRollupStyleEnum>(RollupStyle, out cmbVal))
+                {
+                    RollupStyle = Enum.GetName(typeof(CCRollupStyleEnum), CCRollupStyleEnum.Always);
+                }
+
+                cmbRollupStyleManual.SetSelectedString(RollupStyle);
+                chkDetailProjectStatus_CheckedChanged(null, null);
             }
         }
 
@@ -410,7 +723,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if (ValidateAllData(true, true))
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
             {
                 FCurrentCostCentre.GetAttrributes();
                 ACostCentreRow ParentRow = FCurrentCostCentre.CostCentreRow;
@@ -443,6 +756,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 newCostCentreRow.CostCentreCode = newCostCentreName;
                 newCostCentreRow.LedgerNumber = FLedgerNumber;
                 newCostCentreRow.CostCentreActiveFlag = true;
+
+                newCostCentreRow.ClearingAccount = ParentRow.ClearingAccount;
+                newCostCentreRow.RollupStyle = ParentRow.RollupStyle;
+                newCostCentreRow.RetEarningsAccountCode = ParentRow.RetEarningsAccountCode;
 
                 //
                 // OM - specific code ahead!
@@ -764,6 +1081,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // If changing the PrimaryKey to that specified causes a contraints error,
             // I'll catch it here, issue a warning, and return the control to the "safe" value.
             ProtectedChangeOfPrimaryKey(FCurrentCostCentre);
+
+            //
+            // The value of ARow.RollupStyle may contain "LOCK_" in addition to the enum value.
+            // This means that all children are constrained to have this value.
+            String RollupStyle = cmbRollupStyleManual.GetSelectedString();
+
+            if (chkChildrenLocked.Checked)
+            {
+                RollupStyle = "LOCK_" + RollupStyle;
+            }
+
+            ARow.RollupStyle = RollupStyle;
         }
 
         private void GetDataFromControlsManual()
@@ -810,7 +1139,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         public Boolean CheckControlsValidateOk()
         {
             GetDetailsFromControls(FCurrentCostCentre.CostCentreRow);
-            return ValidateAllData(true, true);
+            return ValidateAllData(true, TErrorProcessingMode.Epm_All);
         }
 
         /// <summary>
@@ -818,6 +1147,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         public void PopulateControlsAfterRowSelection()
         {
+            if (!FInitialised)
+            {
+                RunOnceOnActivationManual();
+            }
+
             bool hasChanges = FPetraUtilsObject.HasChanges;
 
             FIAmUpdating++;

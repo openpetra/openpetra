@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (rbtAllCostCentres.Checked || rbtAllActiveCostCentres.Checked)
             {
-                CostCentreListTitle = clbCostCentres.GetAllStringList();
+                CostCentreListTitle = clbCostCentres.GetAllStringList(false);
             }
             else
             {
@@ -142,15 +142,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             /* Level of Detail */
             if (this.rbtDetail.Checked)
             {
-                ACalculator.AddParameter("param_depth", "detail");
+                ACalculator.AddParameter("param_depth", "Detail");
             }
             else if (this.rbtStandard.Checked)
             {
-                ACalculator.AddParameter("param_depth", "standard");
+                ACalculator.AddParameter("param_depth", "Standard");
             }
             else
             {
-                ACalculator.AddParameter("param_depth", "summary");
+                ACalculator.AddParameter("param_depth", "Summary");
             }
         }
 

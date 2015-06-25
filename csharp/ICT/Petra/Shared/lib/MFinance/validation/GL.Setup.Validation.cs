@@ -25,11 +25,13 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 
+using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 
 namespace Ict.Petra.Shared.MFinance.Validation
 {
@@ -50,13 +52,19 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AMinDateTime">The earliest allowable date.</param>
         /// <param name="AMaxDateTime">The latest allowable date.</param>
         /// <param name="AIgnoreZeroRateCheck">If true a zero rate will be allowed.  This will be the case when the Daily Exchange Rate screen is modal.</param>
+        /// <param name="ALedgerTableRef">A ledger table containg the available ledgers and their base currencies</param>
+        /// <param name="AEarliestAccountingPeriodStartDate">The earliest accounting period start date in all the active ledgers</param>
+        /// <param name="ALatestAccountingPeriodEndDate">The latest accounting period end date in all the active ledgers</param>
         public static void ValidateDailyExchangeRate(object AContext,
             ADailyExchangeRateRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection,
             TValidationControlsDict AValidationControlsDict,
             DateTime AMinDateTime,
             DateTime AMaxDateTime,
-            bool AIgnoreZeroRateCheck)
+            bool AIgnoreZeroRateCheck,
+            ALedgerTable ALedgerTableRef,
+            DateTime AEarliestAccountingPeriodStartDate,
+            DateTime ALatestAccountingPeriodEndDate)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -116,9 +124,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             AContext,
                             ValidationColumn,
                             ValidationControlsData.ValidationControl);
-
-                        // Handle addition to/removal from TVerificationResultCollection
-                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                     }
                     else if (AMaxDateTime < DateTime.MaxValue)
                     {
@@ -126,8 +131,18 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             ValidationControlsData.ValidationControlLabel, Ict.Common.StringHelper.DateToLocalizedString(AMaxDateTime),
                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-                        // Handle addition to/removal from TVerificationResultCollection
-                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                        if ((VerificationResult == null) && (ARow.RowState == DataRowState.Added)
+                            && (AContext is System.Windows.Forms.Form || AContext is System.Windows.Forms.UserControl))
+                        {
+                            // even without a specific minimum date it should not be too far back
+                            if (ARow.DateEffectiveFrom < AEarliestAccountingPeriodStartDate)
+                            {
+                                VerificationResult = new TScreenVerificationResult(AContext, ValidationColumn,
+                                    Catalog.GetString(
+                                        "The date is before the start of the earliest current accounting period of any active ledger."),
+                                    ValidationControlsData.ValidationControl, TResultSeverity.Resv_Noncritical);
+                            }
+                        }
                     }
                     else if (AMinDateTime > DateTime.MinValue)
                     {
@@ -135,9 +150,43 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             ValidationControlsData.ValidationControlLabel, Ict.Common.StringHelper.DateToLocalizedString(AMinDateTime),
                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-                        // Handle addition to/removal from TVerificationResultCollection
-                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                        if ((VerificationResult == null) && (ARow.RowState == DataRowState.Added)
+                            && (AContext is System.Windows.Forms.Form || AContext is System.Windows.Forms.UserControl))
+                        {
+                            // even without a specific maximum date it should not be too far ahead
+                            if (ARow.DateEffectiveFrom > ALatestAccountingPeriodEndDate)
+                            {
+                                VerificationResult = new TScreenVerificationResult(AContext, ValidationColumn,
+                                    Catalog.GetString(
+                                        "The date is after the end of the latest forwarding period of any active ledger."),
+                                    ValidationControlsData.ValidationControl, TResultSeverity.Resv_Noncritical);
+                            }
+                        }
                     }
+                    else if ((AMinDateTime == DateTime.MinValue) && (AMaxDateTime == DateTime.MaxValue)
+                             && (ARow.RowState == DataRowState.Added)
+                             && (AContext is System.Windows.Forms.Form || AContext is System.Windows.Forms.UserControl))
+                    {
+                        // even without a specific maximum date it should not be too far ahead
+                        if (ARow.DateEffectiveFrom > ALatestAccountingPeriodEndDate)
+                        {
+                            VerificationResult = new TScreenVerificationResult(AContext, ValidationColumn,
+                                Catalog.GetString(
+                                    "The date is after the end of the latest forwarding period of any active ledger."),
+                                ValidationControlsData.ValidationControl, TResultSeverity.Resv_Noncritical);
+                        }
+                        // even without a specific minimum date it should not be too far back
+                        else if (ARow.DateEffectiveFrom < AEarliestAccountingPeriodStartDate)
+                        {
+                            VerificationResult = new TScreenVerificationResult(AContext, ValidationColumn,
+                                Catalog.GetString(
+                                    "The date is before the start of the earliest current accounting period of any active ledger."),
+                                ValidationControlsData.ValidationControl, TResultSeverity.Resv_Noncritical);
+                        }
+                    }
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
             }
 
@@ -153,6 +202,40 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
+
+            if (AContext is System.Windows.Forms.Form || AContext is System.Windows.Forms.UserControl)
+            {
+                // These tests are for the GUI only
+                ValidationColumn = ARow.Table.Columns[ADailyExchangeRateTable.ColumnToCurrencyCodeId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    // One of the currencies should be the base currency of one of the ledgers
+                    if (ValidationControlsData.ValidationControl.Enabled && (ARow.RowState == DataRowState.Added))
+                    {
+                        // Only do this test if the To Currency ComboBox is enabled
+                        TScreenVerificationResult vr = null;
+                        DataView fromView = new DataView(ALedgerTableRef, String.Format("{0}='{1}'",
+                                ALedgerTable.GetBaseCurrencyDBName(), ARow.FromCurrencyCode), String.Empty, DataViewRowState.CurrentRows);
+
+                        if (fromView.Count == 0)
+                        {
+                            DataView toView = new DataView(ALedgerTableRef, String.Format("{0}='{1}'",
+                                    ALedgerTable.GetBaseCurrencyDBName(), ARow.ToCurrencyCode), String.Empty, DataViewRowState.CurrentRows);
+
+                            if (toView.Count == 0)
+                            {
+                                vr = new TScreenVerificationResult(AContext, ValidationColumn,
+                                    "One of the currencies should normally be a base currency for one of the Ledgers",
+                                    ValidationControlsData.ValidationControl, TResultSeverity.Resv_Noncritical);
+                            }
+                        }
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, vr, ValidationColumn);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -164,8 +247,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
+        /// <param name="ALedgerTableRef">A reference to a ledger table that has contains the ledgers that a client has access to</param>
+        /// <param name="AAlternativeFirstDayOfPeriod">An alternative day (apart from 1) that is the start of an accounting period
+        /// for at least one of the availbale ledgers</param>
         public static void ValidateCorporateExchangeRate(object AContext, ACorporateExchangeRateRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            ALedgerTable ALedgerTableRef, int AAlternativeFirstDayOfPeriod)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -203,17 +290,69 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
 
-            // Date must be first of month
+            // Date must be first of month or first day in accounting period of a ledger
             ValidationColumn = ARow.Table.Columns[ACorporateExchangeRateTable.ColumnDateEffectiveFromId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TDateChecks.IsNotCorporateDateTime(ARow.DateEffectiveFrom,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                VerificationResult = null;
+
+                if (AAlternativeFirstDayOfPeriod == 1)
+                {
+                    // Standard first of month validation
+                    VerificationResult = TDateChecks.IsNotCorporateDateTime(ARow.DateEffectiveFrom,
+                        ValidationControlsData.ValidationControlLabel,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+                else if (AAlternativeFirstDayOfPeriod != 0)
+                {
+                    // In this case we validate against either 1 or the alternative
+                    VerificationResult = new TScreenVerificationResult(AContext, ValidationColumn,
+                        String.Format(Catalog.GetString("The first day of the period should be either 1 or {0}."), AAlternativeFirstDayOfPeriod),
+                        ValidationControlsData.ValidationControl, TResultSeverity.Resv_Critical);
+                }
+                else
+                {
+                    // when the value is 0 we cannot do validation because there are too many alternatives!
+                    // How complicated is this set of ledgers???
+                }
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            if (AContext is System.Windows.Forms.Form || AContext is System.Windows.Forms.UserControl)
+            {
+                // These tests are for the GUI only
+                ValidationColumn = ARow.Table.Columns[ACorporateExchangeRateTable.ColumnToCurrencyCodeId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    // One of the currencies should be the base currency of one of the ledgers
+                    if ((ARow.RowState == DataRowState.Added) && (ALedgerTableRef != null))
+                    {
+                        // Only do this test on new rows
+                        TScreenVerificationResult vr = null;
+                        DataView fromView = new DataView(ALedgerTableRef, String.Format("{0}='{1}'",
+                                ALedgerTable.GetBaseCurrencyDBName(), ARow.FromCurrencyCode), String.Empty, DataViewRowState.CurrentRows);
+
+                        if (fromView.Count == 0)
+                        {
+                            DataView toView = new DataView(ALedgerTableRef, String.Format("{0}='{1}'",
+                                    ALedgerTable.GetBaseCurrencyDBName(), ARow.ToCurrencyCode), String.Empty, DataViewRowState.CurrentRows);
+
+                            if (toView.Count == 0)
+                            {
+                                vr = new TScreenVerificationResult(AContext, ValidationColumn,
+                                    "One of the currencies should normally be a base currency for one of the Ledgers",
+                                    ValidationControlsData.ValidationControl, TResultSeverity.Resv_Noncritical);
+                            }
+                        }
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, vr, ValidationColumn);
+                    }
+                }
             }
         }
 

@@ -117,23 +117,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 // now we actually run the operation
                 Int32 OperationsDone = AOperation.RunOperation();
-
-                // non-critical messages to be omitted - 3829
-
-                /*if (OperationsDone == 0)
-                 * {
-                 *  // Non Critical Problem but the user shall be informed ...
-                 *  String strTitle = Catalog.GetString("Period end status");
-                 *  String strMessage = String.Format(Catalog.GetString("Nothing done for \"{0}\""), AOperationName);
-                 *  TVerificationResult tvt =
-                 *      new TVerificationResult(strTitle, strMessage, "",
-                 *          TPeriodEndErrorAndStatusCodes.PEEC_01.ToString(),
-                 *          TResultSeverity.Resv_Info);
-                 *  FverificationResults.Add(tvt);
-                 * }*/
-
-                //
-                // Now I want to verify whether the job has been finished correctly...
+//              TLogging.Log("Period End: RunPeriodEndSequence (" + AOperationName + ") returns " + OperationsDone);
 
                 AbstractPeriodEndOperation VerifyOperation = AOperation.GetActualizedClone();
                 VerifyOperation.IsInInfoMode = true;
@@ -146,8 +130,8 @@ namespace Ict.Petra.Server.MFinance.Common
                     TVerificationResult tvt =
                         new TVerificationResult(
                             String.Format(Catalog.GetString("Problem in \"{0}\""), AOperationName),
-                            String.Format(Catalog.GetString("{0} out of the {1} elements in this operation were not processed correctly!"),
-                                RemainingItems, OperationsDone),
+                            String.Format(Catalog.GetString("{0} operations were completed, but {1} were found still to do!"),
+                                OperationsDone, RemainingItems),
                             "",
                             TPeriodEndErrorAndStatusCodes.PEEC_02.ToString(),
                             TResultSeverity.Resv_Critical);

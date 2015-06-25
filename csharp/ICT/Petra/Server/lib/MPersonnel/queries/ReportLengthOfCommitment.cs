@@ -271,7 +271,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             try
             {
                 // now run the database query
-                TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+                TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
 
                 LengthOfCommitmentReportTDSPmStaffDataTable CommitmentTable = new LengthOfCommitmentReportTDSPmStaffDataTable();
                 DBAccess.GDBAccessObj.SelectDT(CommitmentTable, SqlStmt, Transaction,

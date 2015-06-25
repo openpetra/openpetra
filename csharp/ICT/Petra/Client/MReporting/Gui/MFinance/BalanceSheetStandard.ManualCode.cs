@@ -85,19 +85,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            Int32 ParamNestingDepth = 3;
+            Int32 ParamNestingDepth = 6;
             String DepthOption = paramsDictionary["param_depth"].ToString();
 
-            if (DepthOption == "summary")
+            if (DepthOption == "standard")
             {
-                ParamNestingDepth = 1;
+                ParamNestingDepth = 3;
             }
 
             paramsDictionary.Add("param_nesting_depth", new TVariant(ParamNestingDepth));
             String RootCostCentre = "[" + FLedgerNumber + "]";
             paramsDictionary.Add("param_cost_centre_code", new TVariant(RootCostCentre));
-
-            ACalc.AddParameter("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
 
             //
             // The table contains extra rows for "headers" and "footers", facilitating the hierarchical printout.

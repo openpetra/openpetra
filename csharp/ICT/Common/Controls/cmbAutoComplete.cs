@@ -78,6 +78,7 @@ namespace Ict.Common.Controls
         private bool FSuppressSelectionColor;
         private String FColumnsToSearchDesignTime;
         private int FSelectedIndexOnDataSourceChange = -1;
+        private Timer FStickySelectedValueChangedTimer = new Timer();
 
         /// <summary>
         /// which columns to search
@@ -262,6 +263,14 @@ namespace Ict.Common.Controls
         /// </summary>
         public event TAcceptNewEntryEventHandler AcceptNewEntries;
 
+        /// <summary>
+        /// This event is fired after the selected value has changed and that value has persisted for 1 second.
+        /// This means that the user can use the arrow keys to move quickly through the list without firing this event
+        /// (although the SelectedValueChanged event will fire for each value) but this event will fire when the user pauses on a certain value.
+        /// The event will not fire if the control has lost the focus.
+        /// </summary>
+        public event EventHandler StickySelectedValueChanged;
+
 
         #region Hide Some Unhelpful Parent Properties
 
@@ -310,6 +319,33 @@ namespace Ict.Common.Controls
             this.FSuppressSelectionColor = true;
             this.FAcceptNewValues = false;
             this.FIgnoreNewValues = false;
+
+            // Set up our 'sticky' timer
+            this.FStickySelectedValueChangedTimer.Enabled = false;
+            this.FStickySelectedValueChangedTimer.Interval = 1000;
+            this.FStickySelectedValueChangedTimer.Tick += FStickySelectedValueChangedTimer_Tick;
+
+            this.SelectedValueChanged += TCmbAutoComplete_SelectedValueChanged;
+        }
+
+        private void TCmbAutoComplete_SelectedValueChanged(object sender, EventArgs e)
+        {
+            // The value has changed so we need to reset our sticky timer
+            FStickySelectedValueChangedTimer.Stop();
+            FStickySelectedValueChangedTimer.Enabled = true;
+            FStickySelectedValueChangedTimer.Start();
+        }
+
+        private void FStickySelectedValueChangedTimer_Tick(object sender, EventArgs e)
+        {
+            // The 'sticky' timer has gone off so this new value has persisted for long enough for us to fire the sticky event.
+            FStickySelectedValueChangedTimer.Stop();
+            FStickySelectedValueChangedTimer.Enabled = false;
+
+            if (this.Focused && (StickySelectedValueChanged != null))
+            {
+                StickySelectedValueChanged(this, new EventArgs());
+            }
         }
 
         /// <summary>

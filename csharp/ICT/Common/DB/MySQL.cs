@@ -400,8 +400,14 @@ namespace Ict.Common.DB
                 // Check for characters that indicate a parameter in query text
                 if (ACommandText.IndexOf('?') == -1)
                 {
-                    throw new EDBParameterisedQueryMissingParameterPlaceholdersException(
-                        "Question marks (?) must be present in query text if Parameters are passed in");
+                    foreach (DbParameter param in AParametersArray)
+                    {
+                        if (string.IsNullOrEmpty(param.ParameterName))
+                        {
+                            throw new EDBParameterisedQueryMissingParameterPlaceholdersException(
+                                "Question marks (?) must be present in query text if nameless Parameters are passed in");
+                        }
+                    }
                 }
 
                 if (AParametersArray != null)

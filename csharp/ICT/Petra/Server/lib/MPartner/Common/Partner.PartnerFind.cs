@@ -1090,7 +1090,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                         out AExtractID,
                         PartnerKeysTable,
                         1,
-                        true,
                         true);
 
 //                  TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Added " + AddedPartners.ToString() + " Partners to the desired Extract!");

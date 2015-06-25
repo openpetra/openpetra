@@ -17,3 +17,4 @@ Instant Messaging & Chat,WhatsApp,WhatsApp ID,2,CONTACTDETAIL_GENERAL,?,WhatsApp
 Instant Messaging & Chat,Yahoo,Yahoo ID,3,CONTACTDETAIL_GENERAL,?,Yahoo (Business),false,?,false,?,?,?,?,?
 Instant Messaging & Chat,FaceTime,FaceTime ID,4,CONTACTDETAIL_GENERAL,?,FaceTime (Business),false,?,false,?,?,?,?,?
 PARTNERS_CONTACTDETAILS_SETTINGS,PARTNERS_PRIMARY_CONTACT_METHOD,"A Partners' Primary Contact Method",0,CONTACTDETAILSETTING,?,?,false,?,false,?,?,?,?,?
+PARTNERS_CONTACTDETAILS_SETTINGS,PARTNERS_SECONDARY_EMAIL_ADDRESS,"A Partners' Secondary E-mail Address",0,CONTACTDETAILSETTING,?,?,false,?,false,?,?,?,?,?

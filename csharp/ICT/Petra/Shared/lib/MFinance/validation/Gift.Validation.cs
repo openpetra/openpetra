@@ -34,6 +34,7 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 
 namespace Ict.Petra.Shared.MFinance.Validation
 {
@@ -85,7 +86,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
-            bool isImporting = AContext.ToString().Contains("Importing");
+            bool IsImporting = AContext.ToString().Contains("Importing");
 
             // Bank Account Code must be active
             ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnBankAccountCodeId];
@@ -268,7 +269,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 {
                     VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
                         ValidationControlsData.ValidationControlLabel +
-                        (isImporting ? String.Empty : " of Batch Number " + ValidationContext.ToString()),
+                        (IsImporting ? String.Empty : " of Batch Number " + ValidationContext.ToString()),
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition/removal to/from TVerificationResultCollection
@@ -278,16 +279,19 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     }
 
                     // Exchange rate must be 1.00 if the currency is the the base ledger currency
-                    if ((ABaseCurrency != null) && !ARow.IsCurrencyCodeNull() && (ARow.CurrencyCode == ABaseCurrency)
-                        && (ARow.ExchangeRateToBase != 1.00m)
-                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
-                            AContext,
-                            new TVerificationResult(ValidationContext,
-                                Catalog.GetString("A batch in the ledger base currency must have exchange rate of 1.00."),
-                                TResultSeverity.Resv_Critical),
-                            ValidationColumn))
+                    if ((ABaseCurrency != null)
+                        && (!ARow.IsCurrencyCodeNull())
+                        && (ARow.CurrencyCode == ABaseCurrency)
+                        && (ARow.ExchangeRateToBase != 1.00m))
                     {
-                        VerifResultCollAddedCount++;
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext,
+                                new TVerificationResult(ValidationContext,
+                                    Catalog.GetString("A batch in the ledger base currency must have exchange rate of 1.00."),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
                     }
                 }
             }
@@ -307,7 +311,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.GlEffectiveDate,
                     StartDateCurrentPeriod,
                     EndDateLastForwardingPeriod,
-                    ValidationControlsData.ValidationControlLabel + (isImporting ? String.Empty : " of Batch Number " + ValidationContext.ToString()),
+                    ValidationControlsData.ValidationControlLabel + (IsImporting ? String.Empty : " of Batch Number " + ValidationContext.ToString()),
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     AContext,
@@ -322,7 +326,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
                 // If the GL date was good we need to have a corporate exchange rate for base currency to Intl for the first day of the period
                 if ((VerificationResult == null) && (ACorporateExchangeTableRef != null) && !ARow.IsGlEffectiveDateNull()
-                    && (ABaseCurrency != AInternationalCurrency))
+                    && (ABaseCurrency != null) && (AInternationalCurrency != null) && (ABaseCurrency != AInternationalCurrency))
                 {
                     DateTime firstOfMonth;
 
@@ -393,6 +397,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AAccounts">Optional - a Accounts table.  Is required for import validation. </param>
         /// <param name="AMotivationGroups">Optional - a MotivationGroups table.  Is required for import validation. </param>
         /// <param name="AMotivationDetails">Optional - a MotivationDetails table.  Is required for import validation. </param>
+        /// <param name="AMailingTable">Optional - a Mailing table.  Is required for import validation. </param>
         /// <param name="ARecipientField">Optional The recipient field for the gift.  Is required for import validation. </param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateGiftDetailManual(object AContext,
@@ -404,6 +409,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             AAccountTable AAccounts = null,
             AMotivationGroupTable AMotivationGroups = null,
             AMotivationDetailTable AMotivationDetails = null,
+            PMailingTable AMailingTable = null,
             Int64 ARecipientField = -1)
         {
             DataColumn ValidationColumn;
@@ -690,6 +696,29 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             VerifResultCollAddedCount++;
                         }
                     }
+                }
+            }
+
+            // Mailing code must exist
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMailingCodeId];
+            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (!ARow.IsMailingCodeNull() && (AMailingTable != null))
+            {
+                PMailingRow foundRow = (PMailingRow)AMailingTable.Rows.Find(ARow.MailingCode);
+
+                if ((foundRow == null) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                        AContext,
+                        new TVerificationResult(ValidationContext,
+                            String.Format(Catalog.GetString("Unknown mailing code '{0}'."),
+                                ARow.MailingCode),
+                            TResultSeverity.Resv_Critical),
+                        ValidationColumn))
+                {
+                    VerifResultCollAddedCount++;
                 }
             }
 

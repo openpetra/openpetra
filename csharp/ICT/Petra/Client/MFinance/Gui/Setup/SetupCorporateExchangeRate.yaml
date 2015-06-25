@@ -40,7 +40,7 @@ RootNode:
             Dock: Fill
             Columns: [DetailFromCurrencyCode, DetailToCurrencyCode, DetailDateEffectiveFrom, DetailRateOfExchange]
             CustomColumns:
-                DetailRateOfExchange: {Label=Rate of Exchange, Type=Currency(10)}
+                DetailRateOfExchange: {Label=Rate of Exchange, Type=Decimal(10)}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
@@ -55,7 +55,7 @@ RootNode:
         cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList, ColSpan=2, OnChange=UpdateExchangeRateLabels}
         chkHideOthers: {OnlySetOnce=true, CheckBoxAttachedLabel=right, Label=&Hide other 'To' currencies}
         dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate}
-        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100}
+        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), NullValueAllowed=true, Width=160}
         btnInvertExchangeRate: {Label=&Invert value}
         Empty:
         lblValueOneDirection: {ColSpan=2}

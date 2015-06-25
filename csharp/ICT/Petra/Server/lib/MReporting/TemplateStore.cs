@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             TDBTransaction Transaction = null;
             Boolean submissionOk = true;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref submissionOk,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted, ref Transaction, ref submissionOk,
                 delegate
                 {
                     foreach (String fname in BackupFiles)

@@ -657,6 +657,14 @@ namespace Ict.Petra.Client.App.PetraClient
             // Set up Delegate for the retrieval of the list of Currencies from the Cache
             Ict.Common.Controls.TTxtCurrencyTextBox.RetrieveCurrencyList = @Ict.Petra.Client.CommonControls.TControlExtensions.RetrieveCurrencyList;
 
+            // Set up Delegate for the retrieval of the user defaults
+            Ict.Common.Controls.TTxtNumericTextBox.RetrieveUserDefaultBoolean =
+                @Ict.Petra.Client.CommonControls.TControlExtensions.RetrieveUserDefaultBoolean;
+            Ict.Common.TypeConverter.TCurrencyConverter.RetrieveUserDefaultBoolean =
+                @Ict.Petra.Client.CommonControls.TControlExtensions.RetrieveUserDefaultBoolean;
+            Ict.Common.TypeConverter.TDecimalConverter.RetrieveUserDefaultBoolean =
+                @Ict.Petra.Client.CommonControls.TControlExtensions.RetrieveUserDefaultBoolean;
+
             // Set up Delegate for the set-up of various Colours of all SourceGrid DataGrid instances from UserDefaults
             Ict.Common.Controls.TSgrdDataGrid.SetColourInformation = @SetDataGridColoursFromUserDefaults;
 

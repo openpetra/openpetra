@@ -507,5 +507,291 @@ namespace Ict.Common
         }
 
         #endregion
+
+        #region TCurrencyConverter
+
+        /// <summary>
+        /// Converts a decimal number into a currency using the specified culture settings for currencies.
+        /// It may seem surprising that we need this but it is because some locales have a different thousands and decimal separator
+        ///   for currencies from the one used for numbers.
+        /// </summary>
+        public class TCurrencyConverter : System.ComponentModel.TypeConverter
+        {
+            private NumberFormatInfo FNumberFormatInfo = null;
+            private int FDecimalDigits = 2;
+            private bool FShowThousands = true;
+            private bool FUseCurrencyFormatForCurrency = true;
+            private static TRetrieveUserDefaultBoolean FRetrieveUserDefaultBoolean;
+
+            /// <summary>
+            /// Test if we can convert from a given type to a currency
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="sourceType"></param>
+            /// <returns></returns>
+            public override Boolean CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+            {
+                return sourceType == typeof(string);
+            }
+
+            /// <summary>
+            /// Test if we can convert the decimal to a string
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="sourceType"></param>
+            /// <returns></returns>
+            public override Boolean CanConvertTo(ITypeDescriptorContext context, Type sourceType)
+            {
+                return sourceType == typeof(string);
+            }
+
+            /// <summary>
+            /// convert an object into a decimal
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="culture"></param>
+            /// <param name="value"></param>
+            /// <returns></returns>
+            public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+            {
+                if (value.GetType() == typeof(string))
+                {
+                    return value;
+                }
+
+                return null;
+            }
+
+            /// <summary>
+            /// convert a decimal into another type
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="culture"></param>
+            /// <param name="value"></param>
+            /// <param name="destinationType"></param>
+            /// <returns></returns>
+            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+            {
+                if (value.GetType() == typeof(Decimal))
+                {
+                    string workText = ((decimal)value).ToString("N" + FDecimalDigits);
+
+                    if (FShowThousands)
+                    {
+                        workText = workText.Replace(FNumberFormatInfo.NumberGroupSeparator, FNumberFormatInfo.CurrencyGroupSeparator);
+                    }
+                    else
+                    {
+                        workText = workText.Replace(FNumberFormatInfo.NumberGroupSeparator, String.Empty);
+                    }
+
+                    if (FUseCurrencyFormatForCurrency)
+                    {
+                        workText = workText.Replace(FNumberFormatInfo.NumberDecimalSeparator, FNumberFormatInfo.CurrencyDecimalSeparator);
+                    }
+
+                    return workText;
+                }
+
+                return null;
+            }
+
+            /// <summary>
+            /// Sets the number of decimal places to use for the currency.  The default value is 2.
+            /// </summary>
+            public int DecimalPlaces
+            {
+                set
+                {
+                    FDecimalDigits = value;
+                }
+            }
+
+            /// <summary>
+            /// default constructor
+            /// </summary>
+            public TCurrencyConverter(object AContext, NumberFormatInfo AFormatInfo, int ADecimalDigits) : base()
+            {
+                FNumberFormatInfo = AFormatInfo;
+                FDecimalDigits = ADecimalDigits;
+
+                if (FRetrieveUserDefaultBoolean != null)
+                {
+                    if (AContext.ToString().StartsWith("a_"))
+                    {
+                        // It is a Finance screen
+                        FShowThousands = FRetrieveUserDefaultBoolean(StringHelper.FINANCE_CURRENCY_SHOW_THOUSANDS, true);
+                        FUseCurrencyFormatForCurrency = FRetrieveUserDefaultBoolean(StringHelper.FINANCE_CURRENCY_FORMAT_AS_CURRENCY, true);
+                    }
+                    else
+                    {
+                        // Partner/personnel/conference
+                        FShowThousands = FRetrieveUserDefaultBoolean(StringHelper.PARTNER_CURRENCY_SHOW_THOUSANDS, true);
+                        FUseCurrencyFormatForCurrency = FRetrieveUserDefaultBoolean(StringHelper.PARTNER_CURRENCY_FORMAT_AS_CURRENCY, false);
+                    }
+                }
+                else
+                {
+                    // Must be testing?
+                    FShowThousands = true;
+                    FUseCurrencyFormatForCurrency = true;
+                }
+            }
+
+            /// <summary>
+            /// Declaration of a delegate to retrieve a boolean value from the user defaults
+            /// </summary>
+            public delegate Boolean TRetrieveUserDefaultBoolean(String AKey, Boolean ADefault);
+
+            /// <summary>
+            /// Get/set the function pointer for retrieving a boolean user default
+            /// </summary>
+            public static TRetrieveUserDefaultBoolean RetrieveUserDefaultBoolean
+            {
+                get
+                {
+                    return FRetrieveUserDefaultBoolean;
+                }
+
+                set
+                {
+                    FRetrieveUserDefaultBoolean = value;
+                }
+            }
+        }
+
+        #endregion
+
+        #region TDecimalConverter
+
+        /// <summary>
+        /// Formats a decimal number using the specified culture settings for numbers.
+        /// It may seem surprising that we need this but it is because some locales have a different thousands and decimal separator
+        ///   for currencies from the one used for numbers.  We offer user preferences for whether to display decimals in currency format
+        ///   so that an individual screen uses a consistent format.
+        /// </summary>
+        public class TDecimalConverter : System.ComponentModel.TypeConverter
+        {
+            private NumberFormatInfo FNumberFormatInfo = null;
+            private int FDecimalDigits = 2;
+            private bool FUseCurrencyFormatForDecimal = false;
+            private static TRetrieveUserDefaultBoolean FRetrieveUserDefaultBoolean;
+
+            /// <summary>
+            /// Test if we can convert from a given type to a currency
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="sourceType"></param>
+            /// <returns></returns>
+            public override Boolean CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+            {
+                return sourceType == typeof(string);
+            }
+
+            /// <summary>
+            /// Test if we can convert the decimal to a string
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="sourceType"></param>
+            /// <returns></returns>
+            public override Boolean CanConvertTo(ITypeDescriptorContext context, Type sourceType)
+            {
+                return sourceType == typeof(string);
+            }
+
+            /// <summary>
+            /// convert an object into a decimal
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="culture"></param>
+            /// <param name="value"></param>
+            /// <returns></returns>
+            public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+            {
+                if (value.GetType() == typeof(string))
+                {
+                    return value;
+                }
+
+                return null;
+            }
+
+            /// <summary>
+            /// convert a decimal into another type
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="culture"></param>
+            /// <param name="value"></param>
+            /// <param name="destinationType"></param>
+            /// <returns></returns>
+            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+            {
+                if (value.GetType() == typeof(Decimal))
+                {
+                    string workText = ((decimal)value).ToString("N" + FDecimalDigits);
+
+                    if (FUseCurrencyFormatForDecimal)
+                    {
+                        workText = workText.Replace(FNumberFormatInfo.NumberDecimalSeparator, FNumberFormatInfo.CurrencyDecimalSeparator);
+                    }
+
+                    return workText;
+                }
+
+                return null;
+            }
+
+            /// <summary>
+            /// default constructor
+            /// </summary>
+            public TDecimalConverter(object AContext, NumberFormatInfo AFormatInfo, int ADecimalDigits)
+                : base()
+            {
+                FNumberFormatInfo = AFormatInfo;
+                FDecimalDigits = ADecimalDigits;
+
+                if (FRetrieveUserDefaultBoolean != null)
+                {
+                    if (AContext.ToString().StartsWith("a_"))
+                    {
+                        // It is a Finance screen
+                        FUseCurrencyFormatForDecimal = FRetrieveUserDefaultBoolean(StringHelper.FINANCE_DECIMAL_FORMAT_AS_CURRENCY, true);
+                    }
+                    else
+                    {
+                        // Partner/personnel/conference
+                        FUseCurrencyFormatForDecimal = FRetrieveUserDefaultBoolean(StringHelper.PARTNER_DECIMAL_FORMAT_AS_CURRENCY, false);
+                    }
+                }
+                else
+                {
+                    // Must be testing?
+                    FUseCurrencyFormatForDecimal = true;
+                }
+            }
+
+            /// <summary>
+            /// Declaration of a delegate to retrieve a boolean value from the user defaults
+            /// </summary>
+            public delegate Boolean TRetrieveUserDefaultBoolean(String AKey, Boolean ADefault);
+
+            /// <summary>
+            /// Get/set the function pointer for retrieving a boolean user default
+            /// </summary>
+            public static TRetrieveUserDefaultBoolean RetrieveUserDefaultBoolean
+            {
+                get
+                {
+                    return FRetrieveUserDefaultBoolean;
+                }
+
+                set
+                {
+                    FRetrieveUserDefaultBoolean = value;
+                }
+            }
+        }
+
+        #endregion
     }
 }

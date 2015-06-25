@@ -1118,9 +1118,21 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 // Get the currency from the supplier, from the first documentpayment of this payment; we need the currency
                 APDataset.AApDocumentPayment.DefaultView.RowFilter = AApDocumentPaymentTable.GetPaymentNumberDBName() + " = " +
                                                                      row.PaymentNumber.ToString();
+
+                if (APDataset.AApDocumentPayment.DefaultView.Count == 0) // I'm not sure if this is allowable, but it's better than crashing...
+                {
+                    continue;
+                }
+
                 APDataset.AApDocument.DefaultView.RowFilter = AApDocumentTable.GetApDocumentIdDBName() + " = " +
                                                               ((AApDocumentPaymentRow)APDataset.AApDocumentPayment.DefaultView[0].Row).ApDocumentId.
                                                               ToString();
+
+                if (APDataset.AApDocument.DefaultView.Count == 0) // I'm not sure if this is allowable, but it's better than crashing...
+                {
+                    continue;
+                }
+
                 AApDocumentRow documentRow = (AApDocumentRow)APDataset.AApDocument.DefaultView[0].Row;
                 row.SupplierKey = documentRow.PartnerKey;
 
@@ -1569,8 +1581,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             DateTime APostingDate,
             out TVerificationResultCollection AVerificationResult)
         {
-            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
             AccountsPayableTDS MainDS = AMainDS;
+
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
 
             AVerificationResult = VerificationResult;
 

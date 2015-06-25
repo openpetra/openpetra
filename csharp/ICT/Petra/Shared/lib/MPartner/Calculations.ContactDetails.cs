@@ -67,8 +67,8 @@ namespace Ict.Petra.Shared.MPartner
             /// <summary>Primary Contact Method.</summary>
             ocskPrimaryContactMethod = 16,
 
-            // TODO ocskSecondaryEmailAddress (extension based on request from OM D)
-//            ocskSecondaryEmailAddress = 32
+            /// <summary>SecondaryEmailAddress.</summary>
+            ocskSecondaryEmailAddress = 32
         }
 
         /// <summary>
@@ -111,12 +111,12 @@ namespace Ict.Petra.Shared.MPartner
                 set;
             }
 
-            // TODO_LOW SecondaryEmailAddress (extension based on request from OM D)
-//            public string SecondaryEmailAddress
-//            {
-//                get;
-//                set;
-//            }
+            /// <summary>Secondary Email Address.</summary>
+            public string SecondaryEmailAddress
+            {
+                get;
+                set;
+            }
         }
 
         /// <summary>
@@ -206,6 +206,11 @@ namespace Ict.Petra.Shared.MPartner
         /// Partner Attribute Type that denotes the 'Primary Contact Method'.
         /// </summary>
         public const string ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD = "PARTNERS_PRIMARY_CONTACT_METHOD";
+
+        /// <summary>
+        /// Partner Attribute Type that denotes the 'Secondary E-mail Address'.
+        /// </summary>
+        public const string ATTR_TYPE_PARTNERS_SECONDARY_EMAIL_ADDRESS = "PARTNERS_SECONDARY_EMAIL_ADDRESS";
 
         /// <summary>Column name for the column 'Partner Contact Detail' that can get added to a PPartnerAttribute Table
         /// (gets added by Method <see cref="DeterminePartnerContactDetailAttributes"/>).</summary>
@@ -688,13 +693,13 @@ namespace Ict.Petra.Shared.MPartner
             ref TPartnersOverallContactSettings AOverallContactSettings,
             TOverallContSettingKind AOverallContSettingKind)
         {
-            DataView ElegibleSystemCategoryAttributesDV = DeterminePartnerSystemCategoryAttributes(
+            DataView EligibleSystemCategoryAttributesDV = DeterminePartnerSystemCategoryAttributes(
                 APartnerAttributeDT, TSharedDataCache.TMPartner.GetSystemCategorySettingsConcatStr());
             PPartnerAttributeRow PartnerAttributeDR;
 
-            for (int Counter = 0; Counter < ElegibleSystemCategoryAttributesDV.Count; Counter++)
+            for (int Counter = 0; Counter < EligibleSystemCategoryAttributesDV.Count; Counter++)
             {
-                PartnerAttributeDR = (PPartnerAttributeRow)ElegibleSystemCategoryAttributesDV[Counter].Row;
+                PartnerAttributeDR = (PPartnerAttributeRow)EligibleSystemCategoryAttributesDV[Counter].Row;
 
                 if (PartnerAttributeDR.AttributeType == ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD)
                 {
@@ -702,6 +707,15 @@ namespace Ict.Petra.Shared.MPartner
                         TOverallContSettingKind.ocskPrimaryContactMethod)
                     {
                         AOverallContactSettings.PrimaryContactMethod = PartnerAttributeDR.Value;
+                    }
+                }
+
+                if (PartnerAttributeDR.AttributeType == ATTR_TYPE_PARTNERS_SECONDARY_EMAIL_ADDRESS)
+                {
+                    if ((AOverallContSettingKind & TOverallContSettingKind.ocskSecondaryEmailAddress) ==
+                        TOverallContSettingKind.ocskSecondaryEmailAddress)
+                    {
+                        AOverallContactSettings.SecondaryEmailAddress = PartnerAttributeDR.Value;
                     }
                 }
             }
@@ -1041,7 +1055,8 @@ namespace Ict.Petra.Shared.MPartner
                 }
 
                 if ((!APPartnerAttributeDT[0].Current)
-                    || (APPartnerAttributeDT[0].Primary) || (APPartnerAttributeDT[0].WithinOrganisation))
+                    || (APPartnerAttributeDT[0].Primary)
+                    || (!APPartnerAttributeDT[0].IsWithinOrganisationNull() && APPartnerAttributeDT[0].WithinOrganisation))
                 {
                     // If the one record isn't Current then it can't possibly hold a 'Fax Number',
                     // also not if if is 'Primary' (as there are no 'Primary' Fax Numbers)

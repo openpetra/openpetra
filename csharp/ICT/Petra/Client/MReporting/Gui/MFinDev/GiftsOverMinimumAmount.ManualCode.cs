@@ -58,8 +58,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 || !dtpStartDate.ValidDate(false))
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("No valid date."),
-                    Catalog.GetString("Please enter a valid date."),
+                    Catalog.GetString("Date format problem"),
+                    Catalog.GetString("Please check the date entry."),
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
@@ -91,6 +91,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                     ACalc.AddParameter("param_gift_amount_column", Counter);
                 }
             }
+
+            // this parameter is added incorrectly by the generated code
+            ACalc.RemoveParameter("param_minimum_amount");
+            ACalc.AddParameter("param_minimum_amount", this.txtMinimumAmount.NumberValueDecimal);
         }
     }
 }

@@ -412,6 +412,55 @@ namespace Ict.Petra.Client.App.Gui
         }
 
         /// <summary>
+        /// Displays a verification warning message in a MessageBox. Use this for the final data verification before a Form's data is saved
+        /// but after the message has been shown about errors.  This box should only appear if there are no errors but only warnings.
+        /// </summary>
+        /// <param name="AVerificationError">Verification error to be displayed.</param>
+        /// <param name="AMessageNumber">Message Number.  Usually PetraErrorCodes.ERR_GENERAL_VERIFICATION_WARNING</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        /// <param name="AQuestionToAppend">This message box offers the user a Yes/No choice.  Phrase an appropriate question in this parameter.</param>
+        /// <param name="ADefaultToAnswerYes">Set to true if the default answer should be Yes.  Set to false if the default answer should be No.</param>
+        /// <returns>The DialogResult value - either Yes or No.</returns>
+        public static DialogResult MsgFormSaveVerificationWarning(String AVerificationError,
+            String AMessageNumber,
+            System.Type ATypeWhichRaisesError,
+            String AQuestionToAppend,
+            bool ADefaultToAnswerYes)
+        {
+            if (AMessageNumber == String.Empty)
+            {
+                AMessageNumber = PetraErrorCodes.ERR_GENERAL_VERIFICATION_WARNING;
+            }
+
+            if (ATypeWhichRaisesError == null)
+            {
+                ATypeWhichRaisesError = new StackTrace(false).GetFrame(2).GetMethod().DeclaringType;
+            }
+
+            // Remove possible trailing double Environment.NewLines
+            // (Double Environment.NewLines happen if several error messages are concatenated and they are each separated by double Environment.NewLines)
+            if (AVerificationError.EndsWith(Environment.NewLine + Environment.NewLine))
+            {
+                AVerificationError = AVerificationError.Substring(0, AVerificationError.Length - Environment.NewLine.Length);
+            }
+
+            // Assemble the message
+            string message = String.Format("{0}{1}{1}{2}{1}{3}{4}",
+                Messages.StrWarningsAttention,
+                Environment.NewLine,
+                AVerificationError,
+                AQuestionToAppend,
+                BuildMessageFooter(AMessageNumber, ATypeWhichRaisesError.Name));
+
+            // Show the message box and return the result
+            return MessageBox.Show(message,
+                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_GENERAL_VERIFICATION_WARNING).ErrorMessageTitle,
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question,
+                ADefaultToAnswerYes ? MessageBoxDefaultButton.Button1 : MessageBoxDefaultButton.Button2);
+        }
+
+        /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="AException"></param>

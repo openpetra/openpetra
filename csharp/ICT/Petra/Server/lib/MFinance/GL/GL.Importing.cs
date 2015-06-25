@@ -208,11 +208,10 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         string LedgerBaseCurrency = LedgerTable[0].BaseCurrency;
                         string LedgerIntlCurrency = LedgerTable[0].IntlCurrency;
-                        ACorporateExchangeRateTable CorporateExchangeTable =
-                            ACorporateExchangeRateAccess.LoadViaACurrencyToCurrencyCode(LedgerBaseCurrency,
+                        ACorporateExchangeRateTable CorporateExchangeRateTable =
+                            ACorporateExchangeRateAccess.LoadViaACurrencyToCurrencyCode(LedgerIntlCurrency,
                                 transaction);
-                        ADailyExchangeRateTable DailyExchangeToTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(LedgerBaseCurrency,
-                            transaction);
+                        ADailyExchangeRateTable DailyExchangeRateTable = ADailyExchangeRateAccess.LoadAll(transaction);
 
                         // Go round a loop reading the file line by line
                         ImportMessage = Catalog.GetString("Parsing first line");
@@ -234,7 +233,9 @@ namespace Ict.Petra.Server.MFinance.GL
                                 int preParseMessageCount = Messages.Count;
 
                                 // Read the row analysisType - there is no 'validation' on this so we can make the call with null parameters
-                                string RowType = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("row type"), null, null);
+                                string RowType =
+                                    TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("row type"), null, RowNumber, Messages,
+                                        null);
 
                                 if (RowType == "B")
                                 {
@@ -290,7 +291,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                     NewBatch.BatchDescription =
                                         TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Batch description"),
-                                            MainDS.ABatch.ColumnBatchDescription, ValidationControlsDictBatch);
+                                            MainDS.ABatch.ColumnBatchDescription, RowNumber, Messages, ValidationControlsDictBatch);
 
                                     NewBatch.BatchControlTotal =
                                         TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat,
@@ -407,17 +408,17 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                     NewJournal.JournalDescription =
                                         TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Journal description"),
-                                            MainDS.AJournal.ColumnJournalDescription, ValidationControlsDictJournal);
+                                            MainDS.AJournal.ColumnJournalDescription, RowNumber, Messages, ValidationControlsDictJournal);
 
                                     NewJournal.SubSystemCode =
                                         TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Journal sub system code"),
-                                            MainDS.AJournal.ColumnSubSystemCode, ValidationControlsDictJournal).ToUpper();
+                                            MainDS.AJournal.ColumnSubSystemCode, RowNumber, Messages, ValidationControlsDictJournal).ToUpper();
                                     NewJournal.TransactionTypeCode =
                                         TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Journal transaction type"),
-                                            MainDS.AJournal.ColumnTransactionTypeCode, ValidationControlsDictJournal).ToUpper();
+                                            MainDS.AJournal.ColumnTransactionTypeCode, RowNumber, Messages, ValidationControlsDictJournal).ToUpper();
                                     NewJournal.TransactionCurrency =
                                         TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Journal transaction currency"),
-                                            MainDS.AJournal.ColumnTransactionCurrency, ValidationControlsDictJournal).ToUpper();
+                                            MainDS.AJournal.ColumnTransactionCurrency, RowNumber, Messages, ValidationControlsDictJournal).ToUpper();
                                     NewJournal.ExchangeRateToBase =
                                         TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat,
                                             Catalog.GetString("Journal exchange rate"),
@@ -439,7 +440,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                         ImportMessage = Catalog.GetString("Additional validation of the journal data");
                                         TSharedFinanceValidation_GL.ValidateGLJournalManual(this, NewJournal, ref Messages,
                                             ValidationControlsDictJournal, SetupDS, CurrencyTable,
-                                            CorporateExchangeTable, LedgerBaseCurrency);
+                                            CorporateExchangeRateTable, LedgerBaseCurrency, LedgerIntlCurrency);
 
                                         for (int i = messageCountBeforeValidate; i < Messages.Count; i++)
                                         {
@@ -486,27 +487,36 @@ namespace Ict.Petra.Server.MFinance.GL
                                                     TResultSeverity.Resv_Critical));
                                         }
 
-                                        // Get a Corporate Exchange Rate for international currency
-                                        DateTime firstDayOfMonth;
-
-                                        if (TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod(LedgerNumber, NewJournal.DateEffective,
-                                                out firstDayOfMonth))
+                                        if (TVerificationHelper.IsNullOrOnlyNonCritical(Messages))
                                         {
-                                            intlRateFromBase =
-                                                TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency, firstDayOfMonth,
-                                                    NewJournal.DateEffective);
-                                        }
+                                            // Get a Corporate Exchange Rate for international currency
+                                            // Validation will have ensured that we have a corporate rate for intl currency
+                                            // at least for the first day of the accounting period.
+                                            // (There may possibly be others between then and the effective date)
+                                            DateTime firstDayOfMonth;
 
-                                        if (intlRateFromBase <= 0.0m)
-                                        {
-                                            Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                                    String.Format(
-                                                        "There is no Corporate Exchange Rate for {0} to {1} applicable to the period {2} to {3}.  Please set up an appropriate rate and then import the data again.",
-                                                        LedgerBaseCurrency,
-                                                        LedgerIntlCurrency,
-                                                        StringHelper.DateToLocalizedString(firstDayOfMonth),
-                                                        StringHelper.DateToLocalizedString(NewJournal.DateEffective)),
-                                                    TResultSeverity.Resv_Critical));
+                                            if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(LedgerNumber, NewJournal.DateEffective,
+                                                    out firstDayOfMonth))
+                                            {
+                                                intlRateFromBase =
+                                                    TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency,
+                                                        firstDayOfMonth,
+                                                        NewJournal.DateEffective);
+
+                                                if (intlRateFromBase <= 0.0m)
+                                                {
+                                                    // This should never happen (see above)
+                                                    Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine,
+                                                                RowNumber),
+                                                            String.Format(
+                                                                "There is no Corporate Exchange Rate for {0} to {1} applicable to the period {2} to {3}.  Please set up an appropriate rate and then import the data again.",
+                                                                LedgerBaseCurrency,
+                                                                LedgerIntlCurrency,
+                                                                StringHelper.DateToLocalizedString(firstDayOfMonth),
+                                                                StringHelper.DateToLocalizedString(NewJournal.DateEffective)),
+                                                            TResultSeverity.Resv_Critical));
+                                                }
+                                            }
                                         }
 
                                         if (TVerificationHelper.IsNullOrOnlyNonCritical(Messages))
@@ -514,56 +524,29 @@ namespace Ict.Petra.Server.MFinance.GL
                                             // This row passes validation so we can do final actions if the batch is not in the ledger currency
                                             if (NewJournal.TransactionCurrency != LedgerBaseCurrency)
                                             {
-                                                // Validation will have ensured that we have a corporate rate for the effective date
-                                                // We need to know what that rate is...
-                                                DateTime firstOfMonth = new DateTime(NewJournal.DateEffective.Year,
-                                                    NewJournal.DateEffective.Month,
-                                                    1);
-                                                ACorporateExchangeRateRow corporateRateRow =
-                                                    (ACorporateExchangeRateRow)CorporateExchangeTable.Rows.Find(
-                                                        new object[] { NewJournal.TransactionCurrency, LedgerBaseCurrency, firstOfMonth });
-                                                decimal corporateRate = corporateRateRow.RateOfExchange;
-
-                                                if (Math.Abs((NewJournal.ExchangeRateToBase - corporateRate) / corporateRate) > 0.20m)
-                                                {
-                                                    Messages.Add(new TVerificationResult(String.Format(MCommonConstants.
-                                                                StrImportValidationWarningInLine,
-                                                                RowNumber),
-                                                            String.Format(Catalog.GetString(
-                                                                    "The exchange rate of {0} differs from the Corporate Rate of {1} for the month commencing {2} by more than 20 percent."),
-                                                                NewJournal.ExchangeRateToBase, corporateRate,
-                                                                StringHelper.DateToLocalizedString(firstOfMonth)),
-                                                            TResultSeverity.Resv_Noncritical));
-                                                }
-
                                                 // we need to create a daily exchange rate pair for the transaction date
                                                 // start with To Ledger currency
-                                                if (UpdateDailyExchangeRateTable(DailyExchangeToTable, NewJournal.TransactionCurrency,
+                                                if (UpdateDailyExchangeRateTable(DailyExchangeRateTable, NewJournal.TransactionCurrency,
                                                         LedgerBaseCurrency,
                                                         NewJournal.ExchangeRateToBase, NewJournal.DateEffective))
                                                 {
                                                     Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportInformationForLine,
                                                                 RowNumber),
                                                             String.Format(Catalog.GetString(
-                                                                    "Added exchange rate of {0} to Daily Exchange Rate table for {1}"),
+                                                                    "An exchange rate of {0} for '{1}' to '{2}' on {3} will be added to the Daily Exchange Rate table after a successful import."),
                                                                 NewJournal.ExchangeRateToBase,
+                                                                NewJournal.TransactionCurrency,
+                                                                LedgerBaseCurrency,
                                                                 StringHelper.DateToLocalizedString(NewJournal.DateEffective)),
                                                             TResultSeverity.Resv_Info));
                                                 }
 
                                                 // Now the inverse for From Ledger currency
-                                                ADailyExchangeRateTable DailyExchangeFromTable =
-                                                    ADailyExchangeRateAccess.LoadViaACurrencyFromCurrencyCode(NewJournal.TransactionCurrency,
-                                                        transaction);
                                                 decimal inverseRate = Math.Round(1 / NewJournal.ExchangeRateToBase, 10);
 
-                                                if (UpdateDailyExchangeRateTable(DailyExchangeFromTable, LedgerBaseCurrency,
-                                                        NewJournal.TransactionCurrency,
-                                                        inverseRate, NewJournal.DateEffective))
-                                                {
-                                                    ImportMessage = Catalog.GetString("Saving an updated daily exchange rate");
-                                                    ADailyExchangeRateAccess.SubmitChanges(DailyExchangeFromTable, transaction);
-                                                }
+                                                UpdateDailyExchangeRateTable(DailyExchangeRateTable, LedgerBaseCurrency,
+                                                    NewJournal.TransactionCurrency,
+                                                    inverseRate, NewJournal.DateEffective);
                                             }
                                         }
                                     }
@@ -716,9 +699,9 @@ namespace Ict.Petra.Server.MFinance.GL
                         // Everything is ok, so we can do our finish actions
 
                         // Save all pending changes (last xxx number is updated)
-                        ImportMessage = Catalog.GetString("Saving remaining daily exchange rate data");
-                        ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToTable, transaction);
-                        DailyExchangeToTable.AcceptChanges();
+                        ImportMessage = Catalog.GetString("Saving daily exchange rate data");
+                        ADailyExchangeRateAccess.SubmitChanges(DailyExchangeRateTable, transaction);
+                        DailyExchangeRateTable.AcceptChanges();
 
                         ImportMessage = Catalog.GetString("Saving changes to Ledger table");
                         ALedgerAccess.SubmitChanges(LedgerTable, transaction);
@@ -919,7 +902,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             string intlCurrency = LedgerTable[0].IntlCurrency;
                             string baseCurrency = LedgerTable[0].BaseCurrency;
 
-                            if (TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod(LedgerNumber, NewJournalRow.DateEffective,
+                            if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(LedgerNumber, NewJournalRow.DateEffective,
                                     out firstDayOfMonth))
                             {
                                 intlRateFromBase =
@@ -1166,27 +1149,29 @@ namespace Ict.Petra.Server.MFinance.GL
 
             AMainDS.ATransaction.Rows.Add(NewTransaction);
 
+            int preParseMessageCount = AMessages.Count;
+            int nonCriticalErrorCount = 0;
+
             string costCentreCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Cost centre"),
-                AMainDS.ATransaction.ColumnCostCentreCode, AValidationControlsDictTransaction).ToUpper();
+                AMainDS.ATransaction.ColumnCostCentreCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper();
 
             string accountCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Account code"),
-                AMainDS.ATransaction.ColumnAccountCode, AValidationControlsDictTransaction).ToUpper();
+                AMainDS.ATransaction.ColumnAccountCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper();
 
             // This might add a non-critical error
+            int msgCount = AMessages.Count;
             TCommonImport.FixAccountCodes(ALedgerNumber, ARowNumber, ref accountCode, ASetupDS.AAccount,
                 ref costCentreCode, ASetupDS.ACostCentre, AMessages);
+            nonCriticalErrorCount = AMessages.Count - msgCount;
 
             NewTransaction.CostCentreCode = costCentreCode;
             NewTransaction.AccountCode = accountCode;
 
-            // Its ok to start our counter here because we can't have had any parsing errors yet
-            int preParseMessageCount = AMessages.Count;
-
             NewTransaction.Narrative = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Narrative"),
-                AMainDS.ATransaction.ColumnNarrative, AValidationControlsDictTransaction);
+                AMainDS.ATransaction.ColumnNarrative, ARowNumber, AMessages, AValidationControlsDictTransaction);
 
             NewTransaction.Reference = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Reference"),
-                AMainDS.ATransaction.ColumnReference, AValidationControlsDictTransaction);
+                AMainDS.ATransaction.ColumnReference, ARowNumber, AMessages, AValidationControlsDictTransaction);
 
             DateTime TransactionDate = TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, Catalog.GetString("Transaction date"),
                 AMainDS.ATransaction.ColumnTransactionDate, ARowNumber, AMessages, AValidationControlsDictTransaction);
@@ -1198,14 +1183,14 @@ namespace Ict.Petra.Server.MFinance.GL
                     AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, AValidationControlsDictTransaction, "0");
 
             // The critical parsing is complete now
-            bool hasParsingErrors = (AMessages.Count != preParseMessageCount);
+            bool hasParsingErrors = (AMessages.Count != (preParseMessageCount + nonCriticalErrorCount));
 
             for (int i = 0; i < 10; i++)
             {
                 String analysisType = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Analysis Type") + "#" + i,
-                    AMainDS.ATransAnalAttrib.ColumnAnalysisTypeCode, AValidationControlsDictTransaction).ToUpper();
+                    AMainDS.ATransAnalAttrib.ColumnAnalysisTypeCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper();
                 String analysisValue = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Analysis Value") + "#" + i,
-                    AMainDS.ATransAnalAttrib.ColumnAnalysisAttributeValue, AValidationControlsDictTransaction);
+                    AMainDS.ATransAnalAttrib.ColumnAnalysisAttributeValue, ARowNumber, AMessages, AValidationControlsDictTransaction);
 
                 bool gotType = (analysisType != null) && (analysisType.Length > 0);
                 bool gotValue = (analysisValue != null) && (analysisValue.Length > 0);

@@ -76,6 +76,11 @@ namespace Ict.Common
     /// <summary>
     /// todoComment
     /// </summary>
+    public delegate void TDataSavingValidatedHandler(System.Object Sender, System.ComponentModel.CancelEventArgs e);
+
+    /// <summary>
+    /// todoComment
+    /// </summary>
     public delegate void TDataSavedHandler(System.Object Sender, TDataSavedEventArgs e);
 
     /// <summary>

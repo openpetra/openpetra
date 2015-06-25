@@ -11,7 +11,7 @@ TFilterAndFindPanel FFilterAndFindObject = null;
 /// If this is part of a user control, it can be called from the parent
 public void MniFilterFind_Click(object sender, EventArgs e)
 {
-    if ((this.ActiveControl == null) || ValidateAllData(true, true))
+    if ((this.ActiveControl == null) || ValidateAllData(true, TErrorProcessingMode.Epm_All))
     {
         FFilterAndFindObject.MniFilterFind_Click(sender, e);
     }
@@ -60,9 +60,9 @@ public void CreateFilterFindPanels()
 /// <summary>
 /// Required interface method
 /// </summary>
-public bool DoValidation(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
+public bool DoValidation(bool ARecordChangeVerification, TErrorProcessingMode ADataValidationProcessingMode)
 {
-	return ValidateAllData(ARecordChangeVerification, AProcessAnyDataValidationErrors);
+	return ValidateAllData(ARecordChangeVerification, ADataValidationProcessingMode);
 }
 
 /// <summary>

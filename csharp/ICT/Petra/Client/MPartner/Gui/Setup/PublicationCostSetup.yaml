@@ -21,8 +21,11 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [cmbDetailPublicationCode, txtDetailPublicationCost, cmbDetailCurrencyCode]
+            FilterControls: [cmbDetailPublicationCode, cmbDetailCurrencyCode, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
             FindControls: [cmbDetailPublicationCode, cmbDetailCurrencyCode]
+            ControlAttributes:
+                dtpDetailDateEffective-1: {Label=From Effective date, Comparison=gte}
+                dtpDetailDateEffective-2: {Label=To Effective date, Comparison=lte}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -44,10 +47,12 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [cmbDetailPublicationCode]
-                Row1: [dtpDetailDateEffective, txtDetailPublicationCost, txtDetailPostageCost]
+                Row1: [dtpDetailDateEffective]
                 Row2: [cmbDetailCurrencyCode]
+                Row3: [txtDetailPublicationCost, txtDetailPostageCost, Empty]
         cmbDetailPublicationCode: {List=PublicationInfoList, ColSpan=3}
         dtpDetailDateEffective: {Label=Effective Date}
-        txtDetailPublicationCost: {Width=60, Format=Decimal}
-        txtDetailPostageCost: {Width=60, Format=Decimal}
-        cmbDetailCurrencyCode: {List=CurrencyCodeList, ColSpan=3}
+        txtDetailPublicationCost: {Width=70, Format=Currency, AlwaysHideLabel=true}
+        txtDetailPostageCost: {Width=70, Format=Currency, AlwaysHideLabel=true}
+        cmbDetailCurrencyCode: {List=CurrencyCodeList, ColSpan=3, OnChange=CurrencyCodeChanged}
+        Empty:

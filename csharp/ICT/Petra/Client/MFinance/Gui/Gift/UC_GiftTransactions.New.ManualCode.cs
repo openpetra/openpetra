@@ -24,6 +24,7 @@
 using System;
 using System.Windows.Forms;
 
+using Ict.Common.Verification;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
 
@@ -50,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                if (AutoSaveSuccessful || ((!FAutoSave || !HasChanges) && ValidateAllData(true, true)))
+                if (AutoSaveSuccessful || ((!FAutoSave || !HasChanges) && ValidateAllData(true, TErrorProcessingMode.Epm_IgnoreNonCritical)))
                 {
                     if (!ACompletelyNewGift)      //i.e. a gift detail
                     {

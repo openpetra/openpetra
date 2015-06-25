@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
-            if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
+            if (ValidateAllData(false, Common.Verification.TErrorProcessingMode.Epm_IgnoreNonCritical))
             {
                 foreach (DataRow InspectDR in FMainDS.MExtractMaster.Rows)
                 {
@@ -316,10 +316,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             if (FPetraUtilsObject != null)
             {
                 this.LoadData(AExtractNameFilter, AAllUsers, ACreatedByUser, AModifiedByUser);
-
-                // data can have changed completely, so easiest for now is to select first row
-                grdDetails.SelectRowInGrid(1, true);
-                ShowDetails(1);
 
                 // enable/disable buttons
                 UpdateButtonStatus();
@@ -838,7 +834,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.MaintainExtract);
             grdDetails.EnterKeyPressed += new TKeyPressedEventHandler(this.MaintainExtract);
 
-            FPetraUtilsObject.SetToolTip(btnRefreshGrid, Catalog.GetString("Refresh Extract List"));
+            //FPetraUtilsObject.SetToolTip(btnRefreshGrid, Catalog.GetString("Refresh Extract List"));
         }
 
         /// <summary>
@@ -897,6 +893,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             {
                 throw;
             }
+
             return ReturnValue;
         }
 
@@ -907,6 +904,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             // enable/disable buttons
             UpdateButtonStatus();
+
+            grdDetails.Columns[3].MaximalWidth = 400;
         }
 
         /// <summary>
@@ -996,6 +995,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                 ((TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtExtractName")).Text =
                                     ((TFormsMessage.FormsMessageName)AFormsMessage.MessageObject).Name;
                             });
+                    }
+                    else
+                    {
+                        // show filter panel
+                        MniFilterFind_Click(GetPetraUtilsObject().GetForm(), null);
+                        // show the screen in case it has been hidden
+                        FPetraUtilsObject.GetForm().Show();
+                        // filter results to show the new extract
+                        ((TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtExtractName")).Text =
+                            ((TFormsMessage.FormsMessageName)AFormsMessage.MessageObject).Name;
                     }
                 }
 

@@ -450,7 +450,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.btnLocationKey.Text = Catalog.GetString("Location Key");
-            this.chkWorkerFamOnly.Text = Catalog.GetString("Worker Families O&nly");
+            this.chkWorkerFamOnly.Text = Catalog.GetString("Worker Families Only");
             this.lblPartnerClass.Text = Catalog.GetString("Partner C&lass") + ":";
             this.txtPartnerKey.Text = Catalog.GetString("0000000000");
             this.lblPartnerKey.Text = Catalog.GetString("Partner &Key") + ":";
@@ -463,8 +463,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblAddress3.Text = Catalog.GetString("Address &3") + ":";
             this.lblAddress2.Text = Catalog.GetString("Address &2") + ":";
             this.lblEmail.Text = Catalog.GetString("&Email") + ":";
-            this.lblPartnerName.Text = Catalog.GetString("Pa&rtner Name") + ":";
-            this.lblPersonalName.Text = Catalog.GetString("Personal &(First) Name") + ":";
+            this.lblPartnerName.Text = Catalog.GetString("&Partner Name") + ":";
+            this.lblPersonalName.Text = Catalog.GetString("Personal (First) &Name") + ":";
             this.lblPreviousName.Text = Catalog.GetString("Previous Name") + ":";
             this.lblAddress1.Text = Catalog.GetString("Address &1") + ":";
             this.lblPostCode.Text = Catalog.GetString("P&ost Code") + ":";
@@ -1158,38 +1158,33 @@ namespace Ict.Petra.Client.MPartner.Gui
             //            TLogging.Log("GeneralLeaveHandler for " + ATextBox.Name + ". SplitButton: " + ACriteriaControl.Name);
 
             if (TextBoxText.Contains("*")
-                || (TextBoxText.Contains("%")))
+                || (TextBoxText.Contains("%"))
+                || (TextBoxText.EndsWith("||")))
             {
-                if (TextBoxText.StartsWith("*")
-                    && !(TextBoxText.EndsWith("*")))
+                if (TextBoxText.EndsWith("||")
+                    && !(TextBoxText.StartsWith("||")))
                 {
-                    //                    TLogging.Log(ATextBox.Name + " starts with *");
+//                    TLogging.Log(ATextBox.Name + " ends with ||  = ENDS");
                     NewMatchValue = TMatches.ENDS;
+                }
+                else if (TextBoxText.EndsWith("||")
+                         && (TextBoxText.StartsWith("||")))
+                {
+//                        TLogging.Log(ATextBox.Name + " begins with || and ends with ||  = EXACT");
+                    NewMatchValue = TMatches.EXACT;
                 }
                 else if (TextBoxText.EndsWith("*")
                          && !(TextBoxText.StartsWith("*")))
                 {
-                    //                    TLogging.Log(ATextBox.Name + " ends with *");
+//                    TLogging.Log(ATextBox.Name + " ends with *  = BEGINS");
                     NewMatchValue = TMatches.BEGINS;
                 }
-                else if (TextBoxText.EndsWith("*")
-                         && (TextBoxText.StartsWith("*")))
+                else if ((TextBoxText.EndsWith("*")
+                          && (TextBoxText.StartsWith("*")))
+                         || (TextBoxText.StartsWith("*")))
                 {
-                    //                    TLogging.Log(ATextBox.Name + " contains *");
+//                    TLogging.Log(ATextBox.Name + " begins and ends with *, or begins with *  = CONTAINS");
                     NewMatchValue = TMatches.CONTAINS;
-                }
-
-                /*
-                 * Replace * character(s) in the middle of the text with % character(s)
-                 * to make the SQL-92 'LIKE' operator do what the user intended...
-                 */
-                for (int Counter = 1; Counter < TextBoxText.Length - 1; Counter++)
-                {
-                    if (TextBoxText[Counter] == '*')
-                    {
-                        TextBoxText = TextBoxText.Substring(0, Counter) +
-                                      '%' + TextBoxText.Substring(Counter + 1, TextBoxText.Length - (Counter + 1));
-                    }
                 }
 
                 /*
@@ -1202,18 +1197,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (CriteriaValue != String.Empty)
                 {
                     // There is still a valid CriteriaValue
-                    FFindCriteriaDataTable.Rows[0].BeginEdit();
-                    ACriteriaControl.SelectedValue = Enum.GetName(typeof(TMatches), NewMatchValue);
-                    FFindCriteriaDataTable.Rows[0].EndEdit();
-
-                    //TODO: It seems databinding is broken on this control
-                    // this needs to happen in the SplitButton control really
-                    string fieldname = ((SplitButton)ACriteriaControl).DataBindings[0].BindingMemberInfo.BindingMember;
-                    FFindCriteriaDataTable.Rows[0][fieldname] = Enum.GetName(typeof(TMatches), NewMatchValue);
-
-                    //TODO: DataBinding is really doing strange things here; we have to
-                    //assign the just entered Text again, otherwise it is lost!!!
-                    ATextBox.Text = TextBoxText;
+                    PutNewMatchValueIntoFindCriteriaDT(ACriteriaControl, NewMatchValue, ATextBox, TextBoxText);
                 }
                 else
                 {
@@ -1221,6 +1205,29 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ATextBox.Text = String.Empty;
                 }
             }
+            else
+            {
+                // Ensure that 'BEGINS' is restored in case the user used the '*' joker before but
+                // has cleared it now!
+                PutNewMatchValueIntoFindCriteriaDT(ACriteriaControl, NewMatchValue, ATextBox, TextBoxText);
+            }
+        }
+
+        private void PutNewMatchValueIntoFindCriteriaDT(SplitButton ACriteriaControl, TMatches NewMatchValue,
+            TextBox ATextBox, string ATextBoxText)
+        {
+            FFindCriteriaDataTable.Rows[0].BeginEdit();
+            ACriteriaControl.SelectedValue = Enum.GetName(typeof(TMatches), NewMatchValue);
+            FFindCriteriaDataTable.Rows[0].EndEdit();
+
+            //TODO: It seems databinding is broken on this control
+            // this needs to happen in the SplitButton control really
+            string fieldname = ((SplitButton)ACriteriaControl).DataBindings[0].BindingMemberInfo.BindingMember;
+            FFindCriteriaDataTable.Rows[0][fieldname] = Enum.GetName(typeof(TMatches), NewMatchValue);
+
+            //TODO: DataBinding is really doing strange things here; we have to
+            //assign the just entered Text again, otherwise it is lost!!!
+            ATextBox.Text = ATextBoxText;
         }
 
         private void RemoveJokersFromTextBox(SplitButton ASplitButton,
@@ -1881,6 +1888,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             FindCriteriaUserDefaultRestore();
 
             ShowOrHidePartnerKeyMatchInfoText();
+
+            // Due to the Contact Details implementation the previous ways in which
+            // Email and Phone Number were found are no longer working -> disable
+            // those Criteria until they work again... (Bug #4048)!
+            txtEmail.Enabled = false;
+            txtPhoneNumber.Enabled = false;
 
             // put focus on txtPartnerName on screen load
             this.ActiveControl = txtPartnerName;
@@ -2628,7 +2641,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 pnlLeftColumn.Controls.Clear();
             }
 
-            MatchButtonsSetting = TUserDefaults.GetBooleanDefault(TUserDefaults.PARTNER_FINDOPTIONS_SHOWMATCHBUTTONS, true);
+            // Always hide the 'match buttons' Controls as we don't have a replacement for the 'split button' Control that
+            // would be necessary to make those Buttons useful (Bug #4049)
+            //MatchButtonsSetting = TUserDefaults.GetBooleanDefault(TUserDefaults.PARTNER_FINDOPTIONS_SHOWMATCHBUTTONS, true);
+            MatchButtonsSetting = false;
 
             if (CriteriaFieldsRightControls.Count != 0)
             {
@@ -2657,23 +2673,25 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             foreach (Control TempControl in p.Controls)
             {
-                // tempcontroll
                 foreach (Control TempInnerControl in TempControl.Controls)
                 {
-                    // tempInnerControl
                     if (TempInnerControl.GetType() == typeof(SplitButton))
                     {
-                        // tempInnerControl.Type =      SplitButton
                         TempInnerControl.Visible = WithMatchButtons;
                     }
-
-                    // tempInnerControl.Type =     SplitButton
+                    else if (TempInnerControl.GetType() == typeof(TextBox))
+                    {
+                        if (!WithMatchButtons)
+                        {
+                            TempInnerControl.Width = TempInnerControl.Width + MatchButtonWidth + GapWidth - 2;
+                        }
+                        else
+                        {
+                            TempInnerControl.Width = 112;
+                        }
+                    }
                 }
-
-                // tempInnerControl
             }
-
-            // tempcontroll
         }
 
         /// <summary>

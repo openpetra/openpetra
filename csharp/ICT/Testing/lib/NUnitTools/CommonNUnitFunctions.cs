@@ -131,6 +131,8 @@ namespace Ict.Testing.NUnitTools
         {
             string tempfile = string.Empty;
 
+            TLogging.Log("LoadTestDataBase(" + strSqlFilePathFromCSharpName + ")");
+
             if (ALedgerNumber != -1)
             {
                 // we need to replace the ledgernumber variable in the sql file

@@ -185,6 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             String ReceiptedDonorsList = "";
+            int NumberOfDonors = 0;
 
             foreach (DataRow Row in FGiftTbl.Rows)
             {
@@ -195,6 +196,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (!ReceiptedDonorsList.Contains(DonorName))
                     {
                         ReceiptedDonorsList += DonorName;
+                        NumberOfDonors++;
                     }
                 }
             }
@@ -203,9 +205,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 PreviewOrPrint(HtmlDoc);
 
+                string Message = Catalog.GetPluralString("Was a receipt to the following donor printed correctly?",
+                    "Were receipts to the following donors printed correctly?", NumberOfDonors);
+
                 if (MessageBox.Show(
-                        Catalog.GetString(
-                            "Were receipts to the following donors printed ok?\n\n") +
+                        Message + "\n\n" +
                         ReceiptedDonorsList,
                         Catalog.GetString("Receipt Printing"),
                         MessageBoxButtons.YesNo) == DialogResult.No)

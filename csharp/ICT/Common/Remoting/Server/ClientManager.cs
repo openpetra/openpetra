@@ -709,7 +709,7 @@ namespace Ict.Common.Remoting.Server
                                 }
                                 else if (app.FAppDomainStatus == TSessionStatus.adsActive)
                                 {
-                                    if (LastActionTime.AddMinutes(1) > DateTime.Now)
+                                    if (LastActionTime.AddMinutes(TSrvSetting.ClientIdleStatusAfterXMinutes) > DateTime.Now)
                                     {
                                         AppDomainStatusString = "Active";
                                         LastClientAction = LastActionTime;
@@ -723,7 +723,7 @@ namespace Ict.Common.Remoting.Server
                                 }
                                 else if (app.FAppDomainStatus == TSessionStatus.adsIdle)
                                 {
-                                    if (LastActionTime.AddMinutes(1) < DateTime.Now)
+                                    if (LastActionTime.AddMinutes(TSrvSetting.ClientIdleStatusAfterXMinutes) < DateTime.Now)
                                     {
                                         AppDomainStatusString = "Idle";
                                         LastClientAction = LastActionTime;

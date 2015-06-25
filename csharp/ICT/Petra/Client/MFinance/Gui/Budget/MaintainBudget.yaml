@@ -113,34 +113,34 @@ RootNode:
         cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Enabled=false, OnChange=AccountCodeDetailChanged}
         #lblAccountCodeForeign: {Label=(Foreign Currency Account), Visible=false, TextAlign=left}
         #Adhoc controls
-        txtPeriod01Amount: {Label=Period 1, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod02Amount: {Label=Period 2, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod03Amount: {Label=Period 3, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod04Amount: {Label=Period 4, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod05Amount: {Label=Period 5, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod06Amount: {Label=Period 6, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod07Amount: {Label=Period 7, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod08Amount: {Label=Period 8, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod09Amount: {Label=Period 9, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod10Amount: {Label=Period 10, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod11Amount: {Label=Period 11, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod12Amount: {Label=Period 12, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod13Amount: {Label=Period 13, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        txtPeriod14Amount: {Label=Period 14, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod01Amount: {Label=Period 1, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod02Amount: {Label=Period 2, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod03Amount: {Label=Period 3, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod04Amount: {Label=Period 4, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod05Amount: {Label=Period 5, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod06Amount: {Label=Period 6, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod07Amount: {Label=Period 7, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod08Amount: {Label=Period 8, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod09Amount: {Label=Period 9, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod10Amount: {Label=Period 10, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod11Amount: {Label=Period 11, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod12Amount: {Label=Period 12, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod13Amount: {Label=Period 13, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod14Amount: {Label=Period 14, Format=Currency, AlwaysHideLabel=true, OnLeave=ProcessBudgetTypeAdhoc}
         #txtEmptyColumn1: {NoLabel=true, Visible=false}
-        txtTotalAdhocAmount: {Label=Total Amount, Format=Decimal, ReadOnly=true, Width=150}
+        txtTotalAdhocAmount: {Label=Total Amount, Format=Currency, ReadOnly=true, Width=150}
         #Same controls
         txtAmount: {Label = Amount Per Period, Format=Currency, OnLeave=ProcessBudgetTypeSame}
-        txtSameTotalAmount: {Label=Total Amount, Format=Decimal, ReadOnly=true, Width=150}
+        txtSameTotalAmount: {Label=Total Amount, Format=Currency, ReadOnly=true, Width=150}
         #Split controls
         txtTotalSplitAmount: {Label = Total Amount, Format=Currency, OnLeave=ProcessBudgetTypeSplit}
-        txtPerPeriodAmount: {Label = Amount for periods 1 to 11, Format=Currency, ReadOnly=true}
-        txtLastPeriodAmount: {Label = Amount for period 12, Format=Currency, ReadOnly=true}
+        txtPerPeriodAmount: {Label = Amount for periods 1 to 11, Format=Currency, AlwaysHideLabel=true, ReadOnly=true}
+        txtLastPeriodAmount: {Label = Amount for period 12, Format=Currency, AlwaysHideLabel=true, ReadOnly=true}
         #Inflate N controls
         txtFirstPeriodAmount: {Label = First Period Amount, Format=Currency, OnLeave=ProcessBudgetTypeInflateN}
         txtInflateAfterPeriod: {Label = Inflate after period, Format=Integer, OnLeave=ProcessBudgetTypeInflateN}
         txtInflationRate: {Label = Inflation Rate, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateN}
-        txtInflateNTotalAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=150}
+        txtInflateNTotalAmount: {Label=Total, Format=Currency, ReadOnly=true, Width=150}
         #Inflate Base controls
         txtPeriod1Amount: {Label=Period 1 Amount, Format=Currency, OnLeave=ProcessBudgetTypeInflateBase, Width=140}
         txtPeriod02Index: {Label=Period 2 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
@@ -157,7 +157,7 @@ RootNode:
         txtPeriod13Index: {Label=Period 13 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
         txtPeriod14Index: {Label=Period 14 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
         #txtEmptyColumn2: {NoLabel=true, Visible=false}
-        txtInflateBaseTotalAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=140}
+        txtInflateBaseTotalAmount: {Label=Total, Format=Currency, ReadOnly=true, Width=140}
     Menu:
     Toolbar:
         cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, Width=250, SuppressChangeDetection=true}

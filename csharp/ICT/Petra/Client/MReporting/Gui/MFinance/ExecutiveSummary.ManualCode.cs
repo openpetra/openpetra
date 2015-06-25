@@ -28,9 +28,11 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -90,7 +92,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
 
             pm.Add("param_start_period_i", 1);
-            pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
 
             ArrayList reportParam = ACalc.GetParameters().Elems;
             Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
@@ -114,7 +115,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "Accounts");
             //
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
-            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
+            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+            DataView LedgerView = new DataView(LedgerNameTable);
+            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
+            String LedgerName = "";
+
+            if (LedgerView.Count > 0)
+            {
+                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
+            }
+
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
 

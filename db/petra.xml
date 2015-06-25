@@ -32,10 +32,7 @@
                 initial="no"/>
     <tablefield name="p_deletable_l"
                 type="bit"
-                descr="This defines if the language code can be deleted.
-&lt;br/&gt;This can only be updated by the system manager.
-&lt;br/&gt;At the risk of serious operational integrity.
-&lt;br/&gt;Default to Yes"
+                descr="This defines if the language code can be deleted."
                 format="Yes/No"
                 label="Deletable"
                 columnlabel="Deletable"
@@ -7223,14 +7220,6 @@
                 columnlabel="ICH Process"
                 notnull="yes"
                 initial="0"/>
-    <tablefield name="a_branch_processing_l"
-                type="bit"
-                descr="THis defines whether or not the ledger ha made up of separate branches/departments that are self contained (should balance)."
-                format="yes/no"
-                label="Branch Processing"
-                columnlabel="Branch pro"
-                help="If you have cost centres that need to balance then set to yes"
-                initial="no"/>
     <tablefield name="a_consolidation_ledger_l"
                 type="bit"
                 descr="Indicates whether the ledger is just for storing consolidated accounts (rather than a 'real' ledger)."
@@ -7692,8 +7681,10 @@
                 type="integer"
                 descr="Order to display the account or heading on the Balance Sheet &amp; Income Statement report."
                 format="&gt;&gt;9"
-                label="Report Order"/>
-    <!-- Constraints on table a_account_hierarchy_detail -->
+                label="Report Order"
+                initial="0"
+                notnull="yes"/>
+      <!-- Constraints on table a_account_hierarchy_detail -->
     <primarykey name="a_account_hierarchy_detail_pk"
                 descr=""
                 thisFields="a_ledger_number_i, a_account_hierarchy_code_c, a_reporting_account_code_c"/>
@@ -7841,12 +7832,28 @@
                 label="Type"
                 help="Type of cost centre (foreign or local)."
                 initial="Local"/>
-    <tablefield name="a_key_focus_area_c"
+    <tablefield name="a_clearing_account_c"
+                  type="varchar"
+                  descr="ICH or non-ICH clearing"
+                  format="X(12)"
+                  label="Clearing Account"
+                  help="Stewardship calculation will clear to this account."
+                  initial="8500"/>
+    <tablefield name="a_ret_earnings_account_code_c"
                 type="varchar"
-                descr="Key Focus Area that this cost centre relates to"
-                format="X(20)"
-                label="Key Focus Area"/>
-    <!-- Constraints on table a_cost_centre -->
+                descr="At Year End, Balance in this Cost Centre will roll up to this account"
+                format="X(12)"
+                label="Equity Account"
+                help="At Year End, Surplus or Deficit in this Cost Centre will carry forward into this account."
+                initial="9700"/>
+    <tablefield name="a_rollup_style_c"
+                  type="varchar"
+                  descr="Determine how to roll up the balance in this Cost Centre"
+                  format="X(12)"
+                  label="Rollup Style"
+                  help="How should this Cost Centre roll up to Standard Cost Centre"
+                  initial="Always"/>
+      <!-- Constraints on table a_cost_centre -->
     <primarykey name="a_cost_centre_pk"
                 descr=""
                 thisFields="a_ledger_number_i, a_cost_centre_code_c"/>
@@ -7860,11 +7867,6 @@
                 thisFields="a_ledger_number_i, a_cost_centre_type_c"
                 otherTable="a_cost_centre_types"
                 otherFields="a_ledger_number_i, a_cost_centre_type_c"/>
-    <foreignkey name="a_cost_centre_fk3"
-                descr=""
-                thisFields="a_key_focus_area_c"
-                otherTable="a_key_focus_area"
-                otherFields="a_key_focus_area_c"/>
     <!-- Explicit Indexes on table a_cost_centre  -->
   </table>
   <table name="a_valid_ledger_number"
@@ -8182,18 +8184,21 @@
                 descr=""
                 format="&gt;&gt;9"
                 label="Actuals Data Retention Period"
+                help="How many years to retain GL data."
                 initial="0"/>
     <tablefield name="a_budget_data_retention_i"
                 type="integer"
                 descr=""
                 format="&gt;&gt;9"
                 label="Budget Data Retention Period"
+                help="How many years to retain budget data."
                 initial="0"/>
     <tablefield name="a_number_fwd_posting_periods_i"
                 type="integer"
                 descr=""
                 format="&gt;,&gt;&gt;&gt;,&gt;&gt;9"
                 label="Number Fwd Posting Periods"
+                help="How many periods can be kept open."
                 initial="0"/>
     <tablefield name="a_ledger_number_i"
                 type="integer"
@@ -8862,6 +8867,13 @@
                 label="Form Description"
                 columnlabel="Form Description"
                 help="Enter the description of the form"/>
+    <tablefield name="a_form_file_name_c"
+                type="varchar"
+                descr="File name used for the form. Includes path information."
+                format="X(1000)"
+                label="File Name"
+                columnlabel="File Name"
+                help="Enter the file name used for the form"/>
     <tablefield name="a_form_type_code_c"
                 type="varchar"
                 descr="If there are several types of form then it can be specified here.  Eg an annual receipt and an individual receipt."
@@ -10377,7 +10389,7 @@
                 descr="This defines which currency is being used"
                 format="X(8)"
                 label="Transaction Currency"
-                help="Enter a currency code"
+                help="Currency code for this transaction"
                 notnull="yes"/>
     <!-- Constraints on table a_recurring_journal -->
     <primarykey name="a_recurring_journal_pk"
@@ -10467,7 +10479,7 @@
                 descr="This defines which currency is being used"
                 format="X(8)"
                 label="Transaction Currency"
-                help="Enter a currency code"/>
+                help="Currency code for this transaction"/>
     <tablefield name="a_transaction_amount_n"
                 type="number"
                 length="24"
@@ -10483,7 +10495,7 @@
                 descr="This defines which currency is being used"
                 format="X(8)"
                 label="Base Currency"
-                help="Enter a currency code"/>
+                help="Ledger currency code"/>
     <tablefield name="a_exchange_rate_to_base_n"
                 type="number"
                 length="24"
@@ -10551,6 +10563,7 @@
                 type="varchar"
                 descr=""
                 format="X(8)"
+                notnull="yes"
                 label="Reference"/>
     <tablefield name="a_date_of_entry_d"
                 type="date"
@@ -12171,6 +12184,60 @@
       <indexfield name="a_date_effective_d" order="ascending"/>
     </index>
   </table>
+  <table name="a_revaluation"
+         descr="Holds information used specifically in revaluations. The table extends the a_journal table."
+         area="Petra Data"
+         label="Revaluation"
+         dumpname="a_reval"
+         group="account">
+    <tablefield name="a_ledger_number_i"
+                type="integer"
+                descr="The revaluation journal belongs to this ledger."
+                format="&gt;&gt;&gt;9"
+                label="Ledger Number"
+                help="Enter the ledger number"
+                notnull="yes"
+                initial="0"/>
+    <tablefield name="a_batch_number_i"
+                type="integer"
+                descr="identifes which batch the revaluation journal belongs to."
+                format="&gt;&gt;&gt;&gt;&gt;9"
+                label="Batch Number"
+                help="The number of the batch containing this journal."
+                notnull="yes"
+                initial="0"/>
+    <tablefield name="a_journal_number_i"
+                type="integer"
+                descr="Identifies the revaluation journal within a batch (usually 1)"
+                format="&gt;&gt;&gt;&gt;&gt;9"
+                label="Journal Number"
+                help="The number of this journal."
+                notnull="yes"/>
+    <tablefield name="a_revaluation_currency_c"
+                type="varchar"
+                descr="This defines which revaluation currency the rate applies to"
+                format="X(8)"
+                label="Revaluation Currency"
+                notnull="yes"/>
+    <tablefield name="a_exchange_rate_to_base_n"
+                type="number"
+                length="24"
+                decimals="10"
+                descr="The rate of exchange from the revaluation currency (in a_revaluation_currency_c) to the ledger base currency."
+                format="&gt;,&gt;&gt;&gt;,&gt;&gt;9.99999999"
+                label="Exchange Rate to Base"
+                notnull="yes"
+                initial="0" />
+    <!-- Constraints on table a_revaluation -->
+    <primarykey name="a_revaluation_pk"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i, a_journal_number_i"/>
+    <foreignkey name="a_revaluation_fk1"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i"
+                otherTable="a_batch"
+                otherFields="a_ledger_number_i, a_batch_number_i"/>
+  </table>
   <table name="a_transaction"
          descr="Detailed information for each debit and credit in a general ledger journal."
          area="Petra Data"
@@ -12332,6 +12399,7 @@
                 type="varchar"
                 descr="Reference number/code for the transaction"
                 format="X(50)"
+                notnull="yes"
                 label="Reference"
                 help="(Optional) Enter a reference code."/>
     <tablefield name="a_source_reference_c"
@@ -12645,7 +12713,7 @@
                 descr="This defines which currency is being used"
                 format="x(8)"
                 label="Currency Code"
-                help="Enter a currency code"
+                help="Currency code"
                 notnull="yes"/>
     <tablefield name="p_language_code_c"
                 type="varchar"
@@ -21246,28 +21314,6 @@
     <primarykey name="p_first_contact_pk"
                 descr=""
                 thisFields="p_first_contact_code_c"/>
-  </table>  
-  <table name="a_key_focus_area"
-         descr="Lookup table for Key Focus Areas"
-         area="Petra Data"
-         label="Key Focus Area"
-         dumpname="a_key_fa"
-         group="account">
-    <tablefield name="a_key_focus_area_c"
-                type="varchar"
-                descr="Name of Key Focus Area"
-                format="X(20)"
-                label="Key Focus Area"
-                notnull="yes"/>
-    <tablefield name="a_key_focus_area_comment_c"
-                type="varchar"
-                descr="Comment"
-                format="X(200)"
-                label="Comment"/>
-    <!-- Constraints on table a_key_focus_area -->
-    <primarykey name="a_key_focus_area_pk"
-                descr=""
-                thisFields="a_key_focus_area_c"/>
   </table>  
   <table name="s_group_function"
          descr="Gives the group access to a particular function"

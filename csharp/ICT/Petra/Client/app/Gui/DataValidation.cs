@@ -120,5 +120,40 @@ namespace Ict.Petra.Client.App.Gui
 
             return ReturnValue;
         }
+
+        /// <summary>
+        /// Processes validation warnings by showing a Yes/No message box to the client.  The client can choose to ignore
+        /// the warnings and proceed with, for example, saving the data - or to cancel saving and adjust the entered data.
+        /// The method should only be used when it has been established that there are no validation errors but there is at
+        /// least one warning. Returns true in case the user answers Yes to the question, false otherwise.
+        /// </summary>
+        /// <param name="AVerificationResultCollection">A <see cref="TVerificationResultCollection" /> to inspect for
+        /// data verification errors.</param>
+        /// <param name="AQuestion">A Yes/No question to the client that is appended to the warning list.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of the calling WinForm.</param>
+        /// <returns>True (success) in case the user answers Yes, otherwise false.</returns>
+        public static bool ProcessAnyDataValidationWarnings(TVerificationResultCollection AVerificationResultCollection,
+            String AQuestion, Type ATypeWhichRaisesError)
+        {
+            bool ReturnValue = true;
+
+            if (AVerificationResultCollection.HasCriticalOrNonCriticalErrors && AVerificationResultCollection.HasOnlyNonCriticalErrors)
+            {
+                ReturnValue = false;
+
+                string errorMessages;
+                Control firstControl;
+                object context;
+                AVerificationResultCollection.BuildScreenVerificationResultList(out errorMessages, out firstControl, out context);
+
+                if (TMessages.MsgFormSaveVerificationWarning(errorMessages, AVerificationResultCollection[0].ResultCode,
+                        ATypeWhichRaisesError, AQuestion, false) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    ReturnValue = true;
+                }
+            }
+
+            return ReturnValue;
+        }
     }
 }

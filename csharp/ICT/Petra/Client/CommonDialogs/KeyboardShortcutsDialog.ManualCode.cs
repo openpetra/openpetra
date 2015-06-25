@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections;
 using System.Data;
 using System.Windows.Forms;
 
@@ -49,8 +50,27 @@ namespace Ict.Petra.Client.CommonDialogs
             List,
 
             /// FilterFind table
-            FilterFind
+            FilterFind,
+
+            /// PartnerEditContactDetailsTab table
+            PartnerEditContactDetailsTab
         };
+
+        /// <summary>
+        /// Determines the Tab that gets initially displayed. Must be set before the Form gets shown to have an effect!
+        /// </summary>
+        public string InitiallySelectedTab
+        {
+            get
+            {
+                return FInitiallySelectedTab;
+            }
+
+            set
+            {
+                FInitiallySelectedTab = value;
+            }
+        }
 
         /// <summary>
         /// Our main DataSet that will have one table per screen tab
@@ -59,6 +79,7 @@ namespace Ict.Petra.Client.CommonDialogs
         private string[] FColumnNames = new string[2] {
             Catalog.GetString("Shortcut"), Catalog.GetString("Description")
         };
+        private string FInitiallySelectedTab = String.Empty;
 
         private void InitializeManualCode()
         {
@@ -113,13 +134,65 @@ namespace Ict.Petra.Client.CommonDialogs
             AddShortcutInfoToTable(filterFindTable, ApplWideResourcestrings.StrKeyShortcutF3, ApplWideResourcestrings.StrKeyShortcutF3Help);
             AddShortcutInfoToTable(filterFindTable, ApplWideResourcestrings.StrKeyShortcutShiftF3, ApplWideResourcestrings.StrKeyShortcutShiftF3Help);
 
+            string partnerEditContactDetailsTabTable = KeyboardShortcutTableNames.PartnerEditContactDetailsTab.ToString();
+            AddTableToDataSet(partnerEditContactDetailsTabTable);
+
+            AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("F5"), Catalog.GetString(
+                    "New Records: Select Contact Type 'Phone'."));
+            AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("Shift+F5"), Catalog.GetString(
+                    "New Records: Select Contact Type 'Mobile Phone'."));
+            AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("F6"), Catalog.GetString(
+                    "New Records: Select Contact Type 'E-Mail'."));
+            AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("Shift+F6"), Catalog.GetString(
+                    "New Records: Select Contact Type 'Secure E-Mail'."));
+            AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("F7"), Catalog.GetString(
+                    "New Records: Select Contact Type 'Web Site'."));
+            AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("Shift+F7"), Catalog.GetString(
+                    "New Records: Select Contact Type 'Twitter'."));
+            AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("F8"), Catalog.GetString(
+                    "New Records: Select Contact Type 'Skype'."));
+            AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("Shift+F8"), Catalog.GetString(
+                    "New Records: Select Contact Type 'Lync'."));
+            AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("F9"), Catalog.GetString(
+                    "Send E-mail to 'Primary E-Mail' address'."));
+            AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("F10"), Catalog.GetString(
+                    "Send E-mail to 'Office E-Mail' address (when Partner is a PERSON) or to 'Secondary E-mail' address (when Partner is a FAMILY)."));
+            AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("F11"), Catalog.GetString(
+                    "Either send E-mail to E-mail address that is currently displayed in 'Value' or open Hyperlink that is currently displayed in 'Value'."));
+            AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("F12"), Catalog.GetString(
+                    "New Records of E-Mail or Phone Contact Type: Make Value the 'Primary E-mail' or the 'Primary Phone'."));
+
             this.btnCancel.Text = "&Close";
         }
 
         private void RunOnceOnActivationManual()
         {
+            ArrayList TabsToHide = new ArrayList();
+
             // Called when the screen has loaded
             tpgFilter.Text = Catalog.GetString("Filter and Find");
+            tpgPartnerEditContactDetailsTab.Text = Catalog.GetString("Partner Edit / Contact Details Tab");
+
+            //
+            // For some Forms (and Tabs on these Forms) we show a specific Shortcut Tab
+            //
+
+            // Partner Edit Form: Contact Details Tab.
+            if (FInitiallySelectedTab != String.Empty)
+            {
+                if (FInitiallySelectedTab == "PartnerEditContactDetailsTab")
+                {
+                    tabAllShortcuts.SelectedTab = tpgPartnerEditContactDetailsTab;
+                }
+            }
+            else
+            {
+                // Don't show specific Shortcut Tabs if they aren't requested!
+                TabsToHide.Add("tpgPartnerEditContactDetailsTab");
+            }
+
+            // Hide specific Shortcut Tabs that aren't requested
+            ControlsUtilities.HideTabs(tabAllShortcuts, TabsToHide);
         }
 
         private void TabSelectionChanged(object sender, EventArgs e)
@@ -140,6 +213,12 @@ namespace Ict.Petra.Client.CommonDialogs
             else if (tabAllShortcuts.SelectedTab == tpgFilter)
             {
                 InitialiseTab(KeyboardShortcutTableNames.FilterFind, ucoShortcutsFilterFind.HelpGrid, ucoShortcutsFilterFind.DescriptionLabel);
+            }
+            else if (tabAllShortcuts.SelectedTab == tpgPartnerEditContactDetailsTab)
+            {
+                InitialiseTab(KeyboardShortcutTableNames.PartnerEditContactDetailsTab,
+                    ucoShortcutsPartnerEditContactDetailsTab.HelpGrid,
+                    ucoShortcutsPartnerEditContactDetailsTab.DescriptionLabel);
             }
         }
 
@@ -182,6 +261,12 @@ namespace Ict.Petra.Client.CommonDialogs
 
                 case KeyboardShortcutTableNames.FilterFind:
                     ADescriptionLabel.Text = ApplWideResourcestrings.StrKeysHelpCategoryFilterFind;
+                    break;
+
+                case KeyboardShortcutTableNames.PartnerEditContactDetailsTab:
+                    ADescriptionLabel.Text = Catalog.GetString(
+                    "These keyboard shortcuts are specific to the Partner Edit screens' Contact Details Tab. Use them to " +
+                    "speed up entry of new Contact Detail records or to send E-mails conveniently.");
                     break;
             }
 

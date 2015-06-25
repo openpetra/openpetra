@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -114,8 +115,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
         /// the UserControl.</remarks>
-        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-        /// user, otherwise set it to false.</param>
+        /// <param name="ADataValidationProcessingMode">Set to TErrorProcessingMode.Epm_All if data validation errors should be shown to the
+        /// user, otherwise set it to TErrorProcessingMode.Epm_None.</param>
         /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
         /// specific Control for which Data Validation errors might have been recorded. (Default=null).
         /// <para>
@@ -125,11 +126,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </para>
         /// </param>
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        public bool ValidateAllData(TErrorProcessingMode ADataValidationProcessingMode, Control AValidateSpecificControl = null)
         {
             bool ReturnValue = true;
 
-            ReturnValue = ucoApplications.ValidateAllData(true, AProcessAnyDataValidationErrors, AValidateSpecificControl);
+            ReturnValue = ucoApplications.ValidateAllData(true, ADataValidationProcessingMode, AValidateSpecificControl);
 
             return ReturnValue;
         }

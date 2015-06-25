@@ -76,7 +76,9 @@ INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1
 -- setup sample ledger
 COPY a_ledger FROM '{#ABSOLUTEBASEDATAPATH}/a_ledger.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_cost_centre_types FROM '{#ABSOLUTEBASEDATAPATH}/a_cost_centre_types.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
-COPY a_cost_centre FROM '{#ABSOLUTEBASEDATAPATH}/a_cost_centre.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+
+INSERT INTO a_cost_centre(a_ledger_number_i,  a_cost_centre_code_c,  a_cost_centre_to_report_to_c,  a_cost_centre_name_c,  a_posting_cost_centre_flag_l,  a_cost_centre_active_flag_l,  a_project_status_l,  a_project_constraint_amount_n, a_system_cost_centre_flag_l, a_cost_centre_type_c, a_clearing_account_c, a_ret_earnings_account_code_c, a_rollup_style_c) VALUES (43,'4300','4300S','Germany, General',true,true,false,0,true,'Local', '8500','9700','Always'),(43,'4300S','[43]','Germany',false,true,false,0,true,'Local', '8500','9700','Always'),(43,'0400','ILT','International Clearing House',true,true,false,0,true,'Foreign', '8500','9700','Always'),(43,'3500','ILT','Switzerland',true,true,false,0,true,'Foreign', '8500','9700','Always'),(43,'7300','ILT','Kenya',true,true,false,0,true,'Foreign', '8500','9700','Always'),(43,'9500','ILT','Global Impact Fund',true,true,false,0,true,'Foreign', '8500','9700','Always'),(43,'ILT','[43]','Inter Ledger Transfer Total',false,true,false,0,true,'Local', '8500','9700','Always'),(43,'[43]',null,'[Germany]',false,true,false,0,true,'Local', '8500','9700','Always');
+
 COPY a_account FROM '{#ABSOLUTEBASEDATAPATH}/a_account.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_account_property_code FROM '{#ABSOLUTEBASEDATAPATH}/a_account_property_code.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_account_property FROM '{#ABSOLUTEBASEDATAPATH}/a_account_property.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';

@@ -47,11 +47,13 @@ OpenPetra:
 #                        AddNewChurchShepherd: {ActionOpenScreen=TShepherdChurchForm}
                     Contacts:
                         FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts, Description=Maintain Contacts of Partners}
-                    ImportExport: {Label=Import and Export}
-                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
+                    ImportExport: {Label=Import}
+#                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
                         ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from a file or satellite database}
                     Subscriptions: {Label=Subscriptions}
                         CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions, Label=Cancel Subscriptions, Description=Cancel all expired Subscriptions}
+                    Addresses: {Label=Addresses}
+                        DuplicateAddressCheck: {ActionOpenScreen=TFrmDuplicateAddressCheck, Label=Duplicate Address Check, Description=Search addresses for possible duplicates}
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster, Singleton=true}
@@ -464,9 +466,11 @@ OpenPetra:
                     Security:
                         Groups: {Label=Groups, Description=Maintain Security-related Groups, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmSecurityGroupSetup}
             Database:
-                ImportExport: {DontShowNestedTasksAsLinks=true}
-                    ExportAllData: {ActionClick=TSysManMain.ExportAllData}
-                    RestoreDatabaseFromBackup: {ActionClick=TSysManMain.RestoreDatabase, Description=Replaces all existing data with backed-up data}
+                Database: {DontShowNestedTasksAsLinks=true}
+                    ExportDatabase: {DontShowNestedTasksAsLinks=true}
+                        ExportAllData: {ActionClick=TSysManMain.ExportAllData}
+                    RestoreDatabase:
+                        RestoreDatabaseFromBackup: {ActionClick=TSysManMain.RestoreDatabase, Description=Replaces all existing data with backed-up data}
             Auditing:
                 Logs: {DontShowNestedTasksAsLinks=true}
                     #ErrorLog

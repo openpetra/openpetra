@@ -259,8 +259,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             DataTable PartnerKeysTable = ((DevAge.ComponentModel.BoundDataView)grdApplications.DataSource).DataView.ToTable();
 
             // create empty extract with given name and description and store it in db
-            if (PartnerExtractObject.CreateExtractFromListOfPartnerKeys(ExtractName, ExtractDescription, out ExtractId, PartnerKeysTable, 0, false,
-                    true))
+            if (PartnerExtractObject.CreateExtractFromListOfPartnerKeys(ExtractName, ExtractDescription, out ExtractId, PartnerKeysTable, 0, false))
             {
                 this.Cursor = Cursors.Default;
 

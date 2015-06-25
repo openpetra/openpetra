@@ -61,40 +61,38 @@
 						SELECT 
 							gift.p_donor_key_n AS DonorKey,
 							PUB_p_partner.p_partner_short_name_c AS ShortName,
-							PUB_p_partner.p_partner_class_c AS PartnerClass,
+							PUB_p_partner.p_partner_class_c AS PartnerClass
+						FROM
+							 PUB_a_gift as gift, 
+							 PUB_p_partner
+						WHERE
+								gift.a_date_entered_d BETWEEN {#param_start_date#} AND {#param_end_date#}
+							AND gift.a_ledger_number_i = {{param_ledger_number_i}}
+							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n 
+							
+							AND EXISTS (SELECT * FROM PUB_a_gift_detail, PUB_a_motivation_detail
+								WHERE PUB_a_gift_detail.a_ledger_number_i = gift.a_ledger_number_i
+								AND PUB_a_gift_detail.a_batch_number_i = gift.a_batch_number_i
+								AND PUB_a_gift_detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+								AND PUB_a_motivation_detail.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
+								AND PUB_a_motivation_detail.a_motivation_detail_code_c = PUB_a_gift_detail.a_motivation_detail_code_c
+								AND PUB_a_motivation_detail.a_ledger_number_i = {{param_ledger_number_i}}
+								AND PUB_a_motivation_detail.a_receipt_l = 1)
 						 </value>
 					</queryDetail>
-					<queryDetail condition="eq({param_currency}, Base)">
+					<queryDetail condition="eq({param_exclude_anonymous_donors}, true)">
 						<value>
-							SUM(detail.a_gift_amount_n) AS Amount
+							AND PUB_p_partner.p_anonymous_donor_l = 0
 						 </value>
 					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
+					<queryDetail condition="eq({param_exclude_no_solicitations}, true)">
 						<value>
-							SUM(detail.a_gift_amount_intl_n) AS Amount
+							AND PUB_p_partner.p_no_solicitations_l = 0
 						 </value>
 					</queryDetail>
 					<queryDetail>
 						<value>
-						FROM
-							 PUB_a_gift as gift, 
-							 PUB_a_gift_detail as detail,
-							 PUB_a_motivation_detail,
-							 PUB_p_partner
-						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND gift.a_date_entered_d BETWEEN {#param_start_date#} AND {#param_end_date#}
-							AND gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n 
-							
-							AND PUB_a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c
-							AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
-							AND PUB_a_motivation_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_motivation_detail.a_receipt_l = 1
-							
-							AND (SELECT
+							AND ABS((SELECT
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, Base)">
@@ -124,21 +122,8 @@
 					</queryDetail>
 					<queryDetail>
 						<value>
-								GROUP BY gd.a_gift_transaction_number_i) &gt; {{param_minimum_amount}}
-						</value>
-					</queryDetail>
-					<queryDetail condition="eq({param_exclude_anonymous_donors}, true)">
-						<value>
-							AND PUB_p_partner.p_anonymous_donor_l = 0
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_exclude_no_solicitations}, true)">
-						<value>
-							AND PUB_p_partner.p_no_solicitations_l = 0
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
+								GROUP BY gd.a_gift_transaction_number_i)) &gt;= {{param_minimum_amount}}
+
 							GROUP BY gift.p_donor_key_n, PUB_p_partner.p_partner_short_name_c, PUB_p_partner.p_partner_class_c
 						</value>
 					</queryDetail>
@@ -214,10 +199,21 @@
 							
 							AND PUB_a_motivation_detail.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_a_motivation_group.a_ledger_number_i = {{param_ledger_number_i}}
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_exclude_support_gifts}, true)">
+						<value>
+							AND ((UPPER(PUB_a_gift_detail.a_motivation_group_code_c) = 'GIFT'
+							AND UPPER(PUB_a_gift_detail.a_motivation_detail_code_c) != 'SUPPORT')
+							OR UPPER(PUB_a_gift_detail.a_motivation_group_code_c) != 'GIFT')
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
 							AND PUB_a_gift_detail.a_ledger_number_i =  {{param_ledger_number_i}}
 							AND PUB_a_gift.a_ledger_number_i =  {{param_ledger_number_i}}
 							
-							AND (SELECT
+							AND ABS((SELECT
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, Base)">
@@ -247,7 +243,7 @@
 					</queryDetail>
 					<queryDetail>
 						<value>
-								GROUP BY gd.a_gift_transaction_number_i) &gt; {{param_minimum_amount}}
+								GROUP BY gd.a_gift_transaction_number_i)) &gt;= {{param_minimum_amount}}
 						</value>
 					</queryDetail>
 				</query>

@@ -28,8 +28,11 @@ using System.Drawing;
 
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
+
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 
@@ -52,6 +55,29 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AJournalNumber"></param>
         public TAnalysisAttributes(int ALedgerNumber, int ABatchNumber, int AJournalNumber)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+            else if (AJournalNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Journal number must be greater than 0!"),
+                        Utilities.GetMethodName(true),
+                        AJournalNumber));
+            }
+
+            #endregion Validate Arguments
+
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
             FJournalNumber = AJournalNumber;
@@ -65,19 +91,19 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <returns></returns>
         public static string ConvertStringCollectionToCSV(StringCollection AStringCollection, string AWrapString = "")
         {
-            string csvRetVal = string.Empty;
+            string CSVRetVal = string.Empty;
 
-            int sizeCollection = AStringCollection.Count;
+            int SizeCollection = AStringCollection.Count;
 
-            if (sizeCollection > 0)
+            if (SizeCollection > 0)
             {
-                string[] allStrings = new string[sizeCollection];
+                string[] allStrings = new string[SizeCollection];
                 AStringCollection.CopyTo(allStrings, 0);
 
-                csvRetVal = AWrapString + String.Join(AWrapString + ", " + AWrapString, allStrings) + AWrapString;
+                CSVRetVal = AWrapString + String.Join(AWrapString + ", " + AWrapString, allStrings) + AWrapString;
             }
 
-            return csvRetVal;
+            return CSVRetVal;
         }
 
         /// <summary>
@@ -87,14 +113,25 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <returns></returns>
         public static ATransAnalAttribRow GetSelectedAttributeRow(TSgrdDataGridPaged AGrid)
         {
+            #region Validate Arguments
+
+            if (AGrid == null)
+            {
+                return null;
+            }
+
+            #endregion Validate Arguments
+
             DataRowView[] SelectedGridRow = AGrid.SelectedDataRowsAsDataRowView;
 
             if (SelectedGridRow.Length >= 1)
             {
                 return (ATransAnalAttribRow)SelectedGridRow[0].Row;
             }
-
-            return null;
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -104,33 +141,73 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <returns></returns>
         public static ARecurringTransAnalAttribRow GetSelectedRecurringAttributeRow(TSgrdDataGridPaged AGrid)
         {
+            #region Validate Arguments
+
+            if (AGrid == null)
+            {
+                return null;
+            }
+
+            #endregion Validate Arguments
+
             DataRowView[] SelectedGridRow = AGrid.SelectedDataRowsAsDataRowView;
 
             if (SelectedGridRow.Length >= 1)
             {
                 return (ARecurringTransAnalAttribRow)SelectedGridRow[0].Row;
             }
-
-            return null;
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="AGLBatchDS"></param>
-        /// <param name="AActiveOnly"></param>
         /// <param name="ATransactionNumber"></param>
         /// <param name="AAnalysisCodeFilterValues"></param>
         public void SetTransAnalAttributeDefaultView(GLBatchTDS AGLBatchDS,
-            bool AActiveOnly,
             Int32 ATransactionNumber = 0,
             String AAnalysisCodeFilterValues = "")
         {
+            #region Validate Arguments
+
+            if (AGLBatchDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AGLBatchDS.ATransAnalAttrib == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Transaction Analysis Attributes table is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ATransactionNumber < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Transaction number is < 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             if (FBatchNumber != -1)
             {
                 if (ATransactionNumber > 0)
                 {
-                    if (AActiveOnly && (AAnalysisCodeFilterValues.Length > 0))
+                    if (AAnalysisCodeFilterValues.Length == 0)
+                    {
+                        AGLBatchDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+                            ATransAnalAttribTable.GetBatchNumberDBName(),
+                            FBatchNumber,
+                            ATransAnalAttribTable.GetJournalNumberDBName(),
+                            FJournalNumber,
+                            ATransAnalAttribTable.GetTransactionNumberDBName(),
+                            ATransactionNumber);
+                    }
+                    else
                     {
                         AGLBatchDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6} IN ({7})",
                             ATransAnalAttribTable.GetBatchNumberDBName(),
@@ -142,24 +219,27 @@ namespace Ict.Petra.Client.MFinance.Logic
                             ATransAnalAttribTable.GetAnalysisTypeCodeDBName(),
                             AAnalysisCodeFilterValues);
                     }
+                }
+                else
+                {
+                    if (AAnalysisCodeFilterValues.Length == 0)
+                    {
+                        AGLBatchDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                            ATransAnalAttribTable.GetBatchNumberDBName(),
+                            FBatchNumber,
+                            ATransAnalAttribTable.GetJournalNumberDBName(),
+                            FJournalNumber);
+                    }
                     else
                     {
-                        AGLBatchDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+                        AGLBatchDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4} IN ({5})",
                             ATransAnalAttribTable.GetBatchNumberDBName(),
                             FBatchNumber,
                             ATransAnalAttribTable.GetJournalNumberDBName(),
                             FJournalNumber,
-                            ATransAnalAttribTable.GetTransactionNumberDBName(),
-                            ATransactionNumber);
+                            ATransAnalAttribTable.GetAnalysisTypeCodeDBName(),
+                            AAnalysisCodeFilterValues);
                     }
-                }
-                else
-                {
-                    AGLBatchDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3}",
-                        ATransAnalAttribTable.GetBatchNumberDBName(),
-                        FBatchNumber,
-                        ATransAnalAttribTable.GetJournalNumberDBName(),
-                        FJournalNumber);
                 }
 
                 AGLBatchDS.ATransAnalAttrib.DefaultView.Sort = String.Format("{0} ASC, {1} ASC",
@@ -179,11 +259,43 @@ namespace Ict.Petra.Client.MFinance.Logic
             Int32 ATransactionNumber = 0,
             String AAnalysisCodeFilterValues = "")
         {
+            #region Validate Arguments
+
+            if (AGLBatchDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AGLBatchDS.ARecurringTransAnalAttrib == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring Transaction Analysis Attributes table is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ATransactionNumber < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Transaction number is < 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             if (FBatchNumber != -1)
             {
                 if (ATransactionNumber > 0)
                 {
-                    if (AAnalysisCodeFilterValues.Length > 0)
+                    if (AAnalysisCodeFilterValues.Length == 0)
+                    {
+                        AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+                            ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                            FBatchNumber,
+                            ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                            FJournalNumber,
+                            ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                            ATransactionNumber);
+                    }
+                    else
                     {
                         AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6} IN ({7})",
                             ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
@@ -195,24 +307,27 @@ namespace Ict.Petra.Client.MFinance.Logic
                             ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName(),
                             AAnalysisCodeFilterValues);
                     }
+                }
+                else
+                {
+                    if (AAnalysisCodeFilterValues.Length == 0)
+                    {
+                        AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                            ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                            FBatchNumber,
+                            ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                            FJournalNumber);
+                    }
                     else
                     {
-                        AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+                        AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4} IN ({5})",
                             ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
                             FBatchNumber,
                             ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
                             FJournalNumber,
-                            ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
-                            ATransactionNumber);
+                            ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName(),
+                            AAnalysisCodeFilterValues);
                     }
-                }
-                else
-                {
-                    AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3}",
-                        ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
-                        FBatchNumber,
-                        ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
-                        FJournalNumber);
                 }
 
                 AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.Sort = String.Format("{0} ASC, {1} ASC",
@@ -226,21 +341,29 @@ namespace Ict.Petra.Client.MFinance.Logic
         ///
         /// </summary>
         /// <param name="AAccountCode"></param>
-        /// <param name="AAnalysisAttribute"></param>
+        /// <param name="AAnalysisAttributeTbl"></param>
         /// <param name="AAnalysisCode"></param>
         /// <returns></returns>
-        public bool AnalysisCodeIsActive(string AAccountCode, AAnalysisAttributeTable AAnalysisAttribute, String AAnalysisCode = "")
+        public bool AnalysisCodeIsActive(string AAccountCode, AAnalysisAttributeTable AAnalysisAttributeTbl, String AAnalysisCode = "")
         {
-            bool retVal = true;
+            #region Validate Arguments
 
-            if ((AAnalysisCode == string.Empty) || (AAccountCode == string.Empty))
+            if ((AAccountCode == string.Empty) || (AAnalysisCode == string.Empty))
             {
-                return retVal;
+                return true;
+            }
+            else if (AAnalysisAttributeTbl == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Analysis Attributes table is null!"),
+                        Utilities.GetMethodName(true)));
             }
 
-            DataView dv = new DataView(AAnalysisAttribute);
+            #endregion Validate Arguments
 
-            dv.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
+            DataView AnalysisDV = new DataView(AAnalysisAttributeTbl);
+
+            AnalysisDV.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
                 AAnalysisAttributeTable.GetLedgerNumberDBName(),
                 FLedgerNumber,
                 AAnalysisAttributeTable.GetAccountCodeDBName(),
@@ -249,30 +372,42 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AAnalysisCode,
                 AAnalysisAttributeTable.GetActiveDBName());
 
-            retVal = (dv.Count > 0);
-
-            return retVal;
+            return AnalysisDV.Count > 0;
         }
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="AGridCombo"></param>
-        /// <param name="AAnalysisAttribute"></param>
+        /// <param name="AFreeformAnalysisTbl"></param>
         /// <param name="AAnalysisCode"></param>
         /// <param name="AAnalysisAttributeValue"></param>
         /// <returns></returns>
-        public static bool AnalysisAttributeValueIsActive(ref SourceGrid.Cells.Editors.ComboBox AGridCombo, AFreeformAnalysisTable AAnalysisAttribute,
-            String AAnalysisCode = "", String AAnalysisAttributeValue = "")
+        public static bool AnalysisAttributeValueIsActive(ref SourceGrid.Cells.Editors.ComboBox AGridCombo,
+            AFreeformAnalysisTable AFreeformAnalysisTbl,
+            String AAnalysisCode = "",
+            String AAnalysisAttributeValue = "")
         {
-            bool retVal = true;
+            #region Validate Arguments
 
             if ((AAnalysisCode == string.Empty) || (AAnalysisAttributeValue == string.Empty))
             {
-                return retVal;
+                return true;
+            }
+            else if (AFreeformAnalysisTbl == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Freeform Analysis table is null!"),
+                        Utilities.GetMethodName(true)));
             }
 
-            DataView dv = new DataView(AAnalysisAttribute);
+            #endregion Validate Arguments
+
+            //Make sure the grid combobox has right font else it will adopt strikeout
+            // for all items in the list.
+            AGridCombo.Control.Font = new Font(FontFamily.GenericSansSerif, 8);
+
+            DataView dv = new DataView(AFreeformAnalysisTbl);
 
             dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
                 AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
@@ -281,13 +416,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AAnalysisAttributeValue,
                 AFreeformAnalysisTable.GetActiveDBName());
 
-            retVal = (dv.Count > 0);
-
-            //Make sure the grid combobox has right font else it will adopt strikeout
-            // for all items in the list.
-            AGridCombo.Control.Font = new Font(FontFamily.GenericSansSerif, 8);
-
-            return retVal;
+            return dv.Count > 0;
         }
 
         /// <summary>
@@ -299,15 +428,33 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AGLSetupDS">Can be null.  If supplied the code will use this data set to work out the required analysis attributes
         /// without a need to make a server call.  If not supplied the code will make a separate server call for each transaction row.  This may take several seconds.</param>
         /// <param name="ATransactionNumbers"></param>
-        public void ReconcileTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS, GLSetupTDS AGLSetupDS, out string ATransactionNumbers)
+        public void ReconcileTransAnalysisAttributes(GLBatchTDS AGLBatchDS, GLSetupTDS AGLSetupDS, out string ATransactionNumbers)
         {
+            #region Validate Arguments
+
+            if (AGLBatchDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AGLSetupDS == null)
+            {
+                AGLSetupDS = (GLSetupTDS)TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, false);
+            }
+            else if ((AGLSetupDS.AAnalysisAttribute == null) || (AGLSetupDS.AAnalysisAttribute.Count == 0))
+            {
+                AGLSetupDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, false));
+            }
+
+            #endregion Validate Arguments
+
             ATransactionNumbers = string.Empty;
 
             foreach (DataRowView drv in AGLBatchDS.ATransaction.DefaultView)
             {
                 ATransactionRow tr = (ATransactionRow)drv.Row;
 
-                if (ReconcileTransAnalysisAttributes(ref AGLBatchDS, AGLSetupDS, tr.AccountCode, tr.TransactionNumber))
+                if (TransAnalAttrRequiredUpdating(AGLBatchDS, AGLSetupDS, tr.AccountCode, tr.TransactionNumber))
                 {
                     ATransactionNumbers += tr.TransactionNumber.ToString() + ", ";
                 }
@@ -324,93 +471,189 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// Otherwise a server request is made.</param>
         /// <param name="AAccountCode"></param>
         /// <param name="ATransactionNumber"></param>
+        /// <param name="ACheckBatchStatus"></param>
         /// <returns></returns>
-        public bool ReconcileTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS,
+        public bool TransAnalAttrRequiredUpdating(GLBatchTDS AGLBatchDS,
             GLSetupTDS AGLSetupDS,
             string AAccountCode,
-            int ATransactionNumber)
+            int ATransactionNumber,
+            bool ACheckBatchStatus = true)
         {
-            bool RetVal = false;
+            #region Validate Arguments
 
-            if (string.IsNullOrEmpty(AAccountCode))
+            if (AGLBatchDS == null)
             {
-                return RetVal;
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString("Function:{0} - The GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ACheckBatchStatus && ((AGLBatchDS.ABatch == null) || (AGLBatchDS.ABatch.Count == 0)))
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The GL Batch table in the dataset was required but is null or empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AGLBatchDS.ATransAnalAttrib == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The GL Transaction Analysis Attributes table in the dataset is null or empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AAccountCode.Length == 0)
+            {
+                return false;
+            }
+            else if (ATransactionNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Transaction number must be greater than 0!"),
+                        Utilities.GetMethodName(true)));
             }
 
-            StringCollection RequiredAnalAttrCodes = new StringCollection();
+            #endregion Validate Arguments
 
-            if (AGLSetupDS == null)
+            try
             {
-                // This makes a remote call to the server, which is costly when this method is being called in a loop for all transactions
-                RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
-                    AAccountCode, true);
-            }
-            else
-            {
-                // This makes use of the supplied SetupTDS, which is useful if it has been loaded prior to a loop
-                AGLSetupDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}='{1}'",
-                    AAnalysisAttributeTable.GetAccountCodeDBName(),
-                    AAccountCode);
-
-                foreach (DataRowView drv in AGLSetupDS.AAnalysisAttribute.DefaultView)
+                if (ACheckBatchStatus)
                 {
-                    RequiredAnalAttrCodes.Add(drv.Row[AAnalysisAttributeTable.ColumnAnalysisTypeCodeId].ToString());
-                }
-            }
+                    //Check Batch Status and return if not unposted
+                    string batchFilter = String.Format("{0}={1}",
+                        ABatchTable.GetBatchNumberDBName(),
+                        FBatchNumber);
 
-            SetTransAnalAttributeDefaultView(AGLBatchDS, true, ATransactionNumber,
-                TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'"));
+                    DataRow[] batchRows = AGLBatchDS.ABatch.Select(batchFilter);
 
-            // If the AnalysisType list I'm currently using is the same as the list of required types, I can keep it (with any existing values).
-            bool existingListIsOk = (RequiredAnalAttrCodes.Count == AGLBatchDS.ATransAnalAttrib.DefaultView.Count);
+                    #region Validate Data
 
-            if (existingListIsOk)
-            {
-                foreach (DataRowView rv in AGLBatchDS.ATransAnalAttrib.DefaultView)
-                {
-                    ATransAnalAttribRow row = (ATransAnalAttribRow)rv.Row;
-
-                    if (!RequiredAnalAttrCodes.Contains(row.AnalysisTypeCode))
+                    if (batchRows.Length != 1)
                     {
-                        existingListIsOk = false;
-                        break;
+                        throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                                    "Function:{0} - GL Batch number {1} does not exist in the table!"),
+                                Utilities.GetMethodName(true),
+                                FBatchNumber));
+                    }
+
+                    #endregion Validate Data
+
+                    ABatchRow batchRow = (ABatchRow)batchRows[0];
+
+                    if (batchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                    {
+                        return false;
+                    }
+                }
+
+                //See what analysis attribute codes are required for the specified account code in this ledger
+                StringCollection requiredAnalAttrCodes = new StringCollection();
+                StringCollection currentAnalAttrCodes = new StringCollection();
+                StringCollection analAttrCodesToDelete = new StringCollection();
+                StringCollection analAttrCodesToAdd = new StringCollection();
+
+                if ((AGLSetupDS != null) && (AGLSetupDS.AAnalysisAttribute != null))
+                {
+                    // This makes use of the supplied GLSetupTDS
+                    AGLSetupDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}='{1}' And {2}=true",
+                        AAnalysisAttributeTable.GetAccountCodeDBName(),
+                        AAccountCode,
+                        AAnalysisAttributeTable.GetActiveDBName());
+
+                    foreach (DataRowView drv in AGLSetupDS.AAnalysisAttribute.DefaultView)
+                    {
+                        requiredAnalAttrCodes.Add(drv.Row[AAnalysisAttributeTable.ColumnAnalysisTypeCodeId].ToString());
+                    }
+                }
+                else
+                {
+                    //The server call is needed
+                    requiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+                        AAccountCode,
+                        true);
+                }
+
+                //Populate current codes and which ones to add or delete
+                // (Check if loading required)
+                SetTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber);
+
+                if (AGLBatchDS.ATransAnalAttrib.DefaultView.Count == 0)
+                {
+                    AGLBatchDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttribForJournal(FLedgerNumber, FBatchNumber, FJournalNumber));
+                }
+
+                foreach (DataRowView drv in AGLBatchDS.ATransAnalAttrib.DefaultView)
+                {
+                    ATransAnalAttribRow transAnalAttrRow = (ATransAnalAttribRow)drv.Row;
+
+                    //Populate the current codes string collection
+                    string analAttrCode = transAnalAttrRow.AnalysisTypeCode;
+                    currentAnalAttrCodes.Add(analAttrCode);
+
+                    if ((requiredAnalAttrCodes.Count == 0) || !requiredAnalAttrCodes.Contains(analAttrCode))
+                    {
+                        //Populate the invalid codes string collection
+                        analAttrCodesToDelete.Add(analAttrCode);
+                    }
+                }
+
+                foreach (string analAttrCode in requiredAnalAttrCodes)
+                {
+                    if (!currentAnalAttrCodes.Contains(analAttrCode))
+                    {
+                        //Populate the needed codes string collection
+                        analAttrCodesToAdd.Add(analAttrCode);
+                    }
+                }
+
+                //count collection sizes
+                int codesNumToAdd = analAttrCodesToAdd.Count;
+                int codesNumToDelete = analAttrCodesToDelete.Count;
+
+                //Nothing to add or take away
+                if ((codesNumToAdd == 0) && (codesNumToDelete == 0))
+                {
+                    //No difference detected
+                    return false;
+                }
+
+                //Delete invalid ones
+                if (codesNumToDelete > 0)
+                {
+                    foreach (DataRowView drv in AGLBatchDS.ATransAnalAttrib.DefaultView)
+                    {
+                        ATransAnalAttribRow attrRowCurrent = (ATransAnalAttribRow)drv.Row;
+
+                        if (analAttrCodesToDelete.Contains(attrRowCurrent.AnalysisTypeCode))
+                        {
+                            attrRowCurrent.Delete();
+                        }
+                    }
+                }
+
+                //Add missing ones
+                if (codesNumToAdd > 0)
+                {
+                    foreach (string analysisTypeCode in analAttrCodesToAdd)
+                    {
+                        ATransAnalAttribRow newRow = AGLBatchDS.ATransAnalAttrib.NewRowTyped(true);
+                        newRow.LedgerNumber = FLedgerNumber;
+                        newRow.BatchNumber = FBatchNumber;
+                        newRow.JournalNumber = FJournalNumber;
+                        newRow.TransactionNumber = ATransactionNumber;
+                        newRow.AnalysisTypeCode = analysisTypeCode;
+                        newRow.AccountCode = AAccountCode;
+                        newRow.AnalysisAttributeValue = string.Empty;
+
+                        AGLBatchDS.ATransAnalAttrib.Rows.Add(newRow);
                     }
                 }
             }
-
-            if (existingListIsOk)
+            catch (Exception ex)
             {
-                return RetVal;
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
-            // Delete any existing Analysis Type records and re-create the list (Removing any prior selections by the user).
-            //First show all attribute rows for current transaction
-            SetTransAnalAttributeDefaultView(AGLBatchDS, true, ATransactionNumber);
-
-            foreach (DataRowView rv in AGLBatchDS.ATransAnalAttrib.DefaultView)
-            {
-                ATransAnalAttribRow attrRowCurrent = (ATransAnalAttribRow)rv.Row;
-                attrRowCurrent.Delete();
-
-                RetVal = true;
-            }
-
-            foreach (String analysisTypeCode in RequiredAnalAttrCodes)
-            {
-                ATransAnalAttribRow newRow = AGLBatchDS.ATransAnalAttrib.NewRowTyped(true);
-                newRow.LedgerNumber = FLedgerNumber;
-                newRow.BatchNumber = FBatchNumber;
-                newRow.JournalNumber = FJournalNumber;
-                newRow.TransactionNumber = ATransactionNumber;
-                newRow.AnalysisTypeCode = analysisTypeCode;
-                newRow.AccountCode = AAccountCode;
-
-                AGLBatchDS.ATransAnalAttrib.Rows.Add(newRow);
-
-                RetVal = true;
-            }
-
-            return RetVal;
+            return true;
         }
 
         /// <summary>
@@ -420,15 +663,26 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AGLBatchDS"></param>
         /// <param name="ATransactionNumbers"></param>
-        public void ReconcileRecurringTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS, out string ATransactionNumbers)
+        public void ReconcileRecurringTransAnalysisAttributes(GLBatchTDS AGLBatchDS, out string ATransactionNumbers)
         {
+            #region Validate Arguments
+
+            if (AGLBatchDS == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             ATransactionNumbers = string.Empty;
 
             foreach (DataRowView drv in AGLBatchDS.ARecurringTransaction.DefaultView)
             {
                 ARecurringTransactionRow tr = (ARecurringTransactionRow)drv.Row;
 
-                if (ReconcileRecurringTransAnalysisAttributes(ref AGLBatchDS, tr.AccountCode, tr.TransactionNumber))
+                if (RecurringTransAnalAttrRequiredUpdating(AGLBatchDS, tr.AccountCode, tr.TransactionNumber))
                 {
                     ATransactionNumbers += tr.TransactionNumber.ToString() + ", ";
                 }
@@ -444,73 +698,179 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AAccountCode"></param>
         /// <param name="ATransactionNumber"></param>
         /// <returns></returns>
-        public bool ReconcileRecurringTransAnalysisAttributes(ref GLBatchTDS AGLBatchDS,
+        public bool RecurringTransAnalAttrRequiredUpdating(GLBatchTDS AGLBatchDS,
             string AAccountCode,
             int ATransactionNumber)
         {
-            bool RetVal = false;
+            #region Validate Arguments
 
-            if (string.IsNullOrEmpty(AAccountCode))
+            if (AGLBatchDS == null)
             {
-                return RetVal;
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring GL Batch dataset is null!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if ((AGLBatchDS.ARecurringBatch == null) || (AGLBatchDS.ARecurringBatch.Count == 0))
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring GL Batch table in the dataset is null or empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if ((AGLBatchDS.ARecurringTransaction == null) || (AGLBatchDS.ARecurringTransaction.Count == 0))
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring GL Transaction table in the dataset is null or empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AGLBatchDS.ARecurringTransAnalAttrib == null)
+            {
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Recurring GL Transaction Analysis Attributes table in the dataset is null or empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AAccountCode.Length == 0)
+            {
+                return false;
+            }
+            else if (ATransactionNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Transaction number must be greater than 0!"),
+                        Utilities.GetMethodName(true)));
             }
 
-            StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
-                AAccountCode, true);
+            #endregion Validate Arguments
 
-            SetRecurringTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber,
-                TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'"));
-
-            // If the AnalysisType list I'm currently using is the same as the list of required types, I can keep it (with any existing values).
-            bool existingListIsOk = (RequiredAnalAttrCodes.Count == AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.Count);
-
-            if (existingListIsOk)
+            try
             {
-                foreach (DataRowView rv in AGLBatchDS.ARecurringTransAnalAttrib.DefaultView)
-                {
-                    ARecurringTransAnalAttribRow row = (ARecurringTransAnalAttribRow)rv.Row;
+                //See what analysis attribute codes are required for the specified account code in this ledger
+                StringCollection requiredAnalAttrCodes = new StringCollection();
+                StringCollection currentAnalAttrCodes = new StringCollection();
+                StringCollection analAttrCodesToDelete = new StringCollection();
+                StringCollection analAttrCodesToAdd = new StringCollection();
 
-                    if (!RequiredAnalAttrCodes.Contains(row.AnalysisTypeCode))
+                //The server call is needed
+                requiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+                    AAccountCode,
+                    true);
+
+                //Populate current codes and which ones to add or delete
+                // (Check if loading required)
+                SetRecurringTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber);
+
+                //First check if loading required
+                if (AGLBatchDS.ARecurringTransAnalAttrib.DefaultView.Count == 0)
+                {
+                    AGLBatchDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransAnalAttribForJournal(FLedgerNumber, FBatchNumber,
+                            FJournalNumber));
+                }
+
+                foreach (DataRowView drv in AGLBatchDS.ARecurringTransAnalAttrib.DefaultView)
+                {
+                    ARecurringTransAnalAttribRow transAnalAttrRow = (ARecurringTransAnalAttribRow)drv.Row;
+
+                    string analAttrCode = transAnalAttrRow.AnalysisTypeCode;
+
+                    //Populate the current codes string collection
+                    currentAnalAttrCodes.Add(analAttrCode);
+
+                    if ((requiredAnalAttrCodes.Count == 0) || !requiredAnalAttrCodes.Contains(analAttrCode))
                     {
-                        existingListIsOk = false;
-                        break;
+                        //Populate the invalid codes string collection
+                        analAttrCodesToDelete.Add(analAttrCode);
+                    }
+                }
+
+                foreach (string analAttrCode in requiredAnalAttrCodes)
+                {
+                    if (!currentAnalAttrCodes.Contains(analAttrCode))
+                    {
+                        //Populate the needed codes string collection
+                        analAttrCodesToAdd.Add(analAttrCode);
+                    }
+                }
+
+                //count collection sizes
+                int codesNumToAdd = analAttrCodesToAdd.Count;
+                int codesNumToDelete = analAttrCodesToDelete.Count;
+
+                //Nothing to add or take away
+                if ((codesNumToAdd == 0) && (codesNumToDelete == 0))
+                {
+                    //No difference detected
+                    return false;
+                }
+
+                //Delete invalid ones
+                if (codesNumToDelete > 0)
+                {
+                    foreach (DataRowView drv in AGLBatchDS.ARecurringTransAnalAttrib.DefaultView)
+                    {
+                        ARecurringTransAnalAttribRow attrRowCurrent = (ARecurringTransAnalAttribRow)drv.Row;
+
+                        if (analAttrCodesToDelete.Contains(attrRowCurrent.AnalysisTypeCode))
+                        {
+                            attrRowCurrent.Delete();
+                        }
+                    }
+                }
+
+                //Add missing ones
+                if (codesNumToAdd > 0)
+                {
+                    //Access the transaction row
+                    string transFilter = String.Format("{0}={1} And {2}={3} And {4}={5}",
+                        ARecurringTransactionTable.GetBatchNumberDBName(),
+                        FBatchNumber,
+                        ARecurringTransactionTable.GetJournalNumberDBName(),
+                        FJournalNumber,
+                        ARecurringTransactionTable.GetTransactionNumberDBName(),
+                        ATransactionNumber);
+
+                    DataRow[] transRows = AGLBatchDS.ARecurringTransaction.Select(transFilter);
+
+                    #region Validate Data
+
+                    if (transRows.Length != 1)
+                    {
+                        throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(
+                                Catalog.GetString(
+                                    "Function:{0} - Transaction number {1} in Recurring GL Batch {2} and Journal {3} does not exist in the table!"),
+                                Utilities.GetMethodName(true),
+                                FBatchNumber,
+                                FJournalNumber,
+                                ATransactionNumber));
+                    }
+
+                    #endregion Validate Data
+
+                    ARecurringTransactionRow transRow = (ARecurringTransactionRow)transRows[0];
+
+                    foreach (string analysisTypeCode in analAttrCodesToAdd)
+                    {
+                        ARecurringTransAnalAttribRow newRow = AGLBatchDS.ARecurringTransAnalAttrib.NewRowTyped(true);
+                        newRow.LedgerNumber = FLedgerNumber;
+                        newRow.BatchNumber = FBatchNumber;
+                        newRow.JournalNumber = FJournalNumber;
+                        newRow.TransactionNumber = ATransactionNumber;
+                        newRow.AnalysisTypeCode = analysisTypeCode;
+                        newRow.AccountCode = AAccountCode;
+                        newRow.CostCentreCode = transRow.CostCentreCode;
+                        newRow.AnalysisAttributeValue = string.Empty;
+
+                        AGLBatchDS.ARecurringTransAnalAttrib.Rows.Add(newRow);
                     }
                 }
             }
-
-            if (existingListIsOk)
+            catch (Exception ex)
             {
-                return RetVal;
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
 
-            // Delete any existing Analysis Type records and re-create the list (Removing any prior selections by the user).
-            //First show all attribute rows for current transaction
-            SetRecurringTransAnalAttributeDefaultView(AGLBatchDS, ATransactionNumber);
-
-            foreach (DataRowView rv in AGLBatchDS.ARecurringTransAnalAttrib.DefaultView)
-            {
-                ARecurringTransAnalAttribRow attrRowCurrent = (ARecurringTransAnalAttribRow)rv.Row;
-                attrRowCurrent.Delete();
-
-                RetVal = true;
-            }
-
-            foreach (String analysisTypeCode in RequiredAnalAttrCodes)
-            {
-                ARecurringTransAnalAttribRow newRow = AGLBatchDS.ARecurringTransAnalAttrib.NewRowTyped(true);
-                newRow.LedgerNumber = FLedgerNumber;
-                newRow.BatchNumber = FBatchNumber;
-                newRow.JournalNumber = FJournalNumber;
-                newRow.TransactionNumber = ATransactionNumber;
-                newRow.AnalysisTypeCode = analysisTypeCode;
-                newRow.AccountCode = AAccountCode;
-
-                AGLBatchDS.ARecurringTransAnalAttrib.Rows.Add(newRow);
-
-                RetVal = true;
-            }
-
-            return RetVal;
+            return true;
         }
 
         /// <summary>

@@ -42,13 +42,13 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.MCommon;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Validation;
-using Ict.Petra.Shared.Interfaces.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -57,12 +57,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private Int32 FSelectedBatchNumber = -1;
         private DateTime FDefaultDate = DateTime.Today;
-        //private bool FBatchesLoaded = false;
         private bool FInitialFocusActionComplete = false;
 
         private GLSetupTDS FCacheDS;
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
+
+        /// <summary>
+        /// load the batches into the grid
+        /// </summary>
+        public Int32 LedgerNumber
+        {
+            set
+            {
+                FLedgerNumber = value;
+            }
+        }
 
         private void InitialiseControls()
         {
@@ -75,7 +85,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ALedgerNumber"></param>
         public void LoadBatches(Int32 ALedgerNumber)
         {
-            //FBatchesLoaded = false;
             InitialiseControls();
 
             FLedgerNumber = ALedgerNumber;
@@ -115,29 +124,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             UpdateChangeableStatus();
             UpdateRecordNumberDisplay();
             SetAccountCostCentreTableVariables();
-
-            //FBatchesLoaded = true;
-        }
-
-        /// reset the control
-        public void ClearCurrentSelection()
-        {
-            if (FPetraUtilsObject.HasChanges)
-            {
-                GetDataFromControls();
-            }
-
-            this.FPreviouslySelectedDetailRow = null;
-            ShowData();
-        }
-
-        /// <summary>
-        /// Returns FMainDS
-        /// </summary>
-        /// <returns></returns>
-        public GLBatchTDS RecurringBatchFMainDS()
-        {
-            return FMainDS;
         }
 
         /// <summary>
@@ -160,6 +146,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void LoadJournalsForCurrentRecurringBatch()
         {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
             //Current Batch number
             Int32 BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
@@ -171,7 +162,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, BatchNumber));
+                    ((TFrmRecurringGLBatch) this.ParentForm).LoadJournals(BatchNumber);
+                    //FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, BatchNumber));
                 }
             }
         }
@@ -186,13 +178,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void UpdateChangeableStatus()
         {
-            Boolean allowSubmit = (FPreviouslySelectedDetailRow != null)
-                                  && (grdDetails.Rows.Count > 1);
+            Boolean Submitable = ((FPreviouslySelectedDetailRow != null)
+                                  && (grdDetails.Rows.Count > 1));
 
-            FPetraUtilsObject.EnableAction("actSubmitBatch", allowSubmit);
-            FPetraUtilsObject.EnableAction("actDelete", allowSubmit);
-            pnlDetails.Enabled = allowSubmit;
-            pnlDetailsProtected = !allowSubmit;
+            FPetraUtilsObject.EnableAction("actSubmitBatch", Submitable);
+            FPetraUtilsObject.EnableAction("actDelete", Submitable);
+            pnlDetails.Enabled = Submitable;
+            pnlDetailsProtected = !Submitable;
 
             if ((FPreviouslySelectedDetailRow == null) && (((TFrmRecurringGLBatch) this.ParentForm) != null))
             {
@@ -211,7 +203,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ParseHashTotal(ARow);
 
-            TSharedFinanceValidation_GL.ValidateRecurringGLBatchManual(this, ARow, ref VerificationResultCollection,
+            TSharedFinanceValidation_GL.ValidateRecurringGLBatchManual(this,
+                ARow,
+                ref VerificationResultCollection,
                 FValidationControlsDict);
 
             //TODO: remove this once database definition is set for Batch Description to be NOT NULL
@@ -237,21 +231,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ParseHashTotal(ARecurringBatchRow ARow)
         {
-            decimal correctHashValue = 0m;
-
             if ((txtDetailBatchControlTotal.NumberValueDecimal == null) || !txtDetailBatchControlTotal.NumberValueDecimal.HasValue)
             {
                 bool prev = FPetraUtilsObject.SuppressChangeDetection;
                 FPetraUtilsObject.SuppressChangeDetection = true;
-                txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
+                txtDetailBatchControlTotal.NumberValueDecimal = 0m;
                 FPetraUtilsObject.SuppressChangeDetection = prev;
             }
-            else
-            {
-                correctHashValue = txtDetailBatchControlTotal.NumberValueDecimal.Value;
-            }
 
-            ARow.BatchControlTotal = correctHashValue;
+            if (ARow.BatchControlTotal != txtDetailBatchControlTotal.NumberValueDecimal.Value)
+            {
+                ARow.BatchControlTotal = txtDetailBatchControlTotal.NumberValueDecimal.Value;
+            }
         }
 
         private void ShowDetailsManual(ARecurringBatchRow ARow)
@@ -313,174 +304,40 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            CreateNewARecurringBatch();
-
-            pnlDetails.Enabled = true;
-            EnableButtonControl(true);
-
-            ARecurringBatchRow newBatchRow = GetSelectedDetailRow();
-            Int32 yearNumber = 0;
-            Int32 periodNumber = 0;
-
-            if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
+            if (CreateNewARecurringBatch())
             {
-                newBatchRow.BatchPeriod = periodNumber;
+                if (!EnsureNewBatchIsVisible())
+                {
+                    return;
+                }
+
+                pnlDetails.Enabled = true;
+                EnableButtonControl(true);
             }
 
-            newBatchRow.DateEffective = FDefaultDate;
+            Int32 YearNumber;
+            Int32 PeriodNumber;
 
-            FSelectedBatchNumber = newBatchRow.BatchNumber;
+            if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out YearNumber, out PeriodNumber))
+            {
+                FPreviouslySelectedDetailRow.BatchPeriod = PeriodNumber;
+            }
+
+            FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
+            FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+
+            UpdateRecordNumberDisplay();
+
+            //Automatically save changes
+            ((TFrmRecurringGLBatch) this.ParentForm).SaveChanges();
 
             //Enable the Journals if not already enabled
             ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
-
-            ((TFrmRecurringGLBatch) this.ParentForm).SaveChanges();
         }
 
         private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
         {
             return TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
-        }
-
-        private bool PreDeleteManual(ARecurringBatchRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            bool allowDeletion = true;
-
-            if (FPreviouslySelectedDetailRow != null)
-            {
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete recurring Batch {0}?"),
-                    ARowToDelete.BatchNumber);
-            }
-
-            return allowDeletion;
-        }
-
-        /// <summary>
-        /// Deletes the current row and optionally populates a completion message
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to delete</param>
-        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ARecurringBatchRow ARowToDelete, ref string ACompletionMessage)
-        {
-            int BatchNumber = ARowToDelete.BatchNumber;
-
-            // Delete on client side data through views that is already loaded. Data that is not
-            // loaded yet will be deleted with cascading delete on server side so we don't have
-            // to worry about this here.
-
-            ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
-                BatchNumber);
-
-            // Delete the associated recurring transaction analysis attributes
-            DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
-            viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-                ARecurringTransAnalAttribTable.GetLedgerNumberDBName(),
-                FLedgerNumber,
-                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
-                BatchNumber);
-
-            foreach (DataRowView row in viewRecurringTransAnalAttrib)
-            {
-                row.Delete();
-            }
-
-            // Delete the associated recurring transactions
-            DataView viewRecurringTransaction = new DataView(FMainDS.ARecurringTransaction);
-            viewRecurringTransaction.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-                ARecurringTransactionTable.GetLedgerNumberDBName(),
-                FLedgerNumber,
-                ARecurringTransactionTable.GetBatchNumberDBName(),
-                BatchNumber);
-
-            foreach (DataRowView row in viewRecurringTransaction)
-            {
-                row.Delete();
-            }
-
-            // Delete the associated recurring journals
-            DataView viewRecurringJournal = new DataView(FMainDS.ARecurringJournal);
-            viewRecurringJournal.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-                ARecurringJournalTable.GetLedgerNumberDBName(),
-                FLedgerNumber,
-                ARecurringJournalTable.GetBatchNumberDBName(),
-                BatchNumber);
-
-            foreach (DataRowView row in viewRecurringJournal)
-            {
-                row.Delete();
-            }
-
-            // Delete the recurring batch row.
-            ARowToDelete.Delete();
-
-            UpdateRecordNumberDisplay();
-
-            return true;
-        }
-
-        /// <summary>
-        /// Code to be run after the deletion process
-        /// </summary>
-        /// <param name="ARowToDelete">the row that was/was to be deleted</param>
-        /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
-        /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
-        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        private void PostDeleteManual(ARecurringBatchRow ARowToDelete,
-            bool AAllowDeletion,
-            bool ADeletionPerformed,
-            string ACompletionMessage)
-        {
-            /*Code to execute after the delete has occurred*/
-            if (ADeletionPerformed && (ACompletionMessage.Length > 0))
-            {
-                //causes saving issues
-                //UpdateLedgerTableSettings();
-                ((TFrmRecurringGLBatch) this.ParentForm).SaveChanges();
-                MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
-            }
-
-            UpdateChangeableStatus();
-
-            if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
-            {
-                ClearControls();
-            }
-
-            if (grdDetails.Rows.Count > 1)
-            {
-                ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
-            }
-            else
-            {
-                ((TFrmRecurringGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
-                ((TFrmRecurringGLBatch)ParentForm).DisableJournals();
-            }
-
-            SetInitialFocus();
-        }
-
-        private void UpdateLedgerTableSettings()
-        {
-            int LedgerLastRecurringGLBatchNumber = 0;
-
-            //Update the last recurring GL batch number
-            DataView RecurringGLBatchDV = new DataView(FMainDS.ARecurringBatch);
-
-            RecurringGLBatchDV.RowFilter = string.Empty;
-            RecurringGLBatchDV.Sort = string.Format("{0} DESC",
-                ARecurringBatchTable.GetBatchNumberDBName());
-
-            //Recurring batch numbers can be reused so reset current highest number
-            if (RecurringGLBatchDV.Count > 0)
-            {
-                LedgerLastRecurringGLBatchNumber = (int)(RecurringGLBatchDV[0][ARecurringBatchTable.GetBatchNumberDBName()]);
-            }
-
-            if (FMainDS.ALedger[0].LastRecurringBatchNumber != LedgerLastRecurringGLBatchNumber)
-            {
-                FMainDS.ALedger[0].LastRecurringBatchNumber = LedgerLastRecurringGLBatchNumber;
-            }
         }
 
         private void ClearControls()
@@ -495,6 +352,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FPetraUtilsObject.EnableDataChangedEvent();
             }
+        }
+
+        private void ClearDetailControls()
+        {
+            FPetraUtilsObject.SuppressChangeDetection = true;
+            txtDetailBatchDescription.Text = string.Empty;
+            txtDetailBatchControlTotal.NumberValueDecimal = 0;
+            FPetraUtilsObject.SuppressChangeDetection = false;
         }
 
         private int GetDataTableRowIndexByPrimaryKeys(int ALedgerNumber, int ABatchNumber)
@@ -525,30 +390,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Set focus to the gid controltab
-        /// </summary>
-        public void FocusGrid()
-        {
-            if ((grdDetails != null) && grdDetails.CanFocus)
-            {
-                grdDetails.Focus();
-            }
-        }
-
-        /// <summary>
-        /// Shows the Filter/Find UserControl and switches to the Find Tab.
-        /// </summary>
-        public void ShowFindPanel()
-        {
-            if (FFilterAndFindObject.FilterFindPanel == null)
-            {
-                FFilterAndFindObject.ToggleFilter();
-            }
-
-            FFilterAndFindObject.FilterFindPanel.DisplayFindTab();
-        }
-
-        /// <summary>
         /// Sets the initial focus to the grid or the New button depending on the row count
         /// </summary>
         public void SetInitialFocus()
@@ -558,25 +399,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if (grdDetails.CanFocus)
+            if (grdDetails.Rows.Count <= 1)
             {
-                if (grdDetails.Rows.Count < 2)
-                {
-                    btnNew.Focus();
-                }
-                else if (grdDetails.CanFocus)
-                {
-                    grdDetails.Focus();
-                }
-
-                FInitialFocusActionComplete = true;
+                btnNew.Focus();
             }
+            else if (grdDetails.CanFocus)
+            {
+                grdDetails.Focus();
+            }
+
+            FInitialFocusActionComplete = true;
         }
 
         private void RunOnceOnParentActivationManual()
         {
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+
+            txtDetailBatchControlTotal.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
+
+            LoadBatches(FLedgerNumber);
+
+            SetInitialFocus();
         }
 
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
@@ -585,20 +429,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 grdDetails.AutoResizeGrid();
             }
-        }
-
-        private int CurrentRowIndex()
-        {
-            int rowIndex = -1;
-
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
-            {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
-
-            return rowIndex;
         }
 
         private void SubmitBatch(System.Object sender, EventArgs e)
@@ -817,26 +647,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void SetAccountCostCentreTableVariables()
         {
             //Populate CostCentreList variable
-            DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+            DataTable CostCentreListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
                 FLedgerNumber);
 
             ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
 
             FMainDS.Tables.Add(tmpCostCentreTable);
-            DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            DataUtilities.ChangeDataTableToTypedDataTable(ref CostCentreListTable, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
             FMainDS.RemoveTable(tmpCostCentreTable.TableName);
 
-            FCostCentreTable = (ACostCentreTable)costCentreList;
+            FCostCentreTable = (ACostCentreTable)CostCentreListTable;
 
             //Populate AccountList variable
-            DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+            DataTable AccountListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
 
             AAccountTable tmpAccountTable = new AAccountTable();
             FMainDS.Tables.Add(tmpAccountTable);
-            DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            DataUtilities.ChangeDataTableToTypedDataTable(ref AccountListTable, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
             FMainDS.RemoveTable(tmpAccountTable.TableName);
 
-            FAccountTable = (AAccountTable)accountList;
+            FAccountTable = (AAccountTable)AccountListTable;
         }
 
         private bool AnalysisCodeIsActive(String AAccountCode, String AAnalysisCode = "")
@@ -923,6 +753,189 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return retVal;
+        }
+
+        private bool EnsureNewBatchIsVisible()
+        {
+            // Can we see the new row, bearing in mind we have filtering that the standard filter code does not know about?
+            DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+            Int32 RowNumberGrid =
+                DataUtilities.GetDataViewIndexByDataTableIndex(dv, FMainDS.ARecurringBatch, FMainDS.ARecurringBatch.Rows.Count - 1) + 1;
+
+            if (RowNumberGrid < 1)
+            {
+                MessageBox.Show(
+                    Catalog.GetString(
+                        "The new row has been added but the filter may be preventing it from being displayed. The filter will be reset."),
+                    Catalog.GetString("New Batch"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
+
+                if (SelectDetailRowByDataTableIndex(FMainDS.ARecurringBatch.Rows.Count - 1))
+                {
+                    // Good - we found the row so now we need to do the other stuff to the new record
+                    txtDetailBatchDescription.Text = MCommonResourcestrings.StrPleaseEnterDescription;
+                    txtDetailBatchDescription.Focus();
+                }
+                else
+                {
+                    // This is not supposed to happen!!
+                    MessageBox.Show(
+                        Catalog.GetString(
+                            "The filter was reset but unexpectedly the new batch is not in the list. Please close the screen and do not save changes."),
+                        Catalog.GetString("New Batch"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void ApplyFilterManual(ref string AFilterString)
+        {
+        }
+
+        private bool PreDeleteManual(ARecurringBatchRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            bool allowDeletion = true;
+
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete recurring Batch {0}?"),
+                    ARowToDelete.BatchNumber);
+            }
+
+            return allowDeletion;
+        }
+
+        /// <summary>
+        /// Deletes the current row and optionally populates a completion message
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to delete</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        /// <returns>true if row deletion is successful</returns>
+        private bool DeleteRowManual(ARecurringBatchRow ARowToDelete, ref string ACompletionMessage)
+        {
+            int BatchNumber = ARowToDelete.BatchNumber;
+
+            // Delete on client side data through views that is already loaded. Data that is not
+            // loaded yet will be deleted with cascading delete on server side so we don't have
+            // to worry about this here.
+
+            ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
+                BatchNumber);
+
+            // Delete the associated recurring transaction analysis attributes
+            DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
+            viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                ARecurringTransAnalAttribTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                BatchNumber);
+
+            foreach (DataRowView row in viewRecurringTransAnalAttrib)
+            {
+                row.Delete();
+            }
+
+            // Delete the associated recurring transactions
+            DataView viewRecurringTransaction = new DataView(FMainDS.ARecurringTransaction);
+            viewRecurringTransaction.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                ARecurringTransactionTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                BatchNumber);
+
+            foreach (DataRowView row in viewRecurringTransaction)
+            {
+                row.Delete();
+            }
+
+            // Delete the associated recurring journals
+            DataView viewRecurringJournal = new DataView(FMainDS.ARecurringJournal);
+            viewRecurringJournal.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                ARecurringJournalTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                BatchNumber);
+
+            foreach (DataRowView row in viewRecurringJournal)
+            {
+                row.Delete();
+            }
+
+            // Delete the recurring batch row.
+            ARowToDelete.Delete();
+
+            UpdateRecordNumberDisplay();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Code to be run after the deletion process
+        /// </summary>
+        /// <param name="ARowToDelete">the row that was/was to be deleted</param>
+        /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
+        /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        private void PostDeleteManual(ARecurringBatchRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            /*Code to execute after the delete has occurred*/
+            if (ADeletionPerformed && (ACompletionMessage.Length > 0))
+            {
+                //causes saving issues
+                //UpdateLedgerTableSettings();
+                ((TFrmRecurringGLBatch) this.ParentForm).SaveChanges();
+                MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
+            }
+
+            UpdateChangeableStatus();
+
+            if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
+            {
+                ClearControls();
+            }
+
+            if (grdDetails.Rows.Count > 1)
+            {
+                ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
+            }
+            else
+            {
+                ((TFrmRecurringGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                ((TFrmRecurringGLBatch)ParentForm).DisableJournals();
+            }
+
+            SetInitialFocus();
+        }
+
+        private void UpdateLedgerTableSettings()
+        {
+            int LedgerLastRecurringGLBatchNumber = 0;
+
+            //Update the last recurring GL batch number
+            DataView RecurringGLBatchDV = new DataView(FMainDS.ARecurringBatch);
+
+            RecurringGLBatchDV.RowFilter = string.Empty;
+            RecurringGLBatchDV.Sort = string.Format("{0} DESC",
+                ARecurringBatchTable.GetBatchNumberDBName());
+
+            //Recurring batch numbers can be reused so reset current highest number
+            if (RecurringGLBatchDV.Count > 0)
+            {
+                LedgerLastRecurringGLBatchNumber = (int)(RecurringGLBatchDV[0][ARecurringBatchTable.GetBatchNumberDBName()]);
+            }
+
+            if (FMainDS.ALedger[0].LastRecurringBatchNumber != LedgerLastRecurringGLBatchNumber)
+            {
+                FMainDS.ALedger[0].LastRecurringBatchNumber = LedgerLastRecurringGLBatchNumber;
+            }
         }
     }
 }

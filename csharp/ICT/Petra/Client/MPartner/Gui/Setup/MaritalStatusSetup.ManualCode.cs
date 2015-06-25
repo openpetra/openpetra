@@ -67,13 +67,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             CreateNewPtMaritalStatus();
         }
 
-        private void EnableDisableAssignableDate(Object sender, EventArgs e)
+        private void EnableDisableUnassignableDate(Object sender, EventArgs e)
         {
             dtpDetailAssignableDate.Enabled = !chkDetailAssignableFlag.Checked;
 
             if (chkDetailAssignableFlag.Checked)
             {
                 dtpDetailAssignableDate.Date = null;
+
+                // Hide any shown Data Validation ToolTip as the Data Validation ToolTip for an
+                // empty Unassignable Date might otherwise be left shown
+                FPetraUtilsObject.ValidationToolTip.RemoveAll();
             }
             else
             {

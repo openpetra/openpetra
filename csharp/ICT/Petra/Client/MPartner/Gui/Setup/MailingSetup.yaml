@@ -21,8 +21,11 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [txtDetailMailingCode, txtDetailMailingDescription, txtDetailMailingCost]
+            FilterControls: [txtDetailMailingCode, txtDetailMailingDescription, dtpDetailMailingDate-1, dtpDetailMailingDate-2]
             FindControls: [txtDetailMailingCode, txtDetailMailingDescription]
+            ControlAttributes: 
+                dtpDetailMailingDate-1: {Comparison=gte, Label=Since Mailing Date}
+                dtpDetailMailingDate-2: {Comparison=lte, Label=Before Mailing Date}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -50,4 +53,4 @@ RootNode:
         txtDetailMailingCode: {Label=Mailing Code, CharacterCasing=Upper, Width=180}
         txtDetailMailingDescription: {Label=Description, Width=400}
         dtpDetailMailingDate: {Label=Mailing Date, Validation=True}
-        txtDetailMailingCost: {Label=Mailing Cost, Format=Decimal}
+        txtDetailMailingCost: {Label=Mailing Cost, Format=Currency, AlwaysHideLabel=true}

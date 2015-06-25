@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -119,46 +120,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         }
 
         /// <summary>
-        /// This array of CostCentres may contain some funds that should not be processed
-        /// through ICH.
-        /// I need to process those here, and remove them from the list.
-        ///
-        /// </summary>
-        private static StringDictionary GetDestinationAccountCodes(int ALedgerNumber, ACostCentreTable CostCentreTbl, TDBTransaction ATransaction)
-        {
-            AAccountPropertyTable AccountPropertyTbl = new AAccountPropertyTable();
-            AAccountPropertyRow TemplateRow = AccountPropertyTbl.NewRowTyped(false);
-
-            TemplateRow.LedgerNumber = ALedgerNumber;
-            TemplateRow.PropertyCode = "CLEARING-ACCOUNT-FOR-CC";
-            AccountPropertyTbl = AAccountPropertyAccess.LoadUsingTemplate(TemplateRow, ATransaction);
-
-            StringDictionary ReportingAccountForCC = new StringDictionary();
-
-            foreach (AAccountPropertyRow Row in AccountPropertyTbl.Rows)
-            {
-                String[] CcList = Row.PropertyValue.Split(',');
-
-                foreach (String CC in CcList)
-                {
-                    ReportingAccountForCC.Add(CC, Row.AccountCode);
-                }
-            }
-
-            foreach (DataRow UntypedCCRow in CostCentreTbl.Rows)
-            {
-                ACostCentreRow CostCentreRow = (ACostCentreRow)UntypedCCRow;
-
-                if (!ReportingAccountForCC.ContainsKey(CostCentreRow.CostCentreCode))
-                {
-                    ReportingAccountForCC.Add(CostCentreRow.CostCentreCode, MFinanceConstants.ICH_ACCT_ICH);
-                }
-            }
-
-            return ReportingAccountForCC;
-        }
-
-        /// <summary>
         /// Relates to gl2160.p, line 178 Post_To_Ledger:
         /// If we're working in an open period, make sure the summary data is up to date.
         ///  Check that there are amounts to be transferred to the clearing house.
@@ -204,6 +165,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 TFinancialYear.GetStartAndEndDateOfPeriod(ALedgerNumber, APeriodNumber, out PeriodStartDate, out PeriodEndDate, DBTransaction);
                 String strPeriodStartDate = "#" + PeriodStartDate.ToString("yyyy-MM-dd") + "#";
                 String strPeriodEndDate = "#" + PeriodEndDate.ToString("yyyy-MM-dd") + "#";
+                int CurrentFinancialYear = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, DBTransaction)[0].CurrentFinancialYear;
 
                 AGiftBatchTable GiftBatchTable = new AGiftBatchTable();
                 String GiftQuery = "SELECT * FROM a_gift_batch WHERE " +
@@ -234,6 +196,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 BatchTemplateRow.LedgerNumber = ALedgerNumber;
                 BatchTemplateRow.BatchPeriod = APeriodNumber;
+                BatchTemplateRow.BatchYear = CurrentFinancialYear;
 
                 StringCollection Operators0 = StringHelper.InitStrArr(new string[] { "=", "=" });
                 StringCollection OrderList0 = new StringCollection();
@@ -379,8 +342,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 ACostCentreAccess.LoadUsingTemplate(PostingDS, CCTemplateRow, DBTransaction);
 
                 //Iterate through the cost centres
-//              string OrderBy = ACostCentreTable.GetCostCentreCodeDBName();
-                StringDictionary DestinationAccount = GetDestinationAccountCodes(ALedgerNumber, PostingDS.ACostCentre, DBTransaction);
 
                 AIchStewardshipTable ICHStewardshipTable = new AIchStewardshipTable();
                 Boolean NonIchTransactionsIncluded = false;
@@ -452,7 +413,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 && (TransRow.AccountCode != MFinanceConstants.DIRECT_XFER_ACCT)
                                 && (TransRow.AccountCode != MFinanceConstants.ICH_ACCT_SETTLEMENT))
                             {
-                                if (TransRow.DebitCreditIndicator = ExpenseDrCrIndicator)
+                                if (TransRow.DebitCreditIndicator == ExpenseDrCrIndicator)
                                 {
                                     ExpenseAmount += TransRow.AmountInBaseCurrency;
                                     ExpenseAmountIntl += TransRow.AmountInIntlCurrency;
@@ -520,7 +481,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                      */
                     DrCrIndicator = AccountRow.DebitCreditIndicator;
 
-                    if (DestinationAccount[CostCentreRow.CostCentreCode] == MFinanceConstants.ICH_ACCT_ICH)
+                    if (CostCentreRow.ClearingAccount == MFinanceConstants.ICH_ACCT_ICH)
                     {
                         if (DrCrIndicator == MFinanceConstants.IS_DEBIT)
                         {
@@ -540,7 +501,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         SettlementAmount = 0 - SettlementAmount;
                     }
 
-                    if ((DestinationAccount[CostCentreRow.CostCentreCode] != MFinanceConstants.ICH_ACCT_ICH) && (SettlementAmount != 0))
+                    if ((CostCentreRow.ClearingAccount != MFinanceConstants.ICH_ACCT_ICH) && (SettlementAmount != 0))
                     {
                         // I'm creating a transaction right here for this "non-ICH" CostCentre.
                         // This potentially means that there will be multiple transactions to the "non-ICH" account,
@@ -548,12 +509,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber,
                                 Catalog.GetString("Non-ICH foreign fund Clearing"),
-                                DestinationAccount[CostCentreRow.CostCentreCode],
+                                CostCentreRow.ClearingAccount,
                                 StandardCostCentre, SettlementAmount, PeriodEndDate, !DrCrIndicator, Catalog.GetString("Non-ICH"),
                                 true, SettlementAmount,
                                 out GLTransactionNumber))
                         {
-                            ErrorContext = Catalog.GetString("Generating the ICH batch");
+                            ErrorContext = Catalog.GetString("Generating non-ICH transaction");
                             ErrorMessage =
                                 String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
                                     ALedgerNumber,
@@ -601,7 +562,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     /* Now create corresponding report row on stewardship table,
                      * Only for Cost Centres that cleared to ICH
                      */
-                    if ((DestinationAccount[CostCentreRow.CostCentreCode] == MFinanceConstants.ICH_ACCT_ICH)
+                    if ((CostCentreRow.ClearingAccount == MFinanceConstants.ICH_ACCT_ICH)
                         && ((IncomeAmount != 0)
                             || (ExpenseAmount != 0)
                             || (XferAmount != 0)))
@@ -613,8 +574,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         ICHStewardshipRow.LedgerNumber = ALedgerNumber;
                         ICHStewardshipRow.PeriodNumber = APeriodNumber;
                         ICHStewardshipRow.IchNumber = ICHProcessing;
-//                      ICHStewardshipRow.DateProcessed = DateTime.Today; // This would be strictly correct, but the Stewardship Reporting looks for
-                        ICHStewardshipRow.DateProcessed = PeriodEndDate;  // rows using a date filter.
+                        ICHStewardshipRow.DateProcessed = DateTime.Today;
                         ICHStewardshipRow.CostCentreCode = CostCentreRow.CostCentreCode;
                         ICHStewardshipRow.IncomeAmount = IncomeAmount;
                         ICHStewardshipRow.ExpenseAmount = ExpenseAmount;
@@ -691,7 +651,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         MainDS.ThrowAwayAfterSubmitChanges = true; // SubmitChanges will not return to me any changes made in MainDS.
                         GLBatchTDSAccess.SubmitChanges(MainDS);
-                        ALedgerAccess.SubmitChanges(PostingDS.ALedger, DBTransaction); // LastIchNumber has changed.
+                        ALedgerAccess.SubmitChanges(PostingDS.ALedger, DBTransaction);
+
+                        // refresh cached ICHStewardship table
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableFinanceTablesEnum.ICHStewardshipList.ToString());
 
                         IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
                     }

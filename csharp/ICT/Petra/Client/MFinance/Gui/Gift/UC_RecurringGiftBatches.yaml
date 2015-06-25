@@ -34,7 +34,7 @@ RootNode:
             ControlsOrientation: horizontal
         btnNew: {Action=actNew, Width=120}
         btnDelete: {Action=actDelete, Width=120}
-        btnSubmit: {Action=actSubmit, Width=120, StartNewButtonGroup=true}
+        btnSubmit: {Action=actSubmit, Width=120, StartNewButtonGroup=true, Tooltip=Click to Submit the highlighted recurring batch}
         grdDetails:
             Dock: Fill
             TableName: ARecurringGiftBatch

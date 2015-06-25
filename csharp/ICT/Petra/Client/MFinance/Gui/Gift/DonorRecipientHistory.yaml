@@ -32,7 +32,7 @@ RootNode:
                 Row3: [btnSearch, Empty, btnClear]
         pnlFilter:
             Controls: 
-                Row0: [cmbMotivationGroup, cmbMotivationDetail]
+                Row0: [cmbMotivationGroup, cmbMotivationDetail, pnlPostedOnlyNote]
         pnlGrid:
             Dock: Fill
             Controls: [pnlButtons, grdDetails]
@@ -52,6 +52,11 @@ RootNode:
             Align: right
             Controls:
                 Row0: [btnDonorGiftStatement, btnRecipientGiftStatement]
+        pnlPostedOnlyNote:
+            Margin: 25, 0, 0, 0
+            Width: 400
+            Controls: 
+                Row0: [lblPostedOnlyNote]
  
         cmbLedger: {ReadOnly=true, List=LedgerNameList, OnChange=OnCmbLedgerChange}
         txtDonor: {Type=PartnerKey}
@@ -60,6 +65,9 @@ RootNode:
         dtpDateTo:
         cmbMotivationGroup: {List=UserDefinedList, Width=100, OnChange=OnCmbMotivationChange, Enabled=false}
         cmbMotivationDetail: {List=UserDefinedList, Width=100, OnChange=OnCmbMotivationChange, Enabled=false}
+        lblPostedOnlyNote:
+            Text: Note: Gifts in unposted batches are not listed
+            Width: 370
         txtGiftTotal: {Label=Total, Format=Currency, Width=180, ReadOnly=true}
         txtNumberOfGifts: {Width=65, ReadOnly=true}
 

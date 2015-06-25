@@ -132,6 +132,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddParameter("param_diff_period_i", DiffPeriod);
             ACalculator.AddParameter("param_start_period_i", 0);
             ACalculator.AddParameter("param_end_period_i", 0);
+            ACalculator.AddParameter("param_current_period", FLedgerRow.CurrentPeriod);
 
             ACalculator.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
 
@@ -680,15 +681,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public string GetInternationalCurrency()
         {
             return FLedgerRow.IntlCurrency;
-        }
-
-        /// <summary>
-        /// Get ledger's current period
-        /// </summary>
-        /// <returns></returns>
-        public int GetCurrentPeiod()
-        {
-            return FLedgerRow.CurrentPeriod;
         }
     }
 }

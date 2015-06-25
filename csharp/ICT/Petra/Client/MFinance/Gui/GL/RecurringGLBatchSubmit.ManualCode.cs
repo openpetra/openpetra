@@ -131,12 +131,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FCurrencyCode == FBaseCurrencyCode)
             {
-                txtExchangeRateToBase.Enabled = false;
+                btnGetSetExchangeRate.Enabled = false;
                 txtExchangeRateToBase.BackColor = Color.LightPink;
             }
             else
             {
-                txtExchangeRateToBase.Enabled = true;
+                btnGetSetExchangeRate.Enabled = true;
                 txtExchangeRateToBase.BackColor = Color.Empty;
             }
 
@@ -148,16 +148,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
                 FCurrencyCode,
                 FMainDS.ALedger[0].BaseCurrency,
-                ADate);
+                ADate, true);
 
-            txtExchangeRateToBase.Text = FExchangeRateToBase.ToString();
+            txtExchangeRateToBase.NumberValueDecimal = FExchangeRateToBase;
 
             FExchangeRateIntlToBase = InternationalCurrencyExchangeRate(ADate);
         }
 
         private decimal InternationalCurrencyExchangeRate(DateTime ABatchEffectiveDate)
         {
-            decimal IntlToBaseCurrencyExchRate = 1;
+            decimal IntlToBaseCurrencyExchRate = 0;
 
             DateTime StartOfMonth = new DateTime(ABatchEffectiveDate.Year, ABatchEffectiveDate.Month, 1);
             string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
@@ -173,17 +173,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     LedgerIntlCurrency,
                     StartOfMonth,
                     ABatchEffectiveDate);
-
-                if (IntlToBaseCurrencyExchRate == 0)
-                {
-                    string IntlRateErrorMessage =
-                        String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
-                            LedgerBaseCurrency,
-                            LedgerIntlCurrency,
-                            ABatchEffectiveDate);
-
-                    MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
             }
 
             return IntlToBaseCurrencyExchRate;
@@ -227,8 +216,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            FExchangeRateToBase = selectedExchangeRate;
-            txtExchangeRateToBase.Text = FExchangeRateToBase.ToString();
+            if (selectedExchangeRate > 0.0m)
+            {
+                FExchangeRateToBase = selectedExchangeRate;
+                txtExchangeRateToBase.NumberValueDecimal = FExchangeRateToBase;
+            }
         }
 
         /// <summary>
@@ -237,13 +229,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void SubmitBatch(object sender, EventArgs e)
         {
-            decimal ExchRateToBase = 0;
-
-            if (!(Decimal.TryParse(txtExchangeRateToBase.Text, out ExchRateToBase) && (ExchRateToBase > 0)))
+            // This should never happen - but ...
+            if (txtExchangeRateToBase.NumberValueDecimal <= 0.0m)
             {
-                MessageBox.Show(Catalog.GetString("The exchange rate must be a number greater than 0."));
-                txtExchangeRateToBase.Focus();
-                txtExchangeRateToBase.SelectAll();
+                MessageBox.Show(Catalog.GetString("The exchange rate must be a number greater than 0.0"));
+                btnGetSetExchangeRate.Enabled = true;
                 return;
             }
 

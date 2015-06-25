@@ -254,7 +254,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (ValidateAllData(false, true))
+            if (ValidateAllData(false, TErrorProcessingMode.Epm_All))
             {
                 FMainDS.AApSupplier.Rows[0].BeginEdit();
                 GetDataFromControls(FMainDS.AApSupplier[0]);
@@ -310,6 +310,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (ReturnValue)
             {
+                // Fire the DataSavingValidated event, which is the last chance to cancel the save
+                System.ComponentModel.CancelEventArgs eCancel = new System.ComponentModel.CancelEventArgs(false);
+                FPetraUtilsObject.OnDataSavingValidated(this, eCancel);
+
+                if (eCancel.Cancel == true)
+                {
+                    return false;
+                }
+
                 foreach (DataTable InspectDT in FMainDS.Tables)
                 {
                     foreach (DataRow InspectDR in InspectDT.Rows)

@@ -510,6 +510,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FSelectedBatchNumber = -1;
                 UpdateChangeableStatus();
+                txtDetailHashTotal.CurrencyCode = String.Empty;
                 return;
             }
 
@@ -543,7 +544,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowTransactionTab(Object sender, EventArgs e)
         {
-            if ((grdDetails.Rows.Count > 1) && ValidateAllData(false, true))
+            if ((grdDetails.Rows.Count > 1) && ValidateAllData(false, TErrorProcessingMode.Epm_All))
             {
                 ((TFrmRecurringGiftBatch)ParentForm).SelectTab(TFrmRecurringGiftBatch.eGiftTabs.Transactions);
             }

@@ -1394,62 +1394,86 @@ namespace Ict.Petra.Client.App.Core
 
             ADataTableType = null;
             DateTime dtStart = DateTime.UtcNow;
+            Boolean cachedTableIsUpToDate;
 
             /*
              * Check whether cacheable DataTable is available in the Client-side Cache
+             * March 2015: AlanP changed the IsTableCached method to return two separate booleans: it is in the cache and it is up to date
+             *   Previously it used the method that returned true if it was in the cache AND up-to-date
+             *   which meant that if it was not up-to-date we didn't try and load it so did not get the 'not-up-to-date exception'.
+             *   We then would have gone on to load the out-of-date file and then would presumably have found the hash did not match the server
+             *   so would have got the right data in the end but for the wrong reason.
+             *   The 'out-of-date' exception ought not to get fired now but it left in, in case.
              */
-            if (UCacheableTablesManager.IsTableCached(ACacheableTableName))
+            if (UCacheableTablesManager.IsTableCached(ACacheableTableName, out cachedTableIsUpToDate))
             {
-                if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
+                if (cachedTableIsUpToDate == false)
                 {
-                    TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': is in Client-side ");
-                }
-
-                try
-                {
-                    // Cacheable DataTable is in Clientside Cache
-                    CacheableDataTableFromCache = UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out ADataTableType);
-
-                    if (AFilterCriteriaString != "")
+                    // It is apparently out-of-date, so we don't load it and we must not load from file either!
+                    // This means the table is on the client and is apparently up-to-date, so we go ahead and load it
+                    if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
                     {
-                        /*
-                         * Check if any rows of the Cacheable DataTable in the Client-side
-                         * Cache match the AFilterCriteriaString
-                         */
-                        if (CacheableDataTableFromCache.Select(AFilterCriteriaString).Length != 0)
+                        TLogging.Log("Cacheable DataTable '" + ACacheableTableName +
+                            "': is in Client-side but is known to be out of date.  Will reload from the server...");
+                    }
+
+                    CacheableDataTableReloadNecessary = false;
+                }
+                else
+                {
+                    // This means the table is on the client and is apparently up-to-date, so we go ahead and load it
+                    if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
+                    {
+                        TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': is in Client-side ");
+                    }
+
+                    try
+                    {
+                        // Cacheable DataTable is in Clientside Cache. We may still get an ECacheableTablesMgrTableNotUpToDateException when we get it?
+                        CacheableDataTableFromCache = UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out ADataTableType);
+
+                        if (AFilterCriteriaString != "")
+                        {
+                            /*
+                             * Check if any rows of the Cacheable DataTable in the Client-side
+                             * Cache match the AFilterCriteriaString
+                             */
+                            if (CacheableDataTableFromCache.Select(AFilterCriteriaString).Length != 0)
+                            {
+                                // We have what we are looking for > no need to make a Server call
+                                CacheableDataTableReloadNecessary = false;
+                            }
+                            else
+                            {
+                                // We don't have what we are looking for > need to make a Server call
+                                CacheableDataTableReloadNecessary = true;
+                            }
+                        }
+                        else
                         {
                             // We have what we are looking for > no need to make a Server call
                             CacheableDataTableReloadNecessary = false;
                         }
-                        else
+                    }
+                    catch (ECacheableTablesMgrTableNotUpToDateException)
+                    {
+                        // The Cacheable DataTable in the Clientside Cache is marked as
+                        // being not uptodate, so we need to reload it from the
+                        // PetraServer!
+                        if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
                         {
-                            // We don't have what we are looking for > need to make a Server call
-                            CacheableDataTableReloadNecessary = true;
+                            TLogging.Log("Cacheable DataTable: ECacheableTablesMgrTableNotUpToDateException: '" +
+                                ACacheableTableName + "': needs reloading from OpenPetra Server!");
                         }
-                    }
-                    else
-                    {
-                        // We have what we are looking for > no need to make a Server call
-                        CacheableDataTableReloadNecessary = false;
-                    }
-                }
-                catch (ECacheableTablesMgrTableNotUpToDateException)
-                {
-                    // The Cacheable DataTable in the Clientside Cache is marked as
-                    // being not uptodate, so we need to reload it from the
-                    // PetraServer!
-                    if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
-                    {
-                        TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': needs reloading from OpenPetra Server!");
-                    }
 
-                    // By setting these two values we force the server to give us a table, since the Hash code will be empty string
-                    CacheableDataTableReloadNecessary = false;
-                    CacheableDataTableFromCache = null;
-                }
-                catch (Exception)
-                {
-                    throw;
+                        // By setting these two values we force the server to give us a table, since the Hash code will be empty string
+                        CacheableDataTableReloadNecessary = false;
+                        CacheableDataTableFromCache = null;
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
                 }
             }
 
@@ -1570,6 +1594,7 @@ namespace Ict.Petra.Client.App.Core
                     // The PetraServer returned a DataTable. This means that it either
                     // had a more uptodate cacheable DataTable, or that the Client
                     // didn't have the DataTable at all (HashCode = '').
+                    // Note - we also get a server table if the table is empty because the hash is also empty in that case.
                     if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
                     {
                         TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': got returned from OpenPetra Server.");
@@ -1582,21 +1607,21 @@ namespace Ict.Petra.Client.App.Core
                     // it at the end of the method.
                     CacheableDataTableFilteredDV = null;
 
+                    // Change the table from the server into a typed table before we put it in the cache
+                    if (!(ADataTableType == typeof(System.Data.DataTable)) && !(CacheableDataTableFromServer is TTypedDataTable))
+                    {
+                        DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromServer, ADataTableType, "");
+                    }
+
                     /*
-                     * Add returned DataTable to the Cache - or Merge it if it already
+                     * Add returned (typed) DataTable to the Cache - or Merge it if it already
                      * exists there (only if filtered DataRows of a DataTable are returned
                      * from the PetraServer)
                      */
                     UCacheableTablesManager.AddOrMergeCachedTable(CacheableDataTableFromServer, -1);
 
-                    // Save the (merged) DataTable that's now in the Cache to a file
+                    // Save the (merged) DataTable that's now in the Cache to a file.  It will be saved as a simple DataTable.
                     SaveCacheableDataTableToFile(UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out TmpType));
-
-                    // Change the table from the server into a typed table
-                    if (!(ADataTableType == typeof(System.Data.DataTable)))
-                    {
-                        DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromServer, ADataTableType, "");
-                    }
                 }
                 else
                 {
@@ -1616,7 +1641,18 @@ namespace Ict.Petra.Client.App.Core
 
                     if (CacheSource == TCacheSource.csFile)
                     {
-                        // Add DataTable to the Cache that got loaded from a file
+                        if (!(ADataTableType == typeof(System.Data.DataTable)))
+                        {
+                            /*
+                             * The DataTable in the cache needs to be a typed DataTable, so we need to change
+                             * the loaded DataTable to the Type that is returned from the
+                             * PetraServer (so that a Typed DataTable is again a Typed a
+                             * DataTable and not just a DataTable after loading it from a file).
+                             */
+                            DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromFile, ADataTableType, "");
+                        }
+
+                        // Add the (typed) DataTable to the Cache that got loaded from a file
                         UCacheableTablesManager.AddOrRefreshCachedTable(ACacheableTableName, CacheableDataTableFromFile, -1);
 
                         if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
@@ -1629,21 +1665,11 @@ namespace Ict.Petra.Client.App.Core
                                     out TmpType).Rows.Count.ToString());
                         }
                     }
-
-                    if (!(ADataTableType == typeof(System.Data.DataTable)))
+                    else if (CacheSource == TCacheSource.csCache)
                     {
-                        /*
-                         * The DataTable needs to be a typed DataTable, so we need to change
-                         * the loaded DataTable to the Type that is returned from the
-                         * PetraServer (so that a Typed DataTable is again a Typed a
-                         * DataTable and not just a DataTable after loading it from a file).
-                         */
-                        if (CacheSource == TCacheSource.csFile)
+                        if (!(ADataTableType == typeof(System.Data.DataTable)) && !(CacheableDataTableFromCache is TTypedDataTable))
                         {
-                            DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromFile, ADataTableType, "");
-                        }
-                        else if (CacheSource == TCacheSource.csCache)
-                        {
+                            // If we got the table from the server it ought to be typed already so we don't expect this to get called...
                             DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromCache, ADataTableType, "");
                         }
                     }
@@ -1654,6 +1680,7 @@ namespace Ict.Petra.Client.App.Core
                 throw;
             }
 
+            // Sort out our return value.  This needs to be a copy of the data table in the cache (or a filtered version of it).
             if (CacheableDataTableFilteredDV != null)
             {
                 // There was a filter string so we must return a sub-set of the cache or file copy
@@ -1682,17 +1709,32 @@ namespace Ict.Petra.Client.App.Core
                     DataUtilities.ChangeDataTableToTypedDataTable(ref ReturnValue, ADataTableType, "");
                 }
             }
-            else if (CacheSource == TCacheSource.csCache)
+            else
             {
-                ReturnValue = CacheableDataTableFromCache;
-            }
-            else if (CacheSource == TCacheSource.csFile)
-            {
-                ReturnValue = CacheableDataTableFromFile;
-            }
-            else if (CacheSource == TCacheSource.csServer)
-            {
-                ReturnValue = CacheableDataTableFromServer;
+                // We have to return a copy because a few places in the client change the name of the table so it will merge into a FMainDS dataset
+                //  (e.g. MotivationList gets changed to AMotivationDetail in the 'Gift' screen)
+                if (CacheSource == TCacheSource.csCache)
+                {
+                    ReturnValue = CacheableDataTableFromCache.Copy();
+                }
+                else if (CacheSource == TCacheSource.csFile)
+                {
+                    ReturnValue = CacheableDataTableFromFile.Copy();
+                }
+                else if (CacheSource == TCacheSource.csServer)
+                {
+                    ReturnValue = CacheableDataTableFromServer.Copy();
+                }
+                else
+                {
+                    throw new NotSupportedException("Cache.cs: Unexpected cache source!");
+                }
+
+                // Initialise the column ordinals in the copy
+                if (ReturnValue as TTypedDataTable != null)
+                {
+                    ((TTypedDataTable)ReturnValue).InitVars();
+                }
             }
 
             if (ACustomTableName != String.Empty)

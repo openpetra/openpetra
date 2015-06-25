@@ -25,6 +25,7 @@ using System;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
 
@@ -125,6 +126,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             if (TRemote.MPartner.Partner.WebConnectors.CreateEmptyExtract(ref ExtractId,
                     ExtractName, ExtractDescription))
             {
+                // refresh extract master screen if it is open
+                TFormsMessage BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcExtractCreated);
+                BroadcastMessage.SetMessageDataName(ExtractName);
+                TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+
                 // now open Screen for new extract so user can add partner records manually
                 TFrmExtractMaintain frm = new TFrmExtractMaintain(AParentForm);
                 frm.ExtractId = ExtractId;

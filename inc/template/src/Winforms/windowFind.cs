@@ -309,8 +309,8 @@ namespace {#NAMESPACE}
     /// </summary>
     /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing 
     /// to another record, otherwise set it to false.</param>
-    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-    /// user, otherwise set it to false.</param>
+    /// <param name="ADataValidationProcessingMode">Set to <see cref="TErrorProcessingMode.Epm_None"/> if no data validation errors should be shown to the user,
+    /// otherwise set it to one of <see cref="TErrorProcessingMode.Epm_IgnoreNonCritical"/> or <see cref="TErrorProcessingMode.Epm_All"/>.</param>
     /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a 
     /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
     /// <para>
@@ -320,7 +320,7 @@ namespace {#NAMESPACE}
     /// </para>    
     /// </param>
     /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
-    private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+    private bool ValidateAllData(bool ARecordChangeVerification, TErrorProcessingMode ADataValidationProcessingMode, Control AValidateSpecificControl = null)
     {
         bool ReturnValue = false;
         Control ControlToValidate = null;
@@ -408,7 +408,7 @@ namespace {#NAMESPACE}
         {#USERCONTROLVALIDATION}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
 
-        if (AProcessAnyDataValidationErrors)
+        if (ADataValidationProcessingMode != TErrorProcessingMode.Epm_None)
         {
             // Only process the Data Validations here if ControlToValidate is not null.
             // It can be null if this.ActiveControl yields null - this would happen if no Control
@@ -417,13 +417,15 @@ namespace {#NAMESPACE}
             {
                 if(ControlToValidate.FindUserControlOrForm(true) == this)
                 {
+					bool ignoreWarnings = (ADataValidationProcessingMode == TErrorProcessingMode.Epm_IgnoreNonCritical) &&
+						!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors;
 {#IFDEF SHOWDETAILS}
                     ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                        this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+                        this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null, ignoreWarnings);
 {#ENDIF SHOWDETAILS}
 {#IFNDEF SHOWDETAILS}
                     ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                        this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+                        this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType(), ignoreWarnings);
 {#ENDIFN SHOWDETAILS}
                 }
                 else
@@ -514,7 +516,7 @@ namespace {#NAMESPACE}
     {
         TScreenVerificationResult SingleVerificationResult;
         
-        ValidateAllData(true, false, (Control)sender);
+        ValidateAllData(true, TErrorProcessingMode.Epm_None, (Control)sender);
         
         FPetraUtilsObject.ValidationToolTip.RemoveAll();
         

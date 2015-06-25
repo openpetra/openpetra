@@ -90,6 +90,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             )
         {
             bool Successful = false;
+
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TVerificationResultCollection VerificationResult = new TVerificationResultCollection();

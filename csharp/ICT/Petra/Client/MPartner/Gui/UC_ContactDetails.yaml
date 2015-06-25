@@ -15,7 +15,7 @@ RootNode:
         actLaunchHyperlinkPrefEMail: {ActionClick=LaunchHyperlinkPrefEMail, Image: Email.ico}
         actLaunchHyperlinkEMailWithinOrg: {ActionClick=LaunchHyperlinkEMailWithinOrg, Image: Email.ico}
         actLaunchHyperlinkFromValue: {ActionClick=LaunchHyperlinkFromValue, Image: Email.ico}
-
+        actLaunchHyperlinkSecondaryEMail: {ActionClick=LaunchHyperlinkSecondaryEMail, Image: Email.ico}
     Controls:
         pnlContent:
             Controls: [grpOverallContactSettings, grpContactDetails]
@@ -31,7 +31,7 @@ RootNode:
                 Row1: [cmbPrimaryPhoneForContacting]
                 Row2: [cmbPrimaryEMail, btnLaunchHyperlinkPrefEMail]
         pnlOverallRight:
-            Controls: [grpWithinTheOrganisation]
+            Controls: [grpWithinTheOrganisation, pnlFamilyExtraControls]
             Height: 90
         grpWithinTheOrganisation:
             Controls:
@@ -39,17 +39,22 @@ RootNode:
                 Row2: [cmbEMailWithinTheOrganisation, btnLaunchHyperlinkEMailWithinOrg]
             Margin: 0,16,0,0
             Height: 70
+        pnlFamilyExtraControls:
+            Controls:
+                Row1: [cmbSecondaryEMail, btnLaunchHyperlinkSecondaryEMail]
         cmbPrimaryWayOfContacting:
             Label: Primar&y Contact Method
             Width: 170
             OptionalValues: [=,Phone, E-Mail, Letter, Skype, Lync, Digital Media, Instant Messaging & Chat]
             Validation: true
         cmbPrimaryPhoneForContacting: {Label=Primary Ph&one, OptionalValues=[], ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true,OnChange=HandlePrimaryPhoneSelectedValueChanged}
-        cmbPhoneWithinTheOrganisation: {Label=Office Phone, OptionalValues=[], ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true}
-        cmbPrimaryEMail: {Label=Primary E-&Mail, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true, OnChange=HandlePrimaryEmailSelectedValueChanged}
-        cmbEMailWithinTheOrganisation: {Label=Office E-Mai&l, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true}
+        cmbPhoneWithinTheOrganisation: {Label=Office Phone, OptionalValues=[], ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true,OnChange=HandlePhoneWithinTheOrganisationSelectedValueChanged}
+        cmbPrimaryEMail: {Label=Primary E-Mai&l, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true, OnChange=HandlePrimaryEmailSelectedValueChanged}
+        cmbEMailWithinTheOrganisation: {Label=Office E-Mail, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true, OnChange=HandleEMailWithinTheOrganisationSelectedValueChanged}
+        cmbSecondaryEMail: {Label=Secondary E-Mail, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true, OnChange=HandleSecondaryEmailSelectedValueChanged}
         btnLaunchHyperlinkPrefEMail: {NoLabel=true, Width=15}
         btnLaunchHyperlinkEMailWithinOrg: {NoLabel=true, Width=15}
+        btnLaunchHyperlinkSecondaryEMail: {NoLabel=true, Width=15}
        
         grpContactDetails:
             Controls: [pnlGrid, pnlDetails]

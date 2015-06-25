@@ -40,6 +40,24 @@ namespace Ict.Common.Testing
     [TestFixture]
     public class TTestCommon
     {
+        /***************************************************************************************************************************
+        *  /// IMPORTANT NOTE ON THE USE OF DIFFERING CULTURES
+        *  /// Written by AlanP April 2015
+        *  ///
+        *  /// I believe the following to be correct from my experience using Win7
+        *  ///
+        *  /// If you assign a new Culture to the CurrentThread and it is the Culture that you use for your working PC
+        *  /// the values for the format information will be the values for your PC and not necessarily the values shipped by Microsoft
+        *  /// when you installed Windows.  In my case, specifically for testing the GUI screens I have set my regional formats to use
+        *  /// apostrophe/dot for currency group/decimal and space/comma for numeric group/decimal.  This is very helpful in checking we
+        *  /// get the correct displays.  However, when I run the tests it means that my en-GB culture has these settings.  A similar
+        *  /// situation would arise if your default culture is de-DE say.
+        *  ///
+        *  /// This means that these tests only work if we do not check for actual text in numeric/currency boxes in the en-GB culture.
+        *  /// We can check for text in any other culture - and that is what these tests do.
+        *  ///
+        * *************************************************************************************************************************/
+
         /// init the test
         [SetUp]
         public void Init()
@@ -327,12 +345,24 @@ namespace Ict.Common.Testing
             Row["a_display_format_c"] = "->>>,>>>,>>>,>>9.99";
             Tbl.Rows.Add(Row);
 
+            // See the IMPORTANT NOTE at the top of this class concerning the use of Cultures and a PC's local regional settings.
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
             StringHelper.CurrencyFormatTable = Tbl;
             String TrlRes = StringHelper.FormatUsingCurrencyCode(1234.56M, "TRL");
             String EurRes = StringHelper.FormatUsingCurrencyCode(1234.56M, "EUR");
-            Assert.AreEqual("1,235", TrlRes);
-            Assert.AreEqual("1,234.56", EurRes);
+
+            NumberFormatInfo nfi = Thread.CurrentThread.CurrentCulture.NumberFormat;
+            String expectedTrl = "1" + nfi.CurrencyGroupSeparator + "235";
+            String expectedEur = "1" + nfi.CurrencyGroupSeparator + "234" + nfi.CurrencyDecimalSeparator + "56";
+            Assert.AreEqual(expectedTrl, TrlRes);
+            Assert.AreEqual(expectedEur, EurRes);
+
+            // Now try a different culture with default culture settings
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
+            TrlRes = StringHelper.FormatUsingCurrencyCode(1234.56M, "TRL");
+            EurRes = StringHelper.FormatUsingCurrencyCode(1234.56M, "EUR");
+            Assert.AreEqual("1.235", TrlRes);
+            Assert.AreEqual("1.234,56", EurRes);
         }
 
         /// test csv operations (comma separated value lists)

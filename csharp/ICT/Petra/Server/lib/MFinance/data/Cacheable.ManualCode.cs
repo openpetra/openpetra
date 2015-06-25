@@ -156,6 +156,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
 
             FieldList.Add(AAccountTable.GetLedgerNumberDBName());
             FieldList.Add(AAccountTable.GetAccountCodeDBName());
+            FieldList.Add(AAccountTable.GetAccountTypeDBName());
             FieldList.Add(AAccountTable.GetAccountCodeShortDescDBName());
             FieldList.Add(AAccountTable.GetAccountActiveFlagDBName());
             FieldList.Add(AAccountTable.GetPostingStatusDBName());
@@ -180,23 +181,25 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                 }
             }
 
+            // not currently needed as an Account is only a Bank Account if it has a 'Bank Account' Account Property
             // load AAccountHierarchyDetails and check if this account reports to the CASH account
-            AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(TempDS,
-                ALedgerNumber,
-                MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD,
-                AReadTransaction);
 
-            TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
-            TGetAccountHierarchyDetailInfo accountHierarchyTools = new TGetAccountHierarchyDetailInfo(ledgerInfo);
-            List <string>children = accountHierarchyTools.GetChildren(MFinanceConstants.CASH_ACCT);
-
-            foreach (GLSetupTDSAAccountRow account in TempDS.AAccount.Rows)
-            {
-                if (children.Contains(account.AccountCode))
-                {
-                    account.CashAccountFlag = true;
-                }
-            }
+            /*AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(TempDS,
+             *  ALedgerNumber,
+             *  MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD,
+             *  AReadTransaction);
+             *
+             * TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
+             * TGetAccountHierarchyDetailInfo accountHierarchyTools = new TGetAccountHierarchyDetailInfo(ledgerInfo);
+             * List <string>children = accountHierarchyTools.GetChildren(MFinanceConstants.CASH_ACCT);
+             *
+             * foreach (GLSetupTDSAAccountRow account in TempDS.AAccount.Rows)
+             * {
+             *  if (children.Contains(account.AccountCode))
+             *  {
+             *      account.CashAccountFlag = true;
+             *  }
+             * }*/
 
             return TempDS.AAccount;
         }

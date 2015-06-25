@@ -131,8 +131,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             string RecipientSelection = AParameters["param_recipient"].ToString();
-            string ReportType = AParameters["param_report_type"].ToString();
             string OrderBy = AParameters["param_order_by_name"].ToString();
+
+/*
+ *          string ReportType = string.Empty;
+ *
+ *          if (AParameters.ContainsKey("param_report_type"))
+ *          {
+ *              ReportType = AParameters["param_report_type"].ToString();
+ *          }
+ */
             DateTime CurrentDate = DateTime.Today;
 
             // create new datatable
@@ -152,7 +160,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " OR PUB_p_partner.p_partner_key_n = um_unit_structure.um_child_unit_key_n)" +
                                    " THEN PUB_p_partner.p_partner_short_name_c " +
                                    " ELSE 'UNKNOWN'" +
-                                   " END AS FieldName" +
+                                   " END AS FieldName," +
+
+                                   " CASE WHEN EXISTS (SELECT 1 FROM PUB_p_partner WHERE PUB_p_partner.p_partner_key_n = PUB_p_partner_gift_destination.p_field_key_n"
+                                   +
+                                   " OR PUB_p_partner.p_partner_key_n = um_unit_structure.um_child_unit_key_n)" +
+                                   " THEN PUB_p_partner.p_partner_key_n " +
+                                   " ELSE 0" +
+                                   " END AS FieldKey" +
 
                                    " FROM" +
                                    " PUB_a_gift as gift, " +
@@ -207,11 +222,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                              " AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNumber +
 
                              " AND Recipient.p_partner_key_n = detail.p_recipient_key_n";
-
-                    if (ReportType == "List")
-                    {
-                        Query += " AND detail.p_recipient_key_n  <> 0";
-                    }
 
                     if (RecipientSelection == "One Recipient")
                     {
@@ -342,7 +352,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     string Query = "SELECT" +
                                    " gift.a_date_entered_d AS GiftDate," +
                                    " gift.p_donor_key_n AS DonorKey," +
-                                   " DonorPartner.p_partner_short_name_c AS DonorName," +
+                                   " CASE WHEN DonorPartner.p_partner_short_name_c NOT LIKE ''" +
+                                   " THEN DonorPartner.p_partner_short_name_c" +
+                                   " ELSE '" + Catalog.GetString("Unknown Donor") + "' END AS DonorName," +
                                    " DonorPartner.p_partner_class_c AS DonorClass," +
                                    " detail.p_recipient_key_n AS RecipientKey," +
                                    " detail.a_motivation_detail_code_c AS MotivationCode," +
@@ -450,6 +462,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     Results.Merge(DbAdapter.RunQuery(QueryLocation, "DonorAddresses", Transaction));
 
+                    if (Results.Rows.Count == 0)
+                    {
+                        DataRow NewRow = Results.NewRow();
+                        NewRow["Locality"] = "UNKNOWN";
+                        Results.Rows.Add(NewRow);
+                    }
+
                     Results.Rows[0]["DonorKey"] = ADonorKey;
                 });
 
@@ -532,6 +551,134 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     }
 
                     Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
+                });
+
+            return Results;
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable OneYearMonthGivingDonorTable(Dictionary <String, TVariant>AParameters,
+            Int64 ARecipientKey,
+            TReportingDbAdapter DbAdapter)
+        {
+            TDBTransaction Transaction = null;
+
+            int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            string Currency = AParameters["param_currency"].ToString().ToUpper() == "BASE" ? "a_gift_amount_n" : "a_gift_amount_intl_n";
+
+            // create new datatable
+            DataTable Results = new DataTable();
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string Query = "SELECT DISTINCT" +
+                                   " gift.p_donor_key_n AS DonorKey," +
+                                   " DonorPartner.p_partner_short_name_c AS DonorName," +
+                                   " DonorPartner.p_partner_class_c AS DonorClass," +
+                                   " detail.p_recipient_key_n AS RecipientKey," +
+                                   " SUM (detail." + Currency + ") AS GiftAmountTotal," +
+                                   " COUNT (detail." + Currency + ") AS TotalCount," +
+                                   " PUB_a_gift_batch.a_currency_code_c AS GiftCurrency," +
+
+                                   " SUM (CASE WHEN UPPER(DonorPartner.p_partner_class_c) = 'CHURCH' THEN detail." + Currency +
+                                   " ELSE 0 END) AS TotalChurches," +
+                                   " SUM (CASE WHEN UPPER(DonorPartner.p_partner_class_c) = 'PERSON' OR " +
+                                   " UPPER(DonorPartner.p_partner_class_c) = 'FAMILY' THEN detail." + Currency +
+                                   " ELSE 0 END) AS TotalIndividuals," +
+
+                                   " SUM (CASE WHEN gift.a_date_entered_d BETWEEN '" + AParameters["param_year"] + "-01-01'" +
+                                   " AND '" + AParameters["param_year"] + "-01-31'" +
+                                   " THEN detail." + Currency +
+                                   " ELSE 0 END) AS GiftJanuary," +
+
+                                   " SUM (CASE WHEN gift.a_date_entered_d >= '" + AParameters["param_year"] + "-02-01'" +
+                                   " AND gift.a_date_entered_d < '" + AParameters["param_year"] + "-03-01'" +
+                                   " THEN detail." + Currency +
+                                   " ELSE 0 END) AS GiftFebruary," +
+
+                                   " SUM (CASE WHEN gift.a_date_entered_d BETWEEN '" + AParameters["param_year"] + "-03-01'" +
+                                   " AND '" + AParameters["param_year"] + "-03-31'" +
+                                   " THEN detail." + Currency +
+                                   " ELSE 0 END) AS GiftMarch," +
+
+                                   " SUM (CASE WHEN gift.a_date_entered_d BETWEEN '" + AParameters["param_year"] + "-04-01'" +
+                                   " AND '" + AParameters["param_year"] + "-04-30'" +
+                                   " THEN detail." + Currency +
+                                   " ELSE 0 END) AS GiftApril," +
+
+                                   " SUM (CASE WHEN gift.a_date_entered_d BETWEEN '" + AParameters["param_year"] + "-05-01'" +
+                                   " AND '" + AParameters["param_year"] + "-05-31'" +
+                                   " THEN detail." + Currency +
+                                   " ELSE 0 END) AS GiftMay," +
+
+                                   " SUM (CASE WHEN gift.a_date_entered_d BETWEEN '" + AParameters["param_year"] + "-06-01'" +
+                                   " AND '" + AParameters["param_year"] + "-06-30'" +
+                                   " THEN detail." + Currency +
+                                   " ELSE 0 END) AS GiftJune," +
+
+                                   " SUM (CASE WHEN gift.a_date_entered_d BETWEEN '" + AParameters["param_year"] + "-07-01'" +
+                                   " AND '" + AParameters["param_year"] + "-07-31'" +
+                                   " THEN detail." + Currency +
+                                   " ELSE 0 END) AS GiftJuly," +
+
+                                   " SUM (CASE WHEN gift.a_date_entered_d BETWEEN '" + AParameters["param_year"] + "-08-01'" +
+                                   " AND '" + AParameters["param_year"] + "-08-31'" +
+                                   " THEN detail." + Currency +
+                                   " ELSE 0 END) AS GiftAugust," +
+
+                                   " SUM (CASE WHEN gift.a_date_entered_d BETWEEN '" + AParameters["param_year"] + "-09-01'" +
+                                   " AND '" + AParameters["param_year"] + "-09-30'" +
+                                   " THEN detail." + Currency +
+                                   " ELSE 0 END) AS GiftSeptember," +
+
+                                   " SUM (CASE WHEN gift.a_date_entered_d BETWEEN '" + AParameters["param_year"] + "-10-01'" +
+                                   " AND '" + AParameters["param_year"] + "-10-31'" +
+                                   " THEN detail." + Currency +
+                                   " ELSE 0 END) AS GiftOctober," +
+
+                                   " SUM (CASE WHEN gift.a_date_entered_d BETWEEN '" + AParameters["param_year"] + "-11-01'" +
+                                   " AND '" + AParameters["param_year"] + "-11-30'" +
+                                   " THEN detail." + Currency +
+                                   " ELSE 0 END) AS GiftNovember," +
+
+                                   " SUM (CASE WHEN gift.a_date_entered_d BETWEEN '" + AParameters["param_year"] + "-12-01'" +
+                                   " AND '" + AParameters["param_year"] + "-12-31'" +
+                                   " THEN detail." + Currency +
+                                   " ELSE 0 END) AS GiftDecember" +
+
+                                   " FROM" +
+                                   " PUB_a_gift as gift," +
+                                   " PUB_a_gift_detail as detail," +
+                                   " PUB_a_gift_batch," +
+                                   " PUB_p_partner AS DonorPartner" +
+
+                                   " WHERE" +
+                                   " detail.a_ledger_number_i = gift.a_ledger_number_i" +
+                                   " AND detail.p_recipient_key_n = " + ARecipientKey +
+                                   " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'" +
+                                   " AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i" +
+                                   " AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNumber +
+                                   " AND gift.a_date_entered_d BETWEEN '" + AParameters["param_from_date"].ToDate().ToString("yyyy-MM-dd") +
+                                   "' AND '" + AParameters["param_to_date"].ToDate().ToString(
+                        "yyyy-MM-dd") + "'" +
+                                   " AND DonorPartner.p_partner_key_n = gift.p_donor_key_n" +
+                                   " AND gift.a_ledger_number_i = " + LedgerNumber +
+                                   " AND detail.a_batch_number_i = gift.a_batch_number_i" +
+                                   " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i" +
+                                   " AND detail.a_modified_detail_l = false" +
+
+                                   " GROUP BY DonorPartner.p_partner_key_n, gift.p_donor_key_n, detail.p_recipient_key_n, DonorPartner.p_partner_short_name_c, DonorPartner.p_partner_class_c, PUB_a_gift_batch.a_currency_code_c"
+                                   +
+                                   " ORDER BY gift.p_donor_key_n";
+
+                    Results = DbAdapter.RunQuery(Query, "Donors", Transaction);
                 });
 
             return Results;

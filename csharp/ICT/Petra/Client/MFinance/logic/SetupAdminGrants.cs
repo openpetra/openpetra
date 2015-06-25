@@ -53,40 +53,44 @@ namespace Ict.Petra.Client.MFinance.Logic
             Int32 ALedgerNumber,
             bool ACalledByReceivableScreen)
         {
+            string filter = String.Empty;
+
             DataTable CostCentreListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
 
             CostCentreListTable.DefaultView.Sort = ACostCentreTable.GetCostCentreNameDBName() + " ASC";
 
             if (ACalledByReceivableScreen)
             {
-                CostCentreListTable.DefaultView.RowFilter = ACostCentreTable.GetPostingCostCentreFlagDBName() + " = true AND " +
-                                                            ACostCentreTable.GetCostCentreTypeDBName() + " = 'Local'";
+                filter = ACostCentreTable.GetPostingCostCentreFlagDBName() + " = true AND " +
+                         ACostCentreTable.GetCostCentreTypeDBName() + " = 'Local'";
             }
             else
             {
-                CostCentreListTable.DefaultView.RowFilter = ACostCentreTable.GetPostingCostCentreFlagDBName() + " = true";
+                filter = ACostCentreTable.GetPostingCostCentreFlagDBName() + " = true";
             }
 
             ACostCentreComboBox.InitialiseUserControl(CostCentreListTable,
                 ACostCentreTable.GetCostCentreCodeDBName(), ACostCentreTable.GetCostCentreNameDBName(), null);
             ACostCentreComboBox.AppearanceSetup(new int[] { -1, 300 }, 20);
-            ACostCentreComboBox.Filter = CostCentreListTable.DefaultView.RowFilter;
+            ACostCentreComboBox.Filter = filter;
 
             DataTable AccountListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
             AccountListTable.DefaultView.Sort = AAccountTable.GetAccountCodeDBName() + " ASC";
-            AccountListTable.DefaultView.RowFilter = AAccountTable.GetPostingStatusDBName() + " = true AND " +
-                                                     AAccountTable.GetAccountTypeDBName().ToUpper() + " = 'INCOME'";
+            filter = AAccountTable.GetPostingStatusDBName() + " = true AND " +
+                     AAccountTable.GetAccountTypeDBName().ToUpper() + " = 'INCOME'";
             AAccountCodeComboBox.InitialiseUserControl(AccountListTable,
                 AAccountTable.GetAccountCodeDBName(), AAccountTable.GetAccountCodeShortDescDBName(), null);
             AAccountCodeComboBox.AppearanceSetup(new int[] { -1, 300 }, 20);
+            AAccountCodeComboBox.Filter = filter;
 
             DataTable DrAccountListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
             DrAccountListTable.DefaultView.Sort = AAccountTable.GetAccountCodeDBName() + " ASC";
-            DrAccountListTable.DefaultView.RowFilter = AAccountTable.GetPostingStatusDBName() + " = true AND " +
-                                                       AAccountTable.GetAccountTypeDBName().ToUpper() + " = 'EXPENSE'";
+            filter = AAccountTable.GetPostingStatusDBName() + " = true AND " +
+                     AAccountTable.GetAccountTypeDBName().ToUpper() + " = 'EXPENSE'";
             ADrAccountCodeComboBox.InitialiseUserControl(DrAccountListTable,
                 AAccountTable.GetAccountCodeDBName(), AAccountTable.GetAccountCodeShortDescDBName(), null);
             ADrAccountCodeComboBox.AppearanceSetup(new int[] { -1, 300 }, 20);
+            ADrAccountCodeComboBox.Filter = filter;
         }
 
         /// <summary>
@@ -97,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ADetailChargeAmountTextBox">'Charge Amount' TextBox Control</param>
         /// <param name="ADetailChargePercentageTextBox">'Charge Percentage' TextBox Control</param>
         public static void ChargeOptionComboChanged(TCmbAutoComplete AAChargeOptionComboBox, Label ADetailChargeAmountLabel,
-            TTxtNumericTextBox ADetailChargeAmountTextBox, TTxtNumericTextBox ADetailChargePercentageTextBox)
+            TTxtCurrencyTextBox ADetailChargeAmountTextBox, TTxtNumericTextBox ADetailChargePercentageTextBox)
         {
             ADetailChargeAmountLabel.Text = AAChargeOptionComboBox.GetSelectedString() + Catalog.GetString(" Amount:");
             ADetailChargeAmountTextBox.Enabled = true;

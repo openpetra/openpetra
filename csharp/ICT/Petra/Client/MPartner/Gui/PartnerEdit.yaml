@@ -6,8 +6,11 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     FormType: edit
     Template: windowEditUIConnector 
-    UIConnectorType: Ict.Petra.Shared.Interfaces.MPartner.IPartnerUIConnectorsPartnerEdit
-    UIConnectorCreate: TRemote.MPartner.Partner.UIConnectors.PartnerEdit
+# Note: We deliberately don't set the 'UIConnectorType' and 'UIConnectorCreate' Elements as this would lead to two instances of the UIConnector instead of 
+# one because varying UIConnectors get created programmatically in the Method 'GetPartnerEditUIConnector' in PartnerEdit.ManualCode.cs!
+# (This fixes Mantis Bug #4022.)
+#    UIConnectorType: Ict.Petra.Shared.Interfaces.MPartner.IPartnerUIConnectorsPartnerEdit
+#    UIConnectorCreate: TRemote.MPartner.Partner.UIConnectors.PartnerEdit
     MasterTable: PPartner
     WindowWidth: 800
     WindowHeight: 675
@@ -82,7 +85,7 @@ RootNode:
             Dock: Fill            
     Menu:
         mniFile: 
-            mniFileNewPartner: {Label=&New Partner..., Action=actNewPartner, Order=AlwaysFirst}
+            mniFileNewPartner: {Label=&New Partner..., ShortcutKeys=Keys.N | Keys.Control, Action=actNewPartner, Order=AlwaysFirst}
             mniFileNewPartnerWithShepherd: {Label: N&ew Partner (Shepherd), Action=actFileNewPartnerWithShepherd, Order=AlwaysFirst, Image: NewPartner.ico}
                 mniFileNewPartnerWithShepherdPerson:
                 mniFileNewPartnerWithShepherdFamily:

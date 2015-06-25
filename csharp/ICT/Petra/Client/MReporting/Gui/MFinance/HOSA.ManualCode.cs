@@ -181,8 +181,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                     TCacheableFinanceTablesEnum.LedgerDetails);
                 ALedgerRow LedgerRow = LedgerDetailsTable[0];
-                Boolean IsClosed = (DateEnd.Year < LedgerRow.CurrentFinancialYear) || (PeriodEnd < LedgerRow.CurrentPeriod);
+                Boolean IsClosed = (!pm.Get("param_current_financial_year").ToBool() || (PeriodEnd < LedgerRow.CurrentPeriod));
                 ACalc.AddParameter("param_period_closed", IsClosed);
+                Boolean IsCurrent = (pm.Get("param_current_financial_year").ToBool() && (PeriodEnd == LedgerRow.CurrentPeriod));
+                ACalc.AddParameter("param_period_current", IsCurrent);
 
                 String PeriodTitle = " (" + DateStart.ToString("dd-MMM-yyyy") + " - " + DateEnd.ToString("dd-MMM-yyyy") + ")";
 
@@ -286,8 +288,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private Boolean LoadReportData(TRptCalculator ACalc)
         {
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
-
-            pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
             //
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
             String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);

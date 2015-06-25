@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
@@ -154,6 +155,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             mniFileSave.Click -= FileSave;
             tbbSave.Click += FileSaveManual;
             mniFileSave.Click += FileSaveManual;
+
+            tabGiftBatch.GotFocus += new EventHandler(tabGiftBatch_GotFocus);
+        }
+
+        private void tabGiftBatch_GotFocus(object sender, EventArgs e)
+        {
+            FPetraUtilsObject.WriteToStatusBar(Catalog.GetString(
+                    "Use the left or right arrow keys to switch between Batches and Details"));
         }
 
         /// <summary>
@@ -276,7 +285,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!ValidateAllData(false, true))
+            if (!ValidateAllData(false, TErrorProcessingMode.Epm_All))
             {
                 e.Cancel = true;
 

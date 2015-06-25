@@ -25,6 +25,7 @@ using System;
 using System.Data;
 
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 
@@ -182,7 +183,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         public void SetContactAttribute(string ANewCode)
         {
             // Save the current data
-            ValidateAllData(true, false);
+            ValidateAllData(true, TErrorProcessingMode.Epm_None);
 
             // Save the current contact attribute in our member variable
             FContactAttribute = ANewCode;

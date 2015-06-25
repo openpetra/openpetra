@@ -158,6 +158,56 @@ namespace Ict.Petra.Server.MFinance.GL
             FledgerInfo = ALedgerInfo;
         }
 
+        private void PurgeProcessedFeeTable()
+        {
+            TDBTransaction Transaction = null;
+            Boolean ShouldCommit = true;
+
+            if (!FInfoMode)
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    ref ShouldCommit,
+                    delegate
+                    {
+                        String Query = "DELETE FROM a_processed_fee WHERE" +
+                                       " a_ledger_number_i=" + FledgerInfo.LedgerNumber +
+                                       " AND a_period_number_i<=" + FledgerInfo.NumberOfAccountingPeriods;
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+
+                        Query = "UPDATE a_processed_fee SET a_period_number_i = a_period_number_i-" + FledgerInfo.NumberOfAccountingPeriods +
+                                " WHERE a_ledger_number_i=" + FledgerInfo.LedgerNumber;
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+                    });
+            }
+        }
+
+        private void PurgeIchStewardshipTable()
+        {
+            TDBTransaction Transaction = null;
+            Boolean ShouldCommit = true;
+
+            if (!FInfoMode)
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    ref ShouldCommit,
+                    delegate
+                    {
+                        String Query = "DELETE FROM a_ich_stewardship WHERE" +
+                                       " a_ledger_number_i=" + FledgerInfo.LedgerNumber +
+                                       " AND a_period_number_i<=" + FledgerInfo.NumberOfAccountingPeriods;
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+
+                        Query = "UPDATE a_ich_stewardship SET a_period_number_i = a_period_number_i-" + FledgerInfo.NumberOfAccountingPeriods +
+                                " WHERE a_ledger_number_i=" + FledgerInfo.LedgerNumber;
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+                    });
+            }
+        }
+
         /// <summary>
         /// Master routine ...
         /// </summary>
@@ -183,7 +233,18 @@ namespace Ict.Petra.Server.MFinance.GL
                 return true;
             }
 
-            Int32 FOldYearNum = FledgerInfo.CurrentFinancialYear;
+/*
+ *          TDBTransaction Transaction = null;
+ *          Boolean ShouldCommit = false;
+ *
+ *          DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+ *              TEnforceIsolationLevel.eilMinimum,
+ *              ref Transaction,
+ *              ref ShouldCommit,
+ *              delegate
+ *              {
+ */
+            Int32 OldYearNum = FledgerInfo.CurrentFinancialYear;
 
             RunPeriodEndSequence(new TArchive(FledgerInfo),
                 Catalog.GetString("Archive old financial information"));
@@ -191,27 +252,34 @@ namespace Ict.Petra.Server.MFinance.GL
             RunPeriodEndSequence(new TReallocation(FledgerInfo),
                 Catalog.GetString("Reallocate all income and expense accounts"));
 
-            RunPeriodEndSequence(new TGlmNewYearInit(FledgerInfo, FOldYearNum, this),
+            RunPeriodEndSequence(new TGlmNewYearInit(FledgerInfo, OldYearNum, this),
                 Catalog.GetString("Initialize the database for next year"));
 
-/* As far as we can tell, there's nothing to do for budgets:
- *          RunPeriodEndSequence(new TNewYearBudgets(FledgerInfo),
- *              Catalog.GetString("Initialise budgets for next year"));
- */
+            /* As far as we can tell, there's nothing to do for budgets:
+             *          RunPeriodEndSequence(new TNewYearBudgets(FledgerInfo),
+             *              Catalog.GetString("Initialise budgets for next year"));
+             */
 
-            RunPeriodEndSequence(new TResetForwardPeriodBatches(FledgerInfo, FOldYearNum),
+            RunPeriodEndSequence(new TResetForwardPeriodBatches(FledgerInfo, OldYearNum),
                 Catalog.GetString("Re-base last year's forward-posted batches so they're in the new year."));
 
             RunPeriodEndSequence(new TResetForwardPeriodICH(FledgerInfo),
                 Catalog.GetString("Re-base last year's forward-posted ICH Stewardship to the new year."));
 
+            PurgeProcessedFeeTable();
+            PurgeIchStewardshipTable();
+
             if (!FInfoMode && !FHasCriticalErrors)
             {
                 FledgerInfo.ProvisionalYearEndFlag = false;
+//                      ShouldCommit = true;
+                TLogging.Log("RunYearEnd: No errors; transaction will be committed.");
             }
 
+//                }); // New Or Existing AutoTransaction
+
             return FHasCriticalErrors;
-        }
+        } // RunYearEnd
     } // TYearEnd
 
     /// <summary>
@@ -265,16 +333,6 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         TLedgerInfo FledgerInfo;
         TAccountInfo FaccountInfo;
-        ACostCentreTable FCostCentreTbl;
-        string FstrYearEnd = Catalog.GetString("YEAR-END");
-        string FstrNarrativeToMessage = Catalog.GetString("Year end re-allocation to {2}-{3}");
-        string FstrNarrativeFromToMessage = Catalog.GetString("Year end re-allocation from {0}-{1} to {2}-{3}");
-
-
-        TGlmInfo FglmInfo;
-
-        List <String>FAccountList = null;
-
 
         /// <summary>
         ///
@@ -284,8 +342,9 @@ namespace Ict.Petra.Server.MFinance.GL
             FledgerInfo = ALedgerInfo;
         }
 
-        private void CalculateAccountInfo()
+        private List <String>LoadAccountList()
         {
+            List <String>accountList = null;
             FaccountInfo = new TAccountInfo(FledgerInfo);
             bool blnIncomeFound = false;
             bool blnExpenseFound = false;
@@ -293,7 +352,7 @@ namespace Ict.Petra.Server.MFinance.GL
             String strExpenseAccount = TAccountTypeEnum.Expense.ToString();
 
             FaccountInfo.Reset();
-            FAccountList = new List <String>();
+            accountList = new List <String>();
 
             while (FaccountInfo.MoveNext())
             {
@@ -301,13 +360,13 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     if (FaccountInfo.AccountType == strIncomeAccount)
                     {
-                        FAccountList.Add(FaccountInfo.AccountCode);
+                        accountList.Add(FaccountInfo.AccountCode);
                         blnIncomeFound = true;
                     }
 
                     if (FaccountInfo.AccountType == strExpenseAccount)
                     {
-                        FAccountList.Add(FaccountInfo.AccountCode);
+                        accountList.Add(FaccountInfo.AccountCode);
                         blnExpenseFound = true;
                     }
                 }
@@ -335,45 +394,55 @@ namespace Ict.Petra.Server.MFinance.GL
                 FHasCriticalErrors = true;
             }
 
-            FaccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
+/*
+ * This code is a mystery: In the 'ICH Processing Centre' special case,
+ * code similar but not identical to this, would be required:
+ *
+ *          // Look for the ICH Account setting: If it's not specified in the a_account_property table,
+ *          // this value might be in TAppSettingsManager. Otherwise it's 8500.
+ *          FaccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
+ *
+ *          if (FaccountInfo.IsValid)
+ *          {
+ *              accountList.Add(FaccountInfo.AccountCode);
+ *          }
+ *          else
+ *          {
+ *              TVerificationResult tvt =
+ *                  new TVerificationResult(Catalog.GetString("No ICH_ACCT Account defined"),
+ *                      Catalog.GetString("An ICH Account must be defined."), "",
+ *                      TPeriodEndErrorAndStatusCodes.PEEC_11.ToString(),
+ *                      TResultSeverity.Resv_Critical);
+ *              FverificationResults.Add(tvt);
+ *              FHasCriticalErrors = true;
+ *          }
+ */
+            return accountList;
+        }
 
-            if (FaccountInfo.IsValid)
-            {
-                FAccountList.Add(FaccountInfo.AccountCode);
-            }
-            else
-            {
-                TVerificationResult tvt =
-                    new TVerificationResult(Catalog.GetString("No ICH_ACCT Account defined"),
-                        Catalog.GetString("An ICH Account must be defined."), "",
-                        TPeriodEndErrorAndStatusCodes.PEEC_11.ToString(),
-                        TResultSeverity.Resv_Critical);
-                FverificationResults.Add(tvt);
-                FHasCriticalErrors = true;
-            }
-
+        private ACostCentreTable LoadCostCentreTable()
+        {
             TDBTransaction Transaction = null;
+            ACostCentreTable costCentreTbl = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
-                    FCostCentreTbl = ACostCentreAccess.LoadViaALedger(FledgerInfo.LedgerNumber, Transaction);
+                    costCentreTbl = ACostCentreAccess.LoadViaALedger(FledgerInfo.LedgerNumber, Transaction);
                 });
 
-            FCostCentreTbl.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+            costCentreTbl.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+            costCentreTbl.DefaultView.RowFilter = "a_posting_cost_centre_flag_l=TRUE";
+            return costCentreTbl;
         }
 
         /// <summary>
         /// </summary>
         public override int GetJobSize()
         {
-            bool blnHelp = FInfoMode;
-
-            FInfoMode = true;
-            Int32 CountJobs = RunOperation();
-            FInfoMode = blnHelp;
-            return CountJobs;
+            return -1;
         }
 
         /// <summary>
@@ -385,120 +454,173 @@ namespace Ict.Petra.Server.MFinance.GL
 
         /// <summary>
         /// TReallocation.RunOperation
+        /// (This has been re-written to iterate over Cost Centres, rather than over accounts.)
+        ///
+        /// I need an Account list: all profit / loss accounts, plus ICH,
+        /// and a Cost Centre list: all Cost Centres.
+        ///
+        /// For Each Cost Centre, I need to load GLMP entries so that I can find balances for each qualifying account.
+        ///
+        /// If the rollup style is surplus or deficit, I need to add up the amounts in all the GLMP entries
+        /// that correspond to a qualifying account, to find out whether there's an overal surplus or deficit.
+        /// If the rollup style is always or never, I don't need to do this.
+        ///
+        /// Then for Each account within the Cost Centre loop, I need to need to make two transactions -
+        ///   the destination account is the nominated equity account,
+        ///   and the destination Cost Centre is either the standard Cost Centre, or the same as the source.
         /// </summary>
         public override Int32 RunOperation()
         {
             Int32 CountJobs = 0;
 
-            if (FAccountList == null)
-            {
-                CalculateAccountInfo();
-            }
+            List <String>accountList = LoadAccountList();
+            ACostCentreTable costCentreTbl = LoadCostCentreTable();
 
-            TCommonAccountingTool YearEndBatch = null;
+            Int32 ledgerNumber = FledgerInfo.LedgerNumber;
+            Int32 year = FledgerInfo.CurrentFinancialYear;
+            Int32 period = FledgerInfo.CurrentPeriod;
+            String StandardCostCentre = FledgerInfo.GetStandardCostCentre();
+            TCommonAccountingTool yearEndBatch = null;
 
             if (DoExecuteableCode)
             {
-                YearEndBatch = new TCommonAccountingTool(FledgerInfo,
+                yearEndBatch = new TCommonAccountingTool(FledgerInfo,
                     Catalog.GetString("Financial year end processing"));
-                YearEndBatch.AddBaseCurrencyJournal();
-                YearEndBatch.JournalDescription = Catalog.GetString("YearEnd revaluations");
-                YearEndBatch.SubSystemCode = CommonAccountingSubSystemsEnum.GL;
+                yearEndBatch.AddBaseCurrencyJournal();
+                yearEndBatch.JournalDescription = Catalog.GetString("YearEnd revaluations");
+                yearEndBatch.SubSystemCode = CommonAccountingSubSystemsEnum.GL;
             }
 
-            // tCommonAccountingTool.DateEffective =""; Default is "End of actual period ..."
-            // Loop with all account codes
-            foreach (string strAccountCode in FAccountList)
-            {
-                FglmInfo = new TGlmInfo(FledgerInfo.LedgerNumber,
-                    FledgerInfo.CurrentFinancialYear,
-                    strAccountCode);
+            string narrativeFromTo = Catalog.GetString("Year end re-allocation from {0}-{1} to {2}-{3}");
+            DataTable accountBalanceTable = new DataTable();
+            TDBTransaction transaction = null;
 
-                while (FglmInfo.MoveNext())
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref transaction,
+                delegate
                 {
-                    Int32 CostCentreRowIdx = FCostCentreTbl.DefaultView.Find(FglmInfo.CostCentreCode);
-                    ACostCentreRow currentCostCentre = (ACostCentreRow)FCostCentreTbl.DefaultView[CostCentreRowIdx].Row;
-
-                    if (currentCostCentre.PostingCostCentreFlag)
+                    foreach (DataRowView rv in costCentreTbl.DefaultView)
                     {
-                        TGlmpInfo glmpInfo = new TGlmpInfo(-1, -1, FglmInfo.GlmSequence, FledgerInfo.NumberOfAccountingPeriods);
+                        ACostCentreRow CCRow = (ACostCentreRow)rv.Row;
+                        String Query = "SELECT DISTINCT a_general_ledger_master.a_account_code_c AS Account," +
+                                       " a_general_ledger_master_period.a_actual_base_n AS Balance," +
+                                       " a_account.a_debit_credit_indicator_l AS Debit" +
+                                       " FROM" +
+                                       " a_general_ledger_master_period, a_general_ledger_master, a_account" +
+                                       " WHERE" +
+                                       " a_account.a_account_code_c=a_general_ledger_master.a_account_code_c" +
+                                       " AND a_account.a_posting_status_l=TRUE" +
+                                       " AND a_general_ledger_master_period.a_glm_sequence_i=a_general_ledger_master.a_glm_sequence_i" +
+                                       " AND a_general_ledger_master.a_ledger_number_i = " + ledgerNumber +
+                                       " AND a_general_ledger_master.a_year_i = " + year +
+                                       " AND a_general_ledger_master.a_cost_centre_code_c = '" + CCRow.CostCentreCode + "'" +
+                                       " AND a_general_ledger_master_period.a_period_number_i=" + period +
+                                       " AND a_general_ledger_master_period.a_actual_base_n+a_general_ledger_master.a_closing_period_actual_base_n!=0"
+                                       +
+                                       " ORDER BY a_general_ledger_master.a_account_code_c";
 
-                        if (glmpInfo.ActualBase + FglmInfo.ClosingPeriodActualBase != 0)
+                        accountBalanceTable = DBAccess.GDBAccessObj.SelectDT(Query, "AccountBalance", transaction);
+
+                        String DestCC = StandardCostCentre;                                                     // Roll-up to the standard Cost Centre, unless...
+                        CCRollupStyleEnum RollupStyle = CCRollupStyleEnum.Always;
+
+                        if (Enum.TryParse <CCRollupStyleEnum>(CCRow.RollupStyle, out RollupStyle))
                         {
-                            if (DoExecuteableCode)
+                            if ((RollupStyle == CCRollupStyleEnum.Deficit) || (RollupStyle == CCRollupStyleEnum.Surplus)) // I need to sum all the qualifying accounts
+                            {                                                                                         // to find out whether this Cost Centre is in surplus or deficit.
+                                Decimal TotalForCostCentre = 0;
+
+                                foreach (DataRow accountBalanceRow in accountBalanceTable.Rows)
+                                {
+                                    if (accountList.Contains(accountBalanceRow["Account"].ToString()))
+                                    {
+                                        if (Convert.ToBoolean(accountBalanceRow["Debit"]))
+                                        {
+                                            TotalForCostCentre -= Convert.ToDecimal(accountBalanceRow["Balance"]);
+                                        }
+                                        else
+                                        {
+                                            TotalForCostCentre += Convert.ToDecimal(accountBalanceRow["Balance"]);
+                                        }
+                                    }
+                                }
+
+                                if (((TotalForCostCentre < 0) && (RollupStyle == CCRollupStyleEnum.Surplus))        // If I should rollup surplus, but I didn't get one,
+                                    || ((TotalForCostCentre > 0) && (RollupStyle == CCRollupStyleEnum.Deficit)))    // Or I should rollup deficit, but I didn't get one,
+                                {
+                                    DestCC = CCRow.CostCentreCode;                                              // I'll keep the balance in the same CC.
+                                }
+                            }
+                            else
                             {
-                                ReallocationLoop(glmpInfo, YearEndBatch, strAccountCode, FglmInfo.CostCentreCode);
+                                if (RollupStyle == CCRollupStyleEnum.Never)                                     // Or if I've been told never to roll up
+                                {
+                                    DestCC = CCRow.CostCentreCode;                                              // I'll keep the balance in the same CC.
+                                }
+                            }
+                        }
+
+//                      TLogging.Log("Accounts for " + CCRow.CostCentreCode + ": " + accountBalanceTable.Rows.Count + ". CountJobs=" + CountJobs);
+                        foreach (DataRow accountBalanceRow in accountBalanceTable.Rows)
+                        {
+                            String accountCode = accountBalanceRow["Account"].ToString();
+
+                            if (!accountList.Contains(accountCode))
+                            {
+                                continue;
+                            }
+
+                            Boolean isDebit = Convert.ToBoolean(accountBalanceRow["Debit"]);
+                            Decimal TransactionAmount = Convert.ToDecimal(accountBalanceRow["Balance"]);
+
+                            if (TransactionAmount < 0)
+                            {
+                                isDebit = !isDebit;
+                                TransactionAmount = 0 - TransactionAmount;
                             }
 
                             CountJobs++;
-                        }
-                    }
-                }
-            }
+
+                            if (DoExecuteableCode)
+                            {
+                                ATransactionRow transRow = yearEndBatch.AddBaseCurrencyTransaction(
+                                    accountCode, CCRow.CostCentreCode,
+                                    String.Format(narrativeFromTo, CCRow.CostCentreCode, accountCode, DestCC, CCRow.RetEarningsAccountCode),
+                                    "YEAR-END", !isDebit, TransactionAmount);
+                                transRow.SystemGenerated = true;
+
+                                transRow = yearEndBatch.AddBaseCurrencyTransaction(
+                                    CCRow.RetEarningsAccountCode, DestCC,
+                                    String.Format(narrativeFromTo, CCRow.CostCentreCode, accountCode, DestCC, CCRow.RetEarningsAccountCode),
+                                    "YEAR-END", isDebit, TransactionAmount);
+                                transRow.SystemGenerated = true;
+                            }
+                        } // foreach Account
+
+                    } // foreach Cost Centre
+
+                }); // Get NewOrExisting AutoReadTransaction
 
             if (DoExecuteableCode)
             {
-                YearEndBatch.CloseSaveAndPost(FverificationResults);
+                /* Boolean PostedOk = */
+                yearEndBatch.CloseSaveAndPost(FverificationResults);
+
+/*
+ *              if (PostedOk)
+ *              {
+ *                  TLogging.Log("YearEnd batch posted OK.");
+ *              }
+ *              else
+ *              {
+ *                  TLogging.Log("YearEnd batch had a problem on posting.");
+ *              }
+ */
             }
 
             return CountJobs;
-        }
-
-        private void ReallocationLoop(TGlmpInfo AGlmpInfo, TCommonAccountingTool YearEndBatch, String AAccountFrom, String ACostCentreFrom)
-        {
-            string strCostCentreTo = TLedgerInfo.GetStandardCostCentre(FledgerInfo.LedgerNumber);
-            string strAccountTo;
-
-            FaccountInfo.AccountCode = AAccountFrom;
-            Boolean blnDebitCredit = FaccountInfo.DebitCreditIndicator;
-            String narrativeMessage = FstrNarrativeToMessage;
-
-            string strCCAccoutCode = FaccountInfo.SetCarryForwardAccount(); // Move FaccountInfo to the Carry Forward Account - if there is one.
-
-            if (FaccountInfo.IsValid) // The CarryForward account exists..
-            {
-                strAccountTo = FaccountInfo.AccountCode;
-
-                if (strCCAccoutCode == "SAMECC")
-                {
-                    strCostCentreTo = ACostCentreFrom;
-                    narrativeMessage = FstrNarrativeFromToMessage;
-                }
-            }
-            else // If there's no Carry Forward account, use EARNINGS_BF_ACCT
-            {
-                FaccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.EARNINGS_BF_ACCT);
-                strAccountTo = FaccountInfo.AccountCode;
-            }
-
-            if (FledgerInfo.IltAccountFlag) // In either case, change that if ICH_ACCT is set
-            {
-                FaccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
-                strAccountTo = FaccountInfo.AccountCode;
-            }
-
-            if (FledgerInfo.BranchProcessing) // Keep the original Cost Centres - don't roll up
-            {
-                strCostCentreTo = ACostCentreFrom;
-                narrativeMessage = FstrNarrativeFromToMessage;
-            }
-
-            if (FglmInfo.YtdActualBase < 0)
-            {
-                blnDebitCredit = !blnDebitCredit;
-            }
-
-            Decimal TransactionAmount = Math.Abs(AGlmpInfo.ActualBase);
-
-            YearEndBatch.AddBaseCurrencyTransaction(
-                AAccountFrom, ACostCentreFrom,
-                String.Format(narrativeMessage, ACostCentreFrom, AAccountFrom, strCostCentreTo, strAccountTo),
-                FstrYearEnd, !blnDebitCredit, TransactionAmount);
-
-            YearEndBatch.AddBaseCurrencyTransaction(
-                strAccountTo, strCostCentreTo,
-                String.Format(narrativeMessage, ACostCentreFrom, AAccountFrom, strCostCentreTo, strAccountTo),
-                FstrYearEnd, blnDebitCredit, TransactionAmount);
         }
     } // TReallocation
 
@@ -551,6 +673,7 @@ namespace Ict.Petra.Server.MFinance.GL
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -617,6 +740,7 @@ namespace Ict.Petra.Server.MFinance.GL
             TDBTransaction Transaction = null;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
@@ -648,22 +772,14 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         public override int GetJobSize()
         {
-            return 0; // I can't know the Job size?
-
-/*
- *          bool blnOldInfoMode = FInfoMode;
- *          FInfoMode = true;
- *          int EntryCount = RunOperation();
- *          FInfoMode = blnOldInfoMode;
- *          return EntryCount;
- */
+            return -1; // I can't know the Job size
         }
 
         // get posting glm rows
         private DataTable LoadTable(int ALedgerNumber, int AYear, TDBTransaction ATransaction)
         {
             AGeneralLedgerMasterTable typedTable = new AGeneralLedgerMasterTable();
-            string strSQL = "SELECT PUB_a_general_ledger_master.*" +
+            string strSQL = "SELECT DISTINCT PUB_a_general_ledger_master.*" +
                             " FROM PUB_a_general_ledger_master, PUB_a_account, PUB_a_cost_centre" +
                             " WHERE PUB_a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber +
                             " AND PUB_a_general_ledger_master.a_year_i = " + AYear +
@@ -722,151 +838,160 @@ namespace Ict.Petra.Server.MFinance.GL
                 FYearEndOperator.SetNextPeriod();
             }
 
-            try
+            foreach (AGeneralLedgerMasterRow GlmRowFrom in FGlmPostingFrom.Rows)
             {
-                foreach (AGeneralLedgerMasterRow GlmRowFrom in FGlmPostingFrom.Rows)
+                ++EntryCount;
+
+                if (FInfoMode)
                 {
-                    ++EntryCount;
+                    continue;
+                }
 
-                    if (FInfoMode)
+                FGlmpFrom.DefaultView.RowFilter = "a_glm_sequence_i=" + GlmRowFrom.GlmSequence;
+                FGlmpFrom.DefaultView.Sort = "a_period_number_i";
+
+                AGeneralLedgerMasterRow GlmRowTo = null;
+                //
+                // If there's not already a GLM row for this Account / Cost Centre,
+                // I need to create one now.
+                //
+                Int32 GlmToRowIdx = GlmTDS.AGeneralLedgerMaster.DefaultView.Find(
+                    new Object[] { GlmRowFrom.AccountCode, GlmRowFrom.CostCentreCode }
+                    );
+
+                if (GlmToRowIdx >= 0)
+                {
+                    GlmRowTo = (AGeneralLedgerMasterRow)GlmTDS.AGeneralLedgerMaster.DefaultView[GlmToRowIdx].Row;
+                }
+                else        // GLM record Not present - I'll make one now...
+                {
+                    GlmRowTo = GlmTDS.AGeneralLedgerMaster.NewRowTyped(true);
+                    GlmRowTo.GlmSequence = TempGLMSequence;
+                    TempGLMSequence--;
+                    GlmRowTo.LedgerNumber = FLedgerInfo.LedgerNumber;
+                    GlmRowTo.AccountCode = GlmRowFrom.AccountCode;
+                    GlmRowTo.CostCentreCode = GlmRowFrom.CostCentreCode;
+                    GlmRowTo.Year = FNewYearNum;
+
+                    GlmTDS.AGeneralLedgerMaster.Rows.Add(GlmRowTo);
+                }
+
+                GlmRowTo.YtdActualBase = GlmRowFrom.YtdActualBase;
+                GlmRowTo.YtdActualIntl = GlmRowFrom.YtdActualIntl;
+
+                if (!GlmRowFrom.IsYtdActualForeignNull())
+                {
+                    GlmRowTo.YtdActualForeign = GlmRowFrom.YtdActualForeign;
+                }
+
+                // If the GlmRowTo row already existed, its GLMP records will also exist,
+                // but I need to update them with data from last year's forward periods.
+                // Otherwise I need to create a clutch of matching GLMP records.
+
+                // Create GLM period records for new year if required
+                for (int PeriodCount = 1;
+                     PeriodCount <= FLedgerAccountingPeriods + FLedgerFwdPeriods;
+                     PeriodCount++)
+                {
+                    AGeneralLedgerMasterPeriodRow glmPeriodRow;
+
+                    // If there's already a GLM and GLMP entry, I need to use the existing GLMP row for this period
+                    if ((GlmToRowIdx >= 0)
+                        && GlmTDS.AGeneralLedgerMasterPeriod.Rows.Contains(new object[] { GlmRowTo.GlmSequence, PeriodCount }))
                     {
-                        continue;
-                    }
-
-                    FGlmpFrom.DefaultView.RowFilter = "a_glm_sequence_i=" + GlmRowFrom.GlmSequence;
-                    FGlmpFrom.DefaultView.Sort = "a_period_number_i";
-
-                    // get the number of forward periods that actually exist (this should be FLedgerFwdPeriods but just incase...)
-                    int ForwardPeriods = Math.Max(FGlmpFrom.DefaultView.Count - FLedgerAccountingPeriods, 0);
-
-                    AGeneralLedgerMasterRow GlmRowTo = null;
-                    //
-                    // If there's not already a GLM row for this Account / Cost Centre,
-                    // I need to create one now.
-                    //
-                    Int32 GlmToRowIdx = GlmTDS.AGeneralLedgerMaster.DefaultView.Find(
-                        new Object[] { GlmRowFrom.AccountCode, GlmRowFrom.CostCentreCode }
-                        );
-
-                    if (GlmToRowIdx >= 0)
-                    {
-                        GlmRowTo = (AGeneralLedgerMasterRow)GlmTDS.AGeneralLedgerMaster.DefaultView[GlmToRowIdx].Row;
-                    }
-                    else        // GLM record Not present - I'll make one now...
-                    {
-                        GlmRowTo = GlmTDS.AGeneralLedgerMaster.NewRowTyped(true);
-                        GlmRowTo.GlmSequence = TempGLMSequence;
-                        TempGLMSequence--;
-                        GlmRowTo.LedgerNumber = FLedgerInfo.LedgerNumber;
-                        GlmRowTo.AccountCode = GlmRowFrom.AccountCode;
-                        GlmRowTo.CostCentreCode = GlmRowFrom.CostCentreCode;
-                        GlmRowTo.Year = FNewYearNum;
-
-                        GlmTDS.AGeneralLedgerMaster.Rows.Add(GlmRowTo);
-                    }
-
-                    GlmRowTo.YtdActualBase = GlmRowFrom.YtdActualBase;
-                    GlmRowTo.YtdActualIntl = GlmRowFrom.YtdActualIntl;
-
-                    if (!GlmRowFrom.IsYtdActualForeignNull())
-                    {
-                        GlmRowTo.YtdActualForeign = GlmRowFrom.YtdActualForeign;
-                    }
-
-                    // If the GlmRowTo row already existed, its GLMP records will also exist,
-                    // but I need to update them with data from last year's forward periods.
-                    // Otherwise I need to create a clutch of matching GLMP records.
-
-                    // Create GLM period records for new year if required
-                    for (int PeriodCount = 1;
-                         PeriodCount <= FLedgerAccountingPeriods + FLedgerFwdPeriods;
-                         PeriodCount++)
-                    {
-                        AGeneralLedgerMasterPeriodRow glmPeriodRow;
-
-                        // If there's already a GLM and GLMP entry, I need to use the existing GLMP row for this period
-                        if ((GlmToRowIdx >= 0)
-                            && GlmTDS.AGeneralLedgerMasterPeriod.Rows.Contains(new object[] { GlmRowTo.GlmSequence, PeriodCount }))
-                        {
-                            glmPeriodRow =
-                                (AGeneralLedgerMasterPeriodRow)GlmTDS.AGeneralLedgerMasterPeriod.Rows.Find(new object[] { GlmRowTo.GlmSequence,
-                                                                                                                          PeriodCount });
-                        }
-                        else // otherwise I need to create one now.
-                        {
-                            glmPeriodRow = GlmTDS.AGeneralLedgerMasterPeriod.NewRowTyped(true);
-                            glmPeriodRow.GlmSequence = GlmRowTo.GlmSequence;
-                            glmPeriodRow.PeriodNumber = PeriodCount;
-                            GlmTDS.AGeneralLedgerMasterPeriod.Rows.Add(glmPeriodRow);
-                        }
-                    }
-
-                    // carry forward period balances (if any) over to the start of the new year
-                    for (int PeriodCount = 1;
-                         PeriodCount <= ForwardPeriods;
-                         PeriodCount++)
-                    {
-                        AGeneralLedgerMasterPeriodRow OldGlmForwardPeriodRow =
-                            (AGeneralLedgerMasterPeriodRow)FGlmpFrom.DefaultView[FLedgerAccountingPeriods + PeriodCount - 1].Row;
-                        AGeneralLedgerMasterPeriodRow NewGlmPeriodRow =
+                        glmPeriodRow =
                             (AGeneralLedgerMasterPeriodRow)GlmTDS.AGeneralLedgerMasterPeriod.Rows.Find(new object[] { GlmRowTo.GlmSequence,
                                                                                                                       PeriodCount });
-
-                        NewGlmPeriodRow.ActualBase = OldGlmForwardPeriodRow.ActualBase;
-                        NewGlmPeriodRow.ActualIntl = OldGlmForwardPeriodRow.ActualIntl;
-
-                        if (!OldGlmForwardPeriodRow.IsActualForeignNull())
-                        {
-                            NewGlmPeriodRow.ActualForeign = OldGlmForwardPeriodRow.ActualForeign;
-                        }
                     }
-
-                    AGeneralLedgerMasterPeriodRow LastOldGlmForwardPeriodRow =
-                        (AGeneralLedgerMasterPeriodRow)FGlmpFrom.DefaultView[FGlmpFrom.DefaultView.Count - 1].Row;
-
-                    // populate the new periods not populated by last year's forward periods
-                    for (int PeriodCount = ForwardPeriods + 1;
-                         PeriodCount <= FLedgerAccountingPeriods + ForwardPeriods;
-                         PeriodCount++)
+                    else // otherwise I need to create one now.
                     {
-                        AGeneralLedgerMasterPeriodRow NewGlmPeriodRow =
-                            (AGeneralLedgerMasterPeriodRow)GlmTDS.AGeneralLedgerMasterPeriod.Rows.Find(new object[] { GlmRowTo.GlmSequence,
-                                                                                                                      PeriodCount });
-
-                        NewGlmPeriodRow.ActualBase = LastOldGlmForwardPeriodRow.ActualBase;
-                        NewGlmPeriodRow.ActualIntl = LastOldGlmForwardPeriodRow.ActualIntl;
-
-                        if (!LastOldGlmForwardPeriodRow.IsActualForeignNull())
-                        {
-                            NewGlmPeriodRow.ActualForeign = LastOldGlmForwardPeriodRow.ActualForeign;
-                        }
-                    }
-
-                    // get the number of (not forward) periods that actually exist (this should be FLedgerAccountingPeriods but just incase...)
-                    int ActualAccountingPeriods = Math.Min(FLedgerAccountingPeriods, FGlmpFrom.DefaultView.Count);
-
-                    AGeneralLedgerMasterPeriodRow LastOldGlmPeriodRow =
-                        (AGeneralLedgerMasterPeriodRow)FGlmpFrom.DefaultView[ActualAccountingPeriods - 1].Row;
-
-                    //Set starting balances
-                    GlmRowTo.StartBalanceBase = GlmRowFrom.ClosingPeriodActualBase + LastOldGlmPeriodRow.ActualBase;
-                    GlmRowTo.StartBalanceIntl = GlmRowFrom.ClosingPeriodActualIntl + LastOldGlmPeriodRow.ActualIntl;
-
-                    if (!LastOldGlmPeriodRow.IsActualForeignNull())
-                    {
-                        GlmRowTo.StartBalanceForeign = LastOldGlmPeriodRow.ActualForeign;
+                        glmPeriodRow = GlmTDS.AGeneralLedgerMasterPeriod.NewRowTyped(true);
+                        glmPeriodRow.GlmSequence = GlmRowTo.GlmSequence;
+                        glmPeriodRow.PeriodNumber = PeriodCount;
+                        GlmTDS.AGeneralLedgerMasterPeriod.Rows.Add(glmPeriodRow);
                     }
                 }
-            }
-            finally
-            {
-                // Nothing special to do
+
+                // carry forward period balances (if any) over to the start of the new year
+                AGeneralLedgerMasterPeriodRow OldGlmForwardPeriodRow =
+                    (AGeneralLedgerMasterPeriodRow)FGlmpFrom.DefaultView[FLedgerAccountingPeriods - 1].Row;
+                decimal CarryForwardBase = OldGlmForwardPeriodRow.ActualBase;
+                decimal CarryForwardIntl = OldGlmForwardPeriodRow.ActualIntl;
+                decimal CarryForwardForeign = (OldGlmForwardPeriodRow.IsActualForeignNull()) ? 0 : OldGlmForwardPeriodRow.ActualForeign;
+
+                Int32 LastYearPeriods = FGlmpFrom.DefaultView.Count;
+
+                for (int PeriodCount = FLedgerAccountingPeriods + 1;
+                     PeriodCount <= LastYearPeriods;
+                     PeriodCount++)
+                {
+                    Int32 RowIdx = FGlmpFrom.DefaultView.Find(PeriodCount);
+
+                    if (RowIdx >= 0)
+                    {
+                        OldGlmForwardPeriodRow = (AGeneralLedgerMasterPeriodRow)FGlmpFrom.DefaultView[RowIdx].Row;
+                        CarryForwardBase = OldGlmForwardPeriodRow.ActualBase;
+                        CarryForwardIntl = OldGlmForwardPeriodRow.ActualIntl;
+                        CarryForwardForeign = (OldGlmForwardPeriodRow.IsActualForeignNull()) ? 0 : OldGlmForwardPeriodRow.ActualForeign;
+                        OldGlmForwardPeriodRow.Delete();
+                    }
+
+                    AGeneralLedgerMasterPeriodRow NewGlmPeriodRow =
+                        (AGeneralLedgerMasterPeriodRow)GlmTDS.AGeneralLedgerMasterPeriod.Rows.Find(new object[] { GlmRowTo.GlmSequence,
+                                                                                                                  PeriodCount -
+                                                                                                                  FLedgerAccountingPeriods });
+
+
+                    NewGlmPeriodRow.ActualBase = CarryForwardBase;
+                    NewGlmPeriodRow.ActualIntl = CarryForwardIntl;
+                    NewGlmPeriodRow.ActualForeign = CarryForwardForeign;
+                }
+
+                // Populate the remaining new periods not populated by last year's forward periods
+                for (int PeriodCount = LastYearPeriods - FLedgerAccountingPeriods + 1;
+                     PeriodCount <= FLedgerAccountingPeriods + FLedgerFwdPeriods;
+                     PeriodCount++)
+                {
+                    AGeneralLedgerMasterPeriodRow NewGlmPeriodRow =
+                        (AGeneralLedgerMasterPeriodRow)GlmTDS.AGeneralLedgerMasterPeriod.Rows.Find(new object[] { GlmRowTo.GlmSequence, PeriodCount });
+                    NewGlmPeriodRow.ActualBase = CarryForwardBase;
+                    NewGlmPeriodRow.ActualIntl = CarryForwardIntl;
+                    NewGlmPeriodRow.ActualForeign = CarryForwardForeign;
+                }
+
+                // get the number of (not forward) periods that actually exist (this should be FLedgerAccountingPeriods but just incase...)
+                int ActualAccountingPeriods = Math.Min(FLedgerAccountingPeriods, LastYearPeriods);
+
+                AGeneralLedgerMasterPeriodRow LastOldGlmPeriodRow =
+                    (AGeneralLedgerMasterPeriodRow)FGlmpFrom.DefaultView[ActualAccountingPeriods - 1].Row;
+
+                //Set starting balances
+                GlmRowTo.StartBalanceBase = GlmRowFrom.ClosingPeriodActualBase + LastOldGlmPeriodRow.ActualBase;
+                GlmRowTo.StartBalanceIntl = GlmRowFrom.ClosingPeriodActualIntl + LastOldGlmPeriodRow.ActualIntl;
+                GlmRowTo.StartBalanceForeign = (LastOldGlmPeriodRow.IsActualForeignNull()) ? 0 : LastOldGlmPeriodRow.ActualForeign;
             }
 
             if (DoExecuteableCode)
             {
                 GlmTDS.ThrowAwayAfterSubmitChanges = true;
+                TLogging.Log(
+                    "TGlmNewYearInit: New GLMP (" + FLedgerInfo.LedgerNumber + ") for year " + FNewYearNum + " has " +
+                    GlmTDS.AGeneralLedgerMasterPeriod.Rows.Count + " Rows.");
                 GLPostingTDSAccess.SubmitChanges(GlmTDS);
+
+                FGlmpFrom.ThrowAwayAfterSubmitChanges = true;
+
+                TDBTransaction Transaction = null;
+                Boolean SubmissionOk = true;
+
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    ref SubmissionOk,
+                    delegate
+                    {
+                        AGeneralLedgerMasterPeriodAccess.SubmitChanges(FGlmpFrom, Transaction);
+                    });
             }
 
             return EntryCount;
@@ -968,6 +1093,7 @@ namespace Ict.Petra.Server.MFinance.GL
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -1105,6 +1231,7 @@ namespace Ict.Petra.Server.MFinance.GL
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

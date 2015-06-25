@@ -20,19 +20,13 @@
     Controls:
         tpgGeneralSettings:
             Label: GeneralSettings
-            Controls: [lblLedger, rgrPartnerSelection, grpDateSelection, grpCurrencySelection]
+            Controls: [lblLedger, rgrPartnerSelection, grpDateSelection, grpCurrencySelection, rgrSorting]
         tpgColumns:
             Label: Columns
             Controls: [ucoReportColumns]
-        tpgSorting:
-            Label: Sorting
-            Controls: [ucoReportSorting]
         
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
-            Dock: Fill
-        ucoReportSorting:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
         rgrPartnerSelection:
             Label: Select Partner
@@ -44,6 +38,9 @@
         grpCurrencySelection:
             Label: Select Currency
             Controls: [cmbCurrency]
+        rgrSorting:
+            Label: Sort by
+            Controls: [rbtPartnerName, rbtPartnerKey, rbtAmount]
         lblLedger:
             Label: Ledger
             
@@ -67,6 +64,15 @@
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [Base, International]
+        rbtPartnerName:
+            Label: Partner Name
+            ParameterValue: Donor Name
+        rbtPartnerKey:
+            Label: Partner Key
+            ParameterValue: Partner Key
+        rbtAmount:
+            Label: Total Given
+            ParameterValue: Amount
 
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:

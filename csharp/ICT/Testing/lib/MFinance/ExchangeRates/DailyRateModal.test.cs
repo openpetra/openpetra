@@ -46,7 +46,9 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.CrossLedger.Data;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This test suite will delete all the existing rows in the Daily Exchange rate table
@@ -136,19 +138,33 @@ namespace Tests.MFinance.Client.ExchangeRates
             // define our working date range
             DateTime dtStart = new DateTime(2000, 01, 01);
             DateTime dtEnd = new DateTime(2000, 12, 31);
+            DateTime dateEffectiveFrom;
+            decimal rateOfExchange;
 
             // First test is with empty data - should return 1.0m
-            TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-            decimal result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP");
-            Assert.AreEqual(1.0m, result, "The result should be 1.0m when the table contains no data");
+            ExchangeRateTDS workDS = TRemote.MFinance.Common.WebConnectors.LoadDailyExchangeRateData(false, dtStart, dtEnd);
+            bool gotRate = CommonRoutines.GetBestExchangeRate(workDS.ADailyExchangeRate,
+                "GBP",
+                STANDARD_TEST_CURRENCY,
+                false,
+                out rateOfExchange,
+                out dateEffectiveFrom);
+            Assert.IsFalse(gotRate, "Should fail to get rate when table is empty");
+            Assert.AreEqual(0.0m, rateOfExchange, "The result should be 0.0m when GetBestExchangeRate returns no data");
 
             // Repeat test with data but outside the date range - again should return 1.0m
             FMainDS.InsertStandardModalRows();
             FMainDS.SaveChanges();
 
-            mainScreen = new TFrmSetupDailyExchangeRate(null);
-            result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP");
-            Assert.AreEqual(1.0m, result, "The result should be 1.0m because there is no data in the date range");
+            workDS = TRemote.MFinance.Common.WebConnectors.LoadDailyExchangeRateData(false, dtStart, dtEnd);
+            gotRate = CommonRoutines.GetBestExchangeRate(workDS.ADailyExchangeRate,
+                "GBP",
+                STANDARD_TEST_CURRENCY,
+                false,
+                out rateOfExchange,
+                out dateEffectiveFrom);
+            Assert.IsFalse(gotRate, "Should fail to get rate when table has no data in the date range");
+            Assert.AreEqual(0.0m, rateOfExchange, "The result should be 0.0m when GetBestExchangeRate returns no data");
 
             // Repeat again with data inside the range
             FMainDS.AddARow("GBP", STANDARD_TEST_CURRENCY, new DateTime(2000, 6, 1), 2.0m);
@@ -157,9 +173,16 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.AddARow("GBP", STANDARD_TEST_CURRENCY, new DateTime(2000, 6, 20), 2.10m);
             FMainDS.SaveChanges();
 
-            mainScreen = new TFrmSetupDailyExchangeRate(null);
-            result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP");
-            Assert.AreEqual(2.15m, result);
+            workDS = TRemote.MFinance.Common.WebConnectors.LoadDailyExchangeRateData(false, dtStart, dtEnd);
+            gotRate = CommonRoutines.GetBestExchangeRate(workDS.ADailyExchangeRate,
+                "GBP",
+                STANDARD_TEST_CURRENCY,
+                false,
+                out rateOfExchange,
+                out dateEffectiveFrom);
+            Assert.IsTrue(gotRate, "Expected to get a rate");
+            Assert.AreEqual(2.15m, rateOfExchange);
+            Assert.AreEqual(dateEffectiveFrom, new DateTime(2000, 6, 30), "Unexpected matching date");
         }
 
         #endregion
@@ -193,7 +216,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
                 FStandardEffectiveDate,
-                "GBP",
+                "EUR",
                 1.111m,
                 out selectedRate,
                 out selectedDate,
@@ -214,7 +237,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Check we did also save the result
             FMainDS.LoadAll();
             ADailyExchangeRateRow row =
-                (ADailyExchangeRateRow)FMainDS.ADailyExchangeRate.Rows.Find(new object[] { "GBP", STANDARD_TEST_CURRENCY, FStandardEffectiveDate,
+                (ADailyExchangeRateRow)FMainDS.ADailyExchangeRate.Rows.Find(new object[] { "EUR", STANDARD_TEST_CURRENCY, FStandardEffectiveDate,
                                                                                            7200 });
             Assert.IsNotNull(row, "The selected exchange rate was not saved");
             Assert.AreEqual(STANDARD_RATE_OF_EXCHANGE, row.RateOfExchange);
@@ -250,7 +273,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
                 // These should be the states after adding a new row
                 mainScreen.TFrmSetupDailyExchangerate_Shown(null, null);
-                Assert.AreEqual("GBP", cmbFromCurrency.GetSelectedString());                    // GBP passed in as a ShowDialog parameter
+                Assert.AreEqual("EUR", cmbFromCurrency.GetSelectedString());
                 Assert.AreEqual(STANDARD_TEST_CURRENCY, cmbToCurrency.GetSelectedString());
                 Assert.AreEqual(FStandardEffectiveDate, dtpDateEffective.Date);
                 Assert.IsFalse(cmbFromCurrency.Enabled);
@@ -265,7 +288,21 @@ namespace Tests.MFinance.Client.ExchangeRates
                 txtRateOfExchange.NumberValueDecimal = STANDARD_RATE_OF_EXCHANGE;
 
                 // Save this as our rate and quit
+                string dlgText = String.Empty;
+                bool dlgDisplayed = false;
+
+                // Set up a popup handler
+                ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+                {
+                    MessageBoxTester tester = new MessageBoxTester(hWnd);
+                    dlgText = tester.Text;
+                    dlgDisplayed = true;
+                    tester.SendCommand(MessageBoxTester.Command.Yes);
+                };
+
                 btnCloseTester.Click();
+                Assert.IsTrue(dlgDisplayed, "Expected a validation dialog");
+                Assert.IsTrue(dlgText.Contains("earliest current accounting period"), "Expected a warning about dates");
             }
             catch (Exception ex)
             {
@@ -307,7 +344,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
                 FStandardEffectiveDate,
-                "GBP",
+                "EUR",
                 0.0m,
                 out selectedRate,
                 out selectedDate,
@@ -348,7 +385,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             try
             {
                 mainScreen.TFrmSetupDailyExchangerate_Shown(null, null);
-                Assert.AreEqual("GBP", cmbFromCurrency.GetSelectedString());                    // GBP passed in as a ShowDialog parameter
+                Assert.AreEqual("EUR", cmbFromCurrency.GetSelectedString());                    // GBP passed in as a ShowDialog parameter
                 Assert.AreEqual(STANDARD_TEST_CURRENCY, cmbToCurrency.GetSelectedString());     // The ledger currency for the ledger passed in as parameter
                 Assert.AreEqual(FStandardEffectiveDate, dtpDateEffective.Date);
                 Assert.AreEqual(0.0m, txtRateOfExchange.NumberValueDecimal);
@@ -362,8 +399,22 @@ namespace Tests.MFinance.Client.ExchangeRates
                 Assert.AreEqual(4, grdDetails.Rows.Count);      // added a new row
                 txtRateOfExchange.NumberValueDecimal = 0.5333m;
 
-                // select this item and close
+                // Save this as our rate and quit
+                string dlgText = String.Empty;
+                bool dlgDisplayed = false;
+
+                // Set up a popup handler
+                ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+                {
+                    MessageBoxTester tester = new MessageBoxTester(hWnd);
+                    dlgText = tester.Text;
+                    dlgDisplayed = true;
+                    tester.SendCommand(MessageBoxTester.Command.Yes);
+                };
+
                 btnCloseTester.Click();
+                Assert.IsTrue(dlgDisplayed, "Expected a validation dialog");
+                Assert.IsTrue(dlgText.Contains("earliest current accounting period"), "Expected a warning about dates");
             }
             catch (Exception ex)
             {
@@ -517,7 +568,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
                 DateTime.MinValue,
                 FStandardEffectiveDate,
-                "GBP",
+                "EUR",
                 1.0m,
                 out selectedRate,
                 out selectedDate,
@@ -551,6 +602,13 @@ namespace Tests.MFinance.Client.ExchangeRates
             txtRateOfExchange.NumberValueDecimal = 0.525m;
             // This will hide it and apply the new filter
             mainScreen.ShowUsedRatesAtStartUp = true;
+
+            // Set up a popup handler
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.OK);
+            };
 
             try
             {
@@ -754,8 +812,8 @@ namespace Tests.MFinance.Client.ExchangeRates
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
                 DateTime.MinValue,
                 FStandardEffectiveDate,
-                "GBP",
-                1.0m,
+                "EUR",
+                0.0m,
                 out selectedRate,
                 out selectedDate,
                 out selectedTime);
@@ -791,9 +849,17 @@ namespace Tests.MFinance.Client.ExchangeRates
                 Assert.AreEqual(3, mainScreen.MainGridRowCount, "Wrong number of rows in the grid");
                 txtRateOfExchange.NumberValueDecimal = 0.4999m;
 
+                // Set up a popup handler
+                ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+                {
+                    MessageBoxTester tester = new MessageBoxTester(hWnd);
+                    tester.SendCommand(MessageBoxTester.Command.OK);
+                };
+
                 for (int i = 3; i > 0; i--)
                 {
                     SelectRowInGrid(i);
+
                     string Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
                     Assert.AreEqual("0 Journals and 0 Gift Batches;", Usage, "Unexpected row in the grid!");
 
@@ -826,7 +892,22 @@ namespace Tests.MFinance.Client.ExchangeRates
                     }
                 }
 
+                // Save this as our rate and quit
+                string dlgText = String.Empty;
+                bool dlgDisplayed = false;
+
+                // Set up a popup handler
+                ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+                {
+                    MessageBoxTester tester = new MessageBoxTester(hWnd);
+                    dlgText = tester.Text;
+                    dlgDisplayed = true;
+                    tester.SendCommand(MessageBoxTester.Command.Yes);
+                };
+
                 btnCloseTester.Click();
+                Assert.IsTrue(dlgDisplayed, "Expected a validation dialog");
+                Assert.IsTrue(dlgText.Contains("earliest current accounting period"), "Expected a warning about dates");
             }
             catch (Exception ex)
             {

@@ -89,9 +89,9 @@ RootNode:
         Empty1:
         txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged, Validation=true}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
-        txtDetailExchangeRateToBase: {ReadOnly=true, Validation=true, Format=Decimal(10), Width=130}
+        txtDetailExchangeRateToBase: {ReadOnly=true, Validation=true, Format=Decimal(10), Width=150}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList,OnChange=MethodOfPaymentChanged}
-        btnGetSetExchangeRate: {Action=actSetExchangeRate}
+        btnGetSetExchangeRate: {Action=actSetExchangeRate, Tooltip=Click to set an exchange rate for this batch}
         rgrDetailGiftType:
             OptionalValues: [=Gift,Gift In Kind,Other]
             OptionalValuesConstants: [MFinanceConstants.GIFT_TYPE_GIFT,MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND,MFinanceConstants.GIFT_TYPE_OTHER]

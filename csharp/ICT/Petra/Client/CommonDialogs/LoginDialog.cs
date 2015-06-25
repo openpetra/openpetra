@@ -629,12 +629,7 @@ namespace Ict.Petra.Client.CommonDialogs
                     TVerificationResultCollection VerificationResultCollection;
                     TVerificationResult VerificationResult;
 
-                    if (password == AOldPassword)
-                    {
-                        MessageBox.Show(String.Format(Catalog.GetString(
-                                    "Password not changed as the old password was entered. Please enter a new password."), AUserName));
-                    }
-                    else if (TSharedSysManValidation.CheckPasswordQuality(password, out VerificationResult))
+                    if (TSharedSysManValidation.CheckPasswordQuality(password, out VerificationResult))
                     {
                         // if first password is valid then ask user to enter it again
                         input = new PetraInputBox(
@@ -671,6 +666,11 @@ namespace Ict.Petra.Client.CommonDialogs
                         {
                             break;
                         }
+                    }
+                    else if (password == AOldPassword)
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString(
+                                    "Password not changed as the old password was entered. Please enter a new password."), AUserName));
                     }
                     else
                     {

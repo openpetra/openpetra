@@ -94,23 +94,6 @@
             ParameterName: param_currency
             OptionalValues: [=Base, International]
         
-        tpgAdditionalSettings:
-            Label: Additional Settings
-            Controls: [rgrFormatCurrency]
-        rgrFormatCurrency:
-            ParameterName: param_currency_format
-            Label: Format currency numbers:
-            Controls: [rbtCurrencyComplete, rbtCurrencyWithoutDecimals, rbtCurrencyThousands]
-        rbtCurrencyComplete:
-            Label: Complete
-            ParameterValue: CurrencyComplete
-        rbtCurrencyWithoutDecimals:
-            Label: Without decimals
-            ParameterValue: CurrencyWithoutDecimals
-        rbtCurrencyThousands:
-            Label: Only Thousands
-            ParameterValue: CurrencyThousands
-        
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para0:
             Name: Donor Name

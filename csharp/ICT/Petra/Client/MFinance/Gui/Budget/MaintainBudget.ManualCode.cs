@@ -220,8 +220,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void InitialiseControls()
         {
-            ClearBudgetTextboxCurrencyFormat();
-
             SetupExtraGridFunctionality();
 
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbSelectBudgetYear, FLedgerNumber, true);
@@ -575,6 +573,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     DisplayBudgetTypeInflateBase();
                 }
             }
+
+            UpdateCurrencyCode();
         }
 
         private void ProcessBudgetTypeAdhoc(System.Object sender, EventArgs e)
@@ -1137,51 +1137,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void UpdateCurrencyCode()
         {
-            string totalAmountLabel = "Total (" + CurrencyCodeToUse() + "):";
+            string currencyCode = CurrencyCodeToUse();
 
-            lblSameTotalAmount.Text = totalAmountLabel;
-            lblInflateNTotalAmount.Text = totalAmountLabel;
-            lblTotalSplitAmount.Text = totalAmountLabel;
+            // Adhoc
+            txtPeriod01Amount.CurrencyCode = currencyCode;
+            txtPeriod02Amount.CurrencyCode = currencyCode;
+            txtPeriod03Amount.CurrencyCode = currencyCode;
+            txtPeriod04Amount.CurrencyCode = currencyCode;
+            txtPeriod05Amount.CurrencyCode = currencyCode;
+            txtPeriod06Amount.CurrencyCode = currencyCode;
+            txtPeriod07Amount.CurrencyCode = currencyCode;
+            txtPeriod08Amount.CurrencyCode = currencyCode;
+            txtPeriod09Amount.CurrencyCode = currencyCode;
+            txtPeriod10Amount.CurrencyCode = currencyCode;
+            txtPeriod11Amount.CurrencyCode = currencyCode;
+            txtPeriod12Amount.CurrencyCode = currencyCode;
+            txtPeriod13Amount.CurrencyCode = currencyCode;
+            txtPeriod14Amount.CurrencyCode = currencyCode;
+            txtTotalAdhocAmount.CurrencyCode = currencyCode;
 
-            if (FNumberOfPeriods == 12)
-            {
-                lblPeriod14Amount.Text = totalAmountLabel;
-                lblPeriod14Index.Text = totalAmountLabel;
-            }
-            else
-            {
-                lblTotalAdhocAmount.Text = totalAmountLabel;
-                lblInflateBaseTotalAmount.Text = totalAmountLabel;
-            }
-        }
+            // Same
+            txtAmount.CurrencyCode = currencyCode;
+            txtSameTotalAmount.CurrencyCode = currencyCode;
 
-        private void ClearBudgetTextboxCurrencyFormat()
-        {
-            //Adhoc controls
-            txtPeriod01Amount.CurrencyCode = String.Empty;
-            txtPeriod02Amount.CurrencyCode = String.Empty;
-            txtPeriod03Amount.CurrencyCode = String.Empty;
-            txtPeriod04Amount.CurrencyCode = String.Empty;
-            txtPeriod05Amount.CurrencyCode = String.Empty;
-            txtPeriod06Amount.CurrencyCode = String.Empty;
-            txtPeriod07Amount.CurrencyCode = String.Empty;
-            txtPeriod08Amount.CurrencyCode = String.Empty;
-            txtPeriod09Amount.CurrencyCode = String.Empty;
-            txtPeriod10Amount.CurrencyCode = String.Empty;
-            txtPeriod11Amount.CurrencyCode = String.Empty;
-            txtPeriod12Amount.CurrencyCode = String.Empty;
-            txtPeriod13Amount.CurrencyCode = String.Empty;
-            txtPeriod14Amount.CurrencyCode = String.Empty;
-            //Same controls
-            txtAmount.CurrencyCode = String.Empty;
-            //Split controls
-            txtTotalSplitAmount.CurrencyCode = String.Empty;
-            txtPerPeriodAmount.CurrencyCode = String.Empty;
-            txtLastPeriodAmount.CurrencyCode = String.Empty;
-            //Inflate N controls
-            txtFirstPeriodAmount.CurrencyCode = String.Empty;
-            //Inflate Base controls
-            txtPeriod1Amount.CurrencyCode = String.Empty;
+            // Split
+            txtPerPeriodAmount.CurrencyCode = currencyCode;
+            txtLastPeriodAmount.CurrencyCode = currencyCode;
+            txtTotalSplitAmount.CurrencyCode = currencyCode;
+
+            // Inflate N
+            txtFirstPeriodAmount.CurrencyCode = currencyCode;
+            txtInflateNTotalAmount.CurrencyCode = currencyCode;
+
+            // Inflate Base
+            txtPeriod1Amount.CurrencyCode = currencyCode;
+            txtInflateBaseTotalAmount.CurrencyCode = currencyCode;
         }
 
         private void ShowDetailsManual(ABudgetRow ARow)

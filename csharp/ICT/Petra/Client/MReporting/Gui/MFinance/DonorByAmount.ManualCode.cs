@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
@@ -43,8 +44,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     {
         private void InitializeManualCode()
         {
-            txtMinGiftAmount.CurrencyCode = "";
-            txtMaxGiftAmount.CurrencyCode = "";
+            txtMinGiftAmount.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
+            txtMaxGiftAmount.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

@@ -108,7 +108,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                     ref cmbReportPeriod,
                     FLedgerNumber,
                     cmbYearEnding.GetSelectedInt32(),
-                    FLedgerRow.CurrentPeriod,
+                    FLedgerRow.CurrentPeriod - 1,
                     false,
                     false);
             }
@@ -152,7 +152,16 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         // Called on any report checkbox changed
         private void RefreshReportingOptions(Object Sender, EventArgs e)
         {
-            chkStewardship.Enabled = (cmbReportPeriod.SelectedIndex != 0);
+            if (cmbYearEnding.SelectedIndex != 0)
+            {
+                chkHOSA.Enabled = chkHOSA.Checked = false;
+                chkFees.Enabled = chkFees.Checked = false;
+            }
+            else
+            {
+                chkHOSA.Enabled = true;
+                chkFees.Enabled = true;
+            }
 
             rbtEmailHosa.Enabled =
                 rbtReprintHosa.Enabled = chkHOSA.Enabled && chkHOSA.Checked;
@@ -309,8 +318,11 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             ACalc.AddParameter("param_real_year", StartDate.Year);
             ACalc.AddParameter("param_start_date", StartDate);
             ACalc.AddParameter("param_end_date", EndDate);
+            ACalc.AddParameter("param_current_financial_year", FLedgerRow.CurrentFinancialYear == Year);
             Boolean IsClosed = (Year < FLedgerRow.CurrentFinancialYear) || (PeriodEnd < FLedgerRow.CurrentPeriod);
             ACalc.AddParameter("param_period_closed", IsClosed);
+            Boolean IsCurrent = (Year == FLedgerRow.CurrentFinancialYear) && (PeriodEnd == FLedgerRow.CurrentPeriod);
+            ACalc.AddParameter("param_period_current", IsCurrent);
             ACalc.AddParameter("param_year_i", Year);
             ArrayList reportParam = pm.Elems;
 

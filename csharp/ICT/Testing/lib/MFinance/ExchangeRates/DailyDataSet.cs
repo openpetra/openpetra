@@ -157,26 +157,26 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         private static object[, ] StandardData =
         {
-            { "GBP", "USD", "1900-06-01", 0.50m },
-            { "GBP", "USD", "1900-07-01", 0.51m },
-            { "GBP", "USD", "2999-06-01", 0.52m },
-            { "GBP", "USD", "2999-07-01", 0.53m },
-            { "USD", "GBP", "1900-06-01", 2.00m },
-            { "USD", "GBP", "1900-07-01", 1.9607843137m },
-            { "USD", "GBP", "2999-06-01", 1.9230769231m },
-            { "USD", "GBP", "2999-07-01", 1.8867924528m }
+            { "EUR", "USD", "1900-06-01", 0.50m },
+            { "EUR", "USD", "1900-07-01", 0.51m },
+            { "EUR", "USD", "2999-06-01", 0.52m },
+            { "EUR", "USD", "2999-07-01", 0.53m },
+            { "USD", "EUR", "1900-06-01", 2.00m },
+            { "USD", "EUR", "1900-07-01", 1.9607843137m },
+            { "USD", "EUR", "2999-06-01", 1.9230769231m },
+            { "USD", "EUR", "2999-07-01", 1.8867924528m }
         };
 
         private static object[, ] StandardModalData =
         {
-            { "GBP", STANDARD_TEST_CURRENCY, "1900-06-01", 0.50m },
-            { "GBP", STANDARD_TEST_CURRENCY, "1900-07-01", 0.51m },
-            { "GBP", STANDARD_TEST_CURRENCY, "2999-06-01", 0.52m },
-            { "GBP", STANDARD_TEST_CURRENCY, "2999-07-01", 0.53m },
-            { STANDARD_TEST_CURRENCY, "GBP", "1900-06-01", 2.00m },
-            { STANDARD_TEST_CURRENCY, "GBP", "1900-07-01", 1.9607843137m },
-            { STANDARD_TEST_CURRENCY, "GBP", "2999-06-01", 1.9230769231m },
-            { STANDARD_TEST_CURRENCY, "GBP", "2999-07-01", 1.8867924528m }
+            { "EUR", STANDARD_TEST_CURRENCY, "1900-06-01", 0.50m },
+            { "EUR", STANDARD_TEST_CURRENCY, "1900-07-01", 0.51m },
+            { "EUR", STANDARD_TEST_CURRENCY, "2999-06-01", 0.52m },
+            { "EUR", STANDARD_TEST_CURRENCY, "2999-07-01", 0.53m },
+            { STANDARD_TEST_CURRENCY, "EUR", "1900-06-01", 2.00m },
+            { STANDARD_TEST_CURRENCY, "EUR", "1900-07-01", 1.9607843137m },
+            { STANDARD_TEST_CURRENCY, "EUR", "2999-06-01", 1.9230769231m },
+            { STANDARD_TEST_CURRENCY, "EUR", "2999-07-01", 1.8867924528m }
         };
 
         private const int FFromCurrencyId = 0;

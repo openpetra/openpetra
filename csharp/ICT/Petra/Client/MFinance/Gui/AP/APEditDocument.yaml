@@ -116,12 +116,12 @@ RootNode:
             Width: 365
             Label: Detail &Ref
         txtDetailAmount:
-            Format: Currency(2)
+            Format: Currency
             Label: A&mount
             Validation: true
         txtDetailBaseAmount:
             Label: Base
-            Format: Currency(2)
+            Format: Currency
             ReadOnly: true
         Empty1:
 

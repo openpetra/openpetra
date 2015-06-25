@@ -362,6 +362,9 @@ namespace Ict.Petra.Client.CommonForms
                 pnlIcon.Visible = false;
             }
 
+            // remove the controlbox as we do not need these options (min, max and close_
+            this.ControlBox = false;
+
             // now show the actual dialog
             this.StartPosition = FormStartPosition.CenterScreen;
             this.ShowDialog();

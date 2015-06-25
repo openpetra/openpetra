@@ -1590,7 +1590,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (!AOtherDataDR.IsFamilyNull())
                 {
-                    txtFamily.Text = AOtherDataDR.Family + "   [" + AOtherDataDR.FamilyKey + "]";
+                    txtFamily.Text = AOtherDataDR.Family + "   [ " + String.Format("{0:0000000000}", AOtherDataDR.FamilyKey) + " ]";
                 }
             }
             else

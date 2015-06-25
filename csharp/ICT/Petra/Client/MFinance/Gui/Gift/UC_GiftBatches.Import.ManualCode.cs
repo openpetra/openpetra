@@ -159,7 +159,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         return;
                     }
 
-                    importString = File.ReadAllText(dialog.FileName);
+                    importString = File.ReadAllText(dialog.FileName, Encoding.Default);
 
                     String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                     FdlgSeparator.DateFormat = dateFormatString;
@@ -402,7 +402,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         return false;
                     }
 
-                    importString = File.ReadAllText(dialog.FileName);
+                    importString = File.ReadAllText(dialog.FileName, Encoding.Default);
 
                     String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                     FdlgSeparator.DateFormat = dateFormatString;

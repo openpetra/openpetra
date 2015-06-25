@@ -32,6 +32,7 @@ using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Common;
@@ -126,6 +127,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FExtraDS.AFeesPayable.Merge(CacheDT);
             FExtraDS.AFeesPayable.DefaultView.Sort = String.Format("{0}, {1} ASC",
                 AFeesPayableTable.GetLedgerNumberDBName(), AFeesPayableTable.GetFeeCodeDBName());
+
+            ALedgerRow LedgerRow =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+            txtDetailChargeAmount.CurrencyCode = LedgerRow.BaseCurrency;
 
             SelectRowInGrid(1);
             UpdateRecordNumberDisplay();
