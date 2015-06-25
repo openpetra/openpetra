@@ -4,8 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
-// Copyright 2013-2014 by SolidCharity
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2951,7 +2950,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="AYmlAccountHierarchy"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
-        public static bool ImportAccountHierarchy(Int32 ALedgerNumber, string AHierarchyName, string AXmlAccountHierarchy)
+        public static bool ImportAccountHierarchy(Int32 ALedgerNumber, string AHierarchyName, string AYmlAccountHierarchy)
         {
             #region Validate Arguments
 
@@ -2966,9 +2965,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Hierarchy name is empty!"),
                         Utilities.GetMethodName(true)));
             }
-            else if (AXmlAccountHierarchy.Length == 0)
+            else if (AYmlAccountHierarchy.Length == 0)
             {
-                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Account Hierarchy XML is empty!"),
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Account Hierarchy YML is empty!"),
                         Utilities.GetMethodName(true)));
             }
 
@@ -2978,7 +2977,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             try
             {
-                XMLDoc.LoadXml(AXmlAccountHierarchy);
+                TYml2Xml ymlParser = new TYml2Xml(AYmlAccountHierarchy.Split(new char[] { '\n' }));
+                XMLDoc = ymlParser.ParseYML2XML();
             }
             catch (XmlException exp)
             {

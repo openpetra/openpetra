@@ -2005,7 +2005,7 @@ namespace Ict.Petra.Client.App.Core
             if (TClientSettings.RunAsStandalone == true)
             {
                 // see https://github.com/openpetra/openpetra/issues/63
-                return;
+                return null;
             }
 
             DataTable ReturnValue;

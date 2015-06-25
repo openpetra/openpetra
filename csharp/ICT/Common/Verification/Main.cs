@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -818,7 +818,7 @@ namespace Ict.Common.Verification
         {
             get
             {
-                foreach (TVerificationResult v in List)
+                foreach (TVerificationResult v in FList)
                 {
                     if (v.ResultSeverity != TResultSeverity.Resv_Noncritical)
                     {
@@ -826,7 +826,7 @@ namespace Ict.Common.Verification
                     }
                 }
 
-                return List.Count > 0;
+                return FList.Count > 0;
             }
         }
 
