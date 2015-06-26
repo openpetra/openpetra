@@ -4270,7 +4270,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                            " AND a_fees_receivable.a_ledger_number_i = " + AGiftDetail.LedgerNumber;
 
             AMainDS.AFeesReceivable.Rows.Clear();
-            AMainDS.AFeesReceivable.Merge(DBAccess.GDBAccessObj.SelectDT(Query, AFeesReceivableTable.GetTableDBName(), ATransaction));
+
+            // need to use a typed table to avoid problems with SQLite in the Merge
+            AFeesReceivableTable tmpFeesReceivable = new AFeesReceivableTable();
+            DBAccess.GDBAccessObj.SelectDT(tmpFeesReceivable, Query, ATransaction);
+            AMainDS.AFeesReceivable.Merge(tmpFeesReceivable);
 
             #region Validate Data
 
@@ -4533,6 +4537,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
+                // show the full stacktrace of the caught exception
+                TLogging.Log(ex.ToString());
                 TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
