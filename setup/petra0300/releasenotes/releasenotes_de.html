@@ -12,6 +12,56 @@ Zur Zeit haben wir kein öffentliches Forum, das SourceForge diesen Dienst einges
 
 <h2>Bemerkungen zu den Testversionen (Alpha-Versionen) von OpenPetra.org</h2>
 
+<h3>Alpha 2014.12: 05.12.2014</h3>
+Verbesserungen in diesem Release:<br/><br/>
+
+Finanzmodul:
+<ul>
+<li>Vereinfachte Spendenerfassung durch vorbelegte Feldkombinationen</li>
+<li>Import kompletter Batches oder Transaktionen zu bestehenden Batches in die Spendenerfassung; wahlweise über .csv Dateien oder die Zwischenablage</li>
+<li>Import kompletter Batches oder Transaktionen ins Hauptbuch; wahlweise über .csv Dateien oder die Zwischenablage</li>
+<li>Korrekturen im Bereich Monatsabschluss und Jahresabschluss</li>
+<li>Verbesserte Handhabung von Ausbuchungen</li>
+</ul>
+
+Partnermodul
+<ul>
+<li>Neuer Tab „Contact Log“. Möglichkeit, ein Logbuch zu führen, wer wann von wem bei welcher Gelegenheit kontaktiert wurde.</li>
+<li>Neuer „Contact Details“ Tab. Möglichkeit, Kontaktdaten flexibel und unabhängig von der Postadresse zu erfassen. Wir sind dabei die betroffenen Berichte umzuschreiben, so dass sie die neuen Strukturen aufgreifen.</li>
+</ul>
+
+Client/Server Kommunikation
+<ul>
+<li>Die alte .Net Remoting Lösung wurde durch moderne Webservices ersetzt. Das bedeutet, dass ab sofort die marktübliche SSL Verschlüsselung für die Kommunikation zwischen den OpenPetra Clients und dem OpenPetra Server eingesetzt wird.</li>
+</ul>
+
+Plugins
+<ul>
+<li>Mit dieser neuen Version gibt es die Möglichkeit, Plugins zu benutzen. Durch die neuen Webservices ist es jetzt einfacher, neue Funktionen einzubinden, ohne das ganze Programm neu kompilieren zu müssen. Es gibt schon ein paar Plugins in einem Repository auf GitHub: <a href="https://github.com/solidcharity?query=OpenPetraPlugin_" title="Github Search for OpenPetra plugins" target="_blank">https://github.com/solidcharity?query=OpenPetraPlugin_</a></li>
+</ul>
+
+Einzelplatzversion
+<ul>
+<li>Die Einzelplatzversion von OpenPetra ist jetzt tatsächlich eine simple Anwendung, es wird kein Server mehr im Hintergrund gestartet. Das erleichtert die Benutzung auf Notebooks und Einzelplatzrechnern enorm: es gibt keine Fehlermeldungen von der Firewall mehr!</li>
+<li>Der Windows installer für die Einzelplatzversion steht auf Sourceforge bereit: <a href="http://sourceforge.net/projects/openpetraorg/files/openpetraorg/OpenPetra.org%20Alpha%202014/OpenPetraSetup-2014.12.0.0.exe/download" target="_blank">OpenPetraSetup-2014.12.0.0.exe</a></li>
+</ul>
+
+OpenPetra im Webbrowser
+<ul>
+<li>Es gibt einen experimentellen Ansatz, OpenPetra im Webbrowser zu benutzen. Dieses steht auf <a href="https://demo.solidcharity.com" target="_blank">https://demo.solidcharity.com</a> zum Ausprobieren bereit.</li>
+</ul>
+
+Gehostetes OpenPetra
+<ul>
+<li>Um auszuprobieren, wie OpenPetra über das Internet genutzt werden kann, gibt es auch den fetten .Net Client auf <a href="https://demo.solidcharity.com" target="_blank">https://demo.solidcharity.com</a>
+</li>
+</ul>
+
+Aktualisierte Demo Datenbanken
+<ul>
+<li>Wir haben die Demo Datebanken mit Beispieldaten aktualisiert, sie stehen bei <a href="https://sourceforge.net/projects/openpetraorg/files/openpetraorg/demodata/" target="_blank">Sourceforge</a> zum Herunterladen bereit. Die Buchhaltung ist wieder im aktuellen Jahr, und es sind die neuen Partner Kontaktkategorien und Typen enthalten!</li>
+</ul>
+
 <h3>0.3.0: 22. Juli 2014</h3>
 Bitte beachten Sie auch die vorherigen Notizen, die unten zu finden sind!<br/>
 Um detailliert alle behobenen Fehler zu betrachten, schauen Sie sich bitte diese Seite an: <a href="http://openpetraorg.sourceforge.net/ReleaseDetails/BugsFixed_Alpha-0.3.0.htm">Bugs closed in 0.3.0</a><br/>
