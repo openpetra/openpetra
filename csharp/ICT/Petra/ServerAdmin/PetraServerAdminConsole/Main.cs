@@ -219,24 +219,31 @@ namespace PetraServerAdminConsole
             }
         }
 
+        private static bool ExportDatabase(string ABackupFile)
+        {
+            if (!ABackupFile.EndsWith(".yml.gz"))
+            {
+                Console.WriteLine("filename has to end with .yml.gz. Please try again");
+                return false;
+            }
+
+            string YmlGZData = TRemote.BackupDatabaseToYmlGZ();
+
+            FileStream fs = new FileStream(ABackupFile, FileMode.Create);
+            byte[] buffer = Convert.FromBase64String(YmlGZData);
+            fs.Write(buffer, 0, buffer.Length);
+            fs.Close();
+            TLogging.Log("backup has been written to " + ABackupFile);
+
+            return true;
+        }
+
         private static void ExportDatabase()
         {
             Console.Write("     Please enter filename of yml.gz file: ");
             string backupFile = Path.GetFullPath(Console.ReadLine());
 
-            if (!backupFile.EndsWith(".yml.gz"))
-            {
-                Console.WriteLine("filename has to end with .yml.gz. Please try again");
-                return;
-            }
-
-            string YmlGZData = TRemote.BackupDatabaseToYmlGZ();
-
-            FileStream fs = new FileStream(backupFile, FileMode.Create);
-            byte[] buffer = Convert.FromBase64String(YmlGZData);
-            fs.Write(buffer, 0, buffer.Length);
-            fs.Close();
-            TLogging.Log("backup has been written to " + backupFile);
+            ExportDatabase(backupFile);
         }
 
         private static bool RestoreDatabase(string ARestoreFile)
@@ -784,6 +791,13 @@ namespace PetraServerAdminConsole
                     else if (TAppSettingsManager.GetValue("Command") == "LoadYmlGz")
                     {
                         RestoreDatabase(TAppSettingsManager.GetValue("YmlGzFile"));
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "SaveYmlGz")
+                    {
+                        if (!ExportDatabase(TAppSettingsManager.GetValue("YmlGzFile")))
+                        {
+                            ExitError = true;
+                        }
                     }
                     else if (TAppSettingsManager.GetValue("Command") == "UpgradeDatabase")
                     {
