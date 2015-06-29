@@ -70,12 +70,16 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         // for the demo databases, we want to have an open period for the current month
         private static int CalculatedNumberOfClosedPeriods(int ANumberOfClosedYears)
         {
-            if (DateTime.Today.Month <= 6)
+            if (DateTime.Today.Month <= 5)
             {
+                // current Period: December of previous year
+                // posting allowed until August of this year
                 return 12 * ANumberOfClosedYears + 11;
             }
             else
             {
+                // current Period: June this year
+                // posting allowed until February of next year
                 return 12 * ANumberOfClosedYears + 5;
             }
         }
