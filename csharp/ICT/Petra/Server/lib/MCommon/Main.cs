@@ -434,8 +434,8 @@ namespace Ict.Petra.Server.MCommon
 
             TLogging.LogAtLevel(9, (this.GetType().FullName + ".ExecuteFullQuery SQL:" + FSelectSQL));
 
-            // create temp table
-            FTmpDataTable = new DataTable(FFindParameters.FPagedTable + "_for_paging");
+            // clear temp table. do not recreate because it may be typed
+            FTmpDataTable.Clear();
 
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;

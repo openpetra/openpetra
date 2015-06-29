@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2134,12 +2134,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void Form_Closed(object sender, EventArgs e)
         {
-            if (FPartnerEditUIConnector != null)
-            {
-                // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
-                TEnsureKeepAlive.UnRegister(FPartnerEditUIConnector);
-                FPartnerEditUIConnector = null;
-            }
+            // release the object so that the object can get GC'd on the PetraServer
+            FPartnerEditUIConnector = null;
         }
 
         #endregion

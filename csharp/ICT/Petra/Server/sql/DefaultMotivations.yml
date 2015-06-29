@@ -1,17 +1,7 @@
 ﻿RootNodeInternal:
     GIFT:{desclocal=Standard Gifts}
         FIELD:{description=Field Gift, accountcode=0200}
-            ABC:
-            XYZ:
         KEYMIN:{description=Key Ministry Gift, accountcode=0400}
-            ABC:
-            XYZ:
         PERSONAL:{description=Gift for personal use, accountcode=0100}
-            ABC:
-            XYZ:
         SUPPORT:{description=Support Gift, accountcode=0100}
-            ABC:
-            XYZ:
         UNDESIG:{description=Undesignated Gift, accountcode=0300}
-            ABC:
-            XYZ:

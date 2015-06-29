@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,6 +44,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 // using Ict.Petra.Shared.MFinance.Gift;
@@ -2001,6 +2002,12 @@ namespace Ict.Petra.Client.App.Core
         /// </returns>
         public static DataTable LoadCacheableDataTableFromFile(String ATableName)
         {
+            if (TClientSettings.RunAsStandalone == true)
+            {
+                // see https://github.com/openpetra/openpetra/issues/63
+                return null;
+            }
+
             DataTable ReturnValue;
             StreamReader CacheDTStreamReader;
             DataTable BinaryDT;
