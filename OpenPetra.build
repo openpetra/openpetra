@@ -561,7 +561,7 @@ useful parameters
 
     <!-- download another demo database, and load it -->
     <delete file="demoWith1ledger.yml.gz" />
-    <exec program="wget" commandline="http://sourceforge.net/projects/openpetraorg/files/openpetraorg/demodata/demoWith1ledger.yml.gz/download -OdemoWith1ledger.yml.gz"/>
+    <exec program="wget" commandline="https://github.com/openpetra/demo-databases/blob/master/demoWith1ledger.yml.gz?raw=true -OdemoWith1ledger.yml.gz"/>
     <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
     <call target="initConfigFiles"/>
     <call target="startServerBackground"/>
@@ -592,7 +592,7 @@ useful parameters
        </fileset>
     </zip>
 
-    <!-- calling script must upload the zip file to sourceforge -->
+    <!-- calling script must upload the zip file to https://github.com/openpetra/openpetra-nightlydevzip/releases -->
     
     <echo message="Target devzip finished at: ${datetime::now()}" />
 </target>
