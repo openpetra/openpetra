@@ -126,6 +126,8 @@ namespace Ict.Petra.Shared.MPartner
             {
                 if (pRow.RowState != DataRowState.Deleted)
                 {
+                    bool Unchanged = pRow.RowState == DataRowState.Unchanged;
+
                     pDateEffective = TSaveConvert.ObjectToDate(pRow[PPartnerLocationTable.GetDateEffectiveDBName()]);
                     pDateGoodUntil = TSaveConvert.ObjectToDate(
                         pRow[PPartnerLocationTable.GetDateGoodUntilDBName()], TNullHandlingEnum.nhReturnHighestDate);
@@ -144,6 +146,12 @@ namespace Ict.Petra.Shared.MPartner
                     else
                     {
                         pRow[PartnerEditTDSPPartnerLocationTable.GetIconDBName()] = ((object)3);
+                    }
+
+                    if (Unchanged)
+                    {
+                        // We do not want changing the Icon column to enable save. So revert row status to original.
+                        pRow.AcceptChanges();
                     }
                 }
             }
@@ -195,6 +203,7 @@ namespace Ict.Petra.Shared.MPartner
             System.DateTime TempDate;
             CurrentRow = 0;
             BestRow = 0;
+            bool Unchanged = false;
 
             TLogging.LogAtLevel(8, "Calculations.DetermineBestAddress: processing " + APartnerLocationsDT.Rows.Count.ToString() + " rows...");
 
@@ -243,8 +252,16 @@ namespace Ict.Petra.Shared.MPartner
                 // iterate through the sorted rows
                 for (CurrentRow = 0; CurrentRow <= OrderedRows.Length - 1; CurrentRow += 1)
                 {
+                    Unchanged = OrderedRows[CurrentRow].RowState == DataRowState.Unchanged;
+
                     // reset any row that might have been marked as 'best' before
                     OrderedRows[CurrentRow][PartnerEditTDSPPartnerLocationTable.GetBestAddressDBName()] = ((object)0);
+
+                    // We do not want changing the BestAddress column to enable save. So revert row status to original.
+                    if (Unchanged)
+                    {
+                        OrderedRows[CurrentRow].AcceptChanges();
+                    }
 
                     // determine pTempDate
                     if (FirstRowAddrOrder != 3)
@@ -289,8 +306,17 @@ namespace Ict.Petra.Shared.MPartner
                     }
                 }
 
+                Unchanged = OrderedRows[0].RowState == DataRowState.Unchanged;
+
                 // mark the location that was determined to be the 'best'
                 OrderedRows[BestRow][PartnerEditTDSPPartnerLocationTable.GetBestAddressDBName()] = ((object)1);
+
+                // We do not want changing the BestAddress column to enable save. So revert row status to original.
+                if (Unchanged)
+                {
+                    OrderedRows[0].AcceptChanges();
+                }
+
                 ReturnValue =
                     new TLocationPK(Convert.ToInt64(OrderedRows[BestRow][PLocationTable.GetSiteKeyDBName()]),
                         Convert.ToInt32(OrderedRows[BestRow][PLocationTable.GetLocationKeyDBName()]));
@@ -299,8 +325,16 @@ namespace Ict.Petra.Shared.MPartner
             {
                 if (OrderedRows.Length == 1)
                 {
+                    Unchanged = OrderedRows[0].RowState == DataRowState.Unchanged;
+
                     // mark the only location to be the 'best'
                     OrderedRows[0][PartnerEditTDSPPartnerLocationTable.GetBestAddressDBName()] = ((object)1);
+
+                    // We do not want changing the BestAddress column to enable save. So revert row status to original.
+                    if (Unchanged)
+                    {
+                        OrderedRows[0].AcceptChanges();
+                    }
 
                     ReturnValue = new TLocationPK(Convert.ToInt64(OrderedRows[0][PLocationTable.GetSiteKeyDBName()]),
                         Convert.ToInt32(OrderedRows[0][PLocationTable.GetLocationKeyDBName()]));

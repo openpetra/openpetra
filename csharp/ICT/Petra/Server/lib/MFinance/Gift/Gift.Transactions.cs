@@ -4394,6 +4394,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ref SubmissionOK,
                     delegate
                     {
+                        bool GLBatchIsRequired = false;
+
                         // first prepare all the gift batches, mark them as posted, and create the GL batches
                         foreach (Int32 BatchNumber in ABatchNumbers)
                         {
@@ -4426,7 +4428,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             // it is possible that gl transactions are not actually needed for a gift posting.
                             // E.g. it is only a donor name adjustment -- there is no change in the general ledger account.
                             bool GLBatchNotRequired = GLDataset.ATransaction.Count == 0;
-                            bool GLBatchIsRequired = !GLBatchNotRequired;
 
                             if (GLBatchNotRequired)
                             {
@@ -4434,12 +4435,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                 VerificationResult.AddCollection(SingleVerificationResultCollection);
                             }
+                            else
+                            {
+                                GLBatchIsRequired = true;
+                            }
 
                             // save the batch (or delete if it is not actually needed)
                             if (GLBatchNotRequired || (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
                                                            out SingleVerificationResultCollection) == TSubmitChangesResult.scrOK))
                             {
-                                if (GLBatchIsRequired)  // i.e. GL batch is required and saved OK
+                                if (!GLBatchNotRequired)  // i.e. GL batch is required and saved OK
                                 {
                                     VerificationResult.AddCollection(SingleVerificationResultCollection);
                                     GLBatchNumbers.Add(batch.BatchNumber);
@@ -4491,7 +4496,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         // now post the GL batches
                         if (!TGLPosting.PostGLBatches(ALedgerNumber, GLBatchNumbers,
-                                out SingleVerificationResultCollection))
+                                out SingleVerificationResultCollection) && GLBatchIsRequired)
                         {
                             VerificationResult.AddCollection(SingleVerificationResultCollection);
                             // Transaction will be rolled back, no open GL batch flying around

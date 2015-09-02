@@ -189,9 +189,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             SelectBatchChanged(null, null);
 
-            // validation is not done automatically on this form
-            dtpEffectiveDate.ShowWarningOnLostFocus = true;
-
             rbtNewBatch.Checked = true;
         }
 
@@ -257,10 +254,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (rbtNewBatch.Checked)
             {
-                // if date is empty (if not empty the date is validated elsewhere)
+                // if date is empty
                 if (string.IsNullOrEmpty(dtpEffectiveDate.Text))
                 {
                     MessageBox.Show(Catalog.GetString("Please enter a date for the new Gift Batch."));
+
+                    dtpEffectiveDate.Focus();
+                    return;
+                }
+
+                DateTime temp;
+
+                // if date is invalid
+                if (!DateTime.TryParse(dtpEffectiveDate.Text, out temp))
+                {
+                    MessageBox.Show(Catalog.GetString("Please enter a valid date for the new Gift Batch."));
 
                     dtpEffectiveDate.Focus();
                     return;

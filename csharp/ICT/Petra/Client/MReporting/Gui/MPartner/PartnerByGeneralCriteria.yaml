@@ -60,14 +60,14 @@ RootNode:
                 Row1: [dtpCreatedFrom, dtpCreatedTo]
                 Row2: [cmbUserModified]
                 Row3: [dtpModifiedFrom, dtpModifiedTo]
-        cmbPartnerClass: {List=PartnerClassList, OnChange=OnPartnerClassChanged, ClearIfSettingEmpty=true, ParameterName=param_partner_class}
-        cmbDenomination: {List=DenominationList, ClearIfSettingEmpty=true, ParameterName=param_denomination}
-        cmbBusiness: {List=BusinessCodeList, ClearIfSettingEmpty=true, ParameterName=param_business}
-        cmbLanguage: {List=LanguageCodeList, ClearIfSettingEmpty=true, ParameterName=param_language}
-        cmbUserCreated: {Label=Created By, List=UserList, ClearIfSettingEmpty=true, ParameterName=param_user_created, ColSpan=2}
+        cmbPartnerClass: {List=PartnerClassList, OnChange=OnPartnerClassChanged, ClearIfSettingEmpty=true, ParameterName=param_partner_class, AllowDbNull=true}
+        cmbDenomination: {List=DenominationList, ClearIfSettingEmpty=true, ParameterName=param_denomination, AllowDbNull=true}
+        cmbBusiness: {List=BusinessCodeList, ClearIfSettingEmpty=true, ParameterName=param_business, AllowDbNull=true}
+        cmbLanguage: {List=LanguageCodeList, ClearIfSettingEmpty=true, ParameterName=param_language, AllowDbNull=true}
+        cmbUserCreated: {Label=Created By, List=UserList, ClearIfSettingEmpty=true, ParameterName=param_user_created, ColSpan=2, AllowDbNull=true}
         dtpCreatedFrom: {Label=Created Date between, ClearIfSettingEmpty=true, ParameterName=param_date_created_from}
         dtpCreatedTo: {Label=and, ClearIfSettingEmpty=true, ParameterName=param_date_created_to}
-        cmbUserModified: {Label=Modified By, List=UserList, ClearIfSettingEmpty=true, ParameterName=param_user_modified, ColSpan=2}
+        cmbUserModified: {Label=Modified By, List=UserList, ClearIfSettingEmpty=true, ParameterName=param_user_modified, ColSpan=2, AllowDbNull=true}
         dtpModifiedFrom: {Label=Modified Date between, ClearIfSettingEmpty=true, ParameterName=param_date_modified_from}
         dtpModifiedTo: {Label=and, ClearIfSettingEmpty=true, ParameterName=param_date_modified_to}
 
