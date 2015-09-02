@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -263,10 +264,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return;
                 }
 
-                DateTime temp;
-
                 // if date is invalid
-                if (!DateTime.TryParse(dtpEffectiveDate.Text, out temp))
+                if (!((TtxtPetraDate) dtpEffectiveDate).ValidDate(false))
                 {
                     MessageBox.Show(Catalog.GetString("Please enter a valid date for the new Gift Batch."));
 
