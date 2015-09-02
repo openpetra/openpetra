@@ -263,15 +263,15 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             string Account = string.Empty;
             string BudgetType = string.Empty;
             string BudgetYearString = string.Empty;
-            int BudgetYear = 0;
-
-            Int32 NumPeriods = TAccountingPeriodsWebConnector.GetNumberOfPeriods(ALedgerNumber);
-
-            decimal[] BudgetPeriods = new decimal[NumPeriods];
-            int YearForBudgetRevision = 0;
+            int BudgetYearNumber = 0;
             int BdgRevision = 0;  //not currently implementing versioning so always zero
 
+            int NumPeriods = TAccountingPeriodsWebConnector.GetNumberOfPeriods(ALedgerNumber);
+            decimal[] BudgetPeriods = new decimal[NumPeriods];
+
             int RowNumber = 0;
+
+            ABudgetTable BudgetTableExistingAndImported = new ABudgetTable();
 
             while (!DataFile.EndOfStream)
             {
@@ -341,8 +341,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     {
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + RowNumber.ToString("0000")),
                                 String.Format(Catalog.GetString(
-                                        "The values for this budget row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') do not match Budget Type: '{3}'!"),
-                                    BudgetYear,
+                                        "The values in this budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') do not match the Budget Type: '{3}'!"),
+                                    BudgetYearString,
                                     CostCentre,
                                     Account,
                                     BudgetType),
@@ -352,14 +352,14 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     }
 
                     //Calculate the budget Year
-                    YearForBudgetRevision = BudgetRevisionYearNumber(ALedgerNumber, BudgetYearString);
+                    BudgetYearNumber = GetBudgetYearNumber(ALedgerNumber, BudgetYearString);
 
                     //Add budget revision record if there's not one already.
-                    if (AImportDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, YearForBudgetRevision, BdgRevision }) == null)
+                    if (AImportDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, BudgetYearNumber, BdgRevision }) == null)
                     {
                         ABudgetRevisionRow BudgetRevisionRow = (ABudgetRevisionRow)AImportDS.ABudgetRevision.NewRowTyped();
                         BudgetRevisionRow.LedgerNumber = ALedgerNumber;
-                        BudgetRevisionRow.Year = YearForBudgetRevision;
+                        BudgetRevisionRow.Year = BudgetYearNumber;
                         BudgetRevisionRow.Revision = BdgRevision;
                         BudgetRevisionRow.Description = "Budget Import from: " + ACSVFileName;
                         AImportDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
@@ -370,7 +370,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         totalBudgetRowAmount += BudgetPeriods[i];
                     }
 
-                    BudgetTDS MainDS = new BudgetTDS();
+                    BudgetTDS mainDS = new BudgetTDS();
                     TDBTransaction transaction = null;
 
                     DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -378,34 +378,73 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         ref transaction,
                         delegate
                         {
-                            ABudgetAccess.LoadByUniqueKey(MainDS, ALedgerNumber, YearForBudgetRevision, BdgRevision, CostCentre, Account, transaction);
                             //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
+                            ABudgetAccess.LoadByUniqueKey(mainDS, ALedgerNumber, BudgetYearNumber, BdgRevision, CostCentre, Account, transaction);
+
+                            #region Validate Data
+
+                            if ((mainDS.ABudget != null) && (mainDS.ABudget.Count > 1))
+                            {
+                                //TODO: update when budget revisioning is added
+                                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                            "Function:{0} - Duplicates unique keys exist in the Budget table for Ledger: {1} Year: '{2}' ({3}), Cost Centre: '{4}' & Account: '{5}'!"),
+                                        Utilities.GetMethodName(true),
+                                        ALedgerNumber,
+                                        BudgetYearString,
+                                        BudgetYearNumber,
+                                        CostCentre,
+                                        Account));
+                            }
+
+                            #endregion Validate Data
                         });
 
                     //Check to see if the budget combination already exists:
-                    if (MainDS.ABudget.Count > 0)
+                    if (mainDS.ABudget.Count > 0)
                     {
-                        ABudgetRow BR2 = (ABudgetRow)MainDS.ABudget.Rows[0];
+                        //Will only be one row
+                        ABudgetRow br2 = (ABudgetRow)mainDS.ABudget.Rows[0];
 
-                        int BTSeq = BR2.BudgetSequence;
+                        //Check if exists in AImportDS
+                        int bdgSeq = br2.BudgetSequence;
 
-                        ABudgetRow BdgTRow = (ABudgetRow)AImportDS.ABudget.Rows.Find(new object[] { BTSeq });
+                        //Add to duplicates-checking table
+                        //If not in saved budget table, check if already been imported earlier in the file
+                        DataRow duplicateBudgetRow = BudgetTableExistingAndImported.Rows.Find(new object[] { bdgSeq });
 
-                        if (BdgTRow != null)
+                        if (duplicateBudgetRow != null)
+                        {
+                            //TODO: update when budget revisioning is added
+                            AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + RowNumber.ToString("0000")),
+                                    String.Format(Catalog.GetString(
+                                            "This budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') is repeated in the import file!"),
+                                        BudgetYearString,
+                                        CostCentre,
+                                        Account),
+                                    TResultSeverity.Resv_Noncritical));
+
+                            continue;
+                        }
+
+                        BudgetTableExistingAndImported.ImportRow(br2);
+
+                        ABudgetRow bdgRow = (ABudgetRow)AImportDS.ABudget.Rows.Find(new object[] { bdgSeq });
+
+                        if (bdgRow != null)
                         {
                             bool rowUpdated = false;
 
-                            if (BdgTRow.BudgetTypeCode != BudgetType)
+                            if (bdgRow.BudgetTypeCode != BudgetType)
                             {
                                 rowUpdated = true;
-                                BdgTRow.BudgetTypeCode = BudgetType;
+                                bdgRow.BudgetTypeCode = BudgetType;
                             }
 
                             ABudgetPeriodRow BPRow = null;
 
                             for (int i = 0; i < NumPeriods; i++)
                             {
-                                BPRow = (ABudgetPeriodRow)AImportDS.ABudgetPeriod.Rows.Find(new object[] { BTSeq, i + 1 });
+                                BPRow = (ABudgetPeriodRow)AImportDS.ABudgetPeriod.Rows.Find(new object[] { bdgSeq, i + 1 });
 
                                 if ((BPRow != null) && (BPRow.BudgetBase != BudgetPeriods[i]))
                                 {
@@ -424,18 +463,49 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     }
                     else
                     {
+                        //If not in saved budget table, check if already been imported earlier in the file
+                        DataRow[] duplicateBudgetRows =
+                            BudgetTableExistingAndImported.Select(String.Format("{0}={1} And {2}={3} And {4}={5} And {6}='{7}' And {8}='{9}'",
+                                    ABudgetTable.GetLedgerNumberDBName(),
+                                    ALedgerNumber,
+                                    ABudgetTable.GetYearDBName(),
+                                    BudgetYearNumber,
+                                    ABudgetTable.GetRevisionDBName(),
+                                    BdgRevision,
+                                    ABudgetTable.GetCostCentreCodeDBName(),
+                                    CostCentre,
+                                    ABudgetTable.GetAccountCodeDBName(),
+                                    Account));
+
+                        if ((duplicateBudgetRows != null) && (duplicateBudgetRows.Length > 0))
+                        {
+                            //TODO: update when budget revisioning is added
+                            AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + RowNumber.ToString("0000")),
+                                    String.Format(Catalog.GetString(
+                                            "This budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') is repeated in the import file!"),
+                                        BudgetYearString,
+                                        CostCentre,
+                                        Account),
+                                    TResultSeverity.Resv_Noncritical));
+
+                            continue;
+                        }
+
                         //Add the new budget row
                         ABudgetRow BudgetRow = (ABudgetRow)AImportDS.ABudget.NewRowTyped();
                         int newSequence = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_budget)); // -1 * (AImportDS.ABudget.Rows.Count + 1);
 
                         BudgetRow.BudgetSequence = newSequence;
                         BudgetRow.LedgerNumber = ALedgerNumber;
-                        BudgetRow.Year = YearForBudgetRevision;
+                        BudgetRow.Year = BudgetYearNumber;
                         BudgetRow.Revision = BdgRevision;
                         BudgetRow.CostCentreCode = CostCentre;
                         BudgetRow.AccountCode = Account;
                         BudgetRow.BudgetTypeCode = BudgetType;
                         AImportDS.ABudget.Rows.Add(BudgetRow);
+
+                        //Add to import table to check for later duplicates
+                        BudgetTableExistingAndImported.ImportRow(BudgetRow);
 
                         //Add the budget periods
                         for (int i = 0; i < NumPeriods; i++)
@@ -557,7 +627,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return ErrorCount == AVerificationResult.Count;
         }
 
-        private static Int32 BudgetRevisionYearNumber(int ALedgerNumber, string ABudgetYearName)
+        private static Int32 GetBudgetYearNumber(int ALedgerNumber, string ABudgetYearName)
         {
             int RetVal = 0;
             int BudgetYear = 0;
