@@ -3,7 +3,7 @@
     FormType: report
     FormTitle: Partner By Event
     WindowWidth: 750
-    WindowHeight: 650
+    WindowHeight: 600
     Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
     TemplateParameters:
         CALCULATEFROMMETHOD: Ict.Petra.Server.MPersonnel.queries.QueryPartnerByEvent.CalculateExtract
@@ -15,7 +15,7 @@
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
         # TODO: the following things have to be set by generator
-        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        READCONTROLSLOCALVARS: ReadControlsVerify(ACalc, AReportAction); ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
         SETCONTROLSLOCALVARS: BLANK
     Security:
         ModulePermissionRequired: [PTNRUSER]
@@ -26,7 +26,7 @@
             Controls: [pnlFilter, pnlMiddle, pnlBottom]
         pnlFilter: {ControlsOrientation=horizontal}
             Dock: Top
-            Height: 140
+            Height: 120
             Controls: [ucoFilter]
         pnlMiddle:
             Dock: Fill
@@ -60,9 +60,9 @@
             NoParameter: true
         ucoAddress:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
-            Width: 470
-            Height: 220
+            Width: 495
+            Height: 170
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
-            Width: 205
-            Height: 160
+            Width: 230
+            Height: 170

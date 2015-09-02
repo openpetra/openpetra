@@ -10,8 +10,8 @@ RootNode:
     WindowWidth: 750
     WindowHeight: 600
     Actions:
-        actCopyPartnerKey: {ShortCut=Ctrl+C, ActionClick=CopyPartnerKeyToClipboard}        
-        actSetLastWorkedWith: {ShortCut=Ctrl+S, ActionClick=SetPartnerLastWorkedWith}
+        actCopyPartnerKey: {ActionClick=CopyPartnerKeyToClipboard}
+        actSetLastWorkedWith: {ActionClick=SetPartnerLastWorkedWith}
         actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}      
         
     Controls:

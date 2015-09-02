@@ -4,4 +4,6 @@
   <Parameter id="param_active" value="eBoolean:true" />
   <Parameter id="param_mailing_addresses_only" value="eBoolean:true" />
   <Parameter id="param_exclude_no_solicitations" value="eBoolean:true" />
+  <Parameter id="param_exclude_no_solicitations" value="eBoolean:true" />
+  <Parameter id="param_all_partners" value="eBoolean:true" />
 </Parameters>

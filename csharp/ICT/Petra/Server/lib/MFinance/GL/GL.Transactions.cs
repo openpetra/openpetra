@@ -1806,7 +1806,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ref Transaction,
                     delegate
                     {
-                        AAnalysisTypeAccess.LoadAll(MainDS, Transaction);
+                        AAnalysisTypeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
                         if (!AActiveOnly)
                         {

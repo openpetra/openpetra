@@ -64,8 +64,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //clbIncludeSpecialTypes.SelectionMode = SourceGrid.GridSelectionMode.Row;
             clbIncludeSpecialTypes.Columns.Clear();
             clbIncludeSpecialTypes.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Code"), NewTable.Columns[ValueMember], 100);
-            clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Description"), NewTable.Columns[DisplayMember], 320);
+            clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Code"), NewTable.Columns[ValueMember]);
+            clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Description"), NewTable.Columns[DisplayMember]);
             clbIncludeSpecialTypes.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            if (clbIncludeSpecialTypes.GetCheckedStringList().Length == 0)
+            if ((clbIncludeSpecialTypes.GetCheckedStringList().Length == 0) && (AReportAction != TReportActionEnum.raSave))
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
                     Catalog.GetString("Select at least one special type"),

@@ -20,7 +20,7 @@ RootNode:
             Controls: [pnlFilter, pnlBottom]
         pnlFilter:
             Dock: Top
-            Height: 140
+            Height: 120
             Controls: [ucoFilter]
         pnlBottom:
             Dock: Fill

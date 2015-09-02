@@ -32,7 +32,6 @@
   <Parameter id="param_explicit_specialtypes" value="eString:" />
   <Parameter id="param_exclude_specialtypes" value="eString:" />
   <Parameter id="param_active" value="eBoolean:true" />
-  <Parameter id="param_mailingAddressesOnly" value="eBoolean:true" />
-  <Parameter id="param_families_only" value="eBoolean:false" />
-  <Parameter id="param_excludeNoSolicitations" value="eBoolean:true" />
+  <Parameter id="param_mailing_addresses_only" value="eBoolean:true" />
+  <Parameter id="param_exclude_no_solicitations" value="eBoolean:true" />
 </Parameters>

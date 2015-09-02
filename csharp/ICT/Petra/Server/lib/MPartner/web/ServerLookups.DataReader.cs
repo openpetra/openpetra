@@ -55,28 +55,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// return unit table which contains conferences that match a given search string
         /// Only returns key, name and outreach code fields at the moment.
         /// </summary>
-        /// <param name="AIncludeConferenceUnits">true if conference units are to be retrieved</param>
-        /// <param name="AIncludeOutreachUnits">true if outreach units are to be retrieved</param>
-        /// <param name="AEventName">match string for event name search</param>
-        /// <param name="AIncludeLocationData">true if location columns need to be returned</param>
-        /// <param name="ACurrentAndFutureEventsOnly">indicate if only current or future events are to be returned</param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static DataTable GetEventUnits(bool AIncludeConferenceUnits, bool AIncludeOutreachUnits,
-            string AEventName, bool AIncludeLocationData, bool ACurrentAndFutureEventsOnly)
+        public static DataTable GetEventUnits()
         {
             List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
-            DataColumn[] Key = new DataColumn[1];
+            DataColumn[] Key = new DataColumn[3];
             DataTable Events = new DataTable();
-
-            if (AEventName == "*")
-            {
-                AEventName = "";
-            }
-            else if (AEventName.EndsWith("*"))
-            {
-                AEventName = AEventName.Substring(0, AEventName.Length - 1);
-            }
 
             if (TLogging.DL >= 9)
             {
@@ -93,95 +78,38 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         "SELECT DISTINCT " +
                         PPartnerTable.GetPartnerShortNameDBName() +
                         ", " + PPartnerTable.GetPartnerClassDBName() +
-                        ", " + PUnitTable.GetOutreachCodeDBName();
+                        ", " + PUnitTable.GetOutreachCodeDBName() +
+                        ", " + PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryNameDBName() +
+                        ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetSiteKeyDBName() +
+                        ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetLocationKeyDBName() +
+                        ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateEffectiveDBName() +
+                        ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateGoodUntilDBName() +
 
-                    if (AIncludeLocationData || ACurrentAndFutureEventsOnly)
-                    {
-                        SqlStmt = SqlStmt +
-                                  ", " + PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryNameDBName() +
-                                  ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateEffectiveDBName() +
-                                  ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateGoodUntilDBName();
-                    }
+                        ", " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
+                        ", " + PUnitTable.GetUnitTypeCodeDBName() +
+                        ", " + PUnitTable.GetUnitNameDBName() +
 
-                    SqlStmt = SqlStmt +
-                              ", " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
-                              ", " + PUnitTable.GetUnitTypeCodeDBName() +
+                        " FROM pub_" + PPartnerTable.GetTableDBName() +
+                        ", pub_" + PUnitTable.GetTableDBName() +
+                        ", pub_" + PLocationTable.GetTableDBName() +
+                        ", pub_" + PPartnerLocationTable.GetTableDBName() +
+                        ", pub_" + PCountryTable.GetTableDBName() +
 
-                              " FROM pub_" + PPartnerTable.GetTableDBName() +
-                              ", pub_" + PUnitTable.GetTableDBName();
+                        " WHERE " +
+                        PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
+                        PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() + " AND " +
 
-                    if (AIncludeLocationData || ACurrentAndFutureEventsOnly)
-                    {
-                        SqlStmt = SqlStmt +
-                                  ", pub_" + PLocationTable.GetTableDBName() +
-                                  ", pub_" + PPartnerLocationTable.GetTableDBName() +
-                                  ", pub_" + PCountryTable.GetTableDBName();
-                    }
+                        PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
+                        PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetPartnerKeyDBName() + " AND " +
+                        PLocationTable.GetTableDBName() + "." + PLocationTable.GetSiteKeyDBName() + " = " +
+                        PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetSiteKeyDBName() + " AND " +
+                        PLocationTable.GetTableDBName() + "." + PLocationTable.GetLocationKeyDBName() + " = " +
+                        PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetLocationKeyDBName() + " AND " +
+                        PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryCodeDBName() + " = " +
+                        PLocationTable.GetTableDBName() + "." + PLocationTable.GetCountryCodeDBName() + " AND " +
 
-                    SqlStmt = SqlStmt +
-                              " WHERE " +
-                              PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
-                              PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() + " AND ";
-
-                    if (AIncludeLocationData || ACurrentAndFutureEventsOnly)
-                    {
-                        SqlStmt = SqlStmt +
-                                  PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
-                                  PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetPartnerKeyDBName() + " AND " +
-                                  PLocationTable.GetTableDBName() + "." + PLocationTable.GetSiteKeyDBName() + " = " +
-                                  PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetSiteKeyDBName() + " AND " +
-                                  PLocationTable.GetTableDBName() + "." + PLocationTable.GetLocationKeyDBName() + " = " +
-                                  PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetLocationKeyDBName() + " AND " +
-                                  PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryCodeDBName() + " = " +
-                                  PLocationTable.GetTableDBName() + "." + PLocationTable.GetCountryCodeDBName() + " AND ";
-                    }
-
-                    SqlStmt = SqlStmt +
-                              PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE' " + " AND " +
-                              PPartnerTable.GetPartnerClassDBName() + " = 'UNIT' ";
-
-                    // add criteria for conference and/or outreach
-                    String ConferenceWhereClause = "(" +
-                                                   PUnitTable.GetUnitTypeCodeDBName() + " LIKE '%CONF%' OR " +
-                                                   PUnitTable.GetUnitTypeCodeDBName() + " LIKE '%CONG%')";
-
-                    String OutreachWhereClause = PUnitTable.GetOutreachCodeDBName() + " IS NOT NULL AND " +
-                                                 PUnitTable.GetOutreachCodeDBName() + " <> '' AND (" +
-                                                 PUnitTable.GetUnitTypeCodeDBName() + " NOT LIKE '%CONF%' AND " +
-                                                 PUnitTable.GetUnitTypeCodeDBName() + " NOT LIKE '%CONG%')";
-
-                    if (AIncludeConferenceUnits
-                        && AIncludeOutreachUnits)
-                    {
-                        SqlStmt = SqlStmt + " AND ((" + ConferenceWhereClause + ") OR (" + OutreachWhereClause + "))";
-                    }
-                    else if (AIncludeConferenceUnits)
-                    {
-                        SqlStmt = SqlStmt + " AND (" + ConferenceWhereClause + ")";
-                    }
-                    else if (AIncludeOutreachUnits)
-                    {
-                        SqlStmt = SqlStmt + " AND (" + OutreachWhereClause + ")";
-                    }
-
-                    // add criteria for event name filter
-                    if (AEventName.Length > 0)
-                    {
-                        // in case there is a filter set for the event name
-                        AEventName = AEventName.Replace('*', '%') + "%";
-                        SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
-                                  " LIKE '" + AEventName + "'";
-                    }
-
-                    if (ACurrentAndFutureEventsOnly)
-                    {
-                        SqlStmt = SqlStmt + " AND " + PPartnerLocationTable.GetDateGoodUntilDBName() + " >= ?";
-
-                        SqlParameterList.Add(new OdbcParameter("param_date", OdbcType.Date)
-                            {
-                                Value = DateTime.Today.Date
-                            });
-                    }
+                        PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE' " + " AND " +
+                        PPartnerTable.GetPartnerClassDBName() + " = 'UNIT' ";
 
                     // sort rows according to name
                     SqlStmt = SqlStmt + " ORDER BY " + PPartnerTable.GetPartnerShortNameDBName();
@@ -190,6 +118,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         Transaction, SqlParameterList.ToArray());
 
                     Key[0] = Events.Columns[PPartnerTable.GetPartnerKeyDBName()];
+                    Key[1] = Events.Columns[PPartnerLocationTable.GetSiteKeyDBName()];
+                    Key[2] = Events.Columns[PPartnerLocationTable.GetLocationKeyDBName()];
                     Events.PrimaryKey = Key;
                 });
 
@@ -201,22 +131,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// status ACTIVE.
         /// Only returns key and name field at the moment.
         /// </summary>
-        /// <param name="AFieldName">match string for field name search</param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static PUnitTable GetActiveFieldUnits(string AFieldName)
+        public static PUnitTable GetActiveFieldUnits()
         {
             PUnitTable UnitTable = new PUnitTable();
             PUnitRow UnitRow;
-
-            if (AFieldName == "*")
-            {
-                AFieldName = "";
-            }
-            else if (AFieldName.EndsWith("*"))
-            {
-                AFieldName = AFieldName.Substring(0, AFieldName.Length - 1);
-            }
 
             TLogging.LogAtLevel(9, "TPartnerDataReaderWebConnector.GetActiveFieldUnits called!");
 
@@ -236,14 +156,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                      " AND pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
                                      " = pub_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
                                      " AND " + PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE'";
-
-                    if (AFieldName.Length > 0)
-                    {
-                        // in case there is a filter set for the event name
-                        AFieldName = AFieldName.Replace('*', '%') + "%";
-                        SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
-                                  " LIKE '" + AFieldName + "'";
-                    }
 
                     // sort rows according to name
                     SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
@@ -266,22 +178,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// Return unit table which contains ledger records (unit partners) that match a given search string
         /// Only returns key and name field at the moment.
         /// </summary>
-        /// <param name="ALedgerName">match string for ledger name search</param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static PUnitTable GetLedgerUnits(string ALedgerName)
+        public static PUnitTable GetLedgerUnits()
         {
             PUnitTable UnitTable = new PUnitTable();
             PUnitRow UnitRow;
-
-            if (ALedgerName == "*")
-            {
-                ALedgerName = "";
-            }
-            else if (ALedgerName.EndsWith("*"))
-            {
-                ALedgerName = ALedgerName.Substring(0, ALedgerName.Length - 1);
-            }
 
             TLogging.LogAtLevel(9, "TPartnerDataReaderWebConnector.GetLedgerUnits called!");
 
@@ -298,14 +200,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                      " WHERE pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
                                      " = pub_" + PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetPartnerKeyDBName() +
                                      " AND " + PPartnerTypeTable.GetTypeCodeDBName() + " = '" + MPartnerConstants.PARTNERTYPE_LEDGER + "'";
-
-                    if (ALedgerName.Length > 0)
-                    {
-                        // in case there is a filter set for the event name
-                        ALedgerName = ALedgerName.Replace('*', '%') + "%";
-                        SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
-                                  " LIKE '" + ALedgerName + "'";
-                    }
 
                     // sort rows according to name
                     SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();

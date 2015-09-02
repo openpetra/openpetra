@@ -65,8 +65,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //clbIncludePublication.SelectionMode = SourceGrid.GridSelectionMode.Row;
             clbIncludePublication.Columns.Clear();
             clbIncludePublication.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            clbIncludePublication.AddTextColumn(Catalog.GetString("Publication Code"), NewTable.Columns[ValueMember], 200);
-            clbIncludePublication.AddTextColumn(Catalog.GetString("Publication Description"), NewTable.Columns[DisplayMember], 468);
+            clbIncludePublication.AddTextColumn(Catalog.GetString("Publication Code"), NewTable.Columns[ValueMember]);
+            clbIncludePublication.AddTextColumn(Catalog.GetString("Publication Description"), NewTable.Columns[DisplayMember]);
             clbIncludePublication.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
 
             dtpDateOfSendingCopy.Date = DateTime.Now;
@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            if (clbIncludePublication.GetCheckedStringList().Length == 0)
+            if ((clbIncludePublication.GetCheckedStringList().Length == 0) && (AReportAction != TReportActionEnum.raSave))
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
                     Catalog.GetString("Select at least one subscription"),

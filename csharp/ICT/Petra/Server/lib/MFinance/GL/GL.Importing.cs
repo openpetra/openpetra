@@ -193,7 +193,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(LedgerNumber, transaction);
                         ACurrencyTable CurrencyTable = ACurrencyAccess.LoadAll(transaction);
 
-                        AAnalysisTypeAccess.LoadAll(SetupDS, transaction);
+                        AAnalysisTypeAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
                         AFreeformAnalysisAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
                         AAnalysisAttributeAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
                         ACostCentreAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
@@ -887,7 +887,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         // Load supplementary tables that we are going to need for validation
                         ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-                        AAnalysisTypeAccess.LoadAll(SetupDS, Transaction);
+                        AAnalysisTypeAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                         AFreeformAnalysisAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                         AAnalysisAttributeAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                         ACostCentreAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
@@ -1209,7 +1209,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     // Errors are recorded on-the-fly but are marked as non-critical
                     if (gotType && gotValue)
                     {
-                        DataRow atrow = ASetupDS.AAnalysisType.Rows.Find(new Object[] { analysisType });
+                        DataRow atrow = ASetupDS.AAnalysisType.Rows.Find(new Object[] { NewTransaction.LedgerNumber, analysisType });
                         DataRow afrow = ASetupDS.AFreeformAnalysis.Rows.Find(new Object[] { NewTransaction.LedgerNumber, analysisType, analysisValue });
                         AAnalysisAttributeRow anrow = (AAnalysisAttributeRow)ASetupDS.AAnalysisAttribute.Rows.Find(
                             new Object[] { NewTransaction.LedgerNumber, analysisType, NewTransaction.AccountCode });

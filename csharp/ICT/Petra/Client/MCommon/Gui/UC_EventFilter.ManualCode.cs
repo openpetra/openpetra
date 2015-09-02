@@ -100,6 +100,9 @@ namespace Ict.Petra.Client.MCommon.Gui
             rbtConference.Checked = true;
             chkCurrentFutureOnly.Checked = true;
             FDuringInitialization = false;
+
+            // catch enter key when using text box
+            txtEventName.KeyDown += txtFilterFields_KeyDown;
         }
 
         /// <summary>
@@ -124,6 +127,46 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// </summary>
         public void GetDataFromControls()
         {
+        }
+
+        /// <summary>
+        /// Gets the filter criteria.
+        /// </summary>
+        /// <returns></returns>
+        public string GetFilterCriteria()
+        {
+            string ReturnValue = PUnitTable.GetUnitNameDBName() + " LIKE '" + NameFilter + "%'";
+
+            // add filter for current and future events
+            if (CurrentAndFutureEventsOnly)
+            {
+                ReturnValue += " AND " + PPartnerLocationTable.GetDateGoodUntilDBName() + " >= '" + DateTime.Today.Date + "'";
+            }
+
+            // add filter for conference and/or outreach
+            String ConferenceWhereClause = "(" +
+                                           PUnitTable.GetUnitTypeCodeDBName() + " LIKE '%CONF%' OR " +
+                                           PUnitTable.GetUnitTypeCodeDBName() + " LIKE '%CONG%')";
+
+            String OutreachWhereClause = PUnitTable.GetOutreachCodeDBName() + " IS NOT NULL AND " +
+                                         PUnitTable.GetOutreachCodeDBName() + " <> '' AND (" +
+                                         PUnitTable.GetUnitTypeCodeDBName() + " NOT LIKE '%CONF%' AND " +
+                                         PUnitTable.GetUnitTypeCodeDBName() + " NOT LIKE '%CONG%')";
+
+            if (IncludeConferenceUnits && IncludeOutreachUnits)
+            {
+                ReturnValue += " AND ((" + ConferenceWhereClause + ") OR (" + OutreachWhereClause + "))";
+            }
+            else if (IncludeConferenceUnits)
+            {
+                ReturnValue += " AND (" + ConferenceWhereClause + ")";
+            }
+            else if (IncludeOutreachUnits)
+            {
+                ReturnValue += " AND (" + OutreachWhereClause + ")";
+            }
+
+            return ReturnValue;
         }
 
         #endregion
@@ -174,6 +217,14 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             txtEventName.Text = "";
             this.EventFilterChanged(sender, e);
+        }
+
+        private void txtFilterFields_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                FilterEvents(sender, null);
+            }
         }
 
         #endregion

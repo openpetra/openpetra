@@ -99,9 +99,6 @@ namespace Ict.Petra.Client.CommonControls
             /// <summary>todoComment</summary>
             AddressLayoutList,
 
-            /// <summary>for Finance module, Analysis Attributes</summary>
-            AnalysisTypeList,
-
             /// <summary>todoComment</summary>
             ApplicantStatusList,
 
@@ -557,15 +554,6 @@ namespace Ict.Petra.Client.CommonControls
                     TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.AddressLayoutList),
                     "AddressLayout",
                     null,
-                    null);
-                    break;
-
-                case TListTableEnum.AnalysisTypeList:
-
-                    InitialiseUserControl(
-                    TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AnalysisTypeList),
-                    AAnalysisTypeTable.GetAnalysisTypeCodeDBName(),
-                    AAnalysisTypeTable.GetAnalysisTypeDescriptionDBName(),
                     null);
                     break;
 

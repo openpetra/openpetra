@@ -2,7 +2,7 @@
     BaseYaml: FinanceReportingForm.yaml
     FormType: report
     FormTitle: Donor by Motivation
-    WindowWidth: 900
+    WindowWidth: 800
     WindowHeight: 600
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
@@ -26,26 +26,35 @@
     Controls:
         tpgGeneralSettings: {ControlsOrientation=vertical}
             Label: General Settings
-            Controls: [grpTop, grpMiddle, pnlBottom]
+            Controls: [grpTop, pnlBottom, grpMiddle]
         grpTop: {NoLabel=true}
+            Dock: Fill
             Controls: 
                 Row0: [pnlLedger]
                 Row1: [pnlTopLeft, pnlTopRight]
         pnlLedger:
+            Dock: Top
+            ColSpan: 2
             Controls:
                 Row0:[cmbLedgerNumber]
         pnlTopLeft:
+            Dock: Left
+            Width: 390
             Controls:
                 Row0:[lblMotivationGroup]
                 Row1:[clbMotivationGroup]
         pnlTopRight:
+            Dock: Right
+            Width: 405
             Controls:
                 Row0:[lblMotivationDetail, btnSelectAll, btnDeselectAll]
                 Row1:[clbMotivationDetail]
         grpMiddle: {NoLabel=true, ControlsOrientation=horizontal}
+            Dock: Bottom
             Controls: 
                 Row0: [pnlMiddleLeft, pnlMiddleRight]
         pnlBottom: {ControlsOrientation=horizontal}
+            Dock: Bottom
             Controls: [ucoAddress, ucoChkFilter]
         pnlMiddleLeft:
             Controls:
@@ -62,8 +71,8 @@
         clbMotivationGroup:
             NoLabel: true
             ParameterName: param_motivation_group
-            Width: 320
-            Height: 200
+            Width: 375
+            Stretch: Vertically
         lblMotivationDetail: {Label=Motivation Detail}
         btnSelectAll: {Label=Select all, Action=actSelectAllMotDetail}
         btnDeselectAll: {Label=Deselect all, Action=actDeselectAllMotDetail}
@@ -71,7 +80,7 @@
             NoLabel: true
             ParameterName: param_motivation_detail
             Width: 400
-            Height: 200
+            Stretch: Vertically
             ColSpan: 3
         cmbMailingCode: {Label=Mailing Code, List=MailingList, ClearIfSettingEmpty=true, ParameterName=param_mailing_code}
         cmbReceiptLetterFrequency: {Label=Receipt Letter Frequency, List=FrequencyList, ClearIfSettingEmpty=true, ParameterName=param_receipt_letter_frequency}            
@@ -85,5 +94,9 @@
             ParameterName: param_date_to
         ucoAddress:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+            Height: 170
+            Width: 545
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+            Height: 170
+            Width: 230

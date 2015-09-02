@@ -60,6 +60,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         // name of the extract that is displayed on this screen
         private string FExtractName;
 
+        private bool FFrozen = false;
+
         #region Properties
         /// <summary>
         /// id of extract displayed in this screen
@@ -84,6 +86,23 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             get
             {
                 return FExtractName;
+            }
+        }
+
+        /// <summary>
+        /// True if extract is frozen and cannot be modifid. Hence disable Add and Delete.
+        /// </summary>
+        public bool Frozen
+        {
+            set
+            {
+                FFrozen = value;
+
+                if (FFrozen)
+                {
+                    btnAdd.Enabled = false;
+                    btnDeleteRow.Enabled = false;
+                }
             }
         }
         #endregion
@@ -236,6 +255,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             TFormsMessage BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcExtractCreated);
                             BroadcastMessage.SetMessageDataName(ExtractName);
                             TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+                            this.Focus(); // keeps the focus on the current form
 
                             // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                             return true;
@@ -416,6 +436,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 ucoPartnerInfo.PassPartnerDataNone(ARow.PartnerKey);
                 btnEdit.Enabled = true;
             }
+
+            btnDeleteRow.Enabled = pnlDetails.Enabled && !FFrozen;
         }
 
         private void EditPartner(System.Object sender, EventArgs e)
@@ -578,6 +600,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
                 // end try
             }
+        }
+
+        private void DeleteRecord(System.Object sender, EventArgs e)
+        {
+            DeleteMExtract();
         }
 
         private bool PreDeleteManual(ExtractTDSMExtractRow ARowToDelete, ref string ADeletionQuestion)

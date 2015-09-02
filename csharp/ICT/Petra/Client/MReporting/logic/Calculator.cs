@@ -473,7 +473,8 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <summary>
         /// this is where all the calculations take place
         /// </summary>
-        /// <returns>true if the report was successfully generated
+        /// <returns>
+        /// true if the report was successfully generated
         /// </returns>
         public Boolean GenerateResultRemoteClient()
         {
@@ -521,9 +522,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                         "' in Extract Master List.", TLoggingType.ToStatusBar);
 
                     TFormsMessage BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcExtractCreated);
-
                     BroadcastMessage.SetMessageDataName(Parameters.Get("param_extract_name").ToString());
-
                     TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
                 }
                 else

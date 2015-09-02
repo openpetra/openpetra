@@ -3,6 +3,8 @@
     FormType: report
     FormTitle: Partner By Relationship
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    WindowWidth: 750
+    WindowHeight: 500
     TemplateParameters:
         CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByRelationship.CalculateExtract  
         ISOLATIONLEVEL: serializable
@@ -18,6 +20,7 @@
         ModulePermissionRequired: [PTNRUSER]
     Controls:
         tpgGeneralSettings:
+            Dock: Fill
             Label: General Settings
             Controls: 
                 Row0: [ucoPartnerSelection]
@@ -27,7 +30,9 @@
         ucoPartnerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerOrExtractSelection
             Height: 90
+            Stretch: horizontally
         grpSelectRelationship:
+            Stretch: horizontally
             Label: Select Relationship
             Controls: 
                 Row1: [chkCategoryFilter, cmbRelationCategory]
@@ -55,10 +60,10 @@
         lblSelectReciprocalRelationship:
             Label: (Select from list below)
         grdDirectRelationship:
-            Width: 300
+            Width: 350
             Height: 200
         grdReciprocalRelationship:
-            Width: 300
+            Width: 350
             Height: 200
 			
         ucoChkFilter:

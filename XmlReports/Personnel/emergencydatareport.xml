@@ -112,7 +112,7 @@
                 <value function="assign(AlternateTelephone, not known)" condition="lt(length({AlternateTelephone}), 1)"/>
                 <value function="assign(EmailAddress, not known)" condition="lt({EmailAddress}, 1)"/>
                 <value function="assign(MobileNumber, not known)" condition="lt(length({MobileNumber}), 1)"/>
-                <value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
+				<value function="assign(PartnerAddress, {Locality})"/>
                 <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
                 <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
                 <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>

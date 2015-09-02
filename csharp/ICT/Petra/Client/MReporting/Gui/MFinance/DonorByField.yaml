@@ -22,19 +22,20 @@
     Actions:
         actApplyFilter: {Label=Filter List, ActionClick=FilterList}
     Controls:
-        tpgGeneralSettings: {ControlsOrientation=vertical}
+        tpgGeneralSettings:
             Label: General Settings
             Controls: [pnlFilter, pnlMiddle, pnlBottom]
         pnlFilter: {ControlsOrientation=horizontal}
             Dock: Top
-            Controls: [txtFilter, btnApplyFilter]
+            Controls: 
+                Row0: [chkAllLedgers]
+                Row1: [txtFilterFields, btnApplyFilter]
         pnlMiddle: {ControlsOrientation=horizontal}
             Dock: Fill
             Controls: [clbLedger, grpOptions]
         pnlBottom:
             Dock: Bottom
             Controls: 
-                Row0: [chkAllLedgers]
                 Row1: [ucoAddress, ucoChkFilter]
         grpOptions:
             Label: Selection Criteria
@@ -50,7 +51,7 @@
             NoLabel: true 
             ParameterName: param_ledgers
             Dock: Fill
-        txtFilter:
+        txtFilterFields:
             NoLabel: true
             Width: 300
         btnApplyFilter:
@@ -65,13 +66,14 @@
             Label: To
             ParameterName: param_date_to
         chkAllLedgers: {CheckBoxAttachedLabel=right}
-            Label: Select all ledgers (ignore selection in list above)
+            Label: Select all ledgers (ignore selection in list below)
             ParameterName: param_all_ledgers
+            OnChange: ChkAllLedgersChanged
         ucoAddress:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
-            Height: 220
-            Width: 500
+            Height: 170
+            Width: 520
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
-            Height: 220
-            Width: 200
+            Height: 170
+            Width: 240

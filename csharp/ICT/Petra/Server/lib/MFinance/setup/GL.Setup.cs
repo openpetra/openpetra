@@ -981,7 +981,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                        AAnalysisTypeAccess.LoadAll(MainDS, Transaction);
+                        AAnalysisTypeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AAnalysisAttributeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AGeneralLedgerMasterAccess.LoadUsingTemplate(MainDS, template, Transaction);
@@ -3952,6 +3952,25 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction);
 
+                // create system analysis types for the new ledger
+                AAnalysisTypeAccess.LoadAll(MainDS, Transaction);
+                AAnalysisTypeTable NewAnalysisTypes = new AAnalysisTypeTable();
+
+                foreach (AAnalysisTypeRow AnalysisTypeRow in MainDS.AAnalysisType.Rows)
+                {
+                    if (AnalysisTypeRow.SystemAnalysisType
+                        && !NewAnalysisTypes.Rows.Contains(new Object[] { ANewLedgerNumber, AnalysisTypeRow.AnalysisTypeCode }))
+                    {
+                        AAnalysisTypeRow NewAnalysisType = NewAnalysisTypes.NewRowTyped();
+                        NewAnalysisType.ItemArray = (object[])AnalysisTypeRow.ItemArray.Clone();
+                        NewAnalysisType.LedgerNumber = ANewLedgerNumber;
+                        NewAnalysisTypes.Rows.Add(NewAnalysisType);
+                    }
+                }
+
+                AAnalysisTypeAccess.SubmitChanges(NewAnalysisTypes, Transaction);
+
+
                 AllOK = true;
             }
             catch (Exception Exc)
@@ -4333,7 +4352,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// Check if a TypeCode in  AnalysisType can be deleted (count the references in ATRansAnalysisAtrributes)
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static int CheckDeleteAAnalysisType(String ATypeCode)
+        public static int CheckDeleteAAnalysisType(Int32 ALedgerNumber, String ATypeCode)
         {
             int RetVal = 0;
 
@@ -4344,7 +4363,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    RetVal = AAnalysisAttributeAccess.CountViaAAnalysisType(ATypeCode, Transaction);
+                    RetVal = AAnalysisAttributeAccess.CountViaAAnalysisType(ALedgerNumber, ATypeCode, Transaction);
                 });
 
             return RetVal;

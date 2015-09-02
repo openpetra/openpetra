@@ -181,6 +181,9 @@ namespace Ict.Petra.Shared
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_DEFAULTFIELDMOTIVATION = "DefaultFieldMotivation";
 
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_FAILEDLOGINS_UNTIL_RETIRE = "FailedLoginsUntilRetire";
+
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_USERMESSAGE = "USERMESSAGE";
 

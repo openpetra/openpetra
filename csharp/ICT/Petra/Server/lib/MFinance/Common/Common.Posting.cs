@@ -447,7 +447,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         // TODO: use cached table?
                         ACostCentreAccess.LoadViaALedger(PostingDS, ALedgerNumber, Transaction);
 
-                        AAnalysisTypeAccess.LoadAll(PostingDS, Transaction);
+                        AAnalysisTypeAccess.LoadViaALedger(PostingDS, ALedgerNumber, Transaction);
                         AFreeformAnalysisAccess.LoadViaALedger(PostingDS, ALedgerNumber, Transaction);
                         AAnalysisAttributeAccess.LoadViaALedger(PostingDS, ALedgerNumber, Transaction);
                     });

@@ -728,6 +728,12 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             try
             {
+                // read the settings and parameters from the controls
+                if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate, true))
+                {
+                    return;
+                }
+
                 // open dialog to prompt the user to enter a name for new extract
                 TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this.FWinForm);
                 string ExtractName;
@@ -747,12 +753,6 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
 
                 ExtractNameDialog.Dispose();
-
-                // read the settings and parameters from the controls
-                if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
-                {
-                    return;
-                }
 
                 // add extract name and description to parameter list
                 // (don't add it earlier as the list gets cleared while reading controls from screens)
@@ -831,6 +831,15 @@ namespace Ict.Petra.Client.MReporting.Gui
                         MessageBox.Show(
                             Catalog.GetString("Results cannot be shown because form was closed."),
                             Catalog.GetString("Generate Report"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+
+                    if (ACalculator.CalculatesExtract)
+                    {
+                        // let the user know the extract generation was successful
+                        MessageBox.Show(ACallerForm,
+                            Catalog.GetString("Extract successfully generated."),
+                            Catalog.GetString("Generate Extract"),
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
@@ -1324,7 +1333,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <returns>true if successful
         /// </returns>
-        protected virtual bool ReadControlsWithErrorHandling(TReportActionEnum AReportAction)
+        protected virtual bool ReadControlsWithErrorHandling(TReportActionEnum AReportAction, bool AIsExtract = false)
         {
             bool ReturnValue;
             TVerificationResult VerificationResultEntry;
@@ -1339,9 +1348,13 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 if (FVerificationResults.Count != 0)
                 {
-                    if (AReportAction == TReportActionEnum.raGenerate)
+                    if ((AReportAction == TReportActionEnum.raGenerate) && !AIsExtract)
                     {
                         UserMessage = "Report could not be generated.";
+                    }
+                    else if ((AReportAction == TReportActionEnum.raGenerate) && AIsExtract)
+                    {
+                        UserMessage = "Extract could not be generated.";
                     }
                     else if (AReportAction == TReportActionEnum.raSave)
                     {

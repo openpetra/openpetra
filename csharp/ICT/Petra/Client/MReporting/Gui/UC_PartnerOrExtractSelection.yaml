@@ -8,6 +8,8 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [grpSelection]
+            Dock: Fill
+            Stretch: horizontally
         grpSelection:
             Label: Selection
             Controls:

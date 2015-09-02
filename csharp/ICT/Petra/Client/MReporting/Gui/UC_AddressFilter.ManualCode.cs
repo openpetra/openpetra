@@ -61,6 +61,9 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             txtPostCodeFrom.Validating += new CancelEventHandler(PostCode_Validating);
             txtPostCodeTo.Validating += new CancelEventHandler(PostCode_Validating);
+
+            cmbRegion.cmbCombobox.AllowBlankValue = true;
+            cmbCountry.cmbCombobox.AllowBlankValue = true;
         }
 
         /// <summary>

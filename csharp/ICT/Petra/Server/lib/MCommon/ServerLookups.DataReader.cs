@@ -124,7 +124,7 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     }
                     else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                     {
-                        tempTable = AAnalysisTypeAccess.LoadAll(ReadTransaction);
+                        tempTable = AAnalysisTypeAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
                     }
                     else if (ATablename == AGiftBatchTable.GetTableDBName())
                     {

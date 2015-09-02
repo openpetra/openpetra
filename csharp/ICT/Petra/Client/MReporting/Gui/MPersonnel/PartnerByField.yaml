@@ -23,12 +23,12 @@ RootNode:
         actApplyFilter: {Label=Filter List, ActionClick=FilterList}
         actFieldDatesSelectionChanged: {ActionClick=FieldDatesSelectionChanged}
     Controls:
-        tpgGeneralSettings: {ControlsOrientation=vertical}
+        tpgGeneralSettings:
             Label: General Settings
             Controls: [pnlFilter, pnlMiddle, pnlBottom]
         pnlFilter: {ControlsOrientation=horizontal}
             Dock: Top
-            Controls: [txtFilter, btnApplyFilter]
+            Controls: [txtFilterFields, btnApplyFilter]
         pnlMiddle: {ControlsOrientation=horizontal}
             Dock: Fill
             Controls: [pnlGrid, pnlOptions]
@@ -70,16 +70,16 @@ RootNode:
         rbtCommitmentsOnly: {Label=Only consider Partners with Commitments, ParameterValue=CommitmentsOnly}
         rbtCommitmentsAndWorkerField: {Label=Allow Commitments and Worker Field, ParameterValue=CommitmentsAndWorkerField}
         
-        txtFilter:
+        txtFilterFields:
             NoLabel: true
             Width: 300
         btnApplyFilter:
             Action: actApplyFilter
         ucoAddress:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
-            Width: 500
-            Height: 220
+            Width: 495
+            Height: 170
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
-            Width: 200
-            Height: 150
+            Width: 230
+            Height: 170

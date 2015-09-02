@@ -18,7 +18,7 @@
   <Parameter id="param_calculation" column="1" value="eString:DonorName" />
   <Parameter id="ColumnWidth" column="1" value="eInteger:6" />
   <Parameter id="param_calculation" column="2" value="eString:DonorClass" />
-  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:3" />
   <Parameter id="param_calculation" column="3" value="eString:Year-0" />
   <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
   <Parameter id="param_calculation" column="4" value="eString:Year-1" />

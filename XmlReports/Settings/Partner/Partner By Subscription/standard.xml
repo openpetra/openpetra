@@ -31,4 +31,7 @@
   <Parameter id="ColumnWidth" column="8" value="eInteger:2" />
   <Parameter id="param_explicit_publication" value="eString:" />
   <Parameter id="param_exclude_publication" value="eString:" />
+  <Parameter id="param_active" value="eBoolean:true" />
+  <Parameter id="param_mailing_addresses_only" value="eBoolean:true" />
+  <Parameter id="param_exclude_no_solicitations" value="eBoolean:true" />
 </Parameters>

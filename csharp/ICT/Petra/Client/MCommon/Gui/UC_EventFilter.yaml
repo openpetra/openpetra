@@ -14,13 +14,12 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Stretch: horizontally
             Controls: [pnlFilter]
         pnlFilter:
-            Stretch: horizontally
+            Dock: Fill
             Controls: [grpFilterEventType, grpFilterEventName]
         grpFilterEventType:
-            Stretch: horizontally
+            Dock: Top
             Label: Filter by Event Type
             Controls:
                 Row1: [rbtConference, rbtOutreach, rbtAll]
@@ -44,7 +43,7 @@ RootNode:
         
         grpFilterEventName:
             Label: Filter by Event Name
-            Stretch: horizontally
+            Dock: Fill
             Controls:
                 Row1: [txtEventName, btnFilter, btnClearFilter]
         txtEventName:

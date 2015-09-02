@@ -244,8 +244,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             grdDirectRelationship.DataSource = new DevAge.ComponentModel.BoundDataView(FDirectRelationshipTable.DefaultView);
             grdReciprocalRelationship.DataSource = new DevAge.ComponentModel.BoundDataView(FReciprocalRelationshipTable.DefaultView);
 
-            grdDirectRelationship.AutoSizeCells();
-            grdReciprocalRelationship.AutoSizeCells();
+            grdDirectRelationship.AutoResizeGrid();
+            grdReciprocalRelationship.AutoResizeGrid();
 
             RelationTypes.Add("");
 

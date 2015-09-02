@@ -189,7 +189,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("ColumnWidth", (float)6.0, ColumnCounter);
             ++ColumnCounter;
             ACalc.AddParameter("param_calculation", "DonorClass", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter);
             ++ColumnCounter;
             ACalc.AddParameter("param_calculation", "Year-0", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter);

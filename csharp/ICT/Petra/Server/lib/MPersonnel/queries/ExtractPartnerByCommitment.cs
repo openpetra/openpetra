@@ -136,7 +136,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             ASQLParameterList.Add(new OdbcParameter("param_consider_commitment_status_not", OdbcType.Bit)
                 {
-                    Value = !AParameters.Get("param_consider_commitment_status").ToBool()
+                    Value = AParameters.Get("param_all_partners").ToBool()
                 });
             ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_commitment_status_choices",
                     OdbcType.VarChar,

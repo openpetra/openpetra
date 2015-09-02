@@ -70,6 +70,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             dtpModifiedTo.Text = "";
 
             FPetraUtilsObject.LoadDefaultSettings();
+
+            cmbPartnerClass.cmbCombobox.AllowBlankValue = true;
+            cmbDenomination.cmbCombobox.AllowBlankValue = true;
+            cmbBusiness.cmbCombobox.AllowBlankValue = true;
+            cmbLanguage.cmbCombobox.AllowBlankValue = true;
+            cmbUserCreated.cmbCombobox.AllowBlankValue = true;
+            cmbUserModified.cmbCombobox.AllowBlankValue = true;
         }
 
         private void LoadListData()
@@ -87,9 +94,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             clbLocationType.Columns.Clear();
             clbLocationType.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            clbLocationType.AddTextColumn("", NewTable.Columns[ValueMember], 130);
+            clbLocationType.AddTextColumn("", NewTable.Columns[ValueMember]);
 
             clbLocationType.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+
+            clbLocationType.AutoStretchColumnsToFitWidth = true;
+            clbLocationType.Columns.StretchToFit();
 
             //TODO: only temporarily until settings file exists
             clbLocationType.SetCheckedStringList("");

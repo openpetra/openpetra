@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// using an optional authentication plugin dll
         /// </summary>
         [RequireModulePermission("SYSMAN")]
-        public static bool SetUserPassword(string AUsername, string APassword, bool APasswordNeedsChanged)
+        public static bool SetUserPassword(string AUsername, string APassword, bool APasswordNeedsChanged, bool AUnretireIfRetired)
         {
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
@@ -78,6 +78,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         UserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
                                 UserDR.PasswordSalt), "SHA1");
                         UserDR.PasswordNeedsChange = APasswordNeedsChanged;
+
+                        // unretire the user if it has been previously retired
+                        if (AUnretireIfRetired)
+                        {
+                            UserDR.Retired = false;
+                        }
 
                         SUserAccess.SubmitChanges(UserTable, SubmitChangesTransaction);
 

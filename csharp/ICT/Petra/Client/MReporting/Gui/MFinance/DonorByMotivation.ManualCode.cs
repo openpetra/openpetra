@@ -88,8 +88,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //clbMotivationGroup.SelectionMode = SourceGrid.GridSelectionMode.Row;
             clbMotivationGroup.Columns.Clear();
             clbMotivationGroup.AddCheckBoxColumn("", NewMotGroupTable.Columns[CheckedMemberMotGroup], 17, false);
-            clbMotivationGroup.AddTextColumn(Catalog.GetString("Group Code"), NewMotGroupTable.Columns[ValueMemberMotGroup], 80);
-            clbMotivationGroup.AddTextColumn(Catalog.GetString("Description"), NewMotGroupTable.Columns[DisplayMemberMotGroup], 200);
+            clbMotivationGroup.AddTextColumn(Catalog.GetString("Group Code"), NewMotGroupTable.Columns[ValueMemberMotGroup]);
+            clbMotivationGroup.AddTextColumn(Catalog.GetString("Description"), NewMotGroupTable.Columns[DisplayMemberMotGroup]);
             clbMotivationGroup.DataBindGrid(NewMotGroupTable,
                 ValueMemberMotGroup,
                 CheckedMemberMotGroup,
@@ -97,6 +97,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 false,
                 true,
                 false);
+
+            clbMotivationGroup.AutoResizeGrid();
+            clbMotivationGroup.AutoStretchColumnsToFitWidth = true;
 
             // set flag as otherwise InitializeMotivationDetailList will be processed unnecessarily
             FDuringLoadSettings = true;
@@ -163,13 +166,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //clbMotivationGroup.SelectionMode = SourceGrid.GridSelectionMode.Row;
             clbMotivationDetail.Columns.Clear();
             clbMotivationDetail.AddCheckBoxColumn("", NewMotDetailTable.Columns[CheckedMemberMotDetail], 17, false);
-            clbMotivationDetail.AddTextColumn(Catalog.GetString("Detail Code"), NewMotDetailTable.Columns[Value2MemberMotDetail], 80);
-            clbMotivationDetail.AddTextColumn(Catalog.GetString("Group Code"), NewMotDetailTable.Columns[Value1MemberMotDetail], 80);
-            clbMotivationDetail.AddTextColumn(Catalog.GetString("Description"), NewMotDetailTable.Columns[DisplayMemberMotDetail], 200);
+            clbMotivationDetail.AddTextColumn(Catalog.GetString("Detail Code"), NewMotDetailTable.Columns[Value2MemberMotDetail]);
+            clbMotivationDetail.AddTextColumn(Catalog.GetString("Group Code"), NewMotDetailTable.Columns[Value1MemberMotDetail]);
+            clbMotivationDetail.AddTextColumn(Catalog.GetString("Description"), NewMotDetailTable.Columns[DisplayMemberMotDetail]);
             clbMotivationDetail.DataBindGrid(NewMotDetailTable, "", CheckedMemberMotDetail, KeyColumnList, false, true, false);
 
             // reset checked records
             clbMotivationDetail.SetCheckedStringList(FCheckedMotDetailStringList);
+
+            clbMotivationDetail.AutoResizeGrid();
         }
 
         private void CmbLedgerChanged(System.Object sender, EventArgs e)

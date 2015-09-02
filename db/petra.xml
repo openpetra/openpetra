@@ -8326,6 +8326,14 @@
          label="Analysis Type"
          dumpname="a_anatyp"
          group="account">
+    <tablefield name="a_ledger_number_i"
+                type="integer"
+                descr="The number of the ledger in which the analysis type is used."
+                format="&gt;&gt;&gt;9"
+                label="Ledger Number"
+                help="Enter the ledger number"
+                notnull="yes"
+                initial="0"/>
     <tablefield name="a_analysis_type_code_c"
                 type="varchar"
                 descr=""
@@ -8365,7 +8373,12 @@
     <!-- Constraints on table a_analysis_type -->
     <primarykey name="a_analysis_type_pk"
                 descr=""
-                thisFields="a_analysis_type_code_c"/>
+                thisFields="a_ledger_number_i, a_analysis_type_code_c"/>
+    <foreignkey name="a_analysis_type_fk1"
+                descr=""
+                thisFields="a_ledger_number_i"
+                otherTable="a_ledger"
+                otherFields="a_ledger_number_i"/>
     <!-- Explicit Indexes on table a_analysis_type  -->
   </table>
   <table name="a_analysis_attribute"
@@ -8421,9 +8434,9 @@
                 otherFields="a_ledger_number_i, a_account_code_c"/>
     <foreignkey name="a_analysis_attribute_fk2"
                 descr=""
-                thisFields="a_analysis_type_code_c"
+                thisFields="a_ledger_number_i, a_analysis_type_code_c"
                 otherTable="a_analysis_type"
-                otherFields="a_analysis_type_code_c"/>
+                otherFields="a_ledger_number_i, a_analysis_type_code_c"/>
     <foreignkey name="a_analysis_attribute_fk3"
                 descr=""
                 thisFields="a_ledger_number_i, a_cost_centre_code_c"
@@ -9133,9 +9146,9 @@
                 otherFields="a_ledger_number_i"/>
     <foreignkey name="a_freeform_analysis_fk2"
                 descr=""
-                thisFields="a_analysis_type_code_c"
+                thisFields="a_ledger_number_i, a_analysis_type_code_c"
                 otherTable="a_analysis_type"
-                otherFields="a_analysis_type_code_c"/>
+                otherFields="a_ledger_number_i, a_analysis_type_code_c"/>
     <!-- Explicit Indexes on table a_freeform_analysis  -->
   </table>
   <table name="a_general_ledger_master"

@@ -66,7 +66,12 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <returns>void</returns>
         private void EventFilterChanged(System.Object sender, System.EventArgs e)
         {
-            LoadEventListData();
+            DataView view = new DataView(FEventTable);
+
+            view.AllowNew = false;
+            view.RowFilter = ucoFilter.GetFilterCriteria();
+
+            grdEvent.DataSource = new DevAge.ComponentModel.BoundDataView(view);
             grdEvent.AutoResizeGrid();
             grdEvent.Selection.SelectRow(1, true);
         }
@@ -107,10 +112,8 @@ namespace Ict.Petra.Client.MCommon.Gui
             // Hook up EventFilterChanged Event to be able to react to changed filter
             ucoFilter.EventFilterChanged += new TEventHandlerEventFilterChanged(this.EventFilterChanged);
 
-            //grdEvent.AutoSizeCells();
-
             // now the filter is initialized we can load the initial data
-            LoadEventListData();
+            FEventTable = TRemote.MPartner.Partner.WebConnectors.GetEventUnits();
 
             grdEvent.Columns.Clear();
 
@@ -127,20 +130,8 @@ namespace Ict.Petra.Client.MCommon.Gui
             FEventTable.DefaultView.AllowNew = false;
 
             grdEvent.Selection.EnableMultiSelection = false;
-            grdEvent.AutoResizeGrid();
-            grdEvent.Selection.SelectRow(1, true);
-        }
 
-        private void LoadEventListData()
-        {
-            FEventTable = TRemote.MPartner.Partner.WebConnectors.GetEventUnits
-                              (ucoFilter.IncludeConferenceUnits, ucoFilter.IncludeOutreachUnits,
-                              ucoFilter.NameFilter, true, ucoFilter.CurrentAndFutureEventsOnly);
-
-            // set "AllowNew" to false as otherwise an empty line is shown in the grid when filter is refreshed
-            FEventTable.DefaultView.AllowNew = false;
-
-            grdEvent.DataSource = new DevAge.ComponentModel.BoundDataView(FEventTable.DefaultView);
+            EventFilterChanged(this, null);
         }
     }
 

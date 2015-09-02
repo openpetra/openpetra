@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
         }
 
-        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (txtMinAmount.NumberValueInt > txtMaxAmount.NumberValueInt)
             {
@@ -81,10 +81,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
-        }
 
-        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
-        {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_donorkey", txtDonor.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);

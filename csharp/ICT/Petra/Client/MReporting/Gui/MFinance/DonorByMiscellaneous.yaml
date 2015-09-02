@@ -3,7 +3,7 @@
     FormType: report
     FormTitle: Donor Extract (Miscellaneous)
     WindowWidth: 900
-    WindowHeight: 600
+    WindowHeight: 480
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
         CALCULATEFROMMETHOD: Ict.Petra.Server.MFinance.queries.QueryDonorByMiscellaneous.CalculateExtract
@@ -26,11 +26,14 @@
             Label: General Settings
             Controls: [grpTop, pnlBottom]
         grpTop: {NoLabel=true, ControlsOrientation=horizontal}
+            Dock: Top
             Controls: 
                 Row0: [pnlOptionsLeft, pnlOptionsRight]
         pnlBottom: {ControlsOrientation=horizontal}
+            Dock: Fill
             Controls: [ucoAddress, ucoChkFilter]
         pnlOptionsLeft:
+            Width: 475
             Controls:
                 Row0:[cmbLedgerNumber]
                 Row1:[cmbMethodOfGiving]
@@ -58,7 +61,7 @@
         cmbReceiptLetterFrequency: {Label=Receipt Letter Frequency, List=FrequencyList, ClearIfSettingEmpty=true, ParameterName=param_receipt_letter_frequency}            
         chkNewDonorsOnly: {Label=New Donors only, ParameterName=param_new_donors_only}
         chkReceiptEachGiftOnly: {Label=Receipt each Gift only, ParameterName=param_receipt_each_gift_only}
-        chkExcludeMotDetailNoReceipt: {Label=Exclude Mot. Detail 'No Receipt', ParameterName=param_exclude_mot_detail_no_receipt}
+        chkExcludeMotDetailNoReceipt: {Label=Excl. MotDetail 'No Receipt', ParameterName=param_exclude_mot_detail_no_receipt}
         dtpDateFrom: {ClearIfSettingEmpty=true}
             Label: Date from
             ParameterName: param_date_from
@@ -67,5 +70,9 @@
             ParameterName: param_date_to
         ucoAddress:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+            Height: 170
+            Width: 630
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+            Height: 170
+            Width: 240

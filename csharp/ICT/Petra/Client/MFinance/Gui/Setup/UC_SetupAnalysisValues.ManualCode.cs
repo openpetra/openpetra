@@ -47,7 +47,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                txtHeaderLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
                 /* fix tab order */
                 pnlButtons.TabIndex = grdDetails.TabIndex + 1;

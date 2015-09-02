@@ -486,9 +486,9 @@ namespace Ict.Petra.Server.MFinance.queries
             if (fromExtract)
             {
                 String extractName = AParameters.Get("param_extract_name").ToString();
-                SqlQuery += (", PUB_m_extract AS Extract, PUB_m_extract_master AS ExtractMaster" +
+                SqlQuery += (", PUB_m_extract AS Extract, PUB_m_extract_master AS ExtractMaster " +
                              "WHERE " +
-                             "partner.p_partner_key_n = Extract.p_partner_key_n " +
+                             "recipient.p_partner_key_n = Extract.p_partner_key_n " +
                              "AND Extract.m_extract_id_i = ExtractMaster.m_extract_id_i " +
                              "AND ExtractMaster.m_extract_name_c = '" + extractName + "' " +
                              "AND "

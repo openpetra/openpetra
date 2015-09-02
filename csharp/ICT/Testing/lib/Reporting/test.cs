@@ -22,8 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
 using System.Configuration;
+using System.Data;
+using System.Windows.Forms;
+
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using Ict.Petra.Client.MReporting.Logic;
