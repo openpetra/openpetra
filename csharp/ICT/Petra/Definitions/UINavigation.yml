@@ -240,10 +240,10 @@ OpenPetra:
                         RemittanceAdvice: {Description:Reprint Payment advice sent to supplier, ActionOpenScreen=TFrmAP_RemittanceAdvice}
                 Budgets: {Namespace=Ict.Petra.Client.MFinance.Gui.Budget, DontShowNestedTasksAsLinks=true}
                     General:
-                        MaintainBudget: {ActionOpenScreen=TFrmMaintainBudget}
-                        AutoGenerateBudget: {ActionOpenScreen=TFrmAutoGenerateBudgetDialog}
-                        ConsolidateBudgets: {ActionClick=TConsolidateBudgets.ConsolidateBudgets}
-                        ExportBudget: {ActionOpenScreen=TFrmExportBudget}
+                        MaintainBudget: {Description:Enter/Import and maintain budgets, ActionOpenScreen=TFrmMaintainBudget}
+                        AutoGenerateBudget: {Description:Auto-generate budgets, ActionOpenScreen=TFrmAutoGenerateBudgetDialog}
+                        ConsolidateBudgets: {Description:Consolidate budgets, ActionClick=TConsolidateBudgets.ConsolidateBudgets}
+                        ExportBudget: {Description:Export to CSV for use with Excel, ActionOpenScreen=TFrmExportBudget}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
                       # IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}

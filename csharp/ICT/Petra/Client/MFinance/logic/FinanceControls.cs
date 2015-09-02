@@ -1155,17 +1155,36 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <summary>
         /// This function fills the available financial years of a given ledger into a TCmbAutoPopulated combobox
         /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AIncludeNextYear"></param>
+        /// <param name="AShowYearEnds"></param>
         public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoPopulated AControl,
-            System.Int32 ALedgerNr,
-            bool AIncludeNextYear = false)
+            System.Int32 ALedgerNumber,
+            bool AIncludeNextYear = false,
+            bool AShowYearEnds = false)
         {
             string DisplayMember;
             string ValueMember;
-            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNr,
-                0,
-                AIncludeNextYear,
-                out DisplayMember,
-                out ValueMember);
+
+            DataTable Table = null;
+
+            if (AShowYearEnds)
+            {
+                Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYearEnds(ALedgerNumber,
+                    0,
+                    AIncludeNextYear,
+                    out DisplayMember,
+                    out ValueMember);
+            }
+            else
+            {
+                Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNumber,
+                    0,
+                    AIncludeNextYear,
+                    out DisplayMember,
+                    out ValueMember);
+            }
 
             Table.DefaultView.Sort = ValueMember + " DESC";
 
@@ -1184,14 +1203,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// This function fills the available financial years of a given ledger into a TCmbAutoPopulated combobox
         /// </summary>
         public static void InitialiseAvailableFinancialYearsListHOSA(ref TCmbAutoPopulated AControl,
-            System.Int32 ALedgerNr,
-            bool AIncludeNextYear = false)
+            Int32 ALedgerNumber,
+            Boolean AIncludeNextYear = false)
         {
             string DisplayMember;
             string ValueMember;
             string DescriptionMember;
 
-            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYearsHOSA(ALedgerNr,
+            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYearsHOSA(ALedgerNumber,
                 out DisplayMember,
                 out ValueMember,
                 out DescriptionMember);
@@ -1217,7 +1236,8 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoComplete AControl,
             System.Int32 ALedgerNr,
-            bool AIncludeNextYear = false, bool AShowYearEndings = false)
+            bool AIncludeNextYear = false,
+            bool AShowYearEndings = false)
         {
             string DisplayMember;
             string ValueMember;

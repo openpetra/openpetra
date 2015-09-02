@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void LoadBudgets()
         {
-            FBudgetDS = TRemote.MFinance.Budget.WebConnectors.LoadBudget(FLedgerNumber);
+            FBudgetDS = TRemote.MFinance.Budget.WebConnectors.LoadAllBudgets(FLedgerNumber);
         }
 
         const String sSpace = "[SPACE]";

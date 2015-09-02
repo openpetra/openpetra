@@ -160,4 +160,7 @@ RootNode:
         txtInflateBaseTotalAmount: {Label=Total, Format=Currency, ReadOnly=true, Width=140}
     Menu:
     Toolbar:
-        cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, Width=250, SuppressChangeDetection=true}
+        lblBlank: {Label=Blank}
+        lblYearEnding1: {Label=Year}
+        lblYearEnding2: {Label=Ended}
+        cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, SuppressChangeDetection=true}

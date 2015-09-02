@@ -62,36 +62,95 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static BudgetTDS LoadBudget(Int32 ALedgerNumber)
+        public static BudgetTDS LoadAllBudgets(Int32 ALedgerNumber)
         {
             BudgetTDS MainDS = new BudgetTDS();
-
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    //TODO: need to filter on Year
-                    ABudgetAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                    ABudgetRevisionAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                    //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
-                    ABudgetPeriodAccess.LoadAll(MainDS, Transaction);
-                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        //Load all by Ledger
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                        ABudgetAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                        ABudgetRevisionAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
-                    //            ABudgetPeriodTable BudgetPeriodTable = new ABudgetPeriodTable();
-                    //            ABudgetPeriodRow TemplateRow = (ABudgetPeriodRow)BudgetPeriodTable.NewRow(false);
-                    //
-                    //            TemplateRow.BudgetSequence;
-                    //            ABudgetPeriodAccess.LoadViaABudgetTemplate(MainDS, TemplateRow, Transaction);
-                });
+                        ABudgetTable BudgetTable = new ABudgetTable();
+                        ABudgetRow TemplateRow = (ABudgetRow)BudgetTable.NewRow();
+                        TemplateRow.LedgerNumber = ALedgerNumber;
 
-            // Accept row changes here so that the Client gets 'unmodified' rows
-            MainDS.AcceptChanges();
+                        ABudgetPeriodAccess.LoadViaABudgetTemplate(MainDS, TemplateRow, Transaction);
+                    });
 
-            // Remove all Tables that were not filled with data before remoting them.
-            MainDS.RemoveEmptyTables();
+                // Accept row changes here so that the Client gets 'unmodified' rows
+                MainDS.AcceptChanges();
+
+                // Remove all Tables that were not filled with data before remoting them.
+                MainDS.RemoveEmptyTables();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// load budgets
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABudgetYear"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static BudgetTDS LoadBudgetsForYear(Int32 ALedgerNumber, Int32 ABudgetYear)
+        {
+            BudgetTDS MainDS = new BudgetTDS();
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                        //Load all by Year
+                        ABudgetTable BudgetTable = new ABudgetTable();
+                        ABudgetRow TemplateRow = (ABudgetRow)BudgetTable.NewRow();
+                        TemplateRow.Year = ABudgetYear;
+
+                        ABudgetAccess.LoadUsingTemplate(MainDS, TemplateRow, Transaction);
+                        ABudgetPeriodAccess.LoadViaABudgetTemplate(MainDS, TemplateRow, Transaction);
+                        //TODO: add Budget Revision capability when decision made to add it to OP.
+                        //  Assume Revision=0 for now until implemented
+                        ABudgetRevisionAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABudgetYear, 0, Transaction);
+                    });
+
+                // Accept row changes here so that the Client gets 'unmodified' rows
+                MainDS.AcceptChanges();
+
+                // Remove all Tables that were not filled with data before remoting them.
+                MainDS.RemoveEmptyTables();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
 
             return MainDS;
         }
