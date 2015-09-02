@@ -341,7 +341,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     {
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + RowNumber.ToString("0000")),
                                 String.Format(Catalog.GetString(
-                                        "The values in this budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') do not match the Budget Type: '{3}'!"),
+                                        " The values in this budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') do not match the Budget Type: '{3}'!"),
                                     BudgetYearString,
                                     CostCentre,
                                     Account,
@@ -417,7 +417,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             //TODO: update when budget revisioning is added
                             AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + RowNumber.ToString("0000")),
                                     String.Format(Catalog.GetString(
-                                            "This budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') is repeated in the import file!"),
+                                            " This budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') is repeated in the import file!"),
                                         BudgetYearString,
                                         CostCentre,
                                         Account),
@@ -543,10 +543,13 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             string ABudgetYearString,
             ref TVerificationResultCollection AVerificationResult)
         {
-            int ErrorCount = AVerificationResult.Count;
+            string VerifMessage = string.Empty;
 
             ACostCentreTable CCTable = ACostCentreTbl;
             AAccountTable AccTable = AAccountTbl;
+
+            ACostCentreRow CostCentreRow = null;
+            AAccountRow AccountRow = null;
 
             if (CCTable == null)
             {
@@ -595,36 +598,59 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 }
             }
 
-            if (ACostCentreTbl.Rows.Find(new object[] { ALedgerNumber, ACostCentre }) == null)
+            //Check for missing or inactive cost centre
+            CostCentreRow = (ACostCentreRow)ACostCentreTbl.Rows.Find(new object[] { ALedgerNumber, ACostCentre });
+
+            if (CostCentreRow == null)
             {
-                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + ARowNumber.ToString("0000")),
-                        String.Format(Catalog.GetString("Cost Centre: '{0}' does not exist."), ACostCentre),
-                        TResultSeverity.Resv_Noncritical));
+                VerifMessage += String.Format(Catalog.GetString(" Cost Centre: '{0}' does not exist."), ACostCentre);
             }
-            else if (AAccountTbl.Rows.Find(new object[] { ALedgerNumber, AAccount }) == null)
+            else if (!CostCentreRow.CostCentreActiveFlag)
             {
-                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + ARowNumber.ToString("0000")),
-                        String.Format(Catalog.GetString("Account: '{0}' does not exist."), AAccount),
-                        TResultSeverity.Resv_Noncritical));
-            }
-            else if ((ABudgetType != MFinanceConstants.BUDGET_ADHOC)
-                     && (ABudgetType != MFinanceConstants.BUDGET_SAME)
-                     && (ABudgetType != MFinanceConstants.BUDGET_INFLATE_N)
-                     && (ABudgetType != MFinanceConstants.BUDGET_SPLIT)
-                     && (ABudgetType != MFinanceConstants.BUDGET_INFLATE_BASE))
-            {
-                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + ARowNumber.ToString("0000")),
-                        String.Format(Catalog.GetString("Budget Type: '{0}' does not exist."), ABudgetType),
-                        TResultSeverity.Resv_Noncritical));
-            }
-            else if ((ABudgetYearString != "THIS") && (ABudgetYearString != "NEXT"))
-            {
-                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + ARowNumber.ToString("0000")),
-                        String.Format(Catalog.GetString("Budget Year: '{0}' does not exist."), ABudgetYearString),
-                        TResultSeverity.Resv_Noncritical));
+                VerifMessage += String.Format(Catalog.GetString(" Cost Centre: '{0}' is currently inactive."), ACostCentre);
             }
 
-            return ErrorCount == AVerificationResult.Count;
+            //Check for missing or inactive account code
+            AccountRow = (AAccountRow)AAccountTbl.Rows.Find(new object[] { ALedgerNumber, AAccount });
+
+            if (AccountRow == null)
+            {
+                VerifMessage += String.Format(Catalog.GetString(" Account: '{0}' does not exist."), AAccount);
+            }
+            else if (!AccountRow.AccountActiveFlag)
+            {
+                VerifMessage += String.Format(Catalog.GetString(" Account: '{0}' is currently inactive."), AAccount);
+            }
+
+            //Check Budget Type
+            if ((ABudgetType != MFinanceConstants.BUDGET_ADHOC)
+                && (ABudgetType != MFinanceConstants.BUDGET_SAME)
+                && (ABudgetType != MFinanceConstants.BUDGET_INFLATE_N)
+                && (ABudgetType != MFinanceConstants.BUDGET_SPLIT)
+                && (ABudgetType != MFinanceConstants.BUDGET_INFLATE_BASE))
+            {
+                VerifMessage += String.Format(Catalog.GetString(" Budget Type: '{0}' does not exist."), ABudgetType);
+            }
+
+            //Check Budget Year
+            if ((ABudgetYearString != "THIS") && (ABudgetYearString != "NEXT"))
+            {
+                VerifMessage += String.Format(Catalog.GetString(" Budget Year: '{0}' should be 'THIS' or 'NEXT'."), ABudgetYearString);
+            }
+
+            //Check if errors have occurred
+            if (VerifMessage.Length > 0)
+            {
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + ARowNumber.ToString("0000")),
+                        VerifMessage,
+                        TResultSeverity.Resv_Noncritical));
+
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         private static Int32 GetBudgetYearNumber(int ALedgerNumber, string ABudgetYearName)

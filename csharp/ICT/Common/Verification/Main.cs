@@ -997,7 +997,6 @@ namespace Ict.Common.Verification
 
                     if (siScr != null)
                     {
-
                         if (AFirstErrorControl == null)
                         {
                             AFirstErrorControl = siScr.ResultControl;

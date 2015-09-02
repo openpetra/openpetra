@@ -43,25 +43,25 @@
         <Table sqltable="a_freeform_analysis"/>
     </DataSet>
 
-  <DataSet name="GLReportingTDS">
-    <Table sqltable="a_ledger"/>
-    <Table sqltable="a_account"/>
-    <Table sqltable="a_cost_centre"/>
-    <Table sqltable="a_account_hierarchy_detail"/>
-    <Table sqltable="a_transaction">
-        <CustomField name="a_analysis_type_code_c" type="String"/>
-        <CustomField name="a_analysis_type_description_c" type="String"/>
-        <CustomField name="a_analysis_attribute_value_c" type="String"/>
-    </Table>
-    <Table sqltable="a_general_ledger_master"/>
-    <Table sqltable="a_general_ledger_master_period"/>
-    <Table sqltable="a_trans_anal_attrib"/>
-    <Table sqltable="a_analysis_attribute"/>
-    <Table sqltable="a_analysis_type"/>
-    <Table sqltable="a_freeform_analysis"/>
-  </DataSet>
+    <DataSet name="GLReportingTDS">
+      <Table sqltable="a_ledger"/>
+      <Table sqltable="a_account"/>
+      <Table sqltable="a_cost_centre"/>
+      <Table sqltable="a_account_hierarchy_detail"/>
+      <Table sqltable="a_transaction">
+          <CustomField name="a_analysis_type_code_c" type="String"/>
+          <CustomField name="a_analysis_type_description_c" type="String"/>
+          <CustomField name="a_analysis_attribute_value_c" type="String"/>
+      </Table>
+      <Table sqltable="a_general_ledger_master"/>
+      <Table sqltable="a_general_ledger_master_period"/>
+      <Table sqltable="a_trans_anal_attrib"/>
+      <Table sqltable="a_analysis_attribute"/>
+      <Table sqltable="a_analysis_type"/>
+      <Table sqltable="a_freeform_analysis"/>
+    </DataSet>
 
-  <DataSet name="GLSetupTDS">
+    <DataSet name="GLSetupTDS">
         <Table sqltable="p_partner"/>
 
         <Table sqltable="a_ledger"/>
@@ -117,6 +117,7 @@
         <Table sqltable="p_partner_location"/>
         <Table sqltable="p_partner_ledger"/>
     </DataSet>
+    
     <DataSet name="GLStewardshipCalculationTDS">
         <CustomTable name="CreditFeeTotal">
             <Field sqltable="a_cost_centre" sqlfield="a_cost_centre_code_c"/>
@@ -125,14 +126,31 @@
             <PrimaryKey thisFields="CostCentreCode,AccountCode"/>
         </CustomTable>
     </DataSet>
+  
     <DataSet name="BudgetTDS">
         <Table sqltable="a_ledger"/>
         <Table sqltable="a_budget_revision"/>
         <Table sqltable="a_budget_type"/>
-        <Table sqltable="a_budget"/>
+        <Table sqltable="a_budget">
+            <CustomField name="Period01Amount" type="decimal" initial="0"/>
+            <CustomField name="Period02Amount" type="decimal" initial="0"/>
+            <CustomField name="Period03Amount" type="decimal" initial="0"/>
+            <CustomField name="Period04Amount" type="decimal" initial="0"/>
+            <CustomField name="Period05Amount" type="decimal" initial="0"/>
+            <CustomField name="Period06Amount" type="decimal" initial="0"/>
+            <CustomField name="Period07Amount" type="decimal" initial="0"/>
+            <CustomField name="Period08Amount" type="decimal" initial="0"/>
+            <CustomField name="Period09Amount" type="decimal" initial="0"/>
+            <CustomField name="Period10Amount" type="decimal" initial="0"/>
+            <CustomField name="Period11Amount" type="decimal" initial="0"/>
+            <CustomField name="Period12Amount" type="decimal" initial="0"/>
+            <CustomField name="Period13Amount" type="decimal" initial="0"/>
+            <CustomField name="Period14Amount" type="decimal" initial="0"/>
+        </Table>
         <Table sqltable="a_budget_period"/>
         <Table sqltable="a_general_ledger_master_period"/>
     </DataSet>
+  
     <DataSet name="SuspenseAccountTDS">
         <Table sqltable="a_suspense_account"/>
         <Table sqltable="a_account"/>

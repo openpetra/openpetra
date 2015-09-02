@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
             InitialiseControls();
 
-            //Alaways auto-load budgets for current and next financial year
+            //Always auto-load budgets for current and next financial year
             LoadBudgetsForNextYear();
             FSelectedBudgetYear = FCurrentFinancialYear; // TFinanceControls.GetLedgerCurrentFinancialYear(FLedgerNumber);
             cmbSelectBudgetYear.SetSelectedInt32(FSelectedBudgetYear);
@@ -144,6 +144,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     FMainDS.Merge(TRemote.MFinance.Budget.WebConnectors.LoadBudgetsForYear(FLedgerNumber, FSelectedBudgetYear));
                 }
 
+                RetrievePeriodAmounts();
                 SetBudgetDefaultView();
             }
             finally
@@ -153,8 +154,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         }
 
         //Load budgets into dataset for next financial year
-        // Called from import process as import allows current or next year
-        //   and next year might not have been loaded yet
+        // This is required for import process and is called
+        //  from first load of budgets for current year
         private void LoadBudgetsForNextYear()
         {
             try
@@ -165,6 +166,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
                     FMainDS.Merge(TRemote.MFinance.Budget.WebConnectors.LoadBudgetsForYear(FLedgerNumber, FNextFinancialYear));
                 }
+
+                RetrievePeriodAmounts(FNextFinancialYear);
             }
             finally
             {
@@ -192,6 +195,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             FFilterAndFindObject.ApplyFilter();
             UpdateRecordNumberDisplay();
             FFilterAndFindObject.SetRecordNumberDisplayProperties();
+        }
+
+        private void RetrievePeriodAmounts(Int32 ASpecificYear = -1)
+        {
+            if (ASpecificYear == -1)
+            {
+                ASpecificYear = FSelectedBudgetYear;
+            }
+
+            DataView BudgetsForYear = new DataView(FMainDS.ABudget);
+
+            BudgetsForYear.RowFilter = String.Format("{0}={1}",
+                ABudgetTable.GetYearDBName(),
+                ASpecificYear);
+
+            foreach (DataRowView drv in BudgetsForYear)
+            {
+                BudgetTDSABudgetRow budgetRow = (BudgetTDSABudgetRow)drv.Row;
+
+                DataView budgetPeriodsDV = new DataView(FMainDS.ABudgetPeriod);
+
+                budgetPeriodsDV.RowFilter = String.Format("{0}={1}",
+                    ABudgetPeriodTable.GetBudgetSequenceDBName(),
+                    budgetRow.BudgetSequence);
+                budgetPeriodsDV.Sort = String.Format("{0} ASC",
+                    ABudgetPeriodTable.GetPeriodNumberDBName());
+
+                foreach (DataRowView drv2 in budgetPeriodsDV)
+                {
+                    ABudgetPeriodRow budgetPeriodRow = (ABudgetPeriodRow)drv2.Row;
+
+                    string periodAmountColumn = "Period" + budgetPeriodRow.PeriodNumber.ToString("00") + "Amount";
+
+                    budgetRow[periodAmountColumn] = budgetPeriodRow.BudgetBase;
+                }
+            }
         }
 
         private void RefreshComboLabels()
@@ -306,9 +345,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             lblPerPeriodAmount.Text = String.Format("Amount for periods 1 to {0}:", (FNumberOfPeriods - 1));
             lblLastPeriodAmount.Text = String.Format("Amount for period {0}:", FNumberOfPeriods);
+
+            grdDetails.Columns[grdDetails.Columns.Count - 1].Visible = IfMoreThan13Periods;
+            grdDetails.Columns[grdDetails.Columns.Count - 2].Visible = IfMoreThan12Periods;
         }
 
-        private void NewRowManual(ref ABudgetRow ARow)
+        private void NewRowManual(ref BudgetTDSABudgetRow ARow)
         {
             if (!cmbDetailAccountCode.Enabled)
             {
@@ -493,8 +535,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             if (FPetraUtilsObject.HasChanges)
             {
                 // saving failed, therefore do not try to post
-                MessageBox.Show(Catalog.GetString("Please save before calling this function!"), Catalog.GetString(
-                        "Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Catalog.GetString("Please save before trying to import!"), Catalog.GetString(
+                        "Failure"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
@@ -519,6 +561,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 try
                 {
+                    Cursor = Cursors.WaitCursor;
+
                     Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(OFDialog.FileName);
 
                     if (!fileCanOpen)
@@ -555,6 +599,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
                     NumRecsImported = -1;
                     MessageBox.Show(ex.Message, Catalog.GetString("Budget Import"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    Cursor = Cursors.Default;
                 }
 
                 //Check for import errors and create import error message
@@ -609,6 +657,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             MessageBoxIcon.Information);
                     }
 
+                    RetrievePeriodAmounts();
                     SetBudgetDefaultView();
 
                     SelectRowInGrid(1);
@@ -1325,7 +1374,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtInflateBaseTotalAmount.CurrencyCode = CurrencyCode;
         }
 
-        private void ShowDetailsManual(ABudgetRow ARow)
+        private void ShowDetailsManual(BudgetTDSABudgetRow ARow)
         {
             ClearBudgetTypeTextboxesExcept("None");
             UpdateCurrencyCode();
@@ -1376,7 +1425,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             pnlBudgetTypeInflateBase.Visible = rbtInflateBase.Checked;
         }
 
-        private bool GetDetailDataFromControlsManual(ABudgetRow ARow)
+        private bool GetDetailDataFromControlsManual(BudgetTDSABudgetRow ARow)
         {
             if (ARow != null)
             {
@@ -1437,6 +1486,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 ARow.Year = Convert.ToInt16(cmbSelectBudgetYear.GetSelectedString());
                 ARow.Revision = CreateBudgetRevisionRow(FLedgerNumber, ARow.Year);
                 ARow.EndEdit();
+
+                //Write to Budget custom fields
+                for (int i = 1; i <= FNumberOfPeriods; i++)
+                {
+                    ABudgetPeriodRow budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { ARow.BudgetSequence, i });
+
+                    if (budgetPeriodRow != null)
+                    {
+                        string customColumn = "Period" + i.ToString("00") + "Amount";
+                        ARow[customColumn] = budgetPeriodRow.BudgetBase;
+                    }
+
+                    budgetPeriodRow = null;
+                }
             }
 
             return true;
