@@ -576,60 +576,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// Produce a single page HTML letter to receipt a gift
-        /// </summary>
-        /// <param name="AFormLetterFinanceInfo"></param>
-        /// <param name="AGiftType"></param>
-        /// <param name="AAdjustment"></param>
-        /// <returns>true if gift detail can be printed</returns>
-        private static Boolean CanGiftDetailBePrinted(TFormLetterFinanceInfo AFormLetterFinanceInfo,
-            String AGiftType,
-            Boolean AAdjustment)
-        {
-            // check form settings: exclude adjustments
-            if (AFormLetterFinanceInfo.ExcludeAdjustments
-                && AAdjustment)
-            {
-                return false;
-            }
-
-            // check form settings: include adjustments only
-            if (AFormLetterFinanceInfo.IncludeAdjustmentsOnly
-                && !AAdjustment)
-            {
-                return false;
-            }
-
-            TFormDataGift GiftRecord = new TFormDataGift();
-
-            GiftRecord.IsTypeGiftInKind = (AGiftType == MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND);
-            GiftRecord.IsTypeGift = (AGiftType == MFinanceConstants.GIFT_TYPE_GIFT);
-
-            // check form settings: include gifts only
-            if (AFormLetterFinanceInfo.GiftsOnly
-                && !(AGiftType == MFinanceConstants.GIFT_TYPE_GIFT))
-            {
-                return false;
-            }
-
-            // check form settings: include gifts in kind only
-            if (AFormLetterFinanceInfo.GiftsInKindOnly
-                && !(AGiftType == MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND))
-            {
-                return false;
-            }
-
-            // check form settings: include other gift types
-            if (AFormLetterFinanceInfo.GiftsOther
-                && !(AGiftType == MFinanceConstants.GIFT_TYPE_OTHER))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Create a single gift receipt
         /// </summary>
         /// <param name="ADonorShortName"></param>
