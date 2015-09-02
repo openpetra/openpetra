@@ -1,0 +1,22 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Form Selection List
+    Namespace: Ict.Petra.Client.MFinance.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 550
+    WindowHeight: 400
+
+    Controls:
+        pnlDialogContent:
+            Controls: [lblExplanation, grdForms]
+        lblExplanation:
+            Label: Please select the form to use
+            Dock: Top
+        grdForms:
+            TableName: AForm
+            Columns: []
+            Dock: Fill
+            Stretch: horizontally
+
+        btnOK:

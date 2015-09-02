@@ -210,6 +210,7 @@ OpenPetra:
                         DonorRecipientHistory: {Label=Donor / Recipient History, Description:Gift history for a Donor and/or Recipient, ActionOpenScreen=TFrmDonorRecipientHistory}
                         #PrintSingleReceipt:
                         ReceiptControl:{ActionOpenScreen=TFrmReceiptControl}
+                        SelectFormLetter: {Label=Select Form Letters, Description=Select Finance Form Letters, Namespace=Ict.Petra.Client.MFinance.Gui, ActionClick=TFinanceMain.SelectFinanceFormLetter}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         RecipientGiftStatement: {ActionOpenScreen=TFrmRecipientGiftStatement}
                         DonorGiftStatement: {ActionOpenScreen=TFrmDonorGiftStatement}

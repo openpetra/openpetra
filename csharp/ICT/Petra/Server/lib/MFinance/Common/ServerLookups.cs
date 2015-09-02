@@ -337,5 +337,53 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             return ReturnValue;
         }
+
+        /// <summary>
+        /// return table with forms for given form code and form type code
+        /// </summary>
+        /// <param name="AFormCode">Form Code Filter</param>
+        /// <param name="AFormTypeCode">Form Type Code Filter, ignore this filter if empty string</param>
+        /// <returns>Result Form Table</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static AFormTable GetForms(TFinanceFormCodeEnum AFormCode, String AFormTypeCode)
+        {
+            AFormTable ResultTable = new AFormTable();
+            AFormRow TemplateRow = ResultTable.NewRowTyped(false);
+
+            switch (AFormCode)
+            {
+                case TFinanceFormCodeEnum.ffcReceipt:
+                    TemplateRow.FormCode = MFinanceConstants.FORM_CODE_RECEIPT;
+                    break;
+
+                case TFinanceFormCodeEnum.ffcCheque:
+                    TemplateRow.FormCode = MFinanceConstants.FORM_CODE_CHEQUE;
+                    break;
+
+                case TFinanceFormCodeEnum.ffcRemittance:
+                    TemplateRow.FormCode = MFinanceConstants.FORM_CODE_REMITTANCE;
+                    break;
+
+                default:
+                    break;
+            }
+            if (AFormTypeCode != "")
+            {
+                TemplateRow.FormTypeCode = AFormTypeCode;
+            }
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ResultTable = AFormAccess.LoadUsingTemplate(TemplateRow, Transaction);
+                });
+
+            return ResultTable;
+        }
+
     }
 }

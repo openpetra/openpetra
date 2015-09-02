@@ -134,5 +134,16 @@ namespace Ict.Petra.Client.MFinance.Gui
             frmBatch.LedgerNumber = ALedger;
             frmBatch.Show();
         }
+
+        /// <summary>
+        /// print a new Finance Form Letter
+        /// </summary>
+        public static void SelectFinanceFormLetter(Form AParentForm, int ALedger)
+        {
+            TFrmFormSelectionDialog frm = new TFrmFormSelectionDialog(AParentForm);
+
+            frm.SetParameters(Shared.MFinance.TFinanceFormCodeEnum.ffcReceipt, "");
+            frm.Show();
+        }
     }
 }

@@ -672,4 +672,26 @@ namespace Ict.Petra.Shared.MFinance
         /// </summary>
             Always
     }
+
+    /// <summary>
+    /// enumeration for finance form codes
+    /// </summary>
+    public enum TFinanceFormCodeEnum
+    {
+        /// <summary>
+        /// form code for receipt
+        /// </summary>
+        ffcReceipt,
+
+        /// <summary>
+        /// form code for cheque
+        /// </summary>
+        ffcCheque,
+
+        /// <summary>
+        /// form code for remittance
+        /// </summary>
+        ffcRemittance
+    };
+
 }
