@@ -30,6 +30,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core;
@@ -310,7 +311,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //On populating key ministry
-            if (DisableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).DataRowColumnsHaveChanged(FBatchRow))
+            if (DisableSave && FPetraUtilsObject.HasChanges && !DataUtilities.DataRowColumnsHaveChanged(FBatchRow))
             {
                 FPetraUtilsObject.DisableSaveButton();
             }
@@ -497,7 +498,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
 
-                if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).DataRowColumnsHaveChanged(FBatchRow))
+                if (disableSave && FPetraUtilsObject.HasChanges && !DataUtilities.DataRowColumnsHaveChanged(FBatchRow))
                 {
                     FPetraUtilsObject.DisableSaveButton();
                 }

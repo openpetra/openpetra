@@ -29,6 +29,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -383,7 +384,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
 
-                if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmRecurringGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+                if (disableSave && FPetraUtilsObject.HasChanges && !DataUtilities.DataRowColumnsHaveChanged(FBatchRow))
                 {
                     FPetraUtilsObject.DisableSaveButton();
                 }

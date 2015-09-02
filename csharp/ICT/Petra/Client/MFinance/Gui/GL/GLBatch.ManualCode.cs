@@ -532,30 +532,44 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private int GetChangedRecordCountManual(out string AMessage)
         {
             // For GL Batch we will get some mix of batches, journals and transactions
+            // Only check relevant tables.
+            List <string>TablesToCheck = new List <string>();
+            TablesToCheck.Add(FMainDS.ABatch.TableName);
+            TablesToCheck.Add(FMainDS.AJournal.TableName);
+            TablesToCheck.Add(FMainDS.ATransaction.TableName);
+            TablesToCheck.Add(FMainDS.ATransAnalAttrib.TableName);
+
             List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
             int AllChangesCount = 0;
 
-            // Work out how many changes in each table
-            foreach (DataTable dt in FMainDS.Tables)
+            if (FMainDS.HasChanges())
             {
-                if ((dt != null) && (dt.Rows.Count > 0)
-                    && ((dt.TableName == FMainDS.ABatch.TableName) || (dt.TableName == FMainDS.AJournal.TableName)
-                        || (dt.TableName == FMainDS.ATransaction.TableName) || (dt.TableName == FMainDS.ATransAnalAttrib.TableName)))
+                // Work out how many changes in each table
+                foreach (DataTable dt in FMainDS.GetChanges().Tables)
                 {
-                    int tableChangesCount = 0;
+                    string currentTableName = dt.TableName;
 
-                    foreach (DataRow dr in dt.Rows)
+                    if ((dt != null)
+                        && TablesToCheck.Contains(currentTableName)
+                        && (dt.Rows.Count > 0))
                     {
-                        if (DataRowColumnsHaveChanged(dr))
+                        int tableChangesCount = 0;
+
+                        DataTable dtChanges = dt.GetChanges();
+
+                        foreach (DataRow dr in dtChanges.Rows)
                         {
-                            tableChangesCount++;
-                            AllChangesCount++;
+                            if (DataUtilities.DataRowColumnsHaveChanged(dr))
+                            {
+                                tableChangesCount++;
+                                AllChangesCount++;
+                            }
                         }
-                    }
 
-                    if (tableChangesCount > 0)
-                    {
-                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
+                        if (tableChangesCount > 0)
+                        {
+                            TableAndCountList.Add(new Tuple <string, int>(currentTableName, tableChangesCount));
+                        }
                     }
                 }
             }
@@ -642,58 +656,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     AMessage += strTransactions;
                 }
 
+                AMessage += Environment.NewLine + Catalog.GetString("(some of the changes may include related background items)");
                 AMessage += Environment.NewLine;
                 AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
             }
 
             return AllChangesCount;
-        }
-
-        /// <summary>
-        /// Check if batch columns have actually changed
-        /// </summary>
-        /// <param name="ADataRow"></param>
-        /// <returns></returns>
-        public bool DataRowColumnsHaveChanged(DataRow ADataRow)
-        {
-            bool ColumnValueHasChanged = false;
-
-            if ((ADataRow.RowState != DataRowState.Unchanged) && (ADataRow.RowState != DataRowState.Deleted)
-                && (ADataRow.RowState != DataRowState.Added))
-            {
-                string columnName = string.Empty;
-
-                for (int i = 0; i < ADataRow.Table.Columns.Count; i++)
-                {
-                    columnName = ADataRow.Table.Columns[i].ColumnName;
-
-                    //Ignore the system and temporary fields, all other fields are their SQL name, e.g. a_ledger_number_i
-                    if (columnName.StartsWith("s_") || !columnName.Contains("_"))
-                    {
-                        continue;
-                    }
-
-                    string originalValue = ADataRow[i, DataRowVersion.Original].ToString();
-                    string currentValue = ADataRow[i, DataRowVersion.Current].ToString();
-
-                    if (originalValue != currentValue)
-                    {
-                        ColumnValueHasChanged = true;
-                        break;
-                    }
-                }
-
-                if (!ColumnValueHasChanged)
-                {
-                    ADataRow.RejectChanges();
-                }
-            }
-            else if ((ADataRow.RowState == DataRowState.Deleted) || (ADataRow.RowState == DataRowState.Added))
-            {
-                ColumnValueHasChanged = true;
-            }
-
-            return ColumnValueHasChanged;
         }
 
         /// <summary>

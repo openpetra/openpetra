@@ -436,6 +436,55 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// Check if non-system bound data columns have actually changed in the given
+        ///  row. Only system fields begin 's_'
+        /// </summary>
+        /// <param name="ADataRow"></param>
+        /// <returns></returns>
+        public static Boolean DataRowColumnsHaveChanged(DataRow ADataRow)
+        {
+            bool ColumnValueHasChanged = false;
+
+            if ((ADataRow.RowState != DataRowState.Unchanged)
+                && (ADataRow.RowState != DataRowState.Deleted)
+                && (ADataRow.RowState != DataRowState.Added))
+            {
+                string columnName = string.Empty;
+
+                for (int i = 0; i < ADataRow.Table.Columns.Count; i++)
+                {
+                    columnName = ADataRow.Table.Columns[i].ColumnName;
+
+                    //Ignore the system and temporary fields, all other fields are their SQL name, e.g. a_ledger_number_i
+                    if (columnName.StartsWith("s_") || !columnName.Contains("_"))
+                    {
+                        continue;
+                    }
+
+                    string originalValue = ADataRow[i, DataRowVersion.Original].ToString();
+                    string currentValue = ADataRow[i, DataRowVersion.Current].ToString();
+
+                    if (originalValue != currentValue)
+                    {
+                        ColumnValueHasChanged = true;
+                        break;
+                    }
+                }
+
+                if (!ColumnValueHasChanged)
+                {
+                    ADataRow.RejectChanges();
+                }
+            }
+            else if ((ADataRow.RowState == DataRowState.Deleted) || (ADataRow.RowState == DataRowState.Added))
+            {
+                ColumnValueHasChanged = true;
+            }
+
+            return ColumnValueHasChanged;
+        }
+
+        /// <summary>
         /// copy the modification ids from one datarow to another
         /// </summary>
         /// <param name="ADestinationDR">datarow to be modified</param>
