@@ -993,9 +993,10 @@ namespace Ict.Common.Verification
 
                     AErrorMessages += Environment.NewLine + Environment.NewLine;
 
-                    if (si is TScreenVerificationResult)
+                    siScr = (FList[Counter]) as TScreenVerificationResult;
+
+                    if (siScr != null)
                     {
-                        siScr = (TScreenVerificationResult)(FList[Counter]);
 
                         if (AFirstErrorControl == null)
                         {
@@ -1015,6 +1016,7 @@ namespace Ict.Common.Verification
         /// <summary>
         /// generate the text for a message box showing all verification errors of a given context
         /// </summary>
+        /// <remarks>This method ignores non-screen verification results and builds the list from screen verification results only.</remarks>
         /// <param name="AResultContext">only show errors of the given context</param>
         /// <param name="AErrorMessages">will have the list of error messages</param>
         /// <param name="AFirstErrorControl">for focusing the first control that caused verification failure</param>
@@ -1030,9 +1032,9 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(FList[Counter]);
+                si = (FList[Counter]) as TScreenVerificationResult;
 
-                if (si.ResultContext == AResultContext)
+                if ((si != null) && (si.ResultContext == AResultContext))
                 {
                     AErrorMessages = AErrorMessages + si.ResultText + Environment.NewLine + Environment.NewLine;
 
@@ -1131,6 +1133,7 @@ namespace Ict.Common.Verification
         /// <summary>
         /// Checks if there is an error for this data column already.
         /// </summary>
+        /// <remarks>This method checks screen verification results only, since a simple verification result is not associated with a Result Column.</remarks>
         /// <param name="AResultColumn">The <see cref="System.Data.DataColumn" /> to check for.</param>
         /// <returns>true if such an error already is part of the list</returns>
         public bool Contains(DataColumn AResultColumn)
@@ -1140,9 +1143,9 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(FList[Counter]);
+                si = (FList[Counter]) as TScreenVerificationResult;
 
-                if (si.ResultColumn == AResultColumn)
+                if ((si != null) && (si.ResultColumn == AResultColumn))
                 {
                     Found = true;
                     break;
@@ -1155,6 +1158,7 @@ namespace Ict.Common.Verification
         /// <summary>
         /// Checks if there is an error for any data column of this DataTable already.
         /// </summary>
+        /// <remarks>This method checks screen verification results only, since a simple verification result is not associated with a Result Column table.</remarks>
         /// <param name="ADataTable">The <see cref="System.Data.DataTable" /> to check for.</param>
         /// <returns>true if such an error already is part of the list</returns>
         public bool Contains(DataTable ADataTable)
@@ -1164,9 +1168,10 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(FList[Counter]);
+                si = (FList[Counter]) as TScreenVerificationResult;
 
-                if ((si.ResultColumn != null)
+                if ((si != null)
+                    && (si.ResultColumn != null)
                     && (si.ResultColumn.Table == ADataTable))
                 {
                     Found = true;
@@ -1436,6 +1441,7 @@ namespace Ict.Common.Verification
         /// <summary>
         /// Find a <see cref="TScreenVerificationResult" /> by ResultColumn.
         /// </summary>
+        /// <remarks>This method checks screen verification results only, since a simple verification result is not associated with a Result Column.</remarks>
         /// <param name="AResultColumn">ResultColumn to look for.</param>
         /// <returns>The first result for that ResultColumn, or null if no result was found.</returns>
         public TScreenVerificationResult FindBy(DataColumn AResultColumn)
@@ -1447,9 +1453,9 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(FList[Counter]);
+                si = (FList[Counter]) as TScreenVerificationResult;
 
-                if (si.ResultColumn == AResultColumn)
+                if ((si != null) && (si.ResultColumn == AResultColumn))
                 {
                     ReturnValue = si;
                     break;
@@ -1462,6 +1468,7 @@ namespace Ict.Common.Verification
         /// <summary>
         /// Finds all <see cref="TScreenVerificationResult" />s that are stored for a certain ResultColumn.
         /// </summary>
+        /// <remarks>This method checks screen verification results only, since a simple verification result is not associated with a Result Column.</remarks>
         /// <param name="AResultColumn">ResultColumn to look for.</param>
         /// <returns>An List of <see cref="TScreenVerificationResult" /> that contains all the found
         /// <see cref="TScreenVerificationResult" />s, or null if no result was found.</returns>
@@ -1474,9 +1481,9 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(FList[Counter]);
+                si = (FList[Counter]) as TScreenVerificationResult;
 
-                if (si.ResultColumn == AResultColumn)
+                if ((si != null) && (si.ResultColumn == AResultColumn))
                 {
                     if (ReturnValue == null)
                     {
@@ -1493,6 +1500,7 @@ namespace Ict.Common.Verification
         /// <summary>
         /// Finds all <see cref="TScreenVerificationResult" />s that are stored for any data column of this DataTable already.
         /// </summary>
+        /// <remarks>This method checks screen verification results only, since a simple verification result is not associated with a Result Column table.</remarks>
         /// <param name="ADataTable">The <see cref="System.Data.DataTable" /> to check for.</param>
         /// <returns>An List of <see cref="TScreenVerificationResult" /> that contains all the found
         /// <see cref="TScreenVerificationResult" />s, or null if no result was found.</returns>
@@ -1505,9 +1513,9 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(FList[Counter]);
+                si = (FList[Counter]) as TScreenVerificationResult;
 
-                if (si.ResultColumn.Table == ADataTable)
+                if ((si != null) && (si.ResultColumn.Table == ADataTable))
                 {
                     if (ReturnValue == null)
                     {
@@ -1592,6 +1600,7 @@ namespace Ict.Common.Verification
         /// <summary>
         /// remove a result identified by the column name
         /// </summary>
+        /// <remarks>This method checks screen verification results only, since a simple verification result is not associated with a Result Column.</remarks>
         /// <param name="AResultColumnName">column name</param>
         public void Remove(String AResultColumnName)
         {
@@ -1601,9 +1610,9 @@ namespace Ict.Common.Verification
             {
                 for (int Counter = 0; Counter <= Count - 1; Counter += 1)
                 {
-                    si = (TScreenVerificationResult)(FList[Counter]);
+                    si = (FList[Counter]) as TScreenVerificationResult;
 
-                    if (si.ResultColumn.ColumnName == AResultColumnName)
+                    if ((si != null) && (si.ResultColumn.ColumnName == AResultColumnName))
                     {
                         FList.Remove(si);
                         break;
@@ -1623,12 +1632,12 @@ namespace Ict.Common.Verification
         /// <param name="AResultContext">the context</param>
         public void Remove(object AResultContext)
         {
-            TScreenVerificationResult si;
+            TVerificationResult si;
             ArrayList siarray = new ArrayList();
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(FList[Counter]);
+                si = (TVerificationResult)(FList[Counter]);
 
                 // MessageBox.Show(si.ResultColumn.ToString + ' is found at array count ' + Counter.ToString);
                 if (si.ResultContext == AResultContext)
@@ -1643,7 +1652,7 @@ namespace Ict.Common.Verification
             for (int Counter2 = 0; Counter2 <= siarray.Count - 1; Counter2 += 1)
             {
                 // MessageBox.Show('List.Remove of ' + siarray[Counter2].ResultColumn.ToString + ' at array count ' + Counter2.ToString);
-                FList.Remove((TScreenVerificationResult)siarray[Counter2]);
+                FList.Remove((TVerificationResult)siarray[Counter2]);
             }
         }
 
