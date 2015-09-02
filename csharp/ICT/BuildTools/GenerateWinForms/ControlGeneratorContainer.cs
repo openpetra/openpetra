@@ -842,6 +842,28 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.SetCodelet("INDIVIDUALFILTERFINDPANELEVENTS", "");
                 writer.Template.SetCodelet("INDIVIDUALFILTERFINDPANELPROPERTIES", "");
                 writer.Template.SetCodelet("NUMERICFILTERFINDCOLUMNS", "");
+                writer.Template.SetCodelet("FILTERBUTTON", "");
+
+                if (ctrl.HasAttribute("FilterButton"))
+                {
+                    // This specifies the button text (optional) and status bar text separated by semi-colon
+                    // eg FilterButton=F&ilter;Click to Toggle the Analysis Values filter on and off
+                    string attVal = ctrl.GetAttribute("FilterButton");
+                    int pos = attVal.IndexOf(';');
+
+                    if ((pos >= 0) && (pos < attVal.Length - 1))
+                    {
+                        string codelet = String.Empty;
+
+                        if (pos > 0)
+                        {
+                            codelet = String.Format("chkToggleFilter.Text = \"{0}\";{1}", attVal.Substring(0, pos), Environment.NewLine);
+                        }
+
+                        codelet += String.Format("FPetraUtilsObject.SetStatusBarText(chkToggleFilter, \"{0}\");", attVal.Substring(pos + 1));
+                        writer.Template.SetCodelet("FILTERBUTTON", codelet);
+                    }
+                }
 
                 // Process each of the three Filter/Find definitions
                 int TotalPanels = ProcessIndividualFilterFindPanel(writer,

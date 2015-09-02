@@ -74,6 +74,7 @@ namespace Ict.Common.Controls
         private String UInitialString;
         private bool FAcceptNewValues;
         private bool FIgnoreNewValues;
+        private bool FAllowBlankValue;
         private bool FCaseSensitiveSearch;
         private bool FSuppressSelectionColor;
         private String FColumnsToSearchDesignTime;
@@ -86,9 +87,10 @@ namespace Ict.Common.Controls
         protected StringCollection FColumnsToSearch = null;
 
         /// <summary>
-        /// This property determines which column should be sorted. This may be esential
-        /// for heirs of this class which use more the one column in the combobox. The
-        /// default value for this property is therefore NIL.
+        /// When the user leaves the control the system attempts to match the edit text with an item in the DataSource.  If this property is FALSE (default)
+        /// new values are not accepted and the selected item will revert to the original that applied before the edit.  But if this property is TRUE,
+        /// the new item will be added to the DataSource and the SelectedIndex will be set to the new item.  Use this property in a situation where
+        /// the user can add new values to the list.
         ///
         /// </summary>
         public bool AcceptNewValues
@@ -100,13 +102,18 @@ namespace Ict.Common.Controls
 
             set
             {
+                if ((value == true) && (FIgnoreNewValues || FAllowBlankValue))
+                {
+                    throw new ArgumentException(
+                        "Only one of the properties 'AcceptNewValues', 'IgnoreNewValues' and 'AllowBlankValue' can be set to true at the same time.");
+                }
+
                 this.FAcceptNewValues = value;
             }
         }
 
         /// <summary>
-        /// This property is similar to AcceptNewValues - if you set it to true you also set AcceptNewValues to true.
-        /// The difference is that while new values are accepted the comboBox does not add them to its content.
+        /// This property is similar to AcceptNewValues. The difference is that while new values are accepted the comboBox does not add them to its content.
         /// This behaviour is used in particular in the Filter/Find combo boxes.  You can tab away from the control and leave
         /// the 'Text' property as something that has no match in the drop down list.  The new text is not added to the data source.
         /// If, instead, you set AcceptNewValues then when you tab away the control will ask if you want to add the text to the data source.
@@ -122,7 +129,40 @@ namespace Ict.Common.Controls
 
             set
             {
+                if ((value == true) && (FAcceptNewValues || FAllowBlankValue))
+                {
+                    throw new ArgumentException(
+                        "Only one of the properties 'AcceptNewValues', 'IgnoreNewValues' and 'AllowBlankValue' can be set to true at the same time.");
+                }
+
                 this.FIgnoreNewValues = value;
+            }
+        }
+
+        /// <summary>
+        /// When this property is set to TRUE the user can 'delete' a string in the edit area and make the edit area blank (empty string).
+        /// This will be 'accepted' when the focus leaves the control but the empty string will not be added to the data source.  This means that
+        /// the control probably starts with an empty edit and the user can get back again to an empty edit.  If this property is FALSE (default),
+        /// once a value has been selected from the data the previous good selection will be restored if the edit area is blank when the focus
+        /// moves off the control.  Set this property to TRUE if the purpose of the control is to act as a filter - as in Find Transaction.
+        /// When the control is cleared in this way the SelectedIndex will be -1 and the GetSelectedString() method will return empty text.
+        /// </summary>
+        public bool AllowBlankValue
+        {
+            get
+            {
+                return this.FAllowBlankValue;
+            }
+
+            set
+            {
+                if ((value == true) && (FAcceptNewValues || FIgnoreNewValues))
+                {
+                    throw new ArgumentException(
+                        "Only one of the properties 'AcceptNewValues', 'IgnoreNewValues' and 'AllowBlankValue' can be set to true at the same time.");
+                }
+
+                this.FAllowBlankValue = value;
             }
         }
 
@@ -319,6 +359,7 @@ namespace Ict.Common.Controls
             this.FSuppressSelectionColor = true;
             this.FAcceptNewValues = false;
             this.FIgnoreNewValues = false;
+            this.FAllowBlankValue = false;
 
             // Set up our 'sticky' timer
             this.FStickySelectedValueChangedTimer.Enabled = false;
@@ -479,11 +520,6 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private void OnAcceptNewEntryEvent(TAcceptNewEntryEventArgs Args)
         {
-            if (FIgnoreNewValues == true)
-            {
-                return;
-            }
-
             System.Int32 mNumDataSourceCols = this.GetNumberOfDataSourceCols();
 
             if ((mNumDataSourceCols != 1) || (Args.Cancel == true))
@@ -635,6 +671,8 @@ namespace Ict.Common.Controls
                     case Keys.Down:
                     case Keys.End:
                     case Keys.Home:
+                    case Keys.Tab:
+                    case Keys.ShiftKey:
                         return;
 
                         //break;
@@ -782,13 +820,13 @@ namespace Ict.Common.Controls
                             // User wants to cancel the adding of a new entry => Original value prevails
                             RestoreOriginalItem();
                         }
-                        else
+                        else if (this.FIgnoreNewValues == false)
                         {
                             // Add the new item to the combobox collection
                             OnAcceptNewEntryEvent(mArgs);
                         }
                     }
-                    else
+                    else if (this.FIgnoreNewValues == false)
                     {
                         OnAcceptNewEntryEvent(mArgs);
                     }
@@ -802,7 +840,15 @@ namespace Ict.Common.Controls
                     }
                     else
                     {
-                        RestoreOriginalItem();
+                        if ((this.Text == String.Empty) && FAllowBlankValue)
+                        {
+                            // leave a blank item
+                        }
+                        else
+                        {
+                            // Otherwise we restore the original
+                            RestoreOriginalItem();
+                        }
                     }
                 }
             }

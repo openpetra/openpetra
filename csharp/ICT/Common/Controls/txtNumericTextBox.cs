@@ -93,6 +93,9 @@ namespace Ict.Common.Controls
         private static TRetrieveUserDefaultBoolean FRetrieveUserDefaultBoolean;
         private bool FShowCurrencyThousands = true;
 
+        // Undo
+        private string FCurrentUndoString = null;
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -493,6 +496,8 @@ namespace Ict.Common.Controls
                     }
                 }
 
+                FCurrentUndoString = null;
+
 // Sharp Developer Designer Bug makes Integer mode unusable
 //                else
 //                {
@@ -563,6 +568,8 @@ namespace Ict.Common.Controls
                             "The 'NumberValueDouble' Property can only be set if the 'ControlMode' Property is 'Decimal'!");
                     }
                 }
+
+                FCurrentUndoString = null;
             }
         }
 
@@ -631,6 +638,7 @@ namespace Ict.Common.Controls
                     }
 
                     FormatValue(RemoveNonNumeralChars());
+                    FCurrentUndoString = null;
                 }
                 else
                 {
@@ -710,6 +718,7 @@ namespace Ict.Common.Controls
                     }
 
                     FormatValue(RemoveNonNumeralChars());
+                    FCurrentUndoString = null;
                 }
                 else
                 {
@@ -836,6 +845,12 @@ namespace Ict.Common.Controls
                 HandlePaste();
                 e.Handled = true;
             }
+
+            if ((e.KeyCode == Keys.Z) && (e.Modifiers == Keys.Control))
+            {
+                UndoChanges();
+                e.Handled = true;
+            }
         }
 
         /// <summary>
@@ -935,6 +950,21 @@ namespace Ict.Common.Controls
                             // If Keypressed is of type numeric or the decimal separator (usually ".")
                             if (Char.IsDigit(chrKeyPressed))
                             {
+                                if (FCurrentUndoString != this.Text)
+                                {
+                                    // We need to ascertain if the keypress is within the bounds of the current Undo block.
+                                    // If not then the Undo string needs to be reset and we start a new edit in the new block.
+                                    int selStart;
+                                    int selLength;
+                                    GetEditRange(FCurrentUndoString, this.Text, out selStart, out selLength);
+
+                                    if ((this.SelectionStart < selStart) || (this.SelectionStart > selStart + selLength))
+                                    {
+                                        // Starting a new edit block in a new location within the text.
+                                        ResetUndo();
+                                    }
+                                }
+
                                 #region Decimal place check
 
                                 if (FDecimalPlaces > 0)
@@ -1621,8 +1651,127 @@ namespace Ict.Common.Controls
         /// <param name="e"></param>
         protected void OnEntering(object sender, EventArgs e)
         {
+            if (FCurrentUndoString == null)
+            {
+                // Initialise the undo string - but only if we are entering for the first time.
+                // Otherwise our Undo needs to use the same buffer that it had when we left.
+                ResetUndo();
+            }
+
             this.SelectAll();
         }
+
+        #region Methods relating to Undo
+
+        /// <summary>
+        /// Resets the Undo buffer to the current text
+        /// </summary>
+        private void ResetUndo()
+        {
+            FCurrentUndoString = this.Text;
+        }
+
+        /// <summary>
+        /// Replaces the current text with the text in the Undo buffer
+        /// </summary>
+        private void UndoChanges()
+        {
+            // Undo replaces the current text with the Undo text and then sets the Undo text to what was the previous text.
+            // So the next Undo is a Redo.
+            string prevText = this.Text;
+
+            base.Text = FCurrentUndoString;
+            FCurrentUndoString = prevText;
+
+            // Now we need to position the cursor and set the selection length to the fragment of text that was different.
+            // We can use our friend GetEditRange for this...
+            int selStart;
+            int selLength;
+            GetEditRange(prevText, this.Text, out selStart, out selLength);
+            this.SelectionStart = selStart;
+            this.SelectionLength = selLength;
+        }
+
+        /// <summary>
+        /// Gets the current edit range by comparing the difference between the ACompareText and the current text
+        /// </summary>
+        /// <param name="AInitialText">Text that applied before editing</param>
+        /// <param name="AEditedText">Text after editing AInitialText</param>
+        /// <param name="AStart">The start location of the current edit</param>
+        /// <param name="ALength">The length of the current edit</param>
+        private void GetEditRange(string AInitialText, string AEditedText, out int AStart, out int ALength)
+        {
+            // Start by removing any trailing percentages
+            AInitialText = AInitialText.TrimEnd(new char[] { ' ', '%' });
+            AEditedText = AEditedText.TrimStart(new char[] { ' ', '%' });
+
+            // If it is a decimal we can trim trailing zeros
+            if (FDecimalPlaces > 0)
+            {
+                AInitialText = AInitialText.TrimEnd('0');
+                AEditedText = AEditedText.TrimEnd('0');
+            }
+
+            // Set these values that will apply if there is no difference
+            AStart = Math.Min(AInitialText.Length, AEditedText.Length);
+            ALength = Math.Max(AEditedText.Length - AInitialText.Length, 0);
+            string groupSeps = FCurrentCulture.NumberFormat.NumberGroupSeparator + FCurrentCulture.NumberFormat.CurrencyGroupSeparator;
+
+            // Work from the left of the two strings and find the first difference, ignoring any group separators
+            int k = 0;
+
+            for (int i = 0; k < AInitialText.Length && i < AEditedText.Length; i++)
+            {
+                // If we encounter a group separator we just skip to the next character
+                if (groupSeps.IndexOf(AInitialText[k]) >= 0)
+                {
+                    k++;
+                }
+
+                if (groupSeps.IndexOf(AEditedText[i]) >= 0)
+                {
+                    i++;
+                }
+
+                if (AInitialText[k] != AEditedText[i])
+                {
+                    AStart = i;
+                    break;
+                }
+
+                k++;
+            }
+
+            // Now work backwards from the last character and find the position of the character that doesn't match.
+            // Then we will have the start and end of the non-matching block
+            k = 0;
+
+            for (int i = 0; k < AInitialText.Length && i < AEditedText.Length; i++)
+            {
+                // If we encounter a group separator we just skip to the next character
+                if (groupSeps.IndexOf(AInitialText[AInitialText.Length - k - 1]) >= 0)
+                {
+                    k++;
+                }
+
+                if (groupSeps.IndexOf(AEditedText[AEditedText.Length - i - 1]) >= 0)
+                {
+                    i++;
+                }
+
+                if (AInitialText[AInitialText.Length - k - 1] != AEditedText[AEditedText.Length - i - 1])
+                {
+                    ALength = AEditedText.Length - i - AStart;
+                    break;
+                }
+
+                k++;
+            }
+        }
+
+        #endregion
+
+        #region Delegate for getting User Preferences
 
         /// <summary>
         /// Declaration of a delegate to retrieve a boolean value from the user defaults
@@ -1644,5 +1793,7 @@ namespace Ict.Common.Controls
                 FRetrieveUserDefaultBoolean = value;
             }
         }
+
+        #endregion
     }
 }

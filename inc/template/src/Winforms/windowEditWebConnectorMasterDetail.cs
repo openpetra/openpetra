@@ -108,6 +108,7 @@ namespace {#NAMESPACE}
 {#IFDEF FILTERANDFIND}
       FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, this, pnlFilterAndFind, chkToggleFilter, lblRecordCounter);
       FFilterAndFindObject.SetupFilterAndFindControls();
+      {#FILTERBUTTON}
 {#ENDIF FILTERANDFIND}
 {#IFDEF SHOWDETAILS}
 {#IFDEF DETAILTABLE}

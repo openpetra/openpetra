@@ -268,6 +268,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         true, false, FActiveOnly, false, ACurrencyCode, true);
                     TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, FActiveOnly, false);
                     FPetraUtilsObject.SuppressChangeDetection = prevSuppressChangeDetection;
+
+                    cmbDetailAccountCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_ACCOUNT;
+                    cmbDetailCostCentreCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_COST_CENTRE;
                 }
 
                 UpdateTransactionTotals();
@@ -463,7 +466,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
                         true, false, FActiveOnly, false, TransactionCurrency);
 
-                    cmbDetailAccountCode.SetSelectedString(SelectedAccount);
+                    cmbDetailAccountCode.SetSelectedString(SelectedAccount, -1);
 
                     FTransactionCurrency = TransactionCurrency;
                 }

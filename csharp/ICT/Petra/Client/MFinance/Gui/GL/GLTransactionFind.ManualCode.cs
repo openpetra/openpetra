@@ -179,11 +179,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TFinanceControls.InitialiseCostCentreList(ref cmbCostCentre, FLedgerNumber, true, false, false, false);
             cmbCostCentre.ColumnWidthCol2 = 300;
             cmbCostCentre.AttachedLabel.Width = 280;
+            cmbCostCentre.cmbCombobox.AllowBlankValue = true;
 
             TFinanceControls.InitialiseAccountList(ref cmbAccount, FLedgerNumber,
                 true, false, false, false, FCurrency, true);
             cmbAccount.ColumnWidthCol2 = 300;
             cmbAccount.AttachedLabel.Width = 280;
+            cmbAccount.cmbCombobox.AllowBlankValue = true;
 
             cmbStatus.AddStringItem(Catalog.GetString("All"));
             cmbStatus.AddStringItem(MFinanceConstants.BATCH_POSTED);

@@ -50,6 +50,16 @@ namespace Ict.Petra.Client.MFinance.Logic
     /// </summary>
     public class TFinanceControls
     {
+        #region Predefined strings
+
+        /// <summary> International text for 'Select a valid Cost Centre' </summary>
+        public static readonly string SELECT_VALID_COST_CENTRE = Catalog.GetString("Select a valid Cost Centre");
+
+        /// <summary> International text for 'Select a valid Account' </summary>
+        public static readonly string SELECT_VALID_ACCOUNT = Catalog.GetString("Select a valid Account");
+
+        #endregion
+
         /// <summary>
         /// Check if a given account is active
         /// </summary>
@@ -431,15 +441,6 @@ namespace Ict.Petra.Client.MFinance.Logic
                 Table = AACostCentreListDataSource.Copy();
             }
 
-            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
-            DataRow emptyRow = Table.NewRow();
-
-            emptyRow[ACostCentreTable.ColumnLedgerNumberId] = ALedgerNumber;
-            emptyRow[ACostCentreTable.ColumnCostCentreCodeId] = string.Empty;
-            emptyRow[ACostCentreTable.ColumnCostCentreNameId] = Catalog.GetString("Select a valid cost centre");
-
-            Table.Rows.Add(emptyRow);
-
             //Highlight inactive Cost Centres
             if (!AActiveOnly && AIndicateInactive)
             {
@@ -461,6 +462,9 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
 
             AControl.Filter = PrepareCostCentreFilter(APostingOnly, AExcludePosting, AActiveOnly, ALocalOnly);
+
+            // We set the initial index to -1 because we always want to force the user to make a positive choice
+            AControl.SelectedIndex = -1;
         }
 
         /// Adapter for the modules which have been developed before multi-currency support
@@ -513,14 +517,6 @@ namespace Ict.Petra.Client.MFinance.Logic
                 Table = AAAccountListDataSource.Copy();
             }
 
-            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first account etc)
-            DataRow emptyRow = Table.NewRow();
-
-            emptyRow[AAccountTable.ColumnLedgerNumberId] = ALedgerNumber;
-            emptyRow[AAccountTable.ColumnAccountCodeId] = string.Empty;
-            emptyRow[AAccountTable.ColumnAccountCodeShortDescId] = Catalog.GetString("Select a valid account");
-            Table.Rows.Add(emptyRow);
-
             //Highlight inactive Accounts
             if (!AActiveOnly && AIndicateInactive)
             {
@@ -542,6 +538,9 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             AControl.Filter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly,
                 ABankAccountOnly, AForeignCurrencyName);
+
+            // We set the initial index to -1 because we always want to force the user to make a positive choice
+            AControl.SelectedIndex = -1;
         }
 
         private static Boolean AccountIsDescendantOf(DataView View, String ParentAccount, AAccountHierarchyDetailRow Row)

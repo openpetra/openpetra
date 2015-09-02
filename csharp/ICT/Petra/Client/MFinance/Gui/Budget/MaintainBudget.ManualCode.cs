@@ -1473,5 +1473,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             AFilterString = AFilterString.Replace("Inflate base", MFinanceConstants.BUDGET_INFLATE_BASE);
             AFilterString = AFilterString.Replace("Inflate n", MFinanceConstants.BUDGET_INFLATE_N);
         }
+
+        private void RunOnceOnActivationManual()
+        {
+            cmbDetailAccountCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_ACCOUNT;
+            cmbDetailCostCentreCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_COST_CENTRE;
+        }
     }
 }

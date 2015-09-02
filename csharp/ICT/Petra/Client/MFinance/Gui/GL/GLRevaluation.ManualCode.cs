@@ -102,8 +102,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 lblCostCentre.Text = Catalog.GetString("Revaluation Cost Centre:");
                 TFinanceControls.InitialiseCostCentreList(ref cmbCostCentres, FLedgerNumber, true, false, true, true);
                 cmbCostCentres.SetSelectedString(
-                    TRemote.MFinance.GL.WebConnectors.GetStandardCostCentre(FLedgerNumber)
-                    );
+                    TRemote.MFinance.GL.WebConnectors.GetStandardCostCentre(FLedgerNumber),
+                    -1);
             }
         }
 

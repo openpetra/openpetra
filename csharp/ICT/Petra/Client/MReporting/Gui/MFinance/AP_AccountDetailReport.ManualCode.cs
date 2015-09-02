@@ -49,9 +49,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
 
                 TFinanceControls.InitialiseAccountList(ref cmbAccountFrom, FLedgerNumber, true, false, false, false);
-                cmbAccountFrom.SetSelectedString(FFromAccountCode);
+                cmbAccountFrom.SetSelectedString(FFromAccountCode, -1);
                 TFinanceControls.InitialiseAccountList(ref cmbAccountTo, FLedgerNumber, true, false, false, false);
-                cmbAccountTo.SetSelectedString(FToAccountCode);
+                cmbAccountTo.SetSelectedString(FToAccountCode, -1);
             }
         }
 

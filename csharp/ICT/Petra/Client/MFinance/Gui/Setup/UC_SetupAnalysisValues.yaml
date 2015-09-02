@@ -19,6 +19,7 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
+            FilterButton: F&ilter;Click to show or hide the Analysis Values filter panel
             FilterControls: [txtDetailAnalysisValue, chkDetailActive]
             FindControls: [txtDetailAnalysisValue]
         pnlButtons:

@@ -200,6 +200,7 @@ namespace {#NAMESPACE}
 {#IFDEF FILTERANDFIND}
       FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, this, pnlFilterAndFind, chkToggleFilter, lblRecordCounter);
       FFilterAndFindObject.SetupFilterAndFindControls();
+      {#FILTERBUTTON}
 {#ENDIF FILTERANDFIND}
       ShowData();
       SelectRowInGrid(1);
