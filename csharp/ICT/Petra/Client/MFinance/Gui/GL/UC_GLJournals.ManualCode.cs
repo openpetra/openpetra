@@ -406,11 +406,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.btnGetSetExchangeRate.Enabled = IsChangeable && JournalUpdatable
                                                  && (FPreviouslySelectedDetailRow.TransactionCurrency != FLedgerBaseCurrency);
-
-            if (!IsChangeable)
-            {
-                FPetraUtilsObject.DisableSaveButton();
-            }
         }
 
         private void ClearControls()

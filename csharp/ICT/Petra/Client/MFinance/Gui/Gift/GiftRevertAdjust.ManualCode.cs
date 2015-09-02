@@ -265,7 +265,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 // if date is invalid
-                if (!((TtxtPetraDate) dtpEffectiveDate).ValidDate(false))
+                if (!((TtxtPetraDate)dtpEffectiveDate).ValidDate(false))
                 {
                     MessageBox.Show(Catalog.GetString("Please enter a valid date for the new Gift Batch."));
 

@@ -311,6 +311,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ShowData();
                 SelectRowInGrid(1);
                 ShowDetails(); //Needed because of how currency is handled
+                UpdateChangeableStatus();
 
                 UpdateRecordNumberDisplay();
                 FFilterAndFindObject.SetRecordNumberDisplayProperties();
@@ -498,11 +499,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     cmbDetailAccountCode.SetSelectedString(SelectedAccount, -1);
 
                     FTransactionCurrency = TransactionCurrency;
-
-                    if (!FIsUnposted && FPetraUtilsObject.HasChanges)
-                    {
-                        FPetraUtilsObject.DisableSaveButton();
-                    }
                 }
             }
         }
@@ -535,11 +531,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtCreditAmount.NumberValueDecimal = ARow.TransactionAmount;
                 txtDebitAmountBase.NumberValueDecimal = 0;
                 txtCreditAmountBase.NumberValueDecimal = ARow.AmountInBaseCurrency;
-            }
-
-            if (FPetraUtilsObject.HasChanges && !FIsUnposted)
-            {
-                FPetraUtilsObject.DisableSaveButton();
             }
 
             RefreshAnalysisAttributesGrid();

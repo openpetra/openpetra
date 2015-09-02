@@ -358,11 +358,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             pnlDetails.Enabled = (IsChangeable && JournalUpdatable);
             pnlDetailsProtected = !IsChangeable;
-
-            if (!IsChangeable)
-            {
-                FPetraUtilsObject.DisableSaveButton();
-            }
         }
 
         private void ClearControls()
