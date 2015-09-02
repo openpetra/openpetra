@@ -467,6 +467,45 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.SelectedIndex = -1;
         }
 
+        /// <summary>
+        /// fill combobox values with cost centre list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AReportsTo"></param>
+        /// <param name="AACostCentreListDataSource">If a reference to the ACostCentreList is available, pass it here.  Otherwise the method
+        /// will get it from the data cache.</param>
+        public static void InitialiseLocalCostCentreList(ref TCmbAutoPopulated AControl,
+            Int32 ALedgerNumber,
+            Boolean AReportsTo = false,
+            DataTable AACostCentreListDataSource = null)
+        {
+            DataTable Table;
+
+            if (AACostCentreListDataSource == null)
+            {
+                Table = TRemote.MFinance.Setup.WebConnectors.LoadLocalCostCentres(ALedgerNumber);
+            }
+            else
+            {
+                Table = AACostCentreListDataSource.Copy();
+            }
+
+            AControl.InitialiseUserControl(Table,
+                "CostCentreCode",
+                "CostCentreName",
+                null);
+            AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
+
+            if (AReportsTo)
+            {
+                AControl.Filter = "Posting = false";
+            }
+
+            // We set the initial index to -1 because we always want to force the user to make a positive choice
+            AControl.SelectedIndex = -1;
+        }
+
         /// Adapter for the modules which have been developed before multi-currency support
         /// was required
         public static void InitialiseAccountList(ref TCmbAutoPopulated AControl,
