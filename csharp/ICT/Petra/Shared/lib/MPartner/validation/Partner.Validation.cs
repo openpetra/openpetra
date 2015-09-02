@@ -1112,6 +1112,101 @@ namespace Ict.Petra.Shared.MPartner.Validation
         }
 
         /// <summary>
+        /// Validates the MPartner Formality Setup screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateFormalitySetup(object AContext, PFormalityRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // 'FormalityLevel' must be between 1 and 6
+            ValidationColumn = ARow.Table.Columns[PFormalityTable.ColumnFormalityLevelId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TNumericalChecks.IsInRange(ARow.FormalityLevel, 1, 6,
+                    Catalog.GetString("Formality Level"),
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            //Greeting string must be well formed
+            // It starts with <N and must be followed by none or more of TPIFA and a closing <
+            ValidationColumn = ARow.Table.Columns[PFormalityTable.ColumnSalutationTextId];
+            VerificationResult = null;
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                int startPos = ARow.SalutationText.IndexOf("<N");
+
+                if (startPos >= 0)
+                {
+                    int endPos = ARow.SalutationText.IndexOf('<', startPos + 1);
+
+                    if (endPos == -1)
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_MISSING_CLOSE_TAG_IN_SALUTATION)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+
+                    if (VerificationResult == null)
+                    {
+                        string additionalChars = ARow.SalutationText.Substring(startPos + 2, endPos - startPos - 2);
+
+                        // Make sure there are no duplicates
+                        for (int i = 0; i < additionalChars.Length - 1; i++)
+                        {
+                            if (additionalChars.IndexOf(additionalChars[i], i + 1) != -1)
+                            {
+                                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_DUPLICATE_MODIFIER_TAG_IN_SALUTATION)),
+                                    ValidationColumn, ValidationControlsData.ValidationControl);
+                                break;
+                            }
+                        }
+
+                        if (VerificationResult == null)
+                        {
+                            string allowedChars = "TPIFA";
+
+                            // Make sure that only these chars are used...
+                            for (int i = 0; i < additionalChars.Length; i++)
+                            {
+                                if (allowedChars.IndexOf(additionalChars[i]) == -1)
+                                {
+                                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_UNKNOWN_MODIFIER_TAG_IN_SALUTATION)),
+                                        ValidationColumn, ValidationControlsData.ValidationControl);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
         /// Validates the MPartner Relationship Setup screen data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
@@ -1570,30 +1665,34 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
             bool MoreThanOneOpenGiftDestination = false;
 
-            foreach (PPartnerGiftDestinationRow Row in ATable.Rows)
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                foreach (PPartnerGiftDestinationRow CompareToRow in ATable.Rows)
+                foreach (PPartnerGiftDestinationRow Row in ATable.Rows)
                 {
-                    if (Row != CompareToRow)
+                    foreach (PPartnerGiftDestinationRow CompareToRow in ATable.Rows)
                     {
-                        // make sure there is no more than one open ended record
-                        if (Row.IsDateExpiresNull() && CompareToRow.IsDateExpiresNull())
+                        if (Row != CompareToRow)
                         {
-                            MoreThanOneOpenGiftDestination = true;
-                        }
+                            // make sure there is no more than one open ended record
+                            if (Row.IsDateExpiresNull() && CompareToRow.IsDateExpiresNull())
+                            {
+                                MoreThanOneOpenGiftDestination = true;
+                            }
 
-                        // Make sure no records overlap
-                        if ((CompareToRow.DateEffective != CompareToRow.DateExpires) && (Row.DateEffective != Row.DateExpires)
-                            && (((Row.DateEffective < CompareToRow.DateEffective)
-                                 && ((Row.DateExpires >= CompareToRow.DateEffective) || (Row.IsDateExpiresNull() && !CompareToRow.IsDateExpiresNull())))
-                                || (Row.DateEffective == CompareToRow.DateEffective)))
-                        {
-                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_DATES_OVERLAP)),
-                                ValidationColumn, ValidationControlsData.ValidationControl);
+                            // Make sure no records overlap
+                            if ((CompareToRow.DateEffective != CompareToRow.DateExpires) && (Row.DateEffective != Row.DateExpires)
+                                && (((Row.DateEffective < CompareToRow.DateEffective)
+                                     && ((Row.DateExpires >= CompareToRow.DateEffective)
+                                         || (Row.IsDateExpiresNull() && !CompareToRow.IsDateExpiresNull())))
+                                    || (Row.DateEffective == CompareToRow.DateEffective)))
+                            {
+                                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_DATES_OVERLAP)),
+                                    ValidationColumn, ValidationControlsData.ValidationControl);
 
-                            // Handle addition to/removal from TVerificationResultCollection
-                            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                                // Handle addition to/removal from TVerificationResultCollection
+                                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                            }
                         }
                     }
                 }

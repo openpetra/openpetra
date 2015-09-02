@@ -118,6 +118,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     {
                         tempTable = AFeesReceivableAccess.LoadAll(ReadTransaction);
                     }
+                    else if (ATablename == AFormTable.GetTableDBName())
+                    {
+                        tempTable = AFormAccess.LoadAll(ReadTransaction);
+                    }
                     else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                     {
                         tempTable = AAnalysisTypeAccess.LoadAll(ReadTransaction);
@@ -180,6 +184,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     else if (ATablename == PtApplicationTypeTable.GetTableDBName())
                     {
                         tempTable = PtApplicationTypeAccess.LoadAll(ReadTransaction);
+                    }
+                    else if (ATablename == PFormalityTable.GetTableDBName())
+                    {
+                        tempTable = PFormalityAccess.LoadAll(ReadTransaction);
                     }
                     else if (ATablename == PMailingTable.GetTableDBName())
                     {
@@ -278,6 +286,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                                 TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                                     TCacheableFinanceTablesEnum.FeesReceivableList.ToString());
                             }
+                            else if (ATablename == AFormTable.GetTableDBName())
+                            {
+                                AFormAccess.SubmitChanges((AFormTable)SubmitTable, SubmitChangesTransaction);
+                            }
                             else if (ATablename == AGiftBatchTable.GetTableDBName())
                             {
                                 // This method is called from ADailyExchangeRate Setup - please do not remove
@@ -349,6 +361,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                                     TCacheablePersonTablesEnum.EventApplicationTypeList.ToString());
                                 TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                                     TCacheablePersonTablesEnum.FieldApplicationTypeList.ToString());
+                            }
+                            else if (ATablename == PFormalityTable.GetTableDBName())
+                            {
+                                PFormalityAccess.SubmitChanges((PFormalityTable)SubmitTable, SubmitChangesTransaction);
                             }
                             else if (ATablename == PMailingTable.GetTableDBName())
                             {

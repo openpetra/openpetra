@@ -781,6 +781,10 @@ namespace {#NAMESPACE}
         {
             if (AIsNewRow)
             {
+{#IFDEF GETDETAILSMANUAL}
+                GetDetailsFromControlsManual(ARow);
+
+{#ENDIF GETDETAILSMANUAL}            
                 {#SAVEDETAILS}
                 {#SAVEDETAILSEXTRA}
             }
@@ -788,6 +792,10 @@ namespace {#NAMESPACE}
             {
                 object[] beforeEdit = ARow.ItemArray;
                 ARow.BeginEdit();
+{#IFDEF GETDETAILSMANUAL}
+                GetDetailsFromControlsManual(ARow);
+
+{#ENDIF GETDETAILSMANUAL}            
                 {#SAVEDETAILS}
                 {#SAVEDETAILSEXTRA}
                 if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))

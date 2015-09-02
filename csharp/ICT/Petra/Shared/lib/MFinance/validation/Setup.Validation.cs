@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.IO;
 using System.Windows.Forms;
 
 using Ict.Common.Data;
@@ -129,6 +130,94 @@ namespace Ict.Petra.Shared.MFinance.Validation
             else // If the Account is not foreign, I have nothing at all to say about the contents of the currency field.
             {
                 AVerificationResultCollection.AddOrRemove(null, ARow.Table.Columns[AAccountTable.ColumnForeignCurrencyCodeId]);
+            }
+        }
+
+        /// <summary>
+        /// Additional manual validation for Form Design Setup
+        /// </summary>
+        /// <param name="AContext">Context that describes what I'm validating.</param>
+        /// <param name="ARow">DataRow with the the data I'm validating</param>
+        /// <param name="AVerificationResultCollection">Will be filled with TVerificationResult items if data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateFormDesignManual(object AContext, AFormRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            //  FormTypeCode must not be blank
+            DataColumn ValidationColumn = ARow.Table.Columns[AFormTable.ColumnFormTypeCodeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.FormTypeCode, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // MinimumAmount must be zero or positive
+            ValidationColumn = ARow.Table.Columns[AFormTable.ColumnMinimumAmountId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TNumericalChecks.IsPositiveOrZeroDecimal(ARow.MinimumAmount, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            //  Description must not be blank
+            ValidationColumn = ARow.Table.Columns[AFormTable.ColumnFormDescriptionId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.FormDescription, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // Filename must exist
+            ValidationColumn = ARow.Table.Columns[AFormTable.ColumnFormFileNameId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.FormFileName, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+
+                if (VerificationResult == null)
+                {
+                    if (!File.Exists(ARow.FormFileName))
+                    {
+                        ErrCodeInfo errInfo = ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_GENERAL_FILE_NOT_FOUND);
+
+                        VerificationResult = new TScreenVerificationResult(AContext,
+                            ValidationColumn,
+                            errInfo.ErrorMessageText,
+                            errInfo.ErrorMessageTitle,
+                            PetraErrorCodes.ERR_GENERAL_FILE_NOT_FOUND,
+                            ValidationControlsData.ValidationControl,
+                            TResultSeverity.Resv_Critical);
+                    }
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
             }
         }
     }

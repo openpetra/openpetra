@@ -1,0 +1,52 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Letter Formalities
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PFormality
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 780
+    WindowHeight: 650
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [cmbDetailLanguageCode, cmbDetailCountryCode, cmbDetailAddresseeTypeCode, txtDetailSalutationText]
+            FindControls: [cmbDetailLanguageCode, cmbDetailCountryCode, cmbDetailAddresseeTypeCode, txtDetailSalutationText]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
+        btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailLanguageCode, DetailCountryCode, DetailAddresseeTypeCode, DetailFormalityLevel, DetailSalutationText, DetailComplimentaryClosingText]
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [cmbDetailLanguageCode]
+                Row1: [cmbDetailCountryCode]
+                Row2: [cmbDetailAddresseeTypeCode]
+                Row3: [txtDetailFormalityLevel]
+                Row4: [txtDetailSalutationText]
+                Row5: [txtDetailComplimentaryClosingText]
+        cmbDetailLanguageCode: {List=LanguageCodeList}
+        cmbDetailCountryCode: {List=CountryList}
+        cmbDetailAddresseeTypeCode: {List=AddresseeTypeList}
+        txtDetailFormalityLevel: {Format=Integer, Width=60, Validation=true}
+        txtDetailSalutationText: {Width=245, Stretch=horizontally}
+        txtDetailComplimentaryClosingText: {Width=245, Stretch=horizontally}

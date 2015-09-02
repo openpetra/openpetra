@@ -124,6 +124,12 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Form Data Warning")]
         public const String ERR_GENERAL_VERIFICATION_WARNING = "GEN.00011N";
 
+        /// <summary>File not found error.</summary>
+        [ErrCodeAttribute("File does not exist",
+             ErrorMessageText = "The specified file could not be found",
+             ErrorMessageTitle = "File Name or Path")]
+        public const String ERR_GENERAL_FILE_NOT_FOUND = "GEN.00012V";
+
         #endregion
 
         #region Conference Module-specific error codes
@@ -495,6 +501,24 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Cannot have an end date without setting status to 'CANCELLED' or 'EXPIRED'.",
              ErrorMessageTitle = "Clear Date Ended")]
         public const String ERR_SUBSCRIPTION_DATEENDEDSET_WHEN_ACTIVE = "PARTN.00012V";
+
+        /// <summary>Salutations containing an open N tag must have a closing tag.</summary>
+        [ErrCodeAttribute("Salutation Close Tag",
+             ErrorMessageText = "The Salutation has a <N start tag but no matching closing < tag.",
+             ErrorMessageTitle = "Incorrect Salutation Format")]
+        public const String ERR_MISSING_CLOSE_TAG_IN_SALUTATION = "PARTN.00013N";
+
+        /// <summary>Salutations containing an open N tag cannot contain duplicate modifiers.</summary>
+        [ErrCodeAttribute("Duplicate Salutation Tag",
+             ErrorMessageText = "The Salutation has a duplicate modifier following the <N start tag.",
+             ErrorMessageTitle = "Incorrect Salutation Format")]
+        public const String ERR_DUPLICATE_MODIFIER_TAG_IN_SALUTATION = "PARTN.00014N";
+
+        /// <summary>Salutations containing an open N tag can only use known modifiers.</summary>
+        [ErrCodeAttribute("Unknown Salutation Tag",
+             ErrorMessageText = "The Salutation has an unknown modifier following the <N start tag. Valid modifiers are T, P, I, F and A.",
+             ErrorMessageTitle = "Incorrect Salutation Format")]
+        public const String ERR_UNKNOWN_MODIFIER_TAG_IN_SALUTATION = "PARTN.00015N";
 
         #endregion
 
