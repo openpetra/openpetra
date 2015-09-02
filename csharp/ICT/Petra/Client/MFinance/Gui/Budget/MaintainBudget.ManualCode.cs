@@ -61,6 +61,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
     {
         private Int32 FLedgerNumber;
         private Int32 FCurrentFinancialYear;
+        private Int32 FNextFinancialYear;
         private Int32 FSelectedBudgetYear;
 
         private Int32 FBudgetSequence = -1;
@@ -105,6 +106,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             FNumberOfPeriods = LedgerRow.NumberOfAccountingPeriods;
             FCurrencyCode = LedgerRow.BaseCurrency;
             FCurrentFinancialYear = LedgerRow.CurrentFinancialYear;
+            FNextFinancialYear = FCurrentFinancialYear + 1;
 
             FHas13Periods = (FNumberOfPeriods == 13);
             FHas14Periods = (FNumberOfPeriods == 14);
@@ -116,10 +118,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
             InitialiseControls();
 
-            //Load budgets for current financial year
+            //Alaways auto-load budgets for current and next financial year
+            LoadBudgetsForNextYear();
             FSelectedBudgetYear = FCurrentFinancialYear; // TFinanceControls.GetLedgerCurrentFinancialYear(FLedgerNumber);
             cmbSelectBudgetYear.SetSelectedInt32(FSelectedBudgetYear);
-            LoadBudgetsForYear();
+            LoadBudgetsForSelectedYear();
 
             SelectRowInGrid(1);
 
@@ -130,7 +133,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             FLoadCompleted = true;
         }
 
-        private void LoadBudgetsForYear()
+        private void LoadBudgetsForSelectedYear()
         {
             try
             {
@@ -142,6 +145,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
 
                 SetBudgetDefaultView();
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
+        }
+
+        //Load budgets into dataset for next financial year
+        // Called from import process as import allows current or next year
+        //   and next year might not have been loaded yet
+        private void LoadBudgetsForNextYear()
+        {
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+
+                if (FMainDS.ABudget.Select(String.Format("{0}={1}", ABudgetTable.GetYearDBName(), FNextFinancialYear)).Length == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.Budget.WebConnectors.LoadBudgetsForYear(FLedgerNumber, FNextFinancialYear));
+                }
             }
             finally
             {
@@ -352,7 +375,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
                 else if (int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out FSelectedBudgetYear))
                 {
-                    LoadBudgetsForYear();
+                    LoadBudgetsForSelectedYear();
 
                     SelectRowInGrid(1);
 
@@ -364,7 +387,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
                 else
                 {
-                    MessageBox.Show(Catalog.GetString("Unexpected Error trying to select a new year!"),
+                    MessageBox.Show(Catalog.GetString("Unexpected Error trying to select a different year!"),
                         "Select Budget Year",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
@@ -438,10 +461,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             ACompletionMessage = String.Empty;
 
-            int BudgetSequence = ARowToDelete.BudgetSequence;
-            DeleteBudgetPeriodData(BudgetSequence);
-
+            DeleteBudgetPeriodData(ARowToDelete.BudgetSequence);
             ARowToDelete.Delete();
+            DeleteBudgetRevisionData();
 
             return true;
         }
@@ -460,7 +482,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void ImportBudget(System.Object sender, EventArgs e)
         {
-            decimal NumRecsImported = 0;
+            TVerificationResultCollection ImportErrorMessageCollection = null;
+            string ImportReportMessage = string.Empty;
+            string ErrorMessages = String.Empty;
+
+            int NumRecsImported = 0;
+            int NumRecsUpdated = 0;
+            int NumRowsFailed = 0;
 
             if (FPetraUtilsObject.HasChanges)
             {
@@ -509,8 +537,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                     if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                     {
-                        TVerificationResultCollection AMessages;
-
                         string[] FdlgSeparatorVal = new string[] {
                             FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormat
                         };
@@ -521,33 +547,67 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             OFDialog.FileName,
                             FdlgSeparatorVal,
                             ref FMainDS,
-                            out AMessages);
+                            out NumRecsUpdated,
+                            out ImportErrorMessageCollection);
                     }
                 }
                 catch (Exception ex)
                 {
-                    NumRecsImported = -2;
+                    NumRecsImported = -1;
                     MessageBox.Show(ex.Message, Catalog.GetString("Budget Import"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                //Check for import errors and create import error message
+                NumRowsFailed = (ImportErrorMessageCollection == null) ? 0 : ImportErrorMessageCollection.Count;
+
+                if (NumRowsFailed > 0)
+                {
+                    ErrorMessages = String.Format("{0}{0}{1} rows failed to import:",
+                        Environment.NewLine,
+                        NumRowsFailed);
+
+                    foreach (TVerificationResult verif in ImportErrorMessageCollection)
+                    {
+                        ErrorMessages += String.Format("{0}[{1}] {2}: {3}",
+                            Environment.NewLine,
+                            verif.ResultContext,
+                            verif.ResultTextCaption,
+                            verif.ResultText);
+                    }
                 }
 
                 if (NumRecsImported > 0)
                 {
-                    Int32 totalImported = Convert.ToInt32(Math.Truncate(NumRecsImported));
-                    Int32 totalUpdated = Convert.ToInt32((NumRecsImported - totalImported) * 10000);
+                    ImportReportMessage =
+                        String.Format(Catalog.GetString("{0} budget rows were found in the file and {1} were successfully imported!"),
+                            NumRecsImported,
+                            (NumRecsImported - NumRowsFailed));
 
-                    string msg = String.Format(Catalog.GetString("{0} budget records imported successfully!"), totalImported);
-
-                    if (totalUpdated > 0)
+                    if (NumRecsUpdated > 0)
                     {
-                        msg += String.Format(Catalog.GetString("{0}{0}({1} of which updated existing budgets)"),
+                        ImportReportMessage += String.Format(Catalog.GetString("{0}   ({1} of which updated existing budget rows)"),
                             Environment.NewLine,
-                            totalImported);
+                            NumRecsUpdated);
                     }
 
-                    MessageBox.Show(msg,
-                        Catalog.GetString("Success"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                    if (NumRowsFailed > 0)
+                    {
+                        ImportReportMessage += ErrorMessages;
+
+                        TFrmExtendedMessageBox messageBox = new TFrmExtendedMessageBox(this);
+                        messageBox.ShowDialog(ImportReportMessage,
+                            Catalog.GetString("Budget Import"),
+                            string.Empty,
+                            TFrmExtendedMessageBox.TButtons.embbOK,
+                            TFrmExtendedMessageBox.TIcon.embiWarning);
+                    }
+                    else
+                    {
+                        MessageBox.Show(ImportReportMessage,
+                            Catalog.GetString("Budget Import"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
 
                     SetBudgetDefaultView();
 
@@ -555,19 +615,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                     FPetraUtilsObject.SetChangedFlag();
                 }
-                else if (NumRecsImported == -1)
-                {
-                    MessageBox.Show(Catalog.GetString("The year contained in the import file is different to the current selected year."));
-
-                    SelectRowInGrid(1);
-                }
-                else if (NumRecsImported == -2)
+                else if (NumRecsImported < 0)
                 {
                     SelectRowInGrid(1);
                 }
                 else //0
                 {
-                    MessageBox.Show(Catalog.GetString("No records found to import"));
+                    MessageBox.Show(Catalog.GetString("No records found to import"), Catalog.GetString(
+                            "Budget Import"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
         }
@@ -602,6 +657,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             {
                 ABudgetPeriodRow bpr = (ABudgetPeriodRow)drv.Row;
                 bpr.Delete();
+            }
+        }
+
+        private void DeleteBudgetRevisionData()
+        {
+            //Check if any budgets exist for selected year and revision
+            DataView BudgetDataView = new DataView(FMainDS.ABudget);
+
+            //TODO: update this when budget revisioning is introduced
+            BudgetDataView.RowFilter = String.Format("{0}={1} And {2}={3} And {4}={5}",
+                ABudgetTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                ABudgetTable.GetYearDBName(),
+                FSelectedBudgetYear,
+                ABudgetTable.GetRevisionDBName(),
+                0);
+
+            //If all budgets deleted for selected year then remove row in revision table
+            if (BudgetDataView.Count == 0)
+            {
+                //Deleted any unwanted revision row
+                DataView budgetRevisionDataView = new DataView(FMainDS.ABudgetRevision);
+
+                //TODO: update this when budget revisioning is introduced
+                budgetRevisionDataView.RowFilter = String.Format("{0}={1} And {2}={3} And {4}={5}",
+                    ABudgetRevisionTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    ABudgetRevisionTable.GetYearDBName(),
+                    FSelectedBudgetYear,
+                    ABudgetRevisionTable.GetRevisionDBName(),
+                    0);
+
+                foreach (DataRowView drv in budgetRevisionDataView)
+                {
+                    ABudgetRevisionRow bpr = (ABudgetRevisionRow)drv.Row;
+                    bpr.Delete();
+                }
             }
         }
 

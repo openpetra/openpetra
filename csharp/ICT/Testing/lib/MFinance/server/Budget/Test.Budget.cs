@@ -86,6 +86,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             string budgetTestFile = TAppSettingsManager.GetValue("GiftBatch.file",
                 CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/SampleData/BudgetImport-All.csv");
 
+            int NumBudgetsUpdated;
             TVerificationResultCollection VerificationResult;
 
             BudgetTDS ImportDS = new BudgetTDS();
@@ -97,6 +98,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                 budgetTestFile,
                 new string[] { ",", "dmy", "American" },
                 ref ImportDS,
+                out NumBudgetsUpdated,
                 out VerificationResult);
 
             Assert.AreNotEqual(0, RowsImported, "expect to import several rows");
