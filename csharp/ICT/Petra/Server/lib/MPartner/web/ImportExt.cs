@@ -387,7 +387,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     return 2;
                 }
-                else if ((ALanguageLevel >= 8) && (ALanguageLevel <= 9))
+                else if ((ALanguageLevel >= 8) && (ALanguageLevel != 99))
                 {
                     return 3;
                 }
