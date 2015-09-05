@@ -333,6 +333,8 @@ namespace Ict.Common.IO
         {
             try
             {
+                CreateDirectory(Path.GetDirectoryName(APathToFile));
+
                 using (FileStream fs = new FileStream(APathToFile, FileMode.Create, FileAccess.Write))
                     using (BinaryWriter writer = new BinaryWriter(fs))
                     {
@@ -350,6 +352,31 @@ namespace Ict.Common.IO
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Gets the full path to the location for a temporary copy of a Templater template downloaded from the database.
+        /// The location will be beneath the user's Local Application Data area
+        /// </summary>
+        /// <param name="AUniqueTemplateName">A unique filename made up of FormCode/FormName and FormLanguage</param>
+        /// <param name="ATemplateFileExtension">A file extension with or without an initial dot</param>
+        /// <returns>Full path to the file for the specified code, name and langauge</returns>
+        public static String GetDefaultTemporaryTemplatePath(string AUniqueTemplateName, string ATemplateFileExtension)
+        {
+            string s = Path.Combine(Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData), "OpenPetraOrg", "Templates", "Client", AUniqueTemplateName);
+
+            if (ATemplateFileExtension.Length > 0)
+            {
+                if (!ATemplateFileExtension.StartsWith("."))
+                {
+                    s += ".";
+                }
+
+                s += ATemplateFileExtension;
+            }
+
+            return s;
         }
     }
 }

@@ -418,27 +418,6 @@ namespace Ict.Petra.Shared.MFinance
         public const string LEDGER_INIT_FLAG_CURRENT_PERIOD = "CURRENT-PERIOD";
         ///Ledger Init Flags
         public const string LEDGER_INIT_FLAG_CAL = "CAL";
-
-        ///Form Design Codes
-        public const string FORM_CODE_CHEQUE = "CHEQUE";
-        ///Form Design Codes
-        public const string FORM_CODE_RECEIPT = "RECEIPT";
-        ///Form Design Codes
-        public const string FORM_CODE_REMITTANCE = "REMITTANCE";
-        ///Form Design Type Code
-        public const string FORM_TYPE_CODE_STANDARD = "Standard";
-        ///Form Design Gift Options
-        public const string FORM_OPTION_ALL = "All";
-        ///Form Design Gift Options
-        public const string FORM_OPTION_GIFT_IN_KIND_ONLY = "Gift in Kind Only";
-        ///Form Design Gift Options
-        public const string FORM_OPTION_GIFTS_ONLY = "Gifts Only";
-        ///Form Design Gift Options
-        public const string FORM_OPTION_OTHER = "Other";
-        ///Form Design Adjustment Options
-        public const string FORM_OPTION_ADJUSTMENTS_ONLY = "Adjustments Only";
-        ///Form Design Adjustment Options
-        public const string FORM_OPTION_EXCLUDE_ADJUSTMENTS = "Exclude Adjustments";
     }
 
     /// <summary>
@@ -678,25 +657,4 @@ namespace Ict.Petra.Shared.MFinance
         /// </summary>
             Always
     }
-
-    /// <summary>
-    /// enumeration for finance form codes
-    /// </summary>
-    public enum TFinanceFormCodeEnum
-    {
-        /// <summary>
-        /// form code for receipt
-        /// </summary>
-        ffcReceipt,
-
-        /// <summary>
-        /// form code for cheque
-        /// </summary>
-            ffcCheque,
-
-        /// <summary>
-        /// form code for remittance
-        /// </summary>
-            ffcRemittance
-    };
 }

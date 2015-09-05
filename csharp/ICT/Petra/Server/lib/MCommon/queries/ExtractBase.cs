@@ -30,13 +30,13 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner.Extracts;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Server.MCommon.queries
 {

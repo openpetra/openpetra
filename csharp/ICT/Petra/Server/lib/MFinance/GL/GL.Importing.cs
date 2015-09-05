@@ -23,37 +23,30 @@
 //
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
-using System.Text;
 
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
 
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.Data.Access;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
-using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Server.MSysMan.Data.Access;
 
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Account.Validation;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MSysMan.Data;
 
 namespace Ict.Petra.Server.MFinance.GL
 {

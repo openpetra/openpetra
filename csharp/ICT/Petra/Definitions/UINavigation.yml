@@ -134,8 +134,9 @@ OpenPetra:
                         ContactAttributesAndDetails: {Label=Contact Attributes And Details, Description=Maintain Contact Attributes and Details, ActionOpenScreen=TFrmContactAttributeSetup}
 
                     Mailing:
-                        Mailings: {Label=Mailings, Description=Maintain Mailings, ActionOpenScreen=TFrmMailingSetup}
+                        FormDesign: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Description=Maintain Printable Form Designs, ActionOpenScreen=TFrmFormDesignSetup, Context=Partner}
                         LetterFormalities: {Label=Letter Formalities, Description=Maintain Letter Formalities, ActionOpenScreen=TFrmFormalitySetup}
+                        Mailings: {Label=Mailings, Description=Maintain Mailings, ActionOpenScreen=TFrmMailingSetup}
 
                     LocalData: {Label=Local Data}
                         LocalDataOptionListNames: {Label=Local Data Option List Names, Description=Maintain Local Data Option List names, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
@@ -297,8 +298,8 @@ OpenPetra:
                     Currencies:                   
                         Currencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCurrencySetup, PermissionsRequired=FINANCE-3}
                         CurrencyLanguages: {Description=Maintain Currency Languages, ActionOpenScreen=TFrmCurrencyLanguageSetup, PermissionsRequired=FINANCE-3}
-                    Printing:                   
-                        FormDesign: {Description=Maintain Printable Form Designs, ActionOpenScreen=TFrmSetupFormDesign, PermissionsRequired=FINANCE-3}
+                    Mailing:                   
+                        FormDesign: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Description=Maintain Printable Form Designs, ActionOpenScreen=TFrmFormDesignSetup, Context=Finance}
                     Other:                                       
                         MethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving, PermissionsRequired=FINANCE-3}
                         MethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment, PermissionsRequired=FINANCE-3}

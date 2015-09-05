@@ -32,7 +32,7 @@ using Ict.Common.Printing;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MCommon;
-using Ict.Petra.Client.MFinance.Gui;
+using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MFinance.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift

@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Collections.Specialized;
 using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
@@ -118,10 +119,6 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     {
                         tempTable = AFeesReceivableAccess.LoadAll(ReadTransaction);
                     }
-                    else if (ATablename == AFormTable.GetTableDBName())
-                    {
-                        tempTable = AFormAccess.LoadAll(ReadTransaction);
-                    }
                     else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                     {
                         tempTable = AAnalysisTypeAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
@@ -176,6 +173,22 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     else if (ATablename == PcDiscountTable.GetTableDBName())
                     {
                         tempTable = PcDiscountAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
+                    }
+                    else if (ATablename == PFormTable.GetTableDBName())
+                    {
+                        string[] columns = TTypedDataTable.GetColumnStringList(PFormTable.TableId);
+                        StringCollection fieldList = new StringCollection();
+
+                        for (int i = 0; i < columns.Length; i++)
+                        {
+                            // Do not load the template document - we don't display it and it is big!
+                            if (columns[i] != PFormTable.GetTemplateDocumentDBName())
+                            {
+                                fieldList.Add(columns[i]);
+                            }
+                        }
+
+                        tempTable = PFormAccess.LoadAll(fieldList, ReadTransaction);
                     }
                     else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                     {
@@ -286,10 +299,6 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                                 TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                                     TCacheableFinanceTablesEnum.FeesReceivableList.ToString());
                             }
-                            else if (ATablename == AFormTable.GetTableDBName())
-                            {
-                                AFormAccess.SubmitChanges((AFormTable)SubmitTable, SubmitChangesTransaction);
-                            }
                             else if (ATablename == AGiftBatchTable.GetTableDBName())
                             {
                                 // This method is called from ADailyExchangeRate Setup - please do not remove
@@ -361,6 +370,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                                     TCacheablePersonTablesEnum.EventApplicationTypeList.ToString());
                                 TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                                     TCacheablePersonTablesEnum.FieldApplicationTypeList.ToString());
+                            }
+                            else if (ATablename == PFormTable.GetTableDBName())
+                            {
+                                PFormAccess.SubmitChanges((PFormTable)SubmitTable, SubmitChangesTransaction);
                             }
                             else if (ATablename == PFormalityTable.GetTableDBName())
                             {
