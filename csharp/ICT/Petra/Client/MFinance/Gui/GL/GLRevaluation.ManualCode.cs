@@ -90,6 +90,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 CreateDataGridHeader();
                 String currencyList = GetListOfRevaluationCurrencies();
 
+                lblAccountValue.AutoSize = true;
+                //Equivalent to:
+                //lblAccountValue.Width = TextRenderer.MeasureText(lblAccountValue.Text, lblAccountValue.Font).Width;
                 lblAccountText.Text = Catalog.GetString("Ledger:");
                 lblAccountValue.Text = String.Format("{0} - {1} [{2}]", FLedgerNumber, ledgerName, FLedgerBaseCurrency);
 

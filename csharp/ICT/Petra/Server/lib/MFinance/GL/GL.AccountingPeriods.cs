@@ -550,6 +550,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out String ADisplayMember,
             out String AValueMember)
         {
+            const string INTL_DATE_FORMAT = "yyyy-MM-dd";
+
             //Create the table to populate the combobox
             DataTable ReturnTable = null;
 
@@ -625,7 +627,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                         DataRow ResultRow = ReturnTable.NewRow();
                         ResultRow[0] = yearNumber;
-                        ResultRow[1] = yearEndDate.ToShortDateString();
+                        ResultRow[1] = yearEndDate.ToString(INTL_DATE_FORMAT);
                         ResultRow[2] = yearEndDate.ToLongDateString();
                         ReturnTable.Rows.Add(ResultRow);
 
@@ -666,7 +668,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                             DataRow ResultRow2 = ReturnTable.NewRow();
                             ResultRow2[0] = yearNumber;
-                            ResultRow2[1] = yearEndDate.ToShortDateString();
+                            ResultRow2[1] = yearEndDate.ToString(INTL_DATE_FORMAT);
                             ReturnTable.Rows.Add(ResultRow2);
                         }
 
@@ -674,7 +676,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         {
                             DataRow resultRow = ReturnTable.NewRow();
                             resultRow[0] = currentFinancialYear + 1;
-                            resultRow[1] = currentYearEndDate.AddYears(1).ToShortDateString();
+                            resultRow[1] = currentYearEndDate.AddYears(1).ToString(INTL_DATE_FORMAT);
                             //resultRow[2] = currentYearEndDate.ToString("dd-MMM-yyyy");
                             ReturnTable.Rows.InsertAt(resultRow, 0);
                         }

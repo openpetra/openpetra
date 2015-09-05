@@ -890,11 +890,12 @@ namespace Ict.Petra.Server.MFinance.Common
                     ANView.RowFilter = String.Format("{0} = '{1}' AND {2} = true",
                         AAnalysisAttributeTable.GetAccountCodeDBName(),
                         transRow.AccountCode, AAnalysisAttributeTable.GetActiveDBName());
-                    int i = 0;
 
-                    while (i < ANView.Count)
+                    int counter = 0;
+
+                    while (counter < ANView.Count)
                     {
-                        AAnalysisAttributeRow attributeRow = (AAnalysisAttributeRow)ANView[i].Row;
+                        AAnalysisAttributeRow attributeRow = (AAnalysisAttributeRow)ANView[counter].Row;
 
                         ATransAnalAttribRow aTransAttribRow =
                             (ATransAnalAttribRow)AGLBatchDS.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber,
@@ -907,7 +908,7 @@ namespace Ict.Petra.Server.MFinance.Common
                             AVerifications.Add(new TVerificationResult(
                                     String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
                                     String.Format(Catalog.GetString(
-                                            "Analysis Attribute {0} in Journal {1} Transaction {2} needs a value."),
+                                            "Analysis Type {0} is missing values in journal {1}, transaction {2}"),
                                         attributeRow.AnalysisTypeCode, transRow.JournalNumber, transRow.TransactionNumber),
                                     TResultSeverity.Resv_Critical));
 
@@ -916,13 +917,13 @@ namespace Ict.Petra.Server.MFinance.Common
                         }
                         else
                         {
-                            String v = aTransAttribRow.AnalysisAttributeValue;
+                            String analAttrValue = aTransAttribRow.AnalysisAttributeValue;
 
-                            if ((v == null) || (v.Length == 0))
+                            if ((analAttrValue == null) || (analAttrValue.Length == 0))
                             {
                                 AVerifications.Add(new TVerificationResult(
                                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                        String.Format(Catalog.GetString("Analysis Type {0} is missing values in journal #{1}, transaction #{2}"),
+                                        String.Format(Catalog.GetString("Analysis Type {0} is missing values in journal {1}, transaction {2}"),
                                             attributeRow.AnalysisTypeCode, transRow.JournalNumber, transRow.TransactionNumber),
                                         TResultSeverity.Resv_Critical));
 
@@ -932,15 +933,15 @@ namespace Ict.Petra.Server.MFinance.Common
                             else
                             {
                                 AFreeformAnalysisRow afaRow = (AFreeformAnalysisRow)APostingDS.AFreeformAnalysis.Rows.Find(
-                                    new Object[] { ALedgerNumber, attributeRow.AnalysisTypeCode, v });
+                                    new Object[] { ALedgerNumber, attributeRow.AnalysisTypeCode, analAttrValue });
 
                                 if (afaRow == null)
                                 {
                                     // this would cause a constraint error and is only possible in a development/sqlite environment
                                     AVerifications.Add(new TVerificationResult(
                                             String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                            String.Format(Catalog.GetString("Invalid values at journal #{0} transaction #{1}  and TypeCode {2}"),
-                                                transRow.JournalNumber, transRow.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                            String.Format(Catalog.GetString("Analysis Type {0} has invalid value in journal {1}, transaction {2}"),
+                                                attributeRow.AnalysisTypeCode, transRow.JournalNumber, transRow.TransactionNumber),
                                             TResultSeverity.Resv_Critical));
 
                                     CriticalError = true;
@@ -954,8 +955,9 @@ namespace Ict.Petra.Server.MFinance.Common
                                                 String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber,
                                                     ALedgerNumber),
                                                 String.Format(Catalog.GetString(
-                                                        "Value {0} not active at journal #{1} transaction #{2}  and TypeCode {3}"), v,
-                                                    transRow.JournalNumber, transRow.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                                        "Analysis Type {0} has inactive value: '{1}' in journal {2}, transaction {3}"),
+                                                    attributeRow.AnalysisTypeCode,
+                                                    analAttrValue, transRow.JournalNumber, transRow.TransactionNumber),
                                                 TResultSeverity.Resv_Critical));
 
                                         CriticalError = true;
@@ -965,7 +967,7 @@ namespace Ict.Petra.Server.MFinance.Common
                             } // else
                         } // else
 
-                        i++;
+                        counter++;
                     } // while i
 
                     if (CriticalError)

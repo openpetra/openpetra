@@ -176,6 +176,5 @@ RootNode:
     Menu:
     Toolbar:
         lblBlank: {Label=Blank}
-        lblYearEnding1: {Label=Year}
-        lblYearEnding2: {Label=Ended}
+        lblYearEnding: {Label=Year Ending, AutoSize=false}
         cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, SuppressChangeDetection=true}

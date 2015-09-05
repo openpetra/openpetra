@@ -157,8 +157,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(APartnerKey,
                 Calculations.TOverallContSettingKind.ocskPrimaryEmailAddress | Calculations.TOverallContSettingKind.ocskEmailAddressWithinOrg);
             return Calculations.GetWithinOrganisationEmailAddress(PrimaryContactAttributes, out AEmailAddress)
-                ||
-                Calculations.GetPrimaryEmailAddress(PrimaryContactAttributes, out AEmailAddress);
+                   ||
+                   Calculations.GetPrimaryEmailAddress(PrimaryContactAttributes, out AEmailAddress);
         }
 
         /// <summary>

@@ -28,7 +28,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
-//using System.Linq;
 using System.Resources;
 using System.Text;
 using System.Threading;
@@ -293,23 +292,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             // Deal with labels on toolbar to get required effect
             lblBlank.ForeColor = Color.Transparent;
             lblBlank.BackColor = Color.Transparent;
+            lblBlank.Text = new String(' ', 4);
 
-            lblYearEnding1.BackColor = Color.Transparent;
-            lblYearEnding1.TextAlign = ContentAlignment.TopRight;
-            lblYearEnding1.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-
-            lblYearEnding2.BackColor = Color.Transparent;
-            lblYearEnding2.TextAlign = ContentAlignment.TopLeft;
-            lblYearEnding2.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+            lblYearEnding.BackColor = Color.Transparent;
+            lblYearEnding.TextAlign = ContentAlignment.TopRight;
+            lblYearEnding.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
 
             //Get Available GL Years showing year end dates
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbSelectBudgetYear, FLedgerNumber, true, true);
-            cmbSelectBudgetYear.ComboBoxWidth = 110;
+            cmbSelectBudgetYear.ComboBoxWidth = 100;
 
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false, true);
 
-            // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
-            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true, true);
+            // Do not include summary cost centres: we want to use one cost centre for each Motivation Details. Local and Foreign included
+            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, false, true);
 
             bool IfMoreThan12Periods = (FNumberOfPeriods > 12);
             bool IfMoreThan13Periods = (FNumberOfPeriods > 13);
