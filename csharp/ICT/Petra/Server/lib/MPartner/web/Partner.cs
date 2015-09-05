@@ -206,7 +206,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     if (!MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, Transaction))
                     {
                         ResultValue = false;
-                        DisplayMessage = String.Format(Catalog.GetString("Partner {0} does not exist."), APartnerKey.ToString());
+                        DisplayMessage = String.Format(Catalog.GetString("Partner {0} does not exist."), APartnerKey.ToString("0000000000"));
                     }
 
                     // check if the partner is linked to an OpenPetra user

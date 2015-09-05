@@ -54,6 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitializeManualCode()
         {
+            FinishButtonPanelSetup();
         }
 
         private void PopulateGrid(bool AFirstTime)
@@ -393,6 +394,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             return ReturnTable;
+        }
+
+        private void FinishButtonPanelSetup()
+        {
+            // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+            lblRecordCounter.AutoSize = true;
+            lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+            lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+            pnlButtonsRecordCounter.AutoSize = true;
         }
 
         ///<summary>

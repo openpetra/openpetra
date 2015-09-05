@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
 
             SelectRowInGrid();
-            UpdateRecordNumberDisplay();
+            FinishButtonPanelSetup();
             Filter(this, null);
         }
 
@@ -275,6 +275,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
+        }
+
+        private void FinishButtonPanelSetup()
+        {
+            // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+            lblRecordCounter.AutoSize = true;
+            lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+            lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+            pnlButtonsRecordCounter.AutoSize = true;
+
+            UpdateRecordNumberDisplay();
         }
 
         // update the record counter

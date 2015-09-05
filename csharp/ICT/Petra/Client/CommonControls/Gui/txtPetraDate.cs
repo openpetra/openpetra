@@ -338,7 +338,12 @@ namespace Ict.Petra.Client.CommonControls
         /// <param name="e">Passed in by WinForms.</param>
         void TtxtPetraDate_DoubleClick(object sender, EventArgs e)
         {
-            this.SelectAll();
+            // This is insures that is part of a date is clicked on then only that part is selected.
+            // Other wise the month and hyphen will be selected.
+            if ((this.SelectedText.Length > 1) && this.SelectedText.Contains("-"))
+            {
+                this.Select(this.SelectionStart, this.SelectedText.Length - 1);
+            }
         }
 
         private void TtxtPetraDate_LostFocus(object sender, EventArgs e)

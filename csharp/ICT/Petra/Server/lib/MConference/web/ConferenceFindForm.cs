@@ -203,7 +203,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
                         VerificationResult = new TVerificationResultCollection();
                         VerificationResult.Add(new TVerificationResult(
-                                "Problems deleting conference " + AConferenceKey.ToString(),
+                                "Problems deleting conference " + AConferenceKey.ToString("0000000000"),
                                 e.Message,
                                 "Cannot delete conference",
                                 string.Empty,

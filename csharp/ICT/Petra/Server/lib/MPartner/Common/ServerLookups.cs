@@ -157,7 +157,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
         /// <summary>Is this the key of a valid Gift Recipient?</summary>
         /// <param name="APartnerKey"></param>
-        /// <returns>True if this is a valid key to a partner that's linked to a Cost Centre (in any ledger)</returns>
+        /// <returns>True if this is a valid key to a partner that's linked to a Cost Centre (in any ledger)
+        /// or if this is a local site key.</returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean PartnerIsLinkedToCC(Int64 APartnerKey)
         {
@@ -168,8 +169,14 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 ref ReadTransaction,
                 delegate
                 {
-                    AValidLedgerNumberTable Tbl = AValidLedgerNumberAccess.LoadViaPPartnerPartnerKey(APartnerKey, ReadTransaction);
-                    Ret = (Tbl.Rows.Count > 0);
+                    string Query = "SELECT COUNT(*) FROM a_ledger, a_valid_ledger_number " +
+                                   "WHERE a_ledger.p_partner_key_n = " + APartnerKey +
+                                   " OR a_valid_ledger_number.p_partner_key_n = " + APartnerKey;
+
+                    if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(Query, ReadTransaction)) > 0)
+                    {
+                        Ret = true;
+                    }
                 });
             return Ret;
         }

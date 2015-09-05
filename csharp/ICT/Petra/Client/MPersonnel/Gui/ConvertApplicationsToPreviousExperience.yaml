@@ -1,0 +1,98 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraForm.yaml
+    FormTitle: Convert/Remove Applications To/From Previous Experience
+    Namespace: Ict.Petra.Client.MPersonnel.Gui
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.ApplicationTDS
+    MasterTable: PmShortTermApplication
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: browse
+    Template: windowFind
+    WindowWidth: 600
+    WindowHeight: 600
+    Actions:
+        actEditApplication: {Label=View/Edit Application, ActionClick=EditApplication}
+        actSearch: {ActionClick=Search}
+        actClear: {ActionClick=Clear_Click}
+        actConvertApplications: {ActionClick=ConvertApplications}
+        actSelectEvent_Click: {ActionClick=SelectEvent_Click}
+    Controls:
+        pnlContent:
+            Controls: [pnlControls, pnlGrid]
+            Dock: Fill
+        pnlControls:
+            Dock: Top
+            Height: 235
+            Controls:
+                Row0: [rbtConvert]
+                Row1: [rbtRemove]
+                Row2: [rgrEvents]
+                Row3: [cmbEventYear]
+                Row4: [pnlCriteriaButtons]
+        pnlCriteriaButtons:
+            Stretch: horizontally
+            Controls: [btnGetApplications, btnClear]
+            ControlsOrientation: horizontal
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdApplications]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnEditApplication, btnConvertApplications]
+            ControlsOrientation: horizontal
+        grdApplications:
+            Dock: Fill
+            Columns: [PPartner.PartnerShortName, PmShortTermApplication.ConfirmedOptionCode, PmShortTermApplication.StAppDate]
+            CustomColumns:
+                PPartner.PartnerShortName: {Label=Attendee Name}
+                PmShortTermApplication.ConfirmedOptionCode: {Label=Event Code}
+                PmShortTermApplication.StAppDate: {Label=Date Entered, Type=DateTime}
+
+        rbtConvert:
+            Label: Convert accepted Applications to Previous Experience
+        rbtRemove:
+            Label: Remove accepted Applications from Previous Experience
+        rgrEvents:
+            Controls: [rbtAll, rbtSelectEvent]
+            ControlsOrientation: vertical
+            Stretch: horizontally
+        rbtAll:
+            Height: 15
+            Padding: 5,5,0,0
+        rbtSelectEvent:
+            Controls: [pnlEventSelection]
+            Padding: 5,7,0,0
+            NoLabel: true
+
+        pnlEventSelection:
+            Controls:
+                Row0: [btnSelectEvent, txtEventName]
+                Row1: [Empty, chkShowAllOutreaches]
+            Stretch: horizontally
+
+        txtEventName: 
+            ReadOnly: true
+            BorderStyle: None
+            Stretch: horizontally
+        chkShowAllOutreaches:
+            Label: Show all outreaches in conference
+            CheckBoxAttachedLabel: right
+            Enabled: false
+        cmbEventYear:
+            Width: 100
+
+        btnSelectEvent:
+            Action: actSelectEvent_Click
+            Padding: 12,0,0,0
+        btnGetApplications:
+            Action: actSearch
+        btnClear:
+            Action: actClear
+            Aligh: right
+        btnConvertApplications:
+            Action: actConvertApplications
+            Enabled: false
+        btnEditApplication:
+            Action: actEditApplication
+            Enabled: false
+
+        Empty:

@@ -32,6 +32,7 @@
     <Table sqltable="p_partner_attribute_type"/>
     <Table sqltable="p_partner_attribute">
         <CustomField name="PartnerContactDetail" type="Boolean"/>
+        <Field name="CategoryCode" sqltable="p_partner_attribute_category" sqlfield="p_category_code_c"/>
     </Table>    
     <Table sqltable="p_family">
       <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>

@@ -131,7 +131,7 @@ RootNode:
         lblValueOneDirection: {ColSpan=2}
         lblValueOtherDirection: {ColSpan=2}
 
-        grdRateUsage: {Dock=Fill}
+        grdRateUsage: {Dock=Fill, ActionFocusRow=GrdRateUsage_RowChange}
         lblRateUsage: {Label=Used By}
         btnRateUsage: {Label=View Details}
     Menu:

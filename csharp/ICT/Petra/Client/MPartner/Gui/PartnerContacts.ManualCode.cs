@@ -80,6 +80,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // catch enter on all controls, to trigger search or accept (could use this.AcceptButton, but we have several search buttons etc)
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
+
+            FinishButtonPanelSetup();
         }
 
         private void Search(object sender, EventArgs e)
@@ -319,6 +321,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 return null;
             }
+        }
+
+        private void FinishButtonPanelSetup()
+        {
+            // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+            lblRecordCounter.AutoSize = true;
+            lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+            lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+            pnlButtonsRecordCounter.AutoSize = true;
         }
 
         // update record counter

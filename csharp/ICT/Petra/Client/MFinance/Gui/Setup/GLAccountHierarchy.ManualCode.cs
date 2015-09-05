@@ -149,6 +149,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private Int32 FLedgerNumber;
         private string FSelectedHierarchy = "STANDARD";
 
+        private bool FSuspenseAccountsAllowed = true;
+
         /// <summary>This prevents the updates causing cascading functions</summary>
         public Int32 FIAmUpdating = 0;
 
@@ -164,6 +166,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         // list of accounts that need their foreign currency balances put to zero (i.e. they are no longer foreign currency accounts)
         private List <string>FZeroForeignCurrencyBalances = new List <string>();
+
+        /// <summary>
+        /// Gets a value indicating whether suspense accounts allowed for this ledger.
+        /// </summary>
+        public bool SuspenseAccountsAllowed
+        {
+            get
+            {
+                return FSuspenseAccountsAllowed;
+            }
+        }
 
         /// <summary>
         /// Called from the user controls when the user selects a row,
@@ -514,6 +527,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoAccountAnalysisAttributes.ShowStatus = ShowStatus;
                 FMainDS.Clear();
                 FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
+
+                if (!(bool)TDataCache.TMFinance.GetCacheableFinanceTable(
+                        TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber).Rows[0][ALedgerTable.GetSuspenseAccountFlagDBName()])
+                {
+                    // hide if suspense accounts are not allowed
+                    chkDetailSuspenseAccountFlag.Enabled = false;
+                    chkDetailSuspenseAccountFlag.Visible = false;
+                    lblDetailSuspenseAccountFlag.Visible = false;
+                    FSuspenseAccountsAllowed = false;
+                }
+
                 ucoAccountsTree.RunOnceOnActivationManual(this);
                 ucoAccountsTree.PopulateTreeView(FMainDS, FLedgerNumber, FSelectedHierarchy);
 

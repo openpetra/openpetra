@@ -1048,7 +1048,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                     DisplayMember,
                     DisplayMember,
                     null);
-                ACmbKeyMinistry.AppearanceSetup(new int[] { 250 }, -1);
+                ACmbKeyMinistry.AppearanceSetup(new int[] { 500 }, -1);
 
                 if (!FindAndSelect(ref ACmbKeyMinistry, APartnerKey))
                 {

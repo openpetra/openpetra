@@ -194,6 +194,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.SetStatusBarText(btnSearch, Catalog.GetString("Searches the OpenPetra database with above criteria"));
             FPetraUtilsObject.SetStatusBarText(btnClear, Catalog.GetString("Clears the search criteria fields and the search result"));
             FPetraUtilsObject.SetStatusBarText(btnView, Catalog.GetString("Views the selected Gift"));
+
+            FinishButtonPanelSetup();
         }
 
         // populate the motivation detail and motivation group comboboxes
@@ -567,6 +569,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             return ReturnValue;
+        }
+
+        private void FinishButtonPanelSetup()
+        {
+            // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+            lblRecordCounter.AutoSize = true;
+            lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+            lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+            pnlButtonsRecordCounter.AutoSize = true;
         }
 
         // update record counter

@@ -301,7 +301,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             if (GetSelectedDetailRow() != null)
             {
-                Clipboard.SetDataObject(GetSelectedDetailRow().PartnerKey.ToString());
+                Clipboard.SetDataObject(GetSelectedDetailRow().PartnerKey.ToString("0000000000"));
             }
         }
 

@@ -403,6 +403,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <param name="ARecipientPartnerClass">Recipient's Partner Class (used for Motivation Detail validation).</param>
+        /// <param name="ASetupForILT">Optional - Is the recipient set up for inter-ledger transfers.</param>
         /// <param name="ACostCentres">Optional - a CostCentres table.  Is required for import validation. </param>
         /// <param name="AAccounts">Optional - a Accounts table.  Is required for import validation. </param>
         /// <param name="AMotivationGroups">Optional - a MotivationGroups table.  Is required for import validation. </param>
@@ -415,6 +416,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             ref TVerificationResultCollection AVerificationResultCollection,
             TValidationControlsDict AValidationControlsDict,
             TPartnerClass? ARecipientPartnerClass,
+            bool? ASetupForILT = null,
             ACostCentreTable ACostCentres = null,
             AAccountTable AAccounts = null,
             AMotivationGroupTable AMotivationGroups = null,

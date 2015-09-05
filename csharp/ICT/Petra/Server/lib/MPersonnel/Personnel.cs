@@ -39,6 +39,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MCommon.WebConnectors;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
@@ -203,7 +204,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         /// <param name="AMainDS">Dataset to be populated</param>
         /// <param name="AOutreachCode">match string for event's outreach code</param>
         /// <returns></returns>
-        [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PERSONNEL")]
         public static Boolean LoadShortTermApplications(ref ApplicationTDS AMainDS, string AOutreachCode)
         {
             string QueryShortTermApplication = "";
@@ -261,7 +262,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         /// <param name="ATargetFieldKey">match key for application's Target Field</param>
         /// <param name="APlacementPersonKey">match key for application's Placement Person</param>
         /// <returns></returns>
-        [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PERSONNEL")]
         public static Boolean LoadLongTermApplications(ref ApplicationTDS AMainDS, long ATargetFieldKey, long APlacementPersonKey)
         {
             ApplicationTDS MainDS = new ApplicationTDS();
@@ -318,6 +319,221 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             AMainDS.Merge(MainDS);
 
             return true;
+        }
+
+        /// <summary>
+        /// populate ApplicationTDS dataset with accepted applications that match the given criteria
+        /// </summary>
+        /// <param name="AMainDS">Dataset to be populated</param>
+        /// <param name="AConvertTo">True if converting applications to past experiences.
+        /// False if removing applications from past experiences.</param>
+        /// <param name="AOutreachCode">Match string for event's outreach code (optional).</param>
+        /// <param name="AAllOutreaches">True if finding all outreaches relating to an event.</param>
+        /// <param name="AAllEvents">True if finding all event.</param>
+        /// <param name="AYear">Year of events (optional).</param>
+        /// <returns></returns>
+        [RequireModulePermission("PERSONNEL")]
+        public static Boolean LoadApplicationsForConverting(ref ApplicationTDS AMainDS, bool AConvertTo,
+            string AOutreachCode, bool AAllOutreaches, bool AAllEvents, string AYear)
+        {
+            string Query = string.Empty;
+            ApplicationTDS MainDS = new ApplicationTDS();
+            String ShortTermAppTableName = AMainDS.PmShortTermApplication.TableName;
+
+            List <OdbcParameter>Parameters = new List <OdbcParameter>();
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    Query =
+                        "SELECT DISTINCT PUB_pm_short_term_application.*, p_partner_location.p_date_effective_d, p_partner_location.p_date_good_until_d, PUB_pm_general_application.*, PUB_p_partner.p_partner_short_name_c "
+                        +
+                        "FROM PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_partner, p_partner_location, p_unit " +
+                        "WHERE ";
+
+                    // if we are looking for a specific event
+                    if (!AAllEvents)
+                    {
+                        if (AOutreachCode.Length == 0)
+                        {
+                            // load all appicants with no event
+                            Query += "PUB_pm_short_term_application.pm_confirmed_option_code_c IS NULL " +
+                                     "AND ";
+                        }
+                        else if (AOutreachCode.Length > 0)
+                        {
+                            // get all outreaches relating to an event
+                            if (AAllOutreaches)
+                            {
+                                OdbcParameter Parameter = new OdbcParameter("eventcode", OdbcType.VarChar, 5);
+                                Parameter.Value = AOutreachCode.Substring(0, 5);
+                                Parameters.Add(Parameter);
+
+                                Query += "SUBSTRING(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) = ? " +
+                                         "AND ";
+                            }
+                            else
+                            {
+                                OdbcParameter Parameter =
+                                    new OdbcParameter("eventcode", OdbcType.VarChar, PmShortTermApplicationTable.GetConfirmedOptionCodeLength());
+                                Parameter.Value = AOutreachCode;
+                                Parameters.Add(Parameter);
+
+                                Query += "PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
+                                         "AND ";
+                            }
+                        }
+                    }
+
+                    // if year criteria has been supplied
+                    if (!string.IsNullOrEmpty(AYear))
+                    {
+                        OdbcParameter Parameter = new OdbcParameter("year", OdbcType.VarChar, 2);
+                        Parameter.Value = AYear.ToString().Substring(2, 2);
+                        Parameters.Add(Parameter);
+
+                        Query += "SUBSTRING(PUB_pm_short_term_application.pm_confirmed_option_code_c, 3, 2) = ? " +
+                                 "AND ";
+                    }
+
+                    Query += "PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n " +
+                             "AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i " +
+                             "AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n " +
+                             "AND PUB_pm_general_application.pm_gen_application_status_c = 'A' " +
+                             "AND PUB_p_partner.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n " +
+                             "AND p_unit.p_outreach_code_c = PUB_pm_short_term_application.pm_confirmed_option_code_c " +
+                             "AND p_partner_location.p_partner_key_n = p_unit.p_partner_key_n " +
+                             "AND ";
+
+                    if (AConvertTo)
+                    {
+                        // converting to past experience so need to make sure past experience does not already exist
+                        Query += "NOT ";
+                    }
+
+                    Query += "EXISTS (SELECT * FROM pm_past_experience " +
+                             "WHERE pm_past_experience.p_partner_key_n = pm_short_term_application.p_partner_key_n " +
+                             "AND pm_past_experience.pm_prev_location_c = PUB_pm_short_term_application.pm_confirmed_option_code_c " +
+                             "AND pm_past_experience.pm_start_date_d = p_partner_location.p_date_effective_d " +
+                             "AND pm_past_experience.pm_end_date_d = p_partner_location.p_date_good_until_d)";
+
+                    DBAccess.GDBAccessObj.Select(MainDS, Query, ShortTermAppTableName, Transaction, Parameters.ToArray());
+                });
+
+            AMainDS.Merge(MainDS);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Convert all event applications in dataset to past experience records.
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PERSONNEL")]
+        public static Boolean ConvertApplicationsToPreviousExperience(ApplicationTDS AMainDS)
+        {
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
+
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    PmPastExperienceTable PastExperienceTable = new PmPastExperienceTable();
+
+                    foreach (ApplicationTDSPmShortTermApplicationRow Row in AMainDS.PmShortTermApplication.Rows)
+                    {
+                        // create the new past experience record
+                        PmPastExperienceRow PastExperienceRow = PastExperienceTable.NewRowTyped(true);
+                        PastExperienceRow.Key = Convert.ToInt64(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_past_experience));
+                        PastExperienceRow.PartnerKey = Row.PartnerKey;
+                        PastExperienceRow.PrevLocation = Row.ConfirmedOptionCode;
+                        PastExperienceRow.StartDate = Row.EventStartDate;
+                        PastExperienceRow.EndDate = Row.EventEndDate;
+                        PastExperienceRow.PrevWorkHere = true;
+                        PastExperienceRow.PrevWork = true;
+                        PastExperienceRow.PastExpComments = "Created from Event Application";
+                        PastExperienceRow.OtherOrganisation = "";
+                        PastExperienceRow.PrevRole = "";
+                        PastExperienceTable.Rows.Add(PastExperienceRow);
+                    }
+
+                    PmPastExperienceAccess.SubmitChanges(PastExperienceTable, Transaction);
+
+                    SubmissionOK = true;
+                });
+
+            return SubmissionOK;
+        }
+
+        /// <summary>
+        /// Remove all event applications in dataset from past experience records.
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PERSONNEL")]
+        public static Boolean RemoveApplicationsFromPreviousExperience(ApplicationTDS AMainDS)
+        {
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
+
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    foreach (ApplicationTDSPmShortTermApplicationRow Row in AMainDS.PmShortTermApplication.Rows)
+                    {
+                        PmPastExperienceTable PastExperienceTable = PmPastExperienceAccess.LoadByUniqueKey(
+                            Row.PartnerKey, Row.EventEndDate, Row.EventStartDate, Row.ConfirmedOptionCode, Transaction);
+
+                        if ((PastExperienceTable != null) && (PastExperienceTable.Rows.Count > 0))
+                        {
+                            PastExperienceTable.Rows[0].Delete();
+                            PmPastExperienceAccess.SubmitChanges(PastExperienceTable, Transaction);
+                        }
+                    }
+
+                    SubmissionOK = true;
+                });
+
+            return SubmissionOK;
+        }
+
+        /// <summary>
+        /// Gets the range of years for which events exist with accepted applications.
+        /// </summary>
+        /// <param name="AMinYear">First year</param>
+        /// <param name="AMaxYear">Last year</param>
+        [RequireModulePermission("PERSONNEL")]
+        public static void GetRangeOfYearsWithEvents(out int AMinYear, out int AMaxYear)
+        {
+            string Query = "SELECT MIN(p_partner_location.p_date_effective_d) AS Min, MAX(p_partner_location.p_date_good_until_d) AS Max " +
+                           "FROM p_unit, p_partner_location, pm_general_application, pm_short_term_application " +
+                           "WHERE pm_general_application.p_partner_key_n = pm_short_term_application.p_partner_key_n " +
+                           "AND pm_general_application.pm_application_key_i = pm_short_term_application.pm_application_key_i " +
+                           "AND pm_general_application.pm_registration_office_n = pm_short_term_application.pm_registration_office_n " +
+                           "AND pm_general_application.pm_gen_application_status_c = 'A' " +
+                           "AND p_unit.p_outreach_code_c = pm_short_term_application.pm_confirmed_option_code_c " +
+                           "AND p_unit.p_partner_key_n = p_partner_location.p_partner_key_n";
+
+            TDBTransaction Transaction = null;
+            DataTable MinAndMax = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    MinAndMax = DBAccess.GDBAccessObj.SelectDT(Query, "MinAndMax", Transaction);
+                });
+
+            DataRow row = MinAndMax.Rows[0];
+
+            AMinYear = Convert.ToDateTime(MinAndMax.Rows[0]["Min"]).Year;
+            AMaxYear = Convert.ToDateTime(MinAndMax.Rows[0]["Max"]).Year;
         }
 
         #region Data Validation

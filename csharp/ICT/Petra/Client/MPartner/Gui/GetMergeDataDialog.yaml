@@ -10,15 +10,15 @@ RootNode:
     Controls:
         pnlDialogContent:
             Padding: 5,0,7,0
-            Controls: [lblInfo, clbAddress]
+            Controls: [lblInfo, clbRecords]
             Dock: Fill
         lblInfo:
             Multiline: true
             Dock: Top
             Height: 60
-        clbAddress:
+        clbRecords:
             Dock: Fill
             Stretch: horizontally
             NoLabel: true 
                         
-        btnOK: {Label=&OK (00)}            
+        btnOK: {Label=&OK (0)}            

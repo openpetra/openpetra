@@ -220,7 +220,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             AdjustForm.AddParam("NewPct", ANewPct);
 
                             // gift destination must be the original for tax deduct pct adjustments
-                            AdjustForm.AddParam("FixGiftDestination", true);
+                            AdjustForm.AddParam("FixedGiftDestination", true);
 
                             // comments will be auto completed
                             AdjustForm.AutoCompleteComments();

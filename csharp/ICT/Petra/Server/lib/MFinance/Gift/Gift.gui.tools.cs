@@ -27,12 +27,14 @@ using System.Data;
 
 using Ict.Common.DB;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -74,8 +76,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (APartnerKey != 0)
             {
-                AMotivationGroup = MFinanceConstants.MOTIVATION_GROUP_GIFT;
-
+                string MotivationGroup = MFinanceConstants.MOTIVATION_GROUP_GIFT;
                 string MotivationDetail = AMotivationDetail;
 
                 TDBTransaction readTransaction = null;
@@ -97,27 +98,52 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (partnerRow.PartnerClass.Equals(MPartnerConstants.PARTNERCLASS_UNIT))
                             {
                                 // AND KEY-MIN
-                                PUnitTable pUnitTable =
-                                    PUnitAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
 
-                                if (pUnitTable.Rows.Count == 1)
+                                bool KeyMinFound = false;
+
+                                // first check if a motivation detail is linked to this potential key min
+                                AMotivationDetailTable MotivationDetailTable = AMotivationDetailAccess.LoadViaPPartner(APartnerKey, readTransaction);
+
+                                if ((MotivationDetailTable != null) && (MotivationDetailTable.Rows.Count > 0))
                                 {
-                                    PUnitRow unitRow = (PUnitRow)pUnitTable.Rows[0];
-
-                                    if (unitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+                                    foreach (AMotivationDetailRow Row in MotivationDetailTable.Rows)
                                     {
-                                        MotivationDetail = MFinanceConstants.GROUP_DETAIL_KEY_MIN;
-                                    }
-                                    else
-                                    {
-                                        MotivationDetail =
-                                            TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_DEFAULTFIELDMOTIVATION,
-                                                MFinanceConstants.GROUP_DETAIL_FIELD);
-
-                                        // if system default is empty then set to FIELD
-                                        if (string.IsNullOrEmpty(MotivationDetail))
+                                        if (Row.MotivationStatus)
                                         {
-                                            MotivationDetail = MFinanceConstants.GROUP_DETAIL_FIELD;
+                                            MotivationGroup = MotivationDetailTable[0].MotivationGroupCode;
+                                            MotivationDetail = MotivationDetailTable[0].MotivationDetailCode;
+
+                                            KeyMinFound = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                // second check to see if this is a key min
+                                if (!KeyMinFound)
+                                {
+                                    PUnitTable pUnitTable =
+                                        PUnitAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
+
+                                    if (pUnitTable.Rows.Count == 1)
+                                    {
+                                        PUnitRow unitRow = (PUnitRow)pUnitTable.Rows[0];
+
+                                        if (unitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+                                        {
+                                            MotivationDetail = MFinanceConstants.GROUP_DETAIL_KEY_MIN;
+                                        }
+                                        else
+                                        {
+                                            MotivationDetail =
+                                                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_DEFAULTFIELDMOTIVATION,
+                                                    MFinanceConstants.GROUP_DETAIL_FIELD);
+
+                                            // if system default is empty then set to FIELD
+                                            if (string.IsNullOrEmpty(MotivationDetail))
+                                            {
+                                                MotivationDetail = MFinanceConstants.GROUP_DETAIL_FIELD;
+                                            }
                                         }
                                     }
                                 }
@@ -129,6 +155,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                     });
 
+                AMotivationGroup = MotivationGroup;
                 AMotivationDetail = MotivationDetail;
             }
 

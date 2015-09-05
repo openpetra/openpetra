@@ -189,7 +189,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailRecipientKey.PartnerClassChanged += RecipientPartnerClassChanged;
 
                 //Set initial width of this textbox
-                cmbKeyMinistries.ComboBoxWidth = 250;
+                cmbKeyMinistries.ComboBoxWidth = 300;
                 cmbKeyMinistries.AttachedLabel.Visible = false;
 
                 //Setup hidden text boxes used to speed up reading transactions
@@ -1900,6 +1900,36 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
+            if ((ARow.RecipientField != 0)
+                && (ARow.RecipientKey != 0)
+                && ((int)ARow.RecipientField / 1000000 != ARow.LedgerNumber))
+            {
+                TVerificationResultCollection TempVerificationResultCollection;
+
+                if (!TRemote.MFinance.Gift.WebConnectors.IsRecipientLedgerNumberSetupForILT(FLedgerNumber, FPreviouslySelectedDetailRow.RecipientKey,
+                        Convert.ToInt64(txtDetailRecipientLedgerNumber.Text), out TempVerificationResultCollection))
+                {
+                    DataColumn ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnRecipientLedgerNumberId];
+                    object ValidationContext = String.Format("Batch Number {0} (transaction:{1} detail:{2})",
+                        ARow.BatchNumber,
+                        ARow.GiftTransactionNumber,
+                        ARow.DetailNumber);
+
+                    TValidationControlsData ValidationControlsData;
+
+                    if (FValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        TVerificationResult VerificationResult = new TVerificationResult(this,
+                            ValidationContext.ToString() + ": " + TempVerificationResultCollection[0].ResultText,
+                            PetraErrorCodes.ERR_RECIPIENTFIELD_NOT_ILT, TResultSeverity.Resv_Critical);
+
+                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this,
+                            new TScreenVerificationResult(VerificationResult, ValidationColumn, ValidationControlsData.ValidationControl),
+                            ValidationColumn, true);
+                    }
+                }
+            }
+
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict, txtDetailRecipientKey.CurrentPartnerClass, null, null, null);
 
@@ -1922,12 +1952,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateRecipientLedgerNumber()
         {
+            if (!FInEditMode || (FPreviouslySelectedDetailRow.RecipientKey == 0))
+            {
+                return;
+            }
             // if no gift destination exists for Family parter then give the user the option to open Gift Destination maintenance screen
-            if (FInEditMode
-                && (FPreviouslySelectedDetailRow != null)
-                && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
-                && (FPreviouslySelectedDetailRow.RecipientKey != 0)
-                && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT))
+            else if ((FPreviouslySelectedDetailRow != null)
+                     && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
+                     && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT))
             {
                 if ((txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
                     && (MessageBox.Show(Catalog.GetString("No valid Gift Destination exists for ") +
@@ -1958,6 +1990,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         FPreviouslySelectedDetailRow.RecipientKey,
                         Ict.Petra.Shared.MPartner.TPartnerEditTabPageEnum.petpDetails);
                     frm.Show();
+                }
+            }
+            // if recipient ledger number belongs to a different ledger then check that it is set up for inter-ledger transfers
+            else if ((FPreviouslySelectedDetailRow != null)
+                     && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) != 0)
+                     && ((int)Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) / 1000000 != FLedgerNumber))
+            {
+                TVerificationResultCollection VerificationResults;
+
+                if (!TRemote.MFinance.Gift.WebConnectors.IsRecipientLedgerNumberSetupForILT(
+                        FLedgerNumber, FPreviouslySelectedDetailRow.RecipientKey, Convert.ToInt64(txtDetailRecipientLedgerNumber.Text),
+                        out VerificationResults))
+                {
+                    MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Invalid Data Entered"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -2075,89 +2122,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int workingTransactionNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
             int workingDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
 
-            AGiftDetailRow GiftDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
-                new object[] { workingLedgerNumber, workingBatchNumber, workingTransactionNumber, workingDetailNumber });
-
-            if (FTaxDeductiblePercentageEnabled && GiftDetailRow.TaxDeductible)
+            if (FTaxDeductiblePercentageEnabled)
             {
-                // 100% default if tax deductibility is not limited
-                decimal DefaultTaxDeductiblePct = 100;
-
-                // get the default tax deductible percentage for a new gift made today to the same recipient
-                PPartnerTaxDeductiblePctTable PartnerTaxDeductiblePctTable =
-                    TRemote.MFinance.Gift.WebConnectors.LoadPartnerTaxDeductiblePct(GiftDetailRow.RecipientKey);
-
-                if ((PartnerTaxDeductiblePctTable != null) && (PartnerTaxDeductiblePctTable.Rows.Count > 0))
-                {
-                    foreach (PPartnerTaxDeductiblePctRow Row in PartnerTaxDeductiblePctTable.Rows)
-                    {
-                        // if no valid records exist then the recipient has not limited tax deductible by default
-                        if ((Row.PartnerKey == GiftDetailRow.RecipientKey) && (Row.DateValidFrom <= DateTime.Today))
-                        {
-                            DefaultTaxDeductiblePct = Row.PercentageTaxDeductible;
-                        }
-                    }
-                }
-
-                // if different from current paercentage ask the user which one they want to use
-                if ((GiftDetailRow.TaxDeductiblePct != DefaultTaxDeductiblePct)
-                    && (MessageBox.Show(string.Format(Catalog.GetString(
-                                    "The default tax deductible percentage for this recipient for today's date ({0}%) is different from the tax deductible "
-                                    +
-                                    "percentage recorded for the gift detail to be adjusted ({1}%).{2}Do you want to continue to use the original percentage "
-                                    +
-                                    "of {1}% for the adjusted gift?"),
-                                DefaultTaxDeductiblePct, GiftDetailRow.TaxDeductiblePct, "\r\n\r\n"),
-                            Catalog.GetString("Adjust Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)
-                        == DialogResult.No))
-                {
-                    revertForm.AddParam("UpdateTaxDeductiblePct", true);
-                    revertForm.AddParam("NewPct", DefaultTaxDeductiblePct);
-                }
+                revertForm.CheckTaxDeductPctChange = true;
             }
 
-            if (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
-            {
-                Int64 RecipientLedgerNumber = 0;
-
-                // get the recipient ledger number
-                if (GiftDetailRow.RecipientKey > 0)
-                {
-                    RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(GiftDetailRow.RecipientKey,
-                        DateTime.Today);
-                }
-
-                TVerificationResultCollection VerificationResults;
-
-                // if recipient ledger number belongs to a different ledger then check that it is set up for inter-ledger transfers
-                if ((RecipientLedgerNumber != 0) && (((int)RecipientLedgerNumber / 1000000 == GiftDetailRow.LedgerNumber)
-                                                     || TRemote.MFinance.Gift.WebConnectors.IsRecipientLedgerNumberSetupForILT(
-                                                         GiftDetailRow.LedgerNumber, GiftDetailRow.RecipientKey, RecipientLedgerNumber,
-                                                         out VerificationResults)))
-                {
-                    if (RecipientLedgerNumber != GiftDetailRow.RecipientLedgerNumber)
-                    {
-                        string FieldShortName;
-                        TPartnerClass PartnerClass;
-                        TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
-                            RecipientLedgerNumber, out FieldShortName, out PartnerClass);
-
-                        if (MessageBox.Show(string.Format(Catalog.GetString(
-                                        "The default gift destination for this recipient for today's date ({0} ({1})) is different from the gift destination "
-                                        +
-                                        "recorded for the gift detail to be adjusted ({2} ({3})).{4}Do you want to continue to use the original " +
-                                        "gift destination of {2} ({3}) for the adjusted gift?"),
-                                    FieldShortName, RecipientLedgerNumber,
-                                    txtDetailRecipientLedgerNumber.LabelText, GiftDetailRow.RecipientLedgerNumber, "\r\n\r\n"),
-                                Catalog.GetString("Adjust Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)
-                            == DialogResult.Yes)
-                        {
-                            // the gift destination for this gift detail will not be changeable
-                            revertForm.AddParam("FixGiftDestination", true);
-                        }
-                    }
-                }
-            }
+            revertForm.CheckGiftDestinationChange = true;
 
             try
             {
@@ -2171,7 +2141,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 revertForm.AddParam("Function", AFunctionName);
 
-                revertForm.GiftDetailRow = GiftDetailRow;
+                revertForm.GiftDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
+                    new object[] { workingLedgerNumber, workingBatchNumber, workingTransactionNumber, workingDetailNumber });
 
                 if (!revertForm.IsDisposed && (revertForm.ShowDialog() == DialogResult.OK))
                 {
@@ -2506,7 +2477,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     // if the donor does not have another gift in this gift batch then search the database for
                     // the last gift from this donor
-                    GiftDetailTable = TRemote.MFinance.Gift.WebConnectors.LoadDonorLastGift(ADonorKey);
+                    GiftDetailTable = TRemote.MFinance.Gift.WebConnectors.LoadDonorLastGift(ADonorKey, FLedgerNumber);
                 }
 
                 // if this is the donor's first ever gift
@@ -2647,7 +2618,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        // modifies menu items depending on the Recipeint's Partner class
+        // modifies menu items depending on the Recipient's Partner class
         private void RecipientPartnerClassChanged(TPartnerClass ? APartnerClass)
         {
             bool? DoEnableRecipientGiftDestination;
@@ -2714,9 +2685,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (DetailRow.RecipientKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
                 {
-                    // only make changes if gift is unposted.
-                    if (((AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(
-                             new object[] { DetailRow.LedgerNumber, DetailRow.BatchNumber })).BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                    // only make changes if gift is unposted, not a reversal and doesn't have a fixed gift destination
+                    if ((!DetailRow.IsFixedGiftDestinationNull() && DetailRow.FixedGiftDestination)
+                        || (((AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(
+                                 new object[] { DetailRow.LedgerNumber, DetailRow.BatchNumber })).BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                        || (!DetailRow.IsModifiedDetailNull() && DetailRow.ModifiedDetail))
                     {
                         continue;
                     }

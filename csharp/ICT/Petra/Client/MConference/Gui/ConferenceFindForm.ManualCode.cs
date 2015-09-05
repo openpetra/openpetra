@@ -302,6 +302,7 @@ namespace Ict.Petra.Client.MConference.Gui
                 {
                     FMainDS.PcConference.Columns.Add(PPartnerTable.GetPartnerShortNameDBName(), Type.GetType("System.String"));
                     FMainDS.PcConference.DefaultView.AllowNew = false;
+                    FinishButtonPanelSetup();
                 }
 
                 for (int Counter = 0; Counter < FMainDS.PcConference.Rows.Count; ++Counter)
@@ -328,6 +329,16 @@ namespace Ict.Petra.Client.MConference.Gui
             TDeleteConference.DeleteConference(FPetraUtilsObject.GetCallerForm(), FSelectedConferenceKey, FSelectedConferenceName);
 
             LoadDataGrid(false);
+        }
+
+        private void FinishButtonPanelSetup()
+        {
+            // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+            lblRecordCounter.AutoSize = true;
+            lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+            lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+            pnlButtonsRecordCounter.AutoSize = true;
         }
 
         // update the record counter

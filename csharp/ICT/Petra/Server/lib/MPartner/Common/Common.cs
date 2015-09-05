@@ -70,6 +70,7 @@ namespace Ict.Petra.Server.MPartner.Common
         public static System.Int64 GetNewPartnerKey(System.Int64 AFieldPartnerKey)
         {
             PPartnerLedgerTable PartnerLedgerTable = null;
+            Int64 ReturnValue = -1;
 
             if (AFieldPartnerKey == -1)
             {
@@ -83,9 +84,17 @@ namespace Ict.Petra.Server.MPartner.Common
                 delegate
                 {
                     PartnerLedgerTable = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction);
+                    ReturnValue = PartnerLedgerTable[0].PartnerKey + PartnerLedgerTable[0].LastPartnerId + 1;
+
+                    // Now check that this does not exist, and increment until we
+                    // find one which does not
+                    while (PPartnerAccess.Exists(ReturnValue, ReadTransaction))
+                    {
+                        ReturnValue = ReturnValue + 1;
+                    }
                 });
 
-            return PartnerLedgerTable[0].PartnerKey + PartnerLedgerTable[0].LastPartnerId + 1;
+            return ReturnValue;
         }
 
         /// <summary>

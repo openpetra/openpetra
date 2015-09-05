@@ -831,6 +831,13 @@ namespace Ict.Common.Controls
                 }
             }
 
+            // handle SELECT ALL
+            if ((e.KeyCode == Keys.A) && (e.Modifiers == Keys.Control))
+            {
+                this.SelectAll();
+                e.Handled = true;
+            }
+
             // handle CUT
             if ((e.KeyCode == Keys.X) && (e.Modifiers == Keys.Control))
             {

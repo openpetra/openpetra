@@ -2977,7 +2977,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     {
                         TLogging.LogAtLevel(7,
                             "TPartnerEditUIConnector.GetPartnerContactDetailsInternal: loading Partner Contact Details for Partner " +
-                            FPartnerKey.ToString() + "...");
+                            FPartnerKey.ToString("0000000000") + "...");
 
                         FPartnerEditScreenDS.Merge(PPartnerAttributeAccess.LoadViaPPartner(FPartnerKey, ReadTransaction));
                     });

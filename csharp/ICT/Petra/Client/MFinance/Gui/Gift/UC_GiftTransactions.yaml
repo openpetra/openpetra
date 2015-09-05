@@ -153,9 +153,9 @@ RootNode:
         txtTaxDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
         txtNonDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
         txtDeductibleAccount: {Visible=false, Label=Account, ReadOnly=true}
-        txtDetailGiftCommentOne: {Label=Comment 1, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentTwo: {Label=Comment 2, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentThree: {Label=Comment 3, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentOne: {Label=Comment 1, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentTwo: {Label=Comment 2, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentThree: {Label=Comment 3, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         cmbDetailCommentOneType:
             Label: for
             OptionalValues: [Donor,Recipient,=Both,Office]

@@ -471,7 +471,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                                         AGiftDetailValidation.Validate(this, giftDetails, ref Messages, EmptyControlsDict);
                                         TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, (GiftBatchTDSAGiftDetailRow)giftDetails,
-                                            ref Messages, EmptyControlsDict, RecipientClass, CostCentreTable, AccountTable,
+                                            ref Messages, EmptyControlsDict, RecipientClass, null, CostCentreTable, AccountTable,
                                             MotivationGroupTable, MotivationDetailTable, MailingTable, giftDetails.RecipientKey);
 
                                         // Fix up the messages
@@ -960,7 +960,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                                     AGiftDetailValidation.Validate(this, giftDetails, ref Messages, EmptyControlsDict);
                                     TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, (GiftBatchTDSAGiftDetailRow)giftDetails,
-                                        ref Messages, EmptyControlsDict, RecipientClass, CostCentreTable, AccountTable,
+                                        ref Messages, EmptyControlsDict, RecipientClass, null, CostCentreTable, AccountTable,
                                         MotivationGroupTable, MotivationDetailTable, MailingTable, giftDetails.RecipientKey);
 
                                     // Fix up the messages

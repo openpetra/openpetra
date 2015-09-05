@@ -123,8 +123,8 @@ namespace Ict.Petra.Server.MPartner.Partner
                     }
                     else
                     {
-                        AProblemMessage = "Person with Partner Key " + APersonPartnerKey.ToString() + " and Family Key " +
-                                          AFromFamilyPartnerKey.ToString() + " does not exist!";
+                        AProblemMessage = "Person with Partner Key " + APersonPartnerKey.ToString("0000000000") + " and Family Key " +
+                                          AFromFamilyPartnerKey.ToString("0000000000") + " does not exist!";
                         return TFamilyIDSuccessEnum.fiError;
                     }
                 }
@@ -303,7 +303,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                                         {
                                             AProblemMessage = "Preferred FamilyID " + APreferredFamilyID.ToString() +
                                                               " cannot be taken, it is already in use! Instead, FamilyID " +
-                                                              APreferredFamilyID.ToString() + " is used.";
+                                                              ABestAvailableFamilyID.ToString() + " is used.";
                                             ReturnValue = TFamilyIDSuccessEnum.fiWarning;
                                         }
 
@@ -378,7 +378,7 @@ namespace Ict.Petra.Server.MPartner.Partner
             }
             else
             {
-                AProblemMessage = "Family with Partner Key " + AFamilyPartnerKey.ToString() + " does not exist!";
+                AProblemMessage = "Family with Partner Key " + AFamilyPartnerKey.ToString("0000000000") + " does not exist!";
                 return TFamilyIDSuccessEnum.fiError;
             }
 
@@ -444,7 +444,8 @@ namespace Ict.Petra.Server.MPartner.Partner
                 if (ANewFamilyID == -1)
                 {
                     // this case should actually not happen... (extend the problem message)
-                    AProblemMessage = "There was a problem determining an available Family ID for Family " + AFamilyPartnerKey.ToString() + "!\r\n" +
+                    AProblemMessage = "There was a problem determining an available Family ID for Family " +
+                                      AFamilyPartnerKey.ToString("0000000000") + "!\r\n" +
                                       " Please report the follwing to your System Administrator:\r\n" + AProblemMessage + "\r\n";
 
                     // Find highest FamilyID
@@ -517,12 +518,13 @@ namespace Ict.Petra.Server.MPartner.Partner
             if (ReturnValue == TFamilyIDSuccessEnum.fiWarning)
             {
                 AProblemMessage = String.Format(
-                    Catalog.GetString("The Family ID that the Person had in the former Family could not be \r\n" +
-                        "preserved in the Family that the Person has now joined. \r\n" +
-                        "The reason is: \r\n" +
-                        "    {0} \r\n" +
-                        "Former Family ID: {1} \r\n" +
-                        "New Family ID:    {2}"),
+                    Catalog.GetString("The Family ID that the Person had in the former Family could not be " +
+                        "preserved in the Family that the Person has now joined.{0}{0}" +
+                        "The reason is:{0}{0}" +
+                        "{1}{0}{0}" +
+                        "Former Family ID:  {2}{0}" +
+                        "New Family ID:  {3}"),
+                    "\r\n",
                     AProblemMessage,
                     APreferredFamilyID,
                     ANewFamilyID);

@@ -91,7 +91,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void WorkAroundInitialization()
         {
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
-            cmbDetailTransactionCurrency.cmbCombobox.StickySelectedValueChanged += new EventHandler(StickyCurrencyChange);
             btnGetSetExchangeRate.Click += new EventHandler(SetExchangeRateValue);
         }
 
@@ -644,6 +643,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GetSelectedDetailRow().DateEffective = AEffectiveDate;
                 dtpDetailDateEffective.Date = AEffectiveDate;
                 GetDetailsFromControls(GetSelectedDetailRow());
+
+                // reset exchange rate
+                FPreviouslySelectedDetailRow.ExchangeRateToBase =
+                    (FPreviouslySelectedDetailRow.TransactionCurrency == FLedgerBaseCurrency) ? 1.0m : 0.0m;
+
+                RefreshCurrencyAndExchangeRate();
             }
         }
 

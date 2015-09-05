@@ -47,9 +47,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui
         private string FEventPartnerShortName;
         private String FOutreachCode;
 
-        // option to show applicants for all outreaches of a conference
-        private bool FShowAllOutreaches = false;
-
         // The user's default filter from SUserDefaults (if it exists)
         private string FUserDefaultFilter;
 
@@ -65,6 +62,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.Closed += new System.EventHandler(this.TFrmPetra_ClosedManual);
 
             SetupFilter();
+
+            FinishButtonPanelSetup();
         }
 
         // read user default filter from SUserDefaults (if it exists) and apply it to form
@@ -244,27 +243,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             FilterChange(sender, e);
         }
 
-        private void ShowAllOutreaches_CheckBox(System.Object sender, EventArgs e)
-        {
-            FShowAllOutreaches = !FShowAllOutreaches;
-
-            DataView MyDataView = FMainDS.PmShortTermApplication.DefaultView;
-
-            if (!chkShowAllOutreaches.Checked)
-            {
-                // filter rows so only showing applicants for selected outreach rather than the entire conference
-                MyDataView.RowFilter = PmShortTermApplicationTable.GetConfirmedOptionCodeDBName() + " = " + "'" + FOutreachCode + "'";
-            }
-            else
-            {
-                MyDataView.RowFilter = null;
-            }
-
-            grdApplications.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
-
-            UpdateRecordNumberDisplay();
-        }
-
         private void EditApplication(System.Object sender, EventArgs e)
         {
             PmShortTermApplicationRow SelectedRow = GetSelectedApplication();
@@ -374,27 +352,36 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             return (PmShortTermApplicationRow)((DataRowView)grdApplications.SelectedDataRows[0]).Row;
         }
 
+        private void FinishButtonPanelSetup()
+        {
+            // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+            lblRecordCounter.AutoSize = true;
+            lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+            lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+            pnlButtonsRecordCounter.AutoSize = true;
+
+            UpdateRecordNumberDisplay();
+        }
+
         // update the record counter
         private void UpdateRecordNumberDisplay()
         {
-            int RecordCount;
+            int RecordCount = 0;
 
             if (grdApplications.DataSource != null)
             {
                 RecordCount = ((DevAge.ComponentModel.BoundDataView)grdApplications.DataSource).Count;
-                lblRecordCounter.Text = String.Format(
-                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
-                        true),
-                    RecordCount);
+            }
 
-                if (RecordCount > 0)
-                {
-                    btnEditApplication.Enabled = true;
-                }
-                else
-                {
-                    btnEditApplication.Enabled = false;
-                }
+            lblRecordCounter.Text = String.Format(
+                Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
+                    true),
+                RecordCount);
+
+            if (RecordCount > 0)
+            {
+                btnEditApplication.Enabled = true;
             }
             else
             {

@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailRecipientKey.PartnerClassChanged += RecipientPartnerClassChanged;
 
             //Set initial width of this textbox
-            cmbKeyMinistries.ComboBoxWidth = 250;
+            cmbKeyMinistries.ComboBoxWidth = 300;
             cmbKeyMinistries.AttachedLabel.Visible = false;
 
             //Setup hidden text boxes used to speed up reading transactions

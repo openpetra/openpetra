@@ -67,6 +67,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.Closed += new System.EventHandler(this.TFrmPetra_ClosedManual);
 
             SetupFilter();
+
+            FinishButtonPanelSetup();
         }
 
         // read user default filter from SUserDefaults (if it exists) and apply it to form
@@ -395,6 +397,16 @@ namespace Ict.Petra.Client.MPersonnel.Gui
         private PmGeneralApplicationRow GetSelectedApplication()
         {
             return (PmGeneralApplicationRow)((DataRowView)grdApplications.SelectedDataRows[0]).Row;
+        }
+
+        private void FinishButtonPanelSetup()
+        {
+            // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+            lblRecordCounter.AutoSize = true;
+            lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+            lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+            pnlButtonsRecordCounter.AutoSize = true;
         }
 
         // update the record counter

@@ -421,7 +421,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void CheckPublicationValidity()
         {
-            if (FInitializationRunning)
+            if (FInitializationRunning || (FSubscriptionDR.RowState == DataRowState.Deleted) || (FSubscriptionDR.RowState == DataRowState.Detached))
             {
                 /* don't do his check while a new record is being displayed */
                 return;

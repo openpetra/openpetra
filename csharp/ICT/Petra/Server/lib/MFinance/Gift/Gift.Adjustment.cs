@@ -570,14 +570,25 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (TaxDeductiblePercentageEnabled)
             {
-                // true if a new percentage is available and the user wants to use it
-                bool? UpdateTaxDeductiblePct = (bool?)ARequestParams["UpdateTaxDeductiblePct"];
-
-                if (!AReversal
-                    && (Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust) || (UpdateTaxDeductiblePct == true)))
+                if (!AReversal && Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust))
                 {
                     giftDetail.TaxDeductiblePct = Convert.ToDecimal(ARequestParams["NewPct"]);
                     TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetail);
+                }
+                else if (!AReversal)
+                {
+                    if (ARequestParams.ContainsKey("UpdateTaxDeductiblePct"))
+                    {
+                        List <string[]>UpdateTaxDeductiblePctRecipeints = (List <string[]> )ARequestParams["UpdateTaxDeductiblePct"];
+                        string[] Result = UpdateTaxDeductiblePctRecipeints.Find(x => x[0] == giftDetail.RecipientKey.ToString());
+
+                        // true if a new percentage is available and the user wants to use it
+                        if (Result != null)
+                        {
+                            giftDetail.TaxDeductiblePct = Convert.ToDecimal(Result[1]);
+                            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetail);
+                        }
+                    }
                 }
                 else
                 {
@@ -658,7 +669,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 // if the gift destination should be fixed
-                if ((bool?)ARequestParams["FixGiftDestination"] == true)
+                if (ARequestParams.ContainsKey("FixedGiftDestination")
+                    && (Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust) && (bool)ARequestParams["FixedGiftDestination"]
+                        || (((List <string> )ARequestParams["FixedGiftDestination"]).Exists(x => x == giftDetail.RecipientKey.ToString()))))
                 {
                     giftDetail.FixedGiftDestination = true;
                 }

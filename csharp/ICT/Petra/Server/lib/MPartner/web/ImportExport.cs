@@ -1624,10 +1624,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
             else
             {
-                AddVerificationResult(ref ReferenceResults, String.Format("Import of {0} {1}\r\n {2}",
+                AddVerificationResult(ref ReferenceResults, String.Format("Import of {0} {1} was {2}.",
                         ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass,
                         ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerShortName,
-                        Res == TSubmitChangesResult.scrOK ? "Successful" : "Error"
+                        Res == TSubmitChangesResult.scrOK ? "successful" : "unsuccessful"
                         ),
                     TResultSeverity.Resv_Status);
             }
@@ -1958,26 +1958,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             ExtText += GetExtFileFooter();
             return ExtText;
-        }
-
-        /// <summary>
-        /// Unpack this (ext formatted) string into the database
-        /// </summary>
-        /// <param name="ALinesToImport"></param>
-        /// <param name="ALimitToOption"></param>
-        /// <param name="ADoNotOverwrite"></param>
-        /// <param name="AResultList"></param>
-        [RequireModulePermission("PTNRUSER")]
-        public static Boolean ImportDataExt(string[] ALinesToImport,
-            string ALimitToOption,
-            bool ADoNotOverwrite,
-            out TVerificationResultCollection AResultList)
-        {
-            TPartnerFileImport Importer = new TPartnerFileImport();
-
-            Importer.ImportAllData(ALinesToImport,
-                ALimitToOption, ADoNotOverwrite, out AResultList);
-            return true;
         }
     }
 }

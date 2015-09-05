@@ -102,7 +102,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
     /// <summary>Delegate for a call to open a Modal Range Find screen</summary>
     public delegate bool TDelegateOpenGetMergeDataDialog(long AFromPartnerKey,
         long AToPartnerKey,
-        string ADataType,
+        TMergeActionEnum AMergeAction,
         Form AParentForm);
 
     /// <summary>Delegate for a call to open a Modal Print Partner report screen</summary>

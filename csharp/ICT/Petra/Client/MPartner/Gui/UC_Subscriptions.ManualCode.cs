@@ -252,6 +252,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void GetDetailDataFromControlsManual(PSubscriptionRow ARow)
         {
             ucoDetails.GetDetails(ARow);
+
+            // Clear validation messages as the exact same validation is carried out here as well as ucoDetails.
+            // If we do not clear we get duplicate validation messages.
+            FPetraUtilsObject.VerificationResultCollection.Clear();
         }
 
         /// <summary>

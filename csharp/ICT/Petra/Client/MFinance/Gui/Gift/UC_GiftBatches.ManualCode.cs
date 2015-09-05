@@ -204,7 +204,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ParentForm.Cursor = Cursors.WaitCursor;
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
-            cmbDetailCurrencyCode.cmbCombobox.StickySelectedValueChanged += new EventHandler(StickyCurrencyChange);
 
             // Load the ledger table so we know the base currency
             FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadALedgerTable(FLedgerNumber));
@@ -676,39 +675,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        /// <summary>
-        /// This event is fired when there is a currency change that 'sticks' for more than 1 second.
-        /// We use it to see if the server has a specific rate for this currency and date
-        /// </summary>
-        private void StickyCurrencyChange(object sender, EventArgs e)
-        {
-            if (FPreviouslySelectedDetailRow.CurrencyCode == FLedgerBaseCurrency)
-            {
-                return;
-            }
-
-            decimal suggestedRate = 0.0m;
-
-            if (dtpDetailGlEffectiveDate.Date.HasValue)
-            {
-                FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
-
-                // get a specific single rate for the specific date
-                suggestedRate = TRemote.MFinance.GL.WebConnectors.GetDailyExchangeRate(
-                    FPreviouslySelectedDetailRow.CurrencyCode, FLedgerBaseCurrency, dtpDetailGlEffectiveDate.Date.Value, 0, true);
-
-                FPetraUtilsObject.GetForm().Cursor = Cursors.Default;
-            }
-
-            // Is it different??
-            if (FPreviouslySelectedDetailRow.ExchangeRateToBase != suggestedRate)
-            {
-                FPreviouslySelectedDetailRow.ExchangeRateToBase = suggestedRate;
-                RefreshCurrencyAndExchangeRateControls();
-                RecalculateTransactionAmounts(suggestedRate);
-            }
-        }
-
         private void HashTotalChanged(object sender, EventArgs e)
         {
             TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
@@ -893,6 +859,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (FPreviouslySelectedDetailRow.GlEffectiveDate != ActualDateValue)
                     {
                         FPreviouslySelectedDetailRow.GlEffectiveDate = ActualDateValue;
+
+                        // reset exchange rate
+                        FPreviouslySelectedDetailRow.ExchangeRateToBase =
+                            (FPreviouslySelectedDetailRow.CurrencyCode == FLedgerBaseCurrency) ? 1.0m : 0.0m;
+
+                        RefreshCurrencyAndExchangeRateControls();
+                        RecalculateTransactionAmounts();
                     }
 
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, ActualDateValue, out YearNumber, out PeriodNumber))
@@ -925,28 +898,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                     dtpDetailGlEffectiveDate.Focus();
                                 }
                             }
-                        }
-                    }
-
-                    if (FPreviouslySelectedDetailRow.CurrencyCode != FLedgerBaseCurrency)
-                    {
-                        // Need to check for new exchange rate for this date
-                        decimal suggestedRate = 0.0m;
-
-                        FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
-
-                        // get a specific single rate for the specific date
-                        suggestedRate = TRemote.MFinance.GL.WebConnectors.GetDailyExchangeRate(
-                            FPreviouslySelectedDetailRow.CurrencyCode, FLedgerBaseCurrency, dtpDetailGlEffectiveDate.Date.Value, 0, true);
-
-                        FPetraUtilsObject.GetForm().Cursor = Cursors.Default;
-
-                        // Is it different??
-                        if (FPreviouslySelectedDetailRow.ExchangeRateToBase != suggestedRate)
-                        {
-                            FPreviouslySelectedDetailRow.ExchangeRateToBase = suggestedRate;
-                            RefreshCurrencyAndExchangeRateControls();
-                            RecalculateTransactionAmounts(suggestedRate);
                         }
                     }
                 }
@@ -1155,6 +1106,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 RefreshCurrencyAndExchangeRateControls();
                 RecalculateTransactionAmounts(selectedExchangeRate);
+
+                FPetraUtilsObject.VerificationResultCollection.Clear();
             }
         }
 
