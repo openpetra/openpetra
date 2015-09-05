@@ -6824,6 +6824,7 @@
                 label="Minimum Amount"
                 columnlabel="Minimum"
                 help="Do not print receipt if the total is less than this value +/-"
+                notnull="yes"
                 initial="0"/>
     <tablefield name="p_options_c"
                 type="varchar"

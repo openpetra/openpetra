@@ -861,11 +861,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
 
             // Perform validation in UserControls, too
-            ucoUpperPart.ValidateAllData(TErrorProcessingMode.Epm_None);
-            ucoLowerPart.ValidateAllData(TErrorProcessingMode.Epm_None);
+            ucoUpperPart.ValidateAllData(TErrorProcessingMode.Epm_IgnoreNonCritical);
+            ucoLowerPart.ValidateAllData(TErrorProcessingMode.Epm_IgnoreNonCritical);
 
+            bool ignoreWarnings = !FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors;
             ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                this.GetType(), null, false);
+                this.GetType(), null, ignoreWarnings);
 
             if (ReturnValue)
             {
@@ -926,6 +927,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int16 TmpRowCounter;
             string TmpDebugString = String.Empty;
 #endif
+            // Be sure to fire the OnLeave event on the active control of any user control
+            FPetraUtilsObject.ForceOnLeaveForActiveControl();
+
             FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
             // Don't allow saving if user is still editing a Detail of a List
@@ -945,6 +949,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (ValidateAllData())
             {
+                // Ask the user about non-critical warnings, if they are the only 'errors' in the collection
+                if (FPetraUtilsObject.VerificationResultCollection.HasOnlyNonCriticalErrors
+                    && (TDataValidation.ProcessAnyDataValidationWarnings(FPetraUtilsObject.VerificationResultCollection,
+                            MCommonResourcestrings.StrFormSaveDataAnywayQuestion, this.GetType()) == false))
+                {
+                    return false;
+                }
+
                 // Fire the DataSavingValidated event, which is the last chance to cancel the save
                 System.ComponentModel.CancelEventArgs eCancel = new System.ComponentModel.CancelEventArgs(false);
                 FPetraUtilsObject.OnDataSavingValidated(this, eCancel);
