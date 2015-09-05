@@ -199,6 +199,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDonorInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
                 txtDonorInfo.Font = TAppSettingsManager.GetDefaultBoldFont();
 
+                // Move the print receipt check box and label
+                chkNoReceiptOnAdjustment.Top = dtpDateEntered.Top + 4;
+                chkNoReceiptOnAdjustment.Left = dtpDateEntered.Right + 40;
+                chkNoReceiptOnAdjustment.Visible = false;
+
                 if (FTaxDeductiblePercentageEnabled)
                 {
                     // set up Tax Deductibility Percentage (specifically for OM Switzerland)
@@ -1578,14 +1583,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailReference.Text = ACurrentGiftRow.Reference;
             }
 
-            if (ACurrentGiftRow.IsReceiptLetterCodeNull())
-            {
-                cmbDetailReceiptLetterCode.SelectedIndex = -1;
-            }
-            else
-            {
-                cmbDetailReceiptLetterCode.SetSelectedString(ACurrentGiftRow.ReceiptLetterCode);
-            }
+            cmbDetailReceiptLetterCode.SetSelectedString(ACurrentGiftRow.ReceiptLetterCode, -1);
+            chkNoReceiptOnAdjustment.Checked = !ACurrentGiftRow.PrintReceipt;
         }
 
         /// <summary>
@@ -1722,6 +1721,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             btnDeleteAll.Enabled = btnDelete.Enabled;
             btnNewDetail.Enabled = !PnlDetailsProtected;
             btnNewGift.Enabled = !PnlDetailsProtected;
+
+            // Only show the NoReceipt check box under special circumstances
+            chkNoReceiptOnAdjustment.Visible = IsUnpostedReversedDetailAdjustment(ARow);
+            chkNoReceiptOnAdjustment.Enabled = firstIsEnabled;
+        }
+
+        private Boolean IsUnpostedReversedDetailAdjustment(AGiftDetailRow ARow)
+        {
+            // This method returns true if the gift detail row is an unposted adjustement to a reversed gift detail
+            // We use the LinkToPreviousGift property to discover if this gift is associated with the previous gift row.
+            // Then we check if that row has a modifiedDetail flag sets for its first detail.
+            if ((ARow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return false;
+            }
+
+            AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+
+            if ((giftRow != null) && (giftRow.LinkToPreviousGift == true))
+            {
+                if (ARow.GiftTransactionNumber > 1)
+                {
+                    AGiftDetailRow prevDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
+                        new object[] { ARow.LedgerNumber, ARow.BatchNumber, ARow.GiftTransactionNumber - 1, 1 });
+                    return prevDetailRow.ModifiedDetail == true;
+                }
+            }
+
+            return false;
         }
 
         private Boolean BatchHasMethodOfPayment()
@@ -1850,6 +1878,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FTaxDeductiblePercentageEnabled)
             {
                 GetTaxDeductibleDataFromControlsManual(ref ARow);
+            }
+
+            if (chkNoReceiptOnAdjustment.Visible)
+            {
+                GetGiftRow(ARow.GiftTransactionNumber).PrintReceipt = (chkNoReceiptOnAdjustment.Checked == false);
             }
         }
 
@@ -1987,14 +2020,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFunctionName">Which function shall be called on the server</param>
         public void ShowRevertAdjustForm(GiftAdjustmentFunctionEnum AFunctionName)
         {
+            TFrmGiftBatch parentForm = (TFrmGiftBatch)ParentForm;
             bool reverseWholeBatch = (AFunctionName == GiftAdjustmentFunctionEnum.ReverseGiftBatch);
 
-            if (!((TFrmGiftBatch)ParentForm).SaveChangesManual())
+            if (!parentForm.SaveChangesManual())
             {
                 return;
             }
 
-            ((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
+            parentForm.Cursor = Cursors.WaitCursor;
 
             AGiftBatchRow giftBatch = ((TFrmGiftBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
             int BatchNumber = giftBatch.BatchNumber;
@@ -2002,35 +2036,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (giftBatch == null)
             {
                 MessageBox.Show(Catalog.GetString("Please select a Gift Batch to Reverse."));
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
+                parentForm.Cursor = Cursors.Default;
                 return;
             }
 
             if (!giftBatch.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED))
             {
                 MessageBox.Show(Catalog.GetString("This function is only possible when the selected batch is already posted."));
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
+                parentForm.Cursor = Cursors.Default;
                 return;
             }
 
             if (FPetraUtilsObject.HasChanges)
             {
                 MessageBox.Show(Catalog.GetString("Please save first and than try again!"));
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
+                parentForm.Cursor = Cursors.Default;
                 return;
             }
 
             if (reverseWholeBatch && (FBatchNumber != BatchNumber))
             {
-                ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, true);
-                ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Batches);
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
+                parentForm.SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, true);
+                parentForm.SelectTab(TFrmGiftBatch.eGiftTabs.Batches);
+                parentForm.Cursor = Cursors.WaitCursor;
             }
 
             if (FPreviouslySelectedDetailRow == null)
             {
                 MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
+                parentForm.Cursor = Cursors.Default;
                 return;
             }
 
@@ -2141,16 +2175,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!revertForm.IsDisposed && (revertForm.ShowDialog() == DialogResult.OK))
                 {
-                    ((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
-                    ((TFrmGiftBatch)ParentForm).RefreshAll();
+                    parentForm.Cursor = Cursors.WaitCursor;
+
+                    if ((revertForm.AdjustmentBatchNumber > 0) && (revertForm.AdjustmentBatchNumber != workingBatchNumber))
+                    {
+                        // select the relevant batch
+                        parentForm.InitialBatchNumber = revertForm.AdjustmentBatchNumber;
+                    }
+
+                    parentForm.RefreshAll();
                 }
             }
             finally
             {
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
+                parentForm.Cursor = Cursors.WaitCursor;
                 revertForm.Dispose();
                 ParentForm.ShowInTaskbar = true;
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
+                parentForm.Cursor = Cursors.Default;
             }
         }
 

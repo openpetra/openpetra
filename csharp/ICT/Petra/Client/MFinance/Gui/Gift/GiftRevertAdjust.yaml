@@ -33,13 +33,14 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls: [pnlComments, pnlButtons]
-            Height: 130
+            Height: 145
         pnlComments:
             Dock: Top
             Controls:
                 Row0: [txtReversalCommentOne, cmbReversalCommentOneType]
                 Row1: [txtReversalCommentTwo, cmbReversalCommentTwoType]
                 Row2: [txtReversalCommentThree, cmbReversalCommentThreeType]
+                Row3: [chkNoReceipt]
         pnlButtons:
             Controls:
                 Row0: [btnHelp, btnOK, btnClose]
@@ -76,6 +77,10 @@ RootNode:
         cmbReversalCommentThreeType: {Width=100}
             Label: for
             OptionalValues: [Donor,Recipient,Both,Office]
+        chkNoReceipt:
+            Label: Do not print the adjusting gift transactions on periodic receipts.
+            Tooltip: Tick this if you want to exclude the adjusting gift transaction(s) from periodic receipts
+            CheckBoxAttachedLabel: right
         
         btnOK:
             Action: actOK

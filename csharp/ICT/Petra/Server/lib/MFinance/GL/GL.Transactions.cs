@@ -4096,7 +4096,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string bBatchNumberAlias = "BatchNumber";
             string bBatchLastJournal = BatchTableAlias + "." + ARecurringBatchTable.GetLastJournalDBName();
             string bBatchLastJournalAlias = "BatchLastJournal";
-            string bBatchStatus = BatchTableAlias + "." + ARecurringBatchTable.GetBatchStatusDBName();
             string jLedgerNumber = JournalTableAlias + "." + ARecurringJournalTable.GetLedgerNumberDBName();
             string jBatchNumber = JournalTableAlias + "." + ARecurringJournalTable.GetBatchNumberDBName();
             string jJournalNumber = JournalTableAlias + "." + ARecurringJournalTable.GetJournalNumberDBName();
@@ -4285,7 +4284,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string jJournalNumberAlias = "JournalNumber";
             string jJournalLastTransaction = JournalTableAlias + "." + ARecurringJournalTable.GetLastTransactionNumberDBName();
             string jJournalLastTransactionAlias = "JournalLastTransaction";
-            string jJournalStatus = JournalTableAlias + "." + ARecurringJournalTable.GetJournalStatusDBName();
 
             string tLedgerNumber = TransactionTableAlias + "." + ARecurringTransactionTable.GetLedgerNumberDBName();
             string tBatchNumber = TransactionTableAlias + "." + ARecurringTransactionTable.GetBatchNumberDBName();

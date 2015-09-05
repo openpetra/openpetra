@@ -276,6 +276,8 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
                         fieldList.Add(PFormTable.GetFormNameDBName());
                         fieldList.Add(PFormTable.GetFormDescriptionDBName());
                         fieldList.Add(PFormTable.GetTemplateFileExtensionDBName());
+                        fieldList.Add(PFormTable.GetAddressLayoutCodeDBName());
+                        fieldList.Add(PFormTable.GetFormalityLevelDBName());
 
                         // Probably don't need these on the client
                         fieldList.Add(PFormTable.GetMinimumAmountDBName());

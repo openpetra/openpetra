@@ -634,6 +634,9 @@ namespace Ict.Petra.Client.App.PetraClient
             ExceptionHandling.ProcessSecurityAccessDeniedException = TMessages.MsgSecurityException;
             TUnhandledThreadExceptionHandler.ProcessSecurityAccessDeniedException = TMessages.MsgSecurityException;
 
+            // Delegate for an extended message box
+            TClientTaskInstance.ShowExtendedMessageBox = @TFrmExtendedMessageBoxManager.Create;
+
             // Set up Delegates for forwarding of calls to Screens in various Assemblies
             TCommonScreensForwarding.OpenPartnerFindScreen = @TPartnerFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenPartnerFindByBankDetailsScreen = @TPartnerFindScreenManager.OpenModalForm;

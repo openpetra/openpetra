@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Globalization;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -85,7 +86,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                             // update international amounts for all gl transaction using modified or new exchange rate
                             string Query = "UPDATE a_transaction SET a_amount_in_intl_currency_n = " +
-                                           "(a_amount_in_base_currency_n / " + Row.RateOfExchange + ")" +
+                                           "(a_amount_in_base_currency_n / " + Row.RateOfExchange.ToString(CultureInfo.InvariantCulture) + ")" +
                                            " FROM a_ledger" +
                                            " WHERE EXTRACT(MONTH FROM a_transaction.a_transaction_date_d) = " + Row.DateEffectiveFrom.Month +
                                            " AND EXTRACT(YEAR FROM a_transaction.a_transaction_date_d) = " + Row.DateEffectiveFrom.Year +

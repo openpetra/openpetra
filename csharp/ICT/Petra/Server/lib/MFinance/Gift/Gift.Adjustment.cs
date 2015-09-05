@@ -372,8 +372,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         //assuming new elements are added after these static borders
 
-                        int cycle = 0;
-
                         AGiftDS.AGift.DefaultView.Sort = string.Format("{0}, {1}",
                             AGiftTable.GetBatchNumberDBName(),
                             AGiftTable.GetGiftTransactionNumberDBName());
@@ -383,10 +381,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             AGiftDetailTable.GetGiftTransactionNumberDBName(),
                             AGiftDetailTable.GetDetailNumberDBName());
 
-                        // first cycle creates gift reversal; second cycle creates new adjusted gift (if needed)
-                        do
+                        foreach (DataRowView giftRow in AGiftDS.AGift.DefaultView)
                         {
-                            foreach (DataRowView giftRow in AGiftDS.AGift.DefaultView)
+                            int cycle = 0;
+
+                            // first cycle creates gift reversal; second cycle creates new adjusted gift (if needed)
+                            do
                             {
                                 AGiftRow oldGift = (AGiftRow)giftRow.Row;
 
@@ -399,21 +399,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     gift.DateEntered = DateEffective;
                                     gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
                                     giftBatch.LastGiftNumber++;
+                                    gift.LinkToPreviousGift = (cycle != 0);
                                     gift.LastDetailNumber = 0;
-
-                                    if (NoReceipt)
-                                    {
-                                        gift.ReceiptLetterCode = "NO*RECET";
-                                    }
 
                                     // do not print a receipt for reversed gifts
                                     if (cycle == 0)
                                     {
                                         gift.ReceiptPrinted = true;
+                                        gift.PrintReceipt = false;
                                     }
                                     else
                                     {
                                         gift.ReceiptPrinted = false;
+                                        gift.PrintReceipt = !NoReceipt;
                                     }
 
                                     AGiftDS.AGift.Rows.Add(gift);
@@ -438,12 +436,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         }
                                     }
                                 }
-                            }
 
-                            cycle++;
-                        } while ((cycle < 2)
-                                 && (Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift) || Function.Equals(GiftAdjustmentFunctionEnum.FieldAdjust)
-                                     || Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust)));
+                                cycle++;
+                            } while ((cycle < 2)
+                                     && (Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift)
+                                         || Function.Equals(GiftAdjustmentFunctionEnum.FieldAdjust)
+                                         || Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust)));
+                        }
 
                         //When reversing into a new or existing batch, set batch total
                         if (!Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift))

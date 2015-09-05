@@ -976,6 +976,7 @@ namespace Ict.Petra.Shared.MCommon
             Subscription = new List <TFormDataSubscription>();
             Gift = new List <TFormDataGift>();
             FamilyMember = new List <TFormDataFamilyMember>();
+            Custom1 = Custom2 = Custom3 = Custom4 = Custom5 = Custom6 = Custom7 = Custom8 = String.Empty;
         }
 
         // General Info
@@ -1176,6 +1177,40 @@ namespace Ict.Petra.Shared.MCommon
         }
         ///
         public DateTime ? GiftDate {
+            get; set;
+        }
+
+        // Custom fields
+        ///
+        public String Custom1 {
+            get; set;
+        }
+        ///
+        public String Custom2 {
+            get; set;
+        }
+        ///
+        public String Custom3 {
+            get; set;
+        }
+        ///
+        public String Custom4 {
+            get; set;
+        }
+        ///
+        public String Custom5 {
+            get; set;
+        }
+        ///
+        public String Custom6 {
+            get; set;
+        }
+        ///
+        public String Custom7 {
+            get; set;
+        }
+        ///
+        public String Custom8 {
             get; set;
         }
 
@@ -1522,6 +1557,11 @@ namespace Ict.Petra.Shared.MCommon
 
         /// Recipient name (or motivation if recipient key is 0)
         public String RecipientNameOrMotivation {
+            get; set;
+        }
+
+        /// Mailing Code
+        public String MailingCode {
             get; set;
         }
     }

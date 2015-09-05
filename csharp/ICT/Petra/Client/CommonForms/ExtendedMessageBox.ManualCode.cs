@@ -546,4 +546,48 @@ namespace Ict.Petra.Client.CommonForms
             MessageBox.Show("The message text has been copied to clipboard.", MCommonResourcestrings.StrRecordDeletionTitle);
         }
     }
+
+    /// <summary>
+    /// class that contains a method to show the box.  The TShowExtendedMessageBox delegate points to this class method.
+    /// </summary>
+    public static class TFrmExtendedMessageBoxManager
+    {
+        /// <summary>
+        /// Opens an extended message box screen.
+        /// </summary>
+        /// <param name="AParentForm">The owner of the screen</param>
+        /// <param name="AMessage">The message</param>
+        /// <param name="ACaption">The box Title</param>
+        /// <param name="AChkOptionText">Text to display with the checkbox.  If empty no box is displayed.</param>
+        /// <param name="AButtons">Integer value for the buttons to display corresponding to the TButtons enumeration.
+        /// 0=embbYesYesToAllNoCancel, 1=embbYesYesToAllNoNoToAllCancel, 2=embbYesYesToAllNoNoToAll, 3=embbYesNo, 4=embbYesNoCancel,
+        /// 5=embbOK, 6=embbOKCancel</param>
+        /// <param name="ADefaultButton">Integer value for the default button corresponding to the TDefaultBtton enumeration.
+        /// 0 indicates no default, 1 is button 1 and so on.</param>
+        /// <param name="AIcon">Integer value for the icon corresponding to the TIcon enumeration.</param>
+        /// <param name="AOptionEntrySelected">Set to true if the checkbox is to be initially selected.</param>
+        /// <param name="AOptionExitSelected">Returns true if the option was selected on exit.  False otherwise.</param>
+        /// <returns>0=Yes, 1=YesToAll, 2=No, 3=NoToAll, 4=OK, 5=Cancel, 6=Undefined</returns>
+        public static int Create(Form AParentForm,
+            String AMessage,
+            String ACaption,
+            String AChkOptionText,
+            int AButtons,
+            int ADefaultButton,
+            int AIcon,
+            bool AOptionEntrySelected,
+            out bool AOptionExitSelected)
+        {
+            TFrmExtendedMessageBox dlg = new TFrmExtendedMessageBox(AParentForm);
+
+            dlg.ShowDialog(AMessage,
+                ACaption,
+                AChkOptionText,
+                (TFrmExtendedMessageBox.TButtons)AButtons,
+                (TFrmExtendedMessageBox.TDefaultButton)ADefaultButton,
+                (TFrmExtendedMessageBox.TIcon)AIcon,
+                AOptionEntrySelected);
+            return (int)dlg.GetResult(out AOptionExitSelected);
+        }
+    }
 }

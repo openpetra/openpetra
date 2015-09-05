@@ -47,9 +47,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private AGiftDetailRow giftDetailRow = null;
         private string FCurrencyCode = null;
         private Boolean ok = false;
-        private Boolean FNoReceipt = false;
         private DateTime FStartDateCurrentPeriod;
         private DateTime FEndDateLastForwardingPeriod;
+        private int FAdjustmentBatchNumber = -1;
         private bool FAutoCompleteComments = false;
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             set
             {
-                FNoReceipt = value;
+                chkNoReceipt.Checked = value;
             }
         }
 
@@ -180,6 +180,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// Gets the batch number containg the adjusted gifts
+        /// </summary>
+        public int AdjustmentBatchNumber
+        {
+            get
+            {
+                return FAdjustmentBatchNumber;
+            }
+        }
+
         private void InitializeManualCode()
         {
             //FLedger is still zero at this point
@@ -198,6 +209,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             grdDetails.Enabled = false;
             grdDetails.DataSource = null;
+
+            chkNoReceipt.Enabled = ((GiftAdjustmentFunctionEnum)requestParams["Function"] == GiftAdjustmentFunctionEnum.AdjustGift);
         }
 
         private void GetGiftsForReverseAdjust()
@@ -376,22 +389,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             AddParam("AutoCompleteComments", FAutoCompleteComments);
 
-            AddParam("NoReceipt", FNoReceipt);
+            AddParam("NoReceipt", chkNoReceipt.Checked);
 
-            ReverseAdjust();
+            ReverseAdjust(out FAdjustmentBatchNumber);
         }
 
         // do the actual reversal / adjustment
-        private void ReverseAdjust()
+        private void ReverseAdjust(out int AAdjustmentBatchNumber)
         {
-            int AdjustmentBatchNumber;
             Boolean ok;
 
             try
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AdjustmentBatchNumber, giftMainDS);
+                ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AAdjustmentBatchNumber, giftMainDS);
             }
             finally
             {
@@ -406,29 +418,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     case GiftAdjustmentFunctionEnum.ReverseGiftBatch :
                         MessageBox.Show(Catalog.GetString("Reversed gift batch has been successfully created with Batch Number " +
-                            AdjustmentBatchNumber + "."),
+                            AAdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift Batch"));
                         break;
 
                     case GiftAdjustmentFunctionEnum.ReverseGiftDetail:
-                        MessageBox.Show(Catalog.GetString("Reversed gift detail has been successfully added to Batch " + AdjustmentBatchNumber + "."),
+                        MessageBox.Show(Catalog.GetString("Reversed gift detail has been successfully added to Batch " + AAdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift Detail"));
                         break;
 
                     case GiftAdjustmentFunctionEnum.ReverseGift:
-                        MessageBox.Show(Catalog.GetString("Reversed gift has been successfully added to Batch " + AdjustmentBatchNumber + "."),
+                        MessageBox.Show(Catalog.GetString("Reversed gift has been successfully added to Batch " + AAdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift"));
                         break;
 
                     case GiftAdjustmentFunctionEnum.AdjustGift:
-                        MessageBox.Show(Catalog.GetString("Adjustment transactions have been successfully added to Batch " + AdjustmentBatchNumber +
+                        MessageBox.Show(Catalog.GetString("Adjustment transactions have been successfully added to Batch " + AAdjustmentBatchNumber +
                             "."),
                         Catalog.GetString("Adjust Gift"));
                         break;
 
                     case GiftAdjustmentFunctionEnum.FieldAdjust:
                         MessageBox.Show(Catalog.GetString("Gift Field Adjustment transactions have been successfully added to Batch " +
-                            AdjustmentBatchNumber +
+                            AAdjustmentBatchNumber +
                             "."),
                         Catalog.GetString("Adjust Gift"));
                         break;
@@ -436,7 +448,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     case GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust:
                         MessageBox.Show(Catalog.GetString("Tax Deductible Percentage Adjustment transactions have been successfully added to Batch "
                             +
-                            AdjustmentBatchNumber +
+                            AAdjustmentBatchNumber +
                             "."),
                         Catalog.GetString("Adjust Gift"));
                         break;

@@ -110,6 +110,7 @@ RootNode:
                 Row1: [cmbDetailMethodOfGivingCode, cmbDetailMethodOfPaymentCode]
                 Row2: [txtDetailReference, cmbDetailReceiptLetterCode]
                 Row3: [dtpDateEntered, txtGiftTotal]
+                Row4: [chkNoReceiptOnAdjustment]
         grpDetailsForEachGift: {Width:930, Height:242}
             Controls:
                 Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
@@ -147,6 +148,7 @@ RootNode:
         txtDetailGiftTransactionAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if the gift is to remain confidential}
         chkDetailTaxDeductible: {Label=Tax deductible?, ActionClick=ToggleTaxDeductible}
+        chkNoReceiptOnAdjustment: {Label=Do not print on periodic receipt, CheckBoxAttachedLabel=right, Tooltip=Tick this if you want to exclude this adjusting gift from periodic receipts}
         txtDeductiblePercentage: {Visible=false, Label=% Tax Deductible, Format=PercentDecimal(2), Width=80, NullValueAllowed=false}
         txtTaxDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
         txtNonDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}

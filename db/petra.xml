@@ -11654,6 +11654,14 @@
                 help="Make a selection"
                 notnull="yes"
                 initial="Unprocessed"/>
+    <tablefield name="a_link_to_previous_gift_l"
+                type="bit"
+                descr="Indicates that this gift is linked to the previous gift transaction number. For adjustments this links the new transaction to the reversal one.  Set by the system."
+                format="yes/no"
+                label="Link to Previous Gift"
+                help="When true this gift transaction is linked to the previous one"
+                notnull="yes"
+                initial="no"/>
     <tablefield name="a_print_receipt_l"
                 type="bit"
                 descr="Indicates whether this gift should be included on receipts. For adjustments this field can be set to No to suppress printing."

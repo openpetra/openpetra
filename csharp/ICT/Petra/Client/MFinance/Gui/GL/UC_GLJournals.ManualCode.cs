@@ -71,7 +71,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private string FLedgerBaseCurrency = string.Empty;
         private Int32 FLedgerNumber = -1;
         private ABatchRow FBatchRow = null;
-        private string FCurrencyCodeForJournals = string.Empty;
         private string FBatchStatus = string.Empty;
 
         // Logic Objects

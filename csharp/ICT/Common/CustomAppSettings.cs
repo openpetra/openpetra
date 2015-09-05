@@ -93,6 +93,30 @@ namespace Ict.Common
             }
         }
 
+        /// <summary>
+        /// read only property for the base (top level) directory that contains the folders such as db, etc, log and so on
+        /// </summary>
+        public static string ApplicationBaseDirectory
+        {
+            get
+            {
+                // Start with the ApplicationDirectory (the bin folder)
+                string appDir = ApplicationDirectory;
+
+                // Remove the last item (bin)
+                int pos = appDir.LastIndexOf(Path.DirectorySeparatorChar);
+                appDir = appDir.Substring(0, pos);
+
+                // If the path ends with 'delivery' remove that too.  It applies only on development machines
+                if (appDir.EndsWith(Path.DirectorySeparatorChar + "delivery", StringComparison.OrdinalIgnoreCase))
+                {
+                    appDir = appDir.Substring(0, appDir.Length - 9);
+                }
+
+                return appDir;
+            }
+        }
+
         #region TAppSettingsManager
 
         /// <summary>

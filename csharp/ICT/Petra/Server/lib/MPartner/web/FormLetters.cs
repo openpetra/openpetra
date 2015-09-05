@@ -324,6 +324,57 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                     }
                                 }
 
+                                // Get supporting church, if there is one.  (Actually there may be more than one!)
+                                // The RelationKey should hold the PERSON key and PartnerKey should hold supporter key
+                                PPartnerRelationshipTable tmpTable = new PPartnerRelationshipTable();
+                                PPartnerRelationshipRow templateRow = tmpTable.NewRowTyped(false);
+                                templateRow.RelationName = "SUPPCHURCH";
+                                templateRow.RelationKey = APartnerKey;
+
+                                PPartnerRelationshipTable supportingChurchTable =
+                                    PPartnerRelationshipAccess.LoadUsingTemplate(templateRow, ReadTransaction);
+                                int supportingChurchCount = supportingChurchTable.Rows.Count;
+
+                                // If the user has got RelationKey and PartnerKey back to front we will get no results
+                                PersonFormData.SendingChurchName = String.Empty;
+
+                                for (int i = 0; i < supportingChurchCount; i++)
+                                {
+                                    // Go round each supporting church
+                                    // Get the short name for the sending church
+                                    // Foreign key constraint means that this row is bound to exist
+                                    string churchName;
+                                    TPartnerClass churchClass;
+                                    TStdPartnerStatusCode churchStatus;
+                                    long supportingChurchKey = ((PPartnerRelationshipRow)supportingChurchTable.Rows[i]).PartnerKey;
+
+                                    if (MCommonMain.RetrievePartnerShortName(supportingChurchKey, out churchName, out churchClass, out churchStatus,
+                                            ReadTransaction))
+                                    {
+                                        // The church name can be empty but that would be unusual
+                                        // churchClass should be CHURCH or ORGANISATION if everything is the right way round
+                                        // but we do not check this - nor churchStatus
+                                        if (churchName.Length == 0)
+                                        {
+                                            churchName = Catalog.GetString("Not available");
+                                        }
+
+                                        if (supportingChurchCount > 1)
+                                        {
+                                            if (i > 0)
+                                            {
+                                                PersonFormData.SendingChurchName += Catalog.GetString(" AND ");
+                                            }
+
+                                            PersonFormData.SendingChurchName += String.Format("{0}: '{1}'", i + 1, churchName);
+                                        }
+                                        else
+                                        {
+                                            PersonFormData.SendingChurchName += String.Format("'{0}'", churchName);
+                                        }
+                                    }
+                                }
+
                                 // we need this for later in case we retrieve family members
                                 FamilyKey = PersonRow.FamilyKey;
 

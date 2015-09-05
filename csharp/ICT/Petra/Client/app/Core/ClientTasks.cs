@@ -42,6 +42,19 @@ namespace Ict.Petra.Client.App.Core
         /// <summary></summary>
         public static FastReportsPrintReportNoUi FastReportsPrintReportNoUiDelegate;
 
+        /// <summary></summary>
+        public delegate int TShowExtendedMessageBox(Form AParentForm,
+            String AMessage,
+            String ACaption,
+            String AChkOptionText,
+            int AButtons,
+            int ADefaultButton,
+            int AIcon,
+            bool AEntryOptionSelected,
+            out bool AExitOptionSelected);
+        /// <summary></summary>
+        public static TShowExtendedMessageBox ShowExtendedMessageBox;
+
         /// <summary>
         /// Executes the Client Task.
         /// </summary>

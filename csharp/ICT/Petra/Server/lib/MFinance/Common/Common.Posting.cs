@@ -873,7 +873,6 @@ namespace Ict.Petra.Server.MFinance.Common
             string bBatchNumberAlias = "BatchNumber";
             string bBatchLastJournal = BatchTableAlias + "." + ABatchTable.GetLastJournalDBName();
             string bBatchLastJournalAlias = "BatchLastJournal";
-            string bBatchStatus = BatchTableAlias + "." + ABatchTable.GetBatchStatusDBName();
             string jLedgerNumber = JournalTableAlias + "." + AJournalTable.GetLedgerNumberDBName();
             string jBatchNumber = JournalTableAlias + "." + AJournalTable.GetBatchNumberDBName();
             string jJournalNumber = JournalTableAlias + "." + AJournalTable.GetJournalNumberDBName();
@@ -1063,7 +1062,6 @@ namespace Ict.Petra.Server.MFinance.Common
             string jJournalNumberAlias = "JournalNumber";
             string jJournalLastTransaction = JournalTableAlias + "." + AJournalTable.GetLastTransactionNumberDBName();
             string jJournalLastTransactionAlias = "JournalLastTransaction";
-            string jJournalStatus = JournalTableAlias + "." + AJournalTable.GetJournalStatusDBName();
 
             string tLedgerNumber = TransactionTableAlias + "." + ATransactionTable.GetLedgerNumberDBName();
             string tBatchNumber = TransactionTableAlias + "." + ATransactionTable.GetBatchNumberDBName();
