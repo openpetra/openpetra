@@ -274,7 +274,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 grdAnalAttributes.SetHeaderTooltip(1, Catalog.GetString("Value"));
 
                 // if this form is readonly or batch is posted, then we need all account and cost centre codes, because old codes might have been used
-                bool ActiveOnly = (this.Enabled && FIsUnposted && !FContainsSystemGenerated);
+                bool ActiveOnly = false; //(this.Enabled && FIsUnposted && !FContainsSystemGenerated);
 
                 if (requireControlSetup || (FActiveOnly != ActiveOnly))
                 {

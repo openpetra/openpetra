@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FAccountAndCostCentreLogicObject.RefreshBankAccountAndCostCentreData(FLoadAndFilterLogicObject, out FCostCentreTable, out FAccountTable);
 
             // if this form is readonly, then we need all codes, because old codes might have been used
-            bool ActiveOnly = this.Enabled;
+            bool ActiveOnly = false; //this.Enabled;
             SetupAccountAndCostCentreCombos(ActiveOnly);
 
             cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
