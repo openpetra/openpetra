@@ -292,7 +292,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if new gift transactions were loaded, false if transactions had been loaded already.</returns>
         public bool LoadRecurringGifts(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            FBatchRow = GetCurrentRecurringBatchRow();
+            FBatchRow = GetRecurringBatchRow();
 
             if ((FBatchRow == null) && (GetAnyRecurringBatchRow(ABatchNumber) == null))
             {
@@ -1155,7 +1155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
 
-            if ((GetCurrentRecurringBatchRow() == null) || (txn.NumberValueDecimal == null))
+            if ((GetRecurringBatchRow() == null) || (txn.NumberValueDecimal == null))
             {
                 return;
             }
@@ -1266,14 +1266,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// get the details of the current batch
         /// </summary>
         /// <returns></returns>
-        private ARecurringGiftBatchRow GetCurrentRecurringBatchRow()
+        private ARecurringGiftBatchRow GetRecurringBatchRow()
         {
-            if ((FLedgerNumber != -1) && (FBatchNumber != -1))
-            {
-                return (ARecurringGiftBatchRow)FMainDS.ARecurringGiftBatch.Rows.Find(new object[] { FLedgerNumber, FBatchNumber });
-            }
-
-            return null;
+            return ((TFrmRecurringGiftBatch) this.ParentForm).GetBatchControl().GetSelectedDetailRow();
         }
 
         /// <summary>
@@ -1319,7 +1314,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FGiftDetailView = new DataView(FMainDS.ARecurringGiftDetail);
             FGiftDetailView.RowFilter = FFilterAllDetailsOfGift;
             FGiftDetailView.Sort = ARecurringGiftDetailTable.GetDetailNumberDBName() + " ASC";
-            String formattedDetailAmount = StringHelper.FormatUsingCurrencyCode(ARowToDelete.GiftAmount, GetCurrentRecurringBatchRow().CurrencyCode);
+            String formattedDetailAmount = StringHelper.FormatUsingCurrencyCode(ARowToDelete.GiftAmount, GetRecurringBatchRow().CurrencyCode);
 
             if (FGiftDetailView.Count == 1)
             {
@@ -2321,7 +2316,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            FBatchRow = GetCurrentRecurringBatchRow();
+            FBatchRow = GetRecurringBatchRow();
 
             if (FBatchRow == null)
             {
@@ -2390,7 +2385,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FBatchRow == null)
             {
-                FBatchRow = GetCurrentRecurringBatchRow();
+                FBatchRow = GetRecurringBatchRow();
             }
 
             if (ARow == null)
@@ -2519,7 +2514,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateDataDetailsManual(ARecurringGiftDetailRow ARow)
         {
-            if ((ARow == null) || (GetCurrentRecurringBatchRow() == null) || (GetCurrentRecurringBatchRow().BatchNumber != ARow.BatchNumber))
+            FBatchRow = GetRecurringBatchRow();
+
+            if ((ARow == null) || (FBatchRow == null) || (FBatchRow.BatchNumber != ARow.BatchNumber))
             {
                 return;
             }
@@ -2601,7 +2598,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.ARecurringGiftDetail.Rows.Clear();
             }
 
-            FBatchRow = GetCurrentRecurringBatchRow();
+            FBatchRow = GetRecurringBatchRow();
 
             if (FBatchRow != null)
             {

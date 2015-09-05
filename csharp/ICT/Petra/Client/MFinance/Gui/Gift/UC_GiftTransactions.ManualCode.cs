@@ -1849,15 +1849,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateDataDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            if ((ARow == null) || (ARow.RowState == DataRowState.Deleted) || (GetBatchRow() == null)
-                || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-                || (GetBatchRow().BatchNumber != ARow.BatchNumber))
+            //Ensure FBatchRow is correct, as this gets called from the batch tab validation
+            FBatchRow = GetBatchRow();
+
+            if ((ARow == null) || (ARow.RowState == DataRowState.Deleted) || (FBatchRow == null)
+                || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                || (FBatchRow.BatchNumber != ARow.BatchNumber))
             {
                 return;
             }
-
-            //Ensure FBatchRow is correct, as this gets called from the batch tab validation
-            FBatchRow = GetBatchRow();
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 

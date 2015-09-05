@@ -1681,7 +1681,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ValidateDataDetailsManual(ARecurringTransactionRow ARow)
         {
-            if ((ARow == null) || (GetBatchRow() == null))
+            //Can be called from outside, so need to update fields
+            FBatchRow = GetBatchRow();
+
+            if (FBatchRow == null)
+            {
+                return;
+            }
+
+            FJournalRow = GetJournalRow();
+
+            if (FJournalRow != null)
+            {
+                FJournalNumber = FJournalRow.JournalNumber;
+            }
+
+            if ((ARow == null) || (FBatchRow.BatchNumber != ARow.BatchNumber))
             {
                 return;
             }

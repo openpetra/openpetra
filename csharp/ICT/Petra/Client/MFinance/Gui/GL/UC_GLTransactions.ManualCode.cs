@@ -1901,13 +1901,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ValidateDataDetailsManual(ATransactionRow ARow)
         {
-            if ((ARow == null) || (GetBatchRow() == null) || !FIsUnposted)
+            //Can be called from outside, so need to update fields
+            FBatchRow = GetBatchRow();
+
+            if (FBatchRow == null)
             {
                 return;
             }
 
-            //Can be called from outside, so need to update
-            FBatchRow = GetBatchRow();
+            FJournalRow = GetJournalRow();
+
+            if (FJournalRow != null)
+            {
+                FJournalNumber = FJournalRow.JournalNumber;
+                FJournalStatus = FJournalRow.JournalStatus;
+            }
+
+            FIsUnposted = (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+            if ((ARow == null) || (FBatchRow.BatchNumber != ARow.BatchNumber) || !FIsUnposted)
+            {
+                return;
+            }
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 

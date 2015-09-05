@@ -417,8 +417,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
             object ValidationContext;
             int VerifResultCollAddedCount = 0;
 
-            // Don't validate deleted DataRows
-            if (ARow.RowState == DataRowState.Deleted)
+            // Don't validate deleted DataRows or non-unposted batches
+            if ((ABatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED) || (ARow.RowState == DataRowState.Deleted))
             {
                 return true;
             }
@@ -529,7 +529,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if ((AControl != null) && AControl.Name.EndsWith("Reference"))
             {
-                // if "Reference" is mandatory then make sure it is set
+                //TODO: Check if "Reference" is mandatory then make sure it is set
                 ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnReferenceId];
                 ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
                     ARow.TransactionNumber,
