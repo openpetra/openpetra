@@ -1,0 +1,55 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Address Layout Codes
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PAddressLayoutCode
+    CacheableTable: AddressLayoutCodeList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 600
+    WindowHeight: 650
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actPromote: {Label=&Up, ActionClick=PromoteRecord, Image=MoveUpArrow.ico}
+        actDemote: {Label=Do&wn, ActionClick=DemoteRecord, Image=MoveDownArrow.ico}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdDetails, pnlUpDown]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
+        btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailCode, DetailDeletable, DetailDescription]
+            CustomColumns: 
+               DetailCode: {Label=Layout Code}
+               DetailDeletable: {Type=Boolean, Label=Deletable}
+        pnlUpDown:
+            Dock: Right
+            Controls: [btnUp, btnDown]
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailCode]
+                Row1: [txtDetailDescription]
+                Row2: [txtDetailComment]
+                Row3: [chkDetailDeletable]
+        txtDetailCode: {Label=Layout Code}
+        txtDetailComment: {Multiline=true, Height=100, Width=500, ScrollBars=Vertical, WordWrap=true, Stretch=horizontally}
+        txtDetailDescription: {Width=350}
+        chkDetailDeletable:
+        btnUp: {Action=actPromote, Width=80, Tooltip=Click to move the selected row higher in the list. This affects the list ordering in Layout Code Combo Boxes.}
+        btnDown: {Action=actDemote, Width=80, Tooltip=Click to move the selected row lower in the list. This affects the list ordering in Layout Code Combo Boxes.}

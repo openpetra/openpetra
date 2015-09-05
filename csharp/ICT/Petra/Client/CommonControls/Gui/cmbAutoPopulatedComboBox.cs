@@ -94,10 +94,16 @@ namespace Ict.Petra.Client.CommonControls
             AddresseeTypeList,
 
             /// <summary>todoComment</summary>
+            AddressBlockElementList,
+
+            /// <summary>todoComment</summary>
             AddressDisplayOrderList,
 
             /// <summary>todoComment</summary>
             AddressLayoutList,
+
+            /// <summary>todoComment</summary>
+            AddressLayoutCodeList,
 
             /// <summary>todoComment</summary>
             ApplicantStatusList,
@@ -555,6 +561,28 @@ namespace Ict.Petra.Client.CommonControls
                     "AddressLayout",
                     null,
                     null);
+                    break;
+
+                case TListTableEnum.AddressLayoutCodeList:
+
+                    SortedCacheableDataTable = TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.AddressLayoutCodeList);
+                    SortedCacheableDataTable.DefaultView.Sort = PAddressLayoutCodeTable.GetDisplayIndexDBName() + " ASC";
+
+                    InitialiseUserControl(SortedCacheableDataTable,
+                    PAddressLayoutCodeTable.GetCodeDBName(),
+                    PAddressLayoutCodeTable.GetDescriptionDBName(),
+                    null
+                    );
+                    break;
+
+                case TListTableEnum.AddressBlockElementList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.AddressBlockElementList),
+                    PAddressBlockElementTable.GetAddressElementCodeDBName(),
+                    PAddressBlockElementTable.GetAddressElementDescriptionDBName(),
+                    null
+                    );
                     break;
 
                 case TListTableEnum.ApplicantStatusList:

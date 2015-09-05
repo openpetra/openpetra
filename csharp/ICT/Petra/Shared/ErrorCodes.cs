@@ -470,6 +470,30 @@ namespace Ict.Petra.Shared
         ]
         public const String ERR_OFFICE_PHONE_NR_SET_BUT_NOT_AMONG_PHONE_NRS = "PARTN.00051V";
 
+        /// <summary>The Address Block text has mis-matched tags.</summary>
+        [ErrCodeAttribute("Address Block text contains an unknown data placeholder",
+             ErrorMessageText =
+                 "The text in the Address Block contains an unknown data placeholder.")]
+        public const String ERR_ADDRESS_BLOCK_HAS_UNKNOWN_PLACEHOLDER = "PARTN.00052V";
+
+        /// <summary>The Address Block text has mis-matched tags.</summary>
+        [ErrCodeAttribute("Address Block text has mismatched tags",
+             ErrorMessageText =
+                 "The text in the Address Block has mis-matched opening and closing tags ([[ and ]]).")]
+        public const String ERR_ADDRESS_BLOCK_HAS_MISMATCHED_TAGS = "PARTN.00053V";
+
+        /// <summary>The Address Block text has mis-matched tags.</summary>
+        [ErrCodeAttribute("Address Block text does not contain any data placeholders",
+             ErrorMessageText =
+                 "The text in the Address Block has no data placeholders identified with [[ and ]] tags.")]
+        public const String ERR_ADDRESS_BLOCK_HAS_NO_DATA_PLACEHOLDERS = "PARTN.00054V";
+
+        /// <summary>The Address Block text has mis-matched tags.</summary>
+        [ErrCodeAttribute("Address Block text only contains Print Directive placeholders",
+             ErrorMessageText =
+                 "The text in the Address Block only contains 'Print Directive' placeholders but no data placeholders.")]
+        public const String ERR_ADDRESS_BLOCK_ONLY_HAS_DIRECTIVE_PLACEHOLDERS = "PARTN.00055V";
+
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>

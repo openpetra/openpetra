@@ -121,7 +121,9 @@ OpenPetra:
                         ReasonSubscriptionCancelled: {Label=Reason Subscription Cancelled List, Description=Maintain Reason Subscription Cancelled List, ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup}   
                                                  
                     Address:  
-                        AddreseeTypes: {Label=Addressee Types, Description=Maintain Addressee Types, ActionOpenScreen=TFrmAddresseeTypeSetup}
+                        AddresseeTypes: {Label=Addressee Types, Description=Maintain Addressee Types, ActionOpenScreen=TFrmAddresseeTypeSetup}
+                        AddressLayoutCodes: {Label=Address Layout Codes, Description=Maintain Address Layout Codes, ActionOpenScreen=TFrmAddressLayoutCodeSetup}
+                        AddressLayouts: {Label=Address Layouts, Description=Maintain Address Layouts, ActionOpenScreen=TFrmAddressLayoutSetup}
                         LocationTypes: {Label=Location Types, Description=Maintain Location Types, ActionOpenScreen=TFrmLocationTypeSetup}
                         InternationalPostalTypes: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=International Postal Types, Description=Maintain International Postal Types, ActionOpenScreen=TFrmInternationalPostalTypeSetup}
                         PostcodeRanges: {Label=Postcode Ranges, Description=Maintain Postcode Ranges, ActionOpenScreen=TFrmPostcodeRangeSetup}

@@ -40,6 +40,9 @@ CachedTables:
                 PartnerAttributeSystemCategoryTypeList: {Comment=list of Partner Attribute Types that are Types of System Categories (based on p_partner_attribute_type}
         Mailing:
             DatabaseTables:
+                PAddressBlock:
+                PAddressBlockElement:
+                PAddressLayoutCode:
                 PContactAttribute:
                 PContactAttributeDetail:
                 PMethodOfContact:

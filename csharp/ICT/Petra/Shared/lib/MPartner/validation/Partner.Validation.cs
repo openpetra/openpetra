@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
@@ -1105,6 +1106,121 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.MailingDate,
                     ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPartner Address Layout Setup screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <param name="AAddressElementTable">A table of all available Address Block Elements</param>
+        public static void ValidateAddressBlockSetup(object AContext, PAddressBlockRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            PAddressBlockElementTable AAddressElementTable)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // Do validation on the address block text
+            ValidationColumn = ARow.Table.Columns[PAddressBlockTable.ColumnAddressBlockTextId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                // Address Block Text must not be empty
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.AddressBlockText, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                if (VerificationResult == null)
+                {
+                    // Text must contain at least one replaceable parameter and parameter must exist
+                    // Start by parsing the text
+                    string s = ARow.AddressBlockText;
+                    List <string>allElements = new List <string>();
+                    int posStart = 0;
+                    int posEnd = -2;
+
+                    while (posStart >= 0)
+                    {
+                        posStart = s.IndexOf("[[", posEnd + 2);
+
+                        if (posStart != -1)
+                        {
+                            posEnd = s.IndexOf("]]", posStart);
+
+                            if (posEnd > posStart)
+                            {
+                                allElements.Add(s.Substring(posStart + 2, posEnd - posStart - 2));
+                            }
+                            else
+                            {
+                                // No matching tag
+                                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_ADDRESS_BLOCK_HAS_MISMATCHED_TAGS)),
+                                    ValidationColumn, ValidationControlsData.ValidationControl);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (VerificationResult == null)
+                    {
+                        // Check there is at least one data element
+                        if (allElements.Count == 0)
+                        {
+                            // No elements
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_ADDRESS_BLOCK_HAS_NO_DATA_PLACEHOLDERS)),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                        else
+                        {
+                            // Check that the elements exist and that at least one is not a directive
+                            bool bFoundNonDirective = false;
+
+                            foreach (string e in allElements)
+                            {
+                                PAddressBlockElementRow row = (PAddressBlockElementRow)AAddressElementTable.Rows.Find(e);
+
+                                if (row == null)
+                                {
+                                    // Unknown element
+                                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_ADDRESS_BLOCK_HAS_UNKNOWN_PLACEHOLDER)),
+                                        ValidationColumn, ValidationControlsData.ValidationControl);
+
+                                    break;
+                                }
+                                else if (row.IsDirective == false)
+                                {
+                                    bFoundNonDirective = true;
+                                }
+                            }
+
+                            if ((VerificationResult == null) && (bFoundNonDirective == false))
+                            {
+                                // We got elements but they were all directives
+                                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_ADDRESS_BLOCK_ONLY_HAS_DIRECTIVE_PLACEHOLDERS)),
+                                    ValidationColumn, ValidationControlsData.ValidationControl);
+                            }
+                        }
+                    }
+                }
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
