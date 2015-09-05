@@ -75,37 +75,6 @@ namespace Ict.Petra.Server.MFinance.Gift
         private String FImportLine;
         private String FNewLine;
 
-        private String InferCostCentre(AGiftDetailRow AgiftDetails)
-        {
-            String costCentre = "";
-
-            if (!Common.Common.HasPartnerCostCentreLink(AgiftDetails.RecipientKey, out costCentre))
-            {
-                // There's no helpful entry in a_valid_ledger_number - I'll see about using the MotivationDetail.
-                AMotivationDetailRow mdRow = FMainDS.AMotivationDetail.NewRowTyped(false);
-                mdRow.LedgerNumber = AgiftDetails.LedgerNumber;
-                mdRow.MotivationGroupCode = AgiftDetails.MotivationGroupCode;
-                mdRow.MotivationDetailCode = AgiftDetails.MotivationDetailCode;
-                AMotivationDetailTable tempTbl = null;
-
-                TDBTransaction Transaction = null;
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref Transaction,
-                    delegate
-                    {
-                        tempTbl = AMotivationDetailAccess.LoadUsingTemplate(mdRow, Transaction);
-                    });
-
-                if (tempTbl.Rows.Count > 0)
-                {
-                    costCentre = tempTbl[0].CostCentreCode;
-                }
-            }
-
-            return costCentre;
-        }
-
         private bool UpdateDailyExchangeRateTable(ADailyExchangeRateTable DailyExchangeTable, string AFromCurrencyCode, string AToCurrencyCode,
             decimal AExchangeRate, DateTime AEffectiveDate)
         {
@@ -1398,7 +1367,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             // "In Petra Cost Centre is always inferred from recipient field and motivation detail so is not needed in the import."
-            AGiftDetails.CostCentreCode = InferCostCentre(AGiftDetails);
+            AGiftDetails.CostCentreCode = TGiftTransactionWebConnector.RetrieveCostCentreCodeForRecipient(
+                AGiftDetails.LedgerNumber, AGiftDetails.RecipientKey, AGiftDetails.RecipientLedgerNumber,
+                AGift.DateEntered, AGiftDetails.MotivationGroupCode, AGiftDetails.MotivationDetailCode);
 
             // All the remaining columns are optional and can contain database NULL
             AGiftDetails.GiftCommentOne = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Gift comment one"),

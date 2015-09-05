@@ -2247,21 +2247,51 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String[] SelectedFees = AParameters["param_fee_codes"].ToString().Split(',');
                     Int32 FeeCols = SelectedFees.Length;
 
+                    // Full report lists every gift transaction for all cost centres
+                    // Summary report groups and summarises gifts with a common Foreign cost centre
+                    bool FullReport = AParameters["param_rgrFees"].ToString() == "ByGiftDetail";
+
                     //
                     // This constant is copied from the client - it represents a reasonable maximum
                     // number of columns in the report, and hopefully it is as many as any field needs.
                     Int32 MAX_FEE_COUNT = 11;
 
-                    String Query =
-                        "Select feestbl.*, giftstbl.* FROM " +
-                        "(SELECT a_processed_fee.a_cost_centre_code_c AS CostCentreCode, " +
-                        "a_cost_centre.a_cost_centre_name_c AS CostCentreName";
+                    String Query = "SELECT ";
+
+                    if (!FullReport)
+                    {
+                        Query += "a_cost_centre.a_cost_centre_code_c AS CostCentreCode, " +
+                                 "a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
+                                 "0 AS BatchNumber, " +
+                                 "0 AS TransactionNumber, " +
+                                 "0 AS DetailNumber, " +
+                                 "0 AS Field, " +
+
+                                 "(SELECT SUM(GiftDetail2.a_gift_amount_n) FROM a_gift_detail AS GiftDetail2, a_gift_batch AS GiftBatch2" +
+                                 " WHERE GiftDetail2.a_ledger_number_i = " + LedgerNumber +
+                                 " AND GiftDetail2.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c" +
+                                 " AND GiftBatch2.a_ledger_number_i = GiftDetail2.a_ledger_number_i" +
+                                 " AND GiftBatch2.a_batch_number_i = GiftDetail2.a_batch_number_i" +
+                                 " AND GiftBatch2.a_batch_year_i = " + YearNumber + " AND GiftBatch2.a_batch_period_i = " + period +
+                                 ") AS GiftAmount";
+                    }
+                    else
+                    {
+                        Query += "a_gift_detail.a_gift_amount_n AS GiftAmount, " +
+                                 "a_gift_detail.a_batch_number_i AS BatchNumber, " +
+                                 "a_gift_detail.a_gift_transaction_number_i AS TransactionNumber, " +
+                                 "a_gift_detail.a_detail_number_i AS DetailNumber, " +
+                                 "a_gift_detail.a_recipient_ledger_number_n AS Field, " +
+                                 "0 AS CostCentreCode, " +
+                                 "0 AS CostCentreName";
+                    }
 
                     for (Int32 Idx = 0; Idx < MAX_FEE_COUNT; Idx++)
                     {
                         if (Idx < FeeCols)
                         {
-                            Query += ", SUM( case when (a_fee_code_c  = '" + SelectedFees[Idx] + "') then a_periodic_amount_n else 0 end )as F" + Idx;
+                            Query += ", SUM(CASE WHEN (a_processed_fee.a_fee_code_c  = '" + SelectedFees[Idx] +
+                                     "') THEN a_processed_fee.a_periodic_amount_n ELSE 0 END)as F" + Idx;
                         }
                         else // I'm always providing {MAX_FEE_COUNT} columns - some may be blank at RHS.
                         {
@@ -2269,26 +2299,39 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         }
                     }
 
-                    Query += " FROM a_processed_fee, a_cost_centre " +
-                             "WHERE a_processed_fee.a_ledger_number_i=" + LedgerNumber + " AND a_period_number_i=" + period + " " +
-                             "AND a_cost_centre.a_ledger_number_i = a_processed_fee.a_ledger_number_i " +
-                             "AND a_cost_centre.a_cost_centre_type_c='Foreign' " +
-                             "AND a_cost_centre.a_cost_centre_code_c = a_processed_fee.a_cost_centre_code_c " +
-                             "GROUP BY a_processed_fee.a_cost_centre_code_c, a_cost_centre.a_cost_centre_name_c" +
-                             ") feestbl, " +
+                    Query += " FROM a_gift_batch, a_gift_detail " +
 
-                             "(SELECT a_gift_detail.a_cost_centre_code_c AS CostCentreCode, SUM(a_gift_detail.a_gift_amount_n) AS Gifts " +
-                             "FROM a_gift_batch, a_gift_detail " +
-                             "WHERE " +
-                             "a_gift_batch.a_ledger_number_i = " + LedgerNumber + " " +
-                             "AND a_gift_batch.a_batch_year_i = " + YearNumber + " AND a_gift_batch.a_batch_period_i = " + period + " " +
-                             "AND a_gift_detail.a_ledger_number_i = " + LedgerNumber + " " +
-                             "AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i " +
-                             "GROUP BY a_gift_detail.a_cost_centre_code_c" +
-                             ") giftstbl " +
+                             "LEFT JOIN a_processed_fee " +
+                             "ON a_processed_fee.a_ledger_number_i = " + LedgerNumber +
+                             " AND a_processed_fee.a_period_number_i = " + period +
+                             " AND a_processed_fee.a_batch_number_i = a_gift_detail.a_batch_number_i" +
+                             " AND a_processed_fee.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
+                             " AND a_processed_fee.a_detail_number_i = a_gift_detail.a_detail_number_i ";
 
-                             "WHERE feestbl.CostCentreCode = giftstbl.CostCentreCode " +
-                             "ORDER BY giftstbl.CostCentreCode ";
+                    if (!FullReport)
+                    {
+                        Query += "JOIN a_cost_centre " +
+                                 "ON a_cost_centre.a_ledger_number_i = a_processed_fee.a_ledger_number_i " +
+                                 "AND a_cost_centre.a_cost_centre_code_c = a_processed_fee.a_cost_centre_code_c " +
+                                 "AND a_cost_centre.a_cost_centre_type_c = 'Foreign' ";
+                    }
+
+                    Query += "WHERE " +
+                             "a_gift_batch.a_ledger_number_i = " + LedgerNumber +
+                             " AND a_gift_batch.a_batch_year_i = " + YearNumber + " AND a_gift_batch.a_batch_period_i = " + period +
+                             " AND a_gift_detail.a_ledger_number_i = " + LedgerNumber +
+                             " AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i ";
+
+                    if (!FullReport)
+                    {
+                        Query += "GROUP BY CostCentreCode, CostCentreName " +
+                                 "ORDER BY CostCentreCode";
+                    }
+                    else
+                    {
+                        Query += "GROUP BY GiftAmount, BatchNumber, TransactionNumber, DetailNumber, Field " +
+                                 "ORDER BY BatchNumber, TransactionNumber, DetailNumber";
+                    }
 
                     TLogging.Log(Catalog.GetString(""), TLoggingType.ToStatusBar);
                     resultsTable = DbAdapter.RunQuery(Query, "Fees", Transaction);

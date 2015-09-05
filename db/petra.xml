@@ -1679,7 +1679,7 @@
                 notnull="yes"/>
     <tablefield name="p_deletable_l"
                 type="bit"
-                descr="This defines if the adressee type code can be deleted.
+                descr="This defines if the addressee type code can be deleted.
 &lt;br/&gt;This can only be updated by the system manager.
 &lt;br/&gt;At the risk of serious operational integrity.
 &lt;br/&gt;Default to Yes"
@@ -5343,15 +5343,26 @@
                 format="X(300)"
                 label="Comment"
                 help="Enter Comment for Address Layout Code"/>
+    <tablefield name="p_deletable_l"
+                type="bit"
+                descr="Can this layout code be deleted by the user?"
+                format="Yes/No"
+                label="Deletable"
+                columnlabel="Deletable"
+                help="Indicates whether this layout code can be deleted by the user?"
+                notnull="yes"
+                initial="Yes"/>
     <!-- Constraints on table p_address_layout_code -->
     <primarykey name="p_address_layout_code_pk"
                 descr=""
                 thisFields="p_code_c"/>
     <!-- Explicit Indexes on table p_address_layout_code  -->
+    <!-- This index is non-unique because the user can swap values.  Uniqueness is handled in code.  -->
     <index name="p_address_layout_code_k"
            descr=""
            area="Petra Index"
-           unique="yes">
+           primary="no"
+           unique="no">
       <indexfield name="p_display_index_i" order="ascending"/>
     </index>
   </table>
@@ -5428,6 +5439,52 @@
       <indexfield name="p_address_layout_code_c" order="ascending"/>
     </index>
   </table>
+  <table name="p_address_block"
+         descr="This table contains the address lines used in laying out an address. Eg a form letter address layout"
+         area="Petra Data"
+         label="Address Layout"
+         dumpname="p_addblk"
+         group="mailroom">
+    <tablefield name="p_country_code_c"
+                type="varchar"
+                descr=""
+                format="X(4)"
+                label="Country Code"
+                columnlabel="Country Code"
+                help="Select a Country Code.  The layout for Code 99 will be used when there is no layout specified for the country being printed."
+                notnull="yes"/>
+    <tablefield name="p_address_layout_code_c"
+                type="varchar"
+                descr=""
+                format="X(16)"
+                label="Address Layout Code"
+                columnlabel="Address Layout Code"
+                help="Select an Address Layout Code"
+                notnull="yes"
+                initial="SmlLabel"/>
+    <tablefield name="p_address_block_text_c"
+                type="varchar"
+                descr="The complete set of address lines, including replaceable parameters"
+                format="X(256)"
+                label="Address Line Text"
+                help="Enter the text for the address block on one or more lines incorporating one or more data placeholders"
+                notnull="yes"/>
+    <!-- Constraints on table p_address_layout -->
+    <primarykey name="p_address_block_pk"
+                descr=""
+                thisFields="p_country_code_c, p_address_layout_code_c"/>
+    <foreignkey name="p_address_block_fk1"
+                descr=""
+                thisFields="p_country_code_c"
+                otherTable="p_country"
+                otherFields="p_country_code_c"/>
+    <foreignkey name="p_address_block_fk2"
+                descr=""
+                thisFields="p_address_layout_code_c"
+                otherTable="p_address_layout_code"
+                otherFields="p_code_c"/>
+    <!-- Explicit Indexes on table p_address_layout  -->
+  </table>
   <table name="p_address_element"
          descr="This contains the elements which make up an address. Eg Name etc"
          area="Petra Data"
@@ -5461,6 +5518,37 @@
                 help="Enter the address element text, usually a &quot;&quot;.&quot;&quot; or a &quot;&quot;;&quot;&quot; or a &quot;&quot;,&quot;&quot;"/>
     <!-- Constraints on table p_address_element -->
     <primarykey name="p_address_element_pk"
+                descr=""
+                thisFields="p_address_element_code_c"/>
+    <!-- Explicit Indexes on table p_address_element  -->
+  </table>
+  <table name="p_address_block_element"
+         descr="This contains the elements which make up an address. Eg Name etc"
+         area="Petra Data"
+         label="Address Element"
+         dumpname="p_addbke"
+         group="mailroom">
+    <tablefield name="p_address_element_code_c"
+                type="varchar"
+                descr="This Code is used to identify the address element."
+                format="X(24)"
+                label="Element Code"
+                help="Code used to identify the address element"
+                notnull="yes"/>
+    <tablefield name="p_address_element_description_c"
+                type="varchar"
+                descr=""
+                format="X(80)"
+                label="Description"
+                help="Description for address element code"/>
+    <tablefield name="p_is_directive_l"
+                type="bit"
+                descr="System flag indicates the element is a print directive and not a data placeholder"
+                format="Yes/No"
+                label="Print directive flag"
+                notnull="yes"/>
+    <!-- Constraints on table p_address_element -->
+    <primarykey name="p_address_block_element_pk"
                 descr=""
                 thisFields="p_address_element_code_c"/>
     <!-- Explicit Indexes on table p_address_element  -->

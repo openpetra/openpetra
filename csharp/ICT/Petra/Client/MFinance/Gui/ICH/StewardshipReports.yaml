@@ -46,8 +46,7 @@ RootNode:
             Controls:
                 Row0: [chkHOSA, rgrHosa]
                 Row1: [chkStewardship, rgrStewardship]
-#               Row2: [chkFees, rgrFees]
-                Row2: [chkFees]
+                Row2: [chkFees, rgrFees]
 #               Row3: [chkRecipient, rgrRecipient]
 
         chkHOSA:{Label=All HOSAs, CheckBoxAttachedLabel=right}
@@ -59,7 +58,8 @@ RootNode:
             Controls:[rbtEmailHosa, rbtReprintHosa]
         rgrStewardship: {Label=Stewardship options, ControlsOrientation=horizontal, BorderVisible=false}
             Controls:[rbtEmailStewardship, rbtReprintStewardship]
-#        rgrFees: {Label=Fees options, ControlsOrientation=horizontal, BorderVisible=false}
+        rgrFees: {Label=Fees options, ControlsOrientation=horizontal, BorderVisible=false}
+            Controls:[rbtSummary, rbtFull]
 #            Controls:[rbtEmailFees, rbtReprintFees]
 #       rgrRecipient: {Label=Recipient Statement options, ControlsOrientation=horizontal, BorderVisible=false}
 #           Controls:[rbtEmailRecipient, rbtReprintRecipient]
@@ -68,6 +68,8 @@ RootNode:
         rbtReprintHosa:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
         rbtEmailStewardship:{Label=Email to ICH, ParameterValue=Email}
         rbtReprintStewardship:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
+        rbtSummary:{Label=By Field, ParameterValue=ByField}
+        rbtFull:{Label=By Gift Detail, ParameterValue=ByGiftDetail}
 #        rbtEmailFees:{Label=Email to ICH, ParameterValue=Email}
 #        rbtReprintFees:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
 #       rbtEmailRecipient:{Label=Send emails, ParameterValue=Email}

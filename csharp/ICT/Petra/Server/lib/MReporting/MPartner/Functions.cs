@@ -542,6 +542,13 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 // find the row with BestAddress = 1
                 if (Convert.ToInt32(row["BestAddress"]) == 1)
                 {
+                    // get the partner location details into the parameters
+                    foreach (DataColumn col in PartnerLocationTable.Columns)
+                    {
+                        situation.GetParameters().AddCalculationParameter(StringHelper.UpperCamelCase(col.ColumnName, true,
+                                true), new TVariant(row[col.ColumnName]));
+                    }
+
                     // find the location record with that address
                     LocationTable = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, situation.GetDatabaseConnection().Transaction);
 

@@ -169,6 +169,9 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             rbtEmailStewardship.Enabled =
                 rbtReprintStewardship.Enabled = chkStewardship.Enabled && chkStewardship.Checked;
 
+            rbtFull.Enabled =
+                rbtSummary.Enabled = chkFees.Enabled && chkFees.Checked;
+
             /*
              *          rbtEmailFees.Enabled =
              *              rbtReprintFees.Enabled = chkFees.Enabled && chkFees.Checked;
@@ -489,6 +492,8 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             {
                 Row[Idx] = SelectedFees[Idx];
             }
+
+            ACalc.AddParameter("param_full_report", rbtFull.Checked);
 
             MyFastReportsPlugin.RegisterData(FeeNames, "FeeNames");
             MyFastReportsPlugin.RegisterData(ReportTable, "Fees");

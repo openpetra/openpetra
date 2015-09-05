@@ -413,7 +413,7 @@ namespace Ict.Petra.Client.MCommon
         }
 
         /// <summary>
-        /// Gets the AdressOrder (p_address_order_i DB field) of a certain Country.
+        /// Gets the AddressOrder (p_address_order_i DB field) of a certain Country.
         /// </summary>
         /// <param name="ACountryCode">CountryCode (ISO Code) of a Country</param>
         /// <returns>AddressOrder for that Country (0 if Country cannot be found).</returns>

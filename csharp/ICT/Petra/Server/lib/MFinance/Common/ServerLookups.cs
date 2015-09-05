@@ -276,69 +276,6 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         }
 
         /// <summary>
-        /// Returns true if a Corporate Exchange Rate can be deleted.
-        /// Cannot be deleted if it is effective for a period in the current year which has at least one batch.
-        /// </summary>
-        /// <param name="ADateEffectiveFrom">Corporate Exchange Rate's Date Effective From</param>
-        /// <param name="AIntlCurrency"></param>
-        /// <param name="ATransactionCurrency"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static bool CanDeleteCorporateExchangeRate(DateTime ADateEffectiveFrom, string AIntlCurrency, string ATransactionCurrency)
-        {
-            bool ReturnValue = true;
-            TDBTransaction ReadTransaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction,
-                delegate
-                {
-                    // get accounting period for when the exchange rate is effective (if it exists)
-                    string Query = "SELECT * FROM a_accounting_period" +
-                                   " WHERE a_accounting_period.a_period_end_date_d >= '" + ADateEffectiveFrom + "'" +
-                                   " AND a_accounting_period.a_period_start_date_d <= '" + ADateEffectiveFrom + "'";
-
-                    AAccountingPeriodTable AccountingPeriodTable = new AAccountingPeriodTable();
-                    DBAccess.GDBAccessObj.SelectDT(AccountingPeriodTable, Query, ReadTransaction);
-
-                    // no accounting period if effective in a year other that the current year
-                    if ((AccountingPeriodTable == null) || (AccountingPeriodTable.Rows.Count == 0))
-                    {
-                        return;
-                    }
-
-                    AAccountingPeriodRow AccountingPeriodRow = AccountingPeriodTable[0];
-
-                    // search for batches for the found accounting period
-                    string Query2 = "SELECT CASE WHEN EXISTS (" +
-                                    "SELECT * FROM a_batch, a_journal, a_ledger" +
-                                    " WHERE a_batch.a_date_effective_d <= '" + AccountingPeriodRow.PeriodEndDate + "'" +
-                                    " AND a_batch.a_date_effective_d >= '" + AccountingPeriodRow.PeriodStartDate + "'" +
-                                    " AND a_journal.a_ledger_number_i = a_batch.a_ledger_number_i" +
-                                    " AND a_journal.a_batch_number_i = a_batch.a_batch_number_i" +
-                                    " AND a_ledger.a_ledger_number_i = a_batch.a_ledger_number_i" +
-                                    " AND ((a_journal.a_transaction_currency_c = '" + ATransactionCurrency + "'" +
-                                    " AND a_ledger.a_intl_currency_c = '" + AIntlCurrency + "')" +
-                                    " OR (a_journal.a_transaction_currency_c = '" + AIntlCurrency + "'" +
-                                    " AND a_ledger.a_intl_currency_c = '" + ATransactionCurrency + "'))" +
-                                    ") THEN 'TRUE'" +
-                                    " ELSE 'FALSE' END";
-
-                    DataTable DT = DBAccess.GDBAccessObj.SelectDT(Query2, "temp", ReadTransaction);
-
-                    // a batch has been found
-                    if ((DT != null) && (DT.Rows.Count > 0) && (DT.Rows[0][0].ToString() == "TRUE"))
-                    {
-                        ReturnValue = false;
-                        return;
-                    }
-                });
-
-            return ReturnValue;
-        }
-
-        /// <summary>
         /// return table with forms for given form code and form type code
         /// </summary>
         /// <param name="AFormCode">Form Code Filter</param>

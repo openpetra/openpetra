@@ -129,7 +129,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         private void InitializeManualCode()
         {
-            this.mniCopyPartnerKey.ShortcutKeys = Keys.C | Keys.Control;
             this.mniSetLastWorkedWith.ShortcutKeys = Keys.L | Keys.Control;
         }
 
@@ -193,6 +192,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
 
                 return true;
+            }
+            else if (keyData == (Keys.Control | Keys.C))
+            {
+                if (ucoExtractMaintain.ActiveControl.Name == "grdDetails")
+                {
+                    CopyPartnerKeyToClipboard(this, null);
+                    return true;
+                }
             }
 
             if (ucoExtractMaintain.ProcessParentCmdKey(ref msg, keyData))

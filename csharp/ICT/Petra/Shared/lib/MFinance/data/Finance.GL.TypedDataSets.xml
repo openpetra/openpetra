@@ -160,4 +160,8 @@
                 parentTable="AAccount" parentFields="LedgerNumber,AccountCode"
                 createConstraints="false"/>
     </DataSet>
+
+    <DataSet name="CorporateExchangeSetupTDS">
+        <Table sqltable="a_corporate_exchange_rate"/>
+    </DataSet>
 </PetraDataSets>

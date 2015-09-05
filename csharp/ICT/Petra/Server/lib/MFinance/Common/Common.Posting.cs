@@ -907,9 +907,8 @@ namespace Ict.Petra.Server.MFinance.Common
                             AVerifications.Add(new TVerificationResult(
                                     String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
                                     String.Format(Catalog.GetString(
-                                            "Missing attributes record for journal #{0} transaction #{1}  and TypeCode {2}"),
-                                        transRow.JournalNumber,
-                                        transRow.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                            "Analysis Attribute {0} in Journal {1} Transaction {2} needs a value."),
+                                        attributeRow.AnalysisTypeCode, transRow.JournalNumber, transRow.TransactionNumber),
                                     TResultSeverity.Resv_Critical));
 
                             CriticalError = true;

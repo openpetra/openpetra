@@ -356,7 +356,9 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.IsFalse(cmbFromCurrency.Enabled);
             Assert.IsFalse(cmbToCurrency.Enabled);
             Assert.IsFalse(dtpEffectiveDate.Enabled);
-            Assert.IsFalse(txtExchangeRate.Enabled);
+
+            // Check that the controls are enabled
+            Assert.IsTrue(txtExchangeRate.Enabled);
 
             // Click the 'New' button
             Assert.IsFalse(btnSave.Enabled, "The Save button should be disabled when the screen is loaded");
@@ -548,8 +550,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Select the first row in the grid.  New rows should be based on data row 5
             SelectRowInGrid(1, 5);
 
-            // Check that Invert is disabled, then add one new row and check it is now enabled
-            Assert.IsFalse(btnInvert.Properties.Enabled);
+            // Check that Invert enabled and test that it works
             btnNew.Click();
             Assert.IsTrue(btnInvert.Properties.Enabled);
             txtExchangeRate.NumberValueDecimal = 5.0m;
