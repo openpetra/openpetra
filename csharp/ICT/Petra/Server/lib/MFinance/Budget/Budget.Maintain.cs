@@ -131,12 +131,16 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     {
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
+                        int numPeriods = MainDS.ALedger[0].NumberOfAccountingPeriods;
+
                         //Load all by Year
+                        LoadABudgetByYearWithCustomColumns(ref MainDS, ALedgerNumber, ABudgetYear, numPeriods, Transaction);
+
+                        //Load budget period data
                         ABudgetTable BudgetTable = new ABudgetTable();
                         ABudgetRow TemplateRow = (ABudgetRow)BudgetTable.NewRow();
                         TemplateRow.Year = ABudgetYear;
 
-                        ABudgetAccess.LoadUsingTemplate(MainDS, TemplateRow, Transaction);
                         ABudgetPeriodAccess.LoadViaABudgetTemplate(MainDS, TemplateRow, Transaction);
                         //TODO: add Budget Revision capability when decision made to add it to OP.
                         //  Assume Revision=0 for now until implemented
@@ -159,6 +163,83 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
 
             return MainDS;
+        }
+
+        private static void LoadABudgetByYearWithCustomColumns(ref BudgetTDS AMainDS,
+            Int32 ALedgerNumber,
+            Int32 AYear,
+            Int32 ANumberOfPeriods,
+            TDBTransaction ATransaction)
+        {
+            string sql =
+                "select b.{5}, b.{6}, b.{8}," +
+                "  b.{10}, b.{11}, b.{12}, b.{13}," +
+                "  b.{14}, b.{15}, b.{16}, b.{17}," +
+                "  b.{18}, b.{19}, b.{20}," +
+                "  min(case when bp.{0} = 1 then bp.{1} end) Period01Amount, " +
+                "  min(case when bp.{0} = 2 then bp.{1} end) Period02Amount, " +
+                "  min(case when bp.{0} = 3 then bp.{1} end) Period03Amount, " +
+                "  min(case when bp.{0} = 4 then bp.{1} end) Period04Amount, " +
+                "  min(case when bp.{0} = 5 then bp.{1} end) Period05Amount, " +
+                "  min(case when bp.{0} = 6 then bp.{1} end) Period06Amount, " +
+                "  min(case when bp.{0} = 7 then bp.{1} end) Period07Amount, " +
+                "  min(case when bp.{0} = 8 then bp.{1} end) Period08Amount, " +
+                "  min(case when bp.{0} = 9 then bp.{1} end) Period09Amount, " +
+                "  min(case when bp.{0} = 10 then bp.{1} end) Period10Amount, " +
+                "  min(case when bp.{0} = 11 then bp.{1} end) Period11Amount, " +
+                "  min(case when bp.{0} = 12 then bp.{1} end) Period12Amount";
+
+            if (ANumberOfPeriods > 12)
+            {
+                sql += ", min(case when bp.{0} = 13 then bp.{1} end) Period13Amount";
+            }
+            else
+            {
+                sql += ", 0 Period13Amount";
+            }
+
+            if (ANumberOfPeriods > 13)
+            {
+                sql += ", min(case when bp.{0} = 14 then bp.{1} end) Period14Amount";
+            }
+            else
+            {
+                sql += ", 0 Period14Amount";
+            }
+
+            sql += " from {2} b join {3} bp " +
+                   "   on bp.{4} = b.{5} " +
+                   " where b.{6} = {7} " +
+                   "  and b.{8} = {9} " +
+                   " group by b.{5}, b.{6}, b.{8}," +
+                   "  b.{10}, b.{11}, b.{12}, b.{13}," +
+                   "  b.{14}, b.{15}, b.{16}, b.{17}," +
+                   "  b.{18}, b.{19}, b.{20};";
+
+            string SelectClause = String.Format(sql,
+                ABudgetPeriodTable.GetPeriodNumberDBName(),
+                ABudgetPeriodTable.GetBudgetBaseDBName(),
+                ABudgetTable.GetTableDBName(),
+                ABudgetPeriodTable.GetTableDBName(),
+                ABudgetPeriodTable.GetBudgetSequenceDBName(),
+                ABudgetTable.GetBudgetSequenceDBName(),
+                ABudgetTable.GetLedgerNumberDBName(),
+                ALedgerNumber,
+                ABudgetTable.GetYearDBName(),
+                AYear,
+                ABudgetTable.GetRevisionDBName(),
+                ABudgetTable.GetCostCentreCodeDBName(),
+                ABudgetTable.GetAccountCodeDBName(),
+                ABudgetTable.GetBudgetTypeCodeDBName(),
+                ABudgetTable.GetBudgetStatusDBName(),
+                ABudgetTable.GetCommentDBName(),
+                ABudgetTable.GetDateCreatedDBName(),
+                ABudgetTable.GetCreatedByDBName(),
+                ABudgetTable.GetDateModifiedDBName(),
+                ABudgetTable.GetModifiedByDBName(),
+                ABudgetTable.GetModificationIdDBName());
+
+            DBAccess.GDBAccessObj.Select(AMainDS, SelectClause, AMainDS.ABudget.TableName, ATransaction);
         }
 
         /// <summary>

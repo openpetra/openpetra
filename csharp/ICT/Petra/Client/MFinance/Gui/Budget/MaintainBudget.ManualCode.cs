@@ -28,6 +28,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+//using System.Linq;
 using System.Resources;
 using System.Threading;
 using System.Windows.Forms;
@@ -115,7 +116,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             FMainDS.Merge(new BudgetTDS());
 
             //Setup form and controls
-            this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
+            this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             InitialiseControls();
 
             //Always auto-load budgets for current and next financial year
@@ -144,7 +145,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     FMainDS.Merge(TRemote.MFinance.Budget.WebConnectors.LoadBudgetsForYear(FLedgerNumber, FSelectedBudgetYear));
                 }
 
-                RetrievePeriodAmounts();
                 SetBudgetDefaultView();
             }
             finally
@@ -166,8 +166,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
                     FMainDS.Merge(TRemote.MFinance.Budget.WebConnectors.LoadBudgetsForYear(FLedgerNumber, FNextFinancialYear));
                 }
-
-                RetrievePeriodAmounts(FNextFinancialYear);
             }
             finally
             {
@@ -197,22 +195,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             FFilterAndFindObject.SetRecordNumberDisplayProperties();
         }
 
-        private void RetrievePeriodAmounts(Int32 ASpecificYear = -1)
+        private void UpdateABudgetPeriodAmounts()
         {
-            if (ASpecificYear == -1)
-            {
-                ASpecificYear = FSelectedBudgetYear;
-            }
+            DataView RequiredBudgets = new DataView(FMainDS.ABudget);
 
-            DataView BudgetsForYear = new DataView(FMainDS.ABudget);
-
-            BudgetsForYear.RowFilter = String.Format("{0}={1}",
+            RequiredBudgets.RowFilter = String.Format("{0}={1}",
                 ABudgetTable.GetYearDBName(),
-                ASpecificYear);
+                FSelectedBudgetYear);
 
-            foreach (DataRowView drv in BudgetsForYear)
+            RequiredBudgets.Sort = ABudgetTable.GetBudgetSequenceDBName() + " ASC";
+
+            foreach (DataRowView drv in RequiredBudgets)
             {
                 BudgetTDSABudgetRow budgetRow = (BudgetTDSABudgetRow)drv.Row;
+
+                int budgetSeq = budgetRow.BudgetSequence;
 
                 DataView budgetPeriodsDV = new DataView(FMainDS.ABudgetPeriod);
 
@@ -226,11 +223,68 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
                     ABudgetPeriodRow budgetPeriodRow = (ABudgetPeriodRow)drv2.Row;
 
-                    string periodAmountColumn = "Period" + budgetPeriodRow.PeriodNumber.ToString("00") + "Amount";
+                    int period = budgetPeriodRow.PeriodNumber;
+                    string periodAmountColumn = string.Empty;
 
-                    budgetRow[periodAmountColumn] = budgetPeriodRow.BudgetBase;
+                    if (period <= FNumberOfPeriods)
+                    {
+                        periodAmountColumn = "Period" + period.ToString("00") + "Amount";
+                        budgetRow[periodAmountColumn] = budgetPeriodRow.BudgetBase;
+                    }
+                    else
+                    {
+                        //TODO After data migration, this should not happen so add an error message.
+                        // In old Petra, budget periods always go up to 20, but are only populated
+                        //   up to number of financial periods
+                    }
                 }
             }
+
+            //Attempts using LINQ
+            //DataTable BudgetPeriodAmounts = new DataTable();
+            //BudgetPeriodAmounts.Columns.Add("BudgetSequence", typeof(int));
+            //BudgetPeriodAmounts.Columns.Add("PeriodNumber", typeof(int));
+            //BudgetPeriodAmounts.Columns.Add("Amount", typeof(decimal));
+            //BudgetPeriodAmounts.PrimaryKey = new DataColumn[] {BudgetPeriodAmounts.Columns["BudgetSequence"],
+            //                             BudgetPeriodAmounts.Columns["PeriodNumber"]};
+
+            //var varBudgetPeriodAmounts =
+            //    from BudgetTDSABudgetRow budgetRow in FMainDS.ABudget.Rows
+            //                 where budgetRow.Year == ASpecificYear
+            //                 join ABudgetPeriodRow budgetPeriodRow in FMainDS.ABudgetPeriod.Rows on budgetRow.BudgetSequence equals budgetPeriodRow.BudgetSequence
+            //                 select new
+            //                 {
+            //                     BudgetSequence = budgetRow.BudgetSequence,
+            //                     PeriodNumber = budgetPeriodRow.PeriodNumber,
+            //                     Amount = budgetPeriodRow.BudgetBase
+            //                 }; //produces flat sequence
+
+            //foreach (var rowObj in varBudgetPeriodAmounts)
+            //{
+            //    DataRow row = BudgetPeriodAmounts.NewRow();
+            //    BudgetPeriodAmounts.Rows.Add(rowObj.BudgetSequence, rowObj.PeriodNumber, rowObj.Amount);
+            //}
+
+            //DataView BudgetsPeriodAmountsForYearDV = new DataView(BudgetPeriodAmounts);
+            //BudgetsPeriodAmountsForYearDV.Sort = "BudgetSequence ASC, PeriodNumber ASC";
+
+
+            //for (int i = 0; i < BudgetsForYear.Count; i++)
+            //{
+            //    BudgetTDSABudgetRow budgetRow = (BudgetTDSABudgetRow)BudgetsForYear[i].Row;
+
+            //    for (int j = 1; j <= FNumberOfPeriods; j++)
+            //    {
+            //        DataRow budgetsPeriodAmounts = BudgetsPeriodAmountsForYearDV[(FNumberOfPeriods * i) + j - 1].Row;
+
+            //        string columnName = "Period" + j.ToString("00") + "Amount";
+
+            //        if (budgetRow.BudgetSequence == (int)budgetsPeriodAmounts["BudgetSequence"])
+            //        {
+            //            budgetRow[columnName] = (decimal)budgetsPeriodAmounts["Amount"];
+            //        }
+            //    }
+            //}
         }
 
         private void RefreshComboLabels()
@@ -399,6 +453,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
         }
 
+        private void UpdatePeriodAmountsFromControls(BudgetTDSABudgetRow ARow)
+        {
+            if (ARow == null)
+            {
+                return;
+            }
+
+            //Write to Budget custom fields
+            for (int i = 1; i <= FNumberOfPeriods; i++)
+            {
+                ABudgetPeriodRow budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(
+                    new object[] { ARow.BudgetSequence, i });
+
+                if (budgetPeriodRow != null)
+                {
+                    string customColumn = "Period" + i.ToString("00") + "Amount";
+
+                    if ((decimal)ARow[customColumn] != budgetPeriodRow.BudgetBase)
+                    {
+                        ARow[customColumn] = budgetPeriodRow.BudgetBase;
+                    }
+                }
+
+                budgetPeriodRow = null;
+            }
+        }
+
         private void SelectBudgetYear(Object sender, EventArgs e)
         {
             if (FLoadCompleted)
@@ -407,33 +488,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
                     return;
                 }
-
-                if (FPetraUtilsObject.HasChanges)
+                else if (FPetraUtilsObject.HasChanges)
                 {
                     FRejectYearChange = true;
                     MessageBox.Show(Catalog.GetString("Please save changes before attempting to change year."));
+
                     cmbSelectBudgetYear.SetSelectedInt32(FSelectedBudgetYear);
                     return;
                 }
-                else if (int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out FSelectedBudgetYear))
-                {
-                    LoadBudgetsForSelectedYear();
 
-                    SelectRowInGrid(1);
+                FSelectedBudgetYear = cmbSelectBudgetYear.GetSelectedInt32();
+                LoadBudgetsForSelectedYear();
+                SelectRowInGrid(1);
 
-                    if (FPetraUtilsObject.HasChanges)
-                    {
-                        //Change of year clears boxes in some circumstances so need to save
-                        SaveChanges();
-                    }
-                }
-                else
+                if (FPetraUtilsObject.HasChanges)
                 {
-                    MessageBox.Show(Catalog.GetString("Unexpected Error trying to select a different year!"),
-                        "Select Budget Year",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                    cmbSelectBudgetYear.SetSelectedInt32(FSelectedBudgetYear);
+                    //Change of year clears boxes in some circumstances so need to save
+                    SaveChanges();
                 }
             }
         }
@@ -657,7 +728,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             MessageBoxIcon.Information);
                     }
 
-                    RetrievePeriodAmounts();
+                    UpdateABudgetPeriodAmounts();
                     SetBudgetDefaultView();
 
                     SelectRowInGrid(1);
@@ -837,6 +908,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             txtTotalAdhocAmount.NumberValueDecimal = TotalAmount;
+
+            UpdatePeriodAmountsFromControls(FPreviouslySelectedDetailRow);
         }
 
         private void ProcessBudgetTypeSame(System.Object sender, EventArgs e)
@@ -868,6 +941,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             txtSameTotalAmount.NumberValueDecimal = AnnualAmount;
+
+            UpdatePeriodAmountsFromControls(FPreviouslySelectedDetailRow);
         }
 
         private void ProcessBudgetTypeSplit(System.Object sender, EventArgs e)
@@ -910,6 +985,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             txtPerPeriodAmount.NumberValueDecimal = PerPeriodAmount;
             txtLastPeriodAmount.NumberValueDecimal = LastPeriodAmount;
+
+            UpdatePeriodAmountsFromControls(FPreviouslySelectedDetailRow);
         }
 
         private void ProcessBudgetTypeInflateN(System.Object sender, EventArgs e)
@@ -967,6 +1044,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             txtInflateNTotalAmount.NumberValueDecimal = TotalAmount; //.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
+
+            UpdatePeriodAmountsFromControls(FPreviouslySelectedDetailRow);
         }
 
         private void ProcessBudgetTypeInflateBase(System.Object sender, EventArgs e)
@@ -1023,6 +1102,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             txtInflateBaseTotalAmount.NumberValueDecimal = TotalAmount; //.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
+
+            UpdatePeriodAmountsFromControls(FPreviouslySelectedDetailRow);
         }
 
         private void DisplayBudgetTypeAdhoc()
@@ -1482,24 +1563,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_BASE;
                 }
 
-                //TODO switch to using Ledger financial year
-                ARow.Year = Convert.ToInt16(cmbSelectBudgetYear.GetSelectedString());
-                ARow.Revision = CreateBudgetRevisionRow(FLedgerNumber, ARow.Year);
-                ARow.EndEdit();
-
                 //Write to Budget custom fields
-                for (int i = 1; i <= FNumberOfPeriods; i++)
-                {
-                    ABudgetPeriodRow budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { ARow.BudgetSequence, i });
+                UpdatePeriodAmountsFromControls(ARow);
 
-                    if (budgetPeriodRow != null)
-                    {
-                        string customColumn = "Period" + i.ToString("00") + "Amount";
-                        ARow[customColumn] = budgetPeriodRow.BudgetBase;
-                    }
+                //ARow.Year & ARow.Revision are never set here, but on record creation
 
-                    budgetPeriodRow = null;
-                }
+                ARow.EndEdit();
             }
 
             return true;
