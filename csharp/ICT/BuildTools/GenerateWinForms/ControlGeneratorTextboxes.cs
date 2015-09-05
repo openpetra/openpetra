@@ -43,6 +43,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public DateTimePickerGenerator()
             : base("dtp", "Ict.Petra.Client.CommonControls.TtxtPetraDate")
         {
+            FHasReadOnlyProperty = true;
             this.FChangeEventName = "DateChanged";
             this.FChangeEventHandlerType = "TPetraDateChangedEventHandler";
             FDefaultWidth = 94;

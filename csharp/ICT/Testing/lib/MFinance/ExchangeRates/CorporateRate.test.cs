@@ -355,7 +355,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Check that the controls are disabled
             Assert.IsFalse(cmbFromCurrency.Enabled);
             Assert.IsFalse(cmbToCurrency.Enabled);
-            Assert.IsFalse(dtpEffectiveDate.Enabled);
+            Assert.IsTrue(dtpEffectiveDate.ReadOnly);
 
             // Check that the controls are enabled
             Assert.IsTrue(txtExchangeRate.Enabled);

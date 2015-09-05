@@ -43,11 +43,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         {
             ucoConferenceSelection.AddConfernceKeyChangedEventHandler(this.ConferenceKeyChanged);
             ucoConferenceSelection.AddConferenceSelectionChangedEventHandler(this.ConferenceSelectionChanged);
-
-            dtpConferenceStartDate.Enabled = false;
-            dtpConferenceEndDate.Enabled = false;
-            dtpEarliestArrivalDate.Enabled = false;
-            dtpLatestDepartureDate.Enabled = false;
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

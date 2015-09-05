@@ -71,12 +71,14 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             // enable dtps only if date is null
             if ((dtpStartDate.Date == null) || (dtpStartDate.Date == DateTime.MinValue))
             {
-                dtpStartDate.Enabled = true;
+                dtpStartDate.ReadOnly = false;
+                dtpStartDate.TabStop = true;
             }
 
             if ((dtpEndDate.Date == null) || (dtpEndDate.Date == DateTime.MinValue))
             {
-                dtpEndDate.Enabled = true;
+                dtpEndDate.ReadOnly = false;
+                dtpEndDate.TabStop = true;
             }
 
             // display currency (if currency code in PUnit has changed then use that over the currency code in PcConference)
