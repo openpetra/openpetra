@@ -367,6 +367,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 default:
                     break;
             }
+
             if (AFormTypeCode != "")
             {
                 TemplateRow.FormTypeCode = AFormTypeCode;
@@ -384,6 +385,5 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             return ResultTable;
         }
-
     }
 }

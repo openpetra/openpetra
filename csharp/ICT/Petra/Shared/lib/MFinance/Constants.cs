@@ -686,12 +686,11 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>
         /// form code for cheque
         /// </summary>
-        ffcCheque,
+            ffcCheque,
 
         /// <summary>
         /// form code for remittance
         /// </summary>
-        ffcRemittance
+            ffcRemittance
     };
-
 }
