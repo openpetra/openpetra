@@ -463,9 +463,6 @@ OpenPetra:
                 Safety: {DontShowNestedTasksAsLinks=true}
                     Password: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
                         SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
-                Export: {DontShowNestedTasksAsLinks=true}
-                    DataExport: {PermissionsRequired=FINANCE-1,PERSONNEL}
-                        ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExportDialog}
 
         SystemManager: {Icon=sysman.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN, ShowAsCollapsiblePanels=true}
             Security:
