@@ -1954,6 +1954,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                     NewAccountingPeriodRow.AccountingPeriodNumber = Period;
                                     NewAccountingPeriodRow.PeriodStartDate = PeriodStartDate;
 
+                                    //TODO: Calendar vs Financial Date Handling - Check for current ledger number of periods
                                     if ((((ALedgerRow)(InspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods == 13)
                                         && (Period == 12))
                                     {
@@ -3790,6 +3791,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     MainDS.SSystemDefaults.Rows.Add(systemDefaultsRow);
                 }
 
+                //TODO: Calendar vs Financial Date Handling - Need to review this
                 // create calendar
                 // at the moment we only support financial years that start on the first day of a month
                 // and currently only 12 or 13 periods are allowed and a maximum of 8 forward periods

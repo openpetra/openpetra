@@ -252,6 +252,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_year_i", Year);
                 StartDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, 1);
                 ACalculator.AddParameter("param_start_date", StartDate);
+                //TODO: Calendar vs Financial Date Handling - Check if below has assumed a 12 period financial year
                 EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12);
                 ACalculator.AddParameter("param_end_date", EndDate);
             }
@@ -303,6 +304,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 return;
             }
 
+            //TODO: Calendar vs Financial Date Handling - Check if below has assumed a 12 period financial year
             // TODO
             //          int DiffPeriod = 0;//(System.Int32)CbB_YearEndsOn.SelectedItem;
             //            DiffPeriod = DiffPeriod - 12;

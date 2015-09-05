@@ -153,6 +153,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             int periodCounter = 1;
 
+            //TODO: Calendar vs Financial Date Handling - Check if this should not assume 12 but rather use number of financial periods in ledger
             while (!blnHasErrors && periodCounter < 12)
             {
                 blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(

@@ -270,6 +270,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
+                    //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end in all places below
                     string Query = "SELECT " +
                                    " GiftDetail.p_recipient_key_n AS RecipientKey," +
 
@@ -578,6 +579,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
+                    //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end in all places below
                     string Query = "SELECT DISTINCT" +
                                    " gift.p_donor_key_n AS DonorKey," +
                                    " DonorPartner.p_partner_short_name_c AS DonorName," +

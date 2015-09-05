@@ -166,6 +166,7 @@ namespace Ict.Petra.Server.MFinance.queries
         {
             Int32 LedgerNum = AParameters.Get("param_ledger_number_i").ToInt32();
             Int32 Year = AParameters.Get("param_YearBlock").ToInt32();
+            //TODO: Calendar vs Financial Date Handling - Check if financial year start/end should be used not calendar
             string YearStart = String.Format("#{0:0000}-01-01#", Year);
             string YearEnd = String.Format("#{0:0000}-12-31#", Year);
 
@@ -233,6 +234,7 @@ namespace Ict.Petra.Server.MFinance.queries
             resultTable.Columns.Add("MonthFieldTaxDeduct", typeof(Decimal));
             resultTable.Columns.Add("MonthTotalTaxDeduct", typeof(Decimal));
 
+            //TODO: Calendar vs Financial Date Handling - Check if financial year should be used not calendar, e.g. periods could equal 13
             for (int mnth = 1; mnth <= 12; mnth++)
             {
                 string monthStart = String.Format("#{0:0000}-{1:00}-01#", Year, mnth);
@@ -374,6 +376,7 @@ namespace Ict.Petra.Server.MFinance.queries
 
             for (Int32 YearIdx = 0; YearIdx < NumberOfYears; YearIdx++)
             {
+                //TODO: Calendar vs Financial Date Handling - Check if financial year start/end should be used not calendar
                 string yearStart = String.Format("#{0:0000}-01-01#", Year - YearIdx);
                 string yearEnd = String.Format("#{0:0000}-12-31#", Year - YearIdx);
 

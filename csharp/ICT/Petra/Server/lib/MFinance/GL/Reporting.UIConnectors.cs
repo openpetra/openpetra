@@ -1348,6 +1348,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     if (WholeYearPeriodsBreakdown)
                     {
+                        //TODO: Calendar vs Financial Date Handling - Check if this should use financial num periods and not assume 12
                         CostCentreBreakdown = false;                            // Hopefully the client will have ensured this is false anyway - I'm just asserting it!
                         MonthlyBreakdownQuery =
                             "SUM (CASE WHEN Period=1 THEN ActualYTD ELSE 0 END) AS P1, " +
@@ -2824,6 +2825,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 FirstDate = PeriodStart;
             }
 
+            //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
             String TotalDateRange = "BETWEEN '" + FirstDate.ToString("yyyy-MM-dd") + "' AND '" + new DateTime(DateTime.Today.Year, 12, 31).ToString(
                 "yyyy-MM-dd") + "'";
 
@@ -2963,6 +2965,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             for (Int32 Year = endDate.Year; Year >= startDate.Year; Year--)
             {
+                //TODO: Calendar vs Financial Date Handling - Check if this should use financial num periods and not assume 12
                 for (Int32 Month = 1; Month <= 12; Month++)
                 {
                     string monthStart = String.Format("#{0:0000}-{1:00}-01#", Year, Month);

@@ -390,6 +390,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             if (pv_period_i == 0) // I sometimes get asked for this. There's no period 0.
             {
+                //TODO: Calendar vs Financial Date Handling - Need to confirm this below
                 pv_period_i = 12; // Perhaps I should look up this value from number of periods?
                 pv_year_i--;
             }

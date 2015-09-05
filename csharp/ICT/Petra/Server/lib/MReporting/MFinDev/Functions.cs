@@ -434,6 +434,7 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             String AMotivationGroup,
             bool ABaseCurrency)
         {
+            //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
             DateTime SelectionEndDate = new DateTime(ALastGiftDate.Year, 12, 31);
             DateTime SelectionStartDate = new DateTime(ALastGiftDate.Year - 2, 1, 1);
 

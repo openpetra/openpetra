@@ -49,6 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitializeManualCode()
         {
+            //TODO: Calendar vs Financial Date Handling - Confirm if year end is assumed wrongly, i.e. financial year end does not necessarily = calendar year end
             dtpStartDate.Date = new DateTime(DateTime.Now.Year - 1, 1, 1);
             dtpEndDate.Date = new DateTime(DateTime.Now.Year - 1, 12, 31);
         }

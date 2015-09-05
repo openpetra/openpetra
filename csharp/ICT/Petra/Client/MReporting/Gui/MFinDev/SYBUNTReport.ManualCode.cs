@@ -91,6 +91,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
 
+                //TODO: Calendar vs Financial Date Handling - Confirm if year end is assumed wrongly, i.e. financial year end does not necessarily = calendar year end
                 ACalc.AddParameter("param_this_year_start_date", new DateTime(ThisYear, 1, 1));
                 ACalc.AddParameter("param_this_year_end_date", new DateTime(ThisYear, 12, 31));
                 ACalc.AddParameter("param_last_year_start_date", new DateTime(LastYear - 1, 1, 1));

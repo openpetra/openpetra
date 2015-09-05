@@ -288,6 +288,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     EndDatePeriod = AccountingPeriodTable[0].PeriodEndDate;
 
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                    //TODO: Calendar vs Financial Date Handling - Should this be number of accounting periods rather than 12
                     StartDatePeriod = StartDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
                     EndDatePeriod = EndDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
                 });

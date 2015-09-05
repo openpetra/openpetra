@@ -236,6 +236,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                             bool Debit = Convert.ToBoolean(untypedTransactRow[13]);             //a_transaction.a_debit_credit_indicator_l
                             bool SystemGenerated = Convert.ToBoolean(untypedTransactRow[11]);   //a_transaction.a_system_generated_l
+                            //TODO: Calendar vs Financial Date Handling - Check if number of ledger periods needs to be used here and not 12 assumed
                             string Narrative = untypedTransactRow[12].ToString();               //a_transaction.a_narrative_c
                             DateTime TransactionDate = Convert.ToDateTime(untypedTransactRow[6]); //a_transaction.a_transaction_date_d
 

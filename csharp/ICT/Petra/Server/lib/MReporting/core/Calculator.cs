@@ -794,6 +794,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
 
             for (Counter = 0; Counter <= NumberColumns - 1; Counter++)
             {
+                //TODO: Calendar vs Financial Date Handling - Check if this should use number of financial perids and not month
                 for (Month = 1; Month <= 12; Month++)
                 {
                     NewColumn = Counter * 13 + Month - 1;
@@ -836,6 +837,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
                     }
                 }
 
+                //TODO: Calendar vs Financial Date Handling - Check if this should use financial year/periods and not assume calendar
                 // the ytd column
                 NewColumn = Counter * 13 + 12;
                 Parameters.Copy(TempParameters, Counter, -1, eParameterFit.eExact, NewColumn);
