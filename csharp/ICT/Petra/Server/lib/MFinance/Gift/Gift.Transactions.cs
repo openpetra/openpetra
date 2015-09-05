@@ -1024,7 +1024,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             #endregion Validate Arguments
 
             GiftBatchTDSAGiftDetailTable LastGiftData = new GiftBatchTDSAGiftDetailTable();
-            GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = null;
 

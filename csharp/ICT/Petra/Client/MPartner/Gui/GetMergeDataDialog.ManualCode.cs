@@ -126,7 +126,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             string Business = PPartnerAttributeTable.GetSpecialisedDBName();
             string Current = PPartnerAttributeTable.GetCurrentDBName();
             string NoLongerCurrentFrom = PPartnerAttributeTable.GetNoLongerCurrentFromDBName();
-            string Confidential = PPartnerAttributeTable.GetConfidentialDBName();
             string Comment = PPartnerAttributeTable.GetCommentDBName();
 
 
