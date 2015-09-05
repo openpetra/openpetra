@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,6 +43,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -851,47 +852,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Print or reprint the posting report for this batch.
-        /// </summary>
-        public static void PrintPostingRegister(Int32 ALedgerNumber, Int32 ABatchNumber, Boolean AEditTemplate = false)
-        {
-            FastReportsWrapper ReportingEngine = new FastReportsWrapper("Batch Posting Register");
-
-            if (!ReportingEngine.LoadedOK)
-            {
-                ReportingEngine.ShowErrorPopup();
-                return;
-            }
-
-            GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(ALedgerNumber, ABatchNumber);
-            TRptCalculator Calc = new TRptCalculator();
-            ALedgerRow LedgerRow = BatchTDS.ALedger[0];
-
-            //Call RegisterData to give the data to the template
-            ReportingEngine.RegisterData(BatchTDS.ABatch, "ABatch");
-            ReportingEngine.RegisterData(BatchTDS.AJournal, "AJournal");
-            ReportingEngine.RegisterData(BatchTDS.ATransaction, "ATransaction");
-            ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
-                    ALedgerNumber), "AAccount");
-            ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
-                    ALedgerNumber), "ACostCentre");
-
-            Calc.AddParameter("param_batch_number_i", ABatchNumber);
-            Calc.AddParameter("param_ledger_number_i", ALedgerNumber);
-            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(ALedgerNumber);
-            Calc.AddStringParameter("param_ledger_name", LedgerName);
-
-            if (AEditTemplate)
-            {
-                ReportingEngine.DesignReport(Calc);
-            }
-            else
-            {
-                ReportingEngine.GenerateReport(Calc);
-            }
-        }
-
-        /// <summary>
         /// Print out the selected batch using FastReports template.
         /// </summary>
         /// <param name="sender"></param>
@@ -906,7 +866,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ABatchRow BatchRow = ucoBatches.GetSelectedDetailRow();
-            PrintPostingRegister(FLedgerNumber, BatchRow.BatchNumber, ModifierKeys.HasFlag(Keys.Control));
+
+//          PrintPostingRegister(FLedgerNumber, BatchRow.BatchNumber, ModifierKeys.HasFlag(Keys.Control));
+            TFrmBatchPostingRegister ReportGui = new TFrmBatchPostingRegister(this);
+
+            ReportGui.LedgerNumber = FLedgerNumber;
+            ReportGui.BatchNumber = BatchRow.BatchNumber;
+            ReportGui.Show();
         }
 
         #region Menu and command key handlers for our user controls

@@ -86,6 +86,7 @@ namespace Ict.Petra.Server.App.Delegates
 
             TSharedValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TPartnerServerLookups.VerifyPartner;
+            TSharedPartnerValidationHelper.PartnerIsLinkedToCCDelegate = @TPartnerServerLookups.PartnerIsLinkedToCC;
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookups.GetCurrentPostingRangeDates;
             TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
             TMonthEnd.StewardshipCalculationDelegate = @TStewardshipCalculationWebConnector.PerformStewardshipCalculation;

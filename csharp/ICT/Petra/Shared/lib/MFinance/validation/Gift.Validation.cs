@@ -195,8 +195,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     if ((foundRow == null)
                         && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                             AContext,
-                            new TVerificationResult(ValidationContext,
-                                String.Format(Catalog.GetString("Unknown cost centre code '{0}'."), ARow.BankCostCentre),
+                            new TScreenVerificationResult(ValidationContext,
+                                ValidationColumn,
+                                String.Format(Catalog.GetString("Unknown Bank Cost Centre: '{0}'."), ARow.BankCostCentre),
+                                ValidationControlsData.ValidationControl,
                                 TResultSeverity.Resv_Critical),
                             ValidationColumn))
                     {
@@ -208,8 +210,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     {
                         if (!foundRow.PostingCostCentreFlag && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                                 AContext,
-                                new TVerificationResult(ValidationContext,
+                                new TScreenVerificationResult(ValidationContext,
+                                    ValidationColumn,
                                     String.Format(Catalog.GetString("The cost centre '{0}' is not a Posting Cost Centre."), ARow.BankCostCentre),
+                                    ValidationControlsData.ValidationControl,
                                     TResultSeverity.Resv_Critical),
                                 ValidationColumn))
                         {
@@ -249,8 +253,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     if ((foundRow == null)
                         && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                             AContext,
-                            new TVerificationResult(ValidationContext,
+                            new TScreenVerificationResult(ValidationContext,
+                                ValidationColumn,
                                 String.Format(Catalog.GetString("Unknown currency code '{0}'."), ARow.CurrencyCode),
+                                ValidationControlsData.ValidationControl,
                                 TResultSeverity.Resv_Critical),
                             ValidationColumn))
                     {
@@ -285,8 +291,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         && (ARow.ExchangeRateToBase != 1.00m))
                     {
                         if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext,
-                                new TVerificationResult(ValidationContext,
+                                new TScreenVerificationResult(ValidationContext,
+                                    ValidationColumn,
                                     Catalog.GetString("A batch in the ledger base currency must have exchange rate of 1.00."),
+                                    ValidationControlsData.ValidationControl,
                                     TResultSeverity.Resv_Critical),
                                 ValidationColumn))
                         {
@@ -367,10 +375,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     {
                         if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                                 AContext,
-                                new TVerificationResult(ValidationContext,
+                                new TScreenVerificationResult(ValidationContext,
+                                    ValidationColumn,
                                     String.Format(Catalog.GetString("Unknown gift type '{0}'. Expected one of '{1}', '{2}' or '{3}'"),
                                         ARow.GiftType,
                                         MFinanceConstants.GIFT_TYPE_GIFT, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND, MFinanceConstants.GIFT_TYPE_OTHER),
+                                    ValidationControlsData.ValidationControl,
                                     TResultSeverity.Resv_Critical),
                                 ValidationColumn))
                         {
@@ -628,9 +638,17 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     if ((foundRow == null)
                         && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                             AContext,
-                            new TVerificationResult(ValidationContext,
+                            new TScreenVerificationResult(ValidationContext,
+                                ValidationColumn,
                                 String.Format(Catalog.GetString("Unknown cost centre code '{0}'."), ARow.CostCentreCode),
+                                ValidationControlsData.ValidationControl,
                                 TResultSeverity.Resv_Critical),
+
+/*
+ *                          new TVerificationResult(ValidationContext,
+ *                              String.Format(Catalog.GetString("Unknown cost centre code '{0}'."), ARow.CostCentreCode),
+ *                              TResultSeverity.Resv_Critical),
+ */
                             ValidationColumn))
                     {
                         VerifResultCollAddedCount++;

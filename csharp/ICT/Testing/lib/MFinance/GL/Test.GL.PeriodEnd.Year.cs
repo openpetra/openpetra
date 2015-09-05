@@ -132,7 +132,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 else
                 {
                     TVerificationResultCollection VerificationResult;
-                    TPeriodIntervalConnector.TPeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
+                    TPeriodIntervalConnector.PeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
                     CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                         "Running MonthEnd gave critical error");
                 }
@@ -173,12 +173,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 0, -100, 0, -200, 0, -300);
 
             // first run in info mode
-            TPeriodIntervalConnector.TPeriodYearEnd(intLedgerNumber, true, out verificationResult);
+            TPeriodIntervalConnector.PeriodYearEnd(intLedgerNumber, true, out verificationResult);
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "YearEnd test should not have critical errors");
 
             // now run for real
-            TPeriodIntervalConnector.TPeriodYearEnd(intLedgerNumber, false, out verificationResult);
+            TPeriodIntervalConnector.PeriodYearEnd(intLedgerNumber, false, out verificationResult);
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "YearEnd should not have critical errors");
 
@@ -262,7 +262,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     else
                     {
                         TVerificationResultCollection VerificationResult;
-                        TPeriodIntervalConnector.TPeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
+                        TPeriodIntervalConnector.PeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
                         CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                             "MonthEnd gave critical error at Period" + LedgerInfo.CurrentPeriod + ":\r\n");
                     }

@@ -642,9 +642,44 @@ namespace Ict.Petra.Client.MReporting.Gui
             return SendReport;
         } // AutoEmailReports
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary>Get all the data for the report</summary>
+        /// <remarks>Called from the server during batch posting, and also from File/Print gui</remarks>
+        /// <param name="ACalc"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        public Boolean RegisterBatchPostingData(TRptCalculator ACalc, Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(ALedgerNumber, ABatchNumber);
+
+            if (BatchTDS.ABatch.Rows.Count < 1)
+            {
+                MessageBox.Show(Catalog.GetString("Batch not found"),
+                    Catalog.GetString("Batch Posting Register"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return false;
+            }
+
+            //Call RegisterData to give the data to the template
+            RegisterData(BatchTDS.ABatch, "ABatch");
+            RegisterData(BatchTDS.AJournal, "AJournal");
+            RegisterData(BatchTDS.ATransaction, "ATransaction");
+            RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
+                    ALedgerNumber), "AAccount");
+            RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                    ALedgerNumber), "ACostCentre");
+
+            ACalc.AddParameter("param_batch_number_i", ABatchNumber);
+            ACalc.AddParameter("param_ledger_number_i", ALedgerNumber);
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(ALedgerNumber);
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
+            ACalc.AddParameter("param_currency_name",
+                TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(ALedgerNumber, ABatchNumber));
+            return true;
+        }
+
+        /// <summary>Helper for the report printing ClientTask</summary>
         /// <param name="ReportName"></param>
         /// <param name="paramStr"></param>
         public static void PrintReportNoUi(String ReportName, String paramStr)
@@ -729,20 +764,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             switch (ReportName)
             {
                 case "Batch Posting Register":
-                    // Batch Posting Register report has no UI page as most reports do.
-                    // Code similar to this appears in csharp\ict\petra\client\mfinance\gui\gl\glbatch.manualcode.cs
-                    // where it's wired to the "File Print" function in the GL Batch list.
                 {
                     if ((LedgerNumber != -1) && (BatchNumber != -1))
                     {
-                        GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(LedgerNumber, BatchNumber);
-                        ReportingEngine.RegisterData(BatchTDS.ABatch, "ABatch");
-                        ReportingEngine.RegisterData(BatchTDS.AJournal, "AJournal");
-                        ReportingEngine.RegisterData(BatchTDS.ATransaction, "ATransaction");
-                        ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
-                                LedgerNumber), "AAccount");
-                        ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
-                                LedgerNumber), "ACostCentre");
+                        ReportingEngine.RegisterBatchPostingData(Calc, LedgerNumber, BatchNumber);
                     }
                     else
                     {

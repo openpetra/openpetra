@@ -985,7 +985,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                             if (!PartnerClassValid)
                             {
                                 ValidPartnerClassesStr = ValidPartnerClassesStr.Substring(0,
-                                    ValidPartnerClassesStr.Length - PartnerClassConcatStr.Length - 1);                                                                                            // strip off "' or "
+                                    ValidPartnerClassesStr.Length - PartnerClassConcatStr.Length - 1);      // strip off "' or "
                                 ReturnValue.OverrideResultText(ReturnValue.ResultText + " " +
                                     String.Format(PartnerClassInvalidMessageStr, ValidPartnerClassesStr, PartnerClass));
                             }
@@ -1605,9 +1605,8 @@ namespace Ict.Petra.Shared.MPartner.Validation
         public static void ValidateGiftDestinationRowManual(object AContext, PPartnerGiftDestinationRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
-            DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
-            TVerificationResult VerificationResult;
+            TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
             if (ARow.RowState == DataRowState.Deleted)
@@ -1615,15 +1614,20 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 return;
             }
 
-            // 'Field Key' must be a Partner of Class 'UNIT' and must not be 0
-            ValidationColumn = ARow.Table.Columns[PPartnerGiftDestinationTable.ColumnFieldKeyId];
+            // 'Field Key' must be a Partner associated with a Cost Centre
+            DataColumn ValidationColumn = ARow.Table.Columns[PPartnerGiftDestinationTable.ColumnFieldKeyId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = IsValidUNITPartner(
-                    ARow.FieldKey, false, THelper.NiceValueDescription(
-                        ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                if (!TSharedPartnerValidationHelper.PartnerIsLinkedToCC(ARow.FieldKey))
+                {
+                    VerificationResult = new TScreenVerificationResult(AContext, ValidationColumn,
+                        String.Format(
+                            Catalog.GetString("Gift Destination ({0}) must be a Partner linked to a Cost Centre."),
+                            ARow.FieldKey),
+                        ValidationControlsData.ValidationControl,
+                        TResultSeverity.Resv_Critical);
+                }
 
                 // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
                 // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different

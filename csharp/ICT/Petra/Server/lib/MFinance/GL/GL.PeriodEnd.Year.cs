@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       wolfgangu, timop
+//       Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,6 +56,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     public partial class TPeriodIntervalConnector
     {
         /// <summary>
+        /// Cancels, and prevents database commit, of a currently running PeriodEnd operation.
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static void CancelPeriodOperation()
+        {
+            TLogging.Log("PeriodEnd operation was cancelled.");
+            TPeriodEndOperations.FwasCancelled = true;
+        }
+
+        /// <summary>
         /// Routine to run the year end calculations ...
         /// </summary>
         /// <param name="ALedgerNum"></param>
@@ -63,7 +74,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AVerificationResult"></param>
         /// <returns>false if there's no problem</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool TPeriodYearEnd(
+        public static bool PeriodYearEnd(
             int ALedgerNum,
             bool AIsInInfoMode,
             out TVerificationResultCollection AVerificationResult)
@@ -160,6 +171,11 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void PurgeProcessedFeeTable()
         {
+            if (TPeriodEndOperations.FwasCancelled)
+            {
+                return;
+            }
+
             TDBTransaction Transaction = null;
             Boolean ShouldCommit = true;
 
@@ -185,6 +201,11 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void PurgeIchStewardshipTable()
         {
+            if (TPeriodEndOperations.FwasCancelled)
+            {
+                return;
+            }
+
             TDBTransaction Transaction = null;
             Boolean ShouldCommit = true;
 
@@ -214,7 +235,8 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="AInfoMode"></param>
         /// <param name="AVRCollection"></param>
         /// <returns>True if an error occurred</returns>
-        public bool RunYearEnd(bool AInfoMode,
+        public bool RunYearEnd(
+            bool AInfoMode,
             out TVerificationResultCollection AVRCollection)
         {
             FInfoMode = AInfoMode;
@@ -233,50 +255,64 @@ namespace Ict.Petra.Server.MFinance.GL
                 return true;
             }
 
-/*
- *          TDBTransaction Transaction = null;
- *          Boolean ShouldCommit = false;
- *
- *          DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
- *              TEnforceIsolationLevel.eilMinimum,
- *              ref Transaction,
- *              ref ShouldCommit,
- *              delegate
- *              {
- */
-            Int32 OldYearNum = FledgerInfo.CurrentFinancialYear;
+            TDBTransaction Transaction = null;
+            Boolean ShouldCommit = false;
+            TPeriodEndOperations.FwasCancelled = false;
 
-            RunPeriodEndSequence(new TArchive(FledgerInfo),
-                Catalog.GetString("Archive old financial information"));
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                ref ShouldCommit,
+                delegate
+                {
+                    Int32 OldYearNum = FledgerInfo.CurrentFinancialYear;
 
-            RunPeriodEndSequence(new TReallocation(FledgerInfo),
-                Catalog.GetString("Reallocate all income and expense accounts"));
+                    RunPeriodEndSequence(new TArchive(FledgerInfo),
+                        Catalog.GetString("Archive old financial information"));
 
-            RunPeriodEndSequence(new TGlmNewYearInit(FledgerInfo, OldYearNum, this),
-                Catalog.GetString("Initialize the database for next year"));
+                    RunPeriodEndSequence(new TReallocation(FledgerInfo),
+                        Catalog.GetString("Reallocate all income and expense accounts"));
 
-            /* As far as we can tell, there's nothing to do for budgets:
-             *          RunPeriodEndSequence(new TNewYearBudgets(FledgerInfo),
-             *              Catalog.GetString("Initialise budgets for next year"));
-             */
+                    RunPeriodEndSequence(new TGlmNewYearInit(FledgerInfo, OldYearNum, this),
+                        Catalog.GetString("Initialize the database for next year"));
 
-            RunPeriodEndSequence(new TResetForwardPeriodBatches(FledgerInfo, OldYearNum),
-                Catalog.GetString("Re-base last year's forward-posted batches so they're in the new year."));
+                    /* As far as we can tell, there's nothing to do for budgets:
+                     *          RunPeriodEndSequence(new TNewYearBudgets(FledgerInfo),
+                     *              Catalog.GetString("Initialise budgets for next year"));
+                     */
 
-            RunPeriodEndSequence(new TResetForwardPeriodICH(FledgerInfo),
-                Catalog.GetString("Re-base last year's forward-posted ICH Stewardship to the new year."));
+                    RunPeriodEndSequence(new TResetForwardPeriodBatches(FledgerInfo, OldYearNum),
+                        Catalog.GetString("Re-base last year's forward-posted batches so they're in the new year."));
 
-            PurgeProcessedFeeTable();
-            PurgeIchStewardshipTable();
+                    RunPeriodEndSequence(new TResetForwardPeriodICH(FledgerInfo),
+                        Catalog.GetString("Re-base last year's forward-posted ICH Stewardship to the new year."));
 
-            if (!FInfoMode && !FHasCriticalErrors)
-            {
-                FledgerInfo.ProvisionalYearEndFlag = false;
-//                      ShouldCommit = true;
-                TLogging.Log("RunYearEnd: No errors; transaction will be committed.");
-            }
+                    PurgeProcessedFeeTable();
+                    PurgeIchStewardshipTable();
 
-//                }); // New Or Existing AutoTransaction
+                    if (TPeriodEndOperations.FwasCancelled)
+                    {
+                        FverificationResults.Add(new TVerificationResult(Catalog.GetString("Year End"),
+                                Catalog.GetString("Process was cancelled by user."), "",
+                                TPeriodEndErrorAndStatusCodes.PEEC_12.ToString(),
+                                TResultSeverity.Resv_Critical));
+                        FHasCriticalErrors = true;
+                    }
+
+                    if (!FInfoMode && !FHasCriticalErrors)
+                    {
+                        FledgerInfo.ProvisionalYearEndFlag = false;
+
+                        // Refresh cached ledger table, so that the client will know the current period
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableFinanceTablesEnum.LedgerDetails.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+
+                        TLogging.LogAtLevel(1, "RunYearEnd: No errors; transaction will be committed.");
+                        ShouldCommit = true;
+                    }
+                }); // New Or Existing AutoTransaction
 
             return FHasCriticalErrors;
         } // RunYearEnd
@@ -503,6 +539,11 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     foreach (DataRowView rv in costCentreTbl.DefaultView)
                     {
+                        if (TPeriodEndOperations.FwasCancelled)
+                        {
+                            return; // this only returns from the delegate.
+                        }
+
                         ACostCentreRow CCRow = (ACostCentreRow)rv.Row;
                         String Query = "SELECT DISTINCT a_general_ledger_master.a_account_code_c AS Account," +
                                        " a_general_ledger_master_period.a_actual_base_n AS Balance," +
@@ -840,6 +881,11 @@ namespace Ict.Petra.Server.MFinance.GL
 
             foreach (AGeneralLedgerMasterRow GlmRowFrom in FGlmPostingFrom.Rows)
             {
+                if (TPeriodEndOperations.FwasCancelled)
+                {
+                    return EntryCount;
+                }
+
                 ++EntryCount;
 
                 if (FInfoMode)
@@ -969,12 +1015,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 GlmRowTo.StartBalanceBase = GlmRowFrom.ClosingPeriodActualBase + LastOldGlmPeriodRow.ActualBase;
                 GlmRowTo.StartBalanceIntl = GlmRowFrom.ClosingPeriodActualIntl + LastOldGlmPeriodRow.ActualIntl;
                 GlmRowTo.StartBalanceForeign = (LastOldGlmPeriodRow.IsActualForeignNull()) ? 0 : LastOldGlmPeriodRow.ActualForeign;
-            }
+            } // foreach
 
             if (DoExecuteableCode)
             {
                 GlmTDS.ThrowAwayAfterSubmitChanges = true;
-                TLogging.Log(
+                TLogging.LogAtLevel(1,
                     "TGlmNewYearInit: New GLMP (" + FLedgerInfo.LedgerNumber + ") for year " + FNewYearNum + " has " +
                     GlmTDS.AGeneralLedgerMasterPeriod.Rows.Count + " Rows.");
                 GLPostingTDSAccess.SubmitChanges(GlmTDS);

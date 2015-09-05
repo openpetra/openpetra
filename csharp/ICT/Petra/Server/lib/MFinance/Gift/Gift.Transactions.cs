@@ -1728,9 +1728,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Arguments
 
-            string CostCentreCode = string.Empty;
-            string ARecipientLedgerNumberName = string.Empty;
-
             AVerificationResults = new TVerificationResultCollection();
 
             Int32 RecipientLedger = (int)ARecipientLedgerNumber / 1000000;
@@ -1739,11 +1736,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 if ((RecipientLedger != ALedgerNumber) && (ARecipientPartnerKey > 0))
                 {
+                    string CostCentreCode = string.Empty;
+
                     //Valid ledger number table
                     if (!CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientLedgerNumber, out CostCentreCode)
                         && !CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientPartnerKey, out CostCentreCode))
                     {
                         TPartnerClass Class;
+                        string ARecipientLedgerNumberName = string.Empty;
                         TPartnerServerLookups.GetPartnerShortName(ARecipientLedgerNumber, out ARecipientLedgerNumberName, out Class);
 
                         AVerificationResults.Add(
@@ -1751,6 +1751,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 null,
                                 string.Format(ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_RECIPIENTFIELD_NOT_ILT).ErrorMessageText,
                                     ARecipientLedgerNumberName, ARecipientLedgerNumber),
+                                PetraErrorCodes.ERR_RECIPIENTFIELD_NOT_ILT,
                                 TResultSeverity.Resv_Critical));
 
                         return false;

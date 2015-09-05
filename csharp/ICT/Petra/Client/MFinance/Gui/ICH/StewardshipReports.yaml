@@ -33,17 +33,13 @@ RootNode:
         pnlContentTop:
             Dock: Fill
             Controls:
-                Row0: [grpSelection, rgrCurrency]
+                Row0: [grpSelection]
 
         grpSelection: {Width:410, Height:100}
             Controls: 
                 Row1: [cmbYearEnding]
                 Row2: [cmbReportPeriod]
                 Row3: [cmbICHNumber]
-        rgrCurrency:
-            Height: 100
-            ParameterName: param_currency
-            Controls: [rbtBase, rbtInternational]
 
         pnlContentMiddle:
             Dock: Bottom
@@ -80,10 +76,3 @@ RootNode:
         cmbYearEnding: {Label=Year End, List=UserDefinedList, OnChange=RefreshReportPeriodList, Width=250}
         cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList, Width=250}
         cmbICHNumber: {Label=Run Number (0=all), List=UserDefinedList, Width=250}
-
-        rbtBase: 
-            Label: Base
-            ParameterValue: Base
-        rbtInternational: 
-            Label: International
-            ParameterValue: International

@@ -349,7 +349,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
             }
 
-            mniPrintGiftBatchDetail.Enabled = true;
+            mniFilePrint.Enabled = true;
 
             // change the event that gets called when 'Save' is clicked (i.e. changed from generated code)
             tbbSave.Click -= FileSave;
@@ -904,7 +904,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         // open screen to print the Gift Batch Detail report
-        private void PrintGiftBatchDetail(Object sender, EventArgs e)
+        private void FilePrint(Object sender, EventArgs e)
         {
             TFrmGiftBatchDetail Report = new TFrmGiftBatchDetail(this);
 

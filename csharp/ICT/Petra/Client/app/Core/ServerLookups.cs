@@ -183,6 +183,14 @@ namespace Ict.Petra.Client.App.Core
                     out AIsMergedPartner);
             }
 
+            /// <summary>Is this the key of a valid Gift Recipient?</summary>
+            /// <param name="APartnerKey"></param>
+            /// <returns>True if this is a valid key to a partner that's linked to a Cost Centre (in any ledger)</returns>
+            public static Boolean PartnerIsLinkedToCC(Int64 APartnerKey)
+            {
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.PartnerIsLinkedToCC(APartnerKey);
+            }
+
             /// <summary>
             /// Verifies the existence of a Partner.
             /// </summary>

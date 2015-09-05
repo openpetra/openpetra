@@ -293,8 +293,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             pm.Add("param_ledger_number_i", FLedgerNumber);
             String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            String CurrencyName = (rbtBase.Checked) ? FLedgerRow.BaseCurrency : FLedgerRow.IntlCurrency;
-            ACalc.AddParameter("param_currency_name", CurrencyName);
+            ACalc.AddParameter("param_currency_name", FLedgerRow.BaseCurrency); // Stewardship reports are always in Base Currency.
 
             ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
             ACalc.AddParameter("param_ich_number", pm.Get("param_cmbICHNumber").ToInt32());

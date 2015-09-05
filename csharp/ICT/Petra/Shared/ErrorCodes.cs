@@ -177,7 +177,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>Suspense accounts exist despite disabling suspense accounts for a ledger.</summary>
         [ErrCodeAttribute("Suspense Accounts in use.",
-             ErrorMessageText = "The use of suspense accounts cannot be	disabled because there are accounts	currently in use.")]
+             ErrorMessageText = "The use of suspense accounts cannot be disabled because there are accounts currently in use.")]
         public const String ERR_NO_SUSPENSE_ACCOUNTS_ALLOWED = "FIN.00001V";
 
         /// <summary>Too few forwarding periods.</summary>
@@ -207,7 +207,7 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Period {0} must end one day before the next period begins.")]
         public const String ERR_PERIOD_DATE_RANGE = "FIN.00006V";
 
-        /// <summary>Period date ranges need to make sure that there is no overlap and no gaps in calendar.</summary>
+        /// <summary>Incorrect period.</summary>
         [ErrCodeAttribute("Current Period incorrect.",
              ErrorMessageText = "Current Period cannot be greater than Number of Periods.")]
         public const String ERR_CURRENT_PERIOD_TOO_LATE = "FIN.00007V";
@@ -227,19 +227,19 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "The amount '{0}' is too large. An individual amount cannot be greater than the total amount.")]
         public const String ERR_AMOUNT_TOO_LARGE = "FIN.00010V";
 
-        /// <summary>Allocation journal.</summary>
+        /// <summary>Incorrect percentage.</summary>
         [ErrCodeAttribute("Percentage is above 100%.",
              ErrorMessageText = "Percentage cannot be greater than 100%.")]
         public const String ERR_PERCENTAGE_TOO_LARGE = "FIN.00011V";
 
-        /// <summary>Warning message that two exchange rates differ by more than 10%.</summary>
+        /// <summary>Warning duplicate exchange rate.</summary>
         [ErrCodeAttribute("Duplicate exchange rate for currencies and date.",
              ErrorMessageText =
                  "There is already a row for this currency pair at the same rate for this date.")
         ]
         public const String ERR_EXCH_RATE_IS_DUPLICATE = "FIN.000012N";
 
-        /// <summary>Warning message that two exchange rates differ by more than 10%.</summary>
+        /// <summary>Warning message that the recipient's field is not an ILT ledger.</summary>
         [ErrCodeAttribute("Invalid Data Entered",
              ErrorMessageText =
                  "The recipient's field,  {0} ({1}), is not set up for inter-ledger transfers. Please set it up as an ILT ledger first.")

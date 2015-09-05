@@ -351,7 +351,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 GLMTemplateRow.AccountCode = AAccountCode;
                 GLMTemplateRow.Year = ACurrentFinancialYear;
                 FGLMTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, transaction);
-                TLogging.Log(
+                TLogging.LogAtLevel(1,
                     "TGlmInfo(" + ALedgerNumber + ", " + ACurrentFinancialYear + ", " + AAccountCode + ") has loaded " + FGLMTbl.Rows.Count +
                     " Rows.");
                 iPtr = -1;

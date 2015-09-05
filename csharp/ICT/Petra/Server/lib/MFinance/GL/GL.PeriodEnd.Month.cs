@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AVerificationResults"></param>
         /// <returns>false if there's no problem</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool TPeriodMonthEnd(
+        public static bool PeriodMonthEnd(
             Int32 ALedgerNumber,
             bool AInfoMode,
             out TVerificationResultCollection AVerificationResults)
@@ -184,12 +184,14 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="AInfoMode"></param>
         /// <param name="AVRCollection"></param>
         /// <returns>false if it went OK</returns>
-        public bool RunMonthEnd(bool AInfoMode,
+        public bool RunMonthEnd(
+            bool AInfoMode,
             out TVerificationResultCollection AVRCollection)
         {
             FInfoMode = AInfoMode;
             FverificationResults = new TVerificationResultCollection();
             AVRCollection = FverificationResults;
+            TPeriodEndOperations.FwasCancelled = false;
 
             if (FledgerInfo.ProvisionalYearEndFlag)
             {
@@ -245,6 +247,15 @@ namespace Ict.Petra.Server.MFinance.GL
 
             // RunPeriodEndSequence(new RunMonthlyAdminFees(), "Example");
 
+            if (TPeriodEndOperations.FwasCancelled)
+            {
+                FverificationResults.Add(new TVerificationResult(Catalog.GetString("Month End"),
+                        Catalog.GetString("Process was cancelled by user."), "",
+                        TPeriodEndErrorAndStatusCodes.PEEC_12.ToString(),
+                        TResultSeverity.Resv_Critical));
+                FHasCriticalErrors = true;
+            }
+
             if (!FInfoMode)
             {
                 if (!FHasCriticalErrors)
@@ -298,8 +309,13 @@ namespace Ict.Petra.Server.MFinance.GL
             CheckIfRevaluationIsDone();
             CheckForUnpostedBatches();
             CheckForUnpostedGiftBatches();
+
+            if (FInfoMode)
+            {
+                CheckForSuspenseAccounts();
+            }
+
             CheckForSuspenseAccountsZero();
-            CheckForSuspenseAccounts();
             return 0;
         }
 
@@ -378,6 +394,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (getSuspenseAccountInfo.RowCount != 0)
             {
+                TLogging.LogAtLevel(1, String.Format("MonthEnd: {0} suspense accounts in use.", getSuspenseAccountInfo.RowCount));
                 TVerificationResult tvr = new TVerificationResult(
                     Catalog.GetString("Suspense Accounts found"),
                     String.Format(
@@ -386,6 +403,10 @@ namespace Ict.Petra.Server.MFinance.GL
                         getSuspenseAccountInfo.ToString()),
                     "", TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Status);
                 FverificationResults.Add(tvr);
+            }
+            else
+            {
+                TLogging.LogAtLevel(1, "MonthEnd: No suspense accounts used.");
             }
         }
 
@@ -454,8 +475,8 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
                 }
             }
-        }
-    }
+        } // CheckFor SuspenseAccountsZero
+    } // Run MonthEndChecks
 
     /// <summary>
     /// Example ....

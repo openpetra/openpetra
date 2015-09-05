@@ -671,8 +671,8 @@ namespace Ict.Common.Verification
     {
         #region Resourcestrings
 
-        private static readonly string StrErrorFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1}, Code={3})");
-        private static readonly string StrErrorNoCodeFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1})");
+        private static readonly string StrErrorFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    ({1}: {3})");
+        private static readonly string StrErrorNoCodeFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    ({1})");
         private static readonly string StrStatusFooter = Catalog.GetString("{0}\r\n    Status: {2}\r\n");
 
         #endregion
@@ -1184,12 +1184,11 @@ namespace Ict.Common.Verification
         private void ClassifyExceptions()
         {
             // If collection contains an ExceptionResult, remove all non-exceptions
-            TScreenVerificationResult si;
             Boolean Found = false;
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(FList[Counter]);
+                TVerificationResult si = (TVerificationResult)(FList[Counter]);
 
                 if (si.ResultCode == CommonErrorCodes.ERR_DUPLICATE_RECORD)
                 {
@@ -1205,7 +1204,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = Count - 1; Counter >= 0; Counter--)
             {
-                si = (TScreenVerificationResult)(FList[Counter]);
+                TVerificationResult si = (TVerificationResult)(FList[Counter]);
 
                 if (si.ResultCode != CommonErrorCodes.ERR_DUPLICATE_RECORD)
                 {
@@ -1217,12 +1216,15 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(FList[Counter]);
-
-                if (si.ResultColumn != null)
+                if (FList[Counter] is TScreenVerificationResult)
                 {
-                    Found = true;
-                    break;
+                    TScreenVerificationResult si = (TScreenVerificationResult)(FList[Counter]);
+
+                    if (si.ResultColumn != null)
+                    {
+                        Found = true;
+                        break;
+                    }
                 }
             }
 
@@ -1233,11 +1235,14 @@ namespace Ict.Common.Verification
 
             for (int Counter = Count - 1; Counter >= 0; Counter--)
             {
-                si = (TScreenVerificationResult)(FList[Counter]);
-
-                if (si.ResultColumn == null)
+                if (FList[Counter] is TScreenVerificationResult)
                 {
-                    FList.RemoveAt(Counter);
+                    TScreenVerificationResult si = (TScreenVerificationResult)(FList[Counter]);
+
+                    if (si.ResultColumn == null)
+                    {
+                        RemoveAt(Counter);
+                    }
                 }
             }
         }
@@ -1271,7 +1276,6 @@ namespace Ict.Common.Verification
             bool ATreatUserControlAndFormContextsAsIdentical = false)
         {
             List <TScreenVerificationResult>si = FindAllBy(AResultColumn);
-            bool IdenticalVResultFound = false;
             bool ReturnValue = false;
 
             if (AVerificationResult != null)
@@ -1291,6 +1295,8 @@ namespace Ict.Common.Verification
                 else
                 {
                     // A TVerificationResult for the same AResultColumn was found: inspect it.
+                    bool IdenticalVResultFound = false;
+
                     foreach (TScreenVerificationResult SingleEntry in si)
                     {
                         if (TVerificationHelper.AreVerificationResultsIdentical(SingleEntry, AVerificationResult, false,
@@ -1960,7 +1966,8 @@ namespace Ict.Common.Verification
         /// <summary>
         /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public EVerificationException() : base()
+        public EVerificationException()
+            : base()
         {
         }
 
@@ -1968,7 +1975,8 @@ namespace Ict.Common.Verification
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
-        public EVerificationException(String AMessage) : base(AMessage)
+        public EVerificationException(String AMessage)
+            : base(AMessage)
         {
         }
 
@@ -1977,7 +1985,8 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
-        public EVerificationException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        public EVerificationException(string AMessage, Exception AInnerException)
+            : base(AMessage, AInnerException)
         {
         }
 

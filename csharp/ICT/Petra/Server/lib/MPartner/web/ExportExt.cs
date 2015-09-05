@@ -63,7 +63,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             long MySiteKey = DomainManager.GSiteKey;
             String SubVersion = "0";
 
-            String Header = string.Format("{0} \"{1}\" {2}\n{3}\n", DateFormat, PetraVersion, MySiteKey, SubVersion);
+            String Header = string.Format("{0} \"{1}\" {2}{4}{3}{4}", DateFormat, PetraVersion, MySiteKey, SubVersion, Environment.NewLine);
 
             if (DateFormat == "dmy")
             {

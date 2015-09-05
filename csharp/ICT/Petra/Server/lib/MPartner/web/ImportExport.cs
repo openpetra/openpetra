@@ -1667,7 +1667,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static string GetExtFileFooter()
         {
-            return "0  \"FINISH\"\n";
+            return "0  \"FINISH\"" + Environment.NewLine;
         }
 
         /// <summary>

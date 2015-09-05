@@ -43,10 +43,17 @@ namespace Ict.Petra.Shared.MPartner.Validation
         public delegate bool TVerifyPartner(Int64 APartnerKey, TPartnerClass[] AValidPartnerClasses, out bool APartnerExists,
             out String APartnerShortName, out TPartnerClass APartnerClass, out Boolean AIsMergedPartner);
 
+        /// <summary>Delegate to determine Partner is linked to CC</summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns></returns>
+        public delegate Boolean TPartnerIsLinkedToCC(Int64 APartnerKey);
+
         /// <summary>
         /// Reference to the Delegate for invoking the verification of the existence of a Partner.
         /// </summary>
         private static TVerifyPartner FDelegateVerifyPartner;
+
+        private static TPartnerIsLinkedToCC FDelegatePartnerIsLinkedToCC;
 
         /// <summary>
         /// This property is used to provide a function which invokes the verification of the existence of a Partner.
@@ -62,6 +69,21 @@ namespace Ict.Petra.Shared.MPartner.Validation
             set
             {
                 FDelegateVerifyPartner = value;
+            }
+        }
+
+        /// <summary>
+        /// A function must be provided before the helper function is called.
+        /// </summary>
+        public static TPartnerIsLinkedToCC PartnerIsLinkedToCCDelegate
+        {
+            get
+            {
+                return FDelegatePartnerIsLinkedToCC;
+            }
+            set
+            {
+                FDelegatePartnerIsLinkedToCC = value;
             }
         }
 
@@ -92,6 +114,21 @@ namespace Ict.Petra.Shared.MPartner.Validation
             else
             {
                 throw new InvalidOperationException("Delegate 'TVerifyPartner' must be initialised before calling this Method");
+            }
+        }
+
+        /// <summary>Attempts to call a delegate...</summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns></returns>
+        public static Boolean PartnerIsLinkedToCC(Int64 APartnerKey)
+        {
+            if (FDelegatePartnerIsLinkedToCC != null)
+            {
+                return FDelegatePartnerIsLinkedToCC(APartnerKey);
+            }
+            else
+            {
+                throw new InvalidOperationException("Delegate 'PartnerIsLinkedToCC' must be initialised before calling this Method");
             }
         }
     }
