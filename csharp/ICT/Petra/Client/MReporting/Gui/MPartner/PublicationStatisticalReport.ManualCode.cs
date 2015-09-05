@@ -124,20 +124,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             PublicationCodesToAdd = clbPublicationCode.GetCheckedStringList(false);
 
-            if (clbPublicationCode.CheckedItemsCount == 0)
+            if (AReportAction == TReportActionEnum.raGenerate)
             {
-                VerificationResult = new TVerificationResult(Catalog.GetString("Select Publication Codes"),
-                    Catalog.GetString("No Publication Code was selected!"),
-                    TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationResult);
-            }
-            else if (clbPublicationCode.CheckedItemsCount > 8)
-            {
-                VerificationResult = new TVerificationResult(Catalog.GetString("Select Publication Codes"),
-                    string.Format(Catalog.GetString("You have selected {0} publications. Please reduce this number to 8 or fewer."),
-                        clbPublicationCode.CheckedItemsCount),
-                    TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                if (clbPublicationCode.CheckedItemsCount == 0)
+                {
+                    VerificationResult = new TVerificationResult(Catalog.GetString("Select Publication Codes"),
+                        Catalog.GetString("No Publication Code was selected!"),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+                else if (clbPublicationCode.CheckedItemsCount > 8)
+                {
+                    VerificationResult = new TVerificationResult(Catalog.GetString("Select Publication Codes"),
+                        string.Format(Catalog.GetString("You have selected {0} publications. Please reduce this number to 8 or fewer."),
+                            clbPublicationCode.CheckedItemsCount),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
             }
 
             ACalculator.AddStringParameter("param_clbPublicationCode", SelectedPublicationCodes);

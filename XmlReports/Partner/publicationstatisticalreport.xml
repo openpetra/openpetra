@@ -55,7 +55,7 @@
 	<calculation id="GetCountyPublicationStatistic" returns="County" returnsFormat="internal">
 		<query>
 			<queryDetail>
-				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, {County}, {param_subscriptionoptions}, {param_clbPublicationCode})"/>
+				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, {County}, {param_clbPublicationCode})"/>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -64,7 +64,7 @@
 	<calculation id="GetNonePublicationStatistic" returns="County" returnsFormat="internal">
 		<query>
 			<queryDetail>
-				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, *NONE*, {param_subscriptionoptions}, {param_clbPublicationCode} )"/>
+				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, *NONE*, {param_clbPublicationCode} )"/>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -72,7 +72,7 @@
 	<calculation id="GetForeignPublicationStatistic" returns="County" returnsFormat="internal">
 		<query>
 			<queryDetail>
-				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, *FOREIGN*, {param_subscriptionoptions}, {param_clbPublicationCode} )"/>
+				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, *FOREIGN*, {param_clbPublicationCode} )"/>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -88,7 +88,7 @@
 	<calculation id="CalculatePublicationStatisticTotals" returns="County" returnsFormat="internal">
 		<query>
 			<queryDetail>
-				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, Totals:, {param_subscriptionoptions}, {param_clbPublicationCode}  )"/>
+				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, Totals:, {param_clbPublicationCode}  )"/>
 			</queryDetail>
 		</query>
 	</calculation>

@@ -75,15 +75,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 {
                     foreach (ACorporateExchangeRateRow Row in InspectDS.ACorporateExchangeRate.Rows)
                     {
-                        if (Row.RowState == DataRowState.Modified)
+                        if ((Row.RowState == DataRowState.Modified) || (Row.RowState == DataRowState.Added))
                         {
-                            // should only be -1 if no exchange rates were modified
+                            // should only be -1 if no exchange rates were modified or created
                             if (TransactionsChanged == -1)
                             {
                                 TransactionsChanged = 0;
                             }
 
-                            // update international amounts for all gl transaction using modified exchange rate
+                            // update international amounts for all gl transaction using modified or new exchange rate
                             string Query = "UPDATE a_transaction SET a_amount_in_intl_currency_n = " +
                                            "(a_amount_in_base_currency_n / " + Row.RateOfExchange + ")" +
                                            " FROM a_ledger" +

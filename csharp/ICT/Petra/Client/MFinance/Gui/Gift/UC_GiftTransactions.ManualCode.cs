@@ -532,6 +532,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool DoValidateGiftDestination;
             bool DoTaxUpdate;
 
+            if (!AValidSelection)
+            {
+                // if partner is not valid then we treat this change as if the partner key is 0
+                APartnerKey = 0;
+            }
+
             FRecipientKey = APartnerKey;
 
             TUC_GiftTransactions_Recipient.OnRecipientKeyChanged(APartnerKey,

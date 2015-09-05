@@ -427,6 +427,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             TVerificationResult VerificationResult = null;
             object ValidationContext;
             int VerifResultCollAddedCount = 0;
+            bool ValidPartner = true;
 
             // Don't validate deleted DataRows
             if (ARow.RowState == DataRowState.Deleted)
@@ -447,12 +448,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.RecipientKey, new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT }, true,
                 isImporting ? Catalog.GetString("Recipient key") :
                 "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
-                ValidationContext, ValidationColumn, null);
+                AContext, ValidationColumn, null);
 
             if (VerificationResult != null)
             {
                 AVerificationResultCollection.Remove(ValidationColumn);
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                ValidPartner = false;
             }
 
             // 'Gift amount must be non-zero
@@ -475,7 +477,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
-            // If recipient is non-zero, field must also be non-zero
+            // If recipient is non-zero, field must also be non-zero. Only check for valid recipient keys.
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnRecipientLedgerNumberId];
             ValidationContext = String.Format("batch:{0} transaction:{1} detail:{2}",
                 ARow.BatchNumber,
@@ -484,7 +486,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if ((ARow.RecipientKey > 0) && (ARow.RecipientLedgerNumber == 0))
+                if ((ARow.RecipientKey > 0) && ValidPartner && (ARow.RecipientLedgerNumber == 0))
                 {
                     VerificationResult = TNumericalChecks.IsGreaterThanZero(ARow.RecipientLedgerNumber,
                         "Recipient field of " + ValidationContext + " is 0",
@@ -973,7 +975,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
                 ARow.DonorKey, new TPartnerClass[] { }, true,
                 (isImporting) ? String.Empty : "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()),
-                ValidationContext, ValidationColumn, null);
+                AContext, ValidationColumn, null);
 
             if (VerificationResult != null)
             {
@@ -1178,7 +1180,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
                 ARow.DonorKey, new TPartnerClass[] { }, true,
-                "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()), ValidationContext, ValidationColumn, null);
+                "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()), AContext, ValidationColumn, null);
 
             if (VerificationResult != null)
             {
@@ -1217,6 +1219,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             TVerificationResult VerificationResult = null;
             object ValidationContext;
             int VerifResultCollAddedCount = 0;
+            bool ValidPartner = true;
 
             // Don't validate deleted DataRows
             if (ARow.RowState == DataRowState.Deleted)
@@ -1233,12 +1236,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
                 ARow.RecipientKey, new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT }, true,
-                "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()), ValidationContext, ValidationColumn, null);
+                "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()), AContext, ValidationColumn, null);
 
             if (VerificationResult != null)
             {
                 AVerificationResultCollection.Remove(ValidationColumn);
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                ValidPartner = false;
             }
 
             // 'Gift amount must be non-zero
@@ -1261,7 +1265,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
-            // If recipient is non-zero, field must also be non-zero
+            // If recipient is non-zero, field must also be non-zero. Only check for valid recipient keys.
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnRecipientLedgerNumberId];
             ValidationContext = String.Format("batch:{0} transaction:{1} detail:{2}",
                 ARow.BatchNumber,
@@ -1270,7 +1274,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if ((ARow.RecipientKey > 0) && (ARow.RecipientLedgerNumber == 0))
+                if ((ARow.RecipientKey > 0) && ValidPartner && (ARow.RecipientLedgerNumber == 0))
                 {
                     VerificationResult = TNumericalChecks.IsGreaterThanZero(ARow.RecipientLedgerNumber,
                         "Recipient field of " + ValidationContext + " is 0",

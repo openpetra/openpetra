@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, peters
 //
 // Copyright 2004-2012 by OM International
 //
@@ -21,22 +21,10 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-using System;
-using System.Drawing;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.Data;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MReporting;
-using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MPartner.Partner.Data;
+using System.Text.RegularExpressions;
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MReporting.Logic;
-using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
@@ -45,5 +33,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
     /// </summary>
     public partial class TFrmLengthOfCommitmentReport
     {
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+            if (AReportAction == TReportActionEnum.raGenerate)
+            {
+                // validate anniversaires (comma seperated integers)
+                if (chkAnniversaries.Checked && (string.IsNullOrEmpty(txtAnniversaries.Text)
+                                                 || !Regex.IsMatch(txtAnniversaries.Text, @"^([0-9]+,)*[0-9]+$")))
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("Length of Commitment Report"),
+                        Catalog.GetString("Please enter a comma seperated list of anniversaires."),
+                        TResultSeverity.Resv_Critical);
+
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+            }
+        }
     }
 }

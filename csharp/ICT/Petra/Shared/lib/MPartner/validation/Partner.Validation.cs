@@ -933,7 +933,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (AErrorMessageText == String.Empty)
                 {
                     ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
-                            PetraErrorCodes.ERR_PARTNERKEY_INVALID_NOZERO, new string[] { APartnerKey.ToString() }));
+                            PetraErrorCodes.ERR_PARTNERKEY_INVALID_NOZERO, new string[] { APartnerKey.ToString("0000000000") }));
                 }
                 else
                 {
@@ -953,12 +953,12 @@ namespace Ict.Petra.Shared.MPartner.Validation
                     if (AErrorMessageText == String.Empty)
                     {
                         ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
-                                PetraErrorCodes.ERR_PARTNERKEY_INVALID, new string[] { APartnerKey.ToString() }));
+                                PetraErrorCodes.ERR_PARTNERKEY_INVALID, new string[] { APartnerKey.ToString("0000000000") }));
                     }
                     else
                     {
                         ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
-                                PetraErrorCodes.ERR_PARTNERKEY_INVALID, new string[] { APartnerKey.ToString() }));
+                                PetraErrorCodes.ERR_PARTNERKEY_INVALID, new string[] { APartnerKey.ToString("0000000000") }));
                         ReturnValue.OverrideResultText(AErrorMessageText + Environment.NewLine + ReturnValue.ResultText);
                     }
 

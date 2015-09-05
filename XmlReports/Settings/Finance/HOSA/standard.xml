@@ -10,9 +10,6 @@
   <Parameter id="param_quarter" value="eBoolean:false" />
   <Parameter id="param_period" value="eBoolean:true" />
   <Parameter id="param_date_checked" value="eBoolean:false" />
-  <Parameter id="param_start_period_i" value="eInteger:1" />
-  <Parameter id="param_end_period_i" value="eInteger:1" />
-  <Parameter id="param_year_i" value="eInteger:0" />
   <Parameter id="param_ExcludeInactiveCostCentres" value="eBoolean:true" />
   <Parameter id="param_filter_cost_centres" value="eString:Fields" />
 </Parameters>

@@ -20,8 +20,25 @@
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [txtBatchNumber]
-            Width: 625
-            Padding: 5,0,0,0
+            Controls: [txtBatchNumber, pnlSorting]
+            Dock: Fill
+            #Width: 625
+            #Padding: 5,0,0,0
+        pnlSorting:
+            Controls: [rgrSorting]
+            Stretch: horizontally
+            Height:75
+
+        rgrSorting:
+            ParameterName: param_sortby
+            Dock: Fill
+            Controls: [rbtSortByCostCentreAndAccount, rbtSortByTransaction]
+        rbtSortByCostCentreAndAccount: 
+            Label: Sort by Cost Centre and Account
+            ParameterValue: CostCentreAndAccount
+        rbtSortByTransaction: 
+            Label: Sort by Transaction
+            ParameterValue: Transaction
+
         txtBatchNumber:
             Width: 100

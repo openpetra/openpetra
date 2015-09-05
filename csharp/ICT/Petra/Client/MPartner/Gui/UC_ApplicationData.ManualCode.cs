@@ -224,6 +224,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
+        /// <summary>
+        /// Selects the given application.
+        /// </summary>
+        /// <param name="AApplicationKey">Application's application key.</param>
+        /// <param name="ARegistrationOffice">Application's registration office.</param>
+        public void SelectApplication(Int32 AApplicationKey, Int64 ARegistrationOffice)
+        {
+            ucoApplications.SelectApplications(AApplicationKey, ARegistrationOffice);
+        }
+
         #endregion
 
 

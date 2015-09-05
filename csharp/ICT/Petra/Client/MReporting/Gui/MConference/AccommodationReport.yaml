@@ -13,9 +13,9 @@ RootNode:
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
-        READCONTROLSLOCALVARS: ReadControlsManually(ACalc, AReportAction);
-        SETCONTROLSLOCALVARS: SetControlsManually(AParameters);
-        INITUSERCONTROLS: InitUserControlsManually();
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+        INITUSERCONTROLS: InitUserControlsManual();
         REPORTSETTINGSDIRECTORY: Conference
     Security:
         ModulePermissionRequired: [CONFERENCE]
@@ -27,9 +27,9 @@ RootNode:
         tpgDateSettings:
             Label: Date Settings
             Controls:
-                Row1: [pnlConferenceDate]
-                Row2: [pnlArrivalDepartureDates]
-                Row3: [pnlSelectDateRange]
+                Row1: [grpConferenceDate]
+                Row2: [grpArrivalDepartureDates]
+                Row3: [grpSelectDateRange]
             Order: AlwaysLast
         
         ucoConferenceSelection:
@@ -45,34 +45,28 @@ RootNode:
                 Row1: [rbtBriefReport]
                 Row2: [rbtFullReport]
                 Row3: [rbtDetailReport]
-               
-        pnlConferenceDate:
-            Controls: [grpConferenceDate]
-        pnlArrivalDepartureDates:
-            Controls: [grpArrivalDepartureDates]
-        pnlSelectDateRange:
-            Controls: [grpSelectDateRange]
+
         grpConferenceDate:
-            Dock: Fill
+            Height: 70
             Label: Conference Date
             Controls:
                 Row1: [lblStartDate,dtpStartDate]
                 Row2: [lblEndDate,dtpEndDate]
             ColWidths: [0=Fixed:200,1=Fixed:100]
         grpArrivalDepartureDates:
-            Dock: Fill
+            Height: 70
             Label: Arrival / Departure Dates
             Controls:
                 Row1: [lblEarliestArrival,dtpEarliestArrival]
                 Row2: [lblLatestDeparture,dtpLatestDeparture]
             ColWidths: [0=Fixed:200,1=Fixed:100]
         grpSelectDateRange:
-            Dock: Fill
+            Height: 70
             Label: Select Date Range
             Controls:
                 Row1: [lblFrom,dtpFromDate]
                 Row2: [lblTo,dtpToDate]
-            ColWidths: [0=Fixed:200]
+            ColWidths: [0=Fixed:200,1=Fixed:100]
 
         lblStartDate:
         lblEndDate:

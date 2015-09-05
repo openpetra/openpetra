@@ -439,6 +439,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String APartnerShortName,
             bool AValidSelection)
         {
+            if (!AValidSelection)
+            {
+                // if partner is not valid then we treat this change as if the partner key is 0
+                APartnerKey = 0;
+            }
+
             mniRecipientHistory.Enabled = APartnerKey != 0;
 
             if (FInRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection || FShowingDetails)

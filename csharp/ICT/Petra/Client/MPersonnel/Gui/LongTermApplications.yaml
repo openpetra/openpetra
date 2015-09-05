@@ -12,6 +12,8 @@ RootNode:
     WindowWidth: 600
     WindowHeight: 600
     Actions:
+        actSearch: {ActionClick=Search_Click}
+        actClear: {ActionClick=Clear_Click}
         actEditApplication: {Label=Edit Application, ActionClick=EditApplication}
         actCreateExtract: {ActionClick=CreateExtract_Click}
         actSelectStatuses: {ActionClick=SelectStatuses_Click}
@@ -21,15 +23,17 @@ RootNode:
             Dock: Fill
         pnlControls:
             Dock: Top
-            Height: 170
-            Controls: [pnlApplicationDetails, rgrApplicationStatusFilter]
-        pnlApplicationDetails:
-            Dock: Top
+            Height: 220
+            Controls: [grpApplicationDetails, rgrApplicationStatusFilter]
+        grpApplicationDetails:
+            Stretch: horizontally
+            Label: Search
             Controls:
                 Row0: [txtTargetFieldKey]
                 Row1: [txtPlacementPersonKey]
+                Row2: [btnSearch, btnClear]
         rgrApplicationStatusFilter:
-            Dock: Fill
+            Stretch: horizontally
             Controls: [rbtAll, rbtGeneral, rbtDetailed]
             ControlsOrientation: vertical
             ColWidths: [0=Fixed:190]
@@ -43,7 +47,6 @@ RootNode:
         grdApplications:
             Dock: Fill
             Columns: [PPartner.PartnerShortName, PmGeneralApplication.GenApplicationStatus, PmYearProgramApplication.YpAppDate, PmGeneralApplication.GenAppPossSrvUnitKey]
-            ActionClick: GridRowSelected
             CustomColumns:
                 PPartner.PartnerShortName: {Label=Attendee Name}
                 PmGeneralApplication.GenAppPossSrvUnitKey: {Label=Target Field}
@@ -70,12 +73,11 @@ RootNode:
             Label: Target Field
             Type: PartnerKey
             PartnerClass: UNIT
-            OnChange: UpdateApplicationsByField
+            Stretch: horizontally
         txtPlacementPersonKey:
             Label: Placement Person
             Type: PartnerKey
             PartnerClass: PERSON
-            OnChange: UpdateApplicationsByPlacementPerson
         chkAccepted:
             CheckBoxAttachedLabel: right
             Padding: 0,7,0,0
@@ -103,9 +105,13 @@ RootNode:
             Stretch: horizontally
             NoLabel: true
             Padding: 0,-1,0,0
-            ActionClick: FilterChange
-            Width: 300
+            Width: 275
 
+        btnSearch:
+            Action: actSearch
+        btnClear:
+            Action: actClear
+            Aligh: right
         btnEditApplication:
             Action: actEditApplication
             Enabled: false

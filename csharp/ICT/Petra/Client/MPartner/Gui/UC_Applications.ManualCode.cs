@@ -424,6 +424,24 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Selects the given application.
+        /// </summary>
+        /// <param name="AApplicationKey">Application's application key.</param>
+        /// <param name="ARegistrationOffice">Application's registration office.</param>
+        public void SelectApplications(Int32 AApplicationKey, Int64 ARegistrationOffice)
+        {
+            foreach (DataRowView RowView in FMainDS.PmGeneralApplication.DefaultView)
+            {
+                if ((Convert.ToInt32(RowView[PmGeneralApplicationTable.GetApplicationKeyDBName()]) == AApplicationKey)
+                    && (Convert.ToInt64(RowView[PmGeneralApplicationTable.GetRegistrationOfficeDBName()]) == ARegistrationOffice))
+                {
+                    grdDetails.SelectRowInGrid(grdDetails.Rows.DataSourceRowToIndex(RowView) + 1);
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
         /// Loads Application Data from Petra Server into FMainDS, if not already loaded.
         /// </summary>
         /// <returns>true if successful, otherwise false.</returns>

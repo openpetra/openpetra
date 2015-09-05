@@ -43,7 +43,6 @@ RootNode:
         grdApplications:
             Dock: Fill
             Columns: [PPartner.PartnerShortName, PmGeneralApplication.GenApplicationStatus, PmShortTermApplication.StAppDate]
-            ActionClick: GridRowSelected
             CustomColumns:
                 PPartner.PartnerShortName: {Label=Attendee Name}
                 PmShortTermApplication.StAppDate: {Label=Date Entered, Type=DateTime}

@@ -37,6 +37,7 @@ using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MPartner.Gui.Extracts;
 using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.Interfaces.MPersonnel;
 using Ict.Petra.Shared.MPartner;
@@ -49,6 +50,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
     {
         private long FTargetFieldKey;
         private long FPlacementPersonKey;
+        private string FDetailedStatuses;
 
         // The user's default filter from SUserDefaults (if it exists)
         private string FUserDefaultFilter;
@@ -111,7 +113,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             else
             {
                 rbtDetailed.Checked = true;
-                txtDetailedStatuses.Text = FUserDefaultFilter;
+                SetDetailedStatuses(FUserDefaultFilter);
             }
         }
 
@@ -144,6 +146,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             MyDataView.Sort = "p_partner_short_name_c ASC";
 
             grdApplications.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+
+            grdApplications.SelectRowInGrid(1);
         }
 
         // Run when screen is closed to save filter as user default
@@ -182,28 +186,23 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             }
             else if (rbtDetailed.Checked)
             {
-                DefaultFilter = txtDetailedStatuses.Text;
+                DefaultFilter = FDetailedStatuses;
             }
 
             TUserDefaults.SetDefault(TUserDefaults.PERSONNEL_APPLICATION_STATUS, DefaultFilter);
         }
 
-        private void UpdateApplicationsByField(long APartnerKey, string APartnerShortName, bool AValidSelection)
+        private void Search_Click(System.Object sender, EventArgs e)
         {
-            if (AValidSelection || (APartnerKey == 0))
-            {
-                FTargetFieldKey = APartnerKey;
-                InitGridManually();
-            }
+            FTargetFieldKey = Convert.ToInt64(txtTargetFieldKey.Text);
+            FPlacementPersonKey = Convert.ToInt64(txtPlacementPersonKey.Text);
+            InitGridManually();
         }
 
-        private void UpdateApplicationsByPlacementPerson(long APartnerKey, string APartnerShortName, bool AValidSelection)
+        private void Clear_Click(System.Object sender, EventArgs e)
         {
-            if (AValidSelection || (APartnerKey == 0))
-            {
-                FPlacementPersonKey = APartnerKey;
-                InitGridManually();
-            }
+            txtTargetFieldKey.Text = "0";
+            txtPlacementPersonKey.Text = "0";
         }
 
         private void SelectStatuses_Click(System.Object sender, EventArgs e)
@@ -211,24 +210,40 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             // open dialog to select detailed statuses
             string ApplicationStatusList;
             DialogResult DlgResult = TFrmApplicationStatusDialog.OpenApplicationStatusDialog(
-                txtDetailedStatuses.Text, FPetraUtilsObject.GetForm(), out ApplicationStatusList);
+                FDetailedStatuses, FPetraUtilsObject.GetForm(), out ApplicationStatusList);
 
-            if ((DlgResult == DialogResult.OK) && (txtDetailedStatuses.Text != ApplicationStatusList))
+            if ((DlgResult == DialogResult.OK) && (FDetailedStatuses != ApplicationStatusList))
             {
-                txtDetailedStatuses.Text = ApplicationStatusList;
+                SetDetailedStatuses(ApplicationStatusList);
             }
 
             // update the grid with the new filter
             FilterChange(sender, e);
         }
 
+        private void SetDetailedStatuses(string AApplicationStatusList)
+        {
+            FDetailedStatuses = AApplicationStatusList;
+
+            if (AApplicationStatusList.Length > 38)
+            {
+                // if text won't fit on screen
+                AApplicationStatusList = AApplicationStatusList.Substring(0, 35) + "...";
+            }
+
+            txtDetailedStatuses.Text = AApplicationStatusList;
+        }
+
         private void EditApplication(System.Object sender, EventArgs e)
         {
+            PmGeneralApplicationRow SelectedRow = GetSelectedApplication();
+
             // Open the selected partner's Partner Edit screen at Personnel Applications
             TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
-            frm.SetParameters(TScreenMode.smEdit, GetPartnerKeySelected(), TPartnerEditTabPageEnum.petpPersonnelApplications);
+            frm.SetParameters(TScreenMode.smEdit, SelectedRow.PartnerKey, TPartnerEditTabPageEnum.petpPersonnelApplications);
             frm.Show();
+            frm.SelectApplication(SelectedRow.ApplicationKey, SelectedRow.RegistrationOffice);
         }
 
         private void CreateExtract_Click(System.Object sender, EventArgs e)
@@ -341,7 +356,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             }
             else if (rbtDetailed.Checked)
             {
-                string[] DetailedStatuses = txtDetailedStatuses.Text.Split(',');
+                string[] DetailedStatuses = FDetailedStatuses.Split(',');
 
                 foreach (string Status in DetailedStatuses)
                 {
@@ -377,15 +392,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             UpdateRecordNumberDisplay();
         }
 
-        private void GridRowSelected(System.Object sender, EventArgs e)
+        private PmGeneralApplicationRow GetSelectedApplication()
         {
-            // Only enable the button if a row is selected.
-            btnEditApplication.Enabled = true;
-        }
-
-        private long GetPartnerKeySelected()
-        {
-            return Convert.ToInt64(((DataRowView)grdApplications.SelectedDataRows[0]).Row[PmShortTermApplicationTable.GetPartnerKeyDBName()]);
+            return (PmGeneralApplicationRow)((DataRowView)grdApplications.SelectedDataRows[0]).Row;
         }
 
         // update the record counter
@@ -404,11 +413,18 @@ namespace Ict.Petra.Client.MPersonnel.Gui
                 if (RecordCount > 0)
                 {
                     btnCreateExtract.Enabled = true;
+                    btnEditApplication.Enabled = true;
                 }
                 else
                 {
                     btnCreateExtract.Enabled = false;
+                    btnEditApplication.Enabled = false;
                 }
+            }
+            else
+            {
+                btnCreateExtract.Enabled = false;
+                btnEditApplication.Enabled = false;
             }
         }
     }

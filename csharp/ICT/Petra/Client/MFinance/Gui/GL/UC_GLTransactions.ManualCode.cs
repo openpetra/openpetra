@@ -858,11 +858,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ABatchRow CurrentBatchRow = GetBatchRow();
             AJournalRow CurrentJournalRow = null;
 
-            if ((CurrentBatchRow == null)
-                || (CurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            if (CurrentBatchRow == null)
             {
                 return;
             }
+
+            bool UnpostedBatch = CurrentBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
 
             //Set inital values after confirming not null
             OriginalSaveButtonState = FPetraUtilsObject.HasChanges;
@@ -978,152 +979,173 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 for (int i = dtWork.Rows.Count - 1; i >= 0; i--)
                 {
                     DataRow drWork = dtWork.Rows[i];
-                    TransactionDataChanged = false;
-                    drWork.BeginEdit();
 
-                    bool IsCurrentActiveTransRow = (TransactionRowActive
-                                                    && Convert.ToInt32(drWork[ATransactionTable.ColumnTransactionNumberId]) == CurrentTransNumber
-                                                    && Convert.ToInt32(drWork[ATransactionTable.ColumnBatchNumberId]) == CurrentTransBatchNumber
-                                                    && Convert.ToInt32(drWork[ATransactionTable.ColumnJournalNumberId]) == CurrentTransJournalNumber);
-
-                    if (AUpdateTransDates
-                        && (Convert.ToDateTime(drWork[ATransactionTable.ColumnTransactionDateId]) != CurrentBatchRow.DateEffective))
+                    // Only if an unposted batch (this updates the database)
+                    if (UnpostedBatch)
                     {
-                        //TODO: add if
-                        drWork[ATransactionTable.ColumnTransactionDateId] = CurrentBatchRow.DateEffective;
+                        TransactionDataChanged = false;
+                        drWork.BeginEdit();
 
-                        TransactionDataChanged = true;
-                    }
+                        bool IsCurrentActiveTransRow = (TransactionRowActive
+                                                        && Convert.ToInt32(drWork[ATransactionTable.ColumnTransactionNumberId]) == CurrentTransNumber
+                                                        && Convert.ToInt32(drWork[ATransactionTable.ColumnBatchNumberId]) == CurrentTransBatchNumber
+                                                        && Convert.ToInt32(drWork[ATransactionTable.ColumnJournalNumberId]) ==
+                                                        CurrentTransJournalNumber);
 
-                    if (IsCurrentActiveTransRow)
-                    {
-                        if (FPreviouslySelectedDetailRow.DebitCreditIndicator)
-                        {
-                            if ((txtCreditAmountBase.NumberValueDecimal != 0)
-                                || (txtCreditAmount.NumberValueDecimal != 0)
-                                || (FPreviouslySelectedDetailRow.TransactionAmount != Convert.ToDecimal(txtDebitAmount.NumberValueDecimal)))
-                            {
-                                txtCreditAmountBase.NumberValueDecimal = 0;
-                                txtCreditAmount.NumberValueDecimal = 0;
-                                FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtDebitAmount.NumberValueDecimal);
-                            }
-                        }
-                        else
-                        {
-                            if ((txtDebitAmountBase.NumberValueDecimal != 0)
-                                || (txtDebitAmount.NumberValueDecimal != 0)
-                                || (FPreviouslySelectedDetailRow.TransactionAmount != Convert.ToDecimal(txtCreditAmount.NumberValueDecimal)))
-                            {
-                                txtDebitAmountBase.NumberValueDecimal = 0;
-                                txtDebitAmount.NumberValueDecimal = 0;
-                                FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtCreditAmount.NumberValueDecimal);
-                            }
-                        }
-                    }
-
-                    // recalculate the amount in base currency
-                    if (jr.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
-                    {
-                        //TODO: add if
-                        AmtInBaseCurrency = GLRoutines.Divide(Convert.ToDecimal(
-                                drWork[ATransactionTable.ColumnTransactionAmountId]), jr.ExchangeRateToBase);
-
-                        if (AmtInBaseCurrency != Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
+                        if (AUpdateTransDates
+                            && (Convert.ToDateTime(drWork[ATransactionTable.ColumnTransactionDateId]) != CurrentBatchRow.DateEffective))
                         {
                             //TODO: add if
-                            drWork[ATransactionTable.ColumnAmountInBaseCurrencyId] = AmtInBaseCurrency;
+                            drWork[ATransactionTable.ColumnTransactionDateId] = CurrentBatchRow.DateEffective;
 
                             TransactionDataChanged = true;
                         }
 
-                        if (IsTransactionInIntlCurrency)
+                        if (IsCurrentActiveTransRow)
                         {
-                            if (Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]) !=
-                                Convert.ToDecimal(drWork[ATransactionTable.ColumnTransactionAmountId]))
+                            if (FPreviouslySelectedDetailRow.DebitCreditIndicator)
                             {
-                                drWork[ATransactionTable.ColumnAmountInIntlCurrencyId] = drWork[ATransactionTable.ColumnTransactionAmountId];
+                                if ((txtCreditAmountBase.NumberValueDecimal != 0)
+                                    || (txtCreditAmount.NumberValueDecimal != 0)
+                                    || (FPreviouslySelectedDetailRow.TransactionAmount != Convert.ToDecimal(txtDebitAmount.NumberValueDecimal)))
+                                {
+                                    txtCreditAmountBase.NumberValueDecimal = 0;
+                                    txtCreditAmount.NumberValueDecimal = 0;
+                                    FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtDebitAmount.NumberValueDecimal);
+                                }
+                            }
+                            else
+                            {
+                                if ((txtDebitAmountBase.NumberValueDecimal != 0)
+                                    || (txtDebitAmount.NumberValueDecimal != 0)
+                                    || (FPreviouslySelectedDetailRow.TransactionAmount != Convert.ToDecimal(txtCreditAmount.NumberValueDecimal)))
+                                {
+                                    txtDebitAmountBase.NumberValueDecimal = 0;
+                                    txtDebitAmount.NumberValueDecimal = 0;
+                                    FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtCreditAmount.NumberValueDecimal);
+                                }
+                            }
+                        }
+
+                        // recalculate the amount in base currency
+                        if (jr.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
+                        {
+                            //TODO: add if
+                            AmtInBaseCurrency = GLRoutines.Divide(Convert.ToDecimal(
+                                    drWork[ATransactionTable.ColumnTransactionAmountId]), jr.ExchangeRateToBase);
+
+                            if (AmtInBaseCurrency != Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
+                            {
+                                //TODO: add if
+                                drWork[ATransactionTable.ColumnAmountInBaseCurrencyId] = AmtInBaseCurrency;
 
                                 TransactionDataChanged = true;
+                            }
+
+                            if (IsTransactionInIntlCurrency)
+                            {
+                                if (Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]) !=
+                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnTransactionAmountId]))
+                                {
+                                    drWork[ATransactionTable.ColumnAmountInIntlCurrencyId] = drWork[ATransactionTable.ColumnTransactionAmountId];
+
+                                    TransactionDataChanged = true;
+                                }
+                            }
+                            else
+                            {
+                                // TODO: Instead of hard coding the number of decimals to 2 (for US cent) it should come from the database.
+                                AmtInIntlCurrency =
+                                    (IntlRateToBaseCurrency ==
+                                     0) ? 0 : GLRoutines.Divide(Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]),
+                                        IntlRateToBaseCurrency,
+                                        2);
+
+                                if (Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]) != AmtInIntlCurrency)
+                                {
+                                    drWork[ATransactionTable.ColumnAmountInIntlCurrencyId] = AmtInIntlCurrency;
+
+                                    TransactionDataChanged = true;
+                                }
+                            }
+                        }
+
+                        if (Convert.ToBoolean(drWork[ATransactionTable.ColumnDebitCreditIndicatorId]) == true)
+                        {
+                            AmtDebitTotal += Convert.ToDecimal(drWork[ATransactionTable.ColumnTransactionAmountId]);
+                            AmtDebitTotalBase += Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
+
+                            if (IsCurrentActiveTransRow)
+                            {
+                                if ((FPreviouslySelectedDetailRow.AmountInBaseCurrency !=
+                                     Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
+                                    || (FPreviouslySelectedDetailRow.AmountInIntlCurrency !=
+                                        Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]))
+                                    || (txtDebitAmountBase.NumberValueDecimal !=
+                                        Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
+                                    || (txtCreditAmountBase.NumberValueDecimal != 0))
+                                {
+                                    FPreviouslySelectedDetailRow.AmountInBaseCurrency =
+                                        Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
+                                    FPreviouslySelectedDetailRow.AmountInIntlCurrency =
+                                        Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]);
+                                    txtDebitAmountBase.NumberValueDecimal = Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
+                                    txtCreditAmountBase.NumberValueDecimal = 0;
+                                }
                             }
                         }
                         else
                         {
-                            // TODO: Instead of hard coding the number of decimals to 2 (for US cent) it should come from the database.
-                            AmtInIntlCurrency =
-                                (IntlRateToBaseCurrency ==
-                                 0) ? 0 : GLRoutines.Divide(Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]),
-                                    IntlRateToBaseCurrency,
-                                    2);
+                            AmtCreditTotal += Convert.ToDecimal(drWork[ATransactionTable.ColumnTransactionAmountId]);
+                            AmtCreditTotalBase += Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
 
-                            if (Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]) != AmtInIntlCurrency)
+                            if (IsCurrentActiveTransRow)
                             {
-                                drWork[ATransactionTable.ColumnAmountInIntlCurrencyId] = AmtInIntlCurrency;
-
-                                TransactionDataChanged = true;
+                                if ((FPreviouslySelectedDetailRow.AmountInBaseCurrency !=
+                                     Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
+                                    || (FPreviouslySelectedDetailRow.AmountInIntlCurrency !=
+                                        Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]))
+                                    || (txtCreditAmountBase.NumberValueDecimal !=
+                                        Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
+                                    || (txtDebitAmountBase.NumberValueDecimal != 0))
+                                {
+                                    FPreviouslySelectedDetailRow.AmountInBaseCurrency =
+                                        Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
+                                    FPreviouslySelectedDetailRow.AmountInIntlCurrency =
+                                        Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]);
+                                    txtCreditAmountBase.NumberValueDecimal = Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
+                                    txtDebitAmountBase.NumberValueDecimal = 0;
+                                }
                             }
                         }
-                    }
 
-                    if (Convert.ToBoolean(drWork[ATransactionTable.ColumnDebitCreditIndicatorId]) == true)
-                    {
-                        AmtDebitTotal += Convert.ToDecimal(drWork[ATransactionTable.ColumnTransactionAmountId]);
-                        AmtDebitTotalBase += Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
-
-                        if (IsCurrentActiveTransRow)
+                        if (TransactionDataChanged == true)
                         {
-                            if ((FPreviouslySelectedDetailRow.AmountInBaseCurrency !=
-                                 Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
-                                || (FPreviouslySelectedDetailRow.AmountInIntlCurrency !=
-                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]))
-                                || (txtDebitAmountBase.NumberValueDecimal != Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
-                                || (txtCreditAmountBase.NumberValueDecimal != 0))
-                            {
-                                FPreviouslySelectedDetailRow.AmountInBaseCurrency =
-                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
-                                FPreviouslySelectedDetailRow.AmountInIntlCurrency =
-                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]);
-                                txtDebitAmountBase.NumberValueDecimal = Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
-                                txtCreditAmountBase.NumberValueDecimal = 0;
-                            }
+                            drWork.EndEdit();
                         }
-                    }
-                    else
-                    {
-                        AmtCreditTotal += Convert.ToDecimal(drWork[ATransactionTable.ColumnTransactionAmountId]);
-                        AmtCreditTotalBase += Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
-
-                        if (IsCurrentActiveTransRow)
+                        else
                         {
-                            if ((FPreviouslySelectedDetailRow.AmountInBaseCurrency !=
-                                 Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
-                                || (FPreviouslySelectedDetailRow.AmountInIntlCurrency !=
-                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]))
-                                || (txtCreditAmountBase.NumberValueDecimal !=
-                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]))
-                                || (txtDebitAmountBase.NumberValueDecimal != 0))
-                            {
-                                FPreviouslySelectedDetailRow.AmountInBaseCurrency =
-                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
-                                FPreviouslySelectedDetailRow.AmountInIntlCurrency =
-                                    Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]);
-                                txtCreditAmountBase.NumberValueDecimal = Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
-                                txtDebitAmountBase.NumberValueDecimal = 0;
-                            }
+                            drWork.CancelEdit();
+                            drWork.Delete();
                         }
                     }
-
-                    if (TransactionDataChanged == true)
+                    else // e.g. a posted batch
                     {
-                        drWork.EndEdit();
-                    }
-                    else
-                    {
-                        drWork.CancelEdit();
-                        drWork.Delete();
+                        if (Convert.ToBoolean(drWork[ATransactionTable.ColumnDebitCreditIndicatorId]) == true)
+                        {
+                            AmtDebitTotal += Convert.ToDecimal(drWork[ATransactionTable.ColumnTransactionAmountId]);
+                            AmtDebitTotalBase += Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
+                        }
+                        else
+                        {
+                            AmtCreditTotal += Convert.ToDecimal(drWork[ATransactionTable.ColumnTransactionAmountId]);
+                            AmtCreditTotalBase += Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
+                        }
                     }
                 }   // Next transaction
 
-                if (dtWork.Rows.Count > 0)
+                // only make changes if unposted
+                if ((dtWork.Rows.Count > 0) && UnpostedBatch)
                 {
                     FMainDS.ATransaction.Merge(dtWork);
                     JournalDataChanged = true;
@@ -1145,7 +1167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }   // next journal
 
             //Update totals of Batch
-            if (FLoadCompleted)
+            if (FLoadCompleted && UnpostedBatch)
             {
                 GLRoutines.UpdateTotalsOfBatch(ref FMainDS, CurrentBatchRow);
             }

@@ -45,7 +45,7 @@ RootNode:
         cmbPrimaryWayOfContacting:
             Label: Primar&y Contact Method
             Width: 170
-            OptionalValues: [=,Phone, E-Mail, Letter, Skype, Lync, Digital Media, Instant Messaging & Chat]
+            OptionalValues: [=,Phone, E-Mail, Letter, Skype, Skype for Business, Digital Media, Instant Messaging & Chat]
             Validation: true
         cmbPrimaryPhoneForContacting: {Label=Primary Ph&one, OptionalValues=[], ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true,OnChange=HandlePrimaryPhoneSelectedValueChanged}
         cmbPhoneWithinTheOrganisation: {Label=Office Phone, OptionalValues=[], ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true,OnChange=HandlePhoneWithinTheOrganisationSelectedValueChanged}

@@ -327,8 +327,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 tbrMain.Items.Remove(tbbImportHierarchy);
                 tbrMain.Items.Remove(tbbExportHierarchy);
-                mnuMain.Items.Remove(mniImportHierarchy);
-                mnuMain.Items.Remove(mniExportHierarchy);
+
+                // remove all items except the onces we want
+                mniAccounts.DropDownItems.Clear();
+                mniAccounts.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                        mniAddNewAccount,
+                        mniDeleteAccount
+                    });
             }
 
             this.Text += String.Format(" for Ledger {0}", FLedgerNumber);

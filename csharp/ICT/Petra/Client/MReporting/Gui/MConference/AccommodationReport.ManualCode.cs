@@ -47,12 +47,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     /// </summary>
     public partial class TFrmAccommodationReport
     {
-        private void InitUserControlsManually()
+        private void InitUserControlsManual()
         {
             ucoConferenceSelection.AddConfernceKeyChangedEventHandler(this.ConferenceChanged);
         }
 
-        private void ReadControlsManually(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             int ColumnCounter = 0;
             bool DatesAreValid = (dtpFromDate.ValidDate(false) && dtpToDate.ValidDate(false));
@@ -120,7 +120,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             }
         }
 
-        private void SetControlsManually(TParameterList AParameters)
+        private void SetControlsManual(TParameterList AParameters)
         {
             SetDateRange();
 

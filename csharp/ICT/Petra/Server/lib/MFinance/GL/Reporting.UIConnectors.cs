@@ -138,20 +138,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                      * The new SQL retrieves all units with u_unit_type_code_c is "A", "D", or "F" (Area, Special Fund, or Field).
                      *                                                        Tim Ingham, April 2015
                      *
-                     *
-                     * String sql = "SELECT DISTINCT p_partner.p_partner_key_n, " +
-                     *              "p_partner.p_partner_short_name_c AS FieldName" +
-                     *              " FROM p_partner, p_partner_type" +
-                     *              " WHERE p_partner_type.p_partner_key_n = p_partner.p_partner_key_n " +
-                     *              " AND p_partner_type.p_type_code_c IN ('LEDGER','COSTCENTRE')" +
-                     *              " ORDER BY p_partner.p_partner_short_name_c";
+                     * Actually, the original SQL is right so I've reverted it. Confirmed by OM Swiss and Rob. July 2015
                      */
 
-                    String sql = "SELECT DISTINCT p_unit.p_partner_key_n," +
-                                 " p_unit.p_unit_name_c AS FieldName" +
-                                 " FROM p_unit" +
-                                 " WHERE p_unit.u_unit_type_code_c IN ('A', 'D', 'F')" +
-                                 " ORDER BY p_unit.p_unit_name_c";
+                    String sql = "SELECT DISTINCT p_partner.p_partner_key_n, " +
+                                 "p_partner.p_partner_short_name_c AS FieldName" +
+                                 " FROM p_partner, p_partner_type" +
+                                 " WHERE p_partner_type.p_partner_key_n = p_partner.p_partner_key_n " +
+                                 " AND p_partner_type.p_type_code_c IN ('LEDGER','COSTCENTRE')" +
+                                 " ORDER BY p_partner.p_partner_short_name_c";
 
                     ReturnTable = DBAccess.GDBAccessObj.SelectDT(sql, "receivingFields", ReadTransaction);
                 });

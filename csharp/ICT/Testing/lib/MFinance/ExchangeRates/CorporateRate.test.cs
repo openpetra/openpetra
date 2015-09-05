@@ -254,6 +254,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.SaveChanges();
 
             TFrmSetupCorporateExchangeRate mainScreen = new TFrmSetupCorporateExchangeRate(null);
+            mainScreen.RunOnceOnActivation();
             mainScreen.Show();
 
             // Toolstrip
@@ -293,6 +294,13 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Set a valid exchange rate and save
             txtExchangeRate.NumberValueDecimal = 2.0m;
+
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.OK);
+            };
+
             mainScreen.SaveChanges();
             Assert.IsFalse(btnSave.Enabled, "The Save button should be disabled after the new row has been saved");
 
@@ -394,6 +402,12 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date);
             Assert.AreEqual(newRate, txtExchangeRate.NumberValueDecimal.Value);
             Assert.AreEqual(FAllRowCount - 1, mainScreen.GetSelectedRowIndex());
+
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.OK);
+            };
 
             // Save the changes and check the number of rows now
             mainScreen.SaveChanges();
@@ -510,6 +524,12 @@ namespace Tests.MFinance.Client.ExchangeRates
             grdDetails.Focus();
             Assert.AreEqual(10.0m, txtExchangeRate.NumberValueDecimal);
 
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.OK);
+            };
+
             mainScreen.SaveChanges();
             mainScreen.Close();
         }
@@ -559,6 +579,12 @@ namespace Tests.MFinance.Client.ExchangeRates
             btnInvert.Click();
             Assert.AreEqual(5.0m, txtExchangeRate.NumberValueDecimal);
 
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.OK);
+            };
+
             mainScreen.SaveChanges();
             mainScreen.Close();
         }
@@ -588,6 +614,13 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Add new row, save and close
             btnNew.Click();
             txtExchangeRate.NumberValueDecimal = 10m;
+
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.OK);
+            };
+
             btnSave.Click();
             mainScreen.Close();
 
@@ -631,6 +664,12 @@ namespace Tests.MFinance.Client.ExchangeRates
             {
                 MessageBoxTester tester = new MessageBoxTester(hWnd);
                 tester.SendCommand(MessageBoxTester.Command.Yes);
+
+                ModalFormHandler = delegate(string name2, IntPtr hWnd2, Form form2)
+                {
+                    MessageBoxTester tester2 = new MessageBoxTester(hWnd2);
+                    tester2.SendCommand(MessageBoxTester.Command.OK);
+                };
             };
 
             mainScreen3.Close();

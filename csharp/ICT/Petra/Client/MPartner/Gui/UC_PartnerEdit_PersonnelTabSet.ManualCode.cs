@@ -218,6 +218,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// Selects the given application in the Personnel Applications tab.
+        /// </summary>
+        /// <param name="AApplicationKey">Application's application key.</param>
+        /// <param name="ARegistrationOffice">Application's registration office.</param>
+        public void SelectApplication(Int32 AApplicationKey, Int64 ARegistrationOffice)
+        {
+            tabPersonnel.SelectedTab = tpgApplications;
+            TabSelectionChanged(this, null);
+            FUcoApplications.SelectApplication(AApplicationKey, ARegistrationOffice);
+        }
+
         #endregion
 
         #region Private Methods

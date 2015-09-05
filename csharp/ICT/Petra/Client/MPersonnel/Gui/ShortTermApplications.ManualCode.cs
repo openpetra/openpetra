@@ -150,6 +150,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             }
 
             grdApplications.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+
+            grdApplications.SelectRowInGrid(1);
         }
 
         // Run when screen is closed to save filter as user default
@@ -265,11 +267,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui
 
         private void EditApplication(System.Object sender, EventArgs e)
         {
+            PmShortTermApplicationRow SelectedRow = GetSelectedApplication();
+
             // Open the selected partner's Partner Edit screen at Personnel Applications
             TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
-            frm.SetParameters(TScreenMode.smEdit, GetPartnerKeySelected(), TPartnerEditTabPageEnum.petpPersonnelApplications);
+            frm.SetParameters(TScreenMode.smEdit, SelectedRow.PartnerKey, TPartnerEditTabPageEnum.petpPersonnelApplications);
             frm.Show();
+            frm.SelectApplication(SelectedRow.ApplicationKey, SelectedRow.RegistrationOffice);
         }
 
         // update the grid once the filter is changed
@@ -364,15 +369,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             UpdateRecordNumberDisplay();
         }
 
-        private void GridRowSelected(System.Object sender, EventArgs e)
+        private PmShortTermApplicationRow GetSelectedApplication()
         {
-            // Only enable the button if a row is selected.
-            btnEditApplication.Enabled = true;
-        }
-
-        private long GetPartnerKeySelected()
-        {
-            return Convert.ToInt64(((DataRowView)grdApplications.SelectedDataRows[0]).Row[PmShortTermApplicationTable.GetPartnerKeyDBName()]);
+            return (PmShortTermApplicationRow)((DataRowView)grdApplications.SelectedDataRows[0]).Row;
         }
 
         // update the record counter
@@ -387,6 +386,19 @@ namespace Ict.Petra.Client.MPersonnel.Gui
                     Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
                         true),
                     RecordCount);
+
+                if (RecordCount > 0)
+                {
+                    btnEditApplication.Enabled = true;
+                }
+                else
+                {
+                    btnEditApplication.Enabled = false;
+                }
+            }
+            else
+            {
+                btnEditApplication.Enabled = false;
             }
         }
     }
