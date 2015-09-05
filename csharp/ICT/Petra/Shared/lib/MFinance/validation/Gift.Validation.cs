@@ -945,12 +945,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AVerificationResultCollection"></param>
         /// <param name="AValidationControlsDict"></param>
         /// <param name="AMethodOfGivingRef">Required for import validation</param>
-        /// <param name="AMethodOfPaymentRef">Required for import validation</param>
+        /// <param name="AMethodOfPaymentRef">Required for</param>
+        /// <param name="AFormLetterCodeTbl">Supplied in import validation</param>
         /// <returns></returns>
         public static bool ValidateGiftManual(object AContext, AGiftRow ARow, Int32 AYear, Int32 APeriod, Control AControl,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
             AMethodOfGivingTable AMethodOfGivingRef = null,
-            AMethodOfPaymentTable AMethodOfPaymentRef = null)
+            AMethodOfPaymentTable AMethodOfPaymentRef = null,
+            PFormTable AFormLetterCodeTbl = null)
         {
             DataColumn ValidationColumn;
             //TValidationControlsData ValidationControlsData;
@@ -1051,6 +1053,24 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         new TVerificationResult(ValidationContext,
                             String.Format(Catalog.GetString("Unknown method of payment code '{0}'."),
                                 ARow.MethodOfPaymentCode),
+                            TResultSeverity.Resv_Critical),
+                        ValidationColumn))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            // If supplied, Receipt Letter Code must be a name specified in PForm.
+
+            if (!ARow.IsReceiptLetterCodeNull() && (AFormLetterCodeTbl != null))
+            {
+                AFormLetterCodeTbl.DefaultView.RowFilter = String.Format("p_form_name_c='{0}'", ARow.ReceiptLetterCode);
+
+                if ((AFormLetterCodeTbl.DefaultView.Count == 0) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                        AContext,
+                        new TVerificationResult(ValidationContext,
+                            String.Format(Catalog.GetString("Unknown Letter Code '{0}'."),
+                                ARow.ReceiptLetterCode),
                             TResultSeverity.Resv_Critical),
                         ValidationColumn))
                 {

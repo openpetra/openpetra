@@ -50,20 +50,15 @@
             ParameterValue: Reference
             Controls: [txtReferenceFrom, txtReferenceTo]
             ControlsOrientation: horizontal
+        txtReferenceFrom: {Label=filter from, ParameterName=param_reference_start}
+        txtReferenceTo: {Label=filter to, ParameterName=param_reference_end}
+
         rbtSortByAnalysisType: 
             ParameterValue: Analysis Type
             Controls: [txtAnalysisTypeFrom, txtAnalysisTypeTo]
             ControlsOrientation: horizontal
-        txtReferenceFrom: {Label=from, ParameterName=param_reference_start}
-        txtReferenceTo: 
-            Label: to
-            ParameterName: param_reference_end
-        txtAnalysisTypeFrom: 
-            Label:from
-            ParameterName: param_analyis_type_start
-        txtAnalysisTypeTo: 
-            Label: to
-            ParameterName: param_analyis_type_end
+        txtAnalysisTypeFrom: {Label=filter from, ParameterName=param_analyis_type_start}
+        txtAnalysisTypeTo: {Label=filter to, ParameterName=param_analyis_type_end}
         
         tpgCCAccount:
             Label: Account / Cost Centre Settings

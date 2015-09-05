@@ -178,9 +178,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " LEFT JOIN PUB_p_partner_gift_destination" +
                                    " ON Recipient.p_partner_class_c = 'FAMILY'" +
                                    " AND PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n" +
-                                   " AND PUB_p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate + "'" +
+                                   " AND PUB_p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate.ToString("yyyy-MM-dd") + "'" +
                                    " AND (PUB_p_partner_gift_destination.p_date_expires_d IS NULL" +
-                                   " OR (PUB_p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate + "'" +
+                                   " OR (PUB_p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate.ToString("yyyy-MM-dd") + "'" +
                                    " AND PUB_p_partner_gift_destination.p_date_effective_d <> PUB_p_partner_gift_destination.p_date_expires_d))" +
 
                                    " LEFT JOIN um_unit_structure" +

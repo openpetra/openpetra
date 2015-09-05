@@ -2421,7 +2421,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>I can add child accounts to this account if it's a summary account,
-        ///          or if there have never been transactions posted to it.
+        ///          or if there have never been transactions posted to it, and no current budget.
         ///
         ///          (If children are added to this account, it will be promoted to a summary account.)
         ///
@@ -2496,7 +2496,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                     3, Transaction, true,
                                     out CascadingReferences);
 
-                                bool IsInUse = (Refs > 0);
+                                bool IsInUse = (Refs > 1);
 
                                 CanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
                                 CanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.

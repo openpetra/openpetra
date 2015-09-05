@@ -129,12 +129,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APeriodNumber"></param>
-        /// <param name="AVerificationResult"></param>
+        /// <param name="AVerificationResults"></param>
         /// <returns>True if successful</returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool GenerateICHStewardshipBatch(int ALedgerNumber,
             int APeriodNumber,
-            ref TVerificationResultCollection AVerificationResult)
+            ref TVerificationResultCollection AVerificationResults)
         {
             string StandardCostCentre = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
 
@@ -282,7 +282,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     AccountRow,
                     DBTransaction,
                     ref IncomeAccounts,
-                    ref AVerificationResult);
+                    ref AVerificationResults);
 
 
                 //Process expense accounts
@@ -307,7 +307,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     AccountRow,
                     DBTransaction,
                     ref ExpenseAccounts,
-                    ref AVerificationResult);
+                    ref AVerificationResults);
 
 
                 //Process P&L accounts
@@ -351,7 +351,16 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 foreach (ACostCentreRow CostCentreRow in PostingDS.ACostCentre.Rows)
                 {
-                    string CostCentre = CostCentreRow.CostCentreCode;
+                    //
+                    // To do this work I will need to have a clearling account specified:
+                    if (CostCentreRow.ClearingAccount == "")
+                    {
+                        AVerificationResults.Add(new TVerificationResult("Generate ICH Stewardship Batch",
+                                String.Format(Catalog.GetString("Fault: Cost Centre {0} ({1}) has no Clearing Account Specified."),
+                                    CostCentreRow.CostCentreCode, CostCentreRow.CostCentreName),
+                                TResultSeverity.Resv_Critical));
+                        continue; // The batch is doomed, but I'll continue to look for more faults.
+                    }
 
                     //Initialise values for each Cost Centre
                     decimal SettlementAmount = 0;
@@ -586,30 +595,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     }
                 }   // for each cost centre
 
-                /* Update the balance of the ICH account (like a bank account).
-                 * If the total is negative, it means the ICH batch has a
-                 * credit total so far. Thus, we now balance it with the opposite
-                 * transaction. */
-
-                if (ICHTotal < 0)
+                //
+                // If I already have critical errors,
+                // I need to unwind and tidy up:
+                if (AVerificationResults.HasCriticalErrors)
                 {
-                    DrCrIndicator = MFinanceConstants.IS_DEBIT;
-                    ICHTotal = -ICHTotal;
-                }
-                else if (ICHTotal > 0)
-                {
-                    DrCrIndicator = MFinanceConstants.IS_CREDIT;
-                }
-
-                /* 0006 - If the balance is 0 then this is ok
-                 *  (eg last minute change of a gift from one field to another)
-                 */
-
-                if ((ICHTotal == 0) && !NonIchTransactionsIncluded)
-                {
-                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Generating the ICH batch"),
-                            Catalog.GetString("No ICH batch was required."), TResultSeverity.Resv_Status));
-
                     // An empty GL Batch now exists, which I need to delete.
                     //
                     TVerificationResultCollection BatchCancelResult = new TVerificationResultCollection();
@@ -618,52 +608,33 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         ALedgerNumber,
                         GLBatchNumber,
                         out BatchCancelResult);
-                    AVerificationResult.AddCollection(BatchCancelResult);
-
-                    IsSuccessful = true;
+                    AVerificationResults.AddCollection(BatchCancelResult);
                 }
                 else
                 {
-                    if (ICHTotal != 0)
+                    /* Update the balance of the ICH account (like a bank account).
+                     * If the total is negative, it means the ICH batch has a
+                     * credit total so far. Thus, we now balance it with the opposite
+                     * transaction. */
+
+                    if (ICHTotal < 0)
                     {
-                        //Create a transaction
-                        if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber,
-                                Catalog.GetString("ICH Monthly Clearing"),
-                                MFinanceConstants.ICH_ACCT_ICH, StandardCostCentre, ICHTotal, PeriodEndDate, DrCrIndicator, Catalog.GetString("ICH"),
-                                true, ICHTotal,
-                                out GLTransactionNumber))
-                        {
-                            ErrorContext = Catalog.GetString("Generating the ICH batch");
-                            ErrorMessage =
-                                String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
-                                    ALedgerNumber,
-                                    GLBatchNumber,
-                                    GLJournalNumber);
-                            ErrorType = TResultSeverity.Resv_Noncritical;
-                            throw new System.InvalidOperationException(ErrorMessage);
-                        }
+                        DrCrIndicator = MFinanceConstants.IS_DEBIT;
+                        ICHTotal = -ICHTotal;
+                    }
+                    else if (ICHTotal > 0)
+                    {
+                        DrCrIndicator = MFinanceConstants.IS_CREDIT;
                     }
 
-                    //Post the batch
-                    if (PostICHBatch)
+                    /* 0006 - If the balance is 0 then this is ok
+                     *  (eg last minute change of a gift from one field to another)
+                     */
+
+                    if ((ICHTotal == 0) && !NonIchTransactionsIncluded)
                     {
-                        AIchStewardshipAccess.SubmitChanges(ICHStewardshipTable, DBTransaction);
-
-                        MainDS.ThrowAwayAfterSubmitChanges = true; // SubmitChanges will not return to me any changes made in MainDS.
-                        GLBatchTDSAccess.SubmitChanges(MainDS);
-                        ALedgerAccess.SubmitChanges(PostingDS.ALedger, DBTransaction);
-
-                        // refresh cached ICHStewardship table
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                            TCacheableFinanceTablesEnum.ICHStewardshipList.ToString());
-
-                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
-                    }
-                    else
-                    {
-                        AVerificationResult.Add(new TVerificationResult(ErrorContext,
-                                Catalog.GetString("No Stewardship batch is required."),
-                                TResultSeverity.Resv_Status));
+                        AVerificationResults.Add(new TVerificationResult(Catalog.GetString("Generating the ICH batch"),
+                                Catalog.GetString("No ICH batch was required."), TResultSeverity.Resv_Status));
 
                         // An empty GL Batch now exists, which I need to delete.
                         //
@@ -673,7 +644,65 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             ALedgerNumber,
                             GLBatchNumber,
                             out BatchCancelResult);
-                        AVerificationResult.AddCollection(BatchCancelResult);
+                        AVerificationResults.AddCollection(BatchCancelResult);
+
+                        IsSuccessful = true;
+                    }
+                    else
+                    {
+                        if (ICHTotal != 0)
+                        {
+                            //Create a transaction
+                            if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber,
+                                    Catalog.GetString("ICH Monthly Clearing"),
+                                    MFinanceConstants.ICH_ACCT_ICH, StandardCostCentre, ICHTotal, PeriodEndDate, DrCrIndicator,
+                                    Catalog.GetString("ICH"),
+                                    true, ICHTotal,
+                                    out GLTransactionNumber))
+                            {
+                                ErrorContext = Catalog.GetString("Generating the ICH batch");
+                                ErrorMessage =
+                                    String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
+                                        ALedgerNumber,
+                                        GLBatchNumber,
+                                        GLJournalNumber);
+                                ErrorType = TResultSeverity.Resv_Noncritical;
+                                throw new System.InvalidOperationException(ErrorMessage);
+                            }
+                        }
+
+                        //Post the batch
+                        if (PostICHBatch)
+                        {
+                            AIchStewardshipAccess.SubmitChanges(ICHStewardshipTable, DBTransaction);
+
+                            MainDS.ThrowAwayAfterSubmitChanges = true; // SubmitChanges will not return to me any changes made in MainDS.
+                            GLBatchTDSAccess.SubmitChanges(MainDS);
+                            ALedgerAccess.SubmitChanges(PostingDS.ALedger, DBTransaction);
+
+                            // refresh cached ICHStewardship table
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheableFinanceTablesEnum.ICHStewardshipList.ToString());
+
+                            IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResults);
+                        }
+                        else
+                        {
+                            AVerificationResults.Add(new TVerificationResult(ErrorContext,
+                                    Catalog.GetString("No Stewardship batch is required."),
+                                    TResultSeverity.Resv_Status));
+
+                            // An empty GL Batch now exists, which I need to delete.
+                            //
+                            TVerificationResultCollection BatchCancelResult = new TVerificationResultCollection();
+
+                            TGLPosting.DeleteGLBatch(
+                                ALedgerNumber,
+                                GLBatchNumber,
+                                out BatchCancelResult);
+                            AVerificationResults.AddCollection(BatchCancelResult);
+                        } // else
+
                     } // else
                 } // else
             } // try
@@ -681,12 +710,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             {
                 TLogging.Log("An ArgumentException occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
 
-                if (AVerificationResult == null)
+                if (AVerificationResults == null)
                 {
-                    AVerificationResult = new TVerificationResultCollection();
+                    AVerificationResults = new TVerificationResultCollection();
                 }
 
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, Exc.Message, ErrorType));
+                AVerificationResults.Add(new TVerificationResult(ErrorContext, Exc.Message, ErrorType));
 
                 throw;
             }
@@ -695,12 +724,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 TLogging.Log(
                     "An InvalidOperationException occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
 
-                if (AVerificationResult == null)
+                if (AVerificationResults == null)
                 {
-                    AVerificationResult = new TVerificationResultCollection();
+                    AVerificationResults = new TVerificationResultCollection();
                 }
 
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, Exc.Message, ErrorType));
+                AVerificationResults.Add(new TVerificationResult(ErrorContext, Exc.Message, ErrorType));
 
                 throw;
             }
@@ -715,12 +744,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     APeriodNumber);
                 ErrorType = TResultSeverity.Resv_Critical;
 
-                if (AVerificationResult == null)
+                if (AVerificationResults == null)
                 {
-                    AVerificationResult = new TVerificationResultCollection();
+                    AVerificationResults = new TVerificationResultCollection();
                 }
 
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
 
                 throw;
             }

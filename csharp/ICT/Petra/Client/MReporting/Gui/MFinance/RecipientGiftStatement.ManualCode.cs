@@ -52,6 +52,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 FPetraUtilsObject.LoadDefaultSettings();
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // Column Settings is not supported in the FastReports based solution.
             }
         }
 

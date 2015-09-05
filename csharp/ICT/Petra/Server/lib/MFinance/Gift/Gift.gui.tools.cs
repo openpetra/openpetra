@@ -60,17 +60,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         ///    shall be changed to KEY-MIN.
         /// 8. If p_unit.p_partner_class_c does not hold the value "KEYMIN" the routine is done.
         /// </summary>
-        /// <param name="APartnerKey">Input: not used
-        ///                               Output: True if the partnerKey is a valid number of an
-        ///                                       existing partner and false if not.</param>
-        /// <param name="AMotivationGroup">Input: Common default value for the motivation group.
-        ///                               Output: Default value depending of the actual
-        ///                                       values of APartnerKey. </param>
-        /// <param name="AMotivationDetail">Input: Common default value for the motivation detail.
-        ///                               Output: Default value depending of the actual
-        ///                                       values of APartnerKey. </param>
-        /// <returns>The result of is boolean and the value true tells that there exists an entry
-        /// in the database which is represented by the parther key</returns>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AMotivationGroup">Output: Always set to GIFT</param>
+        /// <param name="AMotivationDetail">Input: default value; unlikely to be used!
+        ///                               Output: value depending on APartnerKey. </param>
+        /// <returns>true if parther key is valid</returns>
         [RequireModulePermission("FINANCE-1")]
         public static Boolean GetMotivationGroupAndDetail(Int64 APartnerKey,
             ref String AMotivationGroup,

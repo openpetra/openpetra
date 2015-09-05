@@ -85,11 +85,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             int Years = Convert.ToInt16(txtYears.Text);
 
             if ((AReportAction == TReportActionEnum.raGenerate)
-                && ((Years > 4) || (Years < 1)))
+                && ((Years > 8) || (Years < 1)))
             {
                 TVerificationResult VerificationMessage = new TVerificationResult(
                     Catalog.GetString("Report Years"),
-                    Catalog.GetString("Set the year range between 1 and 4"), TResultSeverity.Resv_Critical);
+                    Catalog.GetString("Set the year range between 1 and 8"), TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
 

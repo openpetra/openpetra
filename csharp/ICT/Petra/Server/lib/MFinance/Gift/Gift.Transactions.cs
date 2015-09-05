@@ -1521,23 +1521,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (ARecipientPartnerKey < 0)
             {
-                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Recipient Partner Key is less than 0!"),
-                        Utilities.GetMethodName(true)));
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Retrieve Cost Centre Code For Recipient ({0}) - Recipient Key is less than 0!"),
+                        ARecipientPartnerKey));
             }
             else if (ARecipientLedgerNumber < 0)
             {
-                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Recipient Ledger Number is less than 0!"),
-                        Utilities.GetMethodName(true)));
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Retrieve Cost Centre Code For Recipient ({0}) - Ledger Number is less than 0!"),
+                        ARecipientPartnerKey));
             }
             else if (AMotivationGroupCode.Length == 0)
             {
-                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Motivation Group Code is empty!"),
-                        Utilities.GetMethodName(true)));
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Retrieve Cost Centre Code For Recipient ({0}) - Motivation Group Code is empty!"),
+                        ARecipientPartnerKey));
             }
             else if (AMotivationDetailCode.Length == 0)
             {
-                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Motivation Detail Code is empty!"),
-                        Utilities.GetMethodName(true)));
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Retrieve Cost Centre Code For Recipient ({0}) - Motivation Detail Code is empty!"),
+                        ARecipientPartnerKey));
             }
 
             #endregion Validate Arguments
@@ -2898,7 +2902,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 // load all donor shortnames in one go
                 string getDonorSQL =
-                    "SELECT DISTINCT dp.p_partner_key_n, dp.p_partner_short_name_c, dp.p_status_code_c FROM PUB_p_partner dp, PUB_a_gift g " + //, dp.p_receipt_each_gift_l
+                    "SELECT DISTINCT SUBSTRING(dp.p_partner_class_c, 1, 1) AS p_partner_class_c, dp.p_partner_key_n, dp.p_partner_short_name_c, dp.p_status_code_c FROM PUB_p_partner dp, PUB_a_gift g "
+                    +                                                                                                                                                                                      //, dp.p_receipt_each_gift_l
                     "WHERE g.a_ledger_number_i = ? AND g.a_batch_number_i = ? AND g.p_donor_key_n = dp.p_partner_key_n";
 
                 if (ARecurring)

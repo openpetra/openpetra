@@ -418,12 +418,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 AStartPeriod -= 1; // I want the closing balance of the previous period.
             }
 
-            String BalanceField = ASelectedCurrency.StartsWith("Int") ? "glmp.a_actual_intl_n" :
-                                  ASelectedCurrency.StartsWith("Trans") ? "glmp.a_actual_foreign_n" : "glmp.a_actual_base_n";
-
-            String StartBalanceField = ASelectedCurrency.StartsWith("Int") ? "glm.a_start_balance_intl_n" :
-                                       ASelectedCurrency.StartsWith("Trans") ? "glm.a_start_balance_foreign_n" : "glm.a_start_balance_base_n";
-
             String CurrencyCodeField = ASelectedCurrency.StartsWith("Int") ? "a_ledger.a_intl_currency_c" :
                                        ASelectedCurrency == "Base" ? "a_ledger.a_base_currency_c" :
                                        "CASE WHEN a_account.a_foreign_currency_flag_l=TRUE THEN a_account.a_foreign_currency_code_c ELSE a_ledger.a_base_currency_c END";
@@ -445,9 +439,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             String Query = "SELECT glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i, " +
                            "a_account.a_debit_credit_indicator_l AS Debit, " +
-                           StartBalanceField + " AS start_balance, " +
-                           BalanceField + " AS balance, " +
-                           CurrencyCodeField + " AS Currency " +
+                           "glm.a_start_balance_base_n AS StartBalanceBase, " +
+                           "glm.a_start_balance_foreign_n AS StartBalanceForeign, " +
+                           "glm.a_start_balance_intl_n AS StartBalanceIntl, " +
+                           "glmp.a_actual_base_n AS BalanceBase, " +
+                           "glmp.a_actual_foreign_n AS BalanceForeign, " +
+                           "glmp.a_actual_intl_n AS BalanceIntl," +
+                           CurrencyCodeField + " AS Currency, " +
+                           " a_ledger.a_base_currency_c AS BaseCurrency " +
                            " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre, a_ledger" +
                            " WHERE glm." + ALedgerFilter +
                            " AND a_account." + ALedgerFilter +
@@ -511,17 +510,68 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 Int32 ThisPeriod = Convert.ToInt32(row["a_period_number_i"]);
 
+                String BalanceField = "BalanceBase";
+
+                if (ASelectedCurrency.StartsWith("Int"))
+                {
+                    BalanceField = "BalanceIntl";
+                }
+                else
+                {
+                    if (ASelectedCurrency.StartsWith("Trans") && (row["Currency"].ToString() != row["BaseCurrency"].ToString()))
+                    {
+                        BalanceField = "BalanceForeign";
+                    }
+                }
+
                 if (ThisPeriod < MinPeriod)
                 {
                     MinPeriod = ThisPeriod;
-                    Decimal OpeningBalance = (FromStartOfYear) ? Convert.ToDecimal(row["start_balance"]) : Convert.ToDecimal(row["balance"]);
+
+                    Decimal OpeningBalance = 0;
+
+                    if (FromStartOfYear)
+                    {
+                        String StartBalanceField = "StartBalanceBase";
+
+                        if (ASelectedCurrency.StartsWith("Int"))
+                        {
+                            StartBalanceField = "StartBalanceIntl";
+                        }
+                        else
+                        {
+                            if (ASelectedCurrency.StartsWith("Trans") && (row["Currency"].ToString() != row["BaseCurrency"].ToString()))
+                            {
+                                StartBalanceField = "StartBalanceForeign";
+                            }
+                        }
+
+                        if (row[StartBalanceField].GetType() != typeof(DBNull))
+                        {
+                            OpeningBalance = Convert.ToDecimal(row[StartBalanceField]);
+                        }
+                    }
+                    else
+                    {
+                        if (row[BalanceField].GetType() != typeof(DBNull))
+                        {
+                            OpeningBalance = Convert.ToDecimal(row[BalanceField]);
+                        }
+                    }
+
                     NewRow["OpeningBalance"] = MakeItDebit * OpeningBalance;
                 }
 
                 if (ThisPeriod > MaxPeriod)
                 {
                     MaxPeriod = ThisPeriod;
-                    Decimal ClosingBalance = Convert.ToDecimal(row["balance"]);
+                    Decimal ClosingBalance = 0;
+
+                    if (row[BalanceField].GetType() != typeof(DBNull))
+                    {
+                        ClosingBalance = Convert.ToDecimal(row[BalanceField]);
+                    }
+
                     NewRow["ClosingBalance"] = MakeItDebit * ClosingBalance;
                 }
             } // foreach

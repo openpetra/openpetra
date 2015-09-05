@@ -177,12 +177,19 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             SReportTemplateTable ChangedTemplates = editedTemplates.GetChangesTyped();
 
-            SReportTemplateAccess.SubmitChanges(ChangedTemplates, Transaction);
-            DBAccess.GDBAccessObj.CommitTransaction();
-
-            foreach (SReportTemplateRow Row in ChangedTemplates.Rows)
+            if ((ChangedTemplates != null) && (ChangedTemplates.Rows.Count > 0))
             {
-                SaveTemplatesToBackupFile(Row);
+                SReportTemplateAccess.SubmitChanges(ChangedTemplates, Transaction);
+                DBAccess.GDBAccessObj.CommitTransaction();
+
+                foreach (SReportTemplateRow Row in ChangedTemplates.Rows)
+                {
+                    SaveTemplatesToBackupFile(Row);
+                }
+            }
+            else
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
             return ChangedTemplates;

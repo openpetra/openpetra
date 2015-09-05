@@ -319,6 +319,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String importString;
             String impOptions;
             OpenFileDialog dialog = null;
+            Boolean IsPlainText = false;
 
             if (FPetraUtilsObject.HasChanges)
             {
@@ -383,7 +384,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 TImportExportDialogs.SetOpenFileDialogFilePathAndName(dialog, fullPath, exportPath);
 
                 dialog.Title = Catalog.GetString("Import Transactions from CSV File");
-                dialog.Filter = Catalog.GetString("Gift Transactions files (*.csv)|*.csv");
+                dialog.Filter = Catalog.GetString("Gift Transactions files (*.csv)|*.csv|Text Files (*.txt)|*.txt");
                 impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
                 // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
@@ -403,6 +404,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     importString = File.ReadAllText(dialog.FileName, Encoding.Default);
+                    IsPlainText = (Path.GetExtension(dialog.FileName).ToLower() == ".txt");
 
                     String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                     FdlgSeparator.DateFormat = dateFormatString;
@@ -426,7 +428,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 importString = String.Empty;
             }
 
-            if (FdlgSeparator.ShowDialog() == DialogResult.OK)
+            if (IsPlainText || (FdlgSeparator.ShowDialog() == DialogResult.OK))
             {
                 Hashtable requestParams = new Hashtable();
 

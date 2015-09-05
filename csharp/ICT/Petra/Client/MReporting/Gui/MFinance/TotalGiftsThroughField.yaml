@@ -31,5 +31,5 @@ RootNode:
             ParameterName: param_currency
             OptionalValues: [=Base, International]
         txtYears:
-            Label: For last years (1-4)
+            Label: For last years (1-8)
             Format: Integer

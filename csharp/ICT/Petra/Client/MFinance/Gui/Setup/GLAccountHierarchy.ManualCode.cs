@@ -651,6 +651,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void AddNewAccount(Object sender, EventArgs e)
         {
+            ValidateAllData(true, TErrorProcessingMode.Epm_None);
+
             if (FCurrentAccount == null)
             {
                 MessageBox.Show(Catalog.GetString("You can only add a new account after selecting a parent account"));
@@ -663,7 +665,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            ValidateAllData(true, TErrorProcessingMode.Epm_None);
+            if (FCurrentAccount.AccountRow.PostingStatus)
+            {
+                if (MessageBox.Show(String.Format(Catalog.GetString("Do you want to promote {0} to a summary Account?"),
+                            FCurrentAccount.AccountRow.AccountCode), Catalog.GetString("New Account"), MessageBoxButtons.YesNo)
+                    == System.Windows.Forms.DialogResult.No)
+                {
+                    return;
+                }
+            }
+
             string newName = FNameForNewAccounts;
             Int32 countNewAccount = 0;
 

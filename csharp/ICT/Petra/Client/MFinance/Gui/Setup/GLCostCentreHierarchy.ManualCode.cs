@@ -732,8 +732,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     MessageBox.Show(
                         String.Format(Catalog.GetString("Cost Centre {0} is in use and cannot become a summary Cost Centre."),
-                            ParentRow.CostCentreCode), Catalog.GetString("NewCostCentre"));
+                            ParentRow.CostCentreCode), Catalog.GetString("New Cost Centre"));
                     return;
+                }
+
+                if (ParentRow.PostingCostCentreFlag)
+                {
+                    if (MessageBox.Show(String.Format(Catalog.GetString("Do you want to promote {0} to a summary Cost Centre?"),
+                                ParentRow.CostCentreCode), Catalog.GetString("New Cost Centre"), MessageBoxButtons.YesNo)
+                        == System.Windows.Forms.DialogResult.No)
+                    {
+                        return;
+                    }
                 }
 
                 Int32 countNewCostCentre = 0;

@@ -548,11 +548,20 @@ namespace Ict.Petra.Server.MFinance.Gift
             // if the gift it tax deductible
             if (AGiftDetail.TaxDeductible)
             {
-                AMotivationDetailRow MotivationDetailRow = AMotivationDetailAccess.LoadByPrimaryKey(
-                    AGiftDetail.LedgerNumber, AGiftDetail.MotivationGroupCode, AGiftDetail.MotivationDetailCode, ATransaction)[0];
+                AMotivationDetailTable Tbl = AMotivationDetailAccess.LoadByPrimaryKey(
+                    AGiftDetail.LedgerNumber, AGiftDetail.MotivationGroupCode, AGiftDetail.MotivationDetailCode, ATransaction);
+                AMotivationDetailRow MotivationDetailRow;
+
+                Boolean HasTaxDeductibleAccountCode = false;
+
+                if (Tbl.Rows.Count > 0)
+                {
+                    MotivationDetailRow = Tbl[0];
+                    HasTaxDeductibleAccountCode = !string.IsNullOrEmpty(MotivationDetailRow.TaxDeductibleAccountCode);
+                }
 
                 // if the gift's motivation detail has a tax-deductible account
-                if (!string.IsNullOrEmpty(MotivationDetailRow.TaxDeductibleAccountCode))
+                if (HasTaxDeductibleAccountCode)
                 {
                     // default pct is 100
                     AGiftDetail.TaxDeductiblePct = 100;
