@@ -6773,8 +6773,7 @@
                 format="X(8)"
                 label="Address Layout Code"
                 columnlabel="Address Layout Code"
-                help="The address layout code associated with the address block (if it exists) in the template."
-                notnull="yes"/>
+                help="The address layout code associated with the address block (if it exists) in the template."/>
     <tablefield name="p_formality_level_i"
                 type="integer"
                 descr="The formality level to use if the template contains greetings or salutations. 1=Informal, 6=Very formal" 
