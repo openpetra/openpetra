@@ -45,8 +45,10 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
+
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -88,48 +90,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AStartDateCurrentPeriod"></param>
         /// <param name="AEndDateLastForwardingPeriod"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+        public static Boolean GetCurrentPostingRangeDates(Int32 ALedgerNumber,
             out DateTime AStartDateCurrentPeriod,
             out DateTime AEndDateLastForwardingPeriod)
         {
-            TDBTransaction transaction = null;
-            DateTime StartDateCurrentPeriod = new DateTime();
-            DateTime EndDateLastForwardingPeriod = new DateTime();
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref transaction,
-                delegate
-                {
-                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
-
-                    int FirstPostingPeriod = -1;
-
-                    // If final month end has been run but year end has not yet been run
-                    // then we cannot post to the current period as it is actually closed.
-                    if (LedgerTable[0].ProvisionalYearEndFlag)
-                    {
-                        FirstPostingPeriod = LedgerTable[0].CurrentPeriod + 1;
-                    }
-                    else
-                    {
-                        FirstPostingPeriod = LedgerTable[0].CurrentPeriod;
-                    }
-
-                    AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                        FirstPostingPeriod,
-                        transaction);
-
-                    StartDateCurrentPeriod = AccountingPeriodTable[0].PeriodStartDate;
-
-                    AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                        LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods,
-                        transaction);
-                    EndDateLastForwardingPeriod = AccountingPeriodTable[0].PeriodEndDate;
-                });
-            AStartDateCurrentPeriod = StartDateCurrentPeriod;
-            AEndDateLastForwardingPeriod = EndDateLastForwardingPeriod;
-            return true;
+            //Call this rather than duplicate code
+            return TFinanceServerLookups.GetCurrentPostingRangeDates(ALedgerNumber, out AStartDateCurrentPeriod, out AEndDateLastForwardingPeriod);
         }
 
         /// <summary>

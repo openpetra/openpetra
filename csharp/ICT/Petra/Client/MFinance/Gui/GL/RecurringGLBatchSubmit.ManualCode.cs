@@ -129,16 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtCurrencyCodeFrom.Text = FCurrencyCode;
             txtCurrencyCodeTo.Text = FBaseCurrencyCode;
 
-            if (FCurrencyCode == FBaseCurrencyCode)
-            {
-                btnGetSetExchangeRate.Enabled = false;
-                txtExchangeRateToBase.BackColor = Color.LightPink;
-            }
-            else
-            {
-                btnGetSetExchangeRate.Enabled = true;
-                txtExchangeRateToBase.BackColor = Color.Empty;
-            }
+            btnGetSetExchangeRate.Enabled = (FCurrencyCode != FBaseCurrencyCode);
 
             LookupCurrencyExchangeRates(DateTime.Now);
         }

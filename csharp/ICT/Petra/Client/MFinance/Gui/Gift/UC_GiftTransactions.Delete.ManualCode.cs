@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FGiftDetailView = new DataView(FMainDS.AGiftDetail);
             FGiftDetailView.RowFilter = FFilterAllDetailsOfGift;
             FGiftDetailView.Sort = AGiftDetailTable.GetDetailNumberDBName() + " ASC";
-            String formattedDetailAmount = StringHelper.FormatUsingCurrencyCode(ARowToDelete.GiftTransactionAmount, GetCurrentBatchRow().CurrencyCode);
+            String formattedDetailAmount = StringHelper.FormatUsingCurrencyCode(ARowToDelete.GiftTransactionAmount, GetBatchRow().CurrencyCode);
 
             if (FGiftDetailView.Count == 1)
             {

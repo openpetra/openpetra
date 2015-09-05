@@ -545,9 +545,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
 
-            txtDetailExchangeRateToBase.BackColor =
-                (FPreviouslySelectedDetailRow.TransactionCurrency == FLedgerBaseCurrency) ? Color.LightPink : Color.Empty;
-
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FLedgerBaseCurrency);
 
             if (FPreviouslySelectedDetailRow.ExchangeRateToBase > 0.0m)

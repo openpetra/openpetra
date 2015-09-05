@@ -1906,6 +1906,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
+            //Can be called from outside, so need to update
+            FBatchRow = GetBatchRow();
+
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             Control controlToPass = null;

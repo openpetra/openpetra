@@ -362,7 +362,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus) && !AForceLoadFromServer);
 
             //Read key fields
-            FBatchRow = GetCurrentBatchRow();
+            FBatchRow = GetBatchRow();
 
             if ((FBatchRow == null) && (GetAnyBatchRow(ABatchNumber) == null))
             {
@@ -957,12 +957,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
 
-            if ((GetCurrentBatchRow() == null) || (txn.NumberValueDecimal == null))
+            if ((GetBatchRow() == null) || (txn.NumberValueDecimal == null))
             {
                 return;
             }
 
-            if ((FPreviouslySelectedDetailRow != null) && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            if ((FPreviouslySelectedDetailRow != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
                 FPreviouslySelectedDetailRow.GiftTransactionAmount = (decimal)txn.NumberValueDecimal;
                 UpdateBaseAmount(true);
@@ -1091,7 +1091,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// get the details of the current batch
         /// </summary>
         /// <returns></returns>
-        private AGiftBatchRow GetCurrentBatchRow()
+        private AGiftBatchRow GetBatchRow()
         {
             return ((TFrmGiftBatch)ParentForm).GetBatchControl().GetCurrentBatchRow();
         }
@@ -1621,7 +1621,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            FBatchRow = GetCurrentBatchRow();
+            FBatchRow = GetBatchRow();
 
             if (FBatchRow == null)
             {
@@ -1692,7 +1692,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FBatchRow == null)
             {
-                FBatchRow = GetCurrentBatchRow();
+                FBatchRow = GetBatchRow();
             }
 
             if (ARow == null)
@@ -1849,12 +1849,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateDataDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            if ((ARow == null) || (ARow.RowState == DataRowState.Deleted) || (GetCurrentBatchRow() == null)
-                || (GetCurrentBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-                || (GetCurrentBatchRow().BatchNumber != ARow.BatchNumber))
+            if ((ARow == null) || (ARow.RowState == DataRowState.Deleted) || (GetBatchRow() == null)
+                || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                || (GetBatchRow().BatchNumber != ARow.BatchNumber))
             {
                 return;
             }
+
+            //Ensure FBatchRow is correct, as this gets called from the batch tab validation
+            FBatchRow = GetBatchRow();
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
@@ -1946,7 +1949,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             // Get the current batch row from the batch tab
-            FBatchRow = GetCurrentBatchRow();
+            FBatchRow = GetBatchRow();
 
             if (FBatchRow != null)
             {
@@ -2153,7 +2156,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             bool TransactionsFromCurrentBatch = false;
 
-            AGiftBatchRow CurrentBatchRow = GetCurrentBatchRow();
+            AGiftBatchRow CurrentBatchRow = GetBatchRow();
 
             if (!(((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
                 || (CurrentBatchRow == null)
@@ -2414,7 +2417,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             Message +=
                                 string.Format(Catalog.GetString("Recipient: {0} ({1});  Motivation Group: {2};  Motivation Detail: {3};  Amount: {4}"),
                                     Row.RecipientDescription, Row.RecipientKey, Row.MotivationGroupCode, Row.MotivationDetailCode,
-                                    StringHelper.FormatUsingCurrencyCode(Row.GiftTransactionAmount, GetCurrentBatchRow().CurrencyCode) +
+                                    StringHelper.FormatUsingCurrencyCode(Row.GiftTransactionAmount, GetBatchRow().CurrencyCode) +
                                     " " + FBatchRow.CurrencyCode) +
                                 "\n";
                         }
