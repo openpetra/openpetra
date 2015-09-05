@@ -154,8 +154,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             try
             {
-                this.Cursor = Cursors.WaitCursor;
-
                 //Check if the same batch is selected, so no need to apply filter
                 if ((FLedgerNumber == ALedgerNumber)
                     && (FBatchNumber == ABatchNumber)
@@ -182,6 +180,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     return false;
                 }
+
+                this.Cursor = Cursors.WaitCursor;
 
                 // A new ledger/batch
                 DifferentBatchSelected = true;

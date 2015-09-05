@@ -202,19 +202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void AutoEnableTransTabForBatch()
         {
-            bool EnableTransTab = false;
-
-            //If a single journal exists and it is not status=Cancelled then enable transactions tab
-            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.LastJournal == 1))
-            {
-                LoadJournalsForCurrentBatch();
-
-                if (FMainDS.AJournal.DefaultView.Count > 0)
-                {
-                    AJournalRow rJ = (AJournalRow)FMainDS.AJournal.DefaultView[0].Row;
-                    EnableTransTab = (rJ.JournalStatus != MFinanceConstants.BATCH_CANCELLED);
-                }
-            }
+            bool EnableTransTab = ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.LastJournal == 1));
 
             ((TFrmGLBatch) this.ParentForm).EnableTransactions(EnableTransTab);
         }
