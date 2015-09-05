@@ -62,6 +62,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
     /// </summary>
     public class TBudgetMaintainWebConnector
     {
+        private static CultureInfo FCultureInfoNumberFormat;
+
         /// <summary>
         /// load budgets
         /// </summary>
@@ -70,6 +72,17 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static BudgetTDS LoadAllBudgets(Int32 ALedgerNumber)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
             BudgetTDS MainDS = new BudgetTDS();
             TDBTransaction Transaction = null;
 
@@ -80,8 +93,21 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     ref Transaction,
                     delegate
                     {
-                        //Load all by Ledger
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                        #region Validate Data
+
+                        if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
+
+                        //Load all by Ledger but none may exist
                         ABudgetAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         ABudgetRevisionAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
@@ -119,6 +145,22 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static BudgetTDS LoadBudgetsForYear(Int32 ALedgerNumber, Int32 ABudgetYear)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABudgetYear < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Budget Year number cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             BudgetTDS MainDS = new BudgetTDS();
             TDBTransaction Transaction = null;
 
@@ -130,6 +172,18 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     delegate
                     {
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                        #region Validate Data
+
+                        if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
 
                         int numPeriods = MainDS.ALedger[0].NumberOfAccountingPeriods;
 
@@ -171,75 +225,86 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             Int32 ANumberOfPeriods,
             TDBTransaction ATransaction)
         {
-            string sql =
-                "select b.{5}, b.{6}, b.{8}," +
-                "  b.{10}, b.{11}, b.{12}, b.{13}," +
-                "  b.{14}, b.{15}, b.{16}, b.{17}," +
-                "  b.{18}, b.{19}, b.{20}," +
-                "  min(case when bp.{0} = 1 then bp.{1} end) Period01Amount, " +
-                "  min(case when bp.{0} = 2 then bp.{1} end) Period02Amount, " +
-                "  min(case when bp.{0} = 3 then bp.{1} end) Period03Amount, " +
-                "  min(case when bp.{0} = 4 then bp.{1} end) Period04Amount, " +
-                "  min(case when bp.{0} = 5 then bp.{1} end) Period05Amount, " +
-                "  min(case when bp.{0} = 6 then bp.{1} end) Period06Amount, " +
-                "  min(case when bp.{0} = 7 then bp.{1} end) Period07Amount, " +
-                "  min(case when bp.{0} = 8 then bp.{1} end) Period08Amount, " +
-                "  min(case when bp.{0} = 9 then bp.{1} end) Period09Amount, " +
-                "  min(case when bp.{0} = 10 then bp.{1} end) Period10Amount, " +
-                "  min(case when bp.{0} = 11 then bp.{1} end) Period11Amount, " +
-                "  min(case when bp.{0} = 12 then bp.{1} end) Period12Amount";
+            //Parameters for SQL as strings
+            string prmLedgerNumber = ALedgerNumber.ToString();
+            string prmYear = AYear.ToString();
+
+            //Tables with alias
+            string BudgetTableAlias = "b";
+            string bBudgetTable = ABudgetTable.GetTableDBName() + " " + BudgetTableAlias;
+            string BudgetPeriodTableAlias = "bp";
+            string bpBudgetPeriodTable = ABudgetPeriodTable.GetTableDBName() + " " + BudgetPeriodTableAlias;
+
+            //Table: ABudgetTable and fields
+            string bLedgerNumber = BudgetTableAlias + "." + ABudgetTable.GetLedgerNumberDBName();
+            string bBudgetSequence = BudgetTableAlias + "." + ABudgetTable.GetBudgetSequenceDBName();
+            string bYear = BudgetTableAlias + "." + ABudgetTable.GetYearDBName();
+            string bRevision = BudgetTableAlias + "." + ABudgetTable.GetRevisionDBName();
+            string bCostCentreCode = BudgetTableAlias + "." + ABudgetTable.GetCostCentreCodeDBName();
+            string bAccountCode = BudgetTableAlias + "." + ABudgetTable.GetAccountCodeDBName();
+            string bBudgetTypeCode = BudgetTableAlias + "." + ABudgetTable.GetBudgetTypeCodeDBName();
+            string bBudgetStatus = BudgetTableAlias + "." + ABudgetTable.GetBudgetStatusDBName();
+            string bComment = BudgetTableAlias + "." + ABudgetTable.GetCommentDBName();
+            string bDateCreated = BudgetTableAlias + "." + ABudgetTable.GetDateCreatedDBName();
+            string bCreatedBy = BudgetTableAlias + "." + ABudgetTable.GetCreatedByDBName();
+            string bDateModified = BudgetTableAlias + "." + ABudgetTable.GetDateModifiedDBName();
+            string bModifiedBy = BudgetTableAlias + "." + ABudgetTable.GetModifiedByDBName();
+            string bModificationId = BudgetTableAlias + "." + ABudgetTable.GetModificationIdDBName();
+
+            //Table: ABudgetPeriodTable and fields
+            string bpPeriodNumber = BudgetPeriodTableAlias + "." + ABudgetPeriodTable.GetPeriodNumberDBName();
+            string bpBudgetBase = BudgetPeriodTableAlias + "." + ABudgetPeriodTable.GetBudgetBaseDBName();
+            string bpBudgetSequence = BudgetPeriodTableAlias + "." + ABudgetPeriodTable.GetBudgetSequenceDBName();
+
+            string SQLStatement =
+                "select " +
+                bBudgetSequence + ", " + bLedgerNumber + ", " + bYear + ", " +
+                bRevision + ", " + bCostCentreCode + ", " + bAccountCode + ", " + bBudgetTypeCode + ", " +
+                bBudgetStatus + ", " + bComment + ", " + bDateCreated + ", " + bCreatedBy + ", " +
+                bDateModified + ", " + bModifiedBy + ", " + bModificationId + ", " +
+                "min(case when " + bpPeriodNumber + " = 1 then " + bpBudgetBase + " end) Period01Amount, " +
+                "min(case when " + bpPeriodNumber + " = 2 then " + bpBudgetBase + " end) Period02Amount, " +
+                "min(case when " + bpPeriodNumber + " = 3 then " + bpBudgetBase + " end) Period03Amount, " +
+                "min(case when " + bpPeriodNumber + " = 4 then " + bpBudgetBase + " end) Period04Amount, " +
+                "min(case when " + bpPeriodNumber + " = 5 then " + bpBudgetBase + " end) Period05Amount, " +
+                "min(case when " + bpPeriodNumber + " = 6 then " + bpBudgetBase + " end) Period06Amount, " +
+                "min(case when " + bpPeriodNumber + " = 7 then " + bpBudgetBase + " end) Period07Amount, " +
+                "min(case when " + bpPeriodNumber + " = 8 then " + bpBudgetBase + " end) Period08Amount, " +
+                "min(case when " + bpPeriodNumber + " = 9 then " + bpBudgetBase + " end) Period09Amount, " +
+                "min(case when " + bpPeriodNumber + " = 10 then " + bpBudgetBase + " end) Period10Amount, " +
+                "min(case when " + bpPeriodNumber + " = 11 then " + bpBudgetBase + " end) Period11Amount, " +
+                "min(case when " + bpPeriodNumber + " = 12 then " + bpBudgetBase + " end) Period12Amount";
 
             if (ANumberOfPeriods > 12)
             {
-                sql += ", min(case when bp.{0} = 13 then bp.{1} end) Period13Amount";
+                SQLStatement += ", min(case when " + bpPeriodNumber + " = 13 then " + bpBudgetBase + " end) Period13Amount";
             }
             else
             {
-                sql += ", 0 Period13Amount";
+                SQLStatement += ", 0 Period13Amount";
             }
 
             if (ANumberOfPeriods > 13)
             {
-                sql += ", min(case when bp.{0} = 14 then bp.{1} end) Period14Amount";
+                SQLStatement += ", min(case when " + bpPeriodNumber + " = 14 then " + bpBudgetBase + " end) Period14Amount";
             }
             else
             {
-                sql += ", 0 Period14Amount";
+                SQLStatement += ", 0 Period14Amount";
             }
 
-            sql += " from {2} b join {3} bp " +
-                   "   on bp.{4} = b.{5} " +
-                   " where b.{6} = {7} " +
-                   "  and b.{8} = {9} " +
-                   " group by b.{5}, b.{6}, b.{8}," +
-                   "  b.{10}, b.{11}, b.{12}, b.{13}," +
-                   "  b.{14}, b.{15}, b.{16}, b.{17}," +
-                   "  b.{18}, b.{19}, b.{20};";
+            SQLStatement +=
+                " from " + bBudgetTable + " join " + bpBudgetPeriodTable +
+                "   on " + bpBudgetSequence + " = " + bBudgetSequence +
+                " where " + bLedgerNumber + " = " + prmLedgerNumber +
+                "  and " + bYear + " = " + prmYear +
+                " group by " +
+                bBudgetSequence + ", " + bLedgerNumber + ", " + bYear + ", " +
+                bRevision + ", " + bCostCentreCode + ", " + bAccountCode + ", " + bBudgetTypeCode + ", " +
+                bBudgetStatus + ", " + bComment + ", " + bDateCreated + ", " + bCreatedBy + ", " +
+                bDateModified + ", " + bModifiedBy + ", " + bModificationId + ";";
 
-            string SelectClause = String.Format(sql,
-                ABudgetPeriodTable.GetPeriodNumberDBName(),
-                ABudgetPeriodTable.GetBudgetBaseDBName(),
-                ABudgetTable.GetTableDBName(),
-                ABudgetPeriodTable.GetTableDBName(),
-                ABudgetPeriodTable.GetBudgetSequenceDBName(),
-                ABudgetTable.GetBudgetSequenceDBName(),
-                ABudgetTable.GetLedgerNumberDBName(),
-                ALedgerNumber,
-                ABudgetTable.GetYearDBName(),
-                AYear,
-                ABudgetTable.GetRevisionDBName(),
-                ABudgetTable.GetCostCentreCodeDBName(),
-                ABudgetTable.GetAccountCodeDBName(),
-                ABudgetTable.GetBudgetTypeCodeDBName(),
-                ABudgetTable.GetBudgetStatusDBName(),
-                ABudgetTable.GetCommentDBName(),
-                ABudgetTable.GetDateCreatedDBName(),
-                ABudgetTable.GetCreatedByDBName(),
-                ABudgetTable.GetDateModifiedDBName(),
-                ABudgetTable.GetModifiedByDBName(),
-                ABudgetTable.GetModificationIdDBName());
-
-            DBAccess.GDBAccessObj.Select(AMainDS, SelectClause, AMainDS.ABudget.TableName, ATransaction);
+            DBAccess.GDBAccessObj.Select(AMainDS, SQLStatement, AMainDS.ABudget.TableName, ATransaction);
         }
 
         /// <summary>
@@ -280,6 +345,32 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             out Int32 ARecordsUpdated,
             out TVerificationResultCollection AVerificationResult)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ACurrentBudgetYear < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Budget Year number cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (ACSVFileName.Length == 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The CSV File Name is missing!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AFdlgSeparator.Length < 3)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - Information on how to parse the CSV file is missing!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             ARecordsUpdated = 0;
             AVerificationResult = new TVerificationResultCollection();
 
@@ -298,8 +389,6 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             return 0;
         }
-
-        private static CultureInfo FCultureInfoNumberFormat;
 
         /// <summary>
         /// Import the budget from a CSV file
@@ -342,8 +431,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             string CostCentre = string.Empty;
             string Account = string.Empty;
-            string BudgetType = string.Empty;
-            string BudgetYearString = string.Empty;
+            string BudgetTypeUpper = string.Empty;
+            string BudgetYearStringUpper = string.Empty;
             int BudgetYearNumber = 0;
             int BdgRevision = 0;  //not currently implementing versioning so always zero
 
@@ -360,10 +449,15 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                 try
                 {
-                    //Increment row number
-                    RowNumber++;
-
                     string Line = DataFile.ReadLine();
+
+                    if (Line == string.Empty)
+                    {
+                        continue;
+                    }
+
+                    //Increment row number if not an empty line
+                    RowNumber++;
 
                     CostCentre = StringHelper.GetNextCSV(ref Line, Separator, false).ToString();
 
@@ -379,27 +473,27 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     //Account
                     Account = StringHelper.GetNextCSV(ref Line, Separator, false).ToString();
                     //BudgetType
-                    BudgetType = StringHelper.GetNextCSV(ref Line, Separator, false).ToString().ToUpper();
-                    BudgetType = BudgetType.Replace(" ", ""); //Ad hoc will become ADHOC
+                    BudgetTypeUpper = StringHelper.GetNextCSV(ref Line, Separator, false).ToString().ToUpper();
+                    BudgetTypeUpper = BudgetTypeUpper.Replace(" ", ""); //Ad hoc will become ADHOC
 
                     //Allow for variations on Inf.Base and Inf.N
-                    if (BudgetType.Contains("INF"))
+                    if (BudgetTypeUpper.Contains("INF"))
                     {
-                        if (BudgetType.Contains("BASE"))
+                        if (BudgetTypeUpper.Contains("BASE"))
                         {
-                            if (BudgetType != MFinanceConstants.BUDGET_INFLATE_BASE)
+                            if (BudgetTypeUpper != MFinanceConstants.BUDGET_INFLATE_BASE)
                             {
-                                BudgetType = MFinanceConstants.BUDGET_INFLATE_BASE;
+                                BudgetTypeUpper = MFinanceConstants.BUDGET_INFLATE_BASE;
                             }
                         }
-                        else if (BudgetType != MFinanceConstants.BUDGET_INFLATE_N)
+                        else if (BudgetTypeUpper != MFinanceConstants.BUDGET_INFLATE_N)
                         {
-                            BudgetType = MFinanceConstants.BUDGET_INFLATE_N;
+                            BudgetTypeUpper = MFinanceConstants.BUDGET_INFLATE_N;
                         }
                     }
 
                     //BudgetYear
-                    BudgetYearString = (StringHelper.GetNextCSV(ref Line, Separator, false)).ToUpper();
+                    BudgetYearStringUpper = (StringHelper.GetNextCSV(ref Line, Separator, false)).ToUpper();
 
                     //Check validity of CSV file line values
                     if (!ValidateKeyBudgetFields(ALedgerNumber,
@@ -408,8 +502,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             ref AccountTable,
                             CostCentre,
                             Account,
-                            BudgetType,
-                            BudgetYearString,
+                            BudgetTypeUpper,
+                            BudgetYearStringUpper,
                             ref AVerificationResult))
                     {
                         continue;
@@ -418,22 +512,21 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     //Read the budgetperiod values to check if valid according to type
                     Array.Clear(BudgetPeriods, 0, NumPeriods);
 
-                    if (!ProcessBudgetTypeImportDetails(ref Line, Separator, BudgetType, ref BudgetPeriods))
+                    if (!ProcessBudgetTypeImportDetails(RowNumber,
+                            ref Line,
+                            Separator,
+                            BudgetTypeUpper,
+                            ref BudgetPeriods,
+                            BudgetYearStringUpper,
+                            CostCentre,
+                            Account,
+                            ref AVerificationResult))
                     {
-                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + RowNumber.ToString("0000")),
-                                String.Format(Catalog.GetString(
-                                        " The values in this budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') do not match the Budget Type: '{3}'!"),
-                                    BudgetYearString,
-                                    CostCentre,
-                                    Account,
-                                    BudgetType),
-                                TResultSeverity.Resv_Noncritical));
-
                         continue;
                     }
 
                     //Calculate the budget Year
-                    BudgetYearNumber = GetBudgetYearNumber(ALedgerNumber, BudgetYearString);
+                    BudgetYearNumber = GetBudgetYearNumber(ALedgerNumber, BudgetYearStringUpper);
 
                     //Add budget revision record if there's not one already.
                     if (AImportDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, BudgetYearNumber, BdgRevision }) == null)
@@ -471,7 +564,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                             "Function:{0} - Duplicates unique keys exist in the Budget table for Ledger: {1} Year: '{2}' ({3}), Cost Centre: '{4}' & Account: '{5}'!"),
                                         Utilities.GetMethodName(true),
                                         ALedgerNumber,
-                                        BudgetYearString,
+                                        BudgetYearStringUpper,
                                         BudgetYearNumber,
                                         CostCentre,
                                         Account));
@@ -499,7 +592,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + RowNumber.ToString("0000")),
                                     String.Format(Catalog.GetString(
                                             " This budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') is repeated in the import file!"),
-                                        BudgetYearString,
+                                        BudgetYearStringUpper,
                                         CostCentre,
                                         Account),
                                     TResultSeverity.Resv_Noncritical));
@@ -515,10 +608,10 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         {
                             bool rowUpdated = false;
 
-                            if (bdgRow.BudgetTypeCode != BudgetType)
+                            if (bdgRow.BudgetTypeCode != BudgetTypeUpper)
                             {
                                 rowUpdated = true;
-                                bdgRow.BudgetTypeCode = BudgetType;
+                                bdgRow.BudgetTypeCode = BudgetTypeUpper;
                             }
 
                             ABudgetPeriodRow BPRow = null;
@@ -564,7 +657,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + RowNumber.ToString("0000")),
                                     String.Format(Catalog.GetString(
                                             "This budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') is repeated in the import file!"),
-                                        BudgetYearString,
+                                        BudgetYearStringUpper,
                                         CostCentre,
                                         Account),
                                     TResultSeverity.Resv_Noncritical));
@@ -582,7 +675,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         BudgetRow.Revision = BdgRevision;
                         BudgetRow.CostCentreCode = CostCentre;
                         BudgetRow.AccountCode = Account;
-                        BudgetRow.BudgetTypeCode = BudgetType;
+                        BudgetRow.BudgetTypeCode = BudgetTypeUpper;
                         AImportDS.ABudget.Rows.Add(BudgetRow);
 
                         //Add to import table to check for later duplicates
@@ -621,10 +714,10 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             string ACostCentre,
             string AAccount,
             string ABudgetType,
-            string ABudgetYearString,
+            string ABudgetYearStringUpper,
             ref TVerificationResultCollection AVerificationResult)
         {
-            string VerifMessage = string.Empty;
+            string VerificationMessage = string.Empty;
 
             ACostCentreTable CCTable = ACostCentreTbl;
             AAccountTable AccTable = AAccountTbl;
@@ -636,15 +729,15 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             {
                 try
                 {
-                    TDBTransaction Transaction = null;
+                    TDBTransaction transaction = null;
 
                     DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                         TEnforceIsolationLevel.eilMinimum,
-                        ref Transaction,
+                        ref transaction,
                         delegate
                         {
-                            CCTable = ACostCentreAccess.LoadViaALedger(ALedgerNumber, Transaction);
-                            AccTable = AAccountAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                            CCTable = ACostCentreAccess.LoadViaALedger(ALedgerNumber, transaction);
+                            AccTable = AAccountAccess.LoadViaALedger(ALedgerNumber, transaction);
 
                             #region Validate Data
 
@@ -684,11 +777,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             if (CostCentreRow == null)
             {
-                VerifMessage += String.Format(Catalog.GetString(" Cost Centre: '{0}' does not exist."), ACostCentre);
+                VerificationMessage += String.Format(Catalog.GetString(" Cost Centre: '{0}' does not exist."), ACostCentre);
             }
             else if (!CostCentreRow.CostCentreActiveFlag)
             {
-                VerifMessage += String.Format(Catalog.GetString(" Cost Centre: '{0}' is currently inactive."), ACostCentre);
+                VerificationMessage += String.Format(Catalog.GetString(" Cost Centre: '{0}' is currently inactive."), ACostCentre);
             }
 
             //Check for missing or inactive account code
@@ -696,11 +789,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             if (AccountRow == null)
             {
-                VerifMessage += String.Format(Catalog.GetString(" Account: '{0}' does not exist."), AAccount);
+                VerificationMessage += String.Format(Catalog.GetString(" Account: '{0}' does not exist."), AAccount);
             }
             else if (!AccountRow.AccountActiveFlag)
             {
-                VerifMessage += String.Format(Catalog.GetString(" Account: '{0}' is currently inactive."), AAccount);
+                VerificationMessage += String.Format(Catalog.GetString(" Account: '{0}' is currently inactive."), AAccount);
             }
 
             //Check Budget Type
@@ -710,20 +803,24 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 && (ABudgetType != MFinanceConstants.BUDGET_SPLIT)
                 && (ABudgetType != MFinanceConstants.BUDGET_INFLATE_BASE))
             {
-                VerifMessage += String.Format(Catalog.GetString(" Budget Type: '{0}' does not exist."), ABudgetType);
+                VerificationMessage += String.Format(Catalog.GetString(" Budget Type: '{0}' does not exist."), ABudgetType);
             }
 
             //Check Budget Year
-            if ((ABudgetYearString != "THIS") && (ABudgetYearString != "NEXT"))
+            if ((ABudgetYearStringUpper != MFinanceConstants.BUDGET_YEAR_THIS.ToUpper())
+                && (ABudgetYearStringUpper != MFinanceConstants.BUDGET_YEAR_NEXT.ToUpper()))
             {
-                VerifMessage += String.Format(Catalog.GetString(" Budget Year: '{0}' should be 'THIS' or 'NEXT'."), ABudgetYearString);
+                VerificationMessage += String.Format(Catalog.GetString(" Budget Year: '{0}' should be '{1}' or '{2}'."),
+                    ABudgetYearStringUpper,
+                    MFinanceConstants.BUDGET_YEAR_THIS,
+                    MFinanceConstants.BUDGET_YEAR_NEXT);
             }
 
             //Check if errors have occurred
-            if (VerifMessage.Length > 0)
+            if (VerificationMessage.Length > 0)
             {
                 AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + ARowNumber.ToString("0000")),
-                        VerifMessage,
+                        VerificationMessage,
                         TResultSeverity.Resv_Noncritical));
 
                 return false;
@@ -753,33 +850,33 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     {
                         LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
                         AccPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
+
+                        #region Validate Data
+
+                        if ((LedgerTable == null) || (LedgerTable.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
+                        else if ((AccPeriodTable == null) || (AccPeriodTable.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Accounting Period data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
                     });
-
-                #region Validate Data
-
-                if ((LedgerTable == null) || (LedgerTable.Count == 0))
-                {
-                    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
-                            Utilities.GetMethodName(true),
-                            ALedgerNumber));
-                }
-                else if ((AccPeriodTable == null) || (AccPeriodTable.Count == 0))
-                {
-                    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                "Function:{0} - Accounting Period data for Ledger number {1} does not exist or could not be accessed!"),
-                            Utilities.GetMethodName(true),
-                            ALedgerNumber));
-                }
-
-                #endregion Validate Data
 
                 ALedgerRow ledgerRow = (ALedgerRow)LedgerTable.Rows[0];
                 AAccountingPeriodRow accPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[0];
 
                 BudgetYear = accPeriodRow.PeriodStartDate.Year;
 
-                if (ABudgetYearName.ToUpper() != "THIS")
+                if (ABudgetYearName.ToUpper() != MFinanceConstants.BUDGET_YEAR_THIS.ToUpper())
                 {
                     BudgetYear++;
                 }
@@ -805,45 +902,87 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
         private static string BudgetRevisionYearName(int ALedgerNumber, int ABudgetRevisionYear)
         {
-            int budgetYear = 0;
+            string RetVal = string.Empty;
+
+            int BudgetYear = 0;
             ALedgerTable LedgerTable = null;
-            AAccountingPeriodTable accPeriodTable = null;
+            AAccountingPeriodTable AccPeriodTable = null;
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                        AccPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
+
+                        #region Validate Data
+
+                        if ((LedgerTable == null) || (LedgerTable.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
+                        else if ((AccPeriodTable == null) || (AccPeriodTable.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Accounting Period data for Ledger number {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
+                    });
+
+                ALedgerRow ledgerRow = (ALedgerRow)LedgerTable.Rows[0];
+                AAccountingPeriodRow accPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[0];
+
+                DateTime CurrentYearEnd = TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber,
+                    ledgerRow.CurrentFinancialYear,
+                    0,
+                    ledgerRow.NumberOfAccountingPeriods);
+
+                BudgetYear = ABudgetRevisionYear + CurrentYearEnd.Year - ledgerRow.CurrentFinancialYear;
+
+                if (BudgetYear == accPeriodRow.PeriodStartDate.Year)
                 {
-                    LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-                    accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
-                });
-
-            ALedgerRow ledgerRow = (ALedgerRow)LedgerTable.Rows[0];
-            AAccountingPeriodRow accPeriodRow = (AAccountingPeriodRow)accPeriodTable.Rows[0];
-
-            DateTime CurrentYearEnd = TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber,
-                ledgerRow.CurrentFinancialYear,
-                0,
-                ledgerRow.NumberOfAccountingPeriods);
-
-            budgetYear = ABudgetRevisionYear + CurrentYearEnd.Year - ledgerRow.CurrentFinancialYear;
-
-            if (budgetYear == accPeriodRow.PeriodStartDate.Year)
-            {
-                return "This";
+                    RetVal = MFinanceConstants.BUDGET_YEAR_THIS;
+                }
+                else
+                {
+                    RetVal = MFinanceConstants.BUDGET_YEAR_NEXT;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return "Next";
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
+
+            return RetVal;
         }
 
-        private static bool ProcessBudgetTypeImportDetails(ref string Line, string Separator, string ABudgetType, ref decimal[] ABudgetPeriods)
+        private static bool ProcessBudgetTypeImportDetails(int ARowNumber,
+            ref string Line,
+            string Separator,
+            string ABudgetType,
+            ref decimal[] ABudgetPeriods,
+            string ABudgetYearString,
+            string ACostCentre,
+            string AAccount,
+            ref TVerificationResultCollection AVerificationResult)
         {
+            //Assume return true
             bool RetVal = true;
-
             int NumPeriods = ABudgetPeriods.Length;
 
             try
@@ -954,6 +1093,15 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             catch (Exception)
             {
                 RetVal = false;
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + ARowNumber.ToString("0000")),
+                        String.Format(Catalog.GetString(
+                                " The values in this budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') do not match the Budget Type: '{3}' or number of periods: '{4}'!"),
+                            ABudgetYearString,
+                            ACostCentre,
+                            AAccount,
+                            ABudgetType,
+                            ABudgetPeriods.Length),
+                        TResultSeverity.Resv_Noncritical));
             }
 
             return RetVal;
@@ -977,6 +1125,27 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             ref BudgetTDS AExportDS,
             out TVerificationResultCollection AVerificationResult)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ACSVFileName.Length == 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The CSV File Name is missing!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AFdlgSeparator.Length == 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - Information on how to parse the CSV file is missing!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             AVerificationResult = null;
 
             if (AExportDS != null)
@@ -1000,69 +1169,69 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             ref BudgetTDS AExportDS,
             ref TVerificationResultCollection AVerificationResult)
         {
-            Int32 numBudgetsExported = 0;
+            Int32 NumBudgetsExported = 0;
 
-            ALedgerRow lr = (ALedgerRow)AExportDS.ALedger.Rows[0];
+            ALedgerRow LedgerRow = (ALedgerRow)AExportDS.ALedger.Rows[0];
 
-            ABudgetPeriodTable budgetPeriod = (ABudgetPeriodTable)AExportDS.ABudgetPeriod;
+            ABudgetPeriodTable BudgetPeriod = (ABudgetPeriodTable)AExportDS.ABudgetPeriod;
 
-            Int32 numPeriods = lr.NumberOfAccountingPeriods;
+            Int32 NumPeriods = LedgerRow.NumberOfAccountingPeriods;
 
-            char separator = AFdlgSeparator[0].Substring(0, 1).ToCharArray()[0];
+            char Separator = AFdlgSeparator[0].Substring(0, 1).ToCharArray()[0];
 
             TLogging.Log("Writing file: " + ACSVFileName);
 
-            StringBuilder sb = new StringBuilder();
-            string budgetAmounts = string.Empty;
+            StringBuilder StrBuilder = new StringBuilder();
+            string BudgetAmounts = string.Empty;
 
             foreach (ABudgetRow row in AExportDS.ABudget.Rows)
             {
                 switch (row.BudgetTypeCode)
                 {
                     case MFinanceConstants.BUDGET_SAME:
-                        StringBudgetTypeSameAmounts(row.BudgetSequence, ref budgetPeriod, out budgetAmounts);
+                        StringBudgetTypeSameAmounts(row.BudgetSequence, ref BudgetPeriod, out BudgetAmounts);
 
                         break;
 
                     case MFinanceConstants.BUDGET_SPLIT:
-                        StringBudgetTypeSplitAmounts(row.BudgetSequence, numPeriods, ref budgetPeriod, separator, out budgetAmounts);
+                        StringBudgetTypeSplitAmounts(row.BudgetSequence, NumPeriods, ref BudgetPeriod, Separator, out BudgetAmounts);
 
                         break;
 
                     case MFinanceConstants.BUDGET_INFLATE_BASE:
-                        StringBudgetTypeInflateBaseAmounts(row.BudgetSequence, numPeriods, ref budgetPeriod, separator, out budgetAmounts);
+                        StringBudgetTypeInflateBaseAmounts(row.BudgetSequence, NumPeriods, ref BudgetPeriod, Separator, out BudgetAmounts);
 
                         break;
 
                     case MFinanceConstants.BUDGET_INFLATE_N:
-                        StringBudgetTypeInflateNAmounts(row.BudgetSequence, numPeriods, ref budgetPeriod, separator, out budgetAmounts);
+                        StringBudgetTypeInflateNAmounts(row.BudgetSequence, NumPeriods, ref BudgetPeriod, Separator, out BudgetAmounts);
 
                         break;
 
                     default:                              //MFinanceConstants.BUDGET_ADHOC:
-                        StringBudgetTypeAdhocAmounts(row.BudgetSequence, numPeriods, ref budgetPeriod, separator, out budgetAmounts);
+                        StringBudgetTypeAdhocAmounts(row.BudgetSequence, NumPeriods, ref BudgetPeriod, Separator, out BudgetAmounts);
 
                         break;
                 }
 
-                sb.Append(StringHelper.StrMerge(
+                StrBuilder.Append(StringHelper.StrMerge(
                         new string[] {
                             Encase(row.CostCentreCode),
                             Encase(row.AccountCode),
                             Encase(row.BudgetTypeCode),
                             Encase(BudgetRevisionYearName(ALedgerNumber, row.Year))
-                        }, separator));
+                        }, Separator));
 
-                sb.Append(separator.ToString());
-                sb.Append(budgetAmounts);
-                sb.Append(Environment.NewLine);
+                StrBuilder.Append(Separator.ToString());
+                StrBuilder.Append(BudgetAmounts);
+                StrBuilder.Append(Environment.NewLine);
 
-                numBudgetsExported++;
+                NumBudgetsExported++;
             }
 
-            AFileContents = sb.ToString();
+            AFileContents = StrBuilder.ToString();
 
-            return numBudgetsExported;
+            return NumBudgetsExported;
         }
 
         private static string Encase(string AStringToEncase)
