@@ -104,6 +104,9 @@ namespace Ict.Petra.Shared.MCommon
         /// <summary>Partner</summary>
         public const String FORM_CODE_PARTNER = "PARTNER";
 
+        /// <summary>Partner</summary>
+        public const String FORM_CODE_PERSONNEL = "PERSONNEL";
+
         /// <summary>Cheque</summary>
         public const String FORM_CODE_CHEQUE = "CHEQUE";
 

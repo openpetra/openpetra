@@ -76,6 +76,23 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         }
 
         /// <summary>
+        /// Uploads a personnel form template to the specified data row.  The FormCode for this is always PERSONNEL
+        /// </summary>
+        /// <param name="AFormName">Form name</param>
+        /// <param name="ALanguageCode">language code</param>
+        /// <param name="ATemplateText">The template as a base64 string</param>
+        /// <param name="AUserID">User ID who is doing the upload</param>
+        /// <param name="AUploadDateTime">Loacal date and time from the user PC that is doing the upload</param>
+        /// <param name="ATemplateFileExtension">File extension of template file (eg docx)</param>
+        /// <returns>True if the table record was modified successfully</returns>
+        [RequireModulePermission("PERSONNEL")]
+        public static bool UploadPersonnelFormTemplate(String AFormName, String ALanguageCode, String ATemplateText,
+            String AUserID, DateTime AUploadDateTime, String ATemplateFileExtension)
+        {
+            return UploadFormTemplate("PERSONNEL", AFormName, ALanguageCode, ATemplateText, AUserID, AUploadDateTime, ATemplateFileExtension);
+        }
+
+        /// <summary>
         /// Main private helper method that uploads a form template to the specified data row
         /// </summary>
         /// <param name="AFormCode">Form Code</param>
@@ -141,6 +158,17 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         }
 
         /// <summary>
+        /// Returns a single row PFormTable that contains the full template text as a base64 string.
+        /// The parameters are the three elements of the table primary key.
+        /// Use for Personnel form downloads
+        /// </summary>
+        [RequireModulePermission("PERSONNEL")]
+        public static PFormTable DownloadPersonnelFormTemplate(String AFormName, String ALanguageCode)
+        {
+            return DownloadFormTemplate("PERSONNEL", AFormName, ALanguageCode);
+        }
+
+        /// <summary>
         /// main private helper method that returns a single row PFormTable that contains the full template text as a base64 string.
         /// The parameters are the three elements of the table primary key.
         /// </summary>
@@ -186,6 +214,16 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         }
 
         /// <summary>
+        /// return a table with forms for the personnel module
+        /// </summary>
+        /// <returns>Result Form Table</returns>
+        [RequireModulePermission("PERSONNEL")]
+        public static PFormTable GetPersonnelForms()
+        {
+            return GetForms(MCommonConstants.FORM_CODE_PERSONNEL, String.Empty);
+        }
+
+        /// <summary>
         /// Main private method to return a table with forms for partner or finance
         /// </summary>
         /// <param name="AFormCode">Form Code Filter</param>
@@ -198,6 +236,7 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
 
             // Check for a valid form code
             if ((AFormCode == MCommonConstants.FORM_CODE_PARTNER)
+                || (AFormCode == MCommonConstants.FORM_CODE_PERSONNEL)
                 || (AFormCode == MCommonConstants.FORM_CODE_CHEQUE)
                 || (AFormCode == MCommonConstants.FORM_CODE_RECEIPT)
                 || (AFormCode == MCommonConstants.FORM_CODE_REMITTANCE))
