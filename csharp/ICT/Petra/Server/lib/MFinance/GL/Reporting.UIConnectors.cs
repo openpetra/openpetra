@@ -897,7 +897,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
             DataTable resultTable = null;
             TDBTransaction ReadTrans = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTrans,
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTrans,
                 delegate
                 {
                     ACostCentreTable AllCostCentres = ACostCentreAccess.LoadViaALedger(LedgerNumber, ReadTrans);
@@ -1362,7 +1364,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String isThisYear = " Year=" + AccountingYear;
                     String isLastYear = " Year=" + (AccountingYear - 1);
 
-                    String PeriodFilter = " AND glmp.a_period_number_i<=" + ReportPeriodEnd;         // Last month's rows are needed to calculate a single month's delta.
+                    String PeriodFilter = " AND glmp.a_period_number_i<=" + NumberOfAccountingPeriods; // I need the whole year to see "whole year budget".
                     String isEndPeriod = "Period=" + ReportPeriodEnd;
                     String isPrevPeriod = "Period=" + (ReportPeriodStart - 1);
 
@@ -1389,7 +1391,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         "0.0 AS P1, 0.0 AS P2, 0.0 AS P3, 0.0 AS P4, 0.0 AS P5, 0.0 AS P6 , 0.0 AS P7, 0.0 AS P8, 0.0 AS P9, 0.0 AS P10, 0.0 AS P11, 0.0 AS P12 ";
 
                     String NoZeroesFilter =
-                        "WHERE (LastMonthYtd != 0 OR ActualYtd != 0 OR Budget != 0 OR BudgetYTD != 0 OR WholeYearBudget != 0 OR LastYearBudget != 0)";
+                        "WHERE (LastMonthYtd != 0 OR ActualYtd != 0 OR Budget != 0 OR BudgetYTD != 0 OR WholeYearBudget != 0 OR LastYearBudget != 0 OR LastYearLastMonthYtd != 0 OR LastYearActualYtd != 0)";
 
                     if (WholeYearPeriodsBreakdown)
                     {

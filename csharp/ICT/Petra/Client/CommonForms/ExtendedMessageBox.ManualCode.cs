@@ -213,6 +213,7 @@ namespace Ict.Petra.Client.CommonForms
         {
             string ResourceDirectory;
             string IconFileName;
+            ToolTip ButtonTooltip = new ToolTip();
 
             // initialize return values
             FResult = TResult.embrUndefined;
@@ -226,6 +227,9 @@ namespace Ict.Petra.Client.CommonForms
             txtMessage.Font = new System.Drawing.Font(txtMessage.Font, FontStyle.Regular);
 
             pnlLeftButtons.MinimumSize = new Size(btnHelp.Width + btnCopy.Width + 10, pnlLeftButtons.Height);
+
+            ButtonTooltip.SetToolTip(btnHelp, "Help");
+            ButtonTooltip.SetToolTip(btnCopy, "Copy to Clipboard");
 
             this.Text = ACaption;
             chkOption.Text = AChkOptionText;
@@ -543,7 +547,7 @@ namespace Ict.Petra.Client.CommonForms
         {
             Clipboard.SetText(txtMessage.Text);
 
-            MessageBox.Show("The message text has been copied to clipboard.", MCommonResourcestrings.StrRecordDeletionTitle);
+            MessageBox.Show("Message has been copied to clipboard.", this.Text);
         }
     }
 

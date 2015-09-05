@@ -29,7 +29,7 @@ RootNode:
         pnlDialogContent:
             Dock: Fill
 
-        pnlDialogButtons:             
+        pnlDialogButtons:
             Padding: 4,0,2,4
             Height: 36
             Dock: Bottom
@@ -43,7 +43,7 @@ RootNode:
             Controls:
                 Row0: [btnHelp]
         
-        btnHelp: {NoLabel=true, Width=12, Height=24, ImageAlign=System.Drawing.ContentAlignment.MiddleCenter, TabIndex=999, Action=actHelp}
+        btnHelp: {NoLabel=true, Width=12, Height=24, ImageAlign=System.Drawing.ContentAlignment.MiddleCenter, TabIndex=999, Action=actHelp, Tooltip=Help}
             
         pnlRightButtons:
             TabIndex: 998
@@ -54,6 +54,6 @@ RootNode:
             Controls: 
                 Row0: [btnOK, btnCancel, btnApply]
             
-        btnOK: {Label=&OK, Height=24, TabIndex=0, AcceptButton=true, ActionClick=BtnOK_Click}        
+        btnOK: {Label=&OK, Height=24, TabIndex=0, AcceptButton=true, ActionClick=BtnOK_Click}
         btnApply: {Label=&Apply, Height=24, TabIndex=2, Visible=false}
         btnCancel: {Label=&Cancel, Height=24, TabIndex=1, Action=actClose}

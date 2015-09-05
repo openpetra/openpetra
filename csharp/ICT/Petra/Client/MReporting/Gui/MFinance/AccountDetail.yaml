@@ -2,8 +2,8 @@
     BaseYaml: FinanceReportingForm.yaml
     FormType: report
     FormTitle: Account Detail
-    WindowWidth: 640
-    WindowHeight: 600
+    WindowWidth: 670
+    WindowHeight: 670
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
         XMLFILES: [Finance\\\\accountdetail.xml,Finance\\\\accountdetailcommon.xml,Finance\\\\finance.xml,common.xml]

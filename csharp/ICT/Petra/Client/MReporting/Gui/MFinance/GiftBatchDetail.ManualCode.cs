@@ -81,6 +81,43 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
+            //
+            // I need to get the name of the current ledger..
+
+            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+            DataView LedgerView = new DataView(LedgerNameTable);
+
+            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
+            String LedgerName = "";
+
+            if (LedgerView.Count > 0)
+            {
+                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
+            }
+
+            if (!Int32.TryParse(txtBatchNumber.Text, out FBatchNumber))
+            {
+                MessageBox.Show(
+                    Catalog.GetString("Fault: No valid Batch number"),
+                    Catalog.GetString("Gift Batch Detail"));
+                return false;
+            }
+
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
+
+            if (ACalc.GetParameters().Exists("param_currency")
+                && (ACalc.GetParameters().Get("param_currency").ToString() == Catalog.GetString("Transaction")))
+            {
+                ACalc.RemoveParameter("param_currency_name");
+                ACalc.AddParameter("param_currency_name",
+                    TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(FLedgerNumber, FBatchNumber));
+            }
+
+            ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
+            ACalc.AddParameter("param_batch_number_i", FBatchNumber);
+
+
             ArrayList reportParam = ACalc.GetParameters().Elems;
 
             Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
@@ -108,37 +145,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "GiftBatchDetail");
 
-            //
-            // I need to get the name of the current ledger..
-
-            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
-            DataView LedgerView = new DataView(LedgerNameTable);
-            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
-            String LedgerName = "";
-
-            if (LedgerView.Count > 0)
-            {
-                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
-            }
-
-            ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
-
-            if (ACalc.GetParameters().Exists("param_currency")
-                && (ACalc.GetParameters().Get("param_currency").ToString() == Catalog.GetString("Transaction")))
-            {
-                ACalc.RemoveParameter("param_currency_name");
-                ACalc.AddParameter("param_currency_name",
-                    TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(FLedgerNumber, Convert.ToInt32(txtBatchNumber.Text)));
-            }
-
             return true;
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("param_batch_number_i", txtBatchNumber.Text);
+            ACalc.AddParameter("param_batch_number_i", FBatchNumber);
         }
 
         private void RunOnceOnActivationManual()

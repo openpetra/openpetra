@@ -245,7 +245,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                 }
 
-                MessageBox.Show("The FastReports plugin did not initialise:\r\n" +
+                MessageBox.Show("The FastReports subsystem did not initialise:\r\n" +
                     Msg +
                     "\r\n(To suppress this message, set USEXMLREPORTS in SystemDefaults.)",
                     "Reporting engine");

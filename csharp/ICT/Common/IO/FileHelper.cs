@@ -89,14 +89,14 @@ namespace Ict.Common.IO
                                 FileKnownAs = FileKnownAs.Substring(LastSlashPos + 1);
                             }
 
-                            FileStream fs = File.OpenRead(FileToBeZipped);
+                            using (FileStream fs = File.OpenRead(FileToBeZipped))
+                            {
+                                ZippedFile = new ZipEntry(FileKnownAs);
+                                ZippedFile.Size = fs.Length;
+                                ZipStream.PutNextEntry(ZippedFile);
 
-                            ZippedFile = new ZipEntry(FileKnownAs);
-                            ZippedFile.Size = fs.Length;
-                            ZipStream.PutNextEntry(ZippedFile);
-
-                            StreamUtils.Copy(fs, ZipStream, buffer);
-
+                                StreamUtils.Copy(fs, ZipStream, buffer);
+                            }
 //MessageBox.Show("1:" + ZippedStream.Length.ToString());
                         }
 

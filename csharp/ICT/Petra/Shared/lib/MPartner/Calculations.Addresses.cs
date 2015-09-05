@@ -33,6 +33,7 @@ using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Shared.MPartner
 {
@@ -385,10 +386,19 @@ namespace Ict.Petra.Shared.MPartner
         /// </summary>
         /// <param name="ALocationDR">DataRow containing the Location data.</param>
         /// <param name="APartnerLocationStringFormat">Specifies how to format the String that is returned.</param>
+        /// <param name="AaddressOrder">AddressOrder from PCountry row</param>
+        /// <param name="ACountryName">If this is blank, the PLocationRow CountryCode will be used.</param>
         /// <returns>Formatted String.</returns>
         public static String DetermineLocationString(PLocationRow ALocationDR,
-            TPartnerLocationFormatEnum APartnerLocationStringFormat = TPartnerLocationFormatEnum.plfLineBreakSeparated)
+            TPartnerLocationFormatEnum APartnerLocationStringFormat = TPartnerLocationFormatEnum.plfLineBreakSeparated,
+            Int32 AaddressOrder = 0,
+            String ACountryName = "")
         {
+            if (ACountryName == "")
+            {
+                ACountryName = ALocationDR.CountryCode;
+            }
+
             return DetermineLocationString(ALocationDR.Building1,
                 ALocationDR.Building2,
                 ALocationDR.Locality,
@@ -398,46 +408,9 @@ namespace Ict.Petra.Shared.MPartner
                 ALocationDR.City,
                 ALocationDR.County,
                 ALocationDR.PostalCode,
-                ALocationDR.CountryCode,
-                APartnerLocationStringFormat);
-        }
-
-        /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="ABuilding1"></param>
-        /// <param name="ABuilding2"></param>
-        /// <param name="ALocality"></param>
-        /// <param name="AStreetName"></param>
-        /// <param name="AAddress3"></param>
-        /// <param name="ASuburb"></param>
-        /// <param name="ACity"></param>
-        /// <param name="ACounty"></param>
-        /// <param name="APostalCode"></param>
-        /// <param name="ACountryCode"></param>
-        /// <returns></returns>
-        public static String DetermineLocationString(String ABuilding1,
-            String ABuilding2,
-            String ALocality,
-            String AStreetName,
-            String AAddress3,
-            String ASuburb,
-            String ACity,
-            String ACounty,
-            String APostalCode,
-            String ACountryCode)
-        {
-            return DetermineLocationString(ABuilding1,
-                ABuilding2,
-                ALocality,
-                AStreetName,
-                AAddress3,
-                ASuburb,
-                ACity,
-                ACounty,
-                APostalCode,
-                ACountryCode,
-                TPartnerLocationFormatEnum.plfLineBreakSeparated);
+                ACountryName,
+                APartnerLocationStringFormat,
+                AaddressOrder);
         }
 
         /// <summary>
@@ -452,8 +425,9 @@ namespace Ict.Petra.Shared.MPartner
         /// <param name="ACity">city</param>
         /// <param name="ACounty">county</param>
         /// <param name="APostalCode">postal code</param>
-        /// <param name="ACountryCode">country code</param>
+        /// <param name="ACountryName">country name</param>
         /// <param name="PartnerLocationStringFormat">requested format</param>
+        /// <param name="AaddressOrder">AddressOrder from PCountry row</param>
         /// <returns>formatted string</returns>
         public static String DetermineLocationString(String ABuilding1,
             String ABuilding2,
@@ -464,8 +438,9 @@ namespace Ict.Petra.Shared.MPartner
             String ACity,
             String ACounty,
             String APostalCode,
-            String ACountryCode,
-            TPartnerLocationFormatEnum PartnerLocationStringFormat)
+            String ACountryName,
+            TPartnerLocationFormatEnum PartnerLocationStringFormat = TPartnerLocationFormatEnum.plfLineBreakSeparated,
+            Int32 AaddressOrder = 0)
         {
             String ReturnValue;
             String Separator;
@@ -492,84 +467,99 @@ namespace Ict.Petra.Shared.MPartner
 
             SBuilder = new StringBuilder(200);
 
-            if (ABuilding1 != null)
+            if ((ABuilding1 != null) && (ABuilding1 != ""))
             {
-                if (ABuilding1 != "")
-                {
-                    SBuilder.Append(ABuilding1 + Separator);
-                }
+                SBuilder.Append(ABuilding1 + Separator);
             }
 
-            if (ABuilding2 != null)
+            if ((ABuilding2 != null) && (ABuilding2 != ""))
             {
-                if (ABuilding2 != "")
-                {
-                    SBuilder.Append(ABuilding2 + Separator);
-                }
+                SBuilder.Append(ABuilding2 + Separator);
             }
 
-            if (ALocality != null)
+            if ((ALocality != null) && (ALocality != ""))
             {
-                if (ALocality != "")
-                {
-                    SBuilder.Append(ALocality + Separator);
-                }
+                SBuilder.Append(ALocality + Separator);
             }
 
-            if (AStreetName != null)
+            if ((AStreetName != null) && (AStreetName != ""))
             {
-                if (AStreetName != "")
-                {
-                    SBuilder.Append(AStreetName + Separator);
-                }
+                SBuilder.Append(AStreetName + Separator);
             }
 
-            if (AAddress3 != null)
+            if ((AAddress3 != null) && (AAddress3 != ""))
             {
-                if (AAddress3 != "")
-                {
-                    SBuilder.Append(AAddress3 + Separator);
-                }
+                SBuilder.Append(AAddress3 + Separator);
             }
 
-            if (ASuburb != null)
+            if ((ASuburb != null) && (ASuburb != ""))
             {
-                if (ASuburb != "")
-                {
-                    SBuilder.Append(ASuburb + Separator);
-                }
+                SBuilder.Append(ASuburb + Separator);
             }
 
-            if (ACity != null)
+            switch (AaddressOrder)
             {
-                if (ACity != "")
-                {
-                    SBuilder.Append(ACity + Separator);
-                }
+                case 1: // Postcode, City, County, Country
+
+                    if ((APostalCode != null) && (APostalCode != ""))
+                    {
+                        SBuilder.Append(APostalCode + " ");
+                    }
+
+                    if ((ACity != null) && (ACity != ""))
+                    {
+                        SBuilder.Append(ACity + Separator);
+                    }
+
+                    if ((ACounty != null) && (ACounty != ""))
+                    {
+                        SBuilder.Append(ACounty + Separator);
+                    }
+
+                    break;
+
+                case 2: // City, County, Postcode, Country
+
+                    if ((ACity != null) && (ACity != ""))
+                    {
+                        SBuilder.Append(ACity + Separator);
+                    }
+
+                    if ((ACounty != null) && (ACounty != ""))
+                    {
+                        SBuilder.Append(ACounty + Separator);
+                    }
+
+                    if ((APostalCode != null) && (APostalCode != ""))
+                    {
+                        SBuilder.Append(APostalCode + Separator);
+                    }
+
+                    break;
+
+                default: // City, Postcode, County, Country
+
+                    if ((ACity != null) && (ACity != ""))
+                    {
+                        SBuilder.Append(ACity + Separator);
+                    }
+
+                    if ((APostalCode != null) && (APostalCode != ""))
+                    {
+                        SBuilder.Append(APostalCode + Separator);
+                    }
+
+                    if ((ACounty != null) && (ACounty != ""))
+                    {
+                        SBuilder.Append(ACounty + Separator);
+                    }
+
+                    break;
             }
 
-            if (ACounty != null)
+            if ((ACountryName != null) && (ACountryName != ""))
             {
-                if (ACounty != "")
-                {
-                    SBuilder.Append(ACounty + Separator);
-                }
-            }
-
-            if (APostalCode != null)
-            {
-                if (APostalCode != "")
-                {
-                    SBuilder.Append(APostalCode + Separator);
-                }
-            }
-
-            if (ACountryCode != null)
-            {
-                if (ACountryCode != "")
-                {
-                    SBuilder.Append(ACountryCode + Separator);
-                }
+                SBuilder.Append(ACountryName + Separator);
             }
 
             // Get the String that contains the concatenated subStrings

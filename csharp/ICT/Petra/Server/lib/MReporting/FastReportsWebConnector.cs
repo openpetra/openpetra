@@ -4,7 +4,7 @@
 // @Authors:
 //       Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -158,6 +158,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     break;
             }
 
+            FDbAdapter.CloseConnection();
             return (FDbAdapter.IsCancelled) ? null : ResultTbl;
         }
 
