@@ -472,17 +472,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            TFrmRecurringGLBatchSubmit submitForm = new TFrmRecurringGLBatchSubmit(FPetraUtilsObject.GetForm());
+            TFrmRecurringGLBatchSubmit SubmitForm = new TFrmRecurringGLBatchSubmit(FPetraUtilsObject.GetForm());
             try
             {
                 ParentForm.ShowInTaskbar = false;
-                submitForm.MainDS = FMainDS;
-                submitForm.BatchRow = FPreviouslySelectedDetailRow;
-                submitForm.ShowDialog();
+
+                GLBatchTDS submitRecurringDS = (GLBatchTDS)FMainDS.Clone();
+                int currentBatch = FPreviouslySelectedDetailRow.BatchNumber;
+
+                submitRecurringDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadALedgerTable(FLedgerNumber));
+                submitRecurringDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatchAndContent(FLedgerNumber, currentBatch));
+
+                SubmitForm.SubmitMainDS = submitRecurringDS;
+                SubmitForm.ShowDialog();
             }
             finally
             {
-                submitForm.Dispose();
+                SubmitForm.Dispose();
                 ParentForm.ShowInTaskbar = true;
             }
         }
@@ -512,6 +518,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 JournalDV.RowFilter = String.Format("{0}={1}",
                     ARecurringJournalTable.GetBatchNumberDBName(),
                     FSelectedBatchNumber);
+
                 TransDV.RowFilter = String.Format("{0}={1}",
                     ARecurringTransactionTable.GetBatchNumberDBName(),
                     FSelectedBatchNumber);

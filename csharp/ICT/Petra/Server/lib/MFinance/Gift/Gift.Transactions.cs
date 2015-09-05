@@ -3376,7 +3376,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         giftDetail.RecipientField = GetRecipientFundNumberInner(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered);
 
                         // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
-                        if (!giftDetail.FixedGiftDestination && giftDetail.RecipientLedgerNumber != giftDetail.RecipientField)
+                        if (!giftDetail.FixedGiftDestination && (giftDetail.RecipientLedgerNumber != giftDetail.RecipientField))
                         {
                             giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
                             AChangesToCommit = true;

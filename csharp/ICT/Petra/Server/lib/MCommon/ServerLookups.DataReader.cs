@@ -311,6 +311,12 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                                 // The method is not required for changes made to the journal screens, which use a TDS
                                 AJournalAccess.SubmitChanges((AJournalTable)SubmitTable, SubmitChangesTransaction);
                             }
+                            else if (ATablename == ARecurringJournalTable.GetTableDBName())
+                            {
+                                // This method is called from Submit Recurring GL Batch form - please do not remove
+                                // The method is not required for changes made to the journal screens, which use a TDS
+                                ARecurringJournalAccess.SubmitChanges((ARecurringJournalTable)SubmitTable, SubmitChangesTransaction);
+                            }
                             else if (ATablename == ALedgerTable.GetTableDBName())
                             {
                                 // This method is called from ADailyExchangeRate Testing - please do not remove

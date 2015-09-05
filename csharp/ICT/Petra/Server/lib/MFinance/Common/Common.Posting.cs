@@ -635,6 +635,14 @@ namespace Ict.Petra.Server.MFinance.Common
                 return false;
             }
 
+            //Check the validity of the Journal and transaction numbering
+            // This will also correct invalid LastJournal and LastTransaction numbers
+            if (!ValidateGLBatchJournalNumbering(ref AGLBatchDS, ref ABatchToPost, ref AVerifications)
+                || !ValidateGLJournalTransactionNumbering(ref AGLBatchDS, ref ABatchToPost, ref AVerifications))
+            {
+                return false;
+            }
+
             // Calculate the base currency amounts for each transaction, using the exchange rate from the journals.
             // erm - this is done already? I don't want to do it here, since my journal may contain forex-reval elements.
 
@@ -826,6 +834,405 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             return TVerificationHelper.IsNullOrOnlyNonCritical(AVerifications);
+        }
+
+        private static bool ValidateGLBatchJournalNumbering(ref GLBatchTDS AGLBatch,
+            ref ABatchRow ABatchToPost,
+            ref TVerificationResultCollection AVerifications)
+        {
+            #region Validate Arguments
+
+            if ((AGLBatch.ABatch == null) || (AGLBatch.ABatch.Count == 0) || (ABatchToPost == null))
+            {
+                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                            "Function:{0} - No GL Batch data is present!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            //Default to most likely outcome
+            bool NumberingIsValid = true;
+
+            string SQLStatement = string.Empty;
+            string TempTableName = "TempCheckForConsecutiveJournals";
+
+            //Parameters for SQL as strings
+            string prmLedgerNumber = ABatchToPost.LedgerNumber.ToString();
+            string prmBatchNumber = ABatchToPost.BatchNumber.ToString();
+
+            //Tables with alias
+            string BatchTableAlias = "b";
+            string bBatchTable = ABatchTable.GetTableDBName() + " " + BatchTableAlias;
+            string JournalTableAlias = "j";
+            string jJournalTable = AJournalTable.GetTableDBName() + " " + JournalTableAlias;
+
+            //Table: ABudgetTable and fields
+            string bLedgerNumber = BatchTableAlias + "." + ABatchTable.GetLedgerNumberDBName();
+            string bBatchNumber = BatchTableAlias + "." + ABatchTable.GetBatchNumberDBName();
+            string bBatchNumberAlias = "BatchNumber";
+            string bBatchLastJournal = BatchTableAlias + "." + ABatchTable.GetLastJournalDBName();
+            string bBatchLastJournalAlias = "BatchLastJournal";
+            string bBatchStatus = BatchTableAlias + "." + ABatchTable.GetBatchStatusDBName();
+            string jLedgerNumber = JournalTableAlias + "." + AJournalTable.GetLedgerNumberDBName();
+            string jBatchNumber = JournalTableAlias + "." + AJournalTable.GetBatchNumberDBName();
+            string jJournalNumber = JournalTableAlias + "." + AJournalTable.GetJournalNumberDBName();
+            string jFirstJournalAlias = "FirstJournal";
+            string jLastJournalAlias = "LastJournal";
+            string jCountJournalAlias = "CountJournal";
+
+            try
+            {
+                DataTable tempTable = AGLBatch.Tables.Add(TempTableName);
+                tempTable.Columns.Add(bBatchNumberAlias, typeof(Int32));
+                tempTable.Columns.Add(bBatchLastJournalAlias, typeof(Int32));
+                tempTable.Columns.Add(jFirstJournalAlias, typeof(Int32));
+                tempTable.Columns.Add(jLastJournalAlias, typeof(Int32));
+                tempTable.Columns.Add(jCountJournalAlias, typeof(Int32));
+
+                SQLStatement = "SELECT " + bBatchNumber + " " + bBatchNumberAlias + "," +
+                               "      MIN(" + bBatchLastJournal + ") " + bBatchLastJournalAlias + "," +
+                               "      COALESCE(MIN(" + jJournalNumber + "), 0) " + jFirstJournalAlias + "," +
+                               "      COALESCE(MAX(" + jJournalNumber + "), 0) " + jLastJournalAlias + "," +
+                               "      Count(" + jJournalNumber + ") " + jCountJournalAlias +
+                               " FROM " + bBatchTable + " LEFT OUTER JOIN " + jJournalTable +
+                               "        ON " + bLedgerNumber + " = " + jLedgerNumber +
+                               "         AND " + bBatchNumber + " = " + jBatchNumber +
+                               " WHERE " + bLedgerNumber + " = " + prmLedgerNumber +
+                               "   AND " + bBatchNumber + " = " + prmBatchNumber +
+                               " GROUP BY " + bBatchNumber + ";";
+
+                //TODO: remove
+                TLogging.Log(SQLStatement);
+
+                //Create temp table to check veracity of Journal numbering
+                GLBatchTDS gLBatch = AGLBatch;
+                TDBTransaction transaction = null;
+
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref transaction,
+                    delegate
+                    {
+                        DBAccess.GDBAccessObj.Select(gLBatch, SQLStatement, TempTableName, transaction);
+                    });
+
+                //As long as Batches exist, rows will be returned
+                int numTempRows = AGLBatch.Tables[TempTableName].Rows.Count;
+
+                DataView tempDV = new DataView(AGLBatch.Tables[TempTableName]);
+
+                //Confirm are all equal and correct - the most common
+                tempDV.RowFilter = string.Format("{0}={1} And {1}={2} And {0}={2} And (({2}>0 And {3}=1) Or ({2}=0 And {3}=0))",
+                    bBatchLastJournalAlias,
+                    jLastJournalAlias,
+                    jCountJournalAlias,
+                    jFirstJournalAlias);
+
+                //If all records are correct, nothing to do
+                if (tempDV.Count == numTempRows)
+                {
+                    return NumberingIsValid;
+                }
+
+                //!!Reaching this point means there are issues that need addressing.
+
+                //Confirm that no negative numbers exist
+                tempDV.RowFilter = string.Format("{0} < 0 Or {1} < 0",
+                    bBatchLastJournalAlias,
+                    jFirstJournalAlias);
+
+                if (tempDV.Count > 0)
+                {
+                    string errMessage =
+                        "The following Batches have a negative LastJournalNumber or have Journals with a negative JournalNumber!";
+
+                    foreach (DataRowView drv in tempDV)
+                    {
+                        errMessage += string.Format("{0}Batch:{1}",
+                            Environment.NewLine,
+                            drv[bBatchNumberAlias]);
+                    }
+
+                    AVerifications.Add(new TVerificationResult(
+                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber,
+                                ABatchToPost.LedgerNumber),
+                            errMessage,
+                            TResultSeverity.Resv_Critical));
+
+                    return false;
+                }
+
+                //Display non-sequential journals
+                tempDV.RowFilter = string.Format("{2}>0 And ({3}<>1 Or {1}<>{2})",
+                    bBatchLastJournalAlias,
+                    jLastJournalAlias,
+                    jCountJournalAlias,
+                    jFirstJournalAlias);
+
+                if (tempDV.Count > 0)
+                {
+                    string errMessage =
+                        "The following Batches have gaps in their Journal numbering! You will need to cancel the Batch(es) and recreate:";
+
+                    foreach (DataRowView drv in tempDV)
+                    {
+                        errMessage += string.Format("{0}Batch:{1}",
+                            Environment.NewLine,
+                            drv[bBatchNumberAlias]);
+                    }
+
+                    AVerifications.Add(new TVerificationResult(
+                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber,
+                                ABatchToPost.LedgerNumber),
+                            errMessage,
+                            TResultSeverity.Resv_Critical));
+
+                    return false;
+                }
+
+                //The next most likely, is where the BatchLastJournal needs updating
+                //Display mismatched journal last number
+                tempDV.RowFilter = string.Format("{0}<>{1} And {1}={2} And (({2}>0 And {3}=1) Or ({2}=0 And {3}=0))",
+                    bBatchLastJournalAlias,
+                    jLastJournalAlias,
+                    jCountJournalAlias,
+                    jFirstJournalAlias);
+
+                if (tempDV.Count > 0)
+                {
+                    ABatchToPost.LastJournal = Convert.ToInt32(tempDV[0][jLastJournalAlias]);
+                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+            finally
+            {
+                if (AGLBatch.Tables.Contains(TempTableName))
+                {
+                    AGLBatch.Tables.Remove(TempTableName);
+                }
+            }
+
+            return NumberingIsValid;
+        }
+
+        private static bool ValidateGLJournalTransactionNumbering(ref GLBatchTDS AGLBatch,
+            ref ABatchRow ABatchToPost,
+            ref TVerificationResultCollection AVerifications)
+        {
+            #region Validate Arguments
+
+            if (AGLBatch.AJournal == null)
+            {
+                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                            "Function:{0} - No GL Journal data is present!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            //Default to most likely outcome
+            bool NumberingIsValid = true;
+
+            string SQLStatement = string.Empty;
+            string TempTableName = "TempCheckForConsecutiveTransactions";
+
+            //Parameters for SQL as strings
+            string prmLedgerNumber = ABatchToPost.LedgerNumber.ToString();
+            string prmBatchNumber = ABatchToPost.BatchNumber.ToString();
+
+            //Tables with alias
+            string JournalTableAlias = "j";
+            string jJournalTable = AJournalTable.GetTableDBName() + " " + JournalTableAlias;
+
+            string TransactionTableAlias = "t";
+            string tTransactionTable = ATransactionTable.GetTableDBName() + " " + TransactionTableAlias;
+
+            //Fields and Aliases
+            string jLedgerNumber = JournalTableAlias + "." + AJournalTable.GetLedgerNumberDBName();
+            string jBatchNumber = JournalTableAlias + "." + AJournalTable.GetBatchNumberDBName();
+            string jBatchNumberAlias = "BatchNumber";
+            string jJournalNumber = JournalTableAlias + "." + AJournalTable.GetJournalNumberDBName();
+            string jJournalNumberAlias = "JournalNumber";
+            string jJournalLastTransaction = JournalTableAlias + "." + AJournalTable.GetLastTransactionNumberDBName();
+            string jJournalLastTransactionAlias = "JournalLastTransaction";
+            string jJournalStatus = JournalTableAlias + "." + AJournalTable.GetJournalStatusDBName();
+
+            string tLedgerNumber = TransactionTableAlias + "." + ATransactionTable.GetLedgerNumberDBName();
+            string tBatchNumber = TransactionTableAlias + "." + ATransactionTable.GetBatchNumberDBName();
+            string tJournalNumber = TransactionTableAlias + "." + ATransactionTable.GetJournalNumberDBName();
+            string tTransactionNumber = TransactionTableAlias + "." + ATransactionTable.GetTransactionNumberDBName();
+            string tFirstTransactionAlias = "FirstTransaction";
+            string tLastTransactionAlias = "LastTransaction";
+            string tCountTransactionAlias = "CountTransaction";
+
+            try
+            {
+                DataTable tempTable = AGLBatch.Tables.Add(TempTableName);
+                tempTable.Columns.Add(jBatchNumberAlias, typeof(Int32));
+                tempTable.Columns.Add(jJournalNumberAlias, typeof(Int32));
+                tempTable.Columns.Add(jJournalLastTransactionAlias, typeof(Int32));
+                tempTable.Columns.Add(tFirstTransactionAlias, typeof(Int32));
+                tempTable.Columns.Add(tLastTransactionAlias, typeof(Int32));
+                tempTable.Columns.Add(tCountTransactionAlias, typeof(Int32));
+
+                SQLStatement = "SELECT " + jBatchNumber + " " + jBatchNumberAlias + ", " + jJournalNumber + " " + jJournalNumberAlias + "," +
+                               "      MIN(" + jJournalLastTransaction + ") " + jJournalLastTransactionAlias + "," +
+                               "      COALESCE(MIN(" + tTransactionNumber + "), 0) " + tFirstTransactionAlias + "," +
+                               "      COALESCE(MAX(" + tTransactionNumber + "), 0) " + tLastTransactionAlias + "," +
+                               "      Count(" + tTransactionNumber + ") " + tCountTransactionAlias +
+                               " FROM " + jJournalTable + " LEFT OUTER JOIN " + tTransactionTable +
+                               "        ON " + jLedgerNumber + " = " + tLedgerNumber +
+                               "         AND " + jBatchNumber + " = " + tBatchNumber +
+                               "         AND " + jJournalNumber + " = " + tJournalNumber +
+                               " WHERE " + jLedgerNumber + " = " + prmLedgerNumber +
+                               "   AND " + jBatchNumber + " = " + prmBatchNumber +
+                               " GROUP BY " + jBatchNumber + ", " + jJournalNumber + ";";
+
+                //TODO: remove
+                TLogging.Log(SQLStatement);
+
+                //Create temp table to check veracity of Transaction numbering
+                GLBatchTDS gLBatch = AGLBatch;
+                TDBTransaction transaction = null;
+
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref transaction,
+                    delegate
+                    {
+                        DBAccess.GDBAccessObj.Select(gLBatch, SQLStatement, TempTableName, transaction);
+                    });
+
+                //As long as Batches exist, rows will be returned
+                int numTempRows = AGLBatch.Tables[TempTableName].Rows.Count;
+
+                DataView tempDV = new DataView(AGLBatch.Tables[TempTableName]);
+
+                //Confirm are all equal and correct - the most common
+                tempDV.RowFilter = string.Format("{0}={1} And {1}={2} And {0}={2} And (({2}>0 And {3}=1) Or ({2}=0 And {3}=0))",
+                    jJournalLastTransactionAlias,
+                    tLastTransactionAlias,
+                    tCountTransactionAlias,
+                    tFirstTransactionAlias);
+
+                //If all records are correct, nothing to do
+                if (tempDV.Count == numTempRows)
+                {
+                    return NumberingIsValid;
+                }
+
+                //!!Reaching this point means there are issues that need addressing.
+
+                //Confirm that no negative numbers exist
+                tempDV.RowFilter = string.Format("{0} < 0 Or {1} < 0",
+                    jJournalLastTransactionAlias,
+                    tFirstTransactionAlias);
+
+                if (tempDV.Count > 0)
+                {
+                    string errMessage =
+                        "The following Journals have a negative LastTransactionNumber or have Transactions with a negative TransactionNumber!";
+
+                    foreach (DataRowView drv in tempDV)
+                    {
+                        errMessage += string.Format("{0}Batch:{1} Journal:{2}",
+                            Environment.NewLine,
+                            drv[jBatchNumberAlias],
+                            drv[jJournalNumberAlias]);
+                    }
+
+                    AVerifications.Add(new TVerificationResult(
+                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber,
+                                ABatchToPost.LedgerNumber),
+                            errMessage,
+                            TResultSeverity.Resv_Critical));
+
+                    return false;
+                }
+
+                //Display non-sequential transactions
+                tempDV.RowFilter = string.Format("{2}>0 And ({3}<>1 Or {1}<>{2})",
+                    jJournalLastTransactionAlias,
+                    tLastTransactionAlias,
+                    tCountTransactionAlias,
+                    tFirstTransactionAlias);
+
+                if (tempDV.Count > 0)
+                {
+                    string errMessage =
+                        "The following Journals have gaps in their Transaction numbering! You will need to cancel the Journal(s) and recreate:";
+
+                    foreach (DataRowView drv in tempDV)
+                    {
+                        errMessage += string.Format("{0}Batch:{1} Journal:{2}",
+                            Environment.NewLine,
+                            drv[jBatchNumberAlias],
+                            drv[jJournalNumberAlias]);
+                    }
+
+                    AVerifications.Add(new TVerificationResult(
+                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber,
+                                ABatchToPost.LedgerNumber),
+                            errMessage,
+                            TResultSeverity.Resv_Critical));
+
+                    return false;
+                }
+
+                //The next most likely, is where the JournalLastTransaction needs updating
+                //Display mismatched journal last number
+                tempDV.RowFilter = string.Format("{0}<>{1} And {1}={2} And (({2}>0 And {3}=1) Or ({2}=0 And {3}=0))",
+                    jJournalLastTransactionAlias,
+                    tLastTransactionAlias,
+                    tCountTransactionAlias,
+                    tFirstTransactionAlias);
+
+                DataView journalsDV = new DataView(AGLBatch.AJournal);
+
+                if (tempDV.Count > 0)
+                {
+                    //This means the LastTransactionNumber field needs to be updated and is incorrect
+                    foreach (DataRowView drv in tempDV)
+                    {
+                        journalsDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                            AJournalTable.GetBatchNumberDBName(),
+                            drv[jBatchNumberAlias],
+                            AJournalTable.GetJournalNumberDBName(),
+                            drv[jJournalNumberAlias]);
+
+                        foreach (DataRowView journals in journalsDV)
+                        {
+                            AJournalRow journalRow = (AJournalRow)journals.Row;
+                            journalRow.LastTransactionNumber = Convert.ToInt32(drv[tLastTransactionAlias]);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+            finally
+            {
+                if (AGLBatch.Tables.Contains(TempTableName))
+                {
+                    AGLBatch.Tables.Remove(TempTableName);
+                }
+            }
+
+            return NumberingIsValid;
         }
 
         /// <summary>

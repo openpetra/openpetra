@@ -572,10 +572,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if (TaxDeductiblePercentageEnabled)
             {
                 // true if a new percentage is available and the user wants to use it
-                bool? UpdateTaxDeductiblePct = (bool?) ARequestParams["UpdateTaxDeductiblePct"];
+                bool? UpdateTaxDeductiblePct = (bool?)ARequestParams["UpdateTaxDeductiblePct"];
 
-                if (!AReversal && 
-                    (Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust) || UpdateTaxDeductiblePct == true))
+                if (!AReversal
+                    && (Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust) || (UpdateTaxDeductiblePct == true)))
                 {
                     giftDetail.TaxDeductiblePct = Convert.ToDecimal(ARequestParams["NewPct"]);
                     TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetail);
@@ -595,7 +595,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 if ((bool)ARequestParams["AutoCompleteComments"]) // only used for tax deductible pct gift adjustments
                 {
-                    AGiftRow OldGiftRow = (AGiftRow) AMainDS.AGift.Rows.Find(
+                    AGiftRow OldGiftRow = (AGiftRow)AMainDS.AGift.Rows.Find(
                         new object[] { AOldGiftDetail.LedgerNumber, AOldGiftDetail.BatchNumber, AOldGiftDetail.GiftTransactionNumber });
 
                     giftDetail.GiftCommentThree = Catalog.GetString("Original gift date: " + OldGiftRow.DateEntered.ToString("dd-MMM-yyyy"));

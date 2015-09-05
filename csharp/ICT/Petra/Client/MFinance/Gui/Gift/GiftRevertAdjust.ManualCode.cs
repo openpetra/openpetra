@@ -274,10 +274,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string ABankAccountCode, string AGiftType)
         {
             lblBatchDetailsLabel.Text = Catalog.GetString("Ledger") + ": " + ALedgerNumber + ",  " +
-                Catalog.GetString("Currency") + ": " + ACurrencyCode + ",  " +
-                Catalog.GetString("Bank Cost Centre") + ": " + ABankCostCentre + ",  " +
-                Catalog.GetString("Bank Account") + ": " + ABankAccountCode + ",  " +
-                Catalog.GetString("Gift Type") + ": " + AGiftType;
+                                        Catalog.GetString("Currency") + ": " + ACurrencyCode + ",  " +
+                                        Catalog.GetString("Bank Cost Centre") + ": " + ABankCostCentre + ",  " +
+                                        Catalog.GetString("Bank Account") + ": " + ABankAccountCode + ",  " +
+                                        Catalog.GetString("Gift Type") + ": " + AGiftType;
 
             grpBatchDetails.Visible = true;
             lblBatchDetailsLabel.Visible = true;

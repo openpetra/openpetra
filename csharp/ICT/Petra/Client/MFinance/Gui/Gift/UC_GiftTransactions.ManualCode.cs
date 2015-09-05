@@ -2042,7 +2042,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int workingDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
 
             AGiftDetailRow GiftDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
-                    new object[] { workingLedgerNumber, workingBatchNumber, workingTransactionNumber, workingDetailNumber });
+                new object[] { workingLedgerNumber, workingBatchNumber, workingTransactionNumber, workingDetailNumber });
 
             if (FTaxDeductiblePercentageEnabled && GiftDetailRow.TaxDeductible)
             {
@@ -2050,10 +2050,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 decimal DefaultTaxDeductiblePct = 100;
 
                 // get the default tax deductible percentage for a new gift made today to the same recipient
-                PPartnerTaxDeductiblePctTable PartnerTaxDeductiblePctTable = 
+                PPartnerTaxDeductiblePctTable PartnerTaxDeductiblePctTable =
                     TRemote.MFinance.Gift.WebConnectors.LoadPartnerTaxDeductiblePct(GiftDetailRow.RecipientKey);
 
-                if (PartnerTaxDeductiblePctTable != null && PartnerTaxDeductiblePctTable.Rows.Count > 0)
+                if ((PartnerTaxDeductiblePctTable != null) && (PartnerTaxDeductiblePctTable.Rows.Count > 0))
                 {
                     foreach (PPartnerTaxDeductiblePctRow Row in PartnerTaxDeductiblePctTable.Rows)
                     {
@@ -2066,14 +2066,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 // if different from current paercentage ask the user which one they want to use
-                if (GiftDetailRow.TaxDeductiblePct != DefaultTaxDeductiblePct
-                    && MessageBox.Show(string.Format(Catalog.GetString(
-                        "The default tax deductible percentage for this recipient for today's date ({0}%) is different from the tax deductible " +
-                        "percentage recorded for the gift detail to be adjusted ({1}%).{2}Do you want to continue to use the original percentage " +
-                        "of {1}% for the adjusted gift?"),
-                        DefaultTaxDeductiblePct, GiftDetailRow.TaxDeductiblePct, "\r\n\r\n"),
-                        Catalog.GetString("Adjust Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)
-                        == DialogResult.No)
+                if ((GiftDetailRow.TaxDeductiblePct != DefaultTaxDeductiblePct)
+                    && (MessageBox.Show(string.Format(Catalog.GetString(
+                                    "The default tax deductible percentage for this recipient for today's date ({0}%) is different from the tax deductible "
+                                    +
+                                    "percentage recorded for the gift detail to be adjusted ({1}%).{2}Do you want to continue to use the original percentage "
+                                    +
+                                    "of {1}% for the adjusted gift?"),
+                                DefaultTaxDeductiblePct, GiftDetailRow.TaxDeductiblePct, "\r\n\r\n"),
+                            Catalog.GetString("Adjust Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)
+                        == DialogResult.No))
                 {
                     revertForm.AddParam("UpdateTaxDeductiblePct", true);
                     revertForm.AddParam("NewPct", DefaultTaxDeductiblePct);
@@ -2095,8 +2097,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 // if recipient ledger number belongs to a different ledger then check that it is set up for inter-ledger transfers
                 if ((RecipientLedgerNumber != 0) && (((int)RecipientLedgerNumber / 1000000 == GiftDetailRow.LedgerNumber)
-                    || TRemote.MFinance.Gift.WebConnectors.IsRecipientLedgerNumberSetupForILT(
-                        GiftDetailRow.LedgerNumber, GiftDetailRow.RecipientKey, RecipientLedgerNumber, out VerificationResults)))
+                                                     || TRemote.MFinance.Gift.WebConnectors.IsRecipientLedgerNumberSetupForILT(
+                                                         GiftDetailRow.LedgerNumber, GiftDetailRow.RecipientKey, RecipientLedgerNumber,
+                                                         out VerificationResults)))
                 {
                     if (RecipientLedgerNumber != GiftDetailRow.RecipientLedgerNumber)
                     {
@@ -2106,12 +2109,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             RecipientLedgerNumber, out FieldShortName, out PartnerClass);
 
                         if (MessageBox.Show(string.Format(Catalog.GetString(
-                            "The default gift destination for this recipient for today's date ({0} ({1})) is different from the gift destination " +
-                            "recorded for the gift detail to be adjusted ({2} ({3})).{4}Do you want to continue to use the original " +
-                            "gift destination of {2} ({3}) for the adjusted gift?"),
-                            FieldShortName, RecipientLedgerNumber,
-                            txtDetailRecipientLedgerNumber.LabelText, GiftDetailRow.RecipientLedgerNumber, "\r\n\r\n"),
-                            Catalog.GetString("Adjust Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)
+                                        "The default gift destination for this recipient for today's date ({0} ({1})) is different from the gift destination "
+                                        +
+                                        "recorded for the gift detail to be adjusted ({2} ({3})).{4}Do you want to continue to use the original " +
+                                        "gift destination of {2} ({3}) for the adjusted gift?"),
+                                    FieldShortName, RecipientLedgerNumber,
+                                    txtDetailRecipientLedgerNumber.LabelText, GiftDetailRow.RecipientLedgerNumber, "\r\n\r\n"),
+                                Catalog.GetString("Adjust Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)
                             == DialogResult.Yes)
                         {
                             // the gift destination for this gift detail will not be changeable

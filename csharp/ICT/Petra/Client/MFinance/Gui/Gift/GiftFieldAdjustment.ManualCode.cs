@@ -149,7 +149,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AGiftBatchDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetLedgerNumberDBName() + " ASC, " +
                                                        AGiftBatchTable.GetCurrencyCodeDBName() + " ASC, " +
                                                        AGiftBatchTable.GetBankCostCentreDBName() + " ASC, " +
-                                                       AGiftBatchTable.GetBankAccountCodeDBName() + " ASC, " + 
+                                                       AGiftBatchTable.GetBankAccountCodeDBName() + " ASC, " +
                                                        AGiftBatchTable.GetGiftTypeDBName() + " ASC";
 
             GiftBatchTDS NewGiftDS = new GiftBatchTDS();

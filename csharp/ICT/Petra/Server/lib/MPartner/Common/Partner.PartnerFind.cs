@@ -809,7 +809,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
         private static void AddRestrictedClassesToCriteria(DataRow ACriteriaRow, ref ArrayList AInternalParameters, ref string ACustomWhereCriteria)
         {
-            if (ACriteriaRow["RestrictedParterClasses"] != null && ACriteriaRow["RestrictedParterClasses"].ToString().Length > 0)
+            if ((ACriteriaRow["RestrictedParterClasses"] != null) && (ACriteriaRow["RestrictedParterClasses"].ToString().Length > 0))
             {
                 // Split String into String Array is Restricted Partner Classes are being used
                 string[] Classes = ACriteriaRow["RestrictedParterClasses"].ToString().Split(new Char[] { (',') });
