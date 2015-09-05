@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.LoadDefaultSettings();
 
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                FPetraUtilsObject.FFastReportsPlugin.AllowExtractGeneration(true, "donorkey");
             }
         }
 

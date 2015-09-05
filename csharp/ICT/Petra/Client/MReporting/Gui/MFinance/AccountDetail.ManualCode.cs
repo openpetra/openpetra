@@ -210,6 +210,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String CurrencySelected = parameters.Get("param_currency").ToString();
 
+            //
+            // FX Reval transactions should not be shown if "Transaction" currency was selected,
+            // since these transactions only take place in Base currency; they're 0 in the account currency.
+            String RevalFilter = "";
+
+            if (CurrencySelected == "Transaction")
+            {
+                RevalFilter =
+                    " AND ((a_account.a_foreign_currency_flag_l=FALSE) OR (a_account.a_foreign_currency_code_c = a_journal.a_transaction_currency_c))";
+            }
+
             String AmountField = CurrencySelected.StartsWith("Int") ? "a_amount_in_intl_currency_n" :
                                  CurrencySelected.StartsWith("Trans") ? "a_transaction_amount_n" : "a_amount_in_base_currency_n";
 
@@ -240,8 +251,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     " AND a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i " +
                     " AND a_transaction.a_batch_number_i = a_journal.a_batch_number_i " +
                     " AND a_transaction.a_journal_number_i = a_journal.a_journal_number_i " +
-                    " AND ((a_account.a_foreign_currency_flag_l=FALSE) OR (a_account.a_foreign_currency_code_c = a_journal.a_transaction_currency_c))"
-                    +
+                    RevalFilter +
                     " AND a_trans_anal_attrib.a_ledger_number_i = a_transaction.a_ledger_number_i " +
                     " AND a_trans_anal_attrib.a_batch_number_i = a_transaction.a_batch_number_i" +
                     " AND a_trans_anal_attrib.a_journal_number_i = a_transaction.a_journal_number_i" +
@@ -276,8 +286,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     " AND a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i " +
                     " AND a_transaction.a_batch_number_i = a_journal.a_batch_number_i " +
                     " AND a_transaction.a_journal_number_i = a_journal.a_journal_number_i " +
-                    " AND ((a_account.a_foreign_currency_flag_l=FALSE) OR (a_account.a_foreign_currency_code_c = a_journal.a_transaction_currency_c))"
-                    +
+                    RevalFilter +
                     TransAccountCodeFilter +
                     TransCostCentreFilter + " AND " +
                     TranctDateFilter + ReferenceFilter +

@@ -278,6 +278,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbtExportText = new System.Windows.Forms.ToolStripButton();
             this.tbtGenerateChart = new System.Windows.Forms.ToolStripButton();
             this.tbtSendEmail = new System.Windows.Forms.ToolStripButton();
+            this.tbtCreateExtract = new System.Windows.Forms.ToolStripButton();
             this.tabPreview.SuspendLayout();
             this.tbpText.SuspendLayout();
             this.tbpPreview.SuspendLayout();
@@ -295,6 +296,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     this.tbtExportExcelFile,
                     this.tbtExportText,
                     this.tbtSendEmail,
+                    this.tbtCreateExtract,
                     this.tbtGenerateChart
                 });
             this.tbrMain.Name = "tbrMain";
@@ -402,7 +404,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.lblNoPrinter.Name = "lblNoPrinter";
             this.lblNoPrinter.Size = new System.Drawing.Size(336, 48);
             this.lblNoPrinter.TabIndex = 16;
-            this.lblNoPrinter.Text = "Unfortunately this function is disabled. Please" + " install a printer to use this page.";
+            this.lblNoPrinter.Text = "Unfortunately this function is disabled. Please install a printer to use this page.";
 
             //
             // PrintPreviewControl
@@ -479,7 +481,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.sgGridView.BackColor = System.Drawing.SystemColors.ControlDark;
             this.sgGridView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.sgGridView.ContextMenu = this.ContextMenu1;
-            this.sgGridView.DeleteQuestionMessage = "You have chosen to delete this r" + "ecord.'#13#10#13#10'Do you really want to delete it?";
+            this.sgGridView.DeleteQuestionMessage = "You have chosen to delete this record.\r\n\r\nDo you really want to delete it?";
             this.sgGridView.FixedRows = 1;
             this.sgGridView.Location = new System.Drawing.Point(0, 0);
             this.sgGridView.MinimumHeight = 19;
@@ -513,7 +515,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             // tbtExportExcelFile
             //
             this.tbtExportExcelFile.Text = "Export to Excel";
-            this.tbtExportExcelFile.ToolTipText = "Export to Excel xlsx file or directly into Excel, if" + " it is available";
+            this.tbtExportExcelFile.ToolTipText = "Export to Excel xlsx file or directly into Excel, if it is available";
             this.tbtExportExcelFile.Click += new System.EventHandler(this.tbtExportExcelFileClick);
             this.tbtExportExcelFile.Width = 60;
 
@@ -534,10 +536,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbtSendEmail.Width = 70;
 
             //
+            // tbtCreateExtract
+            //
+            this.tbtCreateExtract.Text = "Create Extract";
+            this.tbtCreateExtract.ToolTipText = "Create an Extract from this result set";
+            this.tbtCreateExtract.Click += new System.EventHandler(this.tbtCreateExtractClick);
+            this.tbtCreateExtract.Width = 70;
+
+            //
             // tbtGenerateChart
             //
             this.tbtGenerateChart.Text = "Generate Chart";
-            this.tbtGenerateChart.ToolTipText = "Generates a chart in Excel (only ava" + "ilable yet for few reports at the moment)";
+            this.tbtGenerateChart.ToolTipText = "Generates a chart in Excel (not available for all reports)";
             this.tbtGenerateChart.Click += new System.EventHandler(this.tbtGenerateChartClick);
             this.tbtGenerateChart.Width = 60;
 
@@ -584,6 +594,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private System.Windows.Forms.ToolStripButton tbtExportText;
         private System.Windows.Forms.ToolStripButton tbtGenerateChart;
         private System.Windows.Forms.ToolStripButton tbtSendEmail;
+        private System.Windows.Forms.ToolStripButton tbtCreateExtract;
         private System.Windows.Forms.TabPage tbpGridView;
         private TSgrdDataGrid sgGridView;
         private System.Windows.Forms.ContextMenu ContextMenu1;

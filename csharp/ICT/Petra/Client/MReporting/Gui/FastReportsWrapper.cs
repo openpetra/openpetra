@@ -40,6 +40,7 @@ using Ict.Common.IO;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using System.Collections.Generic;
 using System.Threading;
+using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -57,9 +58,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>true if the data is OK. (If it's not OK, the method should have told the user why not!)</returns>
         public delegate bool TDataGetter (TRptCalculator ACalc);
         private TDataGetter FDataGetter;
+        String FExtractPartnerKeyName = "";
+        private DataTable FClientDataTable = null;
         private Assembly FastReportsDll;
         private object FfastReportInstance;
-        /// <summary>Given with constructor, this can be accessed afterwards.</summary>
+        /// <summary>Specified with constructor, this can be accessed afterwards.</summary>
         public String FReportName;
 
         Type FFastReportType;
@@ -72,7 +75,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private enum TInitState
         {
-            Unknown, LoadDll, LoadTemplate, InitSystem, LoadedOK
+            Unknown, LoadTemplate, InitSystem, LoadedOK
         };
         private TInitState FInitState;
 
@@ -209,6 +212,16 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        /// <summary>Call with true to include the facility to generate an extract</summary>
+        /// <param name="ACanDoExtract"></param>
+        /// <param name="APartnerKeyName"></param>
+        public void AllowExtractGeneration(Boolean ACanDoExtract, String APartnerKeyName = "")
+        {
+            FPetraUtilsObject.DelegateGenerateExtract = ACanDoExtract ? GenerateExtract
+                                                        : (TFrmPetraReportingUtils.TDelegateGenerateReportOverride) null;
+            FExtractPartnerKeyName = APartnerKeyName;
+        }
+
         /// <summary>
         /// Constructor used when there's no Reporting UI
         /// </summary>
@@ -273,12 +286,6 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 switch (FInitState)
                 {
-                    case TInitState.LoadDll:
-                    {
-                        Msg = "failed to load FastReport Dll.";
-                        break;
-                    }
-
                     case TInitState.LoadTemplate:
                     {
                         Msg = String.Format("no reporting template found for {0}.", FReportName);
@@ -321,6 +328,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             FFastReportType.GetMethod("RegisterData", new Type[] { data.GetType(), name.GetType() }).Invoke(FfastReportInstance,
                 new object[] { data, name });
+            FClientDataTable = data;
         }
 
         private void LoadReportParams(TRptCalculator ACalc)
@@ -493,6 +501,109 @@ namespace Ict.Petra.Client.MReporting.Gui
             FFastReportType.GetMethod("Export", new Type[] { ExporterType, HtmlStream.GetType() }).Invoke(FfastReportInstance,
                 new Object[] { HtmlExport, HtmlStream });
             return HtmlStream;
+        }
+
+        private String SelectColumnNameForExract(DataTable ATbl, String ADefaultField)
+        {
+            String Res = "";
+
+            String[] options = new String[ATbl.Columns.Count];
+            TFrmSelectExtractColumn SelectForm = new TFrmSelectExtractColumn();
+            Boolean FoundInt64Field = false;
+
+            if (ATbl.Rows.Count < 1)
+            {
+                return Res;
+            }
+
+            foreach (DataColumn Col in ATbl.Columns)
+            {
+                if (Col.DataType == typeof(Int64))
+                {
+                    FoundInt64Field = true;
+                    SelectForm.AddOption(Col.ColumnName);
+                }
+            }
+
+            SelectForm.SelectedOption = ADefaultField;
+
+            if (FoundInt64Field && (SelectForm.ShowDialog() == System.Windows.Forms.DialogResult.OK))
+            {
+                Res = SelectForm.SelectedOption;
+            }
+
+            return Res;
+        }
+
+        /// <summary>
+        /// Called from a delegate set up by me.
+        /// </summary>
+        /// <param name="ACalc"></param>
+        public void GenerateExtract(TRptCalculator ACalc)
+        {
+            ACalc.GetParameters().Add("param_design_template", false);
+
+            if (FDataGetter == null)
+            {
+                MessageBox.Show(Catalog.GetString("Fault: No Data Table available."), Catalog.GetString("GenerateExtract"));
+                return;
+            }
+
+            if (!FDataGetter(ACalc))
+            {
+                return;
+            }
+
+            FExtractPartnerKeyName = SelectColumnNameForExract(FClientDataTable, FExtractPartnerKeyName);
+
+            if (FExtractPartnerKeyName == "")
+            {
+                return;
+            }
+
+            Int32 partnerKeyColumnNum = FClientDataTable.Columns[FExtractPartnerKeyName].Ordinal;
+
+            TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(FPetraUtilsObject.GetForm());
+            string ExtractName;
+            string ExtractDescription;
+
+            ExtractNameDialog.ShowDialog();
+
+            if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                /* Get values from the Dialog */
+                ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+            }
+            else
+            {
+                // dialog was cancelled, do not continue with extract generation
+                return;
+            }
+
+            ExtractNameDialog.Dispose();
+
+            FPetraUtilsObject.GetForm().UseWaitCursor = true;
+
+            // Create extract with given name and description and store it
+            int ExtractId = 0;
+            IPartnerUIConnectorsPartnerNewExtract PartnerExtractObject = TRemote.MPartner.Extracts.UIConnectors.PartnerNewExtract();
+            Boolean CreateOk = PartnerExtractObject.CreateExtractFromListOfPartnerKeys(
+                ExtractName, ExtractDescription, out ExtractId, FClientDataTable, partnerKeyColumnNum, false);
+            FPetraUtilsObject.GetForm().UseWaitCursor = false;
+
+            if (CreateOk)
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("Extract Created with {0} Partners."),
+                        FClientDataTable.Rows.Count),
+                    Catalog.GetString("Generate Extract"));
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("Creation of extract failed"),
+                    Catalog.GetString("Generate Extract"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+            }
         }
 
         /// <summary>
@@ -788,7 +899,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             // I'm not in the User Interface thread, so I can use an invoke here:
 
             Application.OpenForms[0].Invoke((ThreadStart) delegate { ReportingEngine.GenerateReport(Calc); });
-            // ReportingEngine.GenerateReport(Calc);
         } // PrintReportNoUi
     }
 }

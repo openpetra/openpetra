@@ -266,7 +266,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui
                 if (MessageBox.Show(
                         string.Format(
                             Catalog.GetString(
-                                "The Extract was successfully created.{0}{0}Do you want to open the 'Maintenance of Extract' screen now?"), "\n"),
+                                "Extract Created with {0} Partners.{1}{1}Do you want to open the 'Maintain Extract' screen now?"),
+                            PartnerKeysTable.Rows.Count, "\n"),
                         Catalog.GetString("Create Extract"),
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Information) == DialogResult.Yes)

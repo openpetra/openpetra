@@ -541,7 +541,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         if (PartnerKey > 0)
                         {
                             RecordCounter += 1;
-                            TLogging.Log("Preparing Partner " + PartnerKey.ToString() + " (Record Number " + RecordCounter.ToString() + ")");
+                            TLogging.LogAtLevel(1, "Preparing Partner " + PartnerKey + " (Record Number " + RecordCounter + ")");
 
                             // add row for partner to extract and fill with contents
                             MExtractRow NewRow = ExtractTable.NewRowTyped();

@@ -196,28 +196,35 @@ namespace {#NAMESPACE}
         
 #region Implement interface functions
 
-    /// <summary>
-    /// only run this code once during activation
-    /// </summary>
-    public void RunOnceOnActivation()
+    private void ShowReportOrExtractOptions()
     {
-        if (CalledFromExtracts)
+        if (FCalledFromExtracts)
         {
             tbbGenerateReport.Visible = false;
             mniGenerateReport.Visible = false;
         }
         else
         {
-            tbbGenerateExtract.Visible = false;
-            mniGenerateExtract.Visible = false;
+            if (FPetraUtilsObject.DelegateGenerateExtract == null)
+            {
+                tbbGenerateExtract.Visible = false;
+                mniGenerateExtract.Visible = false;
+            }
         }
-        
+    }
+
+    /// <summary>
+    /// only run this code once during activation
+    /// </summary>
+    public void RunOnceOnActivation()
+    {
+        ShowReportOrExtractOptions();
         {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }
 
     /// <summary>
-    /// Adds event handlers for the appropiate onChange event to call a central procedure
+    /// Adds event handlers for the appropriate onChange event to call a central procedure
     /// </summary>
     /// <returns>void</returns>
     public void HookupAllControls()

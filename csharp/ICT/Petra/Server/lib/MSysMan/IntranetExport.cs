@@ -71,9 +71,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             public String Address;
         }
 
-        private static SortedList <Int64, PartnerDetails>DonorList = new SortedList <Int64, PartnerDetails>();
-        private static SortedList <Int64, PartnerDetails>RecipientList = new SortedList <Int64, PartnerDetails>();
-
         private class PersonRec
         {
             public String Title;                //  LIKE p_person.p_title_c
@@ -98,8 +95,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             public Int32 BatchNumber;
         }
 
-        private static List <BatchKey>GiftBatches = new List <BatchKey>();
-
         /// <summary>
         /// Delegate for the determination of the 'Primary Phone Number' and the 'Primary E-mail Address' of a Partner.
         /// </summary>
@@ -119,11 +114,12 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         /// <param name="AWithinOrganisationEmailAddress">The 'Within Organisation Email Address' if the Partner has got one, otherwise null.</param>
         /// <returns>True if the Partner has got a 'Within Organisation Email Address', otherwise false.</returns>
         [NoRemoting]
-        public delegate bool GetWithinOrganisationEmail(Int64 APartnerKey,
+        public delegate bool GetWithinOrganisationOrPrimaryEmail(Int64 APartnerKey,
             out string AWithinOrganisationEmailAddress);
 
-        /// <summary>
-        ///
+        /// <summary>I need to call TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhone through a delegate,
+        /// since I can't refer to it directly from here. The delegate will have been set up
+        /// to point to the correct function by a previous call to TCallForwarding().
         /// </summary>
         [NoRemoting]
         public static GetPrimaryEmailAndPrimaryPhone GetPrimaryEmailAndPrimaryPhoneDelegate
@@ -132,47 +128,17 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             set;
         }
 
-        /// <summary>
-        ///
+        /// <summary>I need to call TContactDetailsAggregate.GetWithinOrganisationOrPrimaryEmailAddress through a delegate,
+        /// since I can't refer to it directly from here. The delegate will have been set up
+        /// to point to the correct function by a previous call to TCallForwarding().
         /// </summary>
         [NoRemoting]
-        public static GetWithinOrganisationEmail GetWithinOrganisationEmailDelegate
+        public static GetWithinOrganisationOrPrimaryEmail GetWithinOrganisationOrPrimaryEmailDelegate
         {
             get;
             set;
         }
 
-/*
- *      // I need to call MPartner.ServerCalculations.DetermineBestAddress through a delegate,
- *      // since I can't refer to it directly from here. The delegate will have been set up
- *      // to point to the correct function by a previous call to TCallForwarding().
- *
- *      /// <summary>
- *      ///
- *      /// </summary>
- *      /// <param name="APartnerKey"></param>
- *      /// <param name="LocationRow"></param>
- *      /// <returns></returns>
- *      [NoRemoting]
- *      public delegate TLocationPK GetLocationRow(Int64 APartnerKey, out PPartnerLocationRow LocationRow);
- *      private static GetLocationRow FGetLocationRowDelegate;
- *
- *      /// <summary>
- *      ///
- *      /// </summary>
- *      [NoRemoting]
- *      public static GetLocationRow GetLocationRowDelegate
- *      {
- *          get
- *          {
- *              return FGetLocationRowDelegate;
- *          }
- *          set
- *          {
- *              FGetLocationRowDelegate = value;
- *          }
- *      }
- */
         private static String PutDate(object DateField)
         {
             String ret = "";
@@ -190,11 +156,11 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             return ret;
         }
 
-        private static PartnerDetails GetDonor(Int64 APartnerKey)
+        private static PartnerDetails GetDonor(SortedList <Int64, PartnerDetails>ADonorList, Int64 APartnerKey)
         {
-            if (DonorList.ContainsKey(APartnerKey))
+            if (ADonorList.ContainsKey(APartnerKey))
             {
-                return DonorList[APartnerKey];
+                return ADonorList[APartnerKey];
             }
 
             PartnerDetails Ret = new PartnerDetails();
@@ -253,15 +219,15 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     out Ret.Telephone, out Ret.Email);
             }
 
-            DonorList.Add(APartnerKey, Ret);
+            ADonorList.Add(APartnerKey, Ret);
             return Ret;
         }
 
-        private static PartnerDetails GetRecipient(Int64 APartnerKey)
+        private static PartnerDetails GetRecipient(SortedList <Int64, PartnerDetails>ARecipientList, Int64 APartnerKey)
         {
-            if (RecipientList.ContainsKey(APartnerKey))
+            if (ARecipientList.ContainsKey(APartnerKey))
             {
-                return RecipientList[APartnerKey];
+                return ARecipientList[APartnerKey];
             }
 
             PartnerDetails Ret = new PartnerDetails();
@@ -299,26 +265,24 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     }
                 }
 
-                GetWithinOrganisationEmailDelegate(APartnerKey, out Ret.Email);
-
-                // TODO Contact Details: Decide what to do if no 'Within Organisation Email Address' is set: nothing, or take the 'Primary E-Mail Address'?
+                GetWithinOrganisationOrPrimaryEmailDelegate(APartnerKey, out Ret.Email);
             }
 
-            RecipientList.Add(APartnerKey, Ret);
+            ARecipientList.Add(APartnerKey, Ret);
             return Ret;
         }
 
-        private static void GetGiftBatches(Int32 ADaySpan)
+        private static List <BatchKey>GetGiftBatches(Int32 ADaySpan)
         {
             DateTime GiftsSince = DateTime.Now.AddDays(0 - ADaySpan);
+
+            List <BatchKey>GiftBatches = new List <BatchKey>();
 
             String SqlQuery = "SELECT " +
                               "a_batch_number_i AS BatchNumber, " +
                               "a_ledger_number_i AS LedgerNumber " +
-                              "FROM PUB_a_batch " +
-                              "WHERE a_batch_description_c LIKE 'Gift Batch %' " +
-                              "AND a_date_of_entry_d > '" + GiftsSince.ToString("yyyy-MM-dd") + "' "
-            ;
+                              "FROM PUB_a_gift_batch " +
+                              "WHERE a_gl_effective_date_d > '" + GiftsSince.ToString("yyyy-MM-dd") + "' ";
             DataSet GiftBatchDS = DBAccess.GDBAccessObj.Select(SqlQuery, "GiftBatchTbl", FTransaction);
 
             GiftBatches.Clear();
@@ -330,6 +294,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 NewKey.LedgerNumber = Convert.ToInt32(Row["LedgerNumber"]);
                 GiftBatches.Add(NewKey);
             }
+
+            return GiftBatches;
         }
 
         private static void GetAdminFees(Int32 ALedgerNumber,
@@ -377,7 +343,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
         private static Boolean ExportDonations(Int32 ADaySpan)
         {
-            GetGiftBatches(ADaySpan);
+            List <BatchKey>GiftBatches = GetGiftBatches(ADaySpan);
+            SortedList <Int64, PartnerDetails>DonorList = new SortedList <Int64, PartnerDetails>();
+            SortedList <Int64, PartnerDetails>RecipientList = new SortedList <Int64, PartnerDetails>();
 
             StreamWriter sw1 = File.CreateText(FExportFilePath + "donor.csv");
             sw1.WriteLine("first_name,last_name,partner_key,email,address,telephone,anonymous,class");
@@ -456,8 +424,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         RecipientFund = RecipientKey;
                     }
 
-                    GetDonor(Convert.ToInt32(Row["DonorKey"]));  // This adds the Donor to my list if it's not already present.
-                    GetRecipient(RecipientKey); // This adds the recipient to my list if it's not already present.
+                    GetDonor(DonorList, Convert.ToInt32(Row["DonorKey"]));  // This adds the Donor to my list if it's not already present.
+                    GetRecipient(RecipientList, RecipientKey); // This adds the recipient to my list if it's not already present.
 
                     decimal GIFFee;
                     decimal ICTFee;
@@ -641,7 +609,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                                   "PUB_p_person.p_family_key_n AS dFamilyKey," +
                                   "PUB_pm_staff_data.pm_home_office_n AS dHomeOffice," +
                                   "PUB_p_person.p_date_of_birth_d AS dtBirthDate, " +
-                                  "PUB_p_partner_location.p_email_address_c AS cEmailAddress," +
                                   "PUB_p_partner_location.p_location_type_c AS cLocationType " +
 
                                   "FROM PUB_pm_staff_data LEFT JOIN PUB_p_person ON PUB_pm_staff_data.p_partner_key_n = PUB_p_person.p_partner_key_n "
@@ -652,16 +619,16 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                                   +
                                   "AND PUB_pm_staff_data.pm_end_of_commitment_d IS NULL OR PUB_pm_staff_data.pm_end_of_commitment_d > NOW();";
 
-                DataSet StaffPersonDS = DBAccess.GDBAccessObj.Select(SqlQuery, "StaffPersonTbl", FTransaction);
+                DataTable StaffTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "StaffTbl", FTransaction);
 
                 // For each qualifying person in my PmStaffData, I'll produce a position.csv row,
                 // and also produce unique rows for person.csv and email.csv.
 
-                foreach (DataRow Row in StaffPersonDS.Tables["StaffPersonTbl"].Rows)
+                foreach (DataRow StaffRow in StaffTbl.Rows)
                 {
                     String Role = "";
 
-                    switch (Row["role"].ToString())
+                    switch (StaffRow["role"].ToString())
                     {
                         case "SHORT-TERMER": Role = "OM-OMER-GC"; break;
 
@@ -679,38 +646,62 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     }
 
                     // person_key,role,field_key,start_date,end_date,assistant
-                    Int64 PersonKey = Convert.ToInt64(Row["person_key"]);
+                    Int64 PersonKey = Convert.ToInt64(StaffRow["person_key"]);
 
-                    sw.WriteLine(String.Format("{0:D10},\"{1}\",{2:D10},\"{3}\",\"{4}\",FALSE",
-                            PersonKey, Role, Convert.ToInt64(Row["field_key"]), PutDate(Row["start_date"]), PutDate(Row["end_date"])));
+                    sw.WriteLine(String.Format("{0:D10},\"{1}\",{2:D10},\"{3}\",\"{4}\",false",
+                            PersonKey, Role, Convert.ToInt64(StaffRow["field_key"]), PutDate(StaffRow["start_date"]), PutDate(StaffRow["end_date"])));
+
+                    SqlQuery = "SELECT * FROM PUB_pm_job_assignment, PUB_pm_staff_data" +
+                               " WHERE pm_job_assignment.p_partner_key_n = " + PersonKey +
+                               " AND PUB_pm_staff_data.p_partner_key_n = " + PersonKey +
+                               " AND PUB_pm_job_assignment.pm_unit_key_n = " + Convert.ToInt64(StaffRow["field_key"]) +
+                               " AND (PUB_pm_job_assignment.pm_to_date_d >= NOW() OR PUB_pm_job_assignment.pm_to_date_d IS NULL)" +
+                               " AND (PUB_pm_staff_data.pm_end_of_commitment_d >= NOW() OR PUB_pm_staff_data.pm_end_of_commitment_d IS NULL)";
+                    DataTable JobTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "StaffTbl", FTransaction);
+
+                    foreach (DataRow JobRow in JobTbl.Rows)
+                    {
+                        sw.WriteLine(String.Format("{0:D10},\"{1}\",{2:D10},\"{3}\",\"{4}\",{5}",
+                                PersonKey,
+                                JobRow["pt_position_name_c"],
+                                Convert.ToInt64(StaffRow["field_key"]),
+                                PutDate(JobRow["pm_from_date_d"]),
+                                PutDate(JobRow["pm_to_date_d"]),
+                                Convert.ToBoolean(JobRow["pt_assistant_to_l"]) ? "true" : "false")
+                            );
+                    }
 
                     // Produce a unique row in my temporary list for person.csv and email.csv.
                     if (!PersonnelList.ContainsKey(PersonKey))
                     {
                         PersonRec PersonRow = new PersonRec();
-                        PersonRow.Title = Row["cTitle"].ToString();
-                        PersonRow.FirstName = Row["cFirstName"].ToString();
-                        PersonRow.MiddleName = Row["cMiddleName"].ToString();
-                        PersonRow.LastName = Row["cLastName"].ToString();
-                        PersonRow.Academic = Row["cAcademic"].ToString();
-                        PersonRow.Decorations = Row["cDecorations"].ToString();
-                        PersonRow.Gender = Row["cGender"].ToString();
-                        PersonRow.PreferredName = Row["cPreferredName"].ToString();
-                        PersonRow.FamilyKey = Convert.ToInt64(Row["dFamilyKey"]);
-                        PersonRow.HomeOffice = Convert.ToInt64(Row["dHomeOffice"]);
+                        PersonRow.Title = StaffRow["cTitle"].ToString();
+                        PersonRow.FirstName = StaffRow["cFirstName"].ToString();
+                        PersonRow.MiddleName = StaffRow["cMiddleName"].ToString();
+                        PersonRow.LastName = StaffRow["cLastName"].ToString();
+                        PersonRow.Academic = StaffRow["cAcademic"].ToString();
+                        PersonRow.Decorations = StaffRow["cDecorations"].ToString();
+                        PersonRow.Gender = StaffRow["cGender"].ToString();
+                        PersonRow.PreferredName = StaffRow["cPreferredName"].ToString();
+                        PersonRow.FamilyKey = Convert.ToInt64(StaffRow["dFamilyKey"]);
+                        PersonRow.HomeOffice = Convert.ToInt64(StaffRow["dHomeOffice"]);
 
-                        if (Row["dtBirthDate"].GetType() != typeof(System.DBNull))
+                        if (StaffRow["dtBirthDate"].GetType() != typeof(System.DBNull))
                         {
-                            PersonRow.DateOfBirth = (DateTime)Row["dtBirthDate"];
+                            PersonRow.DateOfBirth = (DateTime)StaffRow["dtBirthDate"];
                         }
 
-                        PersonRow.EmailAddress = Row["cEmailAddress"].ToString();
-                        PersonRow.LocationType = Row["cLocationType"].ToString();
+                        String EmailAddress;
+                        GetWithinOrganisationOrPrimaryEmailDelegate(PersonKey, out EmailAddress);
+                        PersonRow.EmailAddress = EmailAddress;
+                        PersonRow.LocationType = StaffRow["cLocationType"].ToString();
 
                         PersonnelList.Add(PersonKey, PersonRow);
-                    }
-                }
-            }
+                    } // if
+
+                } // foreach
+
+            } // using
 
             // person.csv
             using (StreamWriter sw = new StreamWriter(FExportFilePath + "person.csv"))
@@ -823,7 +814,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         break;
 
                     case 2:
-                        FExportTrace += "\r\nERROR in GPG Command line.";
+                        FExportTrace += ("\r\nERROR in GPG Command line: " + ShellProcess.StartInfo.Arguments);
                         ExecOK = false;
                         break;
 
@@ -937,9 +928,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 DeleteTemporaryFiles();
-                DonorList.Clear();
-                RecipientList.Clear();  // These lists are static so they'll stick around for ever,
-                                        // but I don't need to keep the data which is taking up memory.
             }
             return FExportTrace;
         }

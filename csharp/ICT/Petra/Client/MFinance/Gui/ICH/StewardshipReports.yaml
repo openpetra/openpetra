@@ -44,36 +44,32 @@ RootNode:
         pnlContentMiddle:
             Dock: Bottom
             Controls:
-                Row0: [chkHOSA, rgrHosa]
+                Row0: [chkHOSA, grpHosa]
                 Row1: [chkStewardship, rgrStewardship]
                 Row2: [chkFees, rgrFees]
-#               Row3: [chkRecipient, rgrRecipient]
 
         chkHOSA:{Label=All HOSAs, CheckBoxAttachedLabel=right}
         chkStewardship:{Label=Stewardship Report, CheckBoxAttachedLabel=right}
         chkFees:{Label=Admin Fees, CheckBoxAttachedLabel=right}
-#       chkRecipient:{Label=All Recipient Statements, CheckBoxAttachedLabel=right}
 
-        rgrHosa: {Label=HOSA options, ControlsOrientation=horizontal, BorderVisible=false}
+        grpHosa:{Label=HOSA options, BorderVisible=false, Width=250}
+            Controls:
+                Row0:[pnlHosaBtns]
+                Row1:[chkRecipient]
+        pnlHosaBtns: {ControlsOrientation=horizontal}
             Controls:[rbtEmailHosa, rbtReprintHosa]
-        rgrStewardship: {Label=Stewardship options, ControlsOrientation=horizontal, BorderVisible=false}
+        rgrStewardship: {Label=Stewardship options, ControlsOrientation=horizontal, BorderVisible=false, Width=250}
             Controls:[rbtEmailStewardship, rbtReprintStewardship]
-        rgrFees: {Label=Fees options, ControlsOrientation=horizontal, BorderVisible=false}
+        rgrFees: {Label=Fees options, ControlsOrientation=horizontal, BorderVisible=false, Width=250}
             Controls:[rbtSummary, rbtFull]
-#            Controls:[rbtEmailFees, rbtReprintFees]
-#       rgrRecipient: {Label=Recipient Statement options, ControlsOrientation=horizontal, BorderVisible=false}
-#           Controls:[rbtEmailRecipient, rbtReprintRecipient]
 
-        rbtEmailHosa:{Label=Send emails, ParameterValue=Email}
+        rbtEmailHosa:{Label=Send emails, ParameterValue=Email, Width=150}
         rbtReprintHosa:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
+        chkRecipient:{Label=Include Recipient Statements, CheckBoxAttachedLabel=right}
         rbtEmailStewardship:{Label=Email to ICH, ParameterValue=Email}
         rbtReprintStewardship:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
         rbtSummary:{Label=By Field, ParameterValue=ByField}
         rbtFull:{Label=By Gift Detail, ParameterValue=ByGiftDetail}
-#        rbtEmailFees:{Label=Email to ICH, ParameterValue=Email}
-#        rbtReprintFees:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
-#       rbtEmailRecipient:{Label=Send emails, ParameterValue=Email}
-#       rbtReprintRecipient:{Label=Print only, CheckBoxAttachedLabel=right, ParameterValue=Print}
 
         cmbYearEnding: {Label=Year End, List=UserDefinedList, OnChange=RefreshReportPeriodList, Width=250}
         cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList, Width=250}

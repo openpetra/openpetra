@@ -1763,6 +1763,8 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         String.Format(
                             Catalog.GetString("Gift Destination ({0}) must be a Partner linked to a Cost Centre."),
                             ARow.FieldKey),
+                        Catalog.GetString("Partner Validation"),
+                        PetraErrorCodes.ERR_PARTNER_MUST_BE_CC,
                         ValidationControlsData.ValidationControl,
                         TResultSeverity.Resv_Critical);
                 }

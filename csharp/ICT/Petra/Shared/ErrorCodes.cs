@@ -500,6 +500,12 @@ namespace Ict.Petra.Shared
                  "The Address Block contains 'CapsOn' with no matching 'CapsOff'.")]
         public const String ERR_ADDRESS_BLOCK_HAS_NO_MATCHING_CAPS_OFF = "PARTN.00056V";
 
+        /// <summary>Gift recipient must be linked to Cost Centre</summary>
+        [ErrCodeAttribute("Gift recipient must be linked to Cost Centre",
+             ErrorMessageText =
+                 "The Partner Key specified is not linked to a Cost Centre.")
+        ]
+        public const String ERR_PARTNER_MUST_BE_CC = "PARTN.00057V";
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>

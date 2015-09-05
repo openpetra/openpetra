@@ -950,7 +950,7 @@ namespace Ict.Common.Controls
                             // If Keypressed is of type numeric or the decimal separator (usually ".")
                             if (Char.IsDigit(chrKeyPressed))
                             {
-                                if (FCurrentUndoString != this.Text)
+                                if ((FCurrentUndoString != null) && (FCurrentUndoString != this.Text))
                                 {
                                     // We need to ascertain if the keypress is within the bounds of the current Undo block.
                                     // If not then the Undo string needs to be reset and we start a new edit in the new block.

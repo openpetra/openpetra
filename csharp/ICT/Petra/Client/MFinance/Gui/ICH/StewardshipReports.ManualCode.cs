@@ -5,7 +5,7 @@
 //       christophert
 //       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -89,6 +89,8 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 chkFees.CheckedChanged += RefreshReportingOptions;
                 //              chkRecipient.CheckedChanged += RefreshReportingOptions;
                 cmbReportPeriod.SelectedValueChanged += RefreshReportingOptions;
+                rbtEmailHosa.CheckedChanged += RefreshReportingOptions;
+                rbtReprintHosa.CheckedChanged += RefreshReportingOptions;
                 RefreshReportingOptions(null, null);
                 FPetraUtilsObject.DelegateGenerateReportOverride = GenerateAllSelectedReports;
                 FPetraUtilsObject.DelegateViewReportOverride = ViewReportTemplate;
@@ -166,30 +168,20 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             rbtEmailHosa.Enabled =
                 rbtReprintHosa.Enabled = chkHOSA.Enabled && chkHOSA.Checked;
 
+            chkRecipient.Enabled =
+                rbtReprintHosa.Enabled & rbtReprintHosa.Checked;
+
             rbtEmailStewardship.Enabled =
                 rbtReprintStewardship.Enabled = chkStewardship.Enabled && chkStewardship.Checked;
 
             rbtFull.Enabled =
                 rbtSummary.Enabled = chkFees.Enabled && chkFees.Checked;
-
-            /*
-             *          rbtEmailFees.Enabled =
-             *              rbtReprintFees.Enabled = chkFees.Enabled && chkFees.Checked;
-             *          rbtEmailRecipient.Enabled =
-             *              rbtReprintRecipient.Enabled = chkRecipient.Enabled && chkRecipient.Checked;
-             */
         }
 
         private void ViewReportTemplate(TRptCalculator ACalc)
         {
             String ReportName = "";
 
-            /*
-             *          if (chkRecipient.Enabled && chkRecipient.Checked)
-             *          {
-             *              ReportName = "Recipient Gift Statement";
-             *          }
-             */
             if (chkFees.Enabled && chkFees.Checked)
             {
                 ReportName = "Fees";
@@ -212,12 +204,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
             MyFastReportsPlugin = new FastReportsWrapper(ReportName);
 
-            /*
-             *          if (chkRecipient.Enabled && chkRecipient.Checked)
-             *          {
-             *              MyFastReportsPlugin.SetDataGetter(LoadRecipientReportData);
-             *          }
-             */
             if (chkFees.Enabled && chkFees.Checked)
             {
                 MyFastReportsPlugin.SetDataGetter(LoadFeesReportData);
@@ -270,21 +256,13 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 MyFastReportsPlugin.GenerateReport(ACalc);
             }
 
-            /*
-             *          if (chkRecipient.Enabled && chkRecipient.Checked)
-             *          {
-             *              MyFastReportsPlugin = new FastReportsWrapper("Recipient Gift Statement");
-             *              MyFastReportsPlugin.SetDataGetter(LoadRecientReportData);
-             *              MyFastReportsPlugin.GenerateReport(ACalc);
-             *          }
-             */
+            // complex way of stepping around the Windows non-thread-safe controls problem!
             FStatusMsg += Catalog.GetString("\r\n\r\nReport generation complete.");
             this.Invoke(new CrossThreadUpdate(ShowReportStatus));
         }
 
         delegate void CrossThreadUpdate();
 
-        /// <summary>Stupidly complex way of stepping around the Windows non-thread-safe controls problem!</summary>
         private void ShowReportStatus()
         {
             MessageBox.Show(FStatusMsg, Catalog.GetString("Stewardship Reports"));
@@ -347,6 +325,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             ACalc.AddStringParameter("param_cost_centre_codes", "ALL");
             ACalc.AddStringParameter("param_filter_cost_centres", "");
             ACalc.AddStringParameter("param_linked_partner_cc", ""); // Used for auto-emailing HOSAs, this is usually blank.
+            ACalc.AddParameter("param_include_rgs", !chkRecipient.Enabled || chkRecipient.Checked);
             Boolean DataOk = TFrmHOSA.LoadReportDataStaticInner(this, FPetraUtilsObject, MyFastReportsPlugin, ACalc);
 
             if ((!ACalc.GetParameters().Get("param_design_template").ToBool())
