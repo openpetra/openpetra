@@ -13,7 +13,7 @@ RootNode:
         
     Controls:
         pnlContent:
-            Controls: [pnlDataItems, pnlSpecialButtons]              
+            Controls: [pnlDataItems]              
             Dock: Fill
 
         pnlDataItems:
@@ -21,13 +21,6 @@ RootNode:
             ControlsOrientation: horizontal
             Controls: [pnlIndivDataMenu, pnlSelectedIndivDataItem]
             
-        pnlSpecialButtons:
-            Dock: Bottom
-            Height: 35
-            Margin: 0
-            ControlsOrientation: horizontal
-            Controls: [pnlShepherds, pnlEmergencyData]
-
         pnlIndivDataMenu:
             Dock: Left
             BackColor: System.Drawing.Color.Beige
@@ -74,19 +67,3 @@ RootNode:
         ucoSummaryData:
             Type: Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Summary
             Dock: Fill
-                
-        
-        pnlShepherds:
-            Dock: Left
-            ControlsOrientation: horizontal
-            Controls: [btnBasicDataShepherd, btnIntranetRegistrationShepherd]
-            
-        btnBasicDataShepherd: {Label=Basic Data Shepherd...}
-        btnIntranetRegistrationShepherd: {Label=Intranet Registration Shepherd...}
-        
-        pnlEmergencyData:
-            Dock: Fill
-            Padding : 30, 0, 0, 0
-            Controls: [btnEmergencyContacts]
-            
-        btnEmergencyContacts: {Label=Emergency Contacts...}

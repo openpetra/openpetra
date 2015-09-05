@@ -7,6 +7,9 @@ RootNode:
     FormType: edit
     Template: usercontrol
     MasterTable: PmPersonalData
+    Actions:
+        actEmergencyContacts: {Label=Emergenc&y Contacts..., ActionClick=ShowEmergencyContacts}
+
     Controls:
         pnlContent: {ControlsOrientation=vertical}
             Controls: [grpEmergencyData, grpMedical, grpProofOfLifeQuestions]              
@@ -27,10 +30,11 @@ RootNode:
         
         pnlEmergencyDataRight:
             Controls:
-                Row0: [lblIdentMarks]
-                Row1: [txtIdentifyingMarks]
+                Row0: [pnlEmergencyContacts]
+                Row1: [lblIdentMarks]
+                Row2: [txtIdentifyingMarks]
         txtHeightCm:
-            Label: Height (cm)
+            Label: Heigh&t (cm)
             Width: 100
         txtWeightKg:
             Width: 100
@@ -54,34 +58,46 @@ RootNode:
             ScrollBars: Vertical
             NoLabel: True
             Width: 250
-            Height: 110
+            Height: 115
             DataField: PmPersonalData.PhysicalDesc
             
         grpMedical: {Label=Blood Type (will be exported), Stretch=horizontally}
             Controls: [cmbBloodType]
         
         cmbBloodType: 
+            Label: Bl&ood Type
             OptionalValues: [=, A Pos, A Neg, A Unknown, B Pos, B Neg, B Unknown, AB Pos, AB Neg, AB Unknown, O Pos, O Neg, O Unknown]
             
         grpProofOfLifeQuestions:
             Controls: [txtQuestion1, txtAnswer1, txtQuestion2, txtAnswer2, txtQuestion3, txtAnswer3]
-            Label: Proof of life questions (will not be exported)
+            Label: Proof of Life Questions (Will Not be Exported)
         txtQuestion1:
+            Label: Question &1
             Width: 400
             DataField: PmPersonalData.LifeQuestion1
         txtAnswer1:
+            Label: Answer 1
             Width: 400
             DataField: PmPersonalData.LifeAnswer1
         txtQuestion2:
+            Label: Question &2
             Width: 400
             DataField: PmPersonalData.LifeQuestion2
         txtAnswer2:
+            Label: Answer 2
             Width: 400
             DataField: PmPersonalData.LifeAnswer2
         txtQuestion3:
+            Label: Question &3
             Width: 400
             DataField: PmPersonalData.LifeQuestion3
         txtAnswer3:
+            Label: Answer 3
             Width: 400
             DataField: PmPersonalData.LifeAnswer3
-        
+
+        pnlEmergencyContacts:
+            Padding : 0, 0, 0, 0
+            Controls: [btnEmergencyContacts]
+
+        btnEmergencyContacts: {Tooltip=Display Emergency Contacts}

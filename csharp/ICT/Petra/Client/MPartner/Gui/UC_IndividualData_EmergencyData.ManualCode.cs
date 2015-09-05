@@ -64,6 +64,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void SpecialInitUserControl(IndividualDataTDS AMainDS)
         {
+            int TmpTabIndex;
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
@@ -83,6 +84,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 cmbFacialHair.SelectedText = "None";
             }
+
+            pnlEmergencyContacts.Top = 0;
+            pnlEmergencyContacts.Width = 250;
+            pnlEmergencyContacts.Height = 39;
+            btnEmergencyContacts.Top = 6;
+            btnEmergencyContacts.Left = 99;
+            lblIdentMarks.Top = 37;
+            txtIdentifyingMarks.Top = 57;
+            pnlEmergencyDataRight.Height = 180;
+            grpEmergencyData.Height = 200;
+
+            // Alter Tab order of txtIdentifyingMarks and btnEmergencyContacts so that the TextBox comes 
+            // right after the other TextBox Controls
+            TmpTabIndex = txtIdentifyingMarks.TabIndex;
+            txtIdentifyingMarks.TabIndex = btnEmergencyContacts.TabIndex;
+            btnEmergencyContacts.TabIndex = TmpTabIndex;
         }
 
         /// <summary>
@@ -155,6 +172,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             return ReturnValue;
+        }
+
+        private void ShowEmergencyContacts(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         #region Menu and command key handlers for our user controls
