@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             OpenFileDialog dlg = new OpenFileDialog();
 
-            dlg.Filter = "Word Documents (*.doc, *.dot,*.docx)|*.doc, *.dot,*.docx|Html Documents(*.htm,*.html)|*.htm,*.html|All Files|*.*";
+            dlg.Filter = "Word Documents (*.doc, *.dot,*.docx)|*.doc;*.dot;*.docx|Html Documents (*.htm, *.html)|*.htm;*.html|All Files|*.*";
             dlg.CheckFileExists = true;
             dlg.Title = "Select a Document";
 

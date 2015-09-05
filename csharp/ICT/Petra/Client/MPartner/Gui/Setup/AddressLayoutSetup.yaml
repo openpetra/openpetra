@@ -14,6 +14,7 @@ RootNode:
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
         actCopy: {Label=&Copy, ActionClick=CopyRecord}
         actInsertLine: {Label=Insert &Line, ActionClick=InsertElementAndLine}
+        actPreview: {Label=Previe&w, ActionClick=PreviewLayout}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
@@ -27,7 +28,7 @@ RootNode:
             FindControls: [cmbDetailCountryCode, cmbDetailAddressLayoutCode]
         pnlButtons:
             Dock: Bottom
-            Controls: [btnNew, btnDelete, btnCopy]
+            Controls: [btnNew, btnDelete, btnCopy, btnPreview]
             ControlsOrientation: horizontal
         btnNew:
             Action: actNew
@@ -60,4 +61,5 @@ RootNode:
             ControlsOrientation: horizontal
         #btnInsert: #This control is added dynamically by manual code
         btnInsertLine: {Action=ActInsertLine, Width=80, Tooltip=Click to enter the selected placeholder at the start of a new line beneath the cursor position in the Address Layout}
+        btnPreview: {Action=ActPreview, Width=80, StartNewButtonGroup=true, Tooltip=Click to preview the way the layout looks when printed}
         cmbAddressBlockElement: {List=AddressBlockElementList, Width=600, Label=Pl&aceholder, SuppressChangeDetection=true, Tooltip=Choose any item in the list then click the Insert button to insert it in the Address Layout}

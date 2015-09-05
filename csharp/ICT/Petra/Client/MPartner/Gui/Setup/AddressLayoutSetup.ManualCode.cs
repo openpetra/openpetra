@@ -27,8 +27,10 @@ using System.Windows.Forms;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -169,6 +171,29 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // Set the new text and set the cursor position
             txtDetailAddressBlockText.Text = s;
             txtDetailAddressBlockText.SelectionStart = newPos;
+        }
+
+        // The Preview button has been clicked
+        private void PreviewLayout(Object sender, EventArgs e)
+        {
+            // perform standard validation to make sure the layout text has no errors
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_IgnoreNonCritical))
+            {
+                this.Cursor = Cursors.WaitCursor;
+
+                TFrmExtendedMessageBox msgBox = new TFrmExtendedMessageBox(this);
+
+                string s = Catalog.GetString("This is how your address layout will look when printed :");
+                s += Environment.NewLine + Environment.NewLine;
+
+                // Get the layout from the server using the same method used by Templater
+                s += TRemote.MPartner.Partner.WebConnectors.PreviewAddressBlock(txtDetailAddressBlockText.Text);
+
+                this.Cursor = Cursors.Default;
+
+                msgBox.ShowDialog(s, Catalog.GetString("Layout Printing Example"), String.Empty,
+                    TFrmExtendedMessageBox.TButtons.embbOK, TFrmExtendedMessageBox.TIcon.embiInformation);
+            }
         }
 
         #endregion

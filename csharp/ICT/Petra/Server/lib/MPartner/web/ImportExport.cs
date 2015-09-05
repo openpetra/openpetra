@@ -1744,7 +1744,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         public static bool CheckExtractContainsFamily(int AExtractId)
         {
             TDBTransaction ReadTransaction = null;
-            MExtractTable ExtractPartners = new MExtractTable();
             bool ReturnValue = false;
             string Result = string.Empty;
 

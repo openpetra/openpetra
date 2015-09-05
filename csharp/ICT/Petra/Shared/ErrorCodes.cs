@@ -494,6 +494,12 @@ namespace Ict.Petra.Shared
                  "The text in the Address Block only contains 'Print Directive' placeholders but no data placeholders.")]
         public const String ERR_ADDRESS_BLOCK_ONLY_HAS_DIRECTIVE_PLACEHOLDERS = "PARTN.00055V";
 
+        /// <summary>The Address Block text has no matching CapsOff.</summary>
+        [ErrCodeAttribute("Address Block text has CapsOn but no matching CapsOff",
+             ErrorMessageText =
+                 "The Address Block contains 'CapsOn' with no matching 'CapsOff'.")]
+        public const String ERR_ADDRESS_BLOCK_HAS_NO_MATCHING_CAPS_OFF = "PARTN.00056V";
+
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>

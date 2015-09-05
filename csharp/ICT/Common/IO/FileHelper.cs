@@ -293,5 +293,63 @@ namespace Ict.Common.IO
 
             return filename;
         }
+
+        /// <summary>
+        /// Opens the specified binary file, reads it and converts it to a Base64 encoded string
+        /// </summary>
+        /// <param name="APathToFile">Path to the file to open</param>
+        /// <param name="AResult">Either the Base64 encoded string if the method returned true, or an error message if the method returned false</param>
+        /// <returns>True if successful.  False if an error occurred.</returns>
+        public static bool OpenBinaryFileAndConvertToBase64String(string APathToFile, out string AResult)
+        {
+            try
+            {
+                using (FileStream fs = new FileStream(APathToFile, FileMode.Open, FileAccess.Read))
+                    using (BinaryReader reader = new BinaryReader(fs))
+                    {
+                        byte[] binaryBytes = reader.ReadBytes((int)fs.Length);
+                        AResult = Convert.ToBase64String(binaryBytes);
+                        fs.Close();
+                    }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                AResult = ex.Message;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Writes a string in Base64 format to a binary file using the specified file path
+        /// </summary>
+        /// <param name="ABase64String">The Base64 string</param>
+        /// <param name="APathToFile">The path to the file to be written</param>
+        /// <param name="AFailMessage">A failure message if the method returns false</param>
+        /// <returns>True of successful, false otherwise.  If false the failure message will be in the out parameter.</returns>
+        public static bool WriteBinaryFileConvertedFromBase64String(string ABase64String, string APathToFile, out string AFailMessage)
+        {
+            try
+            {
+                using (FileStream fs = new FileStream(APathToFile, FileMode.Create, FileAccess.Write))
+                    using (BinaryWriter writer = new BinaryWriter(fs))
+                    {
+                        byte[] binaryBytes = Convert.FromBase64String(ABase64String);
+                        writer.Write(binaryBytes);
+                        fs.Close();
+                    }
+
+                AFailMessage = String.Empty;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                AFailMessage = ex.Message;
+            }
+
+            return false;
+        }
     }
 }

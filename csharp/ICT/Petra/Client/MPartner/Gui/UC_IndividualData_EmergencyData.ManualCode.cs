@@ -65,6 +65,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void SpecialInitUserControl(IndividualDataTDS AMainDS)
         {
             int TmpTabIndex;
+
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
@@ -95,7 +96,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             pnlEmergencyDataRight.Height = 180;
             grpEmergencyData.Height = 200;
 
-            // Alter Tab order of txtIdentifyingMarks and btnEmergencyContacts so that the TextBox comes 
+            // Alter Tab order of txtIdentifyingMarks and btnEmergencyContacts so that the TextBox comes
             // right after the other TextBox Controls
             TmpTabIndex = txtIdentifyingMarks.TabIndex;
             txtIdentifyingMarks.TabIndex = btnEmergencyContacts.TabIndex;

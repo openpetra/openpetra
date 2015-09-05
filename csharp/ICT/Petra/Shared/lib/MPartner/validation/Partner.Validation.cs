@@ -1164,7 +1164,18 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
                             if (posEnd > posStart)
                             {
-                                allElements.Add(s.Substring(posStart + 2, posEnd - posStart - 2));
+                                // get the placeholder text
+                                string item = s.Substring(posStart + 2, posEnd - posStart - 2);
+
+                                if ((item == "CapsOn") && allElements.Contains("CapsOff"))
+                                {
+                                    allElements.Remove("CapsOff");
+                                }
+
+                                if (!allElements.Contains(item))
+                                {
+                                    allElements.Add(item);
+                                }
                             }
                             else
                             {
@@ -1217,6 +1228,17 @@ namespace Ict.Petra.Shared.MPartner.Validation
                                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                         ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_ADDRESS_BLOCK_ONLY_HAS_DIRECTIVE_PLACEHOLDERS)),
                                     ValidationColumn, ValidationControlsData.ValidationControl);
+                            }
+
+                            if (VerificationResult == null)
+                            {
+                                // All good so far.  If there is a CapsOn there must be a CapsOff
+                                if (allElements.Contains("CapsOn") && !allElements.Contains("CapsOff"))
+                                {
+                                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_ADDRESS_BLOCK_HAS_NO_MATCHING_CAPS_OFF)),
+                                        ValidationColumn, ValidationControlsData.ValidationControl);
+                                }
                             }
                         }
                     }

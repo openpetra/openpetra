@@ -190,35 +190,35 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
 
             // Filename must exist
-            ValidationColumn = ARow.Table.Columns[AFormTable.ColumnFormFileNameId];
+            //ValidationColumn = ARow.Table.Columns[AFormTable.ColumnFormFileNameId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.FormFileName, ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+            //if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            //{
+            //    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.FormFileName, ValidationControlsData.ValidationControlLabel,
+            //        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            //    // Handle addition to/removal from TVerificationResultCollection
+            //    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
 
-                if (VerificationResult == null)
-                {
-                    if (!File.Exists(ARow.FormFileName))
-                    {
-                        ErrCodeInfo errInfo = ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_GENERAL_FILE_NOT_FOUND);
+            //    if (VerificationResult == null)
+            //    {
+            //        if (!File.Exists(ARow.FormFileName))
+            //        {
+            //            ErrCodeInfo errInfo = ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_GENERAL_FILE_NOT_FOUND);
 
-                        VerificationResult = new TScreenVerificationResult(AContext,
-                            ValidationColumn,
-                            errInfo.ErrorMessageText,
-                            errInfo.ErrorMessageTitle,
-                            PetraErrorCodes.ERR_GENERAL_FILE_NOT_FOUND,
-                            ValidationControlsData.ValidationControl,
-                            TResultSeverity.Resv_Critical);
-                    }
+            //            VerificationResult = new TScreenVerificationResult(AContext,
+            //                ValidationColumn,
+            //                errInfo.ErrorMessageText,
+            //                errInfo.ErrorMessageTitle,
+            //                PetraErrorCodes.ERR_GENERAL_FILE_NOT_FOUND,
+            //                ValidationControlsData.ValidationControl,
+            //                TResultSeverity.Resv_Critical);
+            //        }
 
-                    // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-                }
-            }
+            //        // Handle addition to/removal from TVerificationResultCollection
+            //        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            //    }
+            //}
         }
     }
 }
