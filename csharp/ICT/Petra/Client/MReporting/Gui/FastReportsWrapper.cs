@@ -125,37 +125,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
-        private Boolean LoadDll()
-        {
-            try
-            {
-                FInitState = TInitState.LoadDll;
-                FastReportsDll = Assembly.LoadFrom("FastReport.DLL"); // If there's no FastReports DLL, this will "fall at the first hurdle"!
-
-                FInitState = TInitState.InitSystem;
-
-
-                FfastReportInstance = FastReportsDll.CreateInstance("FastReport.Report");
-                FFastReportType = FfastReportInstance.GetType();
-                FFastReportType.GetProperty("StoreInResources").SetValue(FfastReportInstance, false, null);
-
-                //
-                // I want to set the Utils.Config.EmailSettings
-                // to our SMTP server settings.
-                //
-                object EmailSettings = FastReportsDll.GetType("FastReport.Utils.Config").GetProperty("EmailSettings").GetValue(null, null);
-
-                Type EmailSettingsType = EmailSettings.GetType();
-                EmailSettingsType.GetProperty("Host").SetValue(EmailSettings, "TimHost.com", null);
-            }
-            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
-            {
-//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
-                return false;
-            }
-            return true;
-        }
-
         private Boolean LoadDefaultTemplate()
         {
             FInitState = TInitState.LoadTemplate;
@@ -186,25 +155,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FDataGetter = null;
                 FPetraUtilsObject = PetraUtilsObject;
 
-                if (!LoadDll())
-                {
-                    return;
-                }
-
-                FReportName = FPetraUtilsObject.FReportName;
-
-                if (!LoadDefaultTemplate())
-                {
-                    return;
-                }
-
-                FPetraUtilsObject.DelegateGenerateReportOverride = GenerateReport;
-                FPetraUtilsObject.DelegateViewReportOverride = DesignReport;
-                FPetraUtilsObject.DelegateCancelReportOverride = CancelReportGeneration;
-
-                FPetraUtilsObject.EnableDisableSettings(false);
-                FInitState = TInitState.LoadedOK;
-                LoadedOK = true;
+                // we do not support FastReports in the Open Source fork of OpenPetra
+                return;
             }
             catch (Exception e)
             {
@@ -233,19 +185,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 LoadedOK = false;
                 FDataGetter = null;
 
-                if (!LoadDll())
-                {
-                    return;
-                }
-
-                FReportName = AReportName;
-
-                if (!LoadDefaultTemplate())
-                {
-                    return;
-                }
-
-                LoadedOK = true;
+                // we do not support FastReports in the Open Source fork of OpenPetra
+                return;
             }
             catch (Exception e)
             {
