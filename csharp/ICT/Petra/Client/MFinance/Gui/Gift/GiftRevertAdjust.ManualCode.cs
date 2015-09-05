@@ -48,8 +48,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FCurrencyCode = null;
         private Boolean ok = false;
         private Boolean FNoReceipt = false;
-        private DateTime StartDateCurrentPeriod;
-        private DateTime EndDateLastForwardingPeriod;
+        private DateTime FStartDateCurrentPeriod;
+        private DateTime FEndDateLastForwardingPeriod;
+        private bool FAutoCompleteComments = false;
 
         /// <summary>
         /// Return if the revert/adjust action was Ok (then a refresh is needed; otherwise rollback was done)
@@ -157,20 +158,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 DateTime DefaultDate;
                 TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
-                    out StartDateCurrentPeriod,
-                    out EndDateLastForwardingPeriod,
+                    out FStartDateCurrentPeriod,
+                    out FEndDateLastForwardingPeriod,
                     out DefaultDate);
                 lblValidDateRange.Text = String.Format(Catalog.GetString("(Must be between {0} and {1}.)"),
-                    StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
+                    FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
 
                 // set default date for a new batch
-                if (DateTime.Today > EndDateLastForwardingPeriod)
+                if (DateTime.Today > FEndDateLastForwardingPeriod)
                 {
-                    dtpEffectiveDate.Date = EndDateLastForwardingPeriod;
+                    dtpEffectiveDate.Date = FEndDateLastForwardingPeriod;
                 }
-                else if (DateTime.Today < StartDateCurrentPeriod)
+                else if (DateTime.Today < FStartDateCurrentPeriod)
                 {
-                    dtpEffectiveDate.Date = StartDateCurrentPeriod;
+                    dtpEffectiveDate.Date = FStartDateCurrentPeriod;
                 }
                 else
                 {
@@ -244,6 +245,44 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             requestParams.Add(paramName, param);
         }
 
+        /// <summary>
+        /// Comments will be automatically completed and not user definied. Comments 1 and 2 will be a direct copy from original.
+        /// Comment 3 will contain date of original gift. Currently only used for tax deductible pct adjustments.
+        /// </summary>
+        public void AutoCompleteComments()
+        {
+            txtReversalCommentOne.Enabled = false;
+            cmbReversalCommentOneType.Enabled = false;
+            txtReversalCommentTwo.Enabled = false;
+            cmbReversalCommentTwoType.Enabled = false;
+            txtReversalCommentThree.Enabled = false;
+            cmbReversalCommentThreeType.Enabled = false;
+
+            FAutoCompleteComments = true;
+        }
+
+        /// <summary>
+        /// Shows batch details for the batch needed to place adjusted gifts.
+        /// Used for adjustments where gifts come from different batches: field change and tax deduct pct.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACurrencyCode"></param>
+        /// <param name="ABankCostCentre"></param>
+        /// <param name="ABankAccountCode"></param>
+        /// <param name="AGiftType"></param>
+        public void AddBatchDetailsToScreen(int ALedgerNumber, string ACurrencyCode, string ABankCostCentre,
+            string ABankAccountCode, string AGiftType)
+        {
+            lblBatchDetailsLabel.Text = Catalog.GetString("Ledger") + ": " + ALedgerNumber + ",  " +
+                Catalog.GetString("Currency") + ": " + ACurrencyCode + ",  " +
+                Catalog.GetString("Bank Cost Centre") + ": " + ABankCostCentre + ",  " +
+                Catalog.GetString("Bank Account") + ": " + ABankAccountCode + ",  " +
+                Catalog.GetString("Gift Type") + ": " + AGiftType;
+
+            grpBatchDetails.Visible = true;
+            lblBatchDetailsLabel.Visible = true;
+        }
+
         private void BtnOk_Click(System.Object sender, System.EventArgs e)
         {
             if (rbtExistingBatch.Checked && (GetSelectedDetailRow() == null))
@@ -283,8 +322,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 //check the gift batch date to use
-                if ((dtpEffectiveDate.Date < StartDateCurrentPeriod)
-                    || (dtpEffectiveDate.Date > EndDateLastForwardingPeriod)
+                if ((dtpEffectiveDate.Date < FStartDateCurrentPeriod)
+                    || (dtpEffectiveDate.Date > FEndDateLastForwardingPeriod)
                     )
                 {
                     MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
@@ -298,39 +337,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            if (((txtReversalCommentOne.Text.Trim().Length == 0) && (cmbReversalCommentOneType.SelectedIndex != -1))
-                || ((txtReversalCommentOne.Text.Trim().Length > 0) && (cmbReversalCommentOneType.SelectedIndex == -1))
-                )
+            if (!FAutoCompleteComments)
             {
-                MessageBox.Show(Catalog.GetString("Comment 1 and Comment Type 1 must both be empty or both contain a value!"));
-                txtReversalCommentOne.Focus();
-                return;
+                if (((txtReversalCommentOne.Text.Trim().Length == 0) && (cmbReversalCommentOneType.SelectedIndex != -1))
+                    || ((txtReversalCommentOne.Text.Trim().Length > 0) && (cmbReversalCommentOneType.SelectedIndex == -1))
+                    )
+                {
+                    MessageBox.Show(Catalog.GetString("Comment 1 and Comment Type 1 must both be empty or both contain a value!"));
+                    txtReversalCommentOne.Focus();
+                    return;
+                }
+
+                if (((txtReversalCommentTwo.Text.Trim().Length == 0) && (cmbReversalCommentTwoType.SelectedIndex != -1))
+                    || ((txtReversalCommentTwo.Text.Trim().Length > 0) && (cmbReversalCommentTwoType.SelectedIndex == -1))
+                    )
+                {
+                    MessageBox.Show(Catalog.GetString("Comment 2 and Comment Type 2 must both be empty or both contain a value!"));
+                    txtReversalCommentTwo.Focus();
+                    return;
+                }
+
+                if (((txtReversalCommentThree.Text.Trim().Length == 0) && (cmbReversalCommentThreeType.SelectedIndex != -1))
+                    || ((txtReversalCommentThree.Text.Trim().Length > 0) && (cmbReversalCommentThreeType.SelectedIndex == -1))
+                    )
+                {
+                    MessageBox.Show(Catalog.GetString("Comment 3 and Comment Type 3 must both be empty or both contain a value!"));
+                    txtReversalCommentThree.Focus();
+                    return;
+                }
+
+                AddParam("ReversalCommentOne", txtReversalCommentOne.Text);
+                AddParam("ReversalCommentTwo", txtReversalCommentTwo.Text);
+                AddParam("ReversalCommentThree", txtReversalCommentThree.Text);
+                AddParam("ReversalCommentOneType", cmbReversalCommentOneType.Text);
+                AddParam("ReversalCommentTwoType", cmbReversalCommentTwoType.Text);
+                AddParam("ReversalCommentThreeType", cmbReversalCommentThreeType.Text);
             }
 
-            if (((txtReversalCommentTwo.Text.Trim().Length == 0) && (cmbReversalCommentTwoType.SelectedIndex != -1))
-                || ((txtReversalCommentTwo.Text.Trim().Length > 0) && (cmbReversalCommentTwoType.SelectedIndex == -1))
-                )
-            {
-                MessageBox.Show(Catalog.GetString("Comment 2 and Comment Type 2 must both be empty or both contain a value!"));
-                txtReversalCommentTwo.Focus();
-                return;
-            }
+            AddParam("AutoCompleteComments", FAutoCompleteComments);
 
-            if (((txtReversalCommentThree.Text.Trim().Length == 0) && (cmbReversalCommentThreeType.SelectedIndex != -1))
-                || ((txtReversalCommentThree.Text.Trim().Length > 0) && (cmbReversalCommentThreeType.SelectedIndex == -1))
-                )
-            {
-                MessageBox.Show(Catalog.GetString("Comment 3 and Comment Type 3 must both be empty or both contain a value!"));
-                txtReversalCommentThree.Focus();
-                return;
-            }
-
-            AddParam("ReversalCommentOne", txtReversalCommentOne.Text);
-            AddParam("ReversalCommentTwo", txtReversalCommentTwo.Text);
-            AddParam("ReversalCommentThree", txtReversalCommentThree.Text);
-            AddParam("ReversalCommentOneType", cmbReversalCommentOneType.Text);
-            AddParam("ReversalCommentTwoType", cmbReversalCommentTwoType.Text);
-            AddParam("ReversalCommentThreeType", cmbReversalCommentThreeType.Text);
             AddParam("NoReceipt", FNoReceipt);
 
             ReverseAdjust();

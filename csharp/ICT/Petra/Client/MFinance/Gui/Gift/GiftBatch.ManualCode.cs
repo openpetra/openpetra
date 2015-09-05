@@ -174,9 +174,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
-        public void RefreshAll()
+        public void RefreshAll(bool AShowStatusDialogOnLoad = true)
         {
-            ucoBatches.RefreshAllData();
+            ucoBatches.RefreshAllData(AShowStatusDialogOnLoad);
         }
 
         private void FileSaveManual(object sender, EventArgs e)
@@ -947,7 +947,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcRefreshGiftBatches)
             {
-                this.RefreshAll();
+                this.RefreshAll(false);
 
                 MessageProcessed = true;
             }

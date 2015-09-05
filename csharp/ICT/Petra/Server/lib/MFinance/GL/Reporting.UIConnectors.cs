@@ -3236,6 +3236,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
             Int32 ReportPeriodEnd = AParameters["param_end_period_i"].ToInt32();
+            bool YTDBalance = AParameters["param_chkYTD"].ToBool();
 
             //
             // Read different DB fields according to currency setting
@@ -3265,21 +3266,42 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " glm.a_cost_centre_code_c AS CostCentreCode," +
                                    " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
                                    " a_cost_centre.a_cost_centre_type_c AS CostCentreType," +
-                                   " a_account.a_debit_credit_indicator_l AS IsDebit," +
-                                   " glmp." + ActualFieldName + " AS Balance," +
-                                   " 0.0 as Debit, " +
+                                   " a_account.a_debit_credit_indicator_l AS IsDebit,";
+
+                    if (YTDBalance)
+                    {
+                        Query +=   " glmp." + ActualFieldName + " AS Balance,";
+                    }
+                    else
+                    {
+                        Query += " (glmp." + ActualFieldName + " - glmpPrevious." + ActualFieldName + ") AS Balance,";
+                    }
+
+                    Query +=       " 0.0 as Debit, " +
                                    " 0.0 as Credit, " +
                                    " glm.a_account_code_c AS AccountCode," +
                                    " a_account.a_account_code_short_desc_c AS AccountName" +
 
-                                   " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
-                                   " WHERE glm.a_ledger_number_i=" + LedgerNumber +
+                                   " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre";
+
+                    if (!YTDBalance)
+                    {
+                        Query +=   ", a_general_ledger_master_period AS glmpPrevious";
+                    }
+
+                    Query +=       " WHERE glm.a_ledger_number_i=" + LedgerNumber +
                                    " AND glm.a_year_i=" + AccountingYear +
                                    " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
                                    " AND glmp.a_period_number_i=" + ReportPeriodEnd +
-                                   " AND glmp." + ActualFieldName + " <> 0" +
+                                   " AND glmp." + ActualFieldName + " <> 0";
 
-                                   " AND a_account.a_account_code_c = glm.a_account_code_c" +
+                    if (!YTDBalance)
+                    {
+                        Query +=   " AND glm.a_glm_sequence_i = glmpPrevious.a_glm_sequence_i" +
+                                   " AND glmpPrevious.a_period_number_i = " + (ReportPeriodEnd - 1);
+                    }
+
+                    Query +=       " AND a_account.a_account_code_c = glm.a_account_code_c" +
                                    " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
                                    " AND a_account.a_posting_status_l = true" +
                                    " AND a_cost_centre.a_ledger_number_i = glm.a_ledger_number_i" +

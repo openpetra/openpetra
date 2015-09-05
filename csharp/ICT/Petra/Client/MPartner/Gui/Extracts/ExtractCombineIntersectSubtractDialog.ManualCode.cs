@@ -80,14 +80,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // hide field for base extract if not in subtraction mode
             if (FMode != TMode.ecisSubtractMode)
             {
-                int ReducedHeight = txtBaseExtract.Height;
+                int ReducedHeight = txtBaseExtract.Height + lblBaseExtractLabel.Height;
                 txtBaseExtract.Height = 0;
-                lblBaseExtract.Height = 0;
+                lblBaseExtractLabel.Height = 0;
                 txtBaseExtract.Hide();
-                lblBaseExtract.Hide();
+                lblBaseExtractLabel.Hide();
 
                 pnlTop.Height = pnlTop.Height - ReducedHeight;
                 lblExplanation.Location = new System.Drawing.Point(lblExplanation.Location.X, lblExplanation.Location.Y - ReducedHeight);
+            }
+            else
+            {
+                txtBaseExtract.TextBoxWidth = 180;
             }
 
             switch (FMode)
@@ -105,7 +109,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     break;
 
                 case TMode.ecisSubtractMode:
-                    lblExplanation.Text = Catalog.GetString("Please add extracts to the list to be subtracted from the one above.");
+                    lblExplanation.Text = Catalog.GetString("Extract(s) which are to be subtracted:");
                     FindForm().Text = "Subtract Extracts";
                     txtBaseExtract.Select();
                     break;

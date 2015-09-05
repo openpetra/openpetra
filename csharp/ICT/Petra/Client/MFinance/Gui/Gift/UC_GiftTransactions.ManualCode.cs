@@ -2034,12 +2034,92 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
+
             int workingLedgerNumber = FPreviouslySelectedDetailRow.LedgerNumber;
             int workingBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             int workingTransactionNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
             int workingDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
 
-            TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
+            AGiftDetailRow GiftDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
+                    new object[] { workingLedgerNumber, workingBatchNumber, workingTransactionNumber, workingDetailNumber });
+
+            if (FTaxDeductiblePercentageEnabled && GiftDetailRow.TaxDeductible)
+            {
+                // 100% default if tax deductibility is not limited
+                decimal DefaultTaxDeductiblePct = 100;
+
+                // get the default tax deductible percentage for a new gift made today to the same recipient
+                PPartnerTaxDeductiblePctTable PartnerTaxDeductiblePctTable = 
+                    TRemote.MFinance.Gift.WebConnectors.LoadPartnerTaxDeductiblePct(GiftDetailRow.RecipientKey);
+
+                if (PartnerTaxDeductiblePctTable != null && PartnerTaxDeductiblePctTable.Rows.Count > 0)
+                {
+                    foreach (PPartnerTaxDeductiblePctRow Row in PartnerTaxDeductiblePctTable.Rows)
+                    {
+                        // if no valid records exist then the recipient has not limited tax deductible by default
+                        if ((Row.PartnerKey == GiftDetailRow.RecipientKey) && (Row.DateValidFrom <= DateTime.Today))
+                        {
+                            DefaultTaxDeductiblePct = Row.PercentageTaxDeductible;
+                        }
+                    }
+                }
+
+                // if different from current paercentage ask the user which one they want to use
+                if (GiftDetailRow.TaxDeductiblePct != DefaultTaxDeductiblePct
+                    && MessageBox.Show(string.Format(Catalog.GetString(
+                        "The default tax deductible percentage for this recipient for today's date ({0}%) is different from the tax deductible " +
+                        "percentage recorded for the gift detail to be adjusted ({1}%).{2}Do you want to continue to use the original percentage " +
+                        "of {1}% for the adjusted gift?"),
+                        DefaultTaxDeductiblePct, GiftDetailRow.TaxDeductiblePct, "\r\n\r\n"),
+                        Catalog.GetString("Adjust Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)
+                        == DialogResult.No)
+                {
+                    revertForm.AddParam("UpdateTaxDeductiblePct", true);
+                    revertForm.AddParam("NewPct", DefaultTaxDeductiblePct);
+                }
+            }
+
+            if (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
+            {
+                Int64 RecipientLedgerNumber = 0;
+
+                // get the recipient ledger number
+                if (GiftDetailRow.RecipientKey > 0)
+                {
+                    RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(GiftDetailRow.RecipientKey,
+                        DateTime.Today);
+                }
+
+                TVerificationResultCollection VerificationResults;
+
+                // if recipient ledger number belongs to a different ledger then check that it is set up for inter-ledger transfers
+                if ((RecipientLedgerNumber != 0) && (((int)RecipientLedgerNumber / 1000000 == GiftDetailRow.LedgerNumber)
+                    || TRemote.MFinance.Gift.WebConnectors.IsRecipientLedgerNumberSetupForILT(
+                        GiftDetailRow.LedgerNumber, GiftDetailRow.RecipientKey, RecipientLedgerNumber, out VerificationResults)))
+                {
+                    if (RecipientLedgerNumber != GiftDetailRow.RecipientLedgerNumber)
+                    {
+                        string FieldShortName;
+                        TPartnerClass PartnerClass;
+                        TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
+                            RecipientLedgerNumber, out FieldShortName, out PartnerClass);
+
+                        if (MessageBox.Show(string.Format(Catalog.GetString(
+                            "The default gift destination for this recipient for today's date ({0} ({1})) is different from the gift destination " +
+                            "recorded for the gift detail to be adjusted ({2} ({3})).{4}Do you want to continue to use the original " +
+                            "gift destination of {2} ({3}) for the adjusted gift?"),
+                            FieldShortName, RecipientLedgerNumber,
+                            txtDetailRecipientLedgerNumber.LabelText, GiftDetailRow.RecipientLedgerNumber, "\r\n\r\n"),
+                            Catalog.GetString("Adjust Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)
+                            == DialogResult.Yes)
+                        {
+                            // the gift destination for this gift detail will not be changeable
+                            revertForm.AddParam("FixGiftDestination", true);
+                        }
+                    }
+                }
+            }
 
             try
             {
@@ -2053,8 +2133,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 revertForm.AddParam("Function", AFunctionName);
 
-                revertForm.GiftDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
-                    new object[] { workingLedgerNumber, workingBatchNumber, workingTransactionNumber, workingDetailNumber });
+                revertForm.GiftDetailRow = GiftDetailRow;
 
                 if (!revertForm.IsDisposed && (revertForm.ShowDialog() == DialogResult.OK))
                 {

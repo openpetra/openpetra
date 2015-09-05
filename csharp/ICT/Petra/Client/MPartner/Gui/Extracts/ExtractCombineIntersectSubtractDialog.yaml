@@ -23,13 +23,18 @@ RootNode:
         pnlTop:
             Dock: Top
             Controls:
-                Row0: [txtBaseExtract]
-                Row1: [lblExplanation]
-                Row2: [Empty]
+                Row0: [lblBaseExtractLabel]
+                Row1: [txtBaseExtract]
+                Row2: [lblExplanation]
+                Row3: [Empty]
+
+        lblBaseExtractLabel:
+            Width: 500
+            Label: Extract to subtract from
 
         txtBaseExtract:
-            Width: 400
-            Label: Extract to subtract from
+            Width: 575
+            NoLabel: true
             Type: Extract
 
         lblExplanation:

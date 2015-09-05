@@ -11931,6 +11931,12 @@
                 descr="Stores the concatenated primary key fields of the originating gift detail, of which this gift detail is the inverse."
                 format="X(24)"
                 label="Modified Detail Key"/>
+    <tablefield name="a_fixed_gift_destination_l"
+                type="bit"
+                descr="Indicates whether this gift detail's gift destination can be changed. Used for gift adjustments with family recipients."
+                format="yes/no"
+                label="Fixed gift destination"
+                initial="no"/>
     <tablefield name="a_gift_transaction_amount_n"
                 type="number"
                 length="24"

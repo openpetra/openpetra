@@ -14,8 +14,13 @@ RootNode:
         actHelp: {Label=&Help, ActionClick=BtnHelpClick}
     Controls:
         pnlContent:
-            Controls: [rgrBatchSelection, pnlDetails]
+            Controls: [grpBatchDetails, rgrBatchSelection, pnlDetails]
             Dock: Fill
+        grpBatchDetails:
+            Dock: Top
+            Height: 50
+            Controls: [lblBatchDetailsLabel]
+            Visible: false
         rgrBatchSelection:
             Dock: Fill
             Controls: [pnlSelect, grdDetails]
@@ -49,6 +54,9 @@ RootNode:
                 DetailGlEffectiveDate: {Label=Date, Type=DateTime}
                 DetailCurrencyCode: {Label=Currency}
 
+        lblBatchDetailsLabel:
+            Visible: false
+            Dock: Fill
         rbtNewBatch:
             Label: Add reversal/adjustment gifts into a new batch:
         rbtExistingBatch:

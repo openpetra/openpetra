@@ -221,7 +221,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Refresh the data in the grid and the details after the database content was changed on the server
         /// The current filter is not changed.  The highlighted row index remains the same (if possible) after the refresh.
         /// </summary>
-        public void RefreshAllData()
+        public void RefreshAllData(bool AShowStatusDialogOnLoad = true)
         {
             TFrmGiftBatch myParentForm = (TFrmGiftBatch)ParentForm;
 
@@ -276,8 +276,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     // if the batch number = -1 then this is not a valid instance of TUC_GiftTransactions and we do not need to refresh
                     if (TransactionForm.FBatchNumber != -1)
                     {
+                        TransactionForm.ShowStatusDialogOnLoad = AShowStatusDialogOnLoad;
+
                         // This will update the transactions to match the current batch
                         TransactionForm.RefreshAllData();
+
+                        TransactionForm.ShowStatusDialogOnLoad = true;
                     }
                 }
             }
