@@ -504,6 +504,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // create the FPartnerEditScreenDS DataSet that will later be passed to the Client
             FPartnerEditScreenDS = new PartnerEditTDS(DATASETNAME);
 
+            // Important: The IsolationLevel here needs to correspond with the IsolationLevel that is used in the
+            // Ict.Petra.Server.MFinance.Gift.TGift.GetLastGiftDetails Method as otherwise the attempt
+            // of taking-out of a DB Transaction in that Method will lead to Bug #4167!
+            // Also, the IsolationLevel here needs to correspond with the IsolationLevel that is used in all of the
+            // Methods of the Ict.Petra.Server.MPartner.Common.TServerLookups_PartnerInfo Class as these Methods
+            // could be called e.g. by the Partner Find screen while at the same time the user asked for a Partner
+            // to be opened, which will execute concurrently as multi-threading is at work then.
+            // In both these cases either an EDBTransactionIsolationLevelWrongException or
+            // an EDBTransactionIsolationLevelTooLowException would get thrown!
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
                 IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadAndWriteTransaction,
                 ref SubmissionOK,

@@ -238,9 +238,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             TDBTransaction Transaction = null;
             bool SubmissionOK = true;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.RepeatableRead,
-                ref Transaction,
-                ref SubmissionOK,
+            // Important: The IsolationLevel here needs to correspond with the IsolationLevel in the
+            // Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector.LoadData Method
+            // as otherwise the attempt of taking-out of a DB Transaction here will lead to Bug #4167!
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     try
