@@ -30,6 +30,7 @@ using System.Drawing;
 using System.IO;
 //using System.Linq;
 using System.Resources;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -58,7 +59,20 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Budget
 {
-    public partial class TFrmMaintainBudget
+    /// <summary>
+    /// Interface used by logic objects in order to access selected public methods in the MaintainBudget class
+    /// </summary>
+    public interface IMaintainBudget
+    {
+        /// <summary></summary>
+        void SetBudgetDefaultView();
+
+        /// <summary></summary>
+        /// <param name="ARowIndex"></param>
+        void SelectRowInGrid(int ARowIndex);
+    }
+
+    public partial class TFrmMaintainBudget : IMaintainBudget
     {
         private Int32 FLedgerNumber;
         private Int32 FCurrentFinancialYear;
@@ -75,11 +89,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private bool FLoadCompleted = false;
         private bool FRejectYearChange = false;
 
-        private TDlgSelectCSVSeparator FdlgSeparator;
         private String FCurrencyCode = "";
 
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
+
+        private MaintainBudget_Import FImportLogicObject = null;
 
         /// <summary>
         /// AP is opened in this ledger
@@ -90,6 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             {
                 FLedgerNumber = value;
                 LoadBudgets();
+                FImportLogicObject = new MaintainBudget_Import(FPetraUtilsObject, FLedgerNumber, FNumberOfPeriods, this);
             }
         }
 
@@ -173,7 +189,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
         }
 
-        private void SetBudgetDefaultView()
+        /// <summary>
+        ///
+        /// </summary>
+        public void SetBudgetDefaultView()
         {
             DataView MyDataView = FMainDS.ABudget.DefaultView;
 
@@ -193,98 +212,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             FFilterAndFindObject.ApplyFilter();
             UpdateRecordNumberDisplay();
             FFilterAndFindObject.SetRecordNumberDisplayProperties();
-        }
-
-        private void UpdateABudgetPeriodAmounts()
-        {
-            DataView RequiredBudgets = new DataView(FMainDS.ABudget);
-
-            RequiredBudgets.RowFilter = String.Format("{0}={1}",
-                ABudgetTable.GetYearDBName(),
-                FSelectedBudgetYear);
-
-            RequiredBudgets.Sort = ABudgetTable.GetBudgetSequenceDBName() + " ASC";
-
-            foreach (DataRowView drv in RequiredBudgets)
-            {
-                BudgetTDSABudgetRow budgetRow = (BudgetTDSABudgetRow)drv.Row;
-
-                int budgetSeq = budgetRow.BudgetSequence;
-
-                DataView budgetPeriodsDV = new DataView(FMainDS.ABudgetPeriod);
-
-                budgetPeriodsDV.RowFilter = String.Format("{0}={1}",
-                    ABudgetPeriodTable.GetBudgetSequenceDBName(),
-                    budgetRow.BudgetSequence);
-                budgetPeriodsDV.Sort = String.Format("{0} ASC",
-                    ABudgetPeriodTable.GetPeriodNumberDBName());
-
-                foreach (DataRowView drv2 in budgetPeriodsDV)
-                {
-                    ABudgetPeriodRow budgetPeriodRow = (ABudgetPeriodRow)drv2.Row;
-
-                    int period = budgetPeriodRow.PeriodNumber;
-                    string periodAmountColumn = string.Empty;
-
-                    if (period <= FNumberOfPeriods)
-                    {
-                        periodAmountColumn = "Period" + period.ToString("00") + "Amount";
-                        budgetRow[periodAmountColumn] = budgetPeriodRow.BudgetBase;
-                    }
-                    else
-                    {
-                        //TODO After data migration, this should not happen so add an error message.
-                        // In old Petra, budget periods always go up to 20, but are only populated
-                        //   up to number of financial periods
-                    }
-                }
-            }
-
-            //Attempts using LINQ
-            //DataTable BudgetPeriodAmounts = new DataTable();
-            //BudgetPeriodAmounts.Columns.Add("BudgetSequence", typeof(int));
-            //BudgetPeriodAmounts.Columns.Add("PeriodNumber", typeof(int));
-            //BudgetPeriodAmounts.Columns.Add("Amount", typeof(decimal));
-            //BudgetPeriodAmounts.PrimaryKey = new DataColumn[] {BudgetPeriodAmounts.Columns["BudgetSequence"],
-            //                             BudgetPeriodAmounts.Columns["PeriodNumber"]};
-
-            //var varBudgetPeriodAmounts =
-            //    from BudgetTDSABudgetRow budgetRow in FMainDS.ABudget.Rows
-            //                 where budgetRow.Year == ASpecificYear
-            //                 join ABudgetPeriodRow budgetPeriodRow in FMainDS.ABudgetPeriod.Rows on budgetRow.BudgetSequence equals budgetPeriodRow.BudgetSequence
-            //                 select new
-            //                 {
-            //                     BudgetSequence = budgetRow.BudgetSequence,
-            //                     PeriodNumber = budgetPeriodRow.PeriodNumber,
-            //                     Amount = budgetPeriodRow.BudgetBase
-            //                 }; //produces flat sequence
-
-            //foreach (var rowObj in varBudgetPeriodAmounts)
-            //{
-            //    DataRow row = BudgetPeriodAmounts.NewRow();
-            //    BudgetPeriodAmounts.Rows.Add(rowObj.BudgetSequence, rowObj.PeriodNumber, rowObj.Amount);
-            //}
-
-            //DataView BudgetsPeriodAmountsForYearDV = new DataView(BudgetPeriodAmounts);
-            //BudgetsPeriodAmountsForYearDV.Sort = "BudgetSequence ASC, PeriodNumber ASC";
-
-
-            //for (int i = 0; i < BudgetsForYear.Count; i++)
-            //{
-            //    BudgetTDSABudgetRow budgetRow = (BudgetTDSABudgetRow)BudgetsForYear[i].Row;
-
-            //    for (int j = 1; j <= FNumberOfPeriods; j++)
-            //    {
-            //        DataRow budgetsPeriodAmounts = BudgetsPeriodAmountsForYearDV[(FNumberOfPeriods * i) + j - 1].Row;
-
-            //        string columnName = "Period" + j.ToString("00") + "Amount";
-
-            //        if (budgetRow.BudgetSequence == (int)budgetsPeriodAmounts["BudgetSequence"])
-            //        {
-            //            budgetRow[columnName] = (decimal)budgetsPeriodAmounts["Amount"];
-            //        }
-            //    }
-            //}
         }
 
         private void RefreshComboLabels()
@@ -593,158 +520,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
         }
 
-        private void ImportBudget(System.Object sender, EventArgs e)
+        private void ImportBudget(System.Object sender, System.EventArgs e)
         {
-            TVerificationResultCollection ImportErrorMessageCollection = null;
-            string ImportReportMessage = string.Empty;
-            string ErrorMessages = String.Empty;
-
-            int NumRecsImported = 0;
-            int NumRecsUpdated = 0;
-            int NumRowsFailed = 0;
-
-            if (FPetraUtilsObject.HasChanges)
-            {
-                // saving failed, therefore do not try to post
-                MessageBox.Show(Catalog.GetString("Please save before trying to import!"), Catalog.GetString(
-                        "Failure"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                return;
-            }
-
-            String DateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-            OpenFileDialog OFDialog = new OpenFileDialog();
-
-            string ExportPath = TClientSettings.GetExportPath();
-            string FullPath = TUserDefaults.GetStringDefault("Imp Filename",
-                ExportPath + Path.DirectorySeparatorChar + "import.csv");
-            TImportExportDialogs.SetOpenFileDialogFilePathAndName(OFDialog, FullPath, ExportPath);
-
-            OFDialog.Title = Catalog.GetString("Import budget(s) from csv file");
-            OFDialog.Filter = Catalog.GetString("Budget files (*.csv)|*.csv");
-            String ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
-
-            // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
-            TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(FullPath));
-
-            if (OFDialog.ShowDialog() == DialogResult.OK)
-            {
-                FdlgSeparator = new TDlgSelectCSVSeparator(false);
-
-                try
-                {
-                    Cursor = Cursors.WaitCursor;
-
-                    Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(OFDialog.FileName);
-
-                    if (!fileCanOpen)
-                    {
-                        throw new Exception(String.Format(Catalog.GetString("File {0} Cannot be opened."), OFDialog.FileName));
-                    }
-
-                    FdlgSeparator.DateFormat = DateFormatString;
-
-                    if (ImportOptions.Length > 1)
-                    {
-                        FdlgSeparator.NumberFormat = ImportOptions.Substring(1);
-                    }
-
-                    FdlgSeparator.SelectedSeparator = ImportOptions.Substring(0, 1);
-
-                    if (FdlgSeparator.ShowDialog() == DialogResult.OK)
-                    {
-                        string[] FdlgSeparatorVal = new string[] {
-                            FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormat
-                        };
-
-                        //TODO return the budget from the year, and -99 for fail
-                        NumRecsImported = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
-                            FSelectedBudgetYear,
-                            OFDialog.FileName,
-                            FdlgSeparatorVal,
-                            ref FMainDS,
-                            out NumRecsUpdated,
-                            out ImportErrorMessageCollection);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    NumRecsImported = -1;
-                    MessageBox.Show(ex.Message, Catalog.GetString("Budget Import"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    Cursor = Cursors.Default;
-                }
-
-                //Check for import errors and create import error message
-                NumRowsFailed = (ImportErrorMessageCollection == null) ? 0 : ImportErrorMessageCollection.Count;
-
-                if (NumRowsFailed > 0)
-                {
-                    ErrorMessages = String.Format("{0}{0}{1} rows failed to import:",
-                        Environment.NewLine,
-                        NumRowsFailed);
-
-                    foreach (TVerificationResult verif in ImportErrorMessageCollection)
-                    {
-                        ErrorMessages += String.Format("{0}[{1}] {2}: {3}",
-                            Environment.NewLine,
-                            verif.ResultContext,
-                            verif.ResultTextCaption,
-                            verif.ResultText);
-                    }
-                }
-
-                if (NumRecsImported > 0)
-                {
-                    ImportReportMessage =
-                        String.Format(Catalog.GetString("{0} budget rows were found in the file and {1} were successfully imported!"),
-                            NumRecsImported,
-                            (NumRecsImported - NumRowsFailed));
-
-                    if (NumRecsUpdated > 0)
-                    {
-                        ImportReportMessage += String.Format(Catalog.GetString("{0}   ({1} of which updated existing budget rows)"),
-                            Environment.NewLine,
-                            NumRecsUpdated);
-                    }
-
-                    if (NumRowsFailed > 0)
-                    {
-                        ImportReportMessage += ErrorMessages;
-
-                        TFrmExtendedMessageBox messageBox = new TFrmExtendedMessageBox(this);
-                        messageBox.ShowDialog(ImportReportMessage,
-                            Catalog.GetString("Budget Import"),
-                            string.Empty,
-                            TFrmExtendedMessageBox.TButtons.embbOK,
-                            TFrmExtendedMessageBox.TIcon.embiWarning);
-                    }
-                    else
-                    {
-                        MessageBox.Show(ImportReportMessage,
-                            Catalog.GetString("Budget Import"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                    }
-
-                    UpdateABudgetPeriodAmounts();
-                    SetBudgetDefaultView();
-
-                    SelectRowInGrid(1);
-
-                    FPetraUtilsObject.SetChangedFlag();
-                }
-                else if (NumRecsImported < 0)
-                {
-                    SelectRowInGrid(1);
-                }
-                else //0
-                {
-                    MessageBox.Show(Catalog.GetString("No records found to import"), Catalog.GetString(
-                            "Budget Import"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
-            }
+            FImportLogicObject.ImportBudget(FSelectedBudgetYear, ref FMainDS);
         }
 
         // This is not used (and imcomplete...)

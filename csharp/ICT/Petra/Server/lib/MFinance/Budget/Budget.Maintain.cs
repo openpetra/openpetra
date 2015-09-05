@@ -330,19 +330,23 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ACurrentBudgetYear"></param>
+        /// <param name="AImportString"></param>
         /// <param name="ACSVFileName"></param>
         /// <param name="AFdlgSeparator"></param>
         /// <param name="AImportDS"></param>
         /// <param name="ARecordsUpdated"></param>
+        /// <param name="AFailedRows"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns>Total number of records imported and number of which updated as the fractional part</returns>
         [RequireModulePermission("FINANCE-3")]
         public static Int32 ImportBudgets(Int32 ALedgerNumber,
             Int32 ACurrentBudgetYear,
+            string AImportString,
             string ACSVFileName,
             string[] AFdlgSeparator,
             ref BudgetTDS AImportDS,
             out Int32 ARecordsUpdated,
+            out Int32 AFailedRows,
             out TVerificationResultCollection AVerificationResult)
         {
             #region Validate Arguments
@@ -372,16 +376,19 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             #endregion Validate Arguments
 
             ARecordsUpdated = 0;
+            AFailedRows = 0;
             AVerificationResult = new TVerificationResultCollection();
 
             if (AImportDS != null)
             {
                 int retVal = ImportBudgetFromCSV(ALedgerNumber,
                     ACurrentBudgetYear,
+                    AImportString,
                     ACSVFileName,
                     AFdlgSeparator,
                     ref AImportDS,
                     ref ARecordsUpdated,
+                    ref AFailedRows,
                     ref AVerificationResult);
 
                 return retVal;
@@ -395,21 +402,25 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ACurrentBudgetYear"></param>
+        /// <param name="AImportString"></param>
         /// <param name="ACSVFileName"></param>
         /// <param name="AFdlgSeparator"></param>
         /// <param name="AImportDS"></param>
         /// <param name="ARecordsUpdated"></param>
+        /// <param name="AFailedRows"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns>Total number of records imported and number of which updated as the fractional part</returns>
         private static Int32 ImportBudgetFromCSV(Int32 ALedgerNumber,
             Int32 ACurrentBudgetYear,
+            string AImportString,
             string ACSVFileName,
             string[] AFdlgSeparator,
             ref BudgetTDS AImportDS,
             ref Int32 ARecordsUpdated,
+            ref Int32 AFailedRows,
             ref TVerificationResultCollection AVerificationResult)
         {
-            StreamReader DataFile = new StreamReader(ACSVFileName, System.Text.Encoding.Default);
+            StringReader sr = new StringReader(AImportString);
 
             string Separator = AFdlgSeparator[0];
             string DateFormat = AFdlgSeparator[1];
@@ -440,40 +451,35 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             decimal[] BudgetPeriods = new decimal[NumPeriods];
 
             int RowNumber = 0;
+            AFailedRows = 0;
 
             ABudgetTable BudgetTableExistingAndImported = new ABudgetTable();
 
-            while (!DataFile.EndOfStream)
+            // Go round a loop reading the file line by line
+            string ImportLine = sr.ReadLine();
+
+            while (ImportLine != null)
             {
                 decimal totalBudgetRowAmount = 0;
 
                 try
                 {
-                    string Line = DataFile.ReadLine();
+                    CostCentre = StringHelper.GetNextCSV(ref ImportLine, Separator, false).ToString();
 
-                    if (Line == string.Empty)
+                    //Check if header row exists
+                    if ((CostCentre == "Cost Centre") || string.IsNullOrEmpty(ImportLine))
                     {
                         continue;
                     }
 
-                    //Increment row number if not an empty line
+                    //Increment row number
                     RowNumber++;
-
-                    CostCentre = StringHelper.GetNextCSV(ref Line, Separator, false).ToString();
-
-                    //Check if header row exists
-                    if (CostCentre == "Cost Centre")
-                    {
-                        //Read the next line
-                        Line = DataFile.ReadLine();
-                        CostCentre = StringHelper.GetNextCSV(ref Line, Separator, false).ToString();
-                    }
 
                     //Read the values for the current line
                     //Account
-                    Account = StringHelper.GetNextCSV(ref Line, Separator, false).ToString();
+                    Account = StringHelper.GetNextCSV(ref ImportLine, Separator, false).ToString();
                     //BudgetType
-                    BudgetTypeUpper = StringHelper.GetNextCSV(ref Line, Separator, false).ToString().ToUpper();
+                    BudgetTypeUpper = StringHelper.GetNextCSV(ref ImportLine, Separator, false).ToString().ToUpper();
                     BudgetTypeUpper = BudgetTypeUpper.Replace(" ", ""); //Ad hoc will become ADHOC
 
                     //Allow for variations on Inf.Base and Inf.N
@@ -493,7 +499,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     }
 
                     //BudgetYear
-                    BudgetYearStringUpper = (StringHelper.GetNextCSV(ref Line, Separator, false)).ToUpper();
+                    BudgetYearStringUpper = (StringHelper.GetNextCSV(ref ImportLine, Separator, false)).ToUpper();
 
                     //Check validity of CSV file line values
                     if (!ValidateKeyBudgetFields(ALedgerNumber,
@@ -506,6 +512,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             BudgetYearStringUpper,
                             ref AVerificationResult))
                     {
+                        AFailedRows++;
                         continue;
                     }
 
@@ -513,7 +520,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     Array.Clear(BudgetPeriods, 0, NumPeriods);
 
                     if (!ProcessBudgetTypeImportDetails(RowNumber,
-                            ref Line,
+                            ref ImportLine,
                             Separator,
                             BudgetTypeUpper,
                             ref BudgetPeriods,
@@ -597,6 +604,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                         Account),
                                     TResultSeverity.Resv_Noncritical));
 
+                            AFailedRows++;
                             continue;
                         }
 
@@ -662,6 +670,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                         Account),
                                     TResultSeverity.Resv_Noncritical));
 
+                            AFailedRows++;
                             continue;
                         }
 
@@ -700,9 +709,14 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             ex.Message));
                     throw ex;
                 }
+                finally
+                {
+                    // Read the next line
+                    ImportLine = sr.ReadLine();
+                }
             }
 
-            DataFile.Close();
+            //DataFile.Close();
 
             return RowNumber;
         }

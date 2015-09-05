@@ -150,6 +150,7 @@ namespace Ict.Common.Verification
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
+        /// <param name="AAlternativeFirstDayOfPeriod"></param>
         /// <remarks>Usage in the Data Validation Framework: rather than using this Method, use Method
         /// 'TSharedValidationControlHelper.IsNotInvalidDate' for checking the validity of dates as the latter can deal not only with
         /// empty dates, but dates that are invalid in other respects (e.g. exceeding a valid date range)!!!</remarks>
@@ -157,11 +158,12 @@ namespace Ict.Common.Verification
         /// returned that contains details about the problem.</returns>
         public static TVerificationResult IsNotCorporateDateTime(DateTime? ADate, String ADescription,
             object AResultContext = null, System.Data.DataColumn AResultColumn = null,
-            System.Windows.Forms.Control AResultControl = null)
+            System.Windows.Forms.Control AResultControl = null, int AAlternativeFirstDayOfPeriod = 1)
         {
             TVerificationResult ReturnValue;
             DateTime TheDate = TSaveConvert.ObjectToDate(ADate);
             DateTime FirstOfMonth;
+            DateTime FirstOfMonthAlternative;
             String Description = THelper.NiceValueDescription(ADescription);
 
             if (!ADate.HasValue)
@@ -170,19 +172,30 @@ namespace Ict.Common.Verification
             }
 
             FirstOfMonth = new DateTime(TheDate.Year, TheDate.Month, 1);
+            FirstOfMonthAlternative = new DateTime(TheDate.Year, TheDate.Month, AAlternativeFirstDayOfPeriod);
 
             // Checks
-            if (TheDate == FirstOfMonth)
+            if ((TheDate == FirstOfMonth) || (TheDate == FirstOfMonthAlternative))
             {
                 //MessageBox.Show('Date <> DateTime.MinValue');
                 ReturnValue = null;
             }
             else
             {
-                ReturnValue = new TVerificationResult(AResultContext,
-                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE,
-                        CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                        StrDateMustNotBeLaterThanFirstDayOfMonth, new string[] { Description }));
+                if (AAlternativeFirstDayOfPeriod == 1)
+                {
+                    ReturnValue = new TVerificationResult(AResultContext,
+                        ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE,
+                            CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                            StrDateMustNotBeLaterThanFirstDayOfMonth, new string[] { Description }));
+                }
+                else
+                {
+                    ReturnValue = new TVerificationResult(AResultContext,
+                        ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE,
+                            CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                            String.Format(Catalog.GetString("The first day of the period should be either 1 or {0}."), AAlternativeFirstDayOfPeriod)));
+                }
 
                 if (AResultColumn != null)
                 {

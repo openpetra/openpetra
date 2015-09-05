@@ -7,11 +7,12 @@
   <Parameter id="param_calculation" column="0" value="eString:County" />
   <Parameter id="ColumnWidth" column="0" value="eInteger:3" />
   <Parameter id="param_calculation" column="1" value="eString:Donors" />
-  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:1.3" />
   <Parameter id="param_calculation" column="2" value="eString:ExParticipants" />
-  <Parameter id="ColumnWidth" column="2" value="eDecimal:4612811918334230528" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:2.3" />
   <Parameter id="param_calculation" column="3" value="eString:Churches" />
-  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:1.7" />
   <Parameter id="param_calculation" column="4" value="eString:Applicants" />
-  <Parameter id="ColumnWidth" column="4" value="eDecimal:4612811918334230528" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:1.8" />
+  <Parameter id="param_subscriptionoptions" value="eString:AllSubscriptions" />
 </Parameters>

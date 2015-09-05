@@ -15,10 +15,6 @@
       <field whichfield="title1"><value text="Publication Statistical Report"></value></field>
       <field whichfield="title2"><value function="getSiteName()"></value></field>
       <field whichfield="descr1">
-	<fielddetail>
-		<value text="Selected Country: "/>
-		<value variable="param_cmbCountryCode" />
-	</fielddetail>
       </field>
     </pageheader>
 
@@ -41,36 +37,6 @@
 			</queryDetail>
 		</query>
 	</calculation>
-
-	<calculation id="GetPartnerType" returns="PartnerType" returnsFormat="row">
-		<query>
-			<queryDetail>
-				<value>
-					SELECT DISTINCT
-						PUB_p_partner_type.p_type_code_c AS PartnerType
-					FROM
-						PUB_p_partner_type
-					WHERE
-						PUB_p_partner_type.p_partner_key_n = {{PartnerKey}}
-				</value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="GetPartnerGifts" returns="PartnerGifts" returnsFormat="row">
-		<query>
-			<queryDetail>
-				<value>
-					SELECT  DISTINCT
-						PUB_a_gift.p_donor_key_n AS PartnerGifts
-					FROM
-						PUB_a_gift
-					WHERE
-						PUB_a_gift.p_donor_key_n = {{PartnerKey}}
-				</value>
-			</queryDetail>
-		</query>
-	</calculation>
 	
 	<calculation id="CountActivePartners" returns="PartnerCount" returnsFormat="internal">
 		<query>
@@ -89,7 +55,7 @@
 	<calculation id="GetCountyPublicationStatistic" returns="County" returnsFormat="internal">
 		<query>
 			<queryDetail>
-				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, {County})"/>
+				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, {County}, {param_subscriptionoptions}, {param_clbPublicationCode})"/>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -98,7 +64,7 @@
 	<calculation id="GetNonePublicationStatistic" returns="County" returnsFormat="internal">
 		<query>
 			<queryDetail>
-				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, *NONE* )"/>
+				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, *NONE*, {param_subscriptionoptions}, {param_clbPublicationCode} )"/>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -106,7 +72,7 @@
 	<calculation id="GetForeignPublicationStatistic" returns="County" returnsFormat="internal">
 		<query>
 			<queryDetail>
-				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, *FOREIGN* )"/>
+				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, *FOREIGN*, {param_subscriptionoptions}, {param_clbPublicationCode} )"/>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -122,7 +88,7 @@
 	<calculation id="CalculatePublicationStatisticTotals" returns="County" returnsFormat="internal">
 		<query>
 			<queryDetail>
-				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, Totals: )"/>
+				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, Totals:, {param_subscriptionoptions}, {param_clbPublicationCode}  )"/>
 			</queryDetail>
 		</query>
 	</calculation>
