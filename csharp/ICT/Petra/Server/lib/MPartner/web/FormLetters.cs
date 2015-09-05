@@ -1265,15 +1265,23 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 || (AAddressLayoutCode == ""))
             {
                 // this should not happen but just in case we use SMLLABEL as default layout code
-                // NOTE: AlanP for the present we do not support address blocks for multiple languages, so the following has been fixed at 99
-                //AddressBlockTable = PAddressBlockAccess.LoadByPrimaryKey(AFormData.CountryCode, "SMLLABEL", ATransaction);
-                AddressBlockTable = PAddressBlockAccess.LoadByPrimaryKey("99", "SMLLABEL", ATransaction);
+                AddressBlockTable = PAddressBlockAccess.LoadByPrimaryKey(AFormData.CountryCode, "SMLLABEL", ATransaction);
+
+                if (AddressBlockTable.Count == 0)
+                {
+                    // if no address block layout could be found for given country then try to retrieve for default "99"
+                    AddressBlockTable = PAddressBlockAccess.LoadByPrimaryKey("99", "SMLLABEL", ATransaction);
+                }
             }
             else
             {
-                // NOTE: AlanP for the present we do not support address blocks for multiple languages, so the following has been fixed at 99
-                //AddressBlockTable = PAddressBlockAccess.LoadByPrimaryKey(AFormData.CountryCode, AAddressLayoutCode, ATransaction);
-                AddressBlockTable = PAddressBlockAccess.LoadByPrimaryKey("99", AAddressLayoutCode, ATransaction);
+                AddressBlockTable = PAddressBlockAccess.LoadByPrimaryKey(AFormData.CountryCode, AAddressLayoutCode, ATransaction);
+
+                if (AddressBlockTable.Count == 0)
+                {
+                    // if no address block layout could be found for given country then try to retrieve for default "99"
+                    AddressBlockTable = PAddressBlockAccess.LoadByPrimaryKey("99", AAddressLayoutCode, ATransaction);
+                }
             }
 
             if (AddressBlockTable.Count == 0)
