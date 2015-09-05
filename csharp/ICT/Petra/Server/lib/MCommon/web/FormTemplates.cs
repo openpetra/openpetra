@@ -48,7 +48,7 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         /// <param name="ALanguageCode">language code</param>
         /// <param name="ATemplateText">The template as a base64 string</param>
         /// <param name="AUserID">User ID who is doing the upload</param>
-        /// <param name="AUploadDateTime">Loacal date and time from the user PC that is doing the upload</param>
+        /// <param name="AUploadDateTime">Local date and time from the user PC that is doing the upload</param>
         /// <param name="ATemplateFileExtension">File extension of template file (eg docx)</param>
         /// <returns>True if the table record was modified successfully</returns>
         [RequireModulePermission("FINANCE-1")]
@@ -65,14 +65,20 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         /// <param name="ALanguageCode">language code</param>
         /// <param name="ATemplateText">The template as a base64 string</param>
         /// <param name="AUserID">User ID who is doing the upload</param>
-        /// <param name="AUploadDateTime">Loacal date and time from the user PC that is doing the upload</param>
+        /// <param name="AUploadDateTime">Local date and time from the user PC that is doing the upload</param>
         /// <param name="ATemplateFileExtension">File extension of template file (eg docx)</param>
         /// <returns>True if the table record was modified successfully</returns>
         [RequireModulePermission("PTNRUSER")]
         public static bool UploadPartnerFormTemplate(String AFormName, String ALanguageCode, String ATemplateText,
             String AUserID, DateTime AUploadDateTime, String ATemplateFileExtension)
         {
-            return UploadFormTemplate("PARTNER", AFormName, ALanguageCode, ATemplateText, AUserID, AUploadDateTime, ATemplateFileExtension);
+            return UploadFormTemplate(MCommonConstants.FORM_CODE_PARTNER,
+                AFormName,
+                ALanguageCode,
+                ATemplateText,
+                AUserID,
+                AUploadDateTime,
+                ATemplateFileExtension);
         }
 
         /// <summary>
@@ -82,14 +88,20 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         /// <param name="ALanguageCode">language code</param>
         /// <param name="ATemplateText">The template as a base64 string</param>
         /// <param name="AUserID">User ID who is doing the upload</param>
-        /// <param name="AUploadDateTime">Loacal date and time from the user PC that is doing the upload</param>
+        /// <param name="AUploadDateTime">Local date and time from the user PC that is doing the upload</param>
         /// <param name="ATemplateFileExtension">File extension of template file (eg docx)</param>
         /// <returns>True if the table record was modified successfully</returns>
         [RequireModulePermission("PERSONNEL")]
         public static bool UploadPersonnelFormTemplate(String AFormName, String ALanguageCode, String ATemplateText,
             String AUserID, DateTime AUploadDateTime, String ATemplateFileExtension)
         {
-            return UploadFormTemplate("PERSONNEL", AFormName, ALanguageCode, ATemplateText, AUserID, AUploadDateTime, ATemplateFileExtension);
+            return UploadFormTemplate(MCommonConstants.FORM_CODE_PERSONNEL,
+                AFormName,
+                ALanguageCode,
+                ATemplateText,
+                AUserID,
+                AUploadDateTime,
+                ATemplateFileExtension);
         }
 
         /// <summary>
@@ -148,24 +160,24 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
 
         /// <summary>
         /// Returns a single row PFormTable that contains the full template text as a base64 string.
-        /// The parameters are the three elements of the table primary key.
+        /// The parameters are two of the three elements of the table primary key.
         /// Use for Partner form downloads
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
         public static PFormTable DownloadPartnerFormTemplate(String AFormName, String ALanguageCode)
         {
-            return DownloadFormTemplate("PARTNER", AFormName, ALanguageCode);
+            return DownloadFormTemplate(MCommonConstants.FORM_CODE_PARTNER, AFormName, ALanguageCode);
         }
 
         /// <summary>
         /// Returns a single row PFormTable that contains the full template text as a base64 string.
-        /// The parameters are the three elements of the table primary key.
+        /// The parameters are two of the three elements of the table primary key.
         /// Use for Personnel form downloads
         /// </summary>
         [RequireModulePermission("PERSONNEL")]
         public static PFormTable DownloadPersonnelFormTemplate(String AFormName, String ALanguageCode)
         {
-            return DownloadFormTemplate("PERSONNEL", AFormName, ALanguageCode);
+            return DownloadFormTemplate(MCommonConstants.FORM_CODE_PERSONNEL, AFormName, ALanguageCode);
         }
 
         /// <summary>

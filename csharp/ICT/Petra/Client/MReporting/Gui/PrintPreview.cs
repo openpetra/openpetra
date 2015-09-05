@@ -330,7 +330,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             String Res = "";
 
-            String[] options = new String[node.Attributes.Count];
             TFrmSelectExtractColumn SelectForm = new TFrmSelectExtractColumn();
             Boolean FoundInt64Field = false;
 
