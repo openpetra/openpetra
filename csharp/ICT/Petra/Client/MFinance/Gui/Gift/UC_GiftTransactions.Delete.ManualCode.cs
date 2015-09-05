@@ -106,11 +106,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // temporarily disable  New Donor Warning
             ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = false;
 
-            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmGiftBatch) this.ParentForm).SaveChangesManual())
-            {
-                MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
-                return DeletionSuccessful;
-            }
+            //if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmGiftBatch) this.ParentForm).SaveChangesManual())
+            //{
+            //    MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
+            //    return DeletionSuccessful;
+            //}
 
             ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = true;
 

@@ -480,7 +480,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GLBatchTDS submitRecurringDS = (GLBatchTDS)FMainDS.Clone();
                 int currentBatch = FPreviouslySelectedDetailRow.BatchNumber;
 
-                submitRecurringDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadALedgerTable(FLedgerNumber));
                 submitRecurringDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatchAndContent(FLedgerNumber, currentBatch));
 
                 SubmitForm.SubmitMainDS = submitRecurringDS;

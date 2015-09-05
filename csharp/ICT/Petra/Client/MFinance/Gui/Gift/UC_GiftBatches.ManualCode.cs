@@ -969,6 +969,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+                Cursor = Cursors.WaitCursor;
+
                 Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow);
 
                 if (Success)
@@ -1008,6 +1010,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ex.Message);
 
                 MessageBox.Show(errMsg, Catalog.GetString("Post Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
             }
         }
 

@@ -115,24 +115,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (JournalDV.Count > 0)
             {
                 string currencyCode = string.Empty;
-                bool isForeignCurrency = false;
+                decimal exchangeRate = 0;
 
                 foreach (DataRowView drv in JournalDV)
                 {
                     ARecurringJournalRow jr = (ARecurringJournalRow)drv.Row;
 
                     currencyCode = jr.TransactionCurrency;
-                    isForeignCurrency = (currencyCode != FBaseCurrencyCode);
+                    exchangeRate = (currencyCode == FBaseCurrencyCode) ? 1 : 0;
 
                     if (!FExchangeRateDictionary.ContainsKey(currencyCode))
                     {
-                        FExchangeRateDictionary.Add(currencyCode, (isForeignCurrency ? 0 : 1));
+                        FExchangeRateDictionary.Add(currencyCode, exchangeRate);
                     }
 
-                    if (isForeignCurrency)
-                    {
-                        jr.ExchangeRateToBase = 0;
-                    }
+                    jr.ExchangeRateToBase = exchangeRate;
                 }
             }
 
@@ -171,12 +168,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void LookupCurrencyExchangeRates(DateTime ADate, String ACurrencyCode)
         {
-            decimal ExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
-                ACurrencyCode,
-                FBaseCurrencyCode,
-                ADate, true);
+            decimal ExchangeRateToBase = 1;
 
-            txtDetailExchangeRateToBase.NumberValueDecimal = ExchangeRateToBase;
+            if (ACurrencyCode != FBaseCurrencyCode)
+            {
+                ExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
+                    ACurrencyCode,
+                    FBaseCurrencyCode,
+                    ADate, true);
+            }
+
+            if ((txtDetailExchangeRateToBase.NumberValueDecimal.Value != ExchangeRateToBase)
+                || (FPreviouslySelectedDetailRow.ExchangeRateToBase != ExchangeRateToBase))
+            {
+                txtDetailExchangeRateToBase.NumberValueDecimal = ExchangeRateToBase;
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = ExchangeRateToBase;
+            }
 
             FExchangeRateIntlToBase = InternationalCurrencyExchangeRate(ADate);
         }
@@ -210,7 +217,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (DateTime.TryParse(aDate, out dateValue))
             {
-                LookupCurrencyExchangeRates(dateValue, "Test");
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    LookupCurrencyExchangeRates(dateValue, FPreviouslySelectedDetailRow.TransactionCurrency);
+                }
             }
             else
             {

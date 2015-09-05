@@ -647,7 +647,7 @@ namespace Ict.Petra.Server.MFinance.Common
             // erm - this is done already? I don't want to do it here, since my journal may contain forex-reval elements.
 
             // Calculate the credit and debit totals
-            GLRoutines.UpdateTotalsOfBatch(ref AGLBatchDS, ABatchToPost);
+            GLRoutines.UpdateBatchTotals(ref AGLBatchDS, ref ABatchToPost);
 
             if (ABatchToPost.BatchCreditTotal != ABatchToPost.BatchDebitTotal)
             {
@@ -901,9 +901,6 @@ namespace Ict.Petra.Server.MFinance.Common
                                "   AND " + bBatchNumber + " = " + prmBatchNumber +
                                " GROUP BY " + bBatchNumber + ";";
 
-                //TODO: remove
-                TLogging.Log(SQLStatement);
-
                 //Create temp table to check veracity of Journal numbering
                 GLBatchTDS gLBatch = AGLBatch;
                 TDBTransaction transaction = null;
@@ -1093,9 +1090,6 @@ namespace Ict.Petra.Server.MFinance.Common
                                " WHERE " + jLedgerNumber + " = " + prmLedgerNumber +
                                "   AND " + jBatchNumber + " = " + prmBatchNumber +
                                " GROUP BY " + jBatchNumber + ", " + jJournalNumber + ";";
-
-                //TODO: remove
-                TLogging.Log(SQLStatement);
 
                 //Create temp table to check veracity of Transaction numbering
                 GLBatchTDS gLBatch = AGLBatch;
@@ -2184,7 +2178,7 @@ namespace Ict.Petra.Server.MFinance.Common
                             }
 
                             // Calculate the credit and debit totals
-                            GLRoutines.UpdateTotalsOfBatch(ref MainDS, newBatchRow);
+                            GLRoutines.UpdateBatchTotals(ref MainDS, ref newBatchRow);
 
                             GLBatchTDSAccess.SubmitChanges(MainDS);
 

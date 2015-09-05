@@ -141,7 +141,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     ACurrentJournalRow.BeginEdit();
+
                     ACurrentJournalRow.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
+                    ACurrentJournalRow.LastTransactionNumber = 0;
 
                     //Ensure validation passes
                     if (ACurrentJournalRow.JournalDescription.Length == 0)
@@ -166,6 +168,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     ACurrentJournalRow.JournalCreditTotal = 0;
                     ACurrentJournalRow.JournalDebitTotal = 0;
+
                     ACurrentJournalRow.EndEdit();
 
                     FPetraUtilsObject.SetChangedFlag();

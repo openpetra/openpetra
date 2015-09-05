@@ -143,8 +143,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             bool DifferentBatchSelected = false;
 
             FLoadCompleted = false;
+
             FBatchRow = GetBatchRow();
             FJournalRow = GetJournalRow();
+
+            //FBatchNumber and FJournalNumber may have already been set outside
+            //  so need to reset to previous value
+            if (txtBatchNumber.Text.Length > 0)
+            {
+                FBatchNumber = Int32.Parse(txtBatchNumber.Text);
+            }
+
+            if (txtJournalNumber.Text.Length > 0)
+            {
+                FJournalNumber = Int32.Parse(txtJournalNumber.Text);
+            }
+
             FIsUnposted = (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
             if (FLedgerNumber == -1)
@@ -154,6 +168,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             try
             {
+                this.Cursor = Cursors.WaitCursor;
+
                 //Check if the same batch is selected, so no need to apply filter
                 if ((FLedgerNumber == ALedgerNumber)
                     && (FBatchNumber == ABatchNumber)
@@ -181,12 +197,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     return false;
                 }
 
-                this.Cursor = Cursors.WaitCursor;
-
-                // A new ledger/batch
+                // Different batch selected
                 DifferentBatchSelected = true;
                 bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != ACurrencyCode);
 
+                //Handle dialog
                 dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
 
                 if (FShowStatusDialogOnLoad == true)
@@ -202,15 +217,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FJournalNumber = AJournalNumber;
                 FTransactionNumber = -1;
                 FTransactionCurrency = ACurrencyCode;
+                FBatchStatus = ABatchStatus;
+                FJournalStatus = AJournalStatus;
 
                 FPreviouslySelectedDetailRow = null;
                 grdDetails.SuspendLayout();
                 //Empty grids before filling them
                 grdDetails.DataSource = null;
                 grdAnalAttributes.DataSource = null;
-
-                FBatchStatus = ABatchStatus;
-                FJournalStatus = AJournalStatus;
 
                 // This sets the main part of the filter but excluding the additional items set by the user GUI
                 // It gets the right sort order
@@ -322,7 +336,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     string updatedTransactions = string.Empty;
 
                     dlgStatus.CurrentStatus = Catalog.GetString("Checking analysis attributes ...");
-
                     FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(FMainDS, FCacheDS, out updatedTransactions);
 
                     if (updatedTransactions.Length > 0)
@@ -770,7 +783,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (TransDV.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionForBatch(ALedgerNumber, ABatchNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber));
                 }
 
                 //As long as transactions exist, return true
@@ -878,8 +891,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //If called at the batch level, clear the current selections
             if (BatchLevel)
             {
-                CurrentJournalNumber = 0;
-
                 FPetraUtilsObject.SuppressChangeDetection = true;
                 ClearCurrentSelection();
                 ((TFrmGLBatch) this.ParentForm).GetJournalsControl().ClearCurrentSelection();
@@ -1167,18 +1178,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }   // next journal
 
             //Update totals of Batch
-            if (FLoadCompleted && UnpostedBatch)
+            if (UnpostedBatch)
             {
-                GLRoutines.UpdateTotalsOfBatch(ref FMainDS, CurrentBatchRow);
+                GLRoutines.UpdateBatchTotals(ref FMainDS, ref CurrentBatchRow);
             }
-            else
-            {
-                //In trans loading
-                txtCreditTotalAmount.NumberValueDecimal = AmtCreditTotal;
-                txtDebitTotalAmount.NumberValueDecimal = AmtDebitTotal;
-                txtCreditTotalAmountBase.NumberValueDecimal = AmtCreditTotalBase;
-                txtDebitTotalAmountBase.NumberValueDecimal = AmtDebitTotalBase;
-            }
+
+            //In trans loading
+            txtCreditTotalAmount.NumberValueDecimal = AmtCreditTotal;
+            txtDebitTotalAmount.NumberValueDecimal = AmtDebitTotal;
+            txtCreditTotalAmountBase.NumberValueDecimal = AmtCreditTotalBase;
+            txtDebitTotalAmountBase.NumberValueDecimal = AmtDebitTotalBase;
 
             // refresh the currency symbols
             if (TransactionRowActive)
@@ -1580,7 +1589,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.Merge(FTempDS);
                 }
 
-                //If some row(s) still exist after deletion
+                //If all rows have deleted successfully
                 if (grdDetails.Rows.Count < 2)
                 {
                     UpdateChangeableStatus();
@@ -1632,15 +1641,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ClearControls();
                 }
 
+                //Always update LastTransactionNumber first before updating totals
+                GLRoutines.UpdateJournalLastTransaction(ref FMainDS, ref FJournalRow);
                 UpdateTransactionTotals();
 
-                ((TFrmGLBatch) this.ParentForm).SaveChanges();
-
-                //message to user
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion Successful",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                if (((TFrmGLBatch) this.ParentForm).SaveChanges())
+                {
+                    //message to user
+                    MessageBox.Show(ACompletionMessage,
+                        "Deletion Successful",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(Catalog.GetString("Error attempting to save after deleting a transaction!"),
+                        "Deletion Unsuccessful",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                }
             }
             else if (!AAllowDeletion && (ACompletionMessage.Length > 0))
             {
@@ -1680,10 +1699,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             bool RowToDeleteIsNew = (ARowToDelete.RowState == DataRowState.Added);
 
-            if (!RowToDeleteIsNew && !((TFrmGLBatch) this.ParentForm).SaveChanges())
+            if (!RowToDeleteIsNew)
             {
-                MessageBox.Show("Error in trying to save prior to deleting current transaction!");
-                return DeletionSuccessful;
+                //Reject any changes which may fail validation
+                ARowToDelete.RejectChanges();
+
+                if (!((TFrmGLBatch) this.ParentForm).SaveChanges())
+                {
+                    MessageBox.Show(Catalog.GetString("Error in trying to save prior to deleting current transaction!"),
+                        Catalog.GetString("Deletion Error"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+
+                    return DeletionSuccessful;
+                }
             }
 
             //Backup the Dataset for reversion purposes
@@ -1728,7 +1757,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ACompletionMessage = ex.Message;
                 MessageBox.Show(ex.Message,
-                    "Deletion Error",
+                    Catalog.GetString("Deletion Error"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 

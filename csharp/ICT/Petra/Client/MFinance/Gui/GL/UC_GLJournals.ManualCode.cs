@@ -103,6 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
             FJournalsLoaded = false;
+
             FBatchRow = GetBatchRow();
 
             if (FBatchRow == null)
@@ -110,14 +111,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            bool BatchIsUnposted = (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
-
-            FCancelLogicObject = new TUC_GLJournals_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS);
-
             bool FirstRun = (FLedgerNumber != ALedgerNumber);
             bool BatchChanged = (FBatchNumber != ABatchNumber);
-
             bool BatchStatusChanged = (!BatchChanged && (FBatchStatus != ABatchStatus));
+
+            if (FirstRun)
+            {
+                FLedgerNumber = ALedgerNumber;
+            }
+
+            if (BatchChanged)
+            {
+                FBatchNumber = ABatchNumber;
+            }
+
+            if (BatchStatusChanged)
+            {
+                FBatchStatus = ABatchStatus;
+            }
+
+            bool BatchIsUnposted = (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+            //Create object to control deletion
+            FCancelLogicObject = new TUC_GLJournals_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS);
 
             //Make sure the current effective date for the Batch is correct
             DateTime BatchDateEffective = FBatchRow.DateEffective;
@@ -137,10 +153,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
                 // a different journal
-                FLedgerNumber = ALedgerNumber;
-                FBatchNumber = ABatchNumber;
-                FBatchStatus = ABatchStatus;
-
                 SetJournalDefaultView();
                 FPreviouslySelectedDetailRow = null;
 
@@ -581,6 +593,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FCancelLogicObject.CancelRow(FPreviouslySelectedDetailRow, txtDetailJournalDescription, txtDetailExchangeRateToBase))
             {
+                UpdateHeaderTotals(FBatchRow);
                 UpdateChangeableStatus();
                 SetFocusToDetailsGrid();
             }

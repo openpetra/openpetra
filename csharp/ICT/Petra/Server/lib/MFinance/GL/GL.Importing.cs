@@ -254,7 +254,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                     if (NewBatch != null)   // update the totals of the batch that has just been imported
                                     {
-                                        GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
+                                        GLRoutines.UpdateBatchTotals(ref MainDS, ref NewBatch);
 
                                         if (TVerificationHelper.IsNullOrOnlyNonCritical(Messages))
                                         {
@@ -707,7 +707,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         if (NewBatch != null)
                         {
-                            GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
+                            GLRoutines.UpdateBatchTotals(ref MainDS, ref NewBatch);
                         }
 
                         ImportMessage = Catalog.GetString("Saving changes to batch");
@@ -1037,7 +1037,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         // update the totals of the batch that has just been imported
                         ImportMessage = Catalog.GetString("Saving changes to totals");
-                        GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatchRow);
+                        GLRoutines.UpdateBatchTotals(ref MainDS, ref NewBatchRow);
 
                         ImportMessage = Catalog.GetString("Saving journal totals");
                         AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);

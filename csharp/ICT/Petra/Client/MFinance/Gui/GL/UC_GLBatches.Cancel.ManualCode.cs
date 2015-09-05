@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     //Load tables afresh
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, CurrentBatchNumber));
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionForBatch(FLedgerNumber, CurrentBatchNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(FLedgerNumber, CurrentBatchNumber));
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttribForBatch(FLedgerNumber, CurrentBatchNumber));
 
                     //Delete transactions
