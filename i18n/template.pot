@@ -1810,7 +1810,7 @@ msgstr ""
 
 
 #: csharp\ICT\Petra\Client\CommonDialogs\UC_PetraLogoAndVersionInfo.cs:54 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "© 1995 - 2014 by OM International"
+msgid "© 1995 - 2015 by OM International"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\CommonDialogs\UC_PetraLogoAndVersionInfo.cs:55 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
