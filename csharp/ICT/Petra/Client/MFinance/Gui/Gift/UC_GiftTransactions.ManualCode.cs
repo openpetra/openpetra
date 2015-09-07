@@ -2070,15 +2070,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFunctionName">Which function shall be called on the server</param>
         public void ShowRevertAdjustForm(GiftAdjustmentFunctionEnum AFunctionName)
         {
-            TFrmGiftBatch parentForm = (TFrmGiftBatch)ParentForm;
-            bool reverseWholeBatch = (AFunctionName == GiftAdjustmentFunctionEnum.ReverseGiftBatch);
+            TFrmGiftBatch ParentGiftBatchForm = (TFrmGiftBatch)ParentForm;
+            bool ReverseWholeBatch = (AFunctionName == GiftAdjustmentFunctionEnum.ReverseGiftBatch);
+            bool AdjustGift = (AFunctionName == GiftAdjustmentFunctionEnum.AdjustGift);
 
-            if (!parentForm.SaveChangesManual())
+            if (!ParentGiftBatchForm.SaveChangesManual())
             {
                 return;
             }
 
-            parentForm.Cursor = Cursors.WaitCursor;
+            ParentGiftBatchForm.Cursor = Cursors.WaitCursor;
 
             AGiftBatchRow giftBatch = ((TFrmGiftBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
             int BatchNumber = giftBatch.BatchNumber;
@@ -2086,35 +2087,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (giftBatch == null)
             {
                 MessageBox.Show(Catalog.GetString("Please select a Gift Batch to Reverse."));
-                parentForm.Cursor = Cursors.Default;
+                ParentGiftBatchForm.Cursor = Cursors.Default;
                 return;
             }
 
             if (!giftBatch.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED))
             {
                 MessageBox.Show(Catalog.GetString("This function is only possible when the selected batch is already posted."));
-                parentForm.Cursor = Cursors.Default;
+                ParentGiftBatchForm.Cursor = Cursors.Default;
                 return;
             }
 
             if (FPetraUtilsObject.HasChanges)
             {
                 MessageBox.Show(Catalog.GetString("Please save first and than try again!"));
-                parentForm.Cursor = Cursors.Default;
+                ParentGiftBatchForm.Cursor = Cursors.Default;
                 return;
             }
 
-            if (reverseWholeBatch && (FBatchNumber != BatchNumber))
+            if (ReverseWholeBatch && (FBatchNumber != BatchNumber))
             {
-                parentForm.SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, true);
-                parentForm.SelectTab(TFrmGiftBatch.eGiftTabs.Batches);
-                parentForm.Cursor = Cursors.WaitCursor;
+                ParentGiftBatchForm.SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, true);
+                ParentGiftBatchForm.SelectTab(TFrmGiftBatch.eGiftTabs.Batches);
+                ParentGiftBatchForm.Cursor = Cursors.WaitCursor;
             }
 
             if (FPreviouslySelectedDetailRow == null)
             {
                 MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
-                parentForm.Cursor = Cursors.Default;
+                ParentGiftBatchForm.Cursor = Cursors.Default;
                 return;
             }
 
@@ -2149,23 +2150,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!revertForm.IsDisposed && (revertForm.ShowDialog() == DialogResult.OK))
                 {
-                    parentForm.Cursor = Cursors.WaitCursor;
+                    ParentGiftBatchForm.Cursor = Cursors.WaitCursor;
 
                     if ((revertForm.AdjustmentBatchNumber > 0) && (revertForm.AdjustmentBatchNumber != workingBatchNumber))
                     {
                         // select the relevant batch
-                        parentForm.InitialBatchNumber = revertForm.AdjustmentBatchNumber;
+                        ParentGiftBatchForm.InitialBatchNumber = revertForm.AdjustmentBatchNumber;
                     }
 
-                    parentForm.RefreshAll();
+                    ParentGiftBatchForm.RefreshAll();
                 }
             }
             finally
             {
-                parentForm.Cursor = Cursors.WaitCursor;
+                ParentGiftBatchForm.Cursor = Cursors.WaitCursor;
                 revertForm.Dispose();
                 ParentForm.ShowInTaskbar = true;
-                parentForm.Cursor = Cursors.Default;
+                ParentGiftBatchForm.Cursor = Cursors.Default;
+            }
+
+            if (AdjustGift && (ParentGiftBatchForm.ActiveTab() == TFrmGiftBatch.eGiftTabs.Transactions))
+            {
+                //Select first row for adjusting, i.e. first +ve amount
+                foreach (DataRowView drv in FMainDS.AGiftDetail.DefaultView)
+                {
+                    AGiftDetailRow gdr = (AGiftDetailRow)drv.Row;
+
+                    if (gdr.GiftTransactionAmount > 0)
+                    {
+                        grdDetails.SelectRowInGrid(grdDetails.Rows.DataSourceRowToIndex(drv) + 1);
+                    }
+                }
             }
         }
 

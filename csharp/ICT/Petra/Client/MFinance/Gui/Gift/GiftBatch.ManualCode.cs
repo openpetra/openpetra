@@ -513,6 +513,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// Return the currently selected Tab
+        /// </summary>
+        /// <returns></returns>
+        public eGiftTabs ActiveTab()
+        {
+            if (this.tabGiftBatch.SelectedTab == this.tpgBatches)
+            {
+                return eGiftTabs.Batches;
+            }
+            else if (this.tabGiftBatch.SelectedTab == this.tpgTransactions)
+            {
+                return eGiftTabs.Transactions;
+            }
+            else
+            {
+                return eGiftTabs.None;
+            }
+        }
+
+        /// <summary>
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
