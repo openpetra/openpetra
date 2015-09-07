@@ -624,15 +624,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             int CurrentJournalNumber = FPreviouslySelectedDetailRow.JournalNumber;
 
-            if (FCancelLogicObject.CancelRow(FPreviouslySelectedDetailRow, txtDetailJournalDescription, txtDetailExchangeRateToBase))
+            if (FCancelLogicObject.CancelRow(FPreviouslySelectedDetailRow))
             {
                 UpdateHeaderTotals(FBatchRow);
-                UpdateChangeableStatus();
                 SetFocusToDetailsGrid();
             }
 
             SetJournalDefaultView();
             FFilterAndFindObject.ApplyFilter();
+
+            UpdateChangeableStatus();
+            ((TFrmGLBatch)ParentForm).DisableTransactions();
         }
 
         private void RefreshCurrencyAndExchangeRate()

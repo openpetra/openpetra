@@ -202,7 +202,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void AutoEnableTransTabForBatch()
         {
-            bool EnableTransTab = ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.LastJournal == 1));
+            bool EnableTransTab = ((FPreviouslySelectedDetailRow != null)
+                                   && (FPreviouslySelectedDetailRow.LastJournal == 1)
+                                   && (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_CANCELLED));
 
             ((TFrmGLBatch) this.ParentForm).EnableTransactions(EnableTransTab);
         }
@@ -785,21 +787,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
-            int newCurrentRowPos = grdDetails.GetFirstHighlightedRowIndex();
+            int CurrentRowPos = grdDetails.GetFirstHighlightedRowIndex();
 
-            if (FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow, txtDetailBatchDescription))
+            if (FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow))
             {
-                SelectRowInGrid(newCurrentRowPos);
+                //Reset row to fire events
+                SelectRowInGrid(CurrentRowPos);
+
+                //The current Batch is still selected, so disable
+                //((TFrmGLBatch)ParentForm).DisableJournals();
+                //((TFrmGLBatch)ParentForm).DisableTransactions();
             }
 
-            //If some row(s) still exist after deletion
+            //If no row exists in current view after cancellation
             if (grdDetails.Rows.Count < 2)
             {
                 EnableButtonControl(false);
                 ClearDetailControls();
-
-                ((TFrmGLBatch)ParentForm).DisableJournals();
-                ((TFrmGLBatch)ParentForm).DisableTransactions();
             }
         }
 

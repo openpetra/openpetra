@@ -588,6 +588,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// Re-show the specified row
+        /// </summary>
+        /// <param name="AModifiedBatchRow"></param>
+        /// <param name="ARedisplay"></param>
+        public void UndoModifiedBatchRow(AGiftBatchRow AModifiedBatchRow, bool ARedisplay)
+        {
+            //Check if new row or not
+            if (AModifiedBatchRow.RowState == DataRowState.Added)
+            {
+                return;
+            }
+
+            AModifiedBatchRow.RejectChanges();
+
+            if (ARedisplay)
+            {
+                ShowDetails(AModifiedBatchRow);
+            }
+        }
+
+        /// <summary>
         /// add a new batch
         /// </summary>
         /// <param name="sender"></param>

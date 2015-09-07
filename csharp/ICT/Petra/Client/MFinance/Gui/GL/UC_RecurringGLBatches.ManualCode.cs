@@ -898,7 +898,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             catch (Exception ex)
             {
                 ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
+                MessageBox.Show(ACompletionMessage,
                     "Deletion Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);

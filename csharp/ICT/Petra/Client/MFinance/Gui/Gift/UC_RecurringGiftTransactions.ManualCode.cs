@@ -1385,7 +1385,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ARowToDelete.RejectChanges();
                     ShowDetails(ARowToDelete);
 
-                    if (!((TFrmGiftBatch) this.ParentForm).SaveChanges())
+                    if (!((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
                     {
                         MessageBox.Show(Catalog.GetString("Error in trying to save prior to deleting current gift detail!"),
                             Catalog.GetString("Deletion Error"),
@@ -1405,7 +1405,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             GiftBatchTDS BackupMainDS = (GiftBatchTDS)FMainDS.Copy();
             BackupMainDS.Merge(FMainDS);
 
-            //Pass copy to delete method.
+            //To be used later....Pass copy to delete method.
             //GiftBatchTDS TempDS = (GiftBatchTDS)FMainDS.Copy();
             //TempDS.Merge(FMainDS);
 

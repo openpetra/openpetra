@@ -581,53 +581,84 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>true if row deletion is successful</returns>
         private bool DeleteRowManual(ARecurringGiftBatchRow ARowToDelete, ref string ACompletionMessage)
         {
-            bool deletionSuccessful = false;
+            bool DeletionSuccessful = false;
 
-            int batchNumber = ARowToDelete.BatchNumber;
-
-            bool newBatch = (ARowToDelete.RowState == DataRowState.Added);
-
-            // first save any changes
-            if (!((TFrmRecurringGiftBatch)FPetraUtilsObject.GetForm()).SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction.DELETING))
+            if (ARowToDelete == null)
             {
-                return false;
+                return DeletionSuccessful;
+            }
+
+            int BatchNumber = ARowToDelete.BatchNumber;
+
+            ACompletionMessage = string.Empty;
+
+            bool RowToDeleteIsNew = (ARowToDelete.RowState == DataRowState.Added);
+
+            //Backup the Dataset for reversion purposes
+            GiftBatchTDS BackupMainDS = (GiftBatchTDS)FMainDS.Copy();
+            BackupMainDS.Merge(FMainDS);
+
+            if (!RowToDeleteIsNew)
+            {
+                //Return modified row to last saved state to avoid validation failures
+                ARowToDelete.RejectChanges();
+                ShowDetails(ARowToDelete);
+
+                if (!((TFrmRecurringGiftBatch)FPetraUtilsObject.GetForm()).SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction.DELETING))
+                {
+                    MessageBox.Show(Catalog.GetString("Error in trying to save prior to deleting current recurring gift batch!"),
+                        Catalog.GetString("Deletion Error"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+
+                    return DeletionSuccessful;
+                }
             }
 
             try
             {
+                this.Cursor = Cursors.WaitCursor;
+
                 ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
-                    batchNumber);
+                    BatchNumber);
 
                 //clear any transactions currently being editied in the Transaction Tab
                 ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
-                if (!newBatch)
+                if (!RowToDeleteIsNew)
                 {
                     //Load tables afresh
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(FLedgerNumber, batchNumber));
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(FLedgerNumber, BatchNumber));
                 }
 
-                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().DeleteCurrentRecurringBatchGiftData(batchNumber);
+                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().DeleteCurrentRecurringBatchGiftData(BatchNumber);
 
                 // Delete the recurring batch row.
                 ARowToDelete.Delete();
 
                 FPreviouslySelectedDetailRow = null;
 
-                deletionSuccessful = true;
+                DeletionSuccessful = true;
             }
             catch (Exception ex)
             {
                 ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
+                MessageBox.Show(ACompletionMessage,
                     "Deletion Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
+
+                //Revert to previous state
+                FMainDS.Merge(BackupMainDS);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
             }
 
             UpdateRecordNumberDisplay();
 
-            return deletionSuccessful;
+            return DeletionSuccessful;
         }
 
         /// <summary>
@@ -654,7 +685,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    MessageBox.Show("Unable to save after deletion of batch! Try saving manually and closing and reopening the form.");
+                    MessageBox.Show(Catalog.GetString(
+                            "Unable to save after deletion of batch! Try saving manually and closing and reopening the form."));
                 }
             }
             else if (!AAllowDeletion)

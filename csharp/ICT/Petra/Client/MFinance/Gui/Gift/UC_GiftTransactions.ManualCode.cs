@@ -1199,7 +1199,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactionsForBatch(FLedgerNumber, ABatchNumber));
-
                 FMainDS.AcceptChanges();
 
                 RetVal = true;
