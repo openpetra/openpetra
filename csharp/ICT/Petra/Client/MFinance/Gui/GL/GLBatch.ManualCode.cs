@@ -378,8 +378,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                         this.tabGLBatch.SelectedTab = this.tpgJournals;
 
-                        LoadJournals(ucoBatches.GetSelectedDetailRow().BatchNumber,
-                            ucoBatches.GetSelectedDetailRow().BatchStatus);
+                        LoadJournals(ucoBatches.GetSelectedDetailRow());
 
                         this.tpgTransactions.Enabled =
                             (ucoJournals.GetSelectedDetailRow() != null && ucoJournals.GetSelectedDetailRow().JournalStatus !=
@@ -410,8 +409,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             //  which is only allowed when one journal exists
 
                             //Need to make sure that the Journal is loaded
-                            LoadJournals(ucoBatches.GetSelectedDetailRow().BatchNumber,
-                                ucoBatches.GetSelectedDetailRow().BatchStatus);
+                            LoadJournals(ucoBatches.GetSelectedDetailRow());
                         }
 
                         LoadTransactions(ucoJournals.GetSelectedDetailRow().BatchNumber,
@@ -455,11 +453,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Load Journals for current Batch
         /// </summary>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="ABatchStatus"></param>
-        public void LoadJournals(Int32 ABatchNumber, String ABatchStatus)
+        /// <param name="ACurrentBatchRow"></param>
+        public void LoadJournals(ABatchRow ACurrentBatchRow)
         {
-            this.ucoJournals.LoadJournals(FLedgerNumber, ABatchNumber, ABatchStatus);
+            this.ucoJournals.LoadJournals(ACurrentBatchRow);
         }
 
         /// <summary>

@@ -254,7 +254,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                         this.tabRecurringGLBatch.SelectedTab = this.tpgRecurringJournals;
 
-                        LoadJournals(ucoRecurringBatches.GetSelectedDetailRow().BatchNumber);
+                        LoadJournals(ucoRecurringBatches.GetSelectedDetailRow());
 
                         this.tpgRecurringTransactions.Enabled = (ucoRecurringJournals.GetSelectedDetailRow() != null);
 
@@ -283,7 +283,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             //  which is only allowed when one journal exists
 
                             //Need to make sure that the Journal is loaded
-                            LoadJournals(ucoRecurringBatches.GetSelectedDetailRow().BatchNumber);
+                            LoadJournals(ucoRecurringBatches.GetSelectedDetailRow());
                         }
 
                         LoadTransactions(ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
@@ -321,10 +321,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Load Journals for current Batch
         /// </summary>
-        /// <param name="ABatchNumber"></param>
-        public void LoadJournals(Int32 ABatchNumber)
+        /// <param name="ACurrentBatchRow"></param>
+        public void LoadJournals(ARecurringBatchRow ACurrentBatchRow)
         {
-            this.ucoRecurringJournals.LoadJournals(FLedgerNumber, ABatchNumber);
+            this.ucoRecurringJournals.LoadJournals(ACurrentBatchRow);
         }
 
         /// <summary>

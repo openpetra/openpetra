@@ -103,36 +103,54 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return DeletionSuccessful;
             }
 
-            // temporarily disable  New Donor Warning
-            ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = false;
+            bool RowToDeleteIsNew = (ARowToDelete.RowState == DataRowState.Added);
 
-            //if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmGiftBatch) this.ParentForm).SaveChangesManual())
-            //{
-            //    MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
-            //    return DeletionSuccessful;
-            //}
-
-            ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = true;
-
-            //Backup the Dataset for reversion purposes
-            GiftBatchTDS FTempDS = (GiftBatchTDS)FMainDS.Copy();
-            FTempDS.Merge(FMainDS);
-
-            if (ARowToDelete.RowState != DataRowState.Added)
+            if (!RowToDeleteIsNew)
             {
-                //Required to deal with concurrency errors
-                FMainDS.AcceptChanges();
+                try
+                {
+                    // temporarily disable  New Donor Warning
+                    ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = false;
+
+                    //Return modified row to last saved state to avoid validation failures
+                    ARowToDelete.RejectChanges();
+                    ShowDetails(ARowToDelete);
+
+                    if (!((TFrmGiftBatch) this.ParentForm).SaveChanges())
+                    {
+                        MessageBox.Show(Catalog.GetString("Error in trying to save prior to deleting current gift detail!"),
+                            Catalog.GetString("Deletion Error"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+
+                        return DeletionSuccessful;
+                    }
+                }
+                finally
+                {
+                    ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = true;
+                }
             }
 
-            int selectedDetailNumber = ARowToDelete.DetailNumber;
-            int giftToDeleteTransNo = 0;
-            string filterAllGiftsOfBatch = String.Empty;
-            string filterAllGiftDetailsOfBatch = String.Empty;
+            //Backup the Dataset for reversion purposes
+            GiftBatchTDS BackupMainDS = (GiftBatchTDS)FMainDS.Copy();
+            BackupMainDS.Merge(FMainDS);
 
-            int detailRowCount = FGiftDetailView.Count;
+            //Pass copy to delete method.
+            //GiftBatchTDS TempDS = (GiftBatchTDS)FMainDS.Copy();
+            //TempDS.Merge(FMainDS);
+
+            int SelectedDetailNumber = ARowToDelete.DetailNumber;
+            int GiftToDeleteTransNo = 0;
+            string FilterAllGiftsOfBatch = String.Empty;
+            string FilterAllGiftDetailsOfBatch = String.Empty;
+
+            int DetailRowCount = FGiftDetailView.Count;
 
             try
             {
+                this.Cursor = Cursors.WaitCursor;
+
                 //Speeds up deletion of larger gift sets
                 FMainDS.EnforceConstraints = false;
 
@@ -145,7 +163,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ARowToDelete.Delete();
 
                 //If there existed (before the delete row above) more than one detail row, then no need to delete gift header row
-                if (detailRowCount > 1)
+                if (DetailRowCount > 1)
                 {
                     FGiftSelectedForDeletion = false;
 
@@ -153,7 +171,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
 
-                        if (row.DetailNumber > selectedDetailNumber)
+                        if (row.DetailNumber > SelectedDetailNumber)
                         {
                             row.DetailNumber--;
                         }
@@ -165,19 +183,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    giftToDeleteTransNo = FGift.GiftTransactionNumber;
-
-                    TLogging.Log("Delete row: " + giftToDeleteTransNo.ToString());
+                    GiftToDeleteTransNo = FGift.GiftTransactionNumber;
 
                     // Reduce all Gift Detail row Transaction numbers by 1 if they are greater then gift to be deleted
-                    filterAllGiftDetailsOfBatch = String.Format("{0}={1} And {2}>{3}",
+                    FilterAllGiftDetailsOfBatch = String.Format("{0}={1} And {2}>{3}",
                         AGiftDetailTable.GetBatchNumberDBName(),
                         FBatchNumber,
                         AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                        giftToDeleteTransNo);
+                        GiftToDeleteTransNo);
 
                     DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
-                    giftDetailView.RowFilter = filterAllGiftDetailsOfBatch;
+                    giftDetailView.RowFilter = FilterAllGiftDetailsOfBatch;
                     giftDetailView.Sort = String.Format("{0} ASC", AGiftDetailTable.GetGiftTransactionNumberDBName());
 
                     foreach (DataRowView rv in giftDetailView)
@@ -190,14 +206,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     //Cannot delete the gift row, just copy the data of rows above down by 1 row
                     // and then mark the top row for deletion
                     //In other words, bubble the gift row to be deleted to the top
-                    filterAllGiftsOfBatch = String.Format("{0}={1} And {2}>={3}",
+                    FilterAllGiftsOfBatch = String.Format("{0}={1} And {2}>={3}",
                         AGiftTable.GetBatchNumberDBName(),
                         FBatchNumber,
                         AGiftTable.GetGiftTransactionNumberDBName(),
-                        giftToDeleteTransNo);
+                        GiftToDeleteTransNo);
 
                     DataView giftView = new DataView(FMainDS.AGift);
-                    giftView.RowFilter = filterAllGiftsOfBatch;
+                    giftView.RowFilter = FilterAllGiftsOfBatch;
                     giftView.Sort = String.Format("{0} ASC", AGiftTable.GetGiftTransactionNumberDBName());
 
                     AGiftRow giftRowToReceive = null;
@@ -212,7 +228,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                         currentGiftTransNo = giftRowCurrent.GiftTransactionNumber;
 
-                        if (currentGiftTransNo > giftToDeleteTransNo)
+                        if (currentGiftTransNo > GiftToDeleteTransNo)
                         {
                             giftRowToCopyDown = giftRowCurrent;
 
@@ -281,13 +297,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxIcon.Error);
 
                 //Revert to previous state
-                FMainDS.Merge(FTempDS);
+                FMainDS.Merge(BackupMainDS);
             }
             finally
             {
                 FMainDS.EnforceConstraints = true;
                 SetGiftDetailDefaultView();
                 FFilterAndFindObject.ApplyFilter();
+                this.Cursor = Cursors.Default;
             }
 
             UpdateRecordNumberDisplay();

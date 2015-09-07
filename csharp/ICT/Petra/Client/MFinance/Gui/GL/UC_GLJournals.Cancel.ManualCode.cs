@@ -89,9 +89,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TextBox AJournalDescriptionTextBox,
             TTxtNumericTextBox AExchangeRateToBaseTextBox)
         {
-            if ((ACurrentJournalRow == null) || !FMyForm.SaveChanges())
+            //Assign default value(s)
+            bool CancellationSuccessful = false;
+
+            if (ACurrentJournalRow == null)
             {
-                return false;
+                return CancellationSuccessful;
             }
 
             int CurrentBatchNumber = ACurrentJournalRow.BatchNumber;
@@ -103,8 +106,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                      Catalog.GetString("Confirm Cancel"),
                      MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
             {
+                //Backup the Dataset for reversion purposes
+                GLBatchTDS backupMainDS = (GLBatchTDS)FMainDS.Copy();
+                backupMainDS.Merge(FMainDS);
+
                 try
                 {
+                    FMyForm.Cursor = Cursors.WaitCursor;
+
+                    FMyForm.GetJournalsControl().UndoModifiedJournalRow(ACurrentJournalRow, true);
+
                     //clear any transactions currently being editied in the Transaction Tab
                     FMyForm.GetTransactionsControl().ClearCurrentSelection();
 
@@ -112,33 +123,44 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, CurrentBatchNumber,
                             CurrentJournalNumber));
 
-                    DataView dvAA = new DataView(FMainDS.ATransAnalAttrib);
-
-                    dvAA.RowFilter = String.Format("{0}={1} AND {2}={3}",
-                        ATransAnalAttribTable.GetBatchNumberDBName(),
-                        CurrentBatchNumber,
-                        ATransAnalAttribTable.GetJournalNumberDBName(),
-                        CurrentJournalNumber);
-
-                    //Delete Analysis Attribs
-                    foreach (DataRowView dvr in dvAA)
+                    //Delete transactions and analysis attributes
+                    for (int i = FMainDS.ATransAnalAttrib.Count - 1; i >= 0; i--)
                     {
-                        dvr.Delete();
+                        FMainDS.ATransAnalAttrib[i].Delete();
                     }
 
-                    DataView dvTr = new DataView(FMainDS.ATransaction);
-
-                    dvTr.RowFilter = String.Format("{0}={1} AND {2}={3}",
-                        ATransactionTable.GetBatchNumberDBName(),
-                        CurrentBatchNumber,
-                        ATransactionTable.GetJournalNumberDBName(),
-                        CurrentJournalNumber);
-
-                    //Delete Transactions
-                    foreach (DataRowView dvr in dvTr)
+                    for (int i = FMainDS.ATransaction.Count - 1; i >= 0; i--)
                     {
-                        dvr.Delete();
+                        FMainDS.ATransaction[i].Delete();
                     }
+
+                    //DataView dvAA = new DataView(FMainDS.ATransAnalAttrib);
+
+                    //dvAA.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                    //    ATransAnalAttribTable.GetBatchNumberDBName(),
+                    //    CurrentBatchNumber,
+                    //    ATransAnalAttribTable.GetJournalNumberDBName(),
+                    //    CurrentJournalNumber);
+
+                    ////Delete Analysis Attribs
+                    //foreach (DataRowView dvr in dvAA)
+                    //{
+                    //    dvr.Delete();
+                    //}
+
+                    //DataView dvTr = new DataView(FMainDS.ATransaction);
+
+                    //dvTr.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                    //    ATransactionTable.GetBatchNumberDBName(),
+                    //    CurrentBatchNumber,
+                    //    ATransactionTable.GetJournalNumberDBName(),
+                    //    CurrentJournalNumber);
+
+                    ////Delete Transactions
+                    //foreach (DataRowView dvr in dvTr)
+                    //{
+                    //    dvr.Delete();
+                    //}
 
                     ACurrentJournalRow.BeginEdit();
 
@@ -181,25 +203,35 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         FMyForm.DisableTransactions();
+
+                        CancellationSuccessful = true;
                     }
                     else
                     {
-                        // saving failed, therefore do not try to post
+                        // saving failed
                         MessageBox.Show(Catalog.GetString(
                                 "The journal has been cancelled but there were problems during saving; ") + Environment.NewLine +
                             Catalog.GetString("Please try and save the cancellation immediately."),
                             Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-
-                    return true;
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.Message,
+                        "Cancellation Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+
+                    //Revert to previous state
+                    FMainDS.Merge(backupMainDS);
+                }
+                finally
+                {
+                    FMyForm.Cursor = Cursors.Default;
                 }
             }
 
-            return false;
+            return CancellationSuccessful;
         }
 
         #endregion

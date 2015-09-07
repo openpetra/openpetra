@@ -165,6 +165,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     && (FMainDS.ARecurringTransaction.DefaultView.Count > 0))
                 {
                     //Same as previously selected
+
+                    //Need to reconnect FPrev in some circumstances
+                    if (FPreviouslySelectedDetailRow == null)
+                    {
+                        DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(FPrevRowChangedRow);
+
+                        if (rowView != null)
+                        {
+                            FPreviouslySelectedDetailRow = (GLBatchTDSARecurringTransactionRow)(rowView.Row);
+                        }
+                    }
+
                     if (GetSelectedRowIndex() > 0)
                     {
                         if (AFromBatchTab)
@@ -1455,9 +1467,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ARecurringTransactionRow ARowToDelete, ref string ACompletionMessage)
+        private bool DeleteRowManual(GLBatchTDSARecurringTransactionRow ARowToDelete, ref string ACompletionMessage)
         {
-            //Assign a default values
+            //Assign default value(s)
             bool DeletionSuccessful = false;
 
             ACompletionMessage = string.Empty;
@@ -1473,6 +1485,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 //Reject any changes which may fail validation
                 ARowToDelete.RejectChanges();
+                ShowDetails(ARowToDelete);
 
                 if (!((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
                 {

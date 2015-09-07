@@ -147,6 +147,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FBatchRow = GetBatchRow();
             FJournalRow = GetJournalRow();
 
+            if ((FBatchRow == null) || (FJournalRow == null))
+            {
+                return false;
+            }
+
             //FBatchNumber and FJournalNumber may have already been set outside
             //  so need to reset to previous value
             if ((txtBatchNumber.Text.Length > 0) && (FBatchNumber.ToString() != txtBatchNumber.Text))
@@ -159,9 +164,46 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FJournalNumber = Int32.Parse(txtJournalNumber.Text);
             }
 
+            bool FirstRun = (FLedgerNumber != ALedgerNumber);
+            bool BatchChanged = (FBatchNumber != ABatchNumber);
+            bool BatchStatusChanged = (!BatchChanged && (FBatchStatus != ABatchStatus));
+            bool JournalChanged = (BatchChanged || (FJournalNumber != AJournalNumber));
+            bool JournalStatusChanged = (!JournalChanged && (FJournalStatus != AJournalStatus));
+            bool CurrencyChanged = (FTransactionCurrency != ACurrencyCode);
+
+            if (FirstRun)
+            {
+                FLedgerNumber = ALedgerNumber;
+            }
+
+            if (BatchChanged)
+            {
+                FBatchNumber = ABatchNumber;
+            }
+
+            if (BatchStatusChanged)
+            {
+                FBatchStatus = ABatchStatus;
+            }
+
+            if (JournalChanged)
+            {
+                FJournalNumber = AJournalNumber;
+            }
+
+            if (JournalStatusChanged)
+            {
+                FJournalStatus = AJournalStatus;
+            }
+
+            if (CurrencyChanged)
+            {
+                FTransactionCurrency = ACurrencyCode;
+            }
+
             FIsUnposted = (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
-            if (FLedgerNumber == -1)
+            if (FirstRun)
             {
                 InitialiseControls();
             }
@@ -170,18 +212,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                //Check if the same batch is selected, so no need to apply filter
-                if ((FLedgerNumber == ALedgerNumber)
-                    && (FBatchNumber == ABatchNumber)
-                    && (FJournalNumber == AJournalNumber)
-                    && (FTransactionCurrency == ACurrencyCode)
-                    && (FMainDS.ATransaction.DefaultView.Count > 0)
-                    && (FBatchStatus == ABatchStatus)
-                    && (FJournalStatus == AJournalStatus))
+                //Check if the same batch and journal is selected, so no need to apply filter
+                if (!FirstRun
+                    && !BatchChanged
+                    && !JournalChanged
+                    && !BatchStatusChanged
+                    && !JournalStatusChanged
+                    && !CurrencyChanged
+                    && (FMainDS.ATransaction.DefaultView.Count > 0))
                 {
-                    //Same as previously selected batch
+                    //Same as previously selected batch and journal
 
-                    //Need to reconnect  FPrev in some circumstances
+                    //Need to reconnect FPrev in some circumstances
                     if (FPreviouslySelectedDetailRow == null)
                     {
                         DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(FPrevRowChangedRow);
@@ -1697,9 +1739,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ATransactionRow ARowToDelete, ref string ACompletionMessage)
+        private bool DeleteRowManual(GLBatchTDSATransactionRow ARowToDelete, ref string ACompletionMessage)
         {
-            //Assign a default values
+            //Assign default value(s)
             bool DeletionSuccessful = false;
 
             ACompletionMessage = string.Empty;
@@ -1713,8 +1755,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (!RowToDeleteIsNew)
             {
-                //Reject any changes which may fail validation
+                //Return modified row to last saved state to avoid validation failures
                 ARowToDelete.RejectChanges();
+                ShowDetails(ARowToDelete);
 
                 if (!((TFrmGLBatch) this.ParentForm).SaveChanges())
                 {

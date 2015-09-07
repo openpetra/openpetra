@@ -226,8 +226,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (FMainDS.AJournal.DefaultView.Count == 0)
                 {
-                    ((TFrmGLBatch) this.ParentForm).LoadJournals(BatchNumber, BatchStatus);
-                    //FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, BatchNumber));
+                    ((TFrmGLBatch) this.ParentForm).LoadJournals(FPreviouslySelectedDetailRow);
                 }
             }
         }
@@ -345,6 +344,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             UpdateChangeableStatus();
             ((TFrmGLBatch) this.ParentForm).EnableJournals();
+        }
+
+        /// <summary>
+        /// Re-show the specified row
+        /// </summary>
+        /// <param name="AModifiedBatchRow"></param>
+        /// <param name="ARedisplay"></param>
+        public void UndoModifiedBatchRow(ABatchRow AModifiedBatchRow, bool ARedisplay)
+        {
+            //Check if new row or not
+            if (AModifiedBatchRow.RowState == DataRowState.Added)
+            {
+                return;
+            }
+
+            AModifiedBatchRow.RejectChanges();
+
+            if (ARedisplay)
+            {
+                ShowDetails(AModifiedBatchRow);
+            }
         }
 
         /// <summary>
@@ -486,13 +506,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void SetInitialFocus()
         {
-            if (grdDetails.Rows.Count <= 1)
+            if (grdDetails.CanFocus)
             {
-                btnNew.Focus();
-            }
-            else
-            {
-                grdDetails.Focus();
+                if ((grdDetails.Rows.Count <= 1) && btnNew.CanFocus)
+                {
+                    btnNew.Focus();
+                }
+                else
+                {
+                    grdDetails.Focus();
+                }
             }
         }
 

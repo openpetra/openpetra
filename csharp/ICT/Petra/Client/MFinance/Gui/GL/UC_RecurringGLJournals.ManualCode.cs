@@ -84,35 +84,48 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// load the journals into the grid
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <param name="ACurrentBatchRow"></param>
+        public void LoadJournals(ARecurringBatchRow ACurrentBatchRow)
         {
             FJournalsLoaded = false;
 
-            FBatchRow = GetBatchRow();
+            FBatchRow = ACurrentBatchRow;
 
             if (FBatchRow == null)
             {
                 return;
             }
 
-            bool FirstRun = (FLedgerNumber != ALedgerNumber);
-            bool BatchChanged = (FBatchNumber != ABatchNumber);
+            Int32 CurrentLedgerNumber = ACurrentBatchRow.LedgerNumber;
+            Int32 CurrentBatchNumber = ACurrentBatchRow.BatchNumber;
+
+            bool FirstRun = (FLedgerNumber != CurrentLedgerNumber);
+            bool BatchChanged = (FBatchNumber != CurrentBatchNumber);
 
             if (FirstRun)
             {
-                FLedgerNumber = ALedgerNumber;
+                FLedgerNumber = CurrentLedgerNumber;
             }
 
             if (BatchChanged)
             {
-                FBatchNumber = ABatchNumber;
+                FBatchNumber = CurrentBatchNumber;
             }
 
             //Check if same Journals as previously selected
-            if (!FirstRun && !BatchChanged)
+            if (!(FirstRun || BatchChanged))
             {
+                //Need to reconnect FPrev in some circumstances
+                if (FPreviouslySelectedDetailRow == null)
+                {
+                    DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(FPrevRowChangedRow);
+
+                    if (rowView != null)
+                    {
+                        FPreviouslySelectedDetailRow = (GLBatchTDSARecurringJournalRow)(rowView.Row);
+                    }
+                }
+
                 if (GetSelectedRowIndex() > 0)
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
@@ -127,7 +140,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Load Journals
                 if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
                 {
-                    //FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(ALedgerNumber, ABatchNumber));
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, FBatchNumber));
                 }
 
@@ -176,7 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SetJournalDefaultView()
         {
-            string DVRowFilter = string.Format("{0} = {1}",
+            string DVRowFilter = string.Format("{0}={1}",
                 ARecurringJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
 
@@ -376,6 +388,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Called from Batch tab, so no need to check for GetDetailsFromControls()
             // as tab change does that and current tab is Batch tab.
             this.FPreviouslySelectedDetailRow = null;
+            //Reset loading of journals
+            FBatchNumber = -1;
         }
 
         private void ValidateDataDetailsManual(ARecurringJournalRow ARow)
@@ -476,9 +490,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ARecurringJournalRow ARowToDelete, ref string ACompletionMessage)
+        private bool DeleteRowManual(GLBatchTDSARecurringJournalRow ARowToDelete, ref string ACompletionMessage)
         {
-            //Assign a default values
+            //Assign default value(s)
             bool DeletionSuccessful = false;
 
             ACompletionMessage = string.Empty;
@@ -494,6 +508,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 //Reject any changes which may fail validation
                 ARowToDelete.RejectChanges();
+                ShowDetails(ARowToDelete);
 
                 if (!((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
                 {

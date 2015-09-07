@@ -97,40 +97,41 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// load the journals into the grid
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="ABatchStatus"></param>
-        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
+        /// <param name="ACurrentBatchRow"></param>
+        public void LoadJournals(ABatchRow ACurrentBatchRow)
         {
             FJournalsLoaded = false;
 
-            FBatchRow = GetBatchRow();
+            FBatchRow = ACurrentBatchRow;
 
             if (FBatchRow == null)
             {
                 return;
             }
 
-            bool FirstRun = (FLedgerNumber != ALedgerNumber);
-            bool BatchChanged = (FBatchNumber != ABatchNumber);
-            bool BatchStatusChanged = (!BatchChanged && (FBatchStatus != ABatchStatus));
+            Int32 CurrentLedgerNumber = FBatchRow.LedgerNumber;
+            Int32 CurrentBatchNumber = FBatchRow.BatchNumber;
+            string CurrentBatchStatus = FBatchRow.BatchStatus;
+            bool BatchIsUnposted = (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+            bool FirstRun = (FLedgerNumber != CurrentLedgerNumber);
+            bool BatchChanged = (FBatchNumber != CurrentBatchNumber);
+            bool BatchStatusChanged = (!BatchChanged && (FBatchStatus != CurrentBatchStatus));
 
             if (FirstRun)
             {
-                FLedgerNumber = ALedgerNumber;
+                FLedgerNumber = CurrentLedgerNumber;
             }
 
             if (BatchChanged)
             {
-                FBatchNumber = ABatchNumber;
+                FBatchNumber = CurrentBatchNumber;
             }
 
             if (BatchStatusChanged)
             {
-                FBatchStatus = ABatchStatus;
+                FBatchStatus = CurrentBatchStatus;
             }
-
-            bool BatchIsUnposted = (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
             //Create object to control deletion
             FCancelLogicObject = new TUC_GLJournals_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS);
@@ -139,8 +140,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DateTime BatchDateEffective = FBatchRow.DateEffective;
 
             //Check if need to load Journals
-            if (!FirstRun && !BatchChanged && !BatchStatusChanged)
+            if (!(FirstRun || BatchChanged || BatchStatusChanged))
             {
+                //Need to reconnect FPrev in some circumstances
+                if (FPreviouslySelectedDetailRow == null)
+                {
+                    DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(FPrevRowChangedRow);
+
+                    if (rowView != null)
+                    {
+                        FPreviouslySelectedDetailRow = (GLBatchTDSAJournalRow)(rowView.Row);
+                    }
+                }
+
                 // The journals are the same and we have loaded them already
                 if (BatchIsUnposted)
                 {
@@ -159,11 +171,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Load Journals
                 if (FMainDS.AJournal.DefaultView.Count == 0)
                 {
-                    //FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(FLedgerNumber, FBatchNumber));
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, FBatchNumber));
                 }
 
-                if (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+                if (BatchIsUnposted)
                 {
                     if (!dtpDetailDateEffective.Date.HasValue || (dtpDetailDateEffective.Date.Value != BatchDateEffective))
                     {
@@ -171,6 +182,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
                 }
 
+                //Check if DateEffective has changed and then update all
                 foreach (DataRowView drv in FMainDS.AJournal.DefaultView)
                 {
                     AJournalRow jr = (AJournalRow)drv.Row;
@@ -228,7 +240,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SetJournalDefaultView()
         {
-            string DVRowFilter = string.Format("{0} = {1}",
+            string DVRowFilter = string.Format("{0}={1}",
                 AJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
 
@@ -322,6 +334,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
                 RefreshCurrencyAndExchangeRate();
+            }
+        }
+
+        /// <summary>
+        /// Re-show the specified row
+        /// </summary>
+        /// <param name="AModifiedJournalRow"></param>
+        /// <param name="ARedisplay"></param>
+        public void UndoModifiedJournalRow(GLBatchTDSAJournalRow AModifiedJournalRow, bool ARedisplay)
+        {
+            //Check if new row or not
+            if (AModifiedJournalRow.RowState == DataRowState.Added)
+            {
+                return;
+            }
+
+            AModifiedJournalRow.RejectChanges();
+
+            if (ARedisplay)
+            {
+                ShowDetails(AModifiedJournalRow);
             }
         }
 
@@ -597,6 +630,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 UpdateChangeableStatus();
                 SetFocusToDetailsGrid();
             }
+
+            SetJournalDefaultView();
+            FFilterAndFindObject.ApplyFilter();
         }
 
         private void RefreshCurrencyAndExchangeRate()

@@ -72,9 +72,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns></returns>
         public bool CancelBatch(ABatchRow ACurrentBatchRow, TextBox ABatchDescriptionTextBox)
         {
-            if ((ACurrentBatchRow == null) || !FMyForm.SaveChanges())
+            //Assign default value(s)
+            bool CancellationSuccessful = false;
+
+            if ((ACurrentBatchRow == null))
             {
-                return false;
+                return CancellationSuccessful;
             }
 
             int CurrentBatchNumber = ACurrentBatchRow.BatchNumber;
@@ -86,8 +89,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                      MessageBoxIcon.Question,
                      MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
             {
+                //Backup the Dataset for reversion purposes
+                GLBatchTDS backupMainDS = (GLBatchTDS)FMainDS.Copy();
+                backupMainDS.Merge(FMainDS);
+
                 try
                 {
+                    FMyForm.Cursor = Cursors.WaitCursor;
+
+                    //Remove any changes, which may cause validation issues, before cancelling
+                    FMyForm.GetBatchControl().UndoModifiedBatchRow(ACurrentBatchRow, true);
+
                     //clear any transactions currently being editied in the Transaction Tab
                     FMyForm.GetTransactionsControl().ClearCurrentSelection();
                     //clear any journals currently being editied in the Journals Tab
@@ -103,7 +115,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(FLedgerNumber, CurrentBatchNumber));
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttribForBatch(FLedgerNumber, CurrentBatchNumber));
 
-                    //Delete transactions
+                    //Delete transactions and analysis attributes
                     for (int i = FMainDS.ATransAnalAttrib.Count - 1; i >= 0; i--)
                     {
                         FMainDS.ATransAnalAttrib[i].Delete();
@@ -123,18 +135,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             journal.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
                             journal.JournalCreditTotal = 0;
                             journal.JournalDebitTotal = 0;
+                            journal.LastTransactionNumber = 0;
                             journal.EndEdit();
                         }
                     }
 
                     // Edit the batch row
                     ACurrentBatchRow.BeginEdit();
-
-                    //Ensure validation passes
-                    if (ACurrentBatchRow.BatchDescription.Length == 0)
-                    {
-                        ABatchDescriptionTextBox.Text = " ";
-                    }
 
                     ACurrentBatchRow.BatchCreditTotal = 0;
                     ACurrentBatchRow.BatchDebitTotal = 0;
@@ -152,7 +159,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             Catalog.GetString("Success"),
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                        return true;
+                        FMyForm.DisableTransactions();
+                        FMyForm.DisableJournals();
+
+                        CancellationSuccessful = true;
                     }
                     else
                     {
@@ -165,11 +175,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.Message,
+                        "Cancellation Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+
+                    //Revert to previous state
+                    FMainDS.Merge(backupMainDS);
+                }
+                finally
+                {
+                    FMyForm.Cursor = Cursors.Default;
                 }
             }
 
-            return false;
+            return CancellationSuccessful;
         }
 
         #endregion
