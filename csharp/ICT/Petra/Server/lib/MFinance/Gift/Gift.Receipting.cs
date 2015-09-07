@@ -576,7 +576,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// Produce a single page HTML letter to receipt a gift
+        /// Create a single gift receipt
         /// </summary>
         /// <param name="ADonorShortName"></param>
         /// <param name="ADonorKey"></param>

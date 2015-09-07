@@ -9,6 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actDonorHistory: {ActionClick=OpenDonorHistory}
+        actDonorFinanceDetails: {ActionClick=OpenDonorFinanceDetails}
         actRecipientHistory: {ActionClick=OpenRecipientHistory}
         actRecipientGiftDestination: {ActionClick=OpenGiftDestination}
         actNewGift: {Label=&New Gift, ActionClick=NewGift}
@@ -110,6 +111,7 @@ RootNode:
                 Row1: [cmbDetailMethodOfGivingCode, cmbDetailMethodOfPaymentCode]
                 Row2: [txtDetailReference, cmbDetailReceiptLetterCode]
                 Row3: [dtpDateEntered, txtGiftTotal]
+                Row4: [chkNoReceiptOnAdjustment]
         grpDetailsForEachGift: {Width:930, Height:242}
             Controls:
                 Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
@@ -147,13 +149,14 @@ RootNode:
         txtDetailGiftTransactionAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if the gift is to remain confidential}
         chkDetailTaxDeductible: {Label=Tax deductible?, ActionClick=ToggleTaxDeductible}
+        chkNoReceiptOnAdjustment: {Label=Do not print on periodic receipt, CheckBoxAttachedLabel=right, Tooltip=Tick this if you want to exclude this adjusting gift from periodic receipts}
         txtDeductiblePercentage: {Visible=false, Label=% Tax Deductible, Format=PercentDecimal(2), Width=80, NullValueAllowed=false}
         txtTaxDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
         txtNonDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
         txtDeductibleAccount: {Visible=false, Label=Account, ReadOnly=true}
-        txtDetailGiftCommentOne: {Label=Comment 1, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentTwo: {Label=Comment 2, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentThree: {Label=Comment 3, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentOne: {Label=Comment 1, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentTwo: {Label=Comment 2, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentThree: {Label=Comment 3, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         cmbDetailCommentOneType:
             Label: for
             OptionalValues: [Donor,Recipient,=Both,Office]
@@ -179,6 +182,7 @@ RootNode:
             mniReverseGiftDetail: {Label=Re&verse Gift Detail, Action=actReverseGiftDetail}
             mniSeparator: {Label=-}
             mniDonorHistory: {Label=&Donor History, Action: actDonorHistory, Enabled=false}
+            mniDonorFinanceDetails: {Label=Donor &Finance Details, Action: actDonorFinanceDetails, Enabled=false}
             mniRecipientHistory: {Label=Recipient &History, Action: actRecipientHistory, Enabled=false}
             mniRecipientGiftDestination: {Label=Recipient Gift D&estination, Action: actRecipientGiftDestination, Enabled=false}
             mniSeparator: {Label=-}

@@ -50,6 +50,7 @@ RootNode:
                 DetailMonthName9: {Label="Name of Month 9"}
                 DetailMonthName10: {Label="Name of Month 10"}
                 DetailMonthName11: {Label="Name of Month 11"}
+	            #TODO: Calendar vs Financial Date Handling - Confirm if need to deal with 12+ ledger periods
                 DetailMonthName12: {Label="Name of Month 12"}
             SortOrder: DetailLanguageCode ASC
             ActionFocusRow: FocusedRowChanged
@@ -82,6 +83,7 @@ RootNode:
         txtDetailMonthName9: {Label=Name of Month 9, Width=100}
         txtDetailMonthName10: {Label=Name of Month 10, Width=100}
         txtDetailMonthName11: {Label=Name of Month 11, Width=100}
+	    #TODO: Calendar vs Financial Date Handling - Confirm if need to deal with 12+ ledger periods
         txtDetailMonthName12: {Label=Name of Month 12, Width=100}
         txtDetailMonthNameShort1: {NoLabel=true, Width=50}
         txtDetailMonthNameShort2: {NoLabel=true, Width=50}
@@ -94,6 +96,7 @@ RootNode:
         txtDetailMonthNameShort9: {NoLabel=true, Width=50}
         txtDetailMonthNameShort10: {NoLabel=true, Width=50}
         txtDetailMonthNameShort11: {NoLabel=true, Width=50}
+	    #TODO: Calendar vs Financial Date Handling - Confirm if need to deal with 12+ ledger periods
         txtDetailMonthNameShort12: {NoLabel=true, Width=50}
         pnlLanguage: {ColSpan = 4}
             Controls:

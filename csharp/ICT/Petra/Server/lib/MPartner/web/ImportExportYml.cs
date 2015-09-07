@@ -807,7 +807,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
                 {
-                    TLogging.Log("Partner " + partnerRow.PartnerKey.ToString() + ", Category: " + category);
+                    TLogging.Log("Partner " + partnerRow.PartnerKey.ToString("0000000000") + ", Category: " + category);
                 }
 
                 if (!PartnerCategories.ContainsKey(category))

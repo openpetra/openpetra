@@ -79,7 +79,7 @@ RootNode:
         cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}
         # transaction type depends on the ledger and the selected sub system; see BeforeShowDetailsManual
         cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList, OnChange=TransactionTypeCodeChanged}
-        cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
+        cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList, OnChange=CurrencyCodeChanged}
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
         txtDetailExchangeRateToBase: {Label=Exchange Rate to Base, ReadOnly=true, Validation=true, Format=Decimal(10), Width=150}
         btnGetSetExchangeRate: {Label= Get/Set Exchange Rate}

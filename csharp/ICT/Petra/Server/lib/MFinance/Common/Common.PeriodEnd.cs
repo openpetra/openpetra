@@ -61,6 +61,11 @@ namespace Ict.Petra.Server.MFinance.Common
         protected bool FHasCriticalErrors;
 
         /// <summary>
+        /// If a cancel request comes from the client, it sets this.
+        /// </summary>
+        public static Boolean FwasCancelled;
+
+        /// <summary>
         /// This is the standard VerificationResultCollection for the info and the error messages.
         /// </summary>
         protected TVerificationResultCollection FverificationResults;
@@ -93,6 +98,12 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AOperationName"></param>
         protected void RunPeriodEndSequence(AbstractPeriodEndOperation AOperation, string AOperationName)
         {
+            if (FwasCancelled)
+            {
+                TLogging.Log(AOperationName + ": operation cancelled by user.");
+                return;
+            }
+
             AOperation.IsInInfoMode = FInfoMode;
             AOperation.VerificationResultCollection = FverificationResults;
             AOperation.FPeriodEndOperator = this;
@@ -200,7 +211,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return !(FHasCriticalErrors | FInfoMode);
+                return !(FHasCriticalErrors | FInfoMode | TPeriodEndOperations.FwasCancelled);
             }
         }
 
@@ -302,5 +313,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
         /// <summary>No ICH_ACCT Account is defined.</summary>
         PEEC_11,
+
+        /// <summary>User-requested cancellation</summary>
+        PEEC_12,
     }
 }

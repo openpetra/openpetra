@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.IO;
 using System.Windows.Forms;
 
 using Ict.Common.Data;
@@ -31,6 +32,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Common;
 
 namespace Ict.Petra.Shared.MFinance.Validation

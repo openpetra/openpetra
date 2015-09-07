@@ -452,12 +452,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 SaveUserDefaults();
 
+                //Process BatchCount value
                 if (BatchCount == 0)
                 {
                     MessageBox.Show(Catalog.GetString("There are no batches matching your criteria"),
-                        Catalog.GetString("Error"),
+                        Catalog.GetString("Export"),
                         MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
+                        MessageBoxIcon.Exclamation);
+                    return false;
+                }
+                else if (BatchCount == -1)
+                {
+                    MessageBox.Show(Catalog.GetString("Gift batch export cancelled"),
+                        Catalog.GetString("Export"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    return false;
+                }
+                else if (BatchCount == -2)
+                {
+                    MessageBox.Show(Catalog.GetString("Gift batch export failed"),
+                        Catalog.GetString("Export"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
                     return false;
                 }
 

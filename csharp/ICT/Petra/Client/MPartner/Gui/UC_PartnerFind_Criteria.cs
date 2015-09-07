@@ -284,6 +284,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         /* and checked if needed */
                         HandlePartnerClassGui();
                     }
+
+                    FFindCriteriaDataTable.Rows[0]["RestrictedParterClasses"] = string.Join(",", value);
                 }
                 else
                 {
@@ -332,7 +334,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool AAllPartnerClasses)
         {
             String TmpString;
-            String RestrictedClasses = "";;
+            String RestrictedClasses = "";
 
             Boolean WorkerFamOnly = false;
             DataRow PartnerClassDataRow;
@@ -1716,7 +1718,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if ((FRestrictedParterClasses == null)
                     || ((FRestrictedParterClasses.Length) == 0))
                 {
-                    // use these default values only if we don't have the restricted partner classen
+                    // use these default values only if we don't have the restricted partner class
                     // which means if we are not in modal mode.
                     InsertDefaultPartnerClassComboBox();
                 }

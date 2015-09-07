@@ -28,7 +28,9 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Verification;
+
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
@@ -36,6 +38,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
+
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -171,9 +174,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
-        public void RefreshAll()
+        public void RefreshAll(bool AShowStatusDialogOnLoad = true)
         {
-            ucoBatches.RefreshAllData();
+            ucoBatches.RefreshAllData(AShowStatusDialogOnLoad);
         }
 
         private void FileSaveManual(object sender, EventArgs e)
@@ -346,7 +349,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
             }
 
-            mniPrintGiftBatchDetail.Enabled = true;
+            mniFilePrint.Enabled = true;
 
             // change the event that gets called when 'Save' is clicked (i.e. changed from generated code)
             tbbSave.Click -= FileSave;
@@ -510,6 +513,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// Return the currently selected Tab
+        /// </summary>
+        /// <returns></returns>
+        public eGiftTabs ActiveTab()
+        {
+            if (this.tabGiftBatch.SelectedTab == this.tpgBatches)
+            {
+                return eGiftTabs.Batches;
+            }
+            else if (this.tabGiftBatch.SelectedTab == this.tpgTransactions)
+            {
+                return eGiftTabs.Transactions;
+            }
+            else
+            {
+                return eGiftTabs.None;
+            }
+        }
+
+        /// <summary>
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
@@ -649,30 +672,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private int GetChangedRecordCountManual(out string AMessage)
         {
-            // For GL Batch we will get a mix of some batches, gifts and gift details.
+            //For Gift Batch we will get a mix of some batches, gifts and gift details.
+            // Only check relevant tables.
+            List <string>TablesToCheck = new List <string>();
+            TablesToCheck.Add(FMainDS.AGiftBatch.TableName);
+            TablesToCheck.Add(FMainDS.AGift.TableName);
+            TablesToCheck.Add(FMainDS.AGiftDetail.TableName);
+
             List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
             int AllChangesCount = 0;
 
-            foreach (DataTable dt in FMainDS.Tables)
+            if (FMainDS.HasChanges())
             {
-                if ((dt != null) && (dt.Rows.Count > 0)
-                    && ((dt.TableName == FMainDS.AGiftBatch.TableName) || (dt.TableName == FMainDS.AGift.TableName)
-                        || (dt.TableName == FMainDS.AGiftDetail.TableName)))
+                foreach (DataTable dt in FMainDS.GetChanges().Tables)
                 {
-                    int tableChangesCount = 0;
+                    string currentTableName = dt.TableName;
 
-                    foreach (DataRow dr in dt.Rows)
+                    if ((dt != null)
+                        && TablesToCheck.Contains(currentTableName)
+                        && (dt.Rows.Count > 0))
                     {
-                        if (DataRowColumnsHaveChanged(dr))
+                        int tableChangesCount = 0;
+
+                        DataTable dtChanges = dt.GetChanges();
+
+                        foreach (DataRow dr in dtChanges.Rows)
                         {
-                            tableChangesCount++;
-                            AllChangesCount++;
+                            if (DataUtilities.DataRowColumnsHaveChanged(dr))
+                            {
+                                tableChangesCount++;
+                                AllChangesCount++;
+                            }
                         }
-                    }
 
-                    if (tableChangesCount > 0)
-                    {
-                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
+                        if (tableChangesCount > 0)
+                        {
+                            TableAndCountList.Add(new Tuple <string, int>(currentTableName, tableChangesCount));
+                        }
                     }
                 }
             }
@@ -793,57 +829,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
+                AMessage += Catalog.GetString("(some of the changes may include related background items)");
+                AMessage += Environment.NewLine;
                 AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
             }
 
             return AllChangesCount;
-        }
-
-        /// <summary>
-        /// Check if batch columns have actually changed
-        /// </summary>
-        /// <param name="ADataRow"></param>
-        /// <returns></returns>
-        public bool DataRowColumnsHaveChanged(DataRow ADataRow)
-        {
-            bool ColumnValueHasChanged = false;
-
-            if ((ADataRow.RowState != DataRowState.Unchanged) && (ADataRow.RowState != DataRowState.Deleted)
-                && (ADataRow.RowState != DataRowState.Added))
-            {
-                string columnName = string.Empty;
-
-                for (int i = 0; i < ADataRow.Table.Columns.Count; i++)
-                {
-                    columnName = ADataRow.Table.Columns[i].ColumnName;
-
-                    //Ignore the system and temporary fields, all other fields are their SQL name, e.g. a_ledger_number_i
-                    if (columnName.StartsWith("s_") || !columnName.Contains("_"))
-                    {
-                        continue;
-                    }
-
-                    string originalValue = ADataRow[i, DataRowVersion.Original].ToString();
-                    string currentValue = ADataRow[i, DataRowVersion.Current].ToString();
-
-                    if (originalValue != currentValue)
-                    {
-                        ColumnValueHasChanged = true;
-                        break;
-                    }
-                }
-
-                if (!ColumnValueHasChanged)
-                {
-                    ADataRow.RejectChanges();
-                }
-            }
-            else if ((ADataRow.RowState == DataRowState.Deleted) || (ADataRow.RowState == DataRowState.Added))
-            {
-                ColumnValueHasChanged = true;
-            }
-
-            return ColumnValueHasChanged;
         }
 
         /// <summary>
@@ -933,7 +924,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         // open screen to print the Gift Batch Detail report
-        private void PrintGiftBatchDetail(Object sender, EventArgs e)
+        private void FilePrint(Object sender, EventArgs e)
         {
             TFrmGiftBatchDetail Report = new TFrmGiftBatchDetail(this);
 
@@ -976,7 +967,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcRefreshGiftBatches)
             {
-                this.RefreshAll();
+                this.RefreshAll(false);
 
                 MessageProcessed = true;
             }

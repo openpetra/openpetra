@@ -176,25 +176,27 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                ref Transaction,
-                delegate
-                {
-                    for (Int32 i = 0; i < F_ForeignAccount.Length; i++)
-                    {
-                        AGeneralLedgerMasterTable GlmTable = new AGeneralLedgerMasterTable();
-                        AGeneralLedgerMasterRow glmTemplate = (AGeneralLedgerMasterRow)GlmTable.NewRowTyped(false);
-                        glmTemplate.LedgerNumber = F_LedgerNum;
-                        glmTemplate.Year = F_FinancialYear;
-                        glmTemplate.AccountCode = F_ForeignAccount[i];
-                        GlmTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(glmTemplate, Transaction);
+            AGeneralLedgerMasterTable GlmTable = new AGeneralLedgerMasterTable();
+            AGeneralLedgerMasterRow glmTemplate = (AGeneralLedgerMasterRow)GlmTable.NewRowTyped(false);
 
-                        if (GlmTable.Rows.Count > 0)
-                        {
-                            RevaluateAccount(GlmTable, F_ExchangeRate[i], F_ForeignAccount[i]);
-                        }
-                    }
-                });
+            glmTemplate.LedgerNumber = F_LedgerNum;
+            glmTemplate.Year = F_FinancialYear;
+
+            for (Int32 i = 0; i < F_ForeignAccount.Length; i++)
+            {
+                glmTemplate.AccountCode = F_ForeignAccount[i];
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    ref Transaction,
+                    delegate
+                    {
+                        GlmTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(glmTemplate, Transaction);
+                    });
+
+                if (GlmTable.Rows.Count > 0)
+                {
+                    RevaluateAccount(GlmTable, F_ExchangeRate[i], F_ForeignAccount[i]);
+                }
+            }
 
             return CloseRevaluationAccountingBatch();
         }

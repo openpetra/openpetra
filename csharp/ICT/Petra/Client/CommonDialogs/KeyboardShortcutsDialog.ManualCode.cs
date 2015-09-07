@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.CommonDialogs
             AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("F8"), Catalog.GetString(
                     "New Records: Select Contact Type 'Skype'."));
             AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("Shift+F8"), Catalog.GetString(
-                    "New Records: Select Contact Type 'Lync'."));
+                    "New Records: Select Contact Type 'Skype for Business'."));
             AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("F9"), Catalog.GetString(
                     "Send E-mail to 'Primary E-Mail' address'."));
             AddShortcutInfoToTable(partnerEditContactDetailsTabTable, Catalog.GetString("F10"), Catalog.GetString(

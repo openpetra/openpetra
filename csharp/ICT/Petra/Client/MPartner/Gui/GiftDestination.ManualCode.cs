@@ -188,7 +188,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            // dtpDetailDateEffective and txtDetailFieldKey cannot be changed once saved
+            // DateEffective and FieldKey cannot be changed once saved
             if (ARow.RowState == DataRowState.Added)
             {
                 dtpDetailDateEffective.Enabled = true;
@@ -305,6 +305,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TSharedPartnerValidation_Partner.ValidateGiftDestinationRowManual(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+
+            if (VerificationResultCollection.HasCriticalErrors) // If something went wrong - allow the user to fix it!
+            {
+                dtpDetailDateEffective.Enabled = true;
+                txtDetailFieldKey.Enabled = true;
+            }
 
             // add VerificationResults from validating on all data (FPetraUtilsObject_DataSaved)
             VerificationResultCollection.AddCollection(FVerificationResultCollection);

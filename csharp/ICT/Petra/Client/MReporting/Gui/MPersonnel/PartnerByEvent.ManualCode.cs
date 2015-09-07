@@ -42,6 +42,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
     public partial class TFrmPartnerByEvent
     {
+        private DataTable FOutreachUnitsTable;
         private bool FCalledForConferences;
 
         /// helper object for the whole screen
@@ -56,18 +57,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 FCalledForConferences = value;
             }
-        }
-
-        /// <summary>
-        /// This Procedure will get called when the event filter criteria are changed
-        /// </summary>
-        /// <param name="sender">The Object that throws this Event</param>
-        /// <param name="e">Event Arguments.
-        /// </param>
-        /// <returns>void</returns>
-        private void EventFilterChanged(System.Object sender, System.EventArgs e)
-        {
-            LoadEventListData();
         }
 
         /// <summary>
@@ -112,32 +101,44 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             string ValueMember = PPartnerTable.GetPartnerKeyDBName();
             string DisplayMember = PPartnerTable.GetPartnerShortNameDBName();
             string EventCodeMember = PUnitTable.GetOutreachCodeDBName();
-            DataTable Table;
 
-            Table = TRemote.MPartner.Partner.WebConnectors.GetEventUnits
-                        (ucoFilter.IncludeConferenceUnits, ucoFilter.IncludeOutreachUnits,
-                        ucoFilter.NameFilter, false, ucoFilter.CurrentAndFutureEventsOnly);
-
-            DataView view = new DataView(Table);
-
-            DataTable NewTable = view.ToTable(true, new string[] { DisplayMember, ValueMember, EventCodeMember });
-            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+            FOutreachUnitsTable = TRemote.MPartner.Partner.WebConnectors.GetEventUnits();
+            FOutreachUnitsTable.Columns.Add(new DataColumn("CHECKED", typeof(bool)));
 
             clbEvent.Columns.Clear();
-            clbEvent.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            clbEvent.AddTextColumn(Catalog.GetString("Event Name"), NewTable.Columns[DisplayMember], 240);
-            clbEvent.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 100);
+            clbEvent.AddCheckBoxColumn("", FOutreachUnitsTable.Columns[CheckedMember], 17, false);
+            clbEvent.AddTextColumn(Catalog.GetString("Event Name"), FOutreachUnitsTable.Columns[DisplayMember]);
+            clbEvent.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), FOutreachUnitsTable.Columns[ValueMember]);
 
             // outreach/event code column only needed in case of displaying Outreaches
             if (ucoFilter.IncludeOutreachUnits)
             {
-                clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 110);
+                clbEvent.AddTextColumn(Catalog.GetString("Event Code"), FOutreachUnitsTable.Columns[EventCodeMember]);
             }
 
-            clbEvent.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
+            EventFilterChanged(this, null);
+        }
 
-            //TODO: only temporarily until settings file exists
+        /// <summary>
+        /// This Procedure will get called when the event filter criteria are changed
+        /// </summary>
+        /// <param name="sender">The Object that throws this Event</param>
+        /// <param name="e">Event Arguments.
+        /// </param>
+        /// <returns>void</returns>
+        private void EventFilterChanged(System.Object sender, System.EventArgs e)
+        {
+            DataView view = new DataView(FOutreachUnitsTable);
+
+            view.AllowNew = false;
+            view.RowFilter = ucoFilter.GetFilterCriteria();
+
+            clbEvent.DataBindGrid(
+                view.ToTable(), PPartnerTable.GetPartnerShortNameDBName(), "CHECKED", PPartnerTable.GetPartnerKeyDBName(), false, true, false);
             clbEvent.SetCheckedStringList("");
+
+            clbEvent.AutoStretchColumnsToFitWidth = true;
+            clbEvent.AutoResizeGrid();
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

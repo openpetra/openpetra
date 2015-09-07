@@ -84,6 +84,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     param.Value = TAccountingPeriodsWebConnector.GetPeriodStartDate(ALedgerNumber, AFinancialYear, 0, 1);
                     Parameters.Add(param);
                     param = new OdbcParameter("enddate", OdbcType.DateTime);
+                    //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
                     param.Value = TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber, AFinancialYear, 0, 12);
                     Parameters.Add(param);
 

@@ -2,9 +2,7 @@
 <!DOCTYPE reports SYSTEM "../reports.dtd">
 <reports>
 	<report id="GiftsOverAmount">
-		<description>
-			
-		</description>
+		<description></description>
 		<reportparameters>
 			<reportparameter name="param_ledger_number_i"/>
 			<reportparameter name="param_currency"/>
@@ -14,7 +12,7 @@
 			<reportparameter name="param_exclude_anonymous_donors"/> 
 			<reportparameter name="param_exclude_no_solicitations"/> 
 		</reportparameters>
-		
+
 		<reportheader/>
 		<pageheader>
 			<field whichfield="title1"><value text ="Gifts Over Minimum Amount Report" /></field>
@@ -50,7 +48,6 @@
 		</pageheader>
 
 		<calculations>
-		
 			<!-- Select Donors and Totals in a given period of time -->
 			<calculation id="Select Donors"
 					returns="DonorKey, ShortName, PartnerClass"
@@ -127,11 +124,6 @@
 							GROUP BY gift.p_donor_key_n, PUB_p_partner.p_partner_short_name_c, PUB_p_partner.p_partner_class_c
 						</value>
 					</queryDetail>
-					<!-- TODO
-					/* for Germany, exclude donors 99000000 and 27002909 (SHKI and anonymous UNBEKANNT) */
-					AND (NOT ((a_ledger.a_ledger_number_i = 27 OR a_ledger.a_ledger_number_i = 90 OR a_ledger.a_ledger_number_i = 99) 
-					AND (a_gift.p_donor_key_n = 99000000 OR a_gift.p_donor_key_n = 27002909)))
-					-->
 					<queryDetail condition="eq({param_sort_by},Donor Key)">
 						<value>
 							ORDER BY gift.p_donor_key_n
@@ -184,7 +176,7 @@
 							PUB_a_gift_detail,
 							PUB_a_motivation_group
 						WHERE
-								PUB_p_partner.p_partner_key_n = PUB_a_gift_detail.p_recipient_key_n
+							PUB_p_partner.p_partner_key_n = PUB_a_gift_detail.p_recipient_key_n
 							
 							AND PUB_a_motivation_detail.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
 							AND PUB_a_motivation_detail.a_motivation_detail_code_c = PUB_a_gift_detail.a_motivation_detail_code_c
@@ -248,7 +240,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="GetPartnerBestAddress"
 					returns="automatic"
 					returnsFormat="internal">
@@ -256,8 +248,7 @@
 					<queryDetail>
 						<value text="NO-SQL"/>
 						<value function="GetPartnerBestAddress({DonorKey})"/>
-						<value function="assign(PartnerAddress,  )"/>
-						<value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
+						<value function="assign(PartnerAddress, {Locality})"/>
 						<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
 						<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
 						<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>
@@ -267,7 +258,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="MakeDetailWithPartner" returns="automatic" returnsFormat="internal">
 				<query>
 					<queryDetail>
@@ -281,7 +272,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="MakeDetailWithMotivation" returns="automatic" returnsFormat="internal">
 				<query>
 					<queryDetail>
@@ -296,13 +287,13 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="Gift Recipient Key" 
 					returnsFormat="partnerkey" returns="text">
 				<caption><value text="Recipient Key"/></caption>
 				<query>
 					<queryDetail><value variable="RecipientKey"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Gift Date" 
@@ -310,7 +301,7 @@
 				<caption><value text="Gift Date"/></caption>
 				<query>
 					<queryDetail><value variable="GiftDate"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Gift Recipient" 
@@ -318,7 +309,7 @@
 				<caption><value text="Gift Recipient"/></caption>
 				<query>
 					<queryDetail><value variable="GiftRecipient"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Motivation Detail" 
@@ -326,7 +317,7 @@
 				<caption><value text="Motivation Detail"/></caption>
 				<query>
 					<queryDetail><value variable="MotivationDetail"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="DonorKey" 
@@ -334,7 +325,7 @@
 				<caption><value text="DonorKey"/></caption>
 				<query>
 					<queryDetail><value variable="DonorKey"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Partner Name" 
@@ -342,7 +333,7 @@
 				<caption><value text="Partner Name"/></caption>
 				<query>
 					<queryDetail><value variable="ShortName"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Total Gifts" 
@@ -350,7 +341,7 @@
 				<caption><value text="Total Gifts"/></caption>
 				<query>
 					<queryDetail><value variable="TotalGifts"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="PartnerAddress" 
@@ -358,12 +349,12 @@
 				<caption><value text="PartnerAddress"/></caption>
 				<query>
 					<queryDetail><value variable="PartnerAddress"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 		</calculations>
 
-		<levels>		
+		<levels>
 			<level name="main">
 				<detail>
 					<lowerLevelReport level="DonorLevel1" ></lowerLevelReport>
@@ -380,17 +371,17 @@
 					</field>
 				</footer>
 			</level>
-				
+
 			<level name="DonorLevel">
 				<header>
-					<field whichfield="header 0" pos="0cm" width="2.5cm" calculation="GetPartnerBestAddress">
+					<field whichfield="header 0" pos="0cm" width="2.5cm">
 						<value variable="DonorKey" format="partnerkey"/>
 					</field>
-					<field whichfield="header 1" pos="2.5cm" width="15cm">
+					<field whichfield="header 1" pos="2.5cm" width="15cm" calculation="GetPartnerBestAddress">
 						<value variable="PartnerClass"/>
 						<value text="     "/>
 						<value variable="ShortName"/>
-						<value text="  "/>
+						<value text="   "/>
 						<value variable="PartnerAddress"/>
 					</field>
 				</header>
@@ -419,9 +410,7 @@
 					</switch>
 				</detail>
 			</level>
-			
 		</levels>
-		
 	</report><!-- Donor Report -->
-	
+
 </reports>

@@ -2196,6 +2196,16 @@ namespace Ict.Common.Controls
             return null;
         }
 
+        /// <summary>
+        /// Resizes the grid columns, taking account of the MaxAutoSizeRows property and the IncludeFixedRowsInAutoSizeColumns property.
+        /// Then, by default, automatically stretches the columns to fit.
+        /// </summary>
+        public void AutoResizeGrid()
+        {
+            this.Columns.AutoSize(false, IncludeFixedRowsInAutoSizeColumns ? 0 : FixedRows, Math.Min(MaxAutoSizeRows, this.Rows.Count - 1));
+            base.OnResize(new EventArgs());
+        }
+
         #region IndexedGridRowsHelper
 
         /// <summary>

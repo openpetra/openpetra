@@ -228,9 +228,7 @@ namespace Ict.Common.Remoting.Server
                         {
                             if (TLogging.DL >= 10)
                             {
-                                Console.WriteLine(
-                                    "{0} TClientStillAliveCheck: FTearDownAppDomain was not assigned -> can't tear down Client's AppDomain!",
-                                    DateTime.Now);
+                                TLogging.Log("TClientStillAliveCheck: FTearDownAppDomain was not assigned -> can't tear down Client's AppDomain!");
                             }
                         }
                     }

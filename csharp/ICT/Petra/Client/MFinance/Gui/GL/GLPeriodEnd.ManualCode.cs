@@ -27,16 +27,20 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using System.Threading;
+using System.Runtime.Remoting.Messaging;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TPeriodEnd
     {
-        const bool INFORMATION_MODE = true;
-        const bool CALCULATION_MODE = false;
-
         TVerificationResultCollection FverificationResult;
         private Int32 FLedgerNumber;
+
+        /// <summary>
+        /// Made public because I want to access this from a callback
+        /// </summary>
+        public Boolean FOperationResult;
 
         /// <summary>
         /// Sets the ledger number and initializes the gui ...
@@ -48,12 +52,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FLedgerNumber = value;
                 string msg;
 
-                bool ErrorStatus = RunPeriodEnd(INFORMATION_MODE);
+                FOperationResult = RunPeriodEnd(true);
                 msg = FverificationResult.BuildVerificationResultString();
 
-                if (ErrorStatus)
+                if (FOperationResult)
                 {
-                    msg = Catalog.GetString("The server returned this message:") +
+                    msg = Catalog.GetString("Process cannot be performed:") +
                           "\r\n\r\n" + msg + "\r\n";
                 }
 
@@ -72,40 +76,85 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void CancelButtonClick(object btn, EventArgs e)
         {
+            if (btnCancel.Text != Catalog.GetString("Done")) // The Cancel button becomes "Done" after AsyncOpEnd, below.
+            {
+                TRemote.MFinance.GL.WebConnectors.CancelPeriodOperation();
+            }
+
             this.Close();
         }
 
+        private delegate bool AsyncOpCaller(bool AInInfoMode);
+
         private void PeriodEndButtonClick(object btn, EventArgs e)
         {
-            RunPeriodEnd(CALCULATION_MODE);
-            tbxMessage.Text = Catalog.GetString("The server returned this message:") +
-                              "\r\n\r\n" +
-                              FverificationResult.BuildVerificationResultString();
+            tbxMessage.Text = "Running Period End operation - please wait.";
+            AsyncOpCaller AsyncOp = new AsyncOpCaller(RunPeriodEnd);
+            this.UseWaitCursor = true;
+            AsyncOp.BeginInvoke(false, AsyncOpEnd, this);
+        }
+
+        delegate void CrossThreadUpdate ();
+
+        private static void AsyncOpEnd(IAsyncResult ar)
+        {
+            AsyncResult result = (AsyncResult)ar;
+            TPeriodEnd TheForm = (TPeriodEnd)result.AsyncState;
+            AsyncOpCaller caller = (AsyncOpCaller)result.AsyncDelegate;
+
+            TheForm.FOperationResult = caller.EndInvoke(ar);
+            TLogging.Log("AsyncOpEnd: " + TheForm.FOperationResult);
+
+            // Reset valid posting dates as they will have changed.
+            TLedgerSelection.ResetValidDates(TheForm.FLedgerNumber);
+            TheForm.TidyUpAfterAsyncOperation();
+        }
+
+        /// <summary>Called after the operation</summary>
+        /// <remarks>Uses an "invoke" to update screen controls.</remarks>
+        ///
+        public void TidyUpAfterAsyncOperation()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new CrossThreadUpdate(TidyUpAfterAsyncOperation));
+                return;
+            }
+
+            UseWaitCursor = false;
+
+            if (FOperationResult)
+            {
+                tbxMessage.Text = Catalog.GetString("Operation did not complete:") +
+                                  "\r\n\r\n" +
+                                  FverificationResult.BuildVerificationResultString();
+            }
+            else
+            {
+                tbxMessage.Text = Catalog.GetString("Operation completed successfully.") +
+                                  "\r\n\r\n" +
+                                  FverificationResult.BuildVerificationResultString();
+            }
+
             btnPeriodEnd.Visible = false;
             btnCancel.Text = Catalog.GetString("Done");
-
-            // reset valid dates as they may have changed: next time this object is called values are refreshed from server
-            TLedgerSelection.ResetValidDates(FLedgerNumber);
         }
 
         private bool RunPeriodEnd(bool AInInfoMode)
         {
-            this.Cursor = Cursors.WaitCursor;
-            bool blnErrorStatus;
-
             if (blnIsInMonthMode)
             {
-                blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodMonthEnd(
+                FOperationResult = TRemote.MFinance.GL.WebConnectors.PeriodMonthEnd(
                     FLedgerNumber, AInInfoMode, out FverificationResult);
             }
             else
             {
-                blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodYearEnd(
+                FOperationResult = TRemote.MFinance.GL.WebConnectors.PeriodYearEnd(
                     FLedgerNumber, AInInfoMode, out FverificationResult);
             }
 
-            this.Cursor = Cursors.Default;
-            return blnErrorStatus;
+            TLogging.Log("RunPeriodEnd: " + FOperationResult);
+            return FOperationResult;
         }
 
         private void ResizeForm(object from, EventArgs e)

@@ -22,6 +22,9 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+
+using Ict.Common;
 
 namespace Ict.Petra.Shared.MCommon
 {
@@ -30,6 +33,46 @@ namespace Ict.Petra.Shared.MCommon
     /// </summary>
     public class MCommonConstants
     {
+        /// <summary>Cacheable DataTables: Isolation Level used when reading them into memory</summary>
+        public const System.Data.IsolationLevel CACHEABLEDT_ISOLATIONLEVEL = IsolationLevel.ReadCommitted;
+
+        #region Importing
+
+        /// <summary>'Import Information'</summary>
+        public static readonly string StrImportInformation = Catalog.GetString("Import Information");
+
+        /// <summary>'An exception occurred while parsing line {0}'</summary>
+        public static readonly string StrExceptionWhileParsingLine = Catalog.GetString("An exception occurred while parsing line {0}");
+
+        /// <summary>'An exception occurred while saving the transactions'</summary>
+        public static readonly string StrExceptionWhileSavingTransactions = Catalog.GetString("An exception occurred while saving the transactions");
+
+        /// <summary>'An exception occurred while saving the batch number {0}'</summary>
+        public static readonly string StrExceptionWhileSavingBatch = Catalog.GetString(
+            "An exception occurred while saving the batch with description: '{0}'");
+
+        /// <summary>'Parsing error in Line {0}'</summary>
+        public static readonly string StrParsingErrorInLine = Catalog.GetString("Parsing error in Line {0}");
+
+        /// <summary>'Parsing error in line {0} - column '{1}''</summary>
+        public static readonly string StrParsingErrorInLineColumn = Catalog.GetString("Parsing error in line {0} - column '{1}'");
+
+        /// <summary>'Import information for Line {0}'</summary>
+        public static readonly string StrImportInformationForLine = Catalog.GetString("Import information for Line {0}");
+
+        /// <summary>'Import validation warning in Line {0}'</summary>
+        public static readonly string StrImportValidationWarningInLine = Catalog.GetString("Import validation warning in Line {0}");
+
+        /// <summary>'Import validation error in Line {0}'</summary>
+        public static readonly string StrImportValidationErrorInLine = Catalog.GetString("Import validation error in Line {0}");
+
+        /// <summary>'Validation error in line {0}'</summary>
+        public static readonly string StrValidationErrorInLine = Catalog.GetString("Validation error in line {0}");
+
+        #endregion
+
+        #region Office Specific Data Types
+
         /// <summary>string</summary>
         public const String OFFICESPECIFIC_DATATYPE_CHAR = "char";
 
@@ -53,5 +96,48 @@ namespace Ict.Petra.Shared.MCommon
 
         /// <summary>lookup, refering to another table</summary>
         public const String OFFICESPECIFIC_DATATYPE_LOOKUP = "lookup";
+
+        #endregion
+
+        #region Common Form Design Codes
+
+        /// <summary>Partner</summary>
+        public const String FORM_CODE_PARTNER = "PARTNER";
+
+        /// <summary>Partner</summary>
+        public const String FORM_CODE_PERSONNEL = "PERSONNEL";
+
+        /// <summary>Cheque</summary>
+        public const String FORM_CODE_CHEQUE = "CHEQUE";
+
+        /// <summary>Receipt</summary>
+        public const String FORM_CODE_RECEIPT = "RECEIPT";
+
+        /// <summary>Remittance</summary>
+        public const String FORM_CODE_REMITTANCE = "REMITTANCE";
+
+        /// <summary>Form Design Type Code</summary>
+        public const string FORM_TYPE_CODE_STANDARD = "Standard";
+
+        /// <summary>Form Design Gift Options</summary>
+        public const string FORM_OPTION_ALL = "All";
+
+        /// <summary>Form Design Gift Options</summary>
+        public const string FORM_OPTION_GIFT_IN_KIND_ONLY = "Gift in Kind Only";
+
+        /// <summary>Form Design Gift Options</summary>
+        public const string FORM_OPTION_GIFTS_ONLY = "Gifts Only";
+
+        /// <summary>Form Design Gift Options</summary>
+        public const string FORM_OPTION_OTHER = "Other";
+
+        /// <summary>Form Design Adjustment Options</summary>
+        public const string FORM_OPTION_ADJUSTMENTS_ONLY = "Adjustments Only";
+
+        /// <summary>Form Design Adjustment Options</summary>
+        public const string FORM_OPTION_EXCLUDE_ADJUSTMENTS = "Exclude Adjustments";
+
+
+        #endregion
     }
 }

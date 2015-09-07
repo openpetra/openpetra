@@ -77,59 +77,47 @@ namespace Ict.Petra.Client.MReporting.Logic
         }
 
         /// <summary>
-        /// This returns a StringCollection with the names of available settings
-        /// for the given report
-        ///
+        /// Get a StringCollection with stored settings for the report
         /// </summary>
-        /// <returns>the list of names of settings, which exist at the moment
-        /// </returns>
         public StringCollection GetAvailableSettings()
         {
-            StringCollection ReturnValue;
-
-            String[] StringArray = null;
+            String[] FilenameList = null;
             String SettingName;
-            ReturnValue = new StringCollection();
+            StringCollection ReturnValue = new StringCollection();
+
+            // Switching back to the application directory, because the path names might be relative.
+            Environment.CurrentDirectory = FApplicationDirectory;
+
+            String Path = FSettingsDirectory + FReportName;
             try
             {
-                // need to switch back to the application directory, because the path names might be relative to the application
-                Environment.CurrentDirectory = FApplicationDirectory;
-                StringArray = System.IO.Directory.GetFiles(FSettingsDirectory + FReportName, "*.xml");
+                FilenameList = System.IO.Directory.GetFiles(Path, "*.xml");
             }
             catch (System.Exception)
             {
                 // Messagebox.show('Error: Xmlfiles could not be found!!!');
             }
 
-            if (StringArray != null)
+            if (FilenameList != null)
             {
-                foreach (string FileName in StringArray)
+                foreach (string FileName in FilenameList)
                 {
                     SettingName = System.IO.Path.GetFileNameWithoutExtension(FileName);
                     ReturnValue.Add(SettingName);
                 }
             }
 
-            // now get the user settings
-            try
-            {
-                // need to switch back to the application directory, because the path names might be relative to the application
-                Environment.CurrentDirectory = FApplicationDirectory;
-                String Path = FUserSettingsDirectory + FReportName;
+            // Now get the user settings
+            Path = FUserSettingsDirectory + FReportName;
 
-                if (System.IO.Directory.Exists(Path))
-                {
-                    StringArray = System.IO.Directory.GetFiles(Path, "*.xml");
-                }
-            }
-            catch (System.Exception)
+            if (System.IO.Directory.Exists(Path))
             {
-                // Messagebox.show('Error: Xmlfiles could not be found!!!');
+                FilenameList = System.IO.Directory.GetFiles(Path, "*.xml");
             }
 
-            if (StringArray != null)
+            if (FilenameList != null)
             {
-                foreach (string FileName in StringArray)
+                foreach (string FileName in FilenameList)
                 {
                     SettingName = System.IO.Path.GetFileNameWithoutExtension(FileName);
 

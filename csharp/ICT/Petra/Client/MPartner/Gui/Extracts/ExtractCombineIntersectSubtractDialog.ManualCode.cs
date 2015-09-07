@@ -80,32 +80,36 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // hide field for base extract if not in subtraction mode
             if (FMode != TMode.ecisSubtractMode)
             {
-                int ReducedHeight = txtBaseExtract.Height;
+                int ReducedHeight = txtBaseExtract.Height + lblBaseExtractLabel.Height;
                 txtBaseExtract.Height = 0;
-                lblBaseExtract.Height = 0;
+                lblBaseExtractLabel.Height = 0;
                 txtBaseExtract.Hide();
-                lblBaseExtract.Hide();
+                lblBaseExtractLabel.Hide();
 
                 pnlTop.Height = pnlTop.Height - ReducedHeight;
                 lblExplanation.Location = new System.Drawing.Point(lblExplanation.Location.X, lblExplanation.Location.Y - ReducedHeight);
+            }
+            else
+            {
+                txtBaseExtract.TextBoxWidth = 180;
             }
 
             switch (FMode)
             {
                 case TMode.ecisCombineMode:
-                    lblExplanation.Text = Catalog.GetString("Please add extracts to the list that you want to combine and then click OK:");
+                    lblExplanation.Text = Catalog.GetString("Please add extracts to the list that you want to combine and then click OK.");
                     FindForm().Text = "Combine Extracts";
                     btnAdd.Select();
                     break;
 
                 case TMode.ecisIntersectMode:
-                    lblExplanation.Text = Catalog.GetString("Please add extracts to the list that you want to intersect and then click OK:");
+                    lblExplanation.Text = Catalog.GetString("Please add extracts to the list that you want to intersect and then click OK.");
                     FindForm().Text = "Intersect Extracts";
                     btnAdd.Select();
                     break;
 
                 case TMode.ecisSubtractMode:
-                    lblExplanation.Text = Catalog.GetString("Please add extracts to the list to be subtracted from the one above:");
+                    lblExplanation.Text = Catalog.GetString("Extract(s) which are to be subtracted:");
                     FindForm().Text = "Subtract Extracts";
                     txtBaseExtract.Select();
                     break;
@@ -163,6 +167,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             grdExtracts.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
             btnRemove.Enabled = false;
+
+            // manually configure tab index
+            pnlLeftButtons.TabIndex = pnlRightButtons.TabIndex + 1;
+            pnlGrid.TabIndex = pnlTop.TabIndex + 1;
         }
 
         /// <summary>
@@ -199,6 +207,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                     FExtractMasterTable.Rows.Add(NewRow);
 
+                    grdExtracts.SelectRowInGrid(1);
+                    btnOK.Select();
                     btnRemove.Enabled = true;
                 }
             }
@@ -364,15 +374,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 switch (FMode)
                 {
                     case TMode.ecisCombineMode:
-                        MessageText = Catalog.GetString("Are you sure that you want to combine the extracts in the list?");
+                        MessageText = Catalog.GetString(
+                        "Are you sure that you want to combine the extracts in the list? (This will create a new extract.)");
                         break;
 
                     case TMode.ecisIntersectMode:
-                        MessageText = Catalog.GetString("Are you sure that you want to intersect the extracts in the list?");
+                        MessageText = Catalog.GetString(
+                        "Are you sure that you want to intersect the extracts in the list? (This will create a new extract.)");
                         break;
 
                     case TMode.ecisSubtractMode:
-                        MessageText = Catalog.GetString("Are you sure that you want to subtract the extracts in the list from the one at the top?");
+                        MessageText = Catalog.GetString(
+                        "Are you sure that you want to subtract the extracts in the list from the one at the top? (This will create a new extract.)");
                         break;
                 }
 

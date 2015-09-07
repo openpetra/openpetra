@@ -31,7 +31,7 @@
         txtOldFieldKey: {Label=Old Field, Type=PartnerKey, ColSpan=3}
         chkNoReceipt:
             Label: Do not print the adjusting gift transactions on periodic receipts.
-            Tooltip: Tick this if the gift was already receipted last year
+            Tooltip: Tick this if you want to exclude the adjusting gift transaction(s) from periodic receipts
             CheckBoxAttachedLabel: right
             ColSpan: 3
 

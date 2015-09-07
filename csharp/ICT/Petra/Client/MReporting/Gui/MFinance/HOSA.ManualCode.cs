@@ -93,6 +93,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_rgrCostCentres", "CostCentreList");
             // TODO need to allow to specify an ICH run number
             ACalc.AddParameter("param_ich_number", 0);
+            ACalc.AddParameter("param_include_rgs", false);
 
             ACalc.AddStringParameter("param_cost_centre_codes", clbCostCentres.GetCheckedStringList(true));
         }

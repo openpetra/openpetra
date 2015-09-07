@@ -74,9 +74,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         private TDelegateLoadSettingsFinished FDelegateLoadSettingsFinished;
 
-        private TDelegateGenerateReportOverride FDelegateGenerateReportOverride;
-        private TDelegateGenerateReportOverride FDelegateViewReportOverride;
-        private TDelegateGenerateReportOverride FDelegateCancelReportOverride;
+        private TDelegateGenerateReportOverride FDelegateGenerateReportOverride = null;
+        private TDelegateGenerateReportOverride FDelegateViewReportOverride = null;
+        private TDelegateGenerateReportOverride FDelegateCancelReportOverride = null;
+        private TDelegateGenerateReportOverride FDelegateGenerateExtract = null;
 
         /// <summary>number of columns that can be sorted</summary>
         public const Int32 NUMBER_SORTBY = 3;
@@ -214,6 +215,22 @@ namespace Ict.Petra.Client.MReporting.Gui
             set
             {
                 FDelegateGenerateReportOverride = value;
+            }
+        }
+
+        /// <summary>
+        /// If the report includes a list of partner keys, it can offer to produce an extract
+        /// just by calling FastReportsWrapper.AllowExtractGeneration
+        /// </summary>
+        public TDelegateGenerateReportOverride DelegateGenerateExtract
+        {
+            set
+            {
+                FDelegateGenerateExtract = value;
+            }
+            get
+            {
+                return FDelegateGenerateExtract;
             }
         }
 
@@ -723,65 +740,73 @@ namespace Ict.Petra.Client.MReporting.Gui
                 ParentControl = CurrentActiveControl as ContainerControl;
             } while (ParentControl != null);
 
-            // Temporily remove focus from active control. This ensures OnLeave event is fired for control.
+            // Temporarily remove focus from the active control. This ensures OnLeave event will be fired for control.
             GetForm().ActiveControl = null;
 
             try
             {
-                // open dialog to prompt the user to enter a name for new extract
-                TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this.FWinForm);
-                string ExtractName;
-                string ExtractDescription;
-
-                ExtractNameDialog.ShowDialog();
-
-                if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                // read the settings and parameters from the controls
+                if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate, true))
                 {
-                    /* Get values from the Dialog */
-                    ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+                    return;
+                }
+
+                if (FDelegateGenerateExtract != null) // Call FastReport's extract scheme
+                {
+                    FDelegateGenerateExtract(FCalculator);
                 }
                 else
                 {
-                    // dialog was cancelled, do not continue with extract generation
-                    return;
-                }
+                    // open dialog to prompt the user to enter a name for new extract
+                    TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this.FWinForm);
+                    string ExtractName;
+                    string ExtractDescription;
 
-                ExtractNameDialog.Dispose();
+                    ExtractNameDialog.ShowDialog();
 
-                // read the settings and parameters from the controls
-                if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
-                {
-                    return;
-                }
+                    if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        /* Get values from the Dialog */
+                        ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+                    }
+                    else
+                    {
+                        // dialog was cancelled, do not continue with extract generation
+                        return;
+                    }
 
-                // add extract name and description to parameter list
-                // (don't add it earlier as the list gets cleared while reading controls from screens)
-                FCalculator.AddParameter("param_extract_name", ExtractName);
-                FCalculator.AddParameter("param_extract_description", ExtractDescription);
+                    ExtractNameDialog.Dispose();
 
-                if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
-                {
-                    FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
-                }
+                    // add extract name and description to parameter list
+                    // (don't add it earlier as the list gets cleared while reading controls from screens)
+                    FCalculator.AddParameter("param_extract_name", ExtractName);
+                    FCalculator.AddParameter("param_extract_description", ExtractDescription);
 
-                this.FWinForm.Cursor = Cursors.WaitCursor;
-                FormCursor = FWinForm.Cursor;
-                TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
+                    if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
+                    {
+                        FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
+                    }
 
-                // Open Extract Mast Screen if not already open.
-                // (If being opened, the screen will not actually be shown at theis stage.)
-                if (TCommonScreensForwarding.OpenExtractMasterScreen != null)
-                {
-                    TCommonScreensForwarding.OpenExtractMasterScreenHidden.Invoke(((ToolStripButton)sender).GetCurrentParent().FindForm());
-                }
+                    this.FWinForm.Cursor = Cursors.WaitCursor;
+                    FormCursor = FWinForm.Cursor;
+                    TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
 
-                if ((FGenerateExtractThread == null) || (!FGenerateExtractThread.IsAlive))
-                {
-                    ((IFrmReporting)FTheForm).EnableBusy(true);
-                    FGenerateExtractThread = new Thread(GenerateExtract);
-                    FGenerateExtractThread.IsBackground = true;
-                    FGenerateExtractThread.Start();
-                }
+                    // Open Extract Mast Screen if not already open.
+                    // (If being opened, the screen will not actually be shown at theis stage.)
+                    if (TCommonScreensForwarding.OpenExtractMasterScreen != null)
+                    {
+                        TCommonScreensForwarding.OpenExtractMasterScreenHidden.Invoke(((ToolStripButton)sender).GetCurrentParent().FindForm());
+                    }
+
+                    if ((FGenerateExtractThread == null) || (!FGenerateExtractThread.IsAlive))
+                    {
+                        ((IFrmReporting)FTheForm).EnableBusy(true);
+                        FGenerateExtractThread = new Thread(GenerateExtract);
+                        FGenerateExtractThread.IsBackground = true;
+                        FGenerateExtractThread.Start();
+                    }
+                }  // else ("old-style reporting" extract scheme
+
             }
             finally
             {
@@ -831,6 +856,15 @@ namespace Ict.Petra.Client.MReporting.Gui
                         MessageBox.Show(
                             Catalog.GetString("Results cannot be shown because form was closed."),
                             Catalog.GetString("Generate Report"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+
+                    if (ACalculator.CalculatesExtract)
+                    {
+                        // let the user know the extract generation was successful
+                        MessageBox.Show(ACallerForm,
+                            Catalog.GetString("Extract successfully generated."),
+                            Catalog.GetString("Generate Extract"),
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
@@ -951,35 +985,15 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void EnableDisableSettings(bool AEnabled)
         {
             MenuStrip mnuMain = (MenuStrip)FFormReportUi.Controls["mnuMain"];
-            ToolStrip tbrMain = (ToolStrip)FFormReportUi.Controls["tbrMain"];
+//          ToolStrip tbrMain = (ToolStrip)FFormReportUi.Controls["tbrMain"];
             ToolStripMenuItem nmuFile = (ToolStripMenuItem)mnuMain.Items[0];
 
             nmuFile.DropDownItems["mniLoadSettings"].Visible = AEnabled;
             nmuFile.DropDownItems["mniSaveSettings"].Visible = AEnabled;
             nmuFile.DropDownItems["mniSaveSettingsAs"].Visible = AEnabled;
             nmuFile.DropDownItems["mniMaintainSettings"].Visible = AEnabled;
-//            tbrMain.Items["tbbSaveSettings"].Visible = AEnabled;
-//            tbrMain.Items["tbbSaveSettingsAs"].Visible = AEnabled;
 
             nmuFile.DropDownItems["mniMaintainTemplates"].Visible = !AEnabled;
-//            tbrMain.Items["tbbMaintainTemplates"].Visible = !AEnabled;
-
-/*
- * // Method previously looked like this when it was in each and every report:
- * // (It was previously not called from anywhere ever, but now I want to use it!)
- *
- *          foreach (ToolStripItem item in mniLoadSettings.DropDownItems)
- *          {
- *              item.Enabled = AEnabled;
- *          }
- *          mniLoadSettings.Enabled = AEnabled;
- *          mniSaveSettings.Enabled = AEnabled;
- *          mniSaveSettingsAs.Enabled = AEnabled;
- *          mniMaintainSettings.Enabled = AEnabled;
- *          //tbbLoadSettings.Enabled = AEnabled;
- *          tbbSaveSettings.Enabled = AEnabled;
- *          tbbSaveSettingsAs.Enabled = AEnabled;
- */
         }
 
         /// <summary>
@@ -1324,7 +1338,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <returns>true if successful
         /// </returns>
-        protected virtual bool ReadControlsWithErrorHandling(TReportActionEnum AReportAction)
+        protected virtual bool ReadControlsWithErrorHandling(TReportActionEnum AReportAction, bool AIsExtract = false)
         {
             bool ReturnValue;
             TVerificationResult VerificationResultEntry;
@@ -1339,9 +1353,13 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 if (FVerificationResults.Count != 0)
                 {
-                    if (AReportAction == TReportActionEnum.raGenerate)
+                    if ((AReportAction == TReportActionEnum.raGenerate) && !AIsExtract)
                     {
                         UserMessage = "Report could not be generated.";
+                    }
+                    else if ((AReportAction == TReportActionEnum.raGenerate) && AIsExtract)
+                    {
+                        UserMessage = "Extract could not be generated.";
                     }
                     else if (AReportAction == TReportActionEnum.raSave)
                     {

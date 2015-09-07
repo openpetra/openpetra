@@ -56,6 +56,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void InitializeManualCode()
         {
+            // Let the user change his/her mind and clear the box
+            cmbDontSummarizeAccount.cmbCombobox.AllowBlankValue = true;
+
             txtBatchNumberStart.NumberValueInt = 0;
             txtBatchNumberEnd.NumberValueInt = 999999;
             DateTime now = DateTime.Now;

@@ -68,4 +68,4 @@ RootNode:
         cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}
         # transaction type depends on the ledger and the selected sub system; see BeforeShowDetailsManual
         cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList, Tooltip=Select one of the available transaction type codes}
-        cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList, CurrencyChanged}
+        cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList, OnChange=CurrencyCodeChanged}

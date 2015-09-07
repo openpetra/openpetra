@@ -58,18 +58,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private CheckBox FFindChkSummary = null;
         private CheckBox FFindChkForeign = null;
 
+        private bool FSuspenseAccountsAllowed = true;
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="AFilterFindPanelObject">The FilterFindPanel Object on the main form</param>
-        public TUC_AccountsListFilterFind(TFilterAndFindPanel AFilterFindPanelObject)
+        /// <param name="ASuspenseAccountsAllowed">Used to determine if the suspense accounts control be shown.</param>
+        public TUC_AccountsListFilterFind(TFilterAndFindPanel AFilterFindPanelObject, bool ASuspenseAccountsAllowed)
         {
+            FSuspenseAccountsAllowed = ASuspenseAccountsAllowed;
+
             FFilterTxtAccountCode = (TextBox)AFilterFindPanelObject.FilterPanelControls.FindControlByName("txtAccountCode");
             FFilterCmbAccountType = (TCmbAutoComplete)AFilterFindPanelObject.FilterPanelControls.FindControlByName("cmbAccountType");
             FFilterTxtDescrEnglish = (TextBox)AFilterFindPanelObject.FilterPanelControls.FindControlByName("txtDescrEnglish");
             FFilterTxtDescrLocal = (TextBox)AFilterFindPanelObject.FilterPanelControls.FindControlByName("txtDescrLocal");
             FFilterChkBankAccount = (CheckBox)AFilterFindPanelObject.FilterPanelControls.FindControlByName("chkBankAccount");
-            FFilterChkSuspenseAccount = (CheckBox)AFilterFindPanelObject.FilterPanelControls.FindControlByName("chkSuspenseAccount");
+
+            if (ASuspenseAccountsAllowed)
+            {
+                FFilterChkSuspenseAccount = (CheckBox)AFilterFindPanelObject.FilterPanelControls.FindControlByName("chkSuspenseAccount");
+            }
+
             FFilterChkActive = (CheckBox)AFilterFindPanelObject.FilterPanelControls.FindControlByName("chkActive");
             FFilterChkSummary = (CheckBox)AFilterFindPanelObject.FilterPanelControls.FindControlByName("chkSummary");
             FFilterChkForeign = (CheckBox)AFilterFindPanelObject.FilterPanelControls.FindControlByName("chkForeign");
@@ -79,7 +89,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FFindTxtDescrEnglish = (TextBox)AFilterFindPanelObject.FindPanelControls.FindControlByName("txtDescrEnglish");
             FFindTxtDescrLocal = (TextBox)AFilterFindPanelObject.FindPanelControls.FindControlByName("txtDescrLocal");
             FFindChkBankAccount = (CheckBox)AFilterFindPanelObject.FindPanelControls.FindControlByName("chkBankAccount");
-            FFindChkSuspenseAccount = (CheckBox)AFilterFindPanelObject.FindPanelControls.FindControlByName("chkSuspenseAccount");
+
+            if (ASuspenseAccountsAllowed)
+            {
+                FFindChkSuspenseAccount = (CheckBox)AFilterFindPanelObject.FindPanelControls.FindControlByName("chkSuspenseAccount");
+            }
+
             FFindChkActive = (CheckBox)AFilterFindPanelObject.FindPanelControls.FindControlByName("chkActive");
             FFindChkSummary = (CheckBox)AFilterFindPanelObject.FindPanelControls.FindControlByName("chkSummary");
             FFindChkForeign = (CheckBox)AFilterFindPanelObject.FindPanelControls.FindControlByName("chkForeign");
@@ -138,7 +153,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
 
-            if (FFilterChkSuspenseAccount.CheckState != CheckState.Indeterminate)
+            if (FSuspenseAccountsAllowed && (FFilterChkSuspenseAccount.CheckState != CheckState.Indeterminate))
             {
                 if (FFilterChkSuspenseAccount.Checked)
                 {
@@ -217,7 +232,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string strAccountDescrEnglish = FFindTxtDescrEnglish.Text.ToLower();
             string strAccountDescrLocal = FFindTxtDescrLocal.Text.ToLower();
             bool isBankAccount = FFindChkBankAccount.Checked;
-            bool isSuspenseAccount = FFindChkSuspenseAccount.Checked;
             bool isActive = FFindChkActive.Checked;
             bool isSummary = FFindChkSummary.Checked;
             bool isForeign = FFindChkForeign.Checked;
@@ -265,9 +279,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
 
-            if (FFindChkSuspenseAccount.CheckState != CheckState.Indeterminate)
+            if (FSuspenseAccountsAllowed && (FFindChkSuspenseAccount.CheckState != CheckState.Indeterminate))
             {
-                if (accountRow.SuspenseAccountFlag != isSuspenseAccount)
+                if (accountRow.SuspenseAccountFlag != FFindChkSuspenseAccount.Checked)
                 {
                     return false;
                 }

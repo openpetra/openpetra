@@ -77,7 +77,7 @@ namespace Ict.Petra.Server.MPartner
             Boolean NewTransaction;
 
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                Ict.Petra.Shared.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -150,7 +150,7 @@ namespace Ict.Petra.Server.MPartner
             BestLocation = DetermineBestAddress(APartnerKey, out APartnerLocationDR);
 
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                Ict.Petra.Shared.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 

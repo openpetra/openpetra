@@ -632,8 +632,40 @@ namespace Ict.Petra.Shared
                     FReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
                     TLogging.LogAtLevel(10, "TCacheableTablesManager.AddOrMergeCachedTable grabbed a WriterLock.");
 
+                    int rowCount = UDataCacheDataSet.Tables[ACacheableTableName].Rows.Count;
                     TLogging.LogAtLevel(7, "TCacheableTablesManager.AddOrMergeCachedTable: merging DataTable " + ACacheableTableName +
-                        ". Rows before merging: " + UDataCacheDataSet.Tables[ACacheableTableName].Rows.Count.ToString());
+                        ". Rows before merging: " + rowCount.ToString());
+
+                    Type cacheableTableType = ACacheableTable.GetType();
+
+                    if ((UDataCacheDataSet.Tables[ACacheableTableName].GetType() == typeof(System.Data.DataTable))
+                        && cacheableTableType.IsSubclassOf(typeof(TTypedDataTable)))
+                    {
+                        TLogging.LogAtLevel(7,
+                            "TCacheableTablesManager.AddOrMergeCachedTable: An attempt was made to merge a Typed Table into a plain DataTable");
+
+                        if (rowCount == 0)
+                        {
+                            // This can happen if the cache did not contain this table when it was marked as needing refreshing.
+                            // In that case the cache will contain an empty plain DataTable, which we are now trying to populate.
+                            TLogging.LogAtLevel(7, "TCacheableTablesManager.AddOrMergeCachedTable: Creating new Typed table (" +
+                                ACacheableTableName + ") in preparation for data merge");
+
+                            DataTable dt = new DataTable();
+                            DataUtilities.ChangeDataTableToTypedDataTable(ref dt, cacheableTableType, ACacheableTableName);
+                            UDataCacheDataSet.Tables.Remove(ACacheableTableName);
+                            UDataCacheDataSet.Tables.Add(dt);
+                        }
+                        else
+                        {
+                            // This should never happen.  The cache should only contain Typed tables or a dummy untyped table that contains no data
+                            // that was only used so that the Contents DataSet could mark it as needing refreshing.
+                            throw new ECacheableTablesMgrException(
+                                "TCacheableTablesManager.AddOrMergeCachedTable: " +
+                                "An unexpected attempt was made to merge a typed data table into an untyped data table that already contains data");
+                        }
+                    }
+
                     TmpDT = ACacheableTable.Copy();
                     TmpDT.TableName = ACacheableTableName;
 
@@ -756,6 +788,7 @@ namespace Ict.Petra.Shared
             if (!UDataCacheDataSet.Tables.Contains(ACacheableTableName))
             {
                 // add an empty table so we can mark it as invalid
+                TLogging.LogAtLevel(7, "MarkCachedTableNeedsRefreshing: Adding a generic DataTable to the cache (" + ACacheableTableName + ")");
                 AddOrRefreshCachedTable(ACacheableTableName, new DataTable(), -1);
             }
 
@@ -1187,6 +1220,8 @@ namespace Ict.Petra.Shared
 
                     WriteLockTakenOut = true;
                     UDataCacheDataSet.Tables.Remove(ACacheableTableName);
+                    TLogging.LogAtLevel(7,
+                        "TCacheableTablesManager.RemoveCachedTable: " + ACacheableTableName + " table has been removed from the cache.");
 
                     if (ARemoveContentsEntry)
                     {

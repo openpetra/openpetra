@@ -15,7 +15,7 @@ RootNode:
                 Row2: [chkFamiliesOnly]
                 Row3: [chkExcludeNoSolicitations]
 
-        chkActivePartners: {Label=Active Partners Only, CheckBoxAttachedLabel=right,ParameterName=param_active, Dock=Top}
-        chkMailingAddressesOnly: {Label=Current Mailing Addresses Only, CheckBoxAttachedLabel=right, ParameterName=param_mailing_addresses_only, Dock=Top}
-        chkFamiliesOnly: {Label=Families Only, CheckBoxAttachedLabel=right, ParameterName=param_families_only, Dock=Top}
-        chkExcludeNoSolicitations: {Label=Exclude 'No Solicitations', CheckBoxAttachedLabel=right, ParameterName=param_exclude_no_solicitations, Dock=Top}
+        chkActivePartners: {Label=Active Partners Only, CheckBoxAttachedLabel=right,ParameterName=param_active}
+        chkMailingAddressesOnly: {Label=Current Mailing Addresses Only, CheckBoxAttachedLabel=right, ParameterName=param_mailing_addresses_only}
+        chkFamiliesOnly: {Label=Families Only, CheckBoxAttachedLabel=right, ParameterName=param_families_only}
+        chkExcludeNoSolicitations: {Label=Exclude 'No Solicitations', CheckBoxAttachedLabel=right, ParameterName=param_exclude_no_solicitations}

@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -33,6 +34,7 @@ using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -83,10 +85,44 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                 if (FileName.Length > 0)
                 {
+                    bool ExportFamiliesPersons = false;
+
+                    bool ContainsFamily = TRemote.MPartner.ImportExport.WebConnectors.CheckExtractContainsFamily(GetSelectedDetailRow().ExtractId);
+
+                    if (ContainsFamily)
+                    {
+                        if (MessageBox.Show(
+                                Catalog.GetString("When exporting a FAMILY record do you want to also export all associated PERSON records?"),
+                                Catalog.GetString("Export Partners"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            ExportFamiliesPersons = true;
+                        }
+                    }
+
+                    this.Cursor = Cursors.WaitCursor;
+
                     if (FileName.EndsWith("ext"))
                     {
-                        String doc = TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartnersExt(GetSelectedDetailRow().ExtractId, false);
-                        Result = TImportExportDialogs.ExportTofile(doc, FileName);
+                        string Doc = string.Empty;
+
+                        // run in thread so we can have Progress Dialog
+                        Thread t = new Thread(() => ExportToFile(ExportFamiliesPersons, ref Doc));
+
+                        using (TProgressDialog dialog = new TProgressDialog(t))
+                        {
+                            dialog.ShowDialog();
+                        }
+
+                        // null if the user cancelled the operation
+                        if (Doc == null)
+                        {
+                            MessageBox.Show(Catalog.GetString("Export cancelled."), Catalog.GetString(
+                                    "Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            this.Cursor = Cursors.Default;
+                            return false;
+                        }
+
+                        Result = TImportExportDialogs.ExportTofile(Doc, FileName);
 
                         if (!Result)
                         {
@@ -107,12 +143,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         // doc.LoadXml(TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartners(GetSelectedDetailRow().ExtractId, false));
                         // Result = TImportExportDialogs.ExportTofile(doc, FileName);
                     }
+
+                    this.Cursor = Cursors.Default;
                 }
 
                 return Result;
             }
 
             return false;
+        }
+
+        private void ExportToFile(bool AExportFamiliesPersons, ref string ADoc)
+        {
+            ADoc = TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartnersExt(GetSelectedDetailRow().ExtractId, AExportFamiliesPersons);
         }
 
         /// <summary>
@@ -263,6 +306,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 TFrmExtractMaintain frm = new TFrmExtractMaintain(this.FindForm());
                 frm.ExtractId = GetSelectedDetailRow().ExtractId;
                 frm.ExtractName = GetSelectedDetailRow().ExtractName;
+                frm.Frozen = GetSelectedDetailRow().Frozen;
                 frm.Show();
             }
         }
@@ -290,6 +334,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             string ACompletionMessage)
         {
             UpdateButtonStatus();
+
+            // automatically save changes after a delete
+            SaveChanges();
         }
 
         /// <summary>
@@ -978,8 +1025,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExtractCreated)
             {
-                FPetraUtilsObject.GetForm().BringToFront();
-
                 if (FDelegateRefreshExtractList())
                 {
                     // this is required as extracts are created on a different thread
@@ -989,7 +1034,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             {
                                 // show filter panel
                                 MniFilterFind_Click(GetPetraUtilsObject().GetForm(), null);
-                                // show the screen in case it has been hidden
+                                // show the screen in case it has been hidden (TExtractMasterScreenManager.OpenFormHidden)
                                 FPetraUtilsObject.GetForm().Show();
                                 // filter results to show the new extract
                                 ((TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtExtractName")).Text =
@@ -1000,7 +1045,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     {
                         // show filter panel
                         MniFilterFind_Click(GetPetraUtilsObject().GetForm(), null);
-                        // show the screen in case it has been hidden
+                        // show the screen in case it has been hidden (TExtractMasterScreenManager.OpenFormHidden)
                         FPetraUtilsObject.GetForm().Show();
                         // filter results to show the new extract
                         ((TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtExtractName")).Text =

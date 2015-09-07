@@ -242,6 +242,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             Boolean ReturnValue;
 
+            // Be sure to fire the OnLeave event on the active control of any user control
+            FPetraUtilsObject.ForceOnLeaveForActiveControl();
+
             FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
             // Don't allow saving if user is still editing a Detail of a List
@@ -254,8 +257,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (ValidateAllData(false, TErrorProcessingMode.Epm_All))
+            if (ValidateAllData(false, TErrorProcessingMode.Epm_IgnoreNonCritical))
             {
+                // Ask the user about non-critical warnings, if they are the only 'errors' in the collection
+                if (FPetraUtilsObject.VerificationResultCollection.HasOnlyNonCriticalErrors
+                    && (TDataValidation.ProcessAnyDataValidationWarnings(FPetraUtilsObject.VerificationResultCollection,
+                            MCommonResourcestrings.StrFormSaveDataAnywayQuestion, this.GetType()) == false))
+                {
+                    return false;
+                }
+
                 FMainDS.AApSupplier.Rows[0].BeginEdit();
                 GetDataFromControls(FMainDS.AApSupplier[0]);
 

@@ -777,6 +777,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                                                         PeriodDate.AddDays(30);
                                                     }
 
+                                                    //TODO: Calendar vs Financial Date Handling - Review below in relation to number of ledger periods which may be > 13
+
                                                     /* handle 13th period stewardship separately (needs to be treated as
                                                      *                 another period 12 one with run number 999) */
                                                     if ((PeriodDate.Day == 31) && (PeriodDate.Month == 12))
@@ -1007,6 +1009,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                     AAccountingPeriodTable AccPeriodTable =
                         AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, LedgerRow.CurrentPeriod, DBTransaction);
                     AAccountingPeriodRow AccPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[0];
+
+                    //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
 
                     /* if this stewardship applies to a period more than 12 months ago we can't process it as it gets
                      * too difficult to figure out whether it is a duplicate or not */

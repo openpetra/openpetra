@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
         /// <summary> Holds the number of active partner. This is needed for calculation of the
         /// publication statistical report. </summary>
-        private static int FNumberOfAcitvePartner;
+        private static int FNumberOfActivePartner;
 
         /// <summary> These constants define special rows for the publication statistical report </summary>
         private const String ROW_FOREIGN = "*FOREIGN*";
@@ -161,7 +161,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
             if (StringHelper.IsSame(f, "GetCountyPublicationStatistic"))
             {
-                value = new TVariant(GetCountyPublicationStatistic(ops[1].ToString(), ops[2].ToString()));
+                value = new TVariant(GetCountyPublicationStatistic(ops[1].ToString(), ops[2].ToString(), ops[3].ToString()));
                 return true;
             }
 
@@ -542,6 +542,13 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 // find the row with BestAddress = 1
                 if (Convert.ToInt32(row["BestAddress"]) == 1)
                 {
+                    // get the partner location details into the parameters
+                    foreach (DataColumn col in PartnerLocationTable.Columns)
+                    {
+                        situation.GetParameters().AddCalculationParameter(StringHelper.UpperCamelCase(col.ColumnName, true,
+                                true), new TVariant(row[col.ColumnName]));
+                    }
+
                     // find the location record with that address
                     LocationTable = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, situation.GetDatabaseConnection().Transaction);
 
@@ -991,72 +998,19 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// </summary>
         /// <param name="ACountryCode">Country Code</param>
         /// <param name="ACounty">County</param>
+        /// <param name="PublicationCodes"></param>
         /// <returns></returns>
-        private bool GetCountyPublicationStatistic(String ACountryCode, String ACounty)
+        private bool GetCountyPublicationStatistic(String ACountryCode, String ACounty, string PublicationCodes)
         {
             // if this is the first call...
             if (FStatisticalReportDataTable == null)
             {
-                CalculatePublicationStatisticalReport(ACountryCode);
+                CalculatePublicationStatisticalReport(ACountryCode, PublicationCodes);
             }
 
             FillStatisticalReportResultTable(ACounty);
 
             return true;
-        }
-
-        /// <summary>
-        /// Check it the partner is an Ex-Omer or an Applicant.
-        /// If yes, the corresponding number is increased.
-        /// </summary>
-        /// <param name="APartnerKey">Partner Key</param>
-        /// <param name="ANumberApplicants">Number of Applicants</param>
-        /// <param name="ANumberExParticipants">Number of Ex Omer</param>
-        private void CheckPartnerType(long APartnerKey, ref int ANumberApplicants, ref int ANumberExParticipants)
-        {
-            DataTable PartnerTypeTable;
-
-            if (!GetDataTableFromXmlSqlStatement("GetPartnerType", out PartnerTypeTable, "PartnerKey", APartnerKey.ToString()))
-            {
-                return;
-            }
-
-            foreach (DataRow row in PartnerTypeTable.Rows)
-            {
-                String PartnerType = row[0].ToString();
-
-                // TODO ORGANIZATION SPECIFIC PartnerType
-                if (PartnerType.StartsWith("EX-OMER"))
-                {
-                    ++ANumberExParticipants;
-                }
-                else if (PartnerType.StartsWith("APPLIED"))
-                {
-                    ++ANumberApplicants;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Check if the partner is a donor.
-        /// If yes, ANumberDonors number is increased.
-        /// </summary>
-        /// <param name="APartnerKey">Partner Key</param>
-        private bool CheckPartnerGift(long APartnerKey)
-        {
-            DataTable GiftTable;
-
-            if (!GetDataTableFromXmlSqlStatement("GetPartnerGifts", out GiftTable, "PartnerKey", APartnerKey.ToString()))
-            {
-                return false;
-            }
-
-            if (GiftTable.Rows.Count > 0)
-            {
-                return true;
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -1211,7 +1165,15 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 TmpRow = FStatisticalReportDataTable.NewRow();
                 TmpRow[0] = (String)Row[0];
                 FStatisticalReportDataTable.Rows.Add(TmpRow);
-                CountyRowList.Add(((String)Row[0]).ToLower(), CurrentRowCounter++);
+
+                if (!CountyRowList.ContainsKey(((String)Row[0]).ToLower()))
+                {
+                    CountyRowList.Add(((String)Row[0]).ToLower(), CurrentRowCounter++);
+                }
+                else
+                {
+                    CurrentRowCounter++;
+                }
             }
 
             TmpRow = FStatisticalReportDataTable.NewRow();
@@ -1236,36 +1198,85 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// Main calculation of the publication statistical report.
         /// </summary>
         /// <param name="ACountryCode"></param>
-        private void CalculatePublicationStatisticalReport(String ACountryCode)
+        /// <param name="APublicationCodes"></param>
+        private void CalculatePublicationStatisticalReport(String ACountryCode, string APublicationCodes)
         {
-            PPartnerTable PartnerTable;
+            DataTable PartnerTable = new DataTable();;
+
             PLocationTable LocationTable;
             PLocationRow LocationRow;
 
-            PartnerTable = PPartnerAccess.LoadAll(situation.GetDatabaseConnection().Transaction);
-            PPartnerLocationRow PartnerLocationRow;
+            // codes should be surrounded by single quotes
+            APublicationCodes = APublicationCodes.Replace("\"", "'");
 
-            PSubscriptionTable SubscriptionTable;
-            SubscriptionTable = PSubscriptionAccess.LoadAll(situation.GetDatabaseConnection().Transaction);
+            // load all active partners who have subscriptions for publications in the list, are a donor, are a church, are an applicant or are an ex-worker
+            string Query = "SELECT DISTINCT p_partner.*," +
+
+                           // is partner a donor?
+                           " CASE WHEN EXISTS (SELECT * FROM PUB_a_gift" +
+                           " WHERE a_gift.p_donor_key_n = p_partner.p_partner_key_n) THEN 'yes'" +
+                           " ELSE '' END AS " + COLUMN_DONOR + "," +
+
+                           // is partner an ex-worker?
+                           " CASE WHEN EXISTS (SELECT * FROM p_partner_type " +
+                           " WHERE p_partner_type.p_partner_key_n = p_partner.p_partner_key_n" +
+                           " AND p_partner_type.p_type_code_c LIKE 'EX-WORKER%') THEN 'yes'" +
+                           " ELSE 'no' END AS " + COLUMN_EXPARTICIPANTS + "," +
+
+                           // is partner an applicant?
+                           " CASE WHEN EXISTS (SELECT * FROM p_partner_type " +
+                           " WHERE p_partner_type.p_partner_key_n = p_partner.p_partner_key_n" +
+                           " AND p_partner_type.p_type_code_c LIKE 'APPLIED%') THEN 'yes'" +
+                           " ELSE 'no' END AS " + COLUMN_APPLICANTS +
+
+                           " FROM p_partner" +
+                           " WHERE p_partner.p_status_code_c = 'ACTIVE'" +
+
+                           // if have subscriptions for publications in the list
+                           " AND (EXISTS (SELECT * FROM p_subscription" +
+                           " WHERE p_subscription.p_partner_key_n = p_partner.p_partner_key_n" +
+
+                           " AND p_subscription.p_publication_code_c IN (" + APublicationCodes + "))" +
+
+                           // if a donor
+                           " OR EXISTS (SELECT * FROM PUB_a_gift" +
+                           " WHERE a_gift.p_donor_key_n = p_partner.p_partner_key_n)" +
+
+                           // if a church
+                           " OR p_partner.p_partner_class_c = 'CHURCH'" +
+
+                           // if an applicant or an ex-worker
+                           " OR EXISTS (SELECT * FROM p_partner_type " +
+                           " WHERE p_partner_type.p_partner_key_n = p_partner.p_partner_key_n" +
+                           " AND (p_partner_type.p_type_code_c LIKE 'EX-WORKER%'" +
+                           " OR p_partner_type.p_type_code_c LIKE 'APPLIED%')))";
+
+            PartnerTable = DBAccess.GDBAccessObj.SelectDT(PartnerTable, Query, situation.GetDatabaseConnection().Transaction);
+
+            // get total number of active partners
+            FNumberOfActivePartner = PPartnerAccess.CountViaPPartnerStatus("ACTIVE", situation.GetDatabaseConnection().Transaction);
+
+            PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
+
+            // load all subscriptions for publications in the list
+            Query = "SELECT * FROM p_subscription" +
+                    " WHERE p_subscription.p_publication_code_c IN (" + APublicationCodes + ")";
+            SubscriptionTable = (PSubscriptionTable)DBAccess.GDBAccessObj.SelectDT(SubscriptionTable, Query,
+                situation.GetDatabaseConnection().Transaction);
+
+            PPartnerLocationRow PartnerLocationRow;
 
             Dictionary <String, int>SubscriptionCounter = new Dictionary <String, int>();
             InitSubscriptionCounter(ref SubscriptionCounter);
 
             Dictionary <String, int>CountyRowList = InitStatisticalReportTable();
-            FNumberOfAcitvePartner = 0;
 
-            String PartnerKeyDBName = PPartnerTable.GetPartnerKeyDBName() + " = ";
-
-            foreach (PPartnerRow PartnerRow in PartnerTable.Rows)
+            // foreach partner that satisfied the above criteria
+            foreach (DataRow PartnerRow in PartnerTable.Rows)
             {
-                if (PartnerRow.StatusCode != "ACTIVE")
-                {
-                    continue;
-                }
+                Int64 PartnerKey = Convert.ToInt64(PartnerRow[PPartnerTable.GetPartnerKeyDBName()]);
 
-                FNumberOfAcitvePartner++;
-
-                if (GetPartnerBestAddressRow(PartnerRow.PartnerKey, situation, out PartnerLocationRow))
+                if (GetPartnerBestAddressRow(PartnerKey, situation, out PartnerLocationRow))
                 {
                     if (PartnerLocationRow == null)
                     {
@@ -1297,6 +1308,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
                     String RowName = ROW_FOREIGN;
 
+                    // Use county if in this country, else foreign
                     if ((!LocationRow.IsCountryCodeNull())
                         && (LocationRow.CountryCode == ACountryCode))
                     {
@@ -1313,9 +1325,8 @@ namespace Ict.Petra.Server.MReporting.MPartner
                         }
                     }
 
-                    // for each subscription
-                    // check if partner receives this subscription
-                    DataRow[] Subscriptions = SubscriptionTable.Select(PartnerKeyDBName + PartnerRow.PartnerKey);
+                    // get the subscriptions that this partner receives (if any)
+                    DataRow[] Subscriptions = SubscriptionTable.Select(PPartnerTable.GetPartnerKeyDBName() + " = " + PartnerKey);
 
                     foreach (DataRow Row in Subscriptions)
                     {
@@ -1335,26 +1346,26 @@ namespace Ict.Petra.Server.MReporting.MPartner
                         }
                     }
 
-                    if (CheckPartnerGift(PartnerRow.PartnerKey))
+                    // partner is a donor
+                    if (PartnerRow[COLUMN_DONOR].ToString() == "yes")
                     {
                         AddToStatisticalReportTable(CountyRowList[RowName], COLUMN_DONOR, 1);
                     }
 
-                    if (PartnerRow.PartnerClass == "CHURCH")
+                    // partner is church
+                    if (PartnerRow[PPartnerTable.GetPartnerClassDBName()].ToString() == "CHURCH")
                     {
                         AddToStatisticalReportTable(CountyRowList[RowName], COLUMN_CHURCH, 1);
                     }
 
-                    int NumApplicants = 0;
-                    int NumExParticipants = 0;
-                    CheckPartnerType(PartnerRow.PartnerKey, ref NumApplicants, ref NumExParticipants);
-
-                    if (NumApplicants > 0)
+                    // partner is an applicant
+                    if (PartnerRow[COLUMN_APPLICANTS].ToString() == "yes")
                     {
                         AddToStatisticalReportTable(CountyRowList[RowName], COLUMN_APPLICANTS, 1);
                     }
 
-                    if (NumExParticipants > 0)
+                    // partner is an ex-worker
+                    if (PartnerRow[COLUMN_EXPARTICIPANTS].ToString() == "yes")
                     {
                         AddToStatisticalReportTable(CountyRowList[RowName], COLUMN_EXPARTICIPANTS, 1);
                     }
@@ -1436,8 +1447,12 @@ namespace Ict.Petra.Server.MReporting.MPartner
                         }
                         else
                         {
-                            FillFirstColumns(ParameterLabel, col, (String)Row.ItemArray[0], new TVariant(""), new TVariant(""), new TVariant(
-                                    ""), new TVariant(""));
+                            FillFirstColumns(ParameterLabel, col,
+                                (String)Row.ItemArray[0],
+                                new TVariant(""),
+                                new TVariant(""),
+                                new TVariant(""),
+                                new TVariant(""));
                         }
                     }
                 }
@@ -1450,7 +1465,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// Fill one of the first five columns of one row of the publication statistical report
         /// 1. column is County name
         /// 2. column is number of donors
-        /// 3. column is number of ex omers
+        /// 3. column is number of ex workers
         /// 4. column is number of churches
         /// 5. column is number of applicants
         /// </summary>
@@ -1512,28 +1527,31 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 }
             }
 
-            for (int col = 0; col <= situation.GetParameters().Get("MaxDisplayColumns").ToInt() - 1; col += 1)
+            if (FStatisticalReportPercentage.Count > 0)
             {
-                if (situation.GetParameters().Exists("param_label", col, -1, eParameterFit.eExact))
+                for (int col = 0; col <= situation.GetParameters().Get("MaxDisplayColumns").ToInt() - 1; col += 1)
                 {
-                    String ParameterLabel = situation.GetParameters().Get("param_label", col, -1, eParameterFit.eExact).ToString();
-
-                    if (ParameterLabel == "Publication")
+                    if (situation.GetParameters().Exists("param_label", col, -1, eParameterFit.eExact))
                     {
-                        String PublicationName = situation.GetParameters().Get("ColumnCaption", col, -1, eParameterFit.eExact).ToString();
+                        String ParameterLabel = situation.GetParameters().Get("param_label", col, -1, eParameterFit.eExact).ToString();
 
-                        situation.GetParameters().Add("Publication",
-                            FStatisticalReportPercentage[PublicationName],
-                            col, -1,
-                            null, null, ReportingConsts.CALCULATIONPARAMETERS);
-                    }
-                    else
-                    {
-                        FillFirstColumns(ParameterLabel, col, ROW_PERCENT,
-                            new TVariant(FStatisticalReportPercentage[COLUMN_DONOR]),
-                            new TVariant(FStatisticalReportPercentage[COLUMN_EXPARTICIPANTS]),
-                            new TVariant(FStatisticalReportPercentage[COLUMN_CHURCH]),
-                            new TVariant(FStatisticalReportPercentage[COLUMN_APPLICANTS]));
+                        if (ParameterLabel == "Publication")
+                        {
+                            String PublicationName = situation.GetParameters().Get("ColumnCaption", col, -1, eParameterFit.eExact).ToString();
+
+                            situation.GetParameters().Add("Publication",
+                                FStatisticalReportPercentage[PublicationName],
+                                col, -1,
+                                null, null, ReportingConsts.CALCULATIONPARAMETERS);
+                        }
+                        else
+                        {
+                            FillFirstColumns(ParameterLabel, col, ROW_PERCENT,
+                                new TVariant(FStatisticalReportPercentage[COLUMN_DONOR]),
+                                new TVariant(FStatisticalReportPercentage[COLUMN_EXPARTICIPANTS]),
+                                new TVariant(FStatisticalReportPercentage[COLUMN_CHURCH]),
+                                new TVariant(FStatisticalReportPercentage[COLUMN_APPLICANTS]));
+                        }
                     }
                 }
             }
@@ -1578,7 +1596,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 FStatisticalReportDataTable.Rows[RowIndex + 1][ColumnIndex] = Totals;
 
                 // Percent:
-                double CalcPercent = Totals * 100.0 / FNumberOfAcitvePartner;
+                double CalcPercent = Totals * 100.0 / FNumberOfActivePartner;
 
                 FStatisticalReportDataTable.Rows[RowIndex][ColumnIndex] = CalcPercent;                 //.ToString("F");
                 FStatisticalReportPercentage.Add(FStatisticalReportDataTable.Columns[ColumnIndex].ColumnName,

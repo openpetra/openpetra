@@ -162,8 +162,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
 
+            //TODO: Calendar vs Financial Date Handling - Confirm that these should not be ledger dates, i.e. allowing for >12 periods and non-calendar period boundaries
             DateTime FromDateThisYear = new DateTime(DateTime.Today.Year, 1, 1);
-
             DateTime ToDatePreviousYear = new DateTime(DateTime.Today.Year - 1, 12, 31);
             DateTime FromDatePreviousYear = new DateTime(DateTime.Today.Year - 1, 1, 1);
 
@@ -189,7 +189,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("ColumnWidth", (float)6.0, ColumnCounter);
             ++ColumnCounter;
             ACalc.AddParameter("param_calculation", "DonorClass", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter);
             ++ColumnCounter;
             ACalc.AddParameter("param_calculation", "Year-0", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter);

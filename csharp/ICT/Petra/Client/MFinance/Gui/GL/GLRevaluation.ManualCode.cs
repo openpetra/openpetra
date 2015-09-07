@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         //TFrmSetupDailyExchangeRate tFrmSetupDailyExchangeRate;
 
 
-        ClickController linkController = new ClickController();
+        ClickController FlinkController = new ClickController();
 
         /// <summary>
         /// use this ledger
@@ -90,6 +90,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 CreateDataGridHeader();
                 String currencyList = GetListOfRevaluationCurrencies();
 
+                lblAccountValue.AutoSize = true;
+                //Equivalent to:
+                //lblAccountValue.Width = TextRenderer.MeasureText(lblAccountValue.Text, lblAccountValue.Font).Width;
                 lblAccountText.Text = Catalog.GetString("Ledger:");
                 lblAccountValue.Text = String.Format("{0} - {1} [{2}]", FLedgerNumber, ledgerName, FLedgerBaseCurrency);
 
@@ -102,8 +105,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 lblCostCentre.Text = Catalog.GetString("Revaluation Cost Centre:");
                 TFinanceControls.InitialiseCostCentreList(ref cmbCostCentres, FLedgerNumber, true, false, true, true);
                 cmbCostCentres.SetSelectedString(
-                    TRemote.MFinance.GL.WebConnectors.GetStandardCostCentre(FLedgerNumber)
-                    );
+                    TRemote.MFinance.GL.WebConnectors.GetStandardCostCentre(FLedgerNumber),
+                    -1);
             }
         }
 
@@ -177,8 +180,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 typeof(string));
             SourceGrid.DataGridColumn gridColumn =
                 grdDetails.Columns.Add(null, "", new SourceGrid.Cells.Button("..."));
-            linkController.InitFrmData(this, FperiodStart, FperiodEnd);
-            gridColumn.DataCell.AddController(linkController);
+            FlinkController.InitFrmData(this, FperiodStart, FperiodEnd);
+            gridColumn.DataCell.AddController(FlinkController);
 
             grdDetails.SelectionMode = SourceGrid.GridSelectionMode.Row;
             grdDetails.CancelEditingWithEscapeKey = false;
@@ -210,7 +213,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FBoundList.AllowNew = false;
             FBoundList.AllowDelete = false;
 
-            linkController.SetDataList(FcurrencyExchangeList);
+            FlinkController.SetDataList(FcurrencyExchangeList);
         }
 
         private void GetLedgerInfo(Int32 ALedgerNumber, out String ALedgerName, out String ALedgerBaseCurrency)
@@ -242,6 +245,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             for (int i = 0; i < FcurrencyExchangeList.Count; ++i)
             {
+                if (FcurrencyExchangeList[i].DoRevaluation && (FcurrencyExchangeList[i].mExchangeRate == 0))
+                {
+                    MessageBox.Show(String.Format(Catalog.GetString("Revaluation of {0} disabled because no exchange rate is available."),
+                            FcurrencyExchangeList[i].AccountCode));
+                    FcurrencyExchangeList[i].DoRevaluation = false;
+                    grdDetails.Refresh();
+                }
+
                 if (FcurrencyExchangeList[i].DoRevaluation)
                 {
                     ++intUsedEntries;

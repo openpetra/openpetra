@@ -76,6 +76,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private DateTime FEarliestAccountingPeriodStartDate = DateTime.MinValue;
         private bool FSkipValidation = false;
         private bool FUseCurrencyFormatForDecimal = true;
+        private int FSelectedRateUsageLedgerNumber = -1;
 
         // Testing
         private bool FShowUnusedRatesAtStartup = false;
@@ -287,7 +288,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // GUI events
             this.btnInvertExchangeRate.Click += new System.EventHandler(this.InvertExchangeRate);
             this.btnRateUsage.Click += new EventHandler(ViewRateUsage);
-            this.grdRateUsage.DoubleClickCell += new TDoubleClickCellEventHandler(ViewRateUsage);
             this.chkHideOthers.CheckedChanged += new EventHandler(chk_CheckedChanged);
 
             FPetraUtilsObject.DataSavingValidated += new TDataSavingValidatedHandler(FPetraUtilsObject_DataSavingValidated);
@@ -388,10 +388,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 break;
                             }
 
+                            foundRate = true;
+
                             if (row.RateOfExchange == modalRateOfExchange)
                             {
                                 rowIdToSelect = i + 1;
-                                foundRate = true;
                                 break;
                             }
                         }
@@ -1089,6 +1090,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             UpdateExchangeRateLabels();
         }
 
+        // enable or disable viewing a transaction depending on the user's ledger access permissions
+        private void GrdRateUsage_RowChange(object sender, EventArgs e)
+        {
+            int rowIndex = grdRateUsage.GetFirstHighlightedRowIndex();
+
+            if (rowIndex < 0)
+            {
+                return;
+            }
+
+            DataRowView rowView = (DataRowView)grdRateUsage.Rows.IndexToDataSourceRow(rowIndex);
+            ExchangeRateTDSADailyExchangeRateUsageRow row = (ExchangeRateTDSADailyExchangeRateUsageRow)rowView.Row;
+
+            // only check ledger permissions if the ledger has actually changed
+            if (FSelectedRateUsageLedgerNumber != row.LedgerNumber)
+            {
+                if (UserInfo.GUserInfo.IsInLedger(Convert.ToInt32(row.LedgerNumber)))
+                {
+                    btnRateUsage.Enabled = true;
+                    this.grdRateUsage.DoubleClickCell += new TDoubleClickCellEventHandler(ViewRateUsage);
+                    FSelectedRateUsageLedgerNumber = row.LedgerNumber;
+                }
+                else
+                {
+                    btnRateUsage.Enabled = false;
+                    this.grdRateUsage.DoubleClickCell -= new TDoubleClickCellEventHandler(ViewRateUsage);
+                    FSelectedRateUsageLedgerNumber = row.LedgerNumber;
+                }
+            }
+        }
+
         private void ViewRateUsage(object sender, EventArgs e)
         {
             // Which row is highlighted?
@@ -1183,14 +1215,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     grdRateUsage.AutoResizeGrid();
                     grdRateUsage.SelectRowWithoutFocus(1);
+                    GrdRateUsage_RowChange(this, null);
                     grdRateUsage.TabStop = true;
                 }
                 else
                 {
                     grdRateUsage.TabStop = false;
+                    btnRateUsage.Enabled = false;
                 }
-
-                btnRateUsage.Enabled = !FIsRateUnused;
 
                 chkHideOthers.Enabled = true;
 

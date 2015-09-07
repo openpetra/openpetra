@@ -2,10 +2,11 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Maintain Corporate Exchange Rates
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.CorporateExchangeSetupTDS
     DetailTable: ACorporateExchangeRate
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
-    Template: windowMaintainTable
+    Template: windowEdit
     WindowWidth: 660
     WindowHeight: 500
     Actions:

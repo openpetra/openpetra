@@ -13,17 +13,30 @@ RootNode:
         READCONTROLSVERIFICATION: BLANK
         READCONTROLSLOCALVARS: BLANK
         SETCONTROLSLOCALVARS: BLANK
-    Events:
-        Load: {class=System.EventHandler, method=TFrmPublicationStatisticalReport_Load}
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
         tpgAdditionalSettings:
-            Label: Country
+            Dock: Fill
             Controls: 
-                Row1: [lblSelectCountry]
-                Row2: [cmbCountryCode]
-        lblSelectCountry: {Label=Select the country for which the statistical report should be generated}
-        cmbCountryCode: {Label=Country Code, List=CountryList}
+#                Row0: [rgrSubscriptions]
+                Row0: [lblSelectMax]
+                Row2: [clbPublicationCode]
+
+# disabled selecting all publications as report cuts of publications after the 8th
+#        rgrSubscriptions: 
+#            ParameterName: param_subscriptionoptions
+#            Controls: [rbtAllSubscriptions, rbtFromList]
+#            Label: Generate report for
+#            Dock: Fill
+#        rbtAllSubscriptions:
+#        rbtFromList:
+#            Controls: [clbPublicationCode]
+
+        lblSelectMax:
+            Text: Select a maximum of 8 publications:
+        clbPublicationCode:
+            NoLabel: true
+            Stretch: fully
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         

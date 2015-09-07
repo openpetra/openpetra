@@ -17,5 +17,6 @@
   <Parameter id="param_cost_centre_list_title" value="eString:All Cost Centres" />
   <Parameter id="param_rgrCostCentres" value="eString:AllCostCentres" />
   <Parameter id="param_cost_centre_codes" value="eString:*NOTUSED*" />
+  <Parameter id="param_chkYTD" value="eBoolean:true" />
   <Parameter id="param_depth" value="eString:standard" />
 </Parameters>

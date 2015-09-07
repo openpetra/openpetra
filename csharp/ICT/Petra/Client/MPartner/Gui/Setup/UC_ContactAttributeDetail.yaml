@@ -19,6 +19,7 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
+            FilterButton: F&ilter;Click to show or hide the Contact Details filter panel
             FilterControls: [txtDetailContactAttrDetailCode, txtDetailContactAttrDetailDescr, chkDetailActive]
             FindControls: [txtDetailContactAttrDetailCode, txtDetailContactAttrDetailDescr]
         pnlButtons:
@@ -51,8 +52,8 @@ RootNode:
                 Row0: [txtDetailContactAttrDetailCode]
                 Row1: [txtDetailContactAttrDetailDescr]
                 Row2: [chkDetailActive]
-        txtDetailContactAttrDetailCode: {Label=Deta&il Code, CharacterCasing=Upper}
-        txtDetailContactAttrDetailDescr: {Label=Descri&ption, Width=475}
+        txtDetailContactAttrDetailCode: {Label=Detai&l Code, CharacterCasing=Upper}
+        txtDetailContactAttrDetailDescr: {Label=Descripti&on, Width=475}
         chkDetailActive: {Label=Acti&ve}
     Menu:
         mniAnalysisValues:

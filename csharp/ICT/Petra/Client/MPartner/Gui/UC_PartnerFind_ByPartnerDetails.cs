@@ -1916,6 +1916,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if (!FBroadcastMessageSearch)
                             {
                                 grdResult.Focus();
+
+                                // this is needed so that the next 'Enter' press opens the partner edit screen
+                                SendKeys.Send("{ENTER}");
                             }
 
                             DataGrid_FocusRowEntered(this, new RowEventArgs(1));

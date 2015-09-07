@@ -29,7 +29,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
-using Ict.Petra.Server.MCommon;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
 

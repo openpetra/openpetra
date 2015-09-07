@@ -32,6 +32,7 @@
     <Table sqltable="p_partner_attribute_type"/>
     <Table sqltable="p_partner_attribute">
         <CustomField name="PartnerContactDetail" type="Boolean"/>
+        <Field name="CategoryCode" sqltable="p_partner_attribute_category" sqlfield="p_category_code_c"/>
     </Table>    
     <Table sqltable="p_family">
       <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
@@ -320,6 +321,7 @@
       <CustomField name="Country" type="string"/>
       <CustomField name="MailingAddressOnly" type="bool" initial="false"/>
       <CustomField name="PartnerClass" type="string"/>
+      <CustomField name="RestrictedParterClasses" type="string"/>
       <CustomField name="PartnerKey" type="Int64" initial="0"/>
       <CustomField name="PartnerStatus" type="string" initial="ACTIVE"/>
       <CustomField name="Email" type="string"/>

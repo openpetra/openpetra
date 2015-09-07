@@ -40,6 +40,7 @@ using Ict.Common.IO;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using System.Collections.Generic;
 using System.Threading;
+using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -57,9 +58,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>true if the data is OK. (If it's not OK, the method should have told the user why not!)</returns>
         public delegate bool TDataGetter (TRptCalculator ACalc);
         private TDataGetter FDataGetter;
+        String FExtractPartnerKeyName = "";
+        private DataTable FClientDataTable = null;
         private Assembly FastReportsDll;
         private object FfastReportInstance;
-        /// <summary>Given with constructor, this can be accessed afterwards.</summary>
+        /// <summary>Specified with constructor, this can be accessed afterwards.</summary>
         public String FReportName;
 
         Type FFastReportType;
@@ -72,7 +75,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private enum TInitState
         {
-            Unknown, LoadDll, LoadTemplate, InitSystem, LoadedOK
+            Unknown, LoadTemplate, InitSystem, LoadedOK
         };
         private TInitState FInitState;
 
@@ -122,37 +125,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
-        private Boolean LoadDll()
-        {
-            try
-            {
-                FInitState = TInitState.LoadDll;
-                FastReportsDll = Assembly.LoadFrom("FastReport.DLL"); // If there's no FastReports DLL, this will "fall at the first hurdle"!
-
-                FInitState = TInitState.InitSystem;
-
-
-                FfastReportInstance = FastReportsDll.CreateInstance("FastReport.Report");
-                FFastReportType = FfastReportInstance.GetType();
-                FFastReportType.GetProperty("StoreInResources").SetValue(FfastReportInstance, false, null);
-
-                //
-                // I want to set the Utils.Config.EmailSettings
-                // to our SMTP server settings.
-                //
-                object EmailSettings = FastReportsDll.GetType("FastReport.Utils.Config").GetProperty("EmailSettings").GetValue(null, null);
-
-                Type EmailSettingsType = EmailSettings.GetType();
-                EmailSettingsType.GetProperty("Host").SetValue(EmailSettings, "TimHost.com", null);
-            }
-            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
-            {
-//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
-                return false;
-            }
-            return true;
-        }
-
         private Boolean LoadDefaultTemplate()
         {
             FInitState = TInitState.LoadTemplate;
@@ -183,30 +155,23 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FDataGetter = null;
                 FPetraUtilsObject = PetraUtilsObject;
 
-                if (!LoadDll())
-                {
-                    return;
-                }
-
-                FReportName = FPetraUtilsObject.FReportName;
-
-                if (!LoadDefaultTemplate())
-                {
-                    return;
-                }
-
-                FPetraUtilsObject.DelegateGenerateReportOverride = GenerateReport;
-                FPetraUtilsObject.DelegateViewReportOverride = DesignReport;
-                FPetraUtilsObject.DelegateCancelReportOverride = CancelReportGeneration;
-
-                FPetraUtilsObject.EnableDisableSettings(false);
-                FInitState = TInitState.LoadedOK;
-                LoadedOK = true;
+                // we do not support FastReports in the Open Source fork of OpenPetra
+                return;
             }
             catch (Exception e)
             {
                 TLogging.Log("FastReports Wrapper (" + FReportName + ") Not loaded: " + e.Message);
             }
+        }
+
+        /// <summary>Call with true to include the facility to generate an extract</summary>
+        /// <param name="ACanDoExtract"></param>
+        /// <param name="APartnerKeyName"></param>
+        public void AllowExtractGeneration(Boolean ACanDoExtract, String APartnerKeyName = "")
+        {
+            FPetraUtilsObject.DelegateGenerateExtract = ACanDoExtract ? GenerateExtract
+                                                        : (TFrmPetraReportingUtils.TDelegateGenerateReportOverride) null;
+            FExtractPartnerKeyName = APartnerKeyName;
         }
 
         /// <summary>
@@ -220,19 +185,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 LoadedOK = false;
                 FDataGetter = null;
 
-                if (!LoadDll())
-                {
-                    return;
-                }
-
-                FReportName = AReportName;
-
-                if (!LoadDefaultTemplate())
-                {
-                    return;
-                }
-
-                LoadedOK = true;
+                // we do not support FastReports in the Open Source fork of OpenPetra
+                return;
             }
             catch (Exception e)
             {
@@ -273,12 +227,6 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 switch (FInitState)
                 {
-                    case TInitState.LoadDll:
-                    {
-                        Msg = "failed to load FastReport Dll.";
-                        break;
-                    }
-
                     case TInitState.LoadTemplate:
                     {
                         Msg = String.Format("no reporting template found for {0}.", FReportName);
@@ -297,7 +245,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                 }
 
-                MessageBox.Show("The FastReports plugin did not initialise:\r\n" +
+                MessageBox.Show("The FastReports subsystem did not initialise:\r\n" +
                     Msg +
                     "\r\n(To suppress this message, set USEXMLREPORTS in SystemDefaults.)",
                     "Reporting engine");
@@ -321,6 +269,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             FFastReportType.GetMethod("RegisterData", new Type[] { data.GetType(), name.GetType() }).Invoke(FfastReportInstance,
                 new object[] { data, name });
+            FClientDataTable = data;
         }
 
         private void LoadReportParams(TRptCalculator ACalc)
@@ -495,6 +444,108 @@ namespace Ict.Petra.Client.MReporting.Gui
             return HtmlStream;
         }
 
+        private String SelectColumnNameForExract(DataTable ATbl, String ADefaultField)
+        {
+            String Res = "";
+
+            TFrmSelectExtractColumn SelectForm = new TFrmSelectExtractColumn();
+            Boolean FoundInt64Field = false;
+
+            if (ATbl.Rows.Count < 1)
+            {
+                return Res;
+            }
+
+            foreach (DataColumn Col in ATbl.Columns)
+            {
+                if (Col.DataType == typeof(Int64))
+                {
+                    FoundInt64Field = true;
+                    SelectForm.AddOption(Col.ColumnName);
+                }
+            }
+
+            SelectForm.SelectedOption = ADefaultField;
+
+            if (FoundInt64Field && (SelectForm.ShowDialog() == System.Windows.Forms.DialogResult.OK))
+            {
+                Res = SelectForm.SelectedOption;
+            }
+
+            return Res;
+        }
+
+        /// <summary>
+        /// Called from a delegate set up by me.
+        /// </summary>
+        /// <param name="ACalc"></param>
+        public void GenerateExtract(TRptCalculator ACalc)
+        {
+            ACalc.GetParameters().Add("param_design_template", false);
+
+            if (FDataGetter == null)
+            {
+                MessageBox.Show(Catalog.GetString("Fault: No Data Table available."), Catalog.GetString("GenerateExtract"));
+                return;
+            }
+
+            if (!FDataGetter(ACalc))
+            {
+                return;
+            }
+
+            FExtractPartnerKeyName = SelectColumnNameForExract(FClientDataTable, FExtractPartnerKeyName);
+
+            if (FExtractPartnerKeyName == "")
+            {
+                return;
+            }
+
+            Int32 partnerKeyColumnNum = FClientDataTable.Columns[FExtractPartnerKeyName].Ordinal;
+
+            TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(FPetraUtilsObject.GetForm());
+            string ExtractName;
+            string ExtractDescription;
+
+            ExtractNameDialog.ShowDialog();
+
+            if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                /* Get values from the Dialog */
+                ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+            }
+            else
+            {
+                // dialog was cancelled, do not continue with extract generation
+                return;
+            }
+
+            ExtractNameDialog.Dispose();
+
+            FPetraUtilsObject.GetForm().UseWaitCursor = true;
+
+            // Create extract with given name and description and store it
+            int ExtractId = 0;
+            IPartnerUIConnectorsPartnerNewExtract PartnerExtractObject = TRemote.MPartner.Extracts.UIConnectors.PartnerNewExtract();
+            Boolean CreateOk = PartnerExtractObject.CreateExtractFromListOfPartnerKeys(
+                ExtractName, ExtractDescription, out ExtractId, FClientDataTable, partnerKeyColumnNum, false);
+            FPetraUtilsObject.GetForm().UseWaitCursor = false;
+
+            if (CreateOk)
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("Extract Created with {0} Partners."),
+                        FClientDataTable.Rows.Count),
+                    Catalog.GetString("Generate Extract"));
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("Creation of extract failed"),
+                    Catalog.GetString("Generate Extract"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+            }
+        }
+
         /// <summary>
         /// Called from a delegate set up by me.
         /// Or if you're not using a reporting UI, you can call this directly, once the data and params have been set up.
@@ -642,9 +693,44 @@ namespace Ict.Petra.Client.MReporting.Gui
             return SendReport;
         } // AutoEmailReports
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary>Get all the data for the report</summary>
+        /// <remarks>Called from the server during batch posting, and also from File/Print gui</remarks>
+        /// <param name="ACalc"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        public Boolean RegisterBatchPostingData(TRptCalculator ACalc, Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(ALedgerNumber, ABatchNumber);
+
+            if (BatchTDS.ABatch.Rows.Count < 1)
+            {
+                MessageBox.Show(Catalog.GetString("Batch not found"),
+                    Catalog.GetString("Batch Posting Register"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return false;
+            }
+
+            //Call RegisterData to give the data to the template
+            RegisterData(BatchTDS.ABatch, "ABatch");
+            RegisterData(BatchTDS.AJournal, "AJournal");
+            RegisterData(BatchTDS.ATransaction, "ATransaction");
+            RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
+                    ALedgerNumber), "AAccount");
+            RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                    ALedgerNumber), "ACostCentre");
+
+            ACalc.AddParameter("param_batch_number_i", ABatchNumber);
+            ACalc.AddParameter("param_ledger_number_i", ALedgerNumber);
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(ALedgerNumber);
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
+            ACalc.AddParameter("param_currency_name",
+                TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(ALedgerNumber, ABatchNumber));
+            return true;
+        }
+
+        /// <summary>Helper for the report printing ClientTask</summary>
         /// <param name="ReportName"></param>
         /// <param name="paramStr"></param>
         public static void PrintReportNoUi(String ReportName, String paramStr)
@@ -729,20 +815,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             switch (ReportName)
             {
                 case "Batch Posting Register":
-                    // Batch Posting Register report has no UI page as most reports do.
-                    // Code similar to this appears in csharp\ict\petra\client\mfinance\gui\gl\glbatch.manualcode.cs
-                    // where it's wired to the "File Print" function in the GL Batch list.
                 {
                     if ((LedgerNumber != -1) && (BatchNumber != -1))
                     {
-                        GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(LedgerNumber, BatchNumber);
-                        ReportingEngine.RegisterData(BatchTDS.ABatch, "ABatch");
-                        ReportingEngine.RegisterData(BatchTDS.AJournal, "AJournal");
-                        ReportingEngine.RegisterData(BatchTDS.ATransaction, "ATransaction");
-                        ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
-                                LedgerNumber), "AAccount");
-                        ReportingEngine.RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
-                                LedgerNumber), "ACostCentre");
+                        ReportingEngine.RegisterBatchPostingData(Calc, LedgerNumber, BatchNumber);
                     }
                     else
                     {
@@ -763,7 +839,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             // I'm not in the User Interface thread, so I can use an invoke here:
 
             Application.OpenForms[0].Invoke((ThreadStart) delegate { ReportingEngine.GenerateReport(Calc); });
-            // ReportingEngine.GenerateReport(Calc);
         } // PrintReportNoUi
     }
 }

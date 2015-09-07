@@ -202,19 +202,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void AutoEnableTransTabForBatch()
         {
-            bool EnableTransTab = false;
-
-            //If a single journal exists and it is not status=Cancelled then enable transactions tab
-            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.LastJournal == 1))
-            {
-                LoadJournalsForCurrentBatch();
-
-                if (FMainDS.AJournal.DefaultView.Count > 0)
-                {
-                    AJournalRow rJ = (AJournalRow)FMainDS.AJournal.DefaultView[0].Row;
-                    EnableTransTab = (rJ.JournalStatus != MFinanceConstants.BATCH_CANCELLED);
-                }
-            }
+            bool EnableTransTab = ((FPreviouslySelectedDetailRow != null)
+                                   && (FPreviouslySelectedDetailRow.LastJournal == 1)
+                                   && (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_CANCELLED));
 
             ((TFrmGLBatch) this.ParentForm).EnableTransactions(EnableTransTab);
         }
@@ -238,8 +228,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (FMainDS.AJournal.DefaultView.Count == 0)
                 {
-                    ((TFrmGLBatch) this.ParentForm).LoadJournals(BatchNumber, BatchStatus);
-                    //FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, BatchNumber));
+                    ((TFrmGLBatch) this.ParentForm).LoadJournals(FPreviouslySelectedDetailRow);
                 }
             }
         }
@@ -357,6 +346,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             UpdateChangeableStatus();
             ((TFrmGLBatch) this.ParentForm).EnableJournals();
+        }
+
+        /// <summary>
+        /// Re-show the specified row
+        /// </summary>
+        /// <param name="AModifiedBatchRow"></param>
+        /// <param name="ARedisplay"></param>
+        public void UndoModifiedBatchRow(ABatchRow AModifiedBatchRow, bool ARedisplay)
+        {
+            //Check if new row or not
+            if (AModifiedBatchRow.RowState == DataRowState.Added)
+            {
+                return;
+            }
+
+            AModifiedBatchRow.RejectChanges();
+
+            if (ARedisplay)
+            {
+                ShowDetails(AModifiedBatchRow);
+            }
         }
 
         /// <summary>
@@ -498,13 +508,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void SetInitialFocus()
         {
-            if (grdDetails.Rows.Count <= 1)
+            if (grdDetails.CanFocus)
             {
-                btnNew.Focus();
-            }
-            else
-            {
-                grdDetails.Focus();
+                if ((grdDetails.Rows.Count <= 1) && btnNew.CanFocus)
+                {
+                    btnNew.Focus();
+                }
+                else
+                {
+                    grdDetails.Focus();
+                }
             }
         }
 
@@ -774,21 +787,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
-            int newCurrentRowPos = grdDetails.GetFirstHighlightedRowIndex();
+            int CurrentRowPos = grdDetails.GetFirstHighlightedRowIndex();
 
-            if (FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow, txtDetailBatchDescription))
+            if (FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow))
             {
-                SelectRowInGrid(newCurrentRowPos);
+                //Reset row to fire events
+                SelectRowInGrid(CurrentRowPos);
+
+                //The current Batch is still selected, so disable
+                //((TFrmGLBatch)ParentForm).DisableJournals();
+                //((TFrmGLBatch)ParentForm).DisableTransactions();
             }
 
-            //If some row(s) still exist after deletion
+            //If no row exists in current view after cancellation
             if (grdDetails.Rows.Count < 2)
             {
                 EnableButtonControl(false);
                 ClearDetailControls();
-
-                ((TFrmGLBatch)ParentForm).DisableJournals();
-                ((TFrmGLBatch)ParentForm).DisableTransactions();
             }
         }
 

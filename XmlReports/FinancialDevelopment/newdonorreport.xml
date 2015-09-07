@@ -279,8 +279,7 @@
 					<queryDetail>
 						<value text="NO-SQL"/>
 						<value function="GetPartnerBestAddress({DonorKey})"/>
-						<value function="assign(PartnerAddress,  )"/>
-						<value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
+						<value function="assign(PartnerAddress, {Locality})"/>
 						<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
 						<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
 						<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>
@@ -313,14 +312,14 @@
 			
 			<level name="DonorLevel" identification="DonorKey">
 				<header>
-					<field whichfield="header 0" pos="0cm" width="2.5cm" calculation="GetPartnerBestAddress">
+					<field whichfield="header 0" pos="0cm" width="2.5cm">
 						<value variable="DonorKey" format="partnerkey"/>
 					</field>
-					<field whichfield="header 1" pos="2.5cm" width="15cm">
+					<field whichfield="header 1" pos="2.5cm" width="15cm" calculation="GetPartnerBestAddress">
 						<value variable="PartnerClass"/>
 						<value text="     "/>
 						<value variable="ShortName"/>
-						<value text="  "/>
+						<value text="   "/>
 						<value variable="PartnerAddress"/>
 					</field>
 				</header>

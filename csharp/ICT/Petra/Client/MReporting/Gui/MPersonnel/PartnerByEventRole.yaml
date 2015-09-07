@@ -4,6 +4,8 @@
     FormTitle: Partner By Event Role
     Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
     UsingNamespaces: [Ict.Petra.Client,Ict.Petra.Client.MCommon,Ict.Petra.Client.MCommon.Gui]
+    WindowWidth: 580
+    WindowHeight: 500
     TemplateParameters:
         CALCULATEFROMMETHOD: Ict.Petra.Server.MPersonnel.queries.QueryPartnerByEventRole.CalculateExtract
         ISOLATIONLEVEL: serializable
@@ -14,7 +16,7 @@
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
         # TODO: the following things have to be set by generator
-        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        READCONTROLSLOCALVARS: ReadControlsVerify(ACalc, AReportAction); ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
         SETCONTROLSLOCALVARS: BLANK
     Security:
         ModulePermissionRequired: [PTNRUSER]
@@ -25,7 +27,7 @@
             Controls: [pnlFilter, pnlBottom]
         pnlFilter: {ControlsOrientation=horizontal}
             Dock: Top
-            Height: 140
+            Height: 130
             Controls: [ucoFilter]
         pnlBottom: {ControlsOrientation=horizontal}
             Dock: Fill
@@ -67,7 +69,8 @@
             Height: 150            
             ParameterName: param_event_roles
         ucoFilter:
-            Dock: Fill
             Type: Ict.Petra.Client.MCommon.Gui.TUC_EventFilter
             NoParameter: true
+            Stretch: horizontally
+            Height: 120
             

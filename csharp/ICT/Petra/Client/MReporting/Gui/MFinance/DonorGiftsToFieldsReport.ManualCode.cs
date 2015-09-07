@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
         }
 
-        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (txtMinAmount.NumberValueInt > txtMaxAmount.NumberValueInt)
             {
@@ -81,14 +81,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
-        }
 
-        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
-        {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_donorkey", txtDonor.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);
 
+            //TODO: Calendar vs Financial Date Handling - Confirm that these should not be ledger dates, i.e. allowing for >12 periods and non-calendar period boundaries
             DateTime FromDateThisYear = new DateTime(DateTime.Today.Year, 1, 1);
             DateTime ToDatePreviousYear = new DateTime(DateTime.Today.Year - 1, 12, 31);
             DateTime FromDatePreviousYear = new DateTime(DateTime.Today.Year - 1, 1, 1);

@@ -1262,6 +1262,11 @@ namespace Ict.Common.DB
                     SetTimeoutForNextCommand(ASelectCommandTimeout);
                 }
 
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                {
+                    LogSqlStatement(this.GetType().FullName + ".SelectUsingDataAdapter()", ASqlStatement, AParametersArray);
+                }
+
                 SelectDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(ASqlStatement, AReadTransaction,
                     false, AParametersArray);
 

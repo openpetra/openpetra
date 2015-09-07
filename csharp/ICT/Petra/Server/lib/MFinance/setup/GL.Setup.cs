@@ -981,7 +981,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                        AAnalysisTypeAccess.LoadAll(MainDS, Transaction);
+                        AAnalysisTypeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AAnalysisAttributeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AGeneralLedgerMasterAccess.LoadUsingTemplate(MainDS, template, Transaction);
@@ -1954,6 +1954,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                     NewAccountingPeriodRow.AccountingPeriodNumber = Period;
                                     NewAccountingPeriodRow.PeriodStartDate = PeriodStartDate;
 
+                                    //TODO: Calendar vs Financial Date Handling - Check for current ledger number of periods
                                     if ((((ALedgerRow)(InspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods == 13)
                                         && (Period == 12))
                                     {
@@ -2420,7 +2421,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>I can add child accounts to this account if it's a summary account,
-        ///          or if there have never been transactions posted to it.
+        ///          or if there have never been transactions posted to it, and no current budget.
         ///
         ///          (If children are added to this account, it will be promoted to a summary account.)
         ///
@@ -2495,7 +2496,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                     3, Transaction, true,
                                     out CascadingReferences);
 
-                                bool IsInUse = (Refs > 0);
+                                bool IsInUse = (Refs > 1);
 
                                 CanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
                                 CanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
@@ -3790,6 +3791,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     MainDS.SSystemDefaults.Rows.Add(systemDefaultsRow);
                 }
 
+                //TODO: Calendar vs Financial Date Handling - Need to review this
                 // create calendar
                 // at the moment we only support financial years that start on the first day of a month
                 // and currently only 12 or 13 periods are allowed and a maximum of 8 forward periods
@@ -3951,6 +3953,25 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
 
                 SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction);
+
+                // create system analysis types for the new ledger
+                AAnalysisTypeAccess.LoadAll(MainDS, Transaction);
+                AAnalysisTypeTable NewAnalysisTypes = new AAnalysisTypeTable();
+
+                foreach (AAnalysisTypeRow AnalysisTypeRow in MainDS.AAnalysisType.Rows)
+                {
+                    if (AnalysisTypeRow.SystemAnalysisType
+                        && !NewAnalysisTypes.Rows.Contains(new Object[] { ANewLedgerNumber, AnalysisTypeRow.AnalysisTypeCode }))
+                    {
+                        AAnalysisTypeRow NewAnalysisType = NewAnalysisTypes.NewRowTyped();
+                        NewAnalysisType.ItemArray = (object[])AnalysisTypeRow.ItemArray.Clone();
+                        NewAnalysisType.LedgerNumber = ANewLedgerNumber;
+                        NewAnalysisTypes.Rows.Add(NewAnalysisType);
+                    }
+                }
+
+                AAnalysisTypeAccess.SubmitChanges(NewAnalysisTypes, Transaction);
+
 
                 AllOK = true;
             }
@@ -4333,7 +4354,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// Check if a TypeCode in  AnalysisType can be deleted (count the references in ATRansAnalysisAtrributes)
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static int CheckDeleteAAnalysisType(String ATypeCode)
+        public static int CheckDeleteAAnalysisType(Int32 ALedgerNumber, String ATypeCode)
         {
             int RetVal = 0;
 
@@ -4344,7 +4365,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    RetVal = AAnalysisAttributeAccess.CountViaAAnalysisType(ATypeCode, Transaction);
+                    RetVal = AAnalysisAttributeAccess.CountViaAAnalysisType(ALedgerNumber, ATypeCode, Transaction);
                 });
 
             return RetVal;

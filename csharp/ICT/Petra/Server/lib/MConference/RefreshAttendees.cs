@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     if (ConferenceTable.Count == 0)
                     {
-                        throw new Exception("Cannot find conference " + AConferenceKey.ToString());
+                        throw new Exception("Cannot find conference " + AConferenceKey.ToString("0000000000"));
                     }
 
                     // update OutreachPrefix in conference record in case it was changed in Unit record for event
@@ -137,7 +137,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     if (ConferenceTable.Count == 0)
                     {
-                        throw new Exception("Cannot find conference " + AConferenceKey.ToString());
+                        throw new Exception("Cannot find conference " + AConferenceKey.ToString("0000000000"));
                     }
 
                     OutreachPrefix = ConferenceTable[0].OutreachPrefix;

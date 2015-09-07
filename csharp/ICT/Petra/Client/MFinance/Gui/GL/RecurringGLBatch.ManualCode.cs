@@ -254,7 +254,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                         this.tabRecurringGLBatch.SelectedTab = this.tpgRecurringJournals;
 
-                        LoadJournals(ucoRecurringBatches.GetSelectedDetailRow().BatchNumber);
+                        LoadJournals(ucoRecurringBatches.GetSelectedDetailRow());
 
                         this.tpgRecurringTransactions.Enabled = (ucoRecurringJournals.GetSelectedDetailRow() != null);
 
@@ -283,7 +283,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             //  which is only allowed when one journal exists
 
                             //Need to make sure that the Journal is loaded
-                            LoadJournals(ucoRecurringBatches.GetSelectedDetailRow().BatchNumber);
+                            LoadJournals(ucoRecurringBatches.GetSelectedDetailRow());
                         }
 
                         LoadTransactions(ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
@@ -321,10 +321,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Load Journals for current Batch
         /// </summary>
-        /// <param name="ABatchNumber"></param>
-        public void LoadJournals(Int32 ABatchNumber)
+        /// <param name="ACurrentBatchRow"></param>
+        public void LoadJournals(ARecurringBatchRow ACurrentBatchRow)
         {
-            this.ucoRecurringJournals.LoadJournals(FLedgerNumber, ABatchNumber);
+            this.ucoRecurringJournals.LoadJournals(ACurrentBatchRow);
         }
 
         /// <summary>
@@ -392,55 +392,44 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private int GetChangedRecordCountManual(out string AMessage)
         {
             // For GL Batch we will get some mix of batches, journals and transactions
+            // Only check relevant tables.
+            List <string>TablesToCheck = new List <string>();
+            TablesToCheck.Add(FMainDS.ARecurringBatch.TableName);
+            TablesToCheck.Add(FMainDS.ARecurringJournal.TableName);
+            TablesToCheck.Add(FMainDS.ARecurringTransaction.TableName);
+            TablesToCheck.Add(FMainDS.ARecurringTransAnalAttrib.TableName);
+
             List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
-            int allChangesCount = 0;
+            int AllChangesCount = 0;
 
-            // Work out how many changes in each table
-            foreach (DataTable dt in FMainDS.Tables)
+            if (FMainDS.HasChanges())
             {
-                if (dt != null)
+                // Work out how many changes in each table
+                foreach (DataTable dt in FMainDS.GetChanges().Tables)
                 {
-                    int tableChangesCount = 0;
+                    string currentTableName = dt.TableName;
 
-                    foreach (DataRow dr in dt.Rows)
+                    if ((dt != null)
+                        && TablesToCheck.Contains(currentTableName)
+                        && (dt.Rows.Count > 0))
                     {
-                        if ((dr.RowState != DataRowState.Unchanged) && (dr.RowState != DataRowState.Deleted) && (dr.RowState != DataRowState.Added))
+                        int tableChangesCount = 0;
+
+                        DataTable dtChanges = dt.GetChanges();
+
+                        foreach (DataRow dr in dtChanges.Rows)
                         {
-                            //Check if fields have actually changed
-                            bool fieldDifferenceDetected = false;
-
-                            for (int i = 0; i < dt.Columns.Count; i++)
-                            {
-                                string originalValue = dr[i, DataRowVersion.Original].ToString();
-                                string currentValue = dr[i, DataRowVersion.Current].ToString();
-
-                                if (originalValue != currentValue)
-                                {
-                                    fieldDifferenceDetected = true;
-                                    break;
-                                }
-                            }
-
-                            if (!fieldDifferenceDetected)
-                            {
-                                dr.RejectChanges();
-                            }
-                            else
+                            if (DataUtilities.DataRowColumnsHaveChanged(dr))
                             {
                                 tableChangesCount++;
-                                allChangesCount++;
+                                AllChangesCount++;
                             }
                         }
-                        else if ((dr.RowState == DataRowState.Deleted) || (dr.RowState == DataRowState.Added))
-                        {
-                            tableChangesCount++;
-                            allChangesCount++;
-                        }
-                    }
 
-                    if (tableChangesCount > 0)
-                    {
-                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
+                        if (tableChangesCount > 0)
+                        {
+                            TableAndCountList.Add(new Tuple <string, int>(currentTableName, tableChangesCount));
+                        }
                     }
                 }
             }
@@ -477,7 +466,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (nBatches > 0)
                 {
-                    strBatches = String.Format("{0} {1}",
+                    strBatches = String.Format("{0} recurring {1}",
                         nBatches,
                         Catalog.GetPluralString("batch", "batches", nBatches));
                 }
@@ -527,11 +516,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     AMessage += strTransactions;
                 }
 
+                AMessage += Environment.NewLine + Catalog.GetString("(some of the changes may include related background items)");
                 AMessage += Environment.NewLine;
                 AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
             }
 
-            return allChangesCount;
+            return AllChangesCount;
         }
 
         #region Menu and command key handlers for our user controls

@@ -398,7 +398,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
                 if (ConferenceTable.Count == 0)
                 {
-                    throw new Exception("Cannot find conference " + AConferenceKey.ToString());
+                    throw new Exception("Cannot find conference " + AConferenceKey.ToString("0000000000"));
                 }
 
                 string OutreachPrefix = ConferenceTable[0].OutreachPrefix;

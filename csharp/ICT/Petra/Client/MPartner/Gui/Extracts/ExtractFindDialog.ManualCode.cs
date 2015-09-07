@@ -98,6 +98,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             return true;
         }
 
+        private void InitializeManualCode()
+        {
+            // manually configure tab index
+            pnlExtractMasterList.TabIndex = pnlFilterButtons.TabIndex + 1;
+            pnlLeftButtons.TabIndex = pnlRightButtons.TabIndex + 1;
+        }
+
         /// <summary>
         /// Called by the instantiator of this Dialog to retrieve the result of the dialog
         ///
@@ -292,6 +299,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
 
             PrepareButtons();
+
+            clbDetails.Select();
         }
 
         /// <summary>

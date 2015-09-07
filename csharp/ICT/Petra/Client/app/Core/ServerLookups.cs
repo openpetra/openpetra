@@ -183,6 +183,14 @@ namespace Ict.Petra.Client.App.Core
                     out AIsMergedPartner);
             }
 
+            /// <summary>Is this the key of a valid Gift Recipient?</summary>
+            /// <param name="APartnerKey"></param>
+            /// <returns>True if this is a valid key to a partner that's linked to a Cost Centre (in any ledger)</returns>
+            public static Boolean PartnerIsLinkedToCC(Int64 APartnerKey)
+            {
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.PartnerIsLinkedToCC(APartnerKey);
+            }
+
             /// <summary>
             /// Verifies the existence of a Partner.
             /// </summary>
@@ -209,6 +217,27 @@ namespace Ict.Petra.Client.App.Core
                     out APartnerClass,
                     out AIsMergedPartner,
                     out AUserCanAccessPartner);
+            }
+
+            /// <summary>
+            /// Verifies the existence of a Partner.
+            /// </summary>
+            /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
+            /// <returns>true if Partner was found in DB (except if AValidPartnerClasses isn't
+            ///  an empty Set and the found Partner isn't of a PartnerClass that is in the
+            ///  Set) or PartnerKey is 0, otherwise false</returns>
+            public static Boolean VerifyPartner(Int64 APartnerKey)
+            {
+                string PartnerShortName = null;
+                TPartnerClass PartnerClass;
+                bool IsMergedPartner;
+                bool UserCanAccessPartner;
+
+                return VerifyPartner(APartnerKey,
+                    out PartnerShortName,
+                    out PartnerClass,
+                    out IsMergedPartner,
+                    out UserCanAccessPartner);
             }
 
             /// <summary>

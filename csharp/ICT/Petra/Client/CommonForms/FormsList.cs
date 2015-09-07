@@ -490,7 +490,7 @@ namespace Ict.Petra.Client.CommonForms
             IDictionaryEnumerator DictEnum;
             int FormsThatReacted = 0;
 
-            DictEnum = GetEnumerator();
+            DictEnum = this.GetEnumerator();
 
             while (DictEnum.MoveNext())
             {

@@ -112,7 +112,7 @@
                 <value function="assign(AlternateTelephone, not known)" condition="lt(length({AlternateTelephone}), 1)"/>
                 <value function="assign(EmailAddress, not known)" condition="lt({EmailAddress}, 1)"/>
                 <value function="assign(MobileNumber, not known)" condition="lt(length({MobileNumber}), 1)"/>
-                <value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
+				<value function="assign(PartnerAddress, {Locality})"/>
                 <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
                 <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
                 <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>
@@ -281,32 +281,34 @@
         <detail>
             <field whichfield="column 0" calculation="Get Partner Address">
                 <value variable="Locality"/>
-                <value text=" "/>
+                <value text="  " condition="gt(length({Locality}), 0)"/>
                 <value variable="StreetName"/>
-                <value text=" "/>
+                <value text="  " condition="gt(length({StreetName}), 0)"/>
                 <value variable="Address3"/>
-                <value text=" "/>
+                <value text="  " condition="gt(length({Address3}), 0)"/>
                 <value variable="County"/>
-                <value text=" "/>
+                <value text="  " condition="gt(length({County}), 0)"/>
                 <value variable="PostalCode"/>
-                <value text=" "/>
+                <value text="  " condition="gt(length({PostalCode}), 0)"/>
                 <value variable="City"/>
-                <value text=" "/>
+                <value text="  " condition="gt(length({City}), 0)"/>
                 <value variable="CountryCode"/>
+                <value text="No Address found" condition="lt(length({SiteKey}), 1)" />
             </field>
         </detail>
     </level>
     
     <level name="Address Lower Level2" identification="StaffPartnerKey">
         <detail>
-            <field whichfield="column 0" >
-                <value text="  Location Type: " condition="gt(length({LocationType}), 0)" />
+            <field whichfield="column 0">
+                <value text="Location Type: " condition="gt(length({LocationType}), 0)" />
                 <value variable="LocationType"/>
-                <value text="  Valid from: " condition="gt(length({LocationType}), 0)" />
+                <value text="  " condition="gt(length({LocationType}), 0)"/>
+                <value text="Valid from: " condition="gt(length({DateEffective}), 0)" />
                 <value variable="DateEffective"/>
-                <value text=" To: " condition="gt(length({LocationType}), 0)" />
+                <value text="  " condition="gt(length({DateEffective}), 0)"/>
+                <value text="To: " condition="gt(length({DateGoodUntil}), 0)" />
                 <value variable="DateGoodUntil"/>
-                <value text="No Address found " condition="lt(length({LocationType}), 1)" />
             </field>
         </detail>
     </level>

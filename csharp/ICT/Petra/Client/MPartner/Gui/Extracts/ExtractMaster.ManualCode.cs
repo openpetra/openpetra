@@ -55,59 +55,64 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             ExtractTDSMExtractTable ExtractTable;
             bool ChangesMade;
 
-            // retrieve contents of extract from server
-            ExtractTable = TRemote.MPartner.Partner.WebConnectors.GetExtractRowsWithPartnerData(AExtractId);
-
-            VerifyAndUpdateExtract(AForm, ref ExtractTable, out ChangesMade);
-
             AForm.Cursor = Cursors.WaitCursor;
 
-            foreach (DataRow InspectDR in ExtractTable.Rows)
+            try
             {
-                InspectDR.EndEdit();
+                // retrieve contents of extract from server
+                ExtractTable = TRemote.MPartner.Partner.WebConnectors.GetExtractRowsWithPartnerData(AExtractId);
+
+                VerifyAndUpdateExtract(AForm, ref ExtractTable, out ChangesMade);
+
+                foreach (DataRow InspectDR in ExtractTable.Rows)
+                {
+                    InspectDR.EndEdit();
+                }
+
+                TSubmitChangesResult SubmissionResult;
+
+                MExtractTable SubmitDT = new MExtractTable();
+
+                if (ExtractTable.GetChangesTyped() != null)
+                {
+                    SubmitDT.Merge(ExtractTable.GetChangesTyped());
+                }
+
+                if ((SubmitDT.Rows.Count == 0)
+                    || !ChangesMade)
+                {
+                    MessageBox.Show(Catalog.GetString("Extract was already up to date"),
+                        Catalog.GetString("Verify and Update Extract"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    // return if no changes were made
+                    return;
+                }
+
+                // Submit changes to the PETRAServer
+                SubmissionResult = TRemote.MPartner.Partner.WebConnectors.SaveExtract
+                                       (AExtractId, ref SubmitDT);
+
+                if (SubmissionResult == TSubmitChangesResult.scrError)
+                {
+                    MessageBox.Show(Catalog.GetString("Verify and Update of Extract failed"),
+                        Catalog.GetString("Verify and Update Extract"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show(Catalog.GetString("Verification and Update of Extract was successful"),
+                        Catalog.GetString("Verify and Update Extract"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
             }
-
-            TSubmitChangesResult SubmissionResult;
-
-            MExtractTable SubmitDT = new MExtractTable();
-
-            if (ExtractTable.GetChangesTyped() != null)
+            finally
             {
-                SubmitDT.Merge(ExtractTable.GetChangesTyped());
+                AForm.Cursor = Cursors.Default;
             }
-
-            if ((SubmitDT.Rows.Count == 0)
-                || !ChangesMade)
-            {
-                MessageBox.Show(Catalog.GetString("Extract was already up to date"),
-                    Catalog.GetString("Verify and Update Extract"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-
-                // return if no changes were made
-                return;
-            }
-
-            // Submit changes to the PETRAServer
-            SubmissionResult = TRemote.MPartner.Partner.WebConnectors.SaveExtract
-                                   (AExtractId, ref SubmitDT);
-
-            if (SubmissionResult == TSubmitChangesResult.scrError)
-            {
-                MessageBox.Show(Catalog.GetString("Verify and Update of Extract failed"),
-                    Catalog.GetString("Verify and Update Extract"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-            else
-            {
-                MessageBox.Show(Catalog.GetString("Verification and Update of Extract was successful"),
-                    Catalog.GetString("Verify and Update Extract"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-            }
-
-            AForm.Cursor = Cursors.Default;
         }
 
         /// <summary>
@@ -479,57 +484,70 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void CombineExtracts(System.Object sender, EventArgs e)
         {
-            TFrmExtractCombineIntersectSubtractDialog ExtractCombineDialog = new TFrmExtractCombineIntersectSubtractDialog(this.ParentForm);
-
-            List <Int32>ACombineExtractIdList;
-
-            // initialize dialog
-            ExtractCombineDialog.SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode.ecisCombineMode);
-
-            if (ucoExtractMasterList.GetSelectedDetailRow() != null)
+            try
             {
-                // Show currently selected extract in the grid in the dialog
-                ExtractCombineDialog.PreSelectExtract(ucoExtractMasterList.GetSelectedDetailRow());
-            }
+                this.Cursor = Cursors.WaitCursor;
 
-            // combining/intersecting of extracts happens in the dialog
-            ExtractCombineDialog.ShowDialog();
+                TFrmExtractCombineIntersectSubtractDialog ExtractCombineDialog = new TFrmExtractCombineIntersectSubtractDialog(this.ParentForm);
 
-            if (ExtractCombineDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
-            {
-                /* Get values from the Dialog */
-                ExtractCombineDialog.GetReturnedParameters(out ACombineExtractIdList);
+                List <Int32>ACombineExtractIdList;
 
-                // now first the user needs to give the new combined extract a name
-                TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this);
-                int NewExtractId = 0;
-                string NewExtractName;
-                string NewExtractDescription;
+                // initialize dialog
+                ExtractCombineDialog.SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode.ecisCombineMode);
 
-                ExtractNameDialog.ShowDialog();
+                if (ucoExtractMasterList.GetSelectedDetailRow() != null)
+                {
+                    // Show currently selected extract in the grid in the dialog
+                    ExtractCombineDialog.PreSelectExtract(ucoExtractMasterList.GetSelectedDetailRow());
+                }
 
-                if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                // combining/intersecting of extracts happens in the dialog
+                ExtractCombineDialog.ShowDialog();
+
+                if (ExtractCombineDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
                 {
                     /* Get values from the Dialog */
-                    ExtractNameDialog.GetReturnedParameters(out NewExtractName, out NewExtractDescription);
-                }
-                else
-                {
-                    // dialog was cancelled, do not continue with extract generation
-                    return;
+                    ExtractCombineDialog.GetReturnedParameters(out ACombineExtractIdList);
+
+                    // now first the user needs to give the new combined extract a name
+                    TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this);
+                    int NewExtractId = 0;
+                    string NewExtractName;
+                    string NewExtractDescription;
+
+                    ExtractNameDialog.ShowDialog();
+
+                    if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        /* Get values from the Dialog */
+                        ExtractNameDialog.GetReturnedParameters(out NewExtractName, out NewExtractDescription);
+                    }
+                    else
+                    {
+                        // dialog was cancelled, do not continue with extract generation
+                        return;
+                    }
+
+                    this.Cursor = Cursors.WaitCursor;
+
+                    ExtractNameDialog.Dispose();
+
+                    if (TRemote.MPartner.Partner.WebConnectors.CombineExtracts
+                            (NewExtractName, NewExtractDescription, ACombineExtractIdList,
+                            out NewExtractId))
+                    {
+                        ucoExtractMasterList.RefreshExtractList(sender, e);
+
+                        MessageBox.Show(Catalog.GetString("Combine Extracts successful."));
+                    }
                 }
 
-                ExtractNameDialog.Dispose();
-
-                if (TRemote.MPartner.Partner.WebConnectors.CombineExtracts
-                        (NewExtractName, NewExtractDescription, ACombineExtractIdList,
-                        out NewExtractId))
-                {
-                    ucoExtractMasterList.RefreshExtractList(sender, e);
-                }
+                ExtractCombineDialog.Dispose();
             }
-
-            ExtractCombineDialog.Dispose();
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
         }
 
         /// <summary>
@@ -539,57 +557,70 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void IntersectExtracts(System.Object sender, EventArgs e)
         {
-            TFrmExtractCombineIntersectSubtractDialog ExtractIntersectDialog = new TFrmExtractCombineIntersectSubtractDialog(this.ParentForm);
-
-            List <Int32>AIntersectExtractIdList;
-
-            // initialize dialog
-            ExtractIntersectDialog.SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode.ecisIntersectMode);
-
-            if (ucoExtractMasterList.GetSelectedDetailRow() != null)
+            try
             {
-                // Show currently selected extract in the grid in the dialog
-                ExtractIntersectDialog.PreSelectExtract(ucoExtractMasterList.GetSelectedDetailRow());
-            }
+                this.Cursor = Cursors.WaitCursor;
 
-            // combining/intersecting of extracts happens in the dialog
-            ExtractIntersectDialog.ShowDialog();
+                TFrmExtractCombineIntersectSubtractDialog ExtractIntersectDialog = new TFrmExtractCombineIntersectSubtractDialog(this.ParentForm);
 
-            if (ExtractIntersectDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
-            {
-                /* Get values from the Dialog */
-                ExtractIntersectDialog.GetReturnedParameters(out AIntersectExtractIdList);
+                List <Int32>AIntersectExtractIdList;
 
-                // now first the user needs to give the new intersected extract a name
-                TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this);
-                int NewExtractId = 0;
-                string NewExtractName;
-                string NewExtractDescription;
+                // initialize dialog
+                ExtractIntersectDialog.SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode.ecisIntersectMode);
 
-                ExtractNameDialog.ShowDialog();
+                if (ucoExtractMasterList.GetSelectedDetailRow() != null)
+                {
+                    // Show currently selected extract in the grid in the dialog
+                    ExtractIntersectDialog.PreSelectExtract(ucoExtractMasterList.GetSelectedDetailRow());
+                }
 
-                if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                // combining/intersecting of extracts happens in the dialog
+                ExtractIntersectDialog.ShowDialog();
+
+                if (ExtractIntersectDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
                 {
                     /* Get values from the Dialog */
-                    ExtractNameDialog.GetReturnedParameters(out NewExtractName, out NewExtractDescription);
-                }
-                else
-                {
-                    // dialog was cancelled, do not continue with extract generation
-                    return;
+                    ExtractIntersectDialog.GetReturnedParameters(out AIntersectExtractIdList);
+
+                    // now first the user needs to give the new intersected extract a name
+                    TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this);
+                    int NewExtractId = 0;
+                    string NewExtractName;
+                    string NewExtractDescription;
+
+                    ExtractNameDialog.ShowDialog();
+
+                    if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        /* Get values from the Dialog */
+                        ExtractNameDialog.GetReturnedParameters(out NewExtractName, out NewExtractDescription);
+                    }
+                    else
+                    {
+                        // dialog was cancelled, do not continue with extract generation
+                        return;
+                    }
+
+                    this.Cursor = Cursors.WaitCursor;
+
+                    ExtractNameDialog.Dispose();
+
+                    if (TRemote.MPartner.Partner.WebConnectors.IntersectExtracts
+                            (NewExtractName, NewExtractDescription, AIntersectExtractIdList,
+                            out NewExtractId))
+                    {
+                        ucoExtractMasterList.RefreshExtractList(sender, e);
+
+                        MessageBox.Show(Catalog.GetString("Intersect Extracts successful."));
+                    }
                 }
 
-                ExtractNameDialog.Dispose();
-
-                if (TRemote.MPartner.Partner.WebConnectors.IntersectExtracts
-                        (NewExtractName, NewExtractDescription, AIntersectExtractIdList,
-                        out NewExtractId))
-                {
-                    ucoExtractMasterList.RefreshExtractList(sender, e);
-                }
+                ExtractIntersectDialog.Dispose();
             }
-
-            ExtractIntersectDialog.Dispose();
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
         }
 
         /// <summary>
@@ -599,58 +630,71 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void SubtractExtracts(System.Object sender, EventArgs e)
         {
-            TFrmExtractCombineIntersectSubtractDialog ExtractSubtractDialog = new TFrmExtractCombineIntersectSubtractDialog(this.ParentForm);
-            String BaseExtractName;
-
-            List <Int32>AIntersectExtractIdList;
-
-            // initialize dialog
-            ExtractSubtractDialog.SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode.ecisSubtractMode);
-
-            if (ucoExtractMasterList.GetSelectedDetailRow() != null)
+            try
             {
-                // Show currently selected extract in the grid in the dialog
-                ExtractSubtractDialog.PreSelectExtract(ucoExtractMasterList.GetSelectedDetailRow());
+                this.Cursor = Cursors.WaitCursor;
+
+                TFrmExtractCombineIntersectSubtractDialog ExtractSubtractDialog = new TFrmExtractCombineIntersectSubtractDialog(this.ParentForm);
+                String BaseExtractName;
+
+                List <Int32>AIntersectExtractIdList;
+
+                // initialize dialog
+                ExtractSubtractDialog.SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode.ecisSubtractMode);
+
+                if (ucoExtractMasterList.GetSelectedDetailRow() != null)
+                {
+                    // Show currently selected extract in the grid in the dialog
+                    ExtractSubtractDialog.PreSelectExtract(ucoExtractMasterList.GetSelectedDetailRow());
+                }
+
+                // show dialog so the user can select extracts to be subtracted
+                ExtractSubtractDialog.ShowDialog();
+
+                if (ExtractSubtractDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                {
+                    // Get values from the Dialog
+                    ExtractSubtractDialog.GetReturnedParameters(out BaseExtractName, out AIntersectExtractIdList);
+
+                    // now first the user needs to give the new intersected extract a name
+                    TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this);
+                    int NewExtractId = 0;
+                    string NewExtractName;
+                    string NewExtractDescription;
+
+                    ExtractNameDialog.ShowDialog();
+
+                    if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        /* Get values from the Dialog */
+                        ExtractNameDialog.GetReturnedParameters(out NewExtractName, out NewExtractDescription);
+                    }
+                    else
+                    {
+                        // dialog was cancelled, do not continue with extract generation
+                        return;
+                    }
+
+                    this.Cursor = Cursors.WaitCursor;
+
+                    ExtractNameDialog.Dispose();
+
+                    if (TRemote.MPartner.Partner.WebConnectors.SubtractExtracts
+                            (NewExtractName, NewExtractDescription, BaseExtractName, AIntersectExtractIdList,
+                            out NewExtractId))
+                    {
+                        ucoExtractMasterList.RefreshExtractList(sender, e);
+
+                        MessageBox.Show(Catalog.GetString("Subtract Extracts successful."));
+                    }
+                }
+
+                ExtractSubtractDialog.Dispose();
             }
-
-            // show dialog so the user can select extracts to be subtracted
-            ExtractSubtractDialog.ShowDialog();
-
-            if (ExtractSubtractDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            finally
             {
-                // Get values from the Dialog
-                ExtractSubtractDialog.GetReturnedParameters(out BaseExtractName, out AIntersectExtractIdList);
-
-                // now first the user needs to give the new intersected extract a name
-                TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this);
-                int NewExtractId = 0;
-                string NewExtractName;
-                string NewExtractDescription;
-
-                ExtractNameDialog.ShowDialog();
-
-                if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
-                {
-                    /* Get values from the Dialog */
-                    ExtractNameDialog.GetReturnedParameters(out NewExtractName, out NewExtractDescription);
-                }
-                else
-                {
-                    // dialog was cancelled, do not continue with extract generation
-                    return;
-                }
-
-                ExtractNameDialog.Dispose();
-
-                if (TRemote.MPartner.Partner.WebConnectors.SubtractExtracts
-                        (NewExtractName, NewExtractDescription, BaseExtractName, AIntersectExtractIdList,
-                        out NewExtractId))
-                {
-                    ucoExtractMasterList.RefreshExtractList(sender, e);
-                }
+                this.Cursor = Cursors.Default;
             }
-
-            ExtractSubtractDialog.Dispose();
         }
 
         /// <summary>
@@ -759,7 +803,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void CreateFamilyMembersExtract(System.Object sender, EventArgs e)
         {
-            TPartnerExtractsMain.FamilyMembersExtract(FindForm());
+            if (ucoExtractMasterList.GetSelectedDetailRow() != null)
+            {
+                TPartnerExtractsMain.CreateFamilyMembersExtract(FindForm(), ucoExtractMasterList.GetSelectedDetailRow());
+            }
+            else
+            {
+                TPartnerExtractsMain.CreateFamilyMembersExtract(FindForm(), null);
+            }
         }
 
         /// <summary>
@@ -769,7 +820,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void CreateFamilyExtractForPersons(System.Object sender, EventArgs e)
         {
-            TPartnerExtractsMain.FamilyExtractForPersons(FindForm());
+            if (ucoExtractMasterList.GetSelectedDetailRow() != null)
+            {
+                TPartnerExtractsMain.CreateFamilyExtractForPersons(FindForm(), ucoExtractMasterList.GetSelectedDetailRow());
+            }
+            else
+            {
+                TPartnerExtractsMain.CreateFamilyExtractForPersons(FindForm(), null);
+            }
         }
 
         private void CreateContactLogExtract(System.Object sender, EventArgs e)

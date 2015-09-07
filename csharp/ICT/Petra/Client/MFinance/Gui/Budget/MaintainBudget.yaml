@@ -4,11 +4,11 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Budget
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.BudgetTDS
     DetailTable: ABudget
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation,Ict.Petra.Shared.MFinance.GL.Data]
     FormType: edit
     Template: windowEdit
     WindowHeight: 600
-    WindowWidth: 800
+    WindowWidth: 1000
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}      
@@ -48,7 +48,22 @@ RootNode:
         btnImport: {Action=actImport, Width=80, StartNewButtonGroup=true}
         grdDetails:
             Dock: Fill
-            Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]
+            Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode, Period01Amount, Period02Amount, Period03Amount, Period04Amount, Period05Amount, Period06Amount, Period07Amount, Period08Amount, Period09Amount, Period10Amount, Period11Amount, Period12Amount, Period13Amount, Period14Amount]
+            CustomColumns:
+                Period01Amount: {Label=Period 01, Type=Currency}
+                Period02Amount: {Label=Period 02, Type=Currency}
+                Period03Amount: {Label=Period 03, Type=Currency}
+                Period04Amount: {Label=Period 04, Type=Currency}
+                Period05Amount: {Label=Period 05, Type=Currency}
+                Period06Amount: {Label=Period 06, Type=Currency}
+                Period07Amount: {Label=Period 07, Type=Currency}
+                Period08Amount: {Label=Period 08, Type=Currency}
+                Period09Amount: {Label=Period 09, Type=Currency}
+                Period10Amount: {Label=Period 10, Type=Currency}
+                Period11Amount: {Label=Period 11, Type=Currency}
+                Period12Amount: {Label=Period 12, Type=Currency}
+                Period13Amount: {Label=Period 13, Type=Currency}
+                Period14Amount: {Label=Period 14, Type=Currency}
             ActionFocusRow: FocusedRowChanged
             #EnableMultiSelection: false
         pnlDetails:
@@ -160,4 +175,6 @@ RootNode:
         txtInflateBaseTotalAmount: {Label=Total, Format=Currency, ReadOnly=true, Width=140}
     Menu:
     Toolbar:
-        cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, Width=250, SuppressChangeDetection=true}
+        lblBlank: {Label=Blank}
+        lblYearEnding: {Label=Year Ending, AutoSize=false}
+        cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, SuppressChangeDetection=true}

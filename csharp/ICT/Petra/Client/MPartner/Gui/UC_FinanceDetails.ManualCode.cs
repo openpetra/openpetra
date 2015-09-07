@@ -46,7 +46,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         #region Properties
 
         /// <summary>Contains a list of all Partners who share the selected bank account</summary>
-        private PPartnerTable AccountSharedWith = new PPartnerTable();
+        private PPartnerTable FAccountSharedWith = new PPartnerTable();
 
         /// <summary>Dataset containg all PBank records for all banks and their locations</summary>
         private BankTDS FBankDataset;
@@ -356,7 +356,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FPreviouslySelectedDetailRow != null)
             {
                 // Find any Partners that share this bank account
-                AccountSharedWith = TRemote.MPartner.Partner.WebConnectors.SharedBankAccountPartners(FPreviouslySelectedDetailRow.BankingDetailsKey,
+                FAccountSharedWith = TRemote.MPartner.Partner.WebConnectors.SharedBankAccountPartners(FPreviouslySelectedDetailRow.BankingDetailsKey,
                     FMainDS.PPartner[0].PartnerKey);
             }
 
@@ -373,12 +373,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             grdAccountSharedWith.Columns.Clear();
 
-            grdAccountSharedWith.AddTextColumn(Catalog.GetString("Partner Name"), AccountSharedWith.ColumnPartnerShortName, 179);
+            if ((FAccountSharedWith == null) || (FAccountSharedWith.Rows.Count == 0))
+            {
+                grdAccountSharedWith.Enabled = false;
+                lblAccountSharedWith.Enabled = false;
+            }
+            else
+            {
+                grdAccountSharedWith.Enabled = true;
+                lblAccountSharedWith.Enabled = true;
 
-            DataView MyDataView = AccountSharedWith.DefaultView;
-            MyDataView.Sort = "p_partner_key_n ASC";
-            MyDataView.AllowNew = false;
-            grdAccountSharedWith.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+                grdAccountSharedWith.AddTextColumn(Catalog.GetString("Partner Name"), FAccountSharedWith.ColumnPartnerShortName, 179);
+
+                DataView MyDataView = FAccountSharedWith.DefaultView;
+                MyDataView.Sort = "p_partner_key_n ASC";
+                MyDataView.AllowNew = false;
+                grdAccountSharedWith.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+            }
         }
 
         private void DoRecalculateScreenParts()
@@ -542,12 +553,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            if (FBankDataset == null)
-            {
-                // populate the comboboxes for Bank Name and Bank Code if not done already (this should never actually happen!)
-                PopulateComboBoxes();
-            }
-
             FCurrentBankRow = GetCurrentRow(APartnerKey);
 
             // change the BankName combo (if it was not the control used to change the bank)
@@ -708,8 +713,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 txtBankKey.DataSet = FBankDataset;
 
                 // populate the comboboxes for Bank Name and Bank Code
-                Thread NewThread = new Thread(PopulateComboBoxes);
-                NewThread.Start();
+                PopulateComboBoxes();
 
                 Cursor.Current = Cursors.Default;
             }
@@ -835,13 +839,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void OpenSharingPartner(System.Object sender, EventArgs e)
         {
-            long SharingPartnerKey = Convert.ToInt64(((DataRowView)grdAccountSharedWith.SelectedDataRows[0]).Row[PPartnerTable.GetPartnerKeyDBName()]);
+            if ((FAccountSharedWith != null) && (FAccountSharedWith.Rows.Count > 0)
+                && (grdAccountSharedWith.SelectedDataRows != null) && (grdAccountSharedWith.SelectedDataRows.Length > 0))
+            {
+                long SharingPartnerKey =
+                    Convert.ToInt64(((DataRowView)grdAccountSharedWith.SelectedDataRows[0]).Row[PPartnerTable.GetPartnerKeyDBName()]);
 
-            // Open the selected partner's Partner Edit screen at Personnel Applications
-            TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+                // Open the selected partner's Partner Edit screen at Personnel Applications
+                TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
-            frm.SetParameters(TScreenMode.smEdit, SharingPartnerKey, TPartnerEditTabPageEnum.petpFinanceDetails);
-            frm.Show();
+                frm.SetParameters(TScreenMode.smEdit, SharingPartnerKey, TPartnerEditTabPageEnum.petpFinanceDetails);
+                frm.Show();
+            }
         }
 
         // Called when the dataset is changed in the FindBank dialog
@@ -936,25 +945,25 @@ namespace Ict.Petra.Client.MPartner.Gui
         // When a bank account is edited, check if it is shared with any other partners. If it is, display a message informing the user.
         private void CheckIfRowIsShared(System.Object Sender, EventArgs e)
         {
-            if ((FPreviouslySelectedDetailRow != LastRowChecked) && (AccountSharedWith.Rows.Count > 0))
+            if ((FPreviouslySelectedDetailRow != LastRowChecked) && (FAccountSharedWith.Rows.Count > 0))
             {
                 string EditQuestion = "";
 
-                if (AccountSharedWith.Rows.Count == 1)
+                if (FAccountSharedWith.Rows.Count == 1)
                 {
                     EditQuestion = Catalog.GetString("This bank account is currently shared with the following Partner:\n");
                 }
-                else if (AccountSharedWith.Rows.Count > 1)
+                else if (FAccountSharedWith.Rows.Count > 1)
                 {
                     EditQuestion = Catalog.GetString("This bank account is currently shared with the following Partners:\n");
                 }
 
-                for (int i = 0; i < AccountSharedWith.Rows.Count; i++)
+                for (int i = 0; i < FAccountSharedWith.Rows.Count; i++)
                 {
                     // do not allow more than 5 partners to be display. Otherwise message box becomes to long.
                     if (i == 5)
                     {
-                        int Remaining = AccountSharedWith.Rows.Count - i;
+                        int Remaining = FAccountSharedWith.Rows.Count - i;
 
                         if (Remaining == 1)
                         {
@@ -968,15 +977,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                         break;
                     }
 
-                    PPartnerRow Row = (PPartnerRow)AccountSharedWith.Rows[i];
+                    PPartnerRow Row = (PPartnerRow)FAccountSharedWith.Rows[i];
                     EditQuestion += "\n" + Row.PartnerShortName + " [" + Row.PartnerKey + "]";
                 }
 
-                if (AccountSharedWith.Rows.Count == 1)
+                if (FAccountSharedWith.Rows.Count == 1)
                 {
                     EditQuestion += Catalog.GetString("\n\nChanges to the Bank Account details here will take effect on the other partner's too.");
                 }
-                else if (AccountSharedWith.Rows.Count > 1)
+                else if (FAccountSharedWith.Rows.Count > 1)
                 {
                     EditQuestion += Catalog.GetString("\n\nChanges to the Bank Account details here will take effect on the other partners' too.");
                 }
@@ -1002,8 +1011,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 txtBankKey.DataSet = FBankDataset;
 
                 // populate the comboboxes for Bank Name and Bank Code
-                Thread NewThread = new Thread(PopulateComboBoxes);
-                NewThread.Start();
+                PopulateComboBoxes();
 
                 Cursor.Current = Cursors.Default;
             }
@@ -1035,23 +1043,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             ADeletionQuestion = "";
 
             // additional message if the bank account to be deleted is shared with one or more other Partners
-            if (AccountSharedWith.Rows.Count > 0)
+            if (FAccountSharedWith.Rows.Count > 0)
             {
-                if (AccountSharedWith.Rows.Count == 1)
+                if (FAccountSharedWith.Rows.Count == 1)
                 {
                     ADeletionQuestion = Catalog.GetString("This bank account is currently shared with the following Partner:\n");
                 }
-                else if (AccountSharedWith.Rows.Count > 1)
+                else if (FAccountSharedWith.Rows.Count > 1)
                 {
                     ADeletionQuestion = Catalog.GetString("This bank account is currently shared with the following Partners:\n");
                 }
 
-                for (int i = 0; i < AccountSharedWith.Rows.Count; i++)
+                for (int i = 0; i < FAccountSharedWith.Rows.Count; i++)
                 {
                     // do not allow more than 5 partners to be display. Otherwise message box becomes to long.
                     if (i == 5)
                     {
-                        int Remaining = AccountSharedWith.Rows.Count - i;
+                        int Remaining = FAccountSharedWith.Rows.Count - i;
 
                         if (Remaining == 1)
                         {
@@ -1065,15 +1073,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                         break;
                     }
 
-                    PPartnerRow Row = (PPartnerRow)AccountSharedWith.Rows[i];
+                    PPartnerRow Row = (PPartnerRow)FAccountSharedWith.Rows[i];
                     ADeletionQuestion += "\n" + Row.PartnerShortName + " [" + Row.PartnerKey + "]";
                 }
 
-                if (AccountSharedWith.Rows.Count == 1)
+                if (FAccountSharedWith.Rows.Count == 1)
                 {
                     ADeletionQuestion += Catalog.GetString("\n\nThe bank account will not be removed from this other partner.\n\n");
                 }
-                else if (AccountSharedWith.Rows.Count > 1)
+                else if (FAccountSharedWith.Rows.Count > 1)
                 {
                     ADeletionQuestion += Catalog.GetString("\n\nThe bank account will not be removed from these other partners.\n\n");
                 }
@@ -1124,7 +1132,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // only delete PBankingDetailsRow if it is not shared with any other Partners
-            if (AccountSharedWith.Rows.Count == 0)
+            if (FAccountSharedWith.Rows.Count == 0)
             {
                 ARowToDelete.Delete();
             }

@@ -1027,6 +1027,9 @@ namespace Ict.Petra.Server.MCommon
         private Boolean FRunningQuery = false;
         private Exception FRunQueryException = null;
 
+        /// <summary>Use this object for creating DB Transactions, etc</summary>
+        public TDataBase FPrivateDatabaseObj = EstablishDBConnection();
+
         /// <summary>Check this before assuming that the query returned a good result!</summary>
         public Boolean IsCancelled
         {
@@ -1078,6 +1081,40 @@ namespace Ict.Petra.Server.MCommon
             FRunningQuery = false;
         }
 
+        private static TDataBase EstablishDBConnection()
+        {
+/*
+ * This scheme that uses a private database connection
+ * is not currently approved for use.
+ *
+ *          TDataBase FDBAccessObj = new Ict.Common.DB.TDataBase();
+ *
+ *          FDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+ *                  TSrvSetting.PostgreSQLServer,
+ *                  TSrvSetting.PostgreSQLServerPort,
+ *                  TSrvSetting.PostgreSQLDatabaseName,
+ *                  TSrvSetting.DBUsername,
+ *                  TSrvSetting.DBPassword,
+ *                  "");
+ *
+ *          return FDBAccessObj;
+ */
+            return DBAccess.GDBAccessObj;
+        }
+
+        /// <summary>
+        /// Call this to ensure that linked resources are disposed.
+        /// </summary>
+        public void CloseConnection()
+        {
+/*
+ * Since in this version I am not using a private database connection
+ * I'm also not going to close it when I've finished:
+ *
+ *          FPrivateDatabaseObj.CloseDBConnection();
+ */
+        }
+
         /// <summary>
         /// Run this Database query.
         /// If FReportingQueryCancelFlag is set, this returns immediately with an empty table.
@@ -1087,25 +1124,14 @@ namespace Ict.Petra.Server.MCommon
         public DataTable RunQuery(String Query, String TableName, TDBTransaction Trans)
         {
             var ResultDT = new DataTable(TableName);
-            bool DBAccessCallSuccessful = false;
 
             if (!FCancelFlag)
             {
                 try
                 {
                     FRunningQuery = true;
-
-                    TServerBusyHelper.CoordinatedAutoRetryCall("FastReports Reporting / RunQuery", ref DBAccessCallSuccessful,
-                        delegate
-                        {
-                            DBAccess.GDBAccessObj.SelectUsingDataAdapter(Query, Trans,
-                                ref ResultDT, out FDataAdapterCanceller);
-
-                            DBAccessCallSuccessful = true;
-                        }, true,
-                        Catalog.GetString("Report calculation could not be completed because the OpenPetra server was too busy. " +
-                            String.Format(TServerBusyHelper.StrPleaseWaitAFewSecondsManualRetryRequiredCustom,
-                                Catalog.GetString("re-start the generation of the Report"))));
+                    FPrivateDatabaseObj.SelectUsingDataAdapter(Query, Trans,
+                        ref ResultDT, out FDataAdapterCanceller);
                 }
                 catch (NpgsqlException Exp)
                 {

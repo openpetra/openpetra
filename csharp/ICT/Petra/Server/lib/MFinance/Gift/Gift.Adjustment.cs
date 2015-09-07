@@ -372,8 +372,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         //assuming new elements are added after these static borders
 
-                        int cycle = 0;
-
                         AGiftDS.AGift.DefaultView.Sort = string.Format("{0}, {1}",
                             AGiftTable.GetBatchNumberDBName(),
                             AGiftTable.GetGiftTransactionNumberDBName());
@@ -383,10 +381,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             AGiftDetailTable.GetGiftTransactionNumberDBName(),
                             AGiftDetailTable.GetDetailNumberDBName());
 
-                        // first cycle creates gift reversal; second cycle creates new adjusted gift (if needed)
-                        do
+                        foreach (DataRowView giftRow in AGiftDS.AGift.DefaultView)
                         {
-                            foreach (DataRowView giftRow in AGiftDS.AGift.DefaultView)
+                            int cycle = 0;
+
+                            // first cycle creates gift reversal; second cycle creates new adjusted gift (if needed)
+                            do
                             {
                                 AGiftRow oldGift = (AGiftRow)giftRow.Row;
 
@@ -399,21 +399,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     gift.DateEntered = DateEffective;
                                     gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
                                     giftBatch.LastGiftNumber++;
+                                    gift.LinkToPreviousGift = (cycle != 0);
                                     gift.LastDetailNumber = 0;
-
-                                    if (NoReceipt)
-                                    {
-                                        gift.ReceiptLetterCode = "NO*RECET";
-                                    }
 
                                     // do not print a receipt for reversed gifts
                                     if (cycle == 0)
                                     {
                                         gift.ReceiptPrinted = true;
+                                        gift.PrintReceipt = false;
                                     }
                                     else
                                     {
                                         gift.ReceiptPrinted = false;
+                                        gift.PrintReceipt = !NoReceipt;
                                     }
 
                                     AGiftDS.AGift.Rows.Add(gift);
@@ -428,7 +426,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                             && (!Function.Equals(GiftAdjustmentFunctionEnum.ReverseGiftDetail)
                                                 || (oldGiftDetail.DetailNumber == GiftDetailNumber)))
                                         {
-                                            AddDuplicateGiftDetailToGift(ref AGiftDS, ref gift, oldGiftDetail, cycle == 0, null, Transaction,
+                                            AddDuplicateGiftDetailToGift(ref AGiftDS, ref gift, oldGiftDetail, cycle == 0, Transaction,
                                                 requestParams);
 
                                             batchGiftTotal += oldGiftDetail.GiftTransactionAmount * ((cycle == 0) ? -1 : 1);
@@ -438,12 +436,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         }
                                     }
                                 }
-                            }
 
-                            cycle++;
-                        } while ((cycle < 2)
-                                 && (Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift) || Function.Equals(GiftAdjustmentFunctionEnum.FieldAdjust)
-                                     || Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust)));
+                                cycle++;
+                            } while ((cycle < 2)
+                                     && (Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift)
+                                         || Function.Equals(GiftAdjustmentFunctionEnum.FieldAdjust)
+                                         || Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust)));
+                        }
 
                         //When reversing into a new or existing batch, set batch total
                         if (!Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift))
@@ -539,14 +538,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AGift"></param>
         /// <param name="AOldGiftDetail"></param>
         /// <param name="AReversal">True for reverse or false for straight duplicate</param>
-        /// <param name="AGiftCommentOne"></param>
         /// <param name="ATransaction"></param>
         /// <param name="ARequestParams"></param>
         private static void AddDuplicateGiftDetailToGift(ref GiftBatchTDS AMainDS,
             ref AGiftRow AGift,
             AGiftDetailRow AOldGiftDetail,
             bool AReversal,
-            string AGiftCommentOne,
             TDBTransaction ATransaction,
             Hashtable ARequestParams = null)
         {
@@ -573,10 +570,25 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (TaxDeductiblePercentageEnabled)
             {
-                if (Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust) && !AReversal)
+                if (!AReversal && Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust))
                 {
                     giftDetail.TaxDeductiblePct = Convert.ToDecimal(ARequestParams["NewPct"]);
                     TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetail);
+                }
+                else if (!AReversal)
+                {
+                    if (ARequestParams.ContainsKey("UpdateTaxDeductiblePct"))
+                    {
+                        List <string[]>UpdateTaxDeductiblePctRecipeints = (List <string[]> )ARequestParams["UpdateTaxDeductiblePct"];
+                        string[] Result = UpdateTaxDeductiblePctRecipeints.Find(x => x[0] == giftDetail.RecipientKey.ToString());
+
+                        // true if a new percentage is available and the user wants to use it
+                        if (Result != null)
+                        {
+                            giftDetail.TaxDeductiblePct = Convert.ToDecimal(Result[1]);
+                            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetail);
+                        }
+                    }
                 }
                 else
                 {
@@ -589,19 +601,25 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            if (AGiftCommentOne != null)
-            {
-                giftDetail.GiftCommentOne = AGiftCommentOne;
-            }
-
             if (ARequestParams != null)
             {
-                giftDetail.GiftCommentOne = (String)ARequestParams["ReversalCommentOne"];
-                giftDetail.GiftCommentTwo = (String)ARequestParams["ReversalCommentTwo"];
-                giftDetail.GiftCommentThree = (String)ARequestParams["ReversalCommentThree"];
-                giftDetail.CommentOneType = (String)ARequestParams["ReversalCommentOneType"];
-                giftDetail.CommentTwoType = (String)ARequestParams["ReversalCommentTwoType"];
-                giftDetail.CommentThreeType = (String)ARequestParams["ReversalCommentThreeType"];
+                if ((bool)ARequestParams["AutoCompleteComments"]) // only used for tax deductible pct gift adjustments
+                {
+                    AGiftRow OldGiftRow = (AGiftRow)AMainDS.AGift.Rows.Find(
+                        new object[] { AOldGiftDetail.LedgerNumber, AOldGiftDetail.BatchNumber, AOldGiftDetail.GiftTransactionNumber });
+
+                    giftDetail.GiftCommentThree = Catalog.GetString("Original gift date: " + OldGiftRow.DateEntered.ToString("dd-MMM-yyyy"));
+                    giftDetail.CommentThreeType = "Both";
+                }
+                else // user defined
+                {
+                    giftDetail.GiftCommentOne = (String)ARequestParams["ReversalCommentOne"];
+                    giftDetail.GiftCommentTwo = (String)ARequestParams["ReversalCommentTwo"];
+                    giftDetail.GiftCommentThree = (String)ARequestParams["ReversalCommentThree"];
+                    giftDetail.CommentOneType = (String)ARequestParams["ReversalCommentOneType"];
+                    giftDetail.CommentTwoType = (String)ARequestParams["ReversalCommentTwoType"];
+                    giftDetail.CommentThreeType = (String)ARequestParams["ReversalCommentThreeType"];
+                }
             }
 
             // If reversal: mark the new gift as a reversal
@@ -648,6 +666,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         giftDetail.MotivationGroupCode = MFinanceConstants.MOTIVATION_GROUP_GIFT;
                         giftDetail.MotivationDetailCode = MFinanceConstants.GROUP_DETAIL_SUPPORT;
                     }
+                }
+
+                // if the gift destination should be fixed
+                if (ARequestParams.ContainsKey("FixedGiftDestination")
+                    && (Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust) && (bool)ARequestParams["FixedGiftDestination"]
+                        || (((List <string> )ARequestParams["FixedGiftDestination"]).Exists(x => x == giftDetail.RecipientKey.ToString()))))
+                {
+                    giftDetail.FixedGiftDestination = true;
+                }
+                else
+                {
+                    giftDetail.FixedGiftDestination = false;
                 }
             }
 

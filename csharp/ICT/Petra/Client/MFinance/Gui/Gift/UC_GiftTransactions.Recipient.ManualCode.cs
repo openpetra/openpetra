@@ -379,22 +379,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ACurrentDetailRow.DateEntered);
             }
 
-            TVerificationResultCollection VerificationResults;
-
-            // if recipient ledger number belongs to a different ledger then check that it is set up for inter-ledger transfers
-            if ((RecipientLedgerNumber != 0) && ((int)RecipientLedgerNumber / 1000000 != ALedgerNumber)
-                && !TRemote.MFinance.Gift.WebConnectors.IsRecipientLedgerNumberSetupForILT(
-                    ALedgerNumber, APartnerKey, RecipientLedgerNumber, out VerificationResults))
-            {
-                MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Invalid Data Entered"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                //ATxtDetailRecipientKey.Text = "0";
-                //return;
-
-                RecipientLedgerNumber = 0;
-            }
-
             ARecipientKeyChangingFlag = true;
             ATxtDetailRecipientKeyMinistry.Text = string.Empty;
 

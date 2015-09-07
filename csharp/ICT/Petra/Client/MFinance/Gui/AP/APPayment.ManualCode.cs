@@ -369,7 +369,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     }
                 }
 
-                cmbBankAccount.SetSelectedString(FSelectedPaymentRow.BankAccount);
+                cmbBankAccount.SetSelectedString(FSelectedPaymentRow.BankAccount, -1);
 
                 FMainDS.AApDocumentPayment.DefaultView.RowFilter = AccountsPayableTDSAApDocumentPaymentTable.GetPaymentNumberDBName() +
                                                                    " = " + FSelectedPaymentRow.PaymentNumber.ToString();

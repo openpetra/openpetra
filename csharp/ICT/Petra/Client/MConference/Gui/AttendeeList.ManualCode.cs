@@ -66,6 +66,8 @@ namespace Ict.Petra.Client.MConference.Gui
 
             // open partner edit screen when user double clicks on a row
             this.grdAttendees.DoubleClick += new System.EventHandler(this.EditPerson);
+
+            FinishButtonPanelSetup();
         }
 
         private void InitGridManually()
@@ -251,6 +253,16 @@ namespace Ict.Petra.Client.MConference.Gui
         private long GetPartnerKeySelected()
         {
             return Convert.ToInt64(((DataRowView)grdAttendees.SelectedDataRows[0]).Row[PcAttendeeTable.GetPartnerKeyDBName()]);
+        }
+
+        private void FinishButtonPanelSetup()
+        {
+            // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+            lblRecordCounter.AutoSize = true;
+            lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+            lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+            pnlButtonsRecordCounter.AutoSize = true;
         }
 
         // update the record counter

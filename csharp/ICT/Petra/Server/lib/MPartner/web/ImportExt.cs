@@ -24,18 +24,16 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Text;
 using System.Data;
 using System.Collections.Generic;
 using Ict.Common.IO;
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Common.Data;
+using Ict.Common.Remoting.Server;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
@@ -45,7 +43,6 @@ using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
 using Ict.Petra.Server.MHospitality.Data.Access;
-using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 
@@ -387,7 +384,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     return 2;
                 }
-                else if ((ALanguageLevel >= 8) && (ALanguageLevel <= 9))
+                else if ((ALanguageLevel >= 8) && (ALanguageLevel != 99))
                 {
                     return 3;
                 }
@@ -462,7 +459,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (PartnerRow.StatusCode == "PRIVATE")
             {
                 AddVerificationResult(
-                    "Status for Partner " + FPartnerKey.ToString() + " changed from PRIVATE to ACTIVE (PRIVATE no longer available).");
+                    "Status for Partner " + FPartnerKey.ToString("0000000000") + " changed from PRIVATE to ACTIVE (PRIVATE no longer available).");
                 PartnerRow.StatusCode = "ACTIVE";
             }
 
@@ -633,8 +630,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     // make sure that contact partner key exists in the database already, otherwise reset to take
                     // care of referential integrity
-                    AddVerificationResult("Contact Partner for Venue " + FPartnerKey.ToString() + " not set" +
-                        " as Partner Key " + VenueRow.ContactPartnerKey.ToString() + " does not exist in database.");
+                    AddVerificationResult("Contact Partner for Venue " + FPartnerKey.ToString("0000000000") + " not set" +
+                        " as Partner Key " + VenueRow.ContactPartnerKey.ToString("0000000000") + " does not exist in database.");
                     VenueRow.SetContactPartnerKeyNull();
                 }
 
@@ -1250,7 +1247,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (StaffDataRow.ReceivingField == 0)
             {
                 // We cannot import a partner that has a receiving field 0. This would break referential integrity.
-                AddVerificationResult("Error - Commitment Record Receiving Field for Partner " + FPartnerKey.ToString() + " is 0. " +
+                AddVerificationResult("Error - Commitment Record Receiving Field for Partner " + FPartnerKey.ToString("0000000000") + " is 0. " +
                     "Commitment Record will not be imported.");
                 ImportCommitment = false;
             }
@@ -1260,7 +1257,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 AddVerificationResult(
                     "Error - Commitment Record Receiving Field " + StaffDataRow.ReceivingField.ToString() + " for Partner " +
-                    FPartnerKey.ToString() +
+                    FPartnerKey.ToString("0000000000") +
                     " does not exist in database. Commitment Record will not be imported.");
                 ImportCommitment = false;
             }
@@ -1269,7 +1266,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (!PUnitAccess.Exists(StaffDataRow.HomeOffice, ATransaction))
             {
                 AddVerificationResult(
-                    "Error - Commitment Record Sending Field " + StaffDataRow.HomeOffice.ToString() + " for Partner " + FPartnerKey.ToString() +
+                    "Error - Commitment Record Sending Field " + StaffDataRow.HomeOffice.ToString() + " for Partner " +
+                    FPartnerKey.ToString("0000000000") +
                     " does not exist in database. Commitment Record will not be imported.");
                 ImportCommitment = false;
             }
@@ -1279,7 +1277,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 AddVerificationResult(
                     "Error - Commitment Record Recruiting Field " + StaffDataRow.OfficeRecruitedBy.ToString() + " for Partner " +
-                    FPartnerKey.ToString() +
+                    FPartnerKey.ToString("0000000000") +
                     " does not exist in database. Commitment Record will not be imported.");
                 ImportCommitment = false;
             }
@@ -1664,7 +1662,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (!PUnitAccess.Exists(GiftDestinationRow.FieldKey, ATransaction))
             {
                 AddVerificationResult(
-                    "Error - Gift Destination Field Key " + GiftDestinationRow.FieldKey.ToString() + " for Partner " + FPartnerKey.ToString() +
+                    "Error - Gift Destination Field Key " + GiftDestinationRow.FieldKey.ToString(
+                        "0000000000") + " for Partner " + FPartnerKey.ToString("0000000000") +
                     " does not exist in database. Gift Destination Record will not be imported.");
                 return;
             }
@@ -1765,7 +1764,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (!PUnitAccess.Exists(JobAssignmentRow.UnitKey, ATransaction))
             {
                 AddVerificationResult(
-                    "Error - Job Assignment Unit Key " + JobAssignmentRow.UnitKey.ToString() + " for Partner " + FPartnerKey.ToString() +
+                    "Error - Job Assignment Unit Key " + JobAssignmentRow.UnitKey.ToString("0000000000") + " for Partner " +
+                    FPartnerKey.ToString("0000000000") +
                     " does not exist in database. Job Assignment Record will not be imported.");
                 ImportJobAssignment = false;
             }

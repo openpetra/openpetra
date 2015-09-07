@@ -52,6 +52,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 FPetraUtilsObject.LoadDefaultSettings();
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // Column Settings is not supported in the FastReports based solution.
             }
         }
 
@@ -64,6 +65,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             if (dtpToDate.Date.HasValue)
             {
                 Int32 ToDateYear = dtpToDate.Date.Value.Year;
+                //TODO: Calendar vs Financial Date Handling - Confirm that these should not be ledger dates, i.e. allowing for >12 periods and non-calendar period boundaries
                 DateTime FromDateThisYear = new DateTime(ToDateYear, 1, 1);
                 DateTime ToDatePreviousYear = new DateTime(ToDateYear - 1, 12, 31);
                 DateTime FromDatePreviousYear = new DateTime(ToDateYear - 1, 1, 1);

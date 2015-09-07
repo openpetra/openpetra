@@ -50,82 +50,75 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private void InitializeManualCode()
         {
             ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+
+            clbDocuments_InitialiseData();
         }
 
-        private void grdDocuments_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
+        private void clbDocuments_InitialiseData()
         {
+            string CheckedMember = "CHECKED";
+
             // Get list of documents
             FDocumentTypeTable = (PmDocumentTypeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(
                 TCacheablePersonTablesEnum.DocumentTypeList);
 
-            grdDocuments.Columns.Clear();
+            DataColumn FirstColumn = new DataColumn(CheckedMember, typeof(bool));
+            FirstColumn.DefaultValue = false;
+            FDocumentTypeTable.Columns.Add(FirstColumn);
 
-            grdDocuments.AddTextColumn("Document Type", FDocumentTypeTable.Columns[PmDocumentTypeTable.GetDocCodeDBName()]);
-            grdDocuments.AddTextColumn("Description", FDocumentTypeTable.Columns[PmDocumentTypeTable.GetDescriptionDBName()]);
+            clbDocuments.Columns.Clear();
+            clbDocuments.AddCheckBoxColumn("", FDocumentTypeTable.Columns[CheckedMember], 17, false);
+            clbDocuments.AddTextColumn("Document Type", FDocumentTypeTable.Columns[PmDocumentTypeTable.GetDocCodeDBName()]);
+            clbDocuments.AddTextColumn("Description", FDocumentTypeTable.Columns[PmDocumentTypeTable.GetDescriptionDBName()]);
 
-            FDocumentTypeTable.DefaultView.AllowNew = false;
-            FDocumentTypeTable.DefaultView.AllowDelete = false;
-
-            grdDocuments.DataSource = new DevAge.ComponentModel.BoundDataView(FDocumentTypeTable.DefaultView);
-            grdDocuments.AutoSizeCells();
-            grdDocuments.Selection.EnableMultiSelection = true;
+            clbDocuments.DataBindGrid(FDocumentTypeTable, PmDocumentTypeTable.GetDocCodeDBName(), CheckedMember,
+                PmDocumentTypeTable.GetDocCodeDBName(), false, true, false);
+            clbDocuments.AutoResizeGrid();
 
             UseDatesChanged(null, null);
         }
 
-        private void grdDocuments_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            String DocumentTypeList = "";
+            String paramDocuments = clbDocuments.GetCheckedStringList(true);
 
-            for (int Counter = 0; Counter < grdDocuments.SelectedDataRows.Length; ++Counter)
+            if (AReportAction == TReportActionEnum.raGenerate)
             {
-                DocumentTypeList = DocumentTypeList +
-                                   (String)((DataRowView)grdDocuments.SelectedDataRows[Counter]).Row[FDocumentTypeTable.Columns[PmDocumentTypeTable.
-                                                                                                                                GetDocCodeDBName()]]
-                                   +
-                                   ",";
-            }
-
-            // remove the last ,
-            if (DocumentTypeList.Length > 0)
-            {
-                DocumentTypeList = DocumentTypeList.Substring(0, DocumentTypeList.Length - 1);
-            }
-            else if (AReportAction == TReportActionEnum.raGenerate)
-            {
-                // at least one document type must be checked
-                TVerificationResult VerificationResult = new TVerificationResult("Select at least one document type.",
-                    "No document type selected!",
-                    TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationResult);
-            }
-
-            ACalc.AddParameter("param_doctype", DocumentTypeList);
-        }
-
-        private void grdDocuments_SetControls(TParameterList AParameters)
-        {
-            String SelectedTypes = AParameters.Get("param_doctype").ToString() + ",";
-
-            grdDocuments.Selection.ResetSelection(false);
-
-            for (int Counter = 0; Counter <= FDocumentTypeTable.Rows.Count; ++Counter)
-            {
-                DataRowView Row = (DataRowView)grdDocuments.Rows.IndexToDataSourceRow(Counter);
-
-                if (Row != null)
+                if (paramDocuments.Length == 0)
                 {
-                    String CurrentType = (String)Row[0];
-
-                    grdDocuments.Selection.SelectRow(Counter, SelectedTypes.Contains((CurrentType + ",")));
+                    TVerificationResult VerificationMessage = new TVerificationResult(
+                        Catalog.GetString("Please select at least one document type."),
+                        Catalog.GetString("No document types selected!"), TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationMessage);
                 }
             }
+
+            paramDocuments = paramDocuments.Replace("\"", "");
+            ACalc.AddParameter("param_doctype", paramDocuments);
+        }
+
+        private void SetControlsManual(TParameterList AParameters)
+        {
+            clbDocuments.SetCheckedStringList(AParameters.Get("param_doctype").ToString());
         }
 
         private void UseDatesChanged(System.Object sender, EventArgs e)
         {
             dtpFromDate.Enabled = chkUseDates.Checked;
             dtpToDate.Enabled = chkUseDates.Checked;
+        }
+
+        private void SelectAllDocuments(object sender, EventArgs e)
+        {
+            for (int Counter = 0; Counter < FDocumentTypeTable.Rows.Count; ++Counter)
+            {
+                FDocumentTypeTable.Rows[Counter]["CHECKED"] = true;
+            }
+        }
+
+        private void UnselectAllDocuments(object sender, EventArgs e)
+        {
+            clbDocuments.ClearSelected();
         }
     }
 }

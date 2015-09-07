@@ -200,6 +200,27 @@ namespace Ict.Petra.Shared.MPartner
         CONTACTDETAIL_SKYPEID
     };
 
+    /// <summary>
+    /// Defines which merge action we need data for (used in Partner Merge)
+    /// </summary>
+    public enum TMergeActionEnum
+    {
+        /// <summary>
+        /// Address
+        /// </summary>
+        ADDRESS,
+
+        /// <summary>
+        /// Contact Detail
+        /// </summary>
+        CONTACTDETAIL,
+
+        /// <summary>
+        /// Bank Account
+        /// </summary>
+        BANKACCOUNT
+    };
+
     #region TLocationPK
 
     /// <summary>

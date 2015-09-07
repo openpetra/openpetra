@@ -376,6 +376,12 @@ namespace Ict.Petra.Shared.MFinance
         /// Budget Types
         public const string BUDGET_INFLATE_N = "INFLATE_N";
 
+        /// Budget Years
+        public const string BUDGET_YEAR_THIS = "This";
+
+        /// Budget Years
+        public const string BUDGET_YEAR_NEXT = "Next";
+
         /// Budget Forecast Types
         public const string FORECAST_TYPE_BUDGET = "Budget";
 

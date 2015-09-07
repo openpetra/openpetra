@@ -35,6 +35,7 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
+            FilterButton: ;Click to show or hide the Analysis Types filter panel
             FilterControls: [txtDetailAnalysisTypeCode, txtDetailAnalysisTypeDescription, chkDetailSystemAnalysisType]
             FindControls: [txtDetailAnalysisTypeCode, txtDetailAnalysisTypeDescription]
         pnlButtons:

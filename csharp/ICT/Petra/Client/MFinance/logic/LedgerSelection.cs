@@ -39,7 +39,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
         /// <summary>
         /// to be called if no valid dates exist yet in the cache;
-        /// also to be called by period end to reset the cache
+        /// also called by PeriodEnd to reset the cache.
         /// </summary>
         public static void ResetValidDates(Int32 ALedgerNumber)
         {

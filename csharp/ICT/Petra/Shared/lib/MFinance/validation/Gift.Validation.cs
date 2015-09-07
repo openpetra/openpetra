@@ -195,8 +195,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     if ((foundRow == null)
                         && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                             AContext,
-                            new TVerificationResult(ValidationContext,
-                                String.Format(Catalog.GetString("Unknown cost centre code '{0}'."), ARow.BankCostCentre),
+                            new TScreenVerificationResult(ValidationContext,
+                                ValidationColumn,
+                                String.Format(Catalog.GetString("Unknown Bank Cost Centre: '{0}'."), ARow.BankCostCentre),
+                                ValidationControlsData.ValidationControl,
                                 TResultSeverity.Resv_Critical),
                             ValidationColumn))
                     {
@@ -208,8 +210,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     {
                         if (!foundRow.PostingCostCentreFlag && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                                 AContext,
-                                new TVerificationResult(ValidationContext,
+                                new TScreenVerificationResult(ValidationContext,
+                                    ValidationColumn,
                                     String.Format(Catalog.GetString("The cost centre '{0}' is not a Posting Cost Centre."), ARow.BankCostCentre),
+                                    ValidationControlsData.ValidationControl,
                                     TResultSeverity.Resv_Critical),
                                 ValidationColumn))
                         {
@@ -249,8 +253,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     if ((foundRow == null)
                         && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                             AContext,
-                            new TVerificationResult(ValidationContext,
+                            new TScreenVerificationResult(ValidationContext,
+                                ValidationColumn,
                                 String.Format(Catalog.GetString("Unknown currency code '{0}'."), ARow.CurrencyCode),
+                                ValidationControlsData.ValidationControl,
                                 TResultSeverity.Resv_Critical),
                             ValidationColumn))
                     {
@@ -285,8 +291,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         && (ARow.ExchangeRateToBase != 1.00m))
                     {
                         if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext,
-                                new TVerificationResult(ValidationContext,
+                                new TScreenVerificationResult(ValidationContext,
+                                    ValidationColumn,
                                     Catalog.GetString("A batch in the ledger base currency must have exchange rate of 1.00."),
+                                    ValidationControlsData.ValidationControl,
                                     TResultSeverity.Resv_Critical),
                                 ValidationColumn))
                         {
@@ -367,10 +375,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     {
                         if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                                 AContext,
-                                new TVerificationResult(ValidationContext,
+                                new TScreenVerificationResult(ValidationContext,
+                                    ValidationColumn,
                                     String.Format(Catalog.GetString("Unknown gift type '{0}'. Expected one of '{1}', '{2}' or '{3}'"),
                                         ARow.GiftType,
                                         MFinanceConstants.GIFT_TYPE_GIFT, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND, MFinanceConstants.GIFT_TYPE_OTHER),
+                                    ValidationControlsData.ValidationControl,
                                     TResultSeverity.Resv_Critical),
                                 ValidationColumn))
                         {
@@ -393,6 +403,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <param name="ARecipientPartnerClass">Recipient's Partner Class (used for Motivation Detail validation).</param>
+        /// <param name="ASetupForILT">Optional - Is the recipient set up for inter-ledger transfers.</param>
         /// <param name="ACostCentres">Optional - a CostCentres table.  Is required for import validation. </param>
         /// <param name="AAccounts">Optional - a Accounts table.  Is required for import validation. </param>
         /// <param name="AMotivationGroups">Optional - a MotivationGroups table.  Is required for import validation. </param>
@@ -405,6 +416,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             ref TVerificationResultCollection AVerificationResultCollection,
             TValidationControlsDict AValidationControlsDict,
             TPartnerClass? ARecipientPartnerClass,
+            bool? ASetupForILT = null,
             ACostCentreTable ACostCentres = null,
             AAccountTable AAccounts = null,
             AMotivationGroupTable AMotivationGroups = null,
@@ -417,6 +429,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             TVerificationResult VerificationResult = null;
             object ValidationContext;
             int VerifResultCollAddedCount = 0;
+            bool ValidPartner = true;
 
             // Don't validate deleted DataRows
             if (ARow.RowState == DataRowState.Deleted)
@@ -437,12 +450,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.RecipientKey, new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT }, true,
                 isImporting ? Catalog.GetString("Recipient key") :
                 "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
-                ValidationContext, ValidationColumn, null);
+                AContext, ValidationColumn, null);
 
             if (VerificationResult != null)
             {
                 AVerificationResultCollection.Remove(ValidationColumn);
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                ValidPartner = false;
             }
 
             // 'Gift amount must be non-zero
@@ -465,7 +479,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
-            // If recipient is non-zero, field must also be non-zero
+            // If recipient is non-zero, field must also be non-zero. Only check for valid recipient keys.
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnRecipientLedgerNumberId];
             ValidationContext = String.Format("batch:{0} transaction:{1} detail:{2}",
                 ARow.BatchNumber,
@@ -474,7 +488,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if ((ARow.RecipientKey > 0) && (ARow.RecipientLedgerNumber == 0))
+                if ((ARow.RecipientKey > 0) && ValidPartner && (ARow.RecipientLedgerNumber == 0))
                 {
                     VerificationResult = TNumericalChecks.IsGreaterThanZero(ARow.RecipientLedgerNumber,
                         "Recipient field of " + ValidationContext + " is 0",
@@ -628,9 +642,17 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     if ((foundRow == null)
                         && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                             AContext,
-                            new TVerificationResult(ValidationContext,
+                            new TScreenVerificationResult(ValidationContext,
+                                ValidationColumn,
                                 String.Format(Catalog.GetString("Unknown cost centre code '{0}'."), ARow.CostCentreCode),
+                                ValidationControlsData.ValidationControl,
                                 TResultSeverity.Resv_Critical),
+
+/*
+ *                          new TVerificationResult(ValidationContext,
+ *                              String.Format(Catalog.GetString("Unknown cost centre code '{0}'."), ARow.CostCentreCode),
+ *                              TResultSeverity.Resv_Critical),
+ */
                             ValidationColumn))
                     {
                         VerifResultCollAddedCount++;
@@ -925,12 +947,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AVerificationResultCollection"></param>
         /// <param name="AValidationControlsDict"></param>
         /// <param name="AMethodOfGivingRef">Required for import validation</param>
-        /// <param name="AMethodOfPaymentRef">Required for import validation</param>
+        /// <param name="AMethodOfPaymentRef">Required for</param>
+        /// <param name="AFormLetterCodeTbl">Supplied in import validation</param>
         /// <returns></returns>
         public static bool ValidateGiftManual(object AContext, AGiftRow ARow, Int32 AYear, Int32 APeriod, Control AControl,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
             AMethodOfGivingTable AMethodOfGivingRef = null,
-            AMethodOfPaymentTable AMethodOfPaymentRef = null)
+            AMethodOfPaymentTable AMethodOfPaymentRef = null,
+            PFormTable AFormLetterCodeTbl = null)
         {
             DataColumn ValidationColumn;
             //TValidationControlsData ValidationControlsData;
@@ -955,7 +979,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
                 ARow.DonorKey, new TPartnerClass[] { }, true,
                 (isImporting) ? String.Empty : "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()),
-                ValidationContext, ValidationColumn, null);
+                AContext, ValidationColumn, null);
 
             if (VerificationResult != null)
             {
@@ -1031,6 +1055,24 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         new TVerificationResult(ValidationContext,
                             String.Format(Catalog.GetString("Unknown method of payment code '{0}'."),
                                 ARow.MethodOfPaymentCode),
+                            TResultSeverity.Resv_Critical),
+                        ValidationColumn))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            // If supplied, Receipt Letter Code must be a name specified in PForm.
+
+            if (!ARow.IsReceiptLetterCodeNull() && (AFormLetterCodeTbl != null))
+            {
+                AFormLetterCodeTbl.DefaultView.RowFilter = String.Format("p_form_name_c='{0}'", ARow.ReceiptLetterCode);
+
+                if ((AFormLetterCodeTbl.DefaultView.Count == 0) && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                        AContext,
+                        new TVerificationResult(ValidationContext,
+                            String.Format(Catalog.GetString("Unknown Letter Code '{0}'."),
+                                ARow.ReceiptLetterCode),
                             TResultSeverity.Resv_Critical),
                         ValidationColumn))
                 {
@@ -1160,7 +1202,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
                 ARow.DonorKey, new TPartnerClass[] { }, true,
-                "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()), ValidationContext, ValidationColumn, null);
+                "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()), AContext, ValidationColumn, null);
 
             if (VerificationResult != null)
             {
@@ -1199,6 +1241,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             TVerificationResult VerificationResult = null;
             object ValidationContext;
             int VerifResultCollAddedCount = 0;
+            bool ValidPartner = true;
 
             // Don't validate deleted DataRows
             if (ARow.RowState == DataRowState.Deleted)
@@ -1215,12 +1258,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
                 ARow.RecipientKey, new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT }, true,
-                "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()), ValidationContext, ValidationColumn, null);
+                "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()), AContext, ValidationColumn, null);
 
             if (VerificationResult != null)
             {
                 AVerificationResultCollection.Remove(ValidationColumn);
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                ValidPartner = false;
             }
 
             // 'Gift amount must be non-zero
@@ -1243,7 +1287,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
-            // If recipient is non-zero, field must also be non-zero
+            // If recipient is non-zero, field must also be non-zero. Only check for valid recipient keys.
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnRecipientLedgerNumberId];
             ValidationContext = String.Format("batch:{0} transaction:{1} detail:{2}",
                 ARow.BatchNumber,
@@ -1252,7 +1296,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if ((ARow.RecipientKey > 0) && (ARow.RecipientLedgerNumber == 0))
+                if ((ARow.RecipientKey > 0) && ValidPartner && (ARow.RecipientLedgerNumber == 0))
                 {
                     VerificationResult = TNumericalChecks.IsGreaterThanZero(ARow.RecipientLedgerNumber,
                         "Recipient field of " + ValidationContext + " is 0",

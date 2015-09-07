@@ -42,6 +42,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
     public partial class TFrmPartnerByField
     {
+        private DataTable FFieldTable;
+
         private void InitializeManualCode()
         {
             // enable autofind in list for first character (so the user can press character to find list entry)
@@ -56,13 +58,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                                                 SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
 
             // populate list with data to be loaded
-            this.LoadListData("");
+            this.LoadListData();
 
             // TODO: At the moment this group box is not needed as we currently only consider commitments. "Worker Field" does not exist
             // any longer. If in the future "Gift Destination" (as replacement for "Worker Field") for this extract becomes important
             // then this group box needs to be modified and displayed accordingly.
             rbtCommitmentsOnly.Checked = true;
             rgrCommitmentsOnly.Visible = false;
+
+            // catch enter key when using text box
+            txtFilterFields.KeyDown += txtFilterFields_KeyDown;
+
+            // manually fix tab order
+            pnlMiddle.TabIndex = 1;
+            pnlFilter.TabIndex = 0;
+            this.ActiveControl = txtFilterFields;
         }
 
         /// <summary>
@@ -77,34 +87,45 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             }
         }
 
-        private void LoadListData(string AFilter)
+        private void LoadListData()
         {
             string CheckedMember = "CHECKED";
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
             string DisplayMember = PUnitTable.GetUnitNameDBName();
             PUnitTable Table;
 
-            Table = TRemote.MPartner.Partner.WebConnectors.GetActiveFieldUnits(AFilter);
+            Table = TRemote.MPartner.Partner.WebConnectors.GetActiveFieldUnits();
 
             DataView view = new DataView(Table);
-
-            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
-            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+            FFieldTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+            FFieldTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
             clbField.Columns.Clear();
-            clbField.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            clbField.AddTextColumn(Catalog.GetString("Field Name"), NewTable.Columns[DisplayMember], 240);
-            clbField.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 100);
+            clbField.AddCheckBoxColumn("", FFieldTable.Columns[CheckedMember], 17, false);
+            clbField.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns[DisplayMember]);
+            clbField.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), FFieldTable.Columns[ValueMember]);
 
-            clbField.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
+            clbField.DataBindGrid(FFieldTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
 
             //TODO: only temporarily until settings file exists
             clbField.SetCheckedStringList("");
         }
 
+        private void txtFilterFields_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                FilterList(sender, null);
+            }
+        }
+
         private void FilterList(System.Object sender, EventArgs e)
         {
-            LoadListData(txtFilter.Text);
+            DataView view = new DataView(FFieldTable);
+
+            view.RowFilter = PUnitTable.GetUnitNameDBName() + " LIKE '" + txtFilterFields.Text + "%'";
+
+            clbField.DataBindGrid(view.ToTable(), PUnitTable.GetUnitNameDBName(), "CHECKED", PUnitTable.GetPartnerKeyDBName(), false, true, false);
         }
 
         private void FieldDatesSelectionChanged(System.Object sender, EventArgs e)
@@ -116,24 +137,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             }
         }
 
-        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
-        {
-            if (clbField.GetCheckedStringList().Length == 0)
-            {
-                TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("Select at least one Field"),
-                    Catalog.GetString("Please select at least one Field as otherwise the Extract cannot be created!"),
-                    TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationResult);
-            }
-        }
-
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (rbtNow.Checked)
             {
                 ACalc.AddParameter("param_from_date", DateTime.Today.Date);
                 ACalc.AddParameter("param_until_date", DateTime.Today.Date);
+            }
+
+            if (clbField.GetCheckedStringList().Length == 0)
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("Generate Extract"),
+                    Catalog.GetString("Please select at least one Field!"),
+                    TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
         }
     }

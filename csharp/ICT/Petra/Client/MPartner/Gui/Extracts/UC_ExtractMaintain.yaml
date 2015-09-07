@@ -26,7 +26,7 @@ RootNode:
                 txtPartnerShortName: {Label=Partner Name}
         pnlButtons:
             Dock: Bottom
-            Controls: [btnAdd, btnDelete, btnEdit]
+            Controls: [btnAdd, btnDeleteRow, btnEdit]
             ControlsOrientation: horizontal
         btnEdit: {Width=100}
             Label: Edit Partner
@@ -34,9 +34,10 @@ RootNode:
         btnAdd: {Width=100}
             Label: Add Partner
             Action: actAdd
-        btnDelete: {Width=100}
+        btnDeleteRow: {Width=100}
             Label: Delete
             Action: actDelete
+            Tooltip: Click to delete the highlighted record(s)
         grdDetails:
             Dock: Fill
             Columns: []

@@ -2,6 +2,8 @@
     BaseYaml: FinanceReportingForm.yaml
     FormType: report
     FormTitle: Recipient by Field
+    WindowWidth: 500
+    WindowHeight: 600
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
         CALCULATEFROMMETHOD: Ict.Petra.Server.MFinance.queries.QueryRecipientByField.CalculateExtract
@@ -25,15 +27,18 @@
             Controls: [pnlFilter, clbLedger, pnlBottom]
         pnlFilter: {ControlsOrientation=horizontal}
             Dock: Top
-            Controls: [txtFilter, btnFilter]
+            Controls:
+                Row0: [chkAllLedgers]
+                Row1: [txtFilterFields, btnFilter]
         pnlBottom:
             Dock: Bottom
-            Controls: [dtpDateFrom, dtpDateTo, chkAllLedgers]
+            Controls:
+                Row0: [dtpDateFrom, dtpDateTo]
         clbLedger:
             Dock: Fill
             NoLabel: true 
             ParameterName: param_ledgers
-        txtFilter:
+        txtFilterFields:
             NoLabel: true
             Width: 300
         btnFilter:
@@ -45,5 +50,6 @@
             Label: To
             ParameterName: param_date_to
         chkAllLedgers: {CheckBoxAttachedLabel=right}
-            Label: Select all ledgers (ignore selection in list above)
+            Label: Select all ledgers (ignore selection in list below)
             ParameterName: param_all_ledgers
+            OnChange: ChkAllLedgersChanged

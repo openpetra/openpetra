@@ -52,7 +52,13 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             if (DataChangedFlag)
             {
-                FTemplateTable.Merge(TRemote.MReporting.WebConnectors.SaveTemplates(FTemplateTable));
+                SReportTemplateTable Tbl = TRemote.MReporting.WebConnectors.SaveTemplates(FTemplateTable);
+
+                if (Tbl != null)
+                {
+                    FTemplateTable.Merge(Tbl);
+                }
+
                 DataChangedFlag = false;
             }
 

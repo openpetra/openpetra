@@ -356,7 +356,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This property may be used to read the width of the Label.
+        /// This property may be used to get the width of the Label.
         ///
         /// </summary>
         public int LabelWidth

@@ -86,7 +86,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             FCommitmentStatusTable.DefaultView.AllowDelete = false;
 
             grdCommitmentStatusChoices.DataSource = new DevAge.ComponentModel.BoundDataView(FCommitmentStatusTable.DefaultView);
-            grdCommitmentStatusChoices.AutoSizeCells();
+            grdCommitmentStatusChoices.AutoResizeGrid();
             #endregion
         }
 
@@ -136,6 +136,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         {
             ACalc.AddParameter("param_field_sending", txtFieldSending.Text);
             ACalc.AddParameter("param_field_receiving", txtFieldReceiving.Text);
+            ACalc.AddParameter("param_all_partners", rbtAllPartners.Checked);
         }
 
         /// <summary>
@@ -174,16 +175,24 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 txtFieldSending.Text = AProperties.Get("param_field_sending").ToString();
             }
 
-            chkCommitmentStatus_Changed(chkCommitmentStatus, null);
+            if (AProperties.Get("param_all_partners").ToBool())
+            {
+                rbtAllPartners.Checked = true;
+            }
+            else
+            {
+                rbtSelectedCommitmentStatus.Checked = true;
+            }
         }
 
         /// <summary>
         /// Disable or enable the commitments selection group depending
         /// on if the user wants this group to affect his query.
         /// </summary>
-        private void chkCommitmentStatus_Changed(Object sender, EventArgs e)
+        private void CommitmentStatus_Changed(Object sender, EventArgs e)
         {
-            grpCommitmentStatuses.Enabled = ((System.Windows.Forms.CheckBox)sender).Checked;
+            grdCommitmentStatusChoices.Enabled = rbtSelectedCommitmentStatus.Checked;
+            pnlBottomCommitmentStatuses.Enabled = rbtSelectedCommitmentStatus.Checked;
         }
     }
 }

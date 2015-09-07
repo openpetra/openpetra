@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 {
                     TFinanceControls.InitialiseAccountList(ref cmbFromAccountCode, FLedgerNumber, true, false, false, false);
                     TFinanceControls.InitialiseAccountList(ref cmbToAccountCode, FLedgerNumber, true, false, false, false);
-                    cmbFromAccountCode.SelectedIndex = 1;
+                    cmbFromAccountCode.SelectedIndex = (cmbFromAccountCode.Count == 0) ? -1 : 0;
                     cmbToAccountCode.SelectedIndex = cmbToAccountCode.Count - 1;
                 }
 
@@ -106,7 +106,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 {
                     TFinanceControls.InitialiseCostCentreList(ref cmbFromCostCentre, FLedgerNumber, true, false, false, false);
                     TFinanceControls.InitialiseCostCentreList(ref cmbToCostCentre, FLedgerNumber, true, false, false, false);
-                    cmbFromCostCentre.SelectedIndex = 1;
+                    cmbFromCostCentre.SelectedIndex = (cmbFromCostCentre.Count == 0) ? -1 : 0;
                     cmbToCostCentre.SelectedIndex = cmbToCostCentre.Count - 1;
                 }
 

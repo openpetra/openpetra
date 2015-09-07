@@ -86,12 +86,11 @@ namespace Ict.Petra.Server.App.Delegates
 
             TSharedValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TPartnerServerLookups.VerifyPartner;
+            TSharedPartnerValidationHelper.PartnerIsLinkedToCCDelegate = @TPartnerServerLookups.PartnerIsLinkedToCC;
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookups.GetCurrentPostingRangeDates;
             TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
             TMonthEnd.StewardshipCalculationDelegate = @TStewardshipCalculationWebConnector.PerformStewardshipCalculation;
             TGLPosting.PrintReportOnClientDelegate = @TReportingWebConnector.GenerateReportOnClient;
-            TIntranetExportWebConnector.GetPrimaryEmailAndPrimaryPhoneDelegate = @TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhone;
-            TIntranetExportWebConnector.GetWithinOrganisationEmailDelegate = @TContactDetailsAggregate.GetWithinOrganisationEmailAddress;
 
             // Set up Delegates for retrieval of cacheable tables when called from Shared directories on server side
             CachePopulatorCommon = new Ict.Petra.Server.MCommon.Cacheable.TCacheable();

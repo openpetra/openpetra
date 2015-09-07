@@ -23,35 +23,30 @@
 //
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
-using System.Text;
 
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
-using Ict.Petra.Server.MCommon;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Server.MSysMan.Data.Access;
+
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
+using Ict.Petra.Server.MFinance.GL.WebConnectors;
+
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Account.Validation;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Server.MFinance.GL.WebConnectors;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Server.MFinance.Common;
-using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
@@ -193,7 +188,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(LedgerNumber, transaction);
                         ACurrencyTable CurrencyTable = ACurrencyAccess.LoadAll(transaction);
 
-                        AAnalysisTypeAccess.LoadAll(SetupDS, transaction);
+                        AAnalysisTypeAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
                         AFreeformAnalysisAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
                         AAnalysisAttributeAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
                         ACostCentreAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
@@ -259,7 +254,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                     if (NewBatch != null)   // update the totals of the batch that has just been imported
                                     {
-                                        GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
+                                        GLRoutines.UpdateBatchTotals(ref MainDS, ref NewBatch);
 
                                         if (TVerificationHelper.IsNullOrOnlyNonCritical(Messages))
                                         {
@@ -712,7 +707,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         if (NewBatch != null)
                         {
-                            GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
+                            GLRoutines.UpdateBatchTotals(ref MainDS, ref NewBatch);
                         }
 
                         ImportMessage = Catalog.GetString("Saving changes to batch");
@@ -887,7 +882,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         // Load supplementary tables that we are going to need for validation
                         ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-                        AAnalysisTypeAccess.LoadAll(SetupDS, Transaction);
+                        AAnalysisTypeAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                         AFreeformAnalysisAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                         AAnalysisAttributeAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                         ACostCentreAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
@@ -1042,7 +1037,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         // update the totals of the batch that has just been imported
                         ImportMessage = Catalog.GetString("Saving changes to totals");
-                        GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatchRow);
+                        GLRoutines.UpdateBatchTotals(ref MainDS, ref NewBatchRow);
 
                         ImportMessage = Catalog.GetString("Saving journal totals");
                         AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
@@ -1209,7 +1204,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     // Errors are recorded on-the-fly but are marked as non-critical
                     if (gotType && gotValue)
                     {
-                        DataRow atrow = ASetupDS.AAnalysisType.Rows.Find(new Object[] { analysisType });
+                        DataRow atrow = ASetupDS.AAnalysisType.Rows.Find(new Object[] { NewTransaction.LedgerNumber, analysisType });
                         DataRow afrow = ASetupDS.AFreeformAnalysis.Rows.Find(new Object[] { NewTransaction.LedgerNumber, analysisType, analysisValue });
                         AAnalysisAttributeRow anrow = (AAnalysisAttributeRow)ASetupDS.AAnalysisAttribute.Rows.Find(
                             new Object[] { NewTransaction.LedgerNumber, analysisType, NewTransaction.AccountCode });

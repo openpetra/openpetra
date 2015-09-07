@@ -49,6 +49,8 @@ compat:
         nant dumpDatabase -D:file=test.sql
   loadDatabase: load the database from a db specific dump
         nant loadDatabase -D:file=test.sql
+  loadTestDatabase: test load the database from a db specific dump
+        nant loadTestDatabase -D:file=test.sql
   loadDatabaseFromBackup: load the database from a backup
         (includes table specification)
   generateORM: generates Object Relational Mapping routines from petra.xml

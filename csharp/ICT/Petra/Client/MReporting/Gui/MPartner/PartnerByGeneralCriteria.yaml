@@ -2,8 +2,8 @@ RootNode:
     BaseYaml: PartnerReportingForm.yaml
     FormType: report
     FormTitle: Partner By General Criteria
-    WindowWidth: 750
-    WindowHeight: 600
+    WindowWidth: 765
+    WindowHeight: 580
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     TemplateParameters:
         CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByGeneralCriteria.CalculateExtract
@@ -19,7 +19,7 @@ RootNode:
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
-        tpgGeneralSettings:
+        tpgGeneralSettings: 
             Label: General Settings
             Controls: 
                 Row0: [pnlLeft, pnlRight]
@@ -34,6 +34,7 @@ RootNode:
                 Row0: [ucoChkFilter]
                 Row1: [grpLocationType]
         grpPartnerInfo: {NoLabel=true}
+            Width: 490
             Controls:
                 Row0: [cmbPartnerClass]
                 Row1: [cmbDenomination]
@@ -41,20 +42,21 @@ RootNode:
                 Row3: [cmbLanguage]
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
-            Width: 300
-            Height: 100
+            Width: 230
+            Height: 120
         grpLocationType:
             Controls: [clbLocationType]
         clbLocationType:
             NoLabel: true 
             ParameterName: param_location_type
-            Width: 200
-            Height: 300
+            Width: 210
+            Height: 315
         ucoAddress:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
-            Width: 500
+            Width: 490
             Height: 220
         grpRecordModification: {NoLabel=true}
+            Width: 490
             Controls:
                 Row0: [cmbUserCreated]
                 Row1: [dtpCreatedFrom, dtpCreatedTo]

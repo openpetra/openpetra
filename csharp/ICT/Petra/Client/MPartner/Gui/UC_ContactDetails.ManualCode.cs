@@ -1878,9 +1878,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     if (keyData == (Keys.F8 | Keys.Shift))
                     {
-                        // Select 'Lync'
+                        // Select 'Skype for Business'
                         cmbContactCategory.cmbCombobox.SetSelectedString("Instant Messaging & Chat");
-                        cmbContactType.cmbCombobox.SetSelectedString("Lync");
+                        cmbContactType.cmbCombobox.SetSelectedString("Skype for Business");
                     }
                     else
                     {

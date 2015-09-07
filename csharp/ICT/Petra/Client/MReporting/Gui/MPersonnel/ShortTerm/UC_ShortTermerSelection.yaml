@@ -39,6 +39,7 @@ RootNode:
             NoLabel: true
         lblEventName:
             Text: 
+            Width: 400
         rbtThisEventOnly:
             Label: Consider this event only
             OnChange: rbtEventSelectionChanged

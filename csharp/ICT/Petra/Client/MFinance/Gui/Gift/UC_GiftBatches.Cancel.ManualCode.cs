@@ -71,16 +71,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns></returns>
         public bool CancelBatch(AGiftBatchRow ACurrentBatchRow)
         {
+            //Assign default value(s)
+            bool CancellationSuccessful = false;
+
             string CancelMessage = string.Empty;
             string CompletionMessage = string.Empty;
-            string ExistingBatchStatus = string.Empty;
-            decimal ExistingBatchTotal = 0;
 
             List <string>ModifiedDetailKeys = new List <string>();
 
             if ((ACurrentBatchRow == null) || (ACurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
-                return false;
+                return CancellationSuccessful;
             }
 
             CancelMessage = String.Format(Catalog.GetString("Are you sure you want to cancel gift batch number: {0}?"),
@@ -92,23 +93,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                      MessageBoxIcon.Question,
                      MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
             {
-                return false;
+                return CancellationSuccessful;
             }
 
-            // first save any changes
-            if (!FMyForm.SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction.CANCELLING))
-            {
-                return false;
-            }
+            //Backup the Dataset for reversion purposes
+            GiftBatchTDS BackupMainDS = (GiftBatchTDS)FMainDS.Copy();
+            BackupMainDS.Merge(FMainDS);
 
             try
             {
+                FMyForm.Cursor = Cursors.WaitCursor;
+
                 //Normally need to set the message parameters before the delete is performed if requiring any of the row values
                 CompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
                     ACurrentBatchRow.BatchNumber);
 
-                ExistingBatchTotal = ACurrentBatchRow.BatchTotal;
-                ExistingBatchStatus = ACurrentBatchRow.BatchStatus;
+                FMyForm.GetBatchControl().UndoModifiedBatchRow(ACurrentBatchRow, true);
 
                 //Load all journals for current Batch
                 //clear any transactions currently being editied in the Transaction Tab
@@ -120,7 +120,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //Load tables afresh
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactionsForBatch(FLedgerNumber, ACurrentBatchRow.BatchNumber));
-
                 FMainDS.AcceptChanges();
 
                 //Delete gift details
@@ -145,19 +144,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ACurrentBatchRow.BatchTotal = 0;
                 ACurrentBatchRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
 
-                FPetraUtilsObject.SetChangedFlag();
-
                 // save first
-                if (!FMyForm.SaveChanges())
-                {
-                    //Should normally be Unposted, but allow for other status values in future
-                    ACurrentBatchRow.BatchTotal = ExistingBatchTotal;
-                    ACurrentBatchRow.BatchStatus = ExistingBatchStatus;
-
-                    // saving failed, therefore do not try to cancel
-                    MessageBox.Show(Catalog.GetString("The cancelled batch failed to save!"));
-                }
-                else
+                if (FMyForm.SaveChanges())
                 {
                     TRemote.MFinance.Gift.WebConnectors.RemoveModifiedDetailOnCancel(FLedgerNumber, ModifiedDetailKeys);
 
@@ -166,17 +154,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                 }
+                else
+                {
+                    throw new Exception(Catalog.GetString("The batch failed to save after being cancelled! Reopen the form and retry."));
+                }
+
+                CancellationSuccessful = true;
             }
             catch (Exception ex)
             {
                 CompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
+                MessageBox.Show(CompletionMessage,
                     "Cancellation Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
+
+                //Revert to previous state
+                FMainDS.Merge(BackupMainDS);
+            }
+            finally
+            {
+                FMyForm.Cursor = Cursors.Default;
             }
 
-            return false;
+            return CancellationSuccessful;
         }
 
         #endregion

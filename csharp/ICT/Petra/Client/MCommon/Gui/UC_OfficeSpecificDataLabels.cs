@@ -718,6 +718,8 @@ namespace Ict.Petra.Client.MCommon.Gui
                     LookupValueEditor.Text = "";
                 }
 
+                LookupValueEditor.cmbCombobox.AllowBlankValue = true;
+
                 // enable save button in editor when cell contents have changed
                 LookupValueEditor.SelectedValueChanged += new EventHandler(this.ControlValueHasChanged);
                 LookupValueEditor.TextChanged += new EventHandler(this.ControlValueHasChanged);

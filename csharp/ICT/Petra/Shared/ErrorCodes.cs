@@ -124,6 +124,12 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Form Data Warning")]
         public const String ERR_GENERAL_VERIFICATION_WARNING = "GEN.00011N";
 
+        /// <summary>File not found error.</summary>
+        [ErrCodeAttribute("File does not exist",
+             ErrorMessageText = "The specified file could not be found",
+             ErrorMessageTitle = "File Name or Path")]
+        public const String ERR_GENERAL_FILE_NOT_FOUND = "GEN.00012V";
+
         #endregion
 
         #region Conference Module-specific error codes
@@ -171,7 +177,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>Suspense accounts exist despite disabling suspense accounts for a ledger.</summary>
         [ErrCodeAttribute("Suspense Accounts in use.",
-             ErrorMessageText = "The use of suspense accounts cannot be	disabled because there are accounts	currently in use.")]
+             ErrorMessageText = "The use of suspense accounts cannot be disabled because there are accounts currently in use.")]
         public const String ERR_NO_SUSPENSE_ACCOUNTS_ALLOWED = "FIN.00001V";
 
         /// <summary>Too few forwarding periods.</summary>
@@ -201,7 +207,7 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Period {0} must end one day before the next period begins.")]
         public const String ERR_PERIOD_DATE_RANGE = "FIN.00006V";
 
-        /// <summary>Period date ranges need to make sure that there is no overlap and no gaps in calendar.</summary>
+        /// <summary>Incorrect period.</summary>
         [ErrCodeAttribute("Current Period incorrect.",
              ErrorMessageText = "Current Period cannot be greater than Number of Periods.")]
         public const String ERR_CURRENT_PERIOD_TOO_LATE = "FIN.00007V";
@@ -221,19 +227,19 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "The amount '{0}' is too large. An individual amount cannot be greater than the total amount.")]
         public const String ERR_AMOUNT_TOO_LARGE = "FIN.00010V";
 
-        /// <summary>Allocation journal.</summary>
+        /// <summary>Incorrect percentage.</summary>
         [ErrCodeAttribute("Percentage is above 100%.",
              ErrorMessageText = "Percentage cannot be greater than 100%.")]
         public const String ERR_PERCENTAGE_TOO_LARGE = "FIN.00011V";
 
-        /// <summary>Warning message that two exchange rates differ by more than 10%.</summary>
+        /// <summary>Warning duplicate exchange rate.</summary>
         [ErrCodeAttribute("Duplicate exchange rate for currencies and date.",
              ErrorMessageText =
                  "There is already a row for this currency pair at the same rate for this date.")
         ]
         public const String ERR_EXCH_RATE_IS_DUPLICATE = "FIN.000012N";
 
-        /// <summary>Warning message that two exchange rates differ by more than 10%.</summary>
+        /// <summary>Warning message that the recipient's field is not an ILT ledger.</summary>
         [ErrCodeAttribute("Invalid Data Entered",
              ErrorMessageText =
                  "The recipient's field,  {0} ({1}), is not set up for inter-ledger transfers. Please set it up as an ILT ledger first.")
@@ -464,6 +470,42 @@ namespace Ict.Petra.Shared
         ]
         public const String ERR_OFFICE_PHONE_NR_SET_BUT_NOT_AMONG_PHONE_NRS = "PARTN.00051V";
 
+        /// <summary>The Address Block text has mis-matched tags.</summary>
+        [ErrCodeAttribute("Address Block text contains an unknown data placeholder",
+             ErrorMessageText =
+                 "The text in the Address Block contains an unknown data placeholder.")]
+        public const String ERR_ADDRESS_BLOCK_HAS_UNKNOWN_PLACEHOLDER = "PARTN.00052V";
+
+        /// <summary>The Address Block text has mis-matched tags.</summary>
+        [ErrCodeAttribute("Address Block text has mismatched tags",
+             ErrorMessageText =
+                 "The text in the Address Block has mis-matched opening and closing tags ([[ and ]]).")]
+        public const String ERR_ADDRESS_BLOCK_HAS_MISMATCHED_TAGS = "PARTN.00053V";
+
+        /// <summary>The Address Block text has mis-matched tags.</summary>
+        [ErrCodeAttribute("Address Block text does not contain any data placeholders",
+             ErrorMessageText =
+                 "The text in the Address Block has no data placeholders identified with [[ and ]] tags.")]
+        public const String ERR_ADDRESS_BLOCK_HAS_NO_DATA_PLACEHOLDERS = "PARTN.00054V";
+
+        /// <summary>The Address Block text has mis-matched tags.</summary>
+        [ErrCodeAttribute("Address Block text only contains Print Directive placeholders",
+             ErrorMessageText =
+                 "The text in the Address Block only contains 'Print Directive' placeholders but no data placeholders.")]
+        public const String ERR_ADDRESS_BLOCK_ONLY_HAS_DIRECTIVE_PLACEHOLDERS = "PARTN.00055V";
+
+        /// <summary>The Address Block text has no matching CapsOff.</summary>
+        [ErrCodeAttribute("Address Block text has CapsOn but no matching CapsOff",
+             ErrorMessageText =
+                 "The Address Block contains 'CapsOn' with no matching 'CapsOff'.")]
+        public const String ERR_ADDRESS_BLOCK_HAS_NO_MATCHING_CAPS_OFF = "PARTN.00056V";
+
+        /// <summary>Gift recipient must be linked to Cost Centre</summary>
+        [ErrCodeAttribute("Gift recipient must be linked to Cost Centre",
+             ErrorMessageText =
+                 "The Partner Key specified is not linked to a Cost Centre.")
+        ]
+        public const String ERR_PARTNER_MUST_BE_CC = "PARTN.00057V";
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>
@@ -495,6 +537,24 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Cannot have an end date without setting status to 'CANCELLED' or 'EXPIRED'.",
              ErrorMessageTitle = "Clear Date Ended")]
         public const String ERR_SUBSCRIPTION_DATEENDEDSET_WHEN_ACTIVE = "PARTN.00012V";
+
+        /// <summary>Salutations containing an open N tag must have a closing tag.</summary>
+        [ErrCodeAttribute("Salutation Close Tag",
+             ErrorMessageText = "The Salutation has a <N start tag but no matching closing < tag.",
+             ErrorMessageTitle = "Incorrect Salutation Format")]
+        public const String ERR_MISSING_CLOSE_TAG_IN_SALUTATION = "PARTN.00013N";
+
+        /// <summary>Salutations containing an open N tag cannot contain duplicate modifiers.</summary>
+        [ErrCodeAttribute("Duplicate Salutation Tag",
+             ErrorMessageText = "The Salutation has a duplicate modifier following the <N start tag.",
+             ErrorMessageTitle = "Incorrect Salutation Format")]
+        public const String ERR_DUPLICATE_MODIFIER_TAG_IN_SALUTATION = "PARTN.00014N";
+
+        /// <summary>Salutations containing an open N tag can only use known modifiers.</summary>
+        [ErrCodeAttribute("Unknown Salutation Tag",
+             ErrorMessageText = "The Salutation has an unknown modifier following the <N start tag. Valid modifiers are T, P, I, F and A.",
+             ErrorMessageTitle = "Incorrect Salutation Format")]
+        public const String ERR_UNKNOWN_MODIFIER_TAG_IN_SALUTATION = "PARTN.00015N";
 
         #endregion
 

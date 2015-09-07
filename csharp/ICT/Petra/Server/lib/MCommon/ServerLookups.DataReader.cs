@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Collections.Specialized;
 using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
@@ -120,7 +121,7 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     }
                     else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                     {
-                        tempTable = AAnalysisTypeAccess.LoadAll(ReadTransaction);
+                        tempTable = AAnalysisTypeAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
                     }
                     else if (ATablename == AGiftBatchTable.GetTableDBName())
                     {
@@ -173,6 +174,22 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     {
                         tempTable = PcDiscountAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
                     }
+                    else if (ATablename == PFormTable.GetTableDBName())
+                    {
+                        string[] columns = TTypedDataTable.GetColumnStringList(PFormTable.TableId);
+                        StringCollection fieldList = new StringCollection();
+
+                        for (int i = 0; i < columns.Length; i++)
+                        {
+                            // Do not load the template document - we don't display it and it is big!
+                            if (columns[i] != PFormTable.GetTemplateDocumentDBName())
+                            {
+                                fieldList.Add(columns[i]);
+                            }
+                        }
+
+                        tempTable = PFormAccess.LoadAll(fieldList, ReadTransaction);
+                    }
                     else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                     {
                         tempTable = PInternationalPostalTypeAccess.LoadAll(ReadTransaction);
@@ -180,6 +197,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     else if (ATablename == PtApplicationTypeTable.GetTableDBName())
                     {
                         tempTable = PtApplicationTypeAccess.LoadAll(ReadTransaction);
+                    }
+                    else if (ATablename == PFormalityTable.GetTableDBName())
+                    {
+                        tempTable = PFormalityAccess.LoadAll(ReadTransaction);
                     }
                     else if (ATablename == PMailingTable.GetTableDBName())
                     {
@@ -290,6 +311,12 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                                 // The method is not required for changes made to the journal screens, which use a TDS
                                 AJournalAccess.SubmitChanges((AJournalTable)SubmitTable, SubmitChangesTransaction);
                             }
+                            else if (ATablename == ARecurringJournalTable.GetTableDBName())
+                            {
+                                // This method is called from Submit Recurring GL Batch form - please do not remove
+                                // The method is not required for changes made to the journal screens, which use a TDS
+                                ARecurringJournalAccess.SubmitChanges((ARecurringJournalTable)SubmitTable, SubmitChangesTransaction);
+                            }
                             else if (ATablename == ALedgerTable.GetTableDBName())
                             {
                                 // This method is called from ADailyExchangeRate Testing - please do not remove
@@ -349,6 +376,14 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                                     TCacheablePersonTablesEnum.EventApplicationTypeList.ToString());
                                 TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                                     TCacheablePersonTablesEnum.FieldApplicationTypeList.ToString());
+                            }
+                            else if (ATablename == PFormTable.GetTableDBName())
+                            {
+                                PFormAccess.SubmitChanges((PFormTable)SubmitTable, SubmitChangesTransaction);
+                            }
+                            else if (ATablename == PFormalityTable.GetTableDBName())
+                            {
+                                PFormalityAccess.SubmitChanges((PFormalityTable)SubmitTable, SubmitChangesTransaction);
                             }
                             else if (ATablename == PMailingTable.GetTableDBName())
                             {

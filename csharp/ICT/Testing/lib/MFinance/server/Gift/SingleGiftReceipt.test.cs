@@ -100,6 +100,7 @@ namespace Tests.MFinance.Server.Gift
 
             TLanguageCulture.SetLanguageAndCulture("de-DE", "de-DE");
 
+            //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
             string receipts =
                 TReceiptingWebConnector.CreateAnnualGiftReceipts(FLedgerNumber,
                     new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31), FileContent);

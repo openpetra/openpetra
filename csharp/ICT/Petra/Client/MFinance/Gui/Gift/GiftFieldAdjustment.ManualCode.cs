@@ -149,8 +149,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AGiftBatchDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetLedgerNumberDBName() + " ASC, " +
                                                        AGiftBatchTable.GetCurrencyCodeDBName() + " ASC, " +
                                                        AGiftBatchTable.GetBankCostCentreDBName() + " ASC, " +
-                                                       AGiftBatchTable.GetBankAccountCodeDBName() + " ASC, " + AGiftBatchTable.GetGiftTypeDBName() +
-                                                       " ASC";
+                                                       AGiftBatchTable.GetBankAccountCodeDBName() + " ASC, " +
+                                                       AGiftBatchTable.GetGiftTypeDBName() + " ASC";
 
             GiftBatchTDS NewGiftDS = new GiftBatchTDS();
             NewGiftDS.AGiftDetail.Merge(new GiftBatchTDSAGiftDetailTable());
@@ -192,6 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 // if this is the last batch or if the next batch's gifts need to be added to a different new batch
                 if ((NextGiftBatch == null)
+                    || (NextGiftBatch.LedgerNumber != OldGiftBatch.LedgerNumber)
                     || (NextGiftBatch.CurrencyCode != OldGiftBatch.CurrencyCode)
                     || (NextGiftBatch.BankCostCentre != OldGiftBatch.BankCostCentre)
                     || (NextGiftBatch.BankAccountCode != OldGiftBatch.BankAccountCode)
@@ -210,10 +211,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         AdjustForm.GiftMainDS = NewGiftDS;
                         AdjustForm.NoReceipt = ANoReceipt;
 
+                        AdjustForm.AddBatchDetailsToScreen(OldGiftBatch.LedgerNumber, OldGiftBatch.CurrencyCode,
+                            OldGiftBatch.BankCostCentre, OldGiftBatch.BankAccountCode, OldGiftBatch.GiftType);
+
                         if (ANewPct != null)
                         {
                             AdjustForm.AddParam("Function", GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust);
                             AdjustForm.AddParam("NewPct", ANewPct);
+
+                            // gift destination must be the original for tax deduct pct adjustments
+                            AdjustForm.AddParam("FixedGiftDestination", true);
+
+                            // comments will be auto completed
+                            AdjustForm.AutoCompleteComments();
                         }
                         else
                         {

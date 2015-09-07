@@ -28,6 +28,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
@@ -126,16 +127,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             if (TRemote.MPartner.Partner.WebConnectors.CreateEmptyExtract(ref ExtractId,
                     ExtractName, ExtractDescription))
             {
-                // refresh extract master screen if it is open
-                TFormsMessage BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcExtractCreated);
-                BroadcastMessage.SetMessageDataName(ExtractName);
-                TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
-
-                // now open Screen for new extract so user can add partner records manually
-                TFrmExtractMaintain frm = new TFrmExtractMaintain(AParentForm);
-                frm.ExtractId = ExtractId;
-                frm.ExtractName = ExtractName;
-                frm.Show();
+                NewExtractCreated(ExtractName, ExtractId, AParentForm);
             }
             else
             {
@@ -154,6 +146,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="AParentForm"></param>
         public static void FamilyMembersExtract(Form AParentForm)
         {
+            CreateFamilyMembersExtract(AParentForm, null);
+        }
+
+        /// <summary>
+        /// Guide user through process to create extract which contains all family member records (Persons)
+        /// of families and persons in a base extract.
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        /// <param name="AExtractMasterRow"></param>
+        public static void CreateFamilyMembersExtract(Form AParentForm, MExtractMasterRow AExtractMasterRow)
+        {
             TFrmExtractFindDialog ExtractFindDialog = new TFrmExtractFindDialog(AParentForm);
             TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(AParentForm);
             int BaseExtractId = 0;
@@ -163,20 +166,40 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             string ExtractName;
             string ExtractDescription;
 
-            // inform user what this extract is about and what will happen
-            MessageBox.Show(Catalog.GetString("Please select an existing Extract with the Find Screen that follows.\r\n\r\n" +
-                    "The new Extract will contain all Family Members (Persons) of the Families" +
-                    " that exist in the selected Extract."),
-                Catalog.GetString("Generate Family Members Extract"),
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            if (AExtractMasterRow != null)
+            {
+                BaseExtractId = AExtractMasterRow.ExtractId;
 
-            // let the user select base extract
-            ExtractFindDialog.ShowDialog(true);
+                // inform user what this extract is about and what will happen
+                if (MessageBox.Show(Catalog.GetString("A new Extract will be created that will contain all Family Members (Persons) " +
+                            "of the Families that exist in the Extract '" + AExtractMasterRow.ExtractName + "'."),
+                        Catalog.GetString("Generate Family Members Extract"),
+                        MessageBoxButtons.OKCancel,
+                        MessageBoxIcon.Information) == DialogResult.Cancel)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                // inform user what this extract is about and what will happen
+                if (MessageBox.Show(Catalog.GetString("Please select an existing Extract with the Find Screen that follows.\r\n\r\n" +
+                            "A new Extract will be created that will contain all Family Members (Persons) of the Families" +
+                            " that exist in the selected Extract."),
+                        Catalog.GetString("Generate Family Members Extract"),
+                        MessageBoxButtons.OKCancel,
+                        MessageBoxIcon.Information) == DialogResult.Cancel)
+                {
+                    return;
+                }
 
-            // get data for selected base extract
-            ExtractFindDialog.GetResult(out BaseExtractId, out BaseExtractName, out BaseExtractDescription);
-            ExtractFindDialog.Dispose();
+                // let the user select base extract
+                ExtractFindDialog.ShowDialog(true);
+
+                // get data for selected base extract
+                ExtractFindDialog.GetResult(out BaseExtractId, out BaseExtractName, out BaseExtractDescription);
+                ExtractFindDialog.Dispose();
+            }
 
             // only continue if a base extract was selected
             if (BaseExtractId >= 0)
@@ -200,11 +223,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 if (TRemote.MPartner.Partner.WebConnectors.CreateFamilyMembersExtract(BaseExtractId,
                         ref ExtractId, ExtractName, ExtractDescription))
                 {
-                    // now open Screen for new extract so user can see the result
-                    TFrmExtractMaintain frm = new TFrmExtractMaintain(AParentForm);
-                    frm.ExtractId = ExtractId;
-                    frm.ExtractName = ExtractName;
-                    frm.Show();
+                    NewExtractCreated(ExtractName, ExtractId, AParentForm);
                 }
                 else
                 {
@@ -218,11 +237,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Guide user through process to create extract which contains all family member records (Persons)
+        /// of families and persons in a base extract.
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        public static void FamilyExtractForPersons(Form AParentForm)
+        {
+            CreateFamilyMembersExtract(AParentForm, null);
+        }
+
+        /// <summary>
         /// Guide user through process to create extract which contains all family records of
         /// Persons in a base extract.
         /// </summary>
         /// <param name="AParentForm"></param>
-        public static void FamilyExtractForPersons(Form AParentForm)
+        /// <param name="AExtractMasterRow"></param>
+        public static void CreateFamilyExtractForPersons(Form AParentForm, MExtractMasterRow AExtractMasterRow)
         {
             TFrmExtractFindDialog ExtractFindDialog = new TFrmExtractFindDialog(AParentForm);
             TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(AParentForm);
@@ -233,20 +263,37 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             string ExtractName;
             string ExtractDescription;
 
-            // inform user what this extract is about and what will happen
-            MessageBox.Show(Catalog.GetString("Please select an existing Extract with the Find Screen that follows.\r\n\r\n" +
-                    "The new Extract will contain all Families of the Persons" +
-                    " that exist in the selected Extract."),
-                Catalog.GetString("Generate Family Extract for Persons"),
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            if (AExtractMasterRow != null)
+            {
+                BaseExtractId = AExtractMasterRow.ExtractId;
 
-            // let the user select base extract
-            ExtractFindDialog.ShowDialog(true);
+                // inform user what this extract is about and what will happen
+                if (MessageBox.Show(Catalog.GetString("A new Extract will be created that will contain all Families of the Persons" +
+                            " that exist in the Extract '" + AExtractMasterRow.ExtractName + "'."),
+                        Catalog.GetString("Generate Family Extract for Persons"),
+                        MessageBoxButtons.OKCancel,
+                        MessageBoxIcon.Information) == DialogResult.Cancel)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                // inform user what this extract is about and what will happen
+                MessageBox.Show(Catalog.GetString("Please select an existing Extract with the Find Screen that follows.\r\n\r\n" +
+                        "A new Extract will be created that will contain all Families of the Persons" +
+                        " that exist in the selected Extract."),
+                    Catalog.GetString("Generate Family Extract for Persons"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
 
-            // get data for selected base extract
-            ExtractFindDialog.GetResult(out BaseExtractId, out BaseExtractName, out BaseExtractDescription);
-            ExtractFindDialog.Dispose();
+                // let the user select base extract
+                ExtractFindDialog.ShowDialog(true);
+
+                // get data for selected base extract
+                ExtractFindDialog.GetResult(out BaseExtractId, out BaseExtractName, out BaseExtractDescription);
+                ExtractFindDialog.Dispose();
+            }
 
             // only continue if a base extract was selected
             if (BaseExtractId >= 0)
@@ -270,11 +317,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 if (TRemote.MPartner.Partner.WebConnectors.CreateFamilyExtractForPersons(BaseExtractId,
                         ref ExtractId, ExtractName, ExtractDescription))
                 {
-                    // now open Screen for new extract so user can see the result
-                    TFrmExtractMaintain frm = new TFrmExtractMaintain(AParentForm);
-                    frm.ExtractId = ExtractId;
-                    frm.ExtractName = ExtractName;
-                    frm.Show();
+                    NewExtractCreated(ExtractName, ExtractId, AParentForm);
                 }
                 else
                 {
@@ -296,6 +339,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             TFrmPartnerByContactLog frm = new TFrmPartnerByContactLog(AParentForm);
 
             frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        // once an extract has been created, this will refresh extract master screen and open maintainance screen for extract
+        private static void NewExtractCreated(string AExtractName, int AExtractId, Form AParentForm)
+        {
+            // refresh extract master screen if it is open
+            TFormsMessage BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcExtractCreated);
+
+            BroadcastMessage.SetMessageDataName(AExtractName);
+            TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+
+            // now open Screen for new extract so user can add partner records manually
+            TFrmExtractMaintain frm = new TFrmExtractMaintain(AParentForm);
+            frm.ExtractId = AExtractId;
+            frm.ExtractName = AExtractName;
             frm.Show();
         }
     }

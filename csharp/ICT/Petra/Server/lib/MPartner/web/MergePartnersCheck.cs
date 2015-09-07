@@ -571,6 +571,49 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// get the contact details of the From Partner
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static PartnerEditTDSPPartnerAttributeTable GetPartnerContactDetails(long AFromPartnerKey, long AToPartnerKey)
+        {
+            PartnerEditTDSPPartnerAttributeTable ReturnTable = new PartnerEditTDSPPartnerAttributeTable();
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    string Query = "SELECT p_partner_attribute.*, p_partner_attribute_category.p_category_code_c" +
+                                   " FROM p_partner_attribute, p_partner_attribute_category, p_partner_attribute_type" +
+                                   " WHERE p_partner_attribute.p_partner_key_n = " + AFromPartnerKey +
+                                   " AND p_partner_attribute.p_attribute_type_c = p_partner_attribute_type.p_attribute_type_c" +
+                                   " AND p_partner_attribute_category.p_category_code_c = p_partner_attribute_type.p_category_code_c" +
+                                   " AND p_partner_attribute_category.p_partner_contact_category_l = 'true'" +
+
+                                   // ignore if an identical contact detail exists for the To Partner
+                                   " AND NOT EXISTS (SELECT *" +
+                                   " FROM p_partner_attribute AS ToContactDetail" +
+                                   " WHERE ToContactDetail.p_partner_key_n = " + AToPartnerKey +
+                                   " AND ToContactDetail.p_attribute_type_c = p_partner_attribute.p_attribute_type_c" +
+                                   " AND ToContactDetail.p_value_c = p_partner_attribute.p_value_c" +
+                                   " AND (ToContactDetail.p_comment_c = p_partner_attribute.p_comment_c" +
+                                   " OR ((ToContactDetail.p_comment_c IS NULL OR ToContactDetail.p_comment_c = '')" +
+                                   " AND (p_partner_attribute.p_comment_c IS NULL OR p_partner_attribute.p_comment_c = '')))" +
+                                   " AND ToContactDetail.p_within_organisation_l = p_partner_attribute.p_within_organisation_l" +
+                                   " AND ToContactDetail.p_specialised_l = p_partner_attribute.p_specialised_l" +
+                                   " AND ToContactDetail.p_confidential_l = p_partner_attribute.p_confidential_l" +
+                                   " AND ToContactDetail.p_current_l = p_partner_attribute.p_current_l" +
+                                   " AND (ToContactDetail.p_no_longer_current_from_d = p_partner_attribute.p_no_longer_current_from_d" +
+                                   " OR (ToContactDetail.p_no_longer_current_from_d IS NULL" +
+                                   " AND p_partner_attribute.p_no_longer_current_from_d IS NULL)))";
+
+                    DBAccess.GDBAccessObj.SelectDT(ReturnTable, Query, Transaction);
+                });
+
+            return ReturnTable;
+        }
+
+        /// <summary>
         /// Finds if an active Gift Destination exists and checkes if it can be merged
         /// </summary>
         /// <param name="AFromPartnerKey">Partner being merged from</param>
@@ -615,20 +658,22 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         ReturnValue = false;
                     }
-
-                    // check for clash with the 'To' partner
-                    PPartnerGiftDestinationTable ToGiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AToPartnerKey, Transaction);
-                    CheckGiftDestinationClashes(ToGiftDestinations, ActiveRow, out FromGiftDestinationRowNeedsEnded,
-                        out ToGiftDestinationRowNeedsEnded);
-
-                    if (FromGiftDestinationRowNeedsEnded != null)
+                    else
                     {
-                        FromGiftDestinationNeedsEnded = true;
-                    }
+                        // check for clash with the 'To' partner
+                        PPartnerGiftDestinationTable ToGiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AToPartnerKey, Transaction);
+                        CheckGiftDestinationClashes(ToGiftDestinations, ActiveRow, out FromGiftDestinationRowNeedsEnded,
+                            out ToGiftDestinationRowNeedsEnded);
 
-                    if (ToGiftDestinationRowNeedsEnded != null)
-                    {
-                        ToGiftDestinationNeedsEnded = true;
+                        if (FromGiftDestinationRowNeedsEnded != null)
+                        {
+                            FromGiftDestinationNeedsEnded = true;
+                        }
+
+                        if (ToGiftDestinationRowNeedsEnded != null)
+                        {
+                            ToGiftDestinationNeedsEnded = true;
+                        }
                     }
                 });
 

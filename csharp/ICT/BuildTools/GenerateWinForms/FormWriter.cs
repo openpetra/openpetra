@@ -1406,6 +1406,28 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     // Handled by manual code
                     Console.WriteLine("Skipping DeleteRecord() handler because it is handled by " +
                         Path.GetFileNameWithoutExtension(FCodeStorage.FManualCodeFilename));
+
+                    ProcessTemplate snippetCanDeleteRow = FTemplate.GetSnippet("SNIPCANDELETEROW");
+                    bool bRequiresDetailTable = false;
+
+                    if (FCodeStorage.FControlList.ContainsKey("chkDetailDeletable")
+                        || FCodeStorage.FControlList.ContainsKey("chkDeletable"))
+                    {
+                        snippetCanDeleteRow.SetCodelet("DELETEABLEFLAG", "Deletable");
+                        bRequiresDetailTable = true;
+                    }
+                    else if (FCodeStorage.FControlList.ContainsKey("chkDetailDeletableFlag")
+                             || FCodeStorage.FControlList.ContainsKey("chkDeletableFlag"))
+                    {
+                        snippetCanDeleteRow.SetCodelet("DELETEABLEFLAG", "DeletableFlag");
+                        bRequiresDetailTable = true;
+                    }
+
+                    if (bRequiresDetailTable)
+                    {
+                        snippetCanDeleteRow.SetCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
+                        FTemplate.InsertSnippet("CANDELETEROW", snippetCanDeleteRow);
+                    }
                 }
                 else
                 {

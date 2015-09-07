@@ -166,6 +166,7 @@ namespace Ict.Petra.Server.MFinance.queries
         {
             Int32 LedgerNum = AParameters.Get("param_ledger_number_i").ToInt32();
             Int32 Year = AParameters.Get("param_YearBlock").ToInt32();
+            //TODO: Calendar vs Financial Date Handling - Check if financial year start/end should be used not calendar
             string YearStart = String.Format("#{0:0000}-01-01#", Year);
             string YearEnd = String.Format("#{0:0000}-12-31#", Year);
 
@@ -233,6 +234,7 @@ namespace Ict.Petra.Server.MFinance.queries
             resultTable.Columns.Add("MonthFieldTaxDeduct", typeof(Decimal));
             resultTable.Columns.Add("MonthTotalTaxDeduct", typeof(Decimal));
 
+            //TODO: Calendar vs Financial Date Handling - Check if financial year should be used not calendar, e.g. periods could equal 13
             for (int mnth = 1; mnth <= 12; mnth++)
             {
                 string monthStart = String.Format("#{0:0000}-{1:00}-01#", Year, mnth);
@@ -374,6 +376,7 @@ namespace Ict.Petra.Server.MFinance.queries
 
             for (Int32 YearIdx = 0; YearIdx < NumberOfYears; YearIdx++)
             {
+                //TODO: Calendar vs Financial Date Handling - Check if financial year start/end should be used not calendar
                 string yearStart = String.Format("#{0:0000}-01-01#", Year - YearIdx);
                 string yearEnd = String.Format("#{0:0000}-12-31#", Year - YearIdx);
 
@@ -486,9 +489,9 @@ namespace Ict.Petra.Server.MFinance.queries
             if (fromExtract)
             {
                 String extractName = AParameters.Get("param_extract_name").ToString();
-                SqlQuery += (", PUB_m_extract AS Extract, PUB_m_extract_master AS ExtractMaster" +
+                SqlQuery += (", PUB_m_extract AS Extract, PUB_m_extract_master AS ExtractMaster " +
                              "WHERE " +
-                             "partner.p_partner_key_n = Extract.p_partner_key_n " +
+                             "recipient.p_partner_key_n = Extract.p_partner_key_n " +
                              "AND Extract.m_extract_id_i = ExtractMaster.m_extract_id_i " +
                              "AND ExtractMaster.m_extract_name_c = '" + extractName + "' " +
                              "AND "

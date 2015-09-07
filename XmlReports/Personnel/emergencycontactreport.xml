@@ -243,8 +243,7 @@
 				<value function="assign(PartnerNameAndField, concatenateww({PartnerNameAndField}, Field:, 3))"/>
 				<value function="assign(PartnerNameAndField, concatenateww({PartnerNameAndField}, {FieldOfStaff}, 1))" condition="gt({FieldOfStaff}, 0)"/>
 				<value function="assign(PartnerNameAndField, concatenateww({PartnerNameAndField}, ?, 1))" condition="lt(length({FieldOfStaff}), 1)"/>
-				<value function="assign(PartnerAddress,  )"/>
-				<value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
+				<value function="assign(PartnerAddress, {Locality})"/>
 				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
 				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
 				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>

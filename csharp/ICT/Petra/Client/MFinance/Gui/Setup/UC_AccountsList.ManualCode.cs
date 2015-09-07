@@ -277,11 +277,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        private void CreateFilterFindPanelsManual()
+        {
+            // remove this control if suspense accounts are not allowed for this ledger
+            if (!FParentForm.SuspenseAccountsAllowed)
+            {
+                CheckBox chkSuspenseAccount = new CheckBox();
+                chkSuspenseAccount.Name = "chkSuspenseAccount";
+
+                FFilterAndFindObject.FilterPanelControls.FStandardFilterPanels.Remove(
+                    FFilterAndFindObject.FilterPanelControls.FindPanelByClonedFrom(chkSuspenseAccount));
+            }
+        }
+
         private void FilterToggledManual(bool AFilterPanelIsCollapsed)
         {
             if ((FFilterFindLogicObject == null) && !AFilterPanelIsCollapsed)
             {
-                FFilterFindLogicObject = new TUC_AccountsListFilterFind(FFilterAndFindObject);
+                FFilterFindLogicObject = new TUC_AccountsListFilterFind(FFilterAndFindObject, FParentForm.SuspenseAccountsAllowed);
             }
         }
 

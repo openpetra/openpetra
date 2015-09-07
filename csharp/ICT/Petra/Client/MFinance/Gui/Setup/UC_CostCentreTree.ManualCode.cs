@@ -256,9 +256,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
 
                 String PrevParent = AChild.Parent.Text;
-                String NewParentCostCentreCode = ((CostCentreNodeDetails)ANewParent.Tag).CostCentreRow.CostCentreCode;
+                ACostCentreRow ParentRow = ((CostCentreNodeDetails)ANewParent.Tag).CostCentreRow;
+
+                if (ParentRow.PostingCostCentreFlag)
+                {
+                    if (MessageBox.Show(String.Format(Catalog.GetString("Do you want to promote {0} to a summary Cost Centre?"),
+                                ParentRow.CostCentreCode), Catalog.GetString("Move CostCentre"), MessageBoxButtons.YesNo)
+                        == System.Windows.Forms.DialogResult.No)
+                    {
+                        ShowNodeSelected(null);
+                        return;
+                    }
+                }
+
                 TreeNode NewNode = (TreeNode)AChild.Clone();
-                DraggedCostCentre.CostCentreRow.CostCentreToReportTo = NewParentCostCentreCode;
+                DraggedCostCentre.CostCentreRow.CostCentreToReportTo = ParentRow.CostCentreCode;
                 DraggedCostCentre.linkedTreeNode = NewNode;
                 InsertInOrder(ANewParent, NewNode);
                 NewNode.Expand();

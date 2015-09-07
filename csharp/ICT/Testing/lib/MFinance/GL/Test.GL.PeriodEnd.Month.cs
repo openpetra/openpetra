@@ -91,7 +91,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             //UnloadTestData_GetBatchInfo();
 
             TVerificationResultCollection verificationResult;
-            bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+            bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -133,8 +133,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             new ChangeSuspenseAccount(FLedgerNumber, strAccountBank).Suspense();
 
             TVerificationResultCollection verificationResult;
-            bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
-                FLedgerNumber, false, out verificationResult);
+            bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(    // Changed to InfoMode because
+                FLedgerNumber, true, out verificationResult);               // the suspense accounts warning is now shown only in InfoMode.
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
@@ -144,18 +144,19 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 {
                     blnStatusArrived = true;
                     Assert.AreEqual(TResultSeverity.Resv_Status, verificationResult[i].ResultSeverity,
-                        "Value shall be status only ...");
+                        "MonthEnd verificationResult should be status only ...");
                 }
             }
 
-            Assert.IsTrue(blnStatusArrived, "Status message has been shown");
+            Assert.IsTrue(blnStatusArrived, "MonthEnd status message PEEC_07 has been shown");
             Assert.IsFalse(blnHasErrors, "there should not be an error for closing the first period");
 
-            int periodCounter = 2;
+            int periodCounter = 1;
 
+            //TODO: Calendar vs Financial Date Handling - Check if this should not assume 12 but rather use number of financial periods in ledger
             while (!blnHasErrors && periodCounter < 12)
             {
-                blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+                blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
                     FLedgerNumber, false, out verificationResult);
 
                 Assert.IsFalse(blnHasErrors, "there was an error closing period " + periodCounter.ToString());
@@ -163,7 +164,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 Assert.AreEqual(periodCounter, new TLedgerInfo(FLedgerNumber).CurrentPeriod, "should be in new period");
             }
 
-            blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+            blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, false, out verificationResult);
 
             blnStatusArrived = false;
@@ -225,7 +226,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ImportGiftBatch(getAccountingPeriodInfo.PeriodStartDate);
 
             TVerificationResultCollection verificationResult;
-            bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+            bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -307,7 +308,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             Assert.IsFalse(blnHasErrors, "Problem running the revaluation");
 
-            blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+            blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, true, out verificationResult);
 
             if (blnHasErrors)
@@ -341,7 +342,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
                 // Run MonthEnd ...
                 TVerificationResultCollection verificationResult;
-                bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+                bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
                     FLedgerNumber, false, out verificationResult);
 
                 if (!ledgerInfo.ProvisionalYearEndFlag)

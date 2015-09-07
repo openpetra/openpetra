@@ -102,7 +102,7 @@ namespace Ict.Petra.Client.CommonForms
         {
             // Deal with the window positions which are stored on the local file system
             string localAppDataPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                TAppSettingsManager.GetLocalAppDataPath(),
                 CommonFormsResourcestrings.StrFolderOrganisationName,
                 System.Diagnostics.FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
             string settingsFileName = String.Format(CommonFormsResourcestrings.StrScreenPositionsFileName, UserInfo.GUserInfo.UserID);
@@ -221,7 +221,7 @@ namespace Ict.Petra.Client.CommonForms
             FWindowPositions.Clear();
 
             string localAppDataPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                TAppSettingsManager.GetLocalAppDataPath(),
                 CommonFormsResourcestrings.StrFolderOrganisationName,
                 System.Diagnostics.FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
             string settingsFileName = String.Format(CommonFormsResourcestrings.StrScreenPositionsFileName, UserInfo.GUserInfo.UserID);

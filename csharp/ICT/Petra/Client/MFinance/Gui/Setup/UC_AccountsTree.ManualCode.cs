@@ -280,6 +280,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     return;
                 }
 
+                AAccountRow ParentRow = ((AccountNodeDetails)AChild.Tag).AccountRow;
+
+                if (ParentRow.PostingStatus)
+                {
+                    if (MessageBox.Show(String.Format(Catalog.GetString("Do you want to promote {0} to a summary Account?"),
+                                ParentRow.AccountCode), Catalog.GetString("Move Account"), MessageBoxButtons.YesNo)
+                        == System.Windows.Forms.DialogResult.No)
+                    {
+                        ShowNodeSelected(null);
+                        return;
+                    }
+                }
+
                 FParentForm.SetSelectedAccount(null);
                 String PrevParent = AChild.Parent.Text;
                 AccountNodeDetails DraggedAccount = (AccountNodeDetails)AChild.Tag;

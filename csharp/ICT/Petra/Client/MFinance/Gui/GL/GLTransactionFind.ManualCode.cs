@@ -171,6 +171,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             cmbAccount.TabIndex = Temp2;
 
             this.ActiveControl = cmbStatus;
+
+            FinishButtonPanelSetup();
         }
 
         // populate the comboboxes
@@ -179,11 +181,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TFinanceControls.InitialiseCostCentreList(ref cmbCostCentre, FLedgerNumber, true, false, false, false);
             cmbCostCentre.ColumnWidthCol2 = 300;
             cmbCostCentre.AttachedLabel.Width = 280;
+            cmbCostCentre.cmbCombobox.AllowBlankValue = true;
 
             TFinanceControls.InitialiseAccountList(ref cmbAccount, FLedgerNumber,
                 true, false, false, false, FCurrency, true);
             cmbAccount.ColumnWidthCol2 = 300;
             cmbAccount.AttachedLabel.Width = 280;
+            cmbAccount.cmbCombobox.AllowBlankValue = true;
 
             cmbStatus.AddStringItem(Catalog.GetString("All"));
             cmbStatus.AddStringItem(MFinanceConstants.BATCH_POSTED);
@@ -534,6 +538,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return ReturnValue;
+        }
+
+        private void FinishButtonPanelSetup()
+        {
+            // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+            lblRecordCounter.AutoSize = true;
+            lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+            lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+            pnlButtonsRecordCounter.AutoSize = true;
         }
 
         // update record counter

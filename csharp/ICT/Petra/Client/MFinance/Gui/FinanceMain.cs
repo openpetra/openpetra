@@ -21,8 +21,13 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+using System.Data;
 using System.Windows.Forms;
+
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MReporting.Gui.MFinance;

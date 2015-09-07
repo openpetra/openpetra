@@ -2,6 +2,8 @@ RootNode:
     BaseYaml: PersonnelReportingForm.yaml
     FormType: report
     FormTitle: Personal Documents Expiry Report
+    WindowWidth: 650
+    WindowHeight: 500
     Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
     TemplateParameters:
         XMLFILES: [Personnel\\\\personaldocumentexpiryreport.xml,Personnel\\\\personnel.xml]
@@ -14,34 +16,54 @@ RootNode:
         SETCONTROLSLOCALVARS: BLANK
     Security:
         ModulePermissionRequired: [PERSONNEL]
+    Actions:
+        actUnselectAllDocuments:
+            ActionClick: UnselectAllDocuments
+        actSelectAllDocuments:
+            ActionClick: SelectAllDocuments
     Controls:
         tpgReportSorting:
             Label: Sorting
             Controls: [ucoReportSorting]
         tpgGeneralSettings:
+            Dock: Fill
             Label: General Settings
-            Controls: [ucoPartnerSelection]
+            Controls:
+                Row0: [ucoPartnerSelection]
+                Row1: [pnlAdditionalSettings]
             Order: AlwaysFirst
-        tpgAdditionalSettings:
-            Label: Additional Settings
-            Controls: [grpDocuments, grpDates]
-            Order: AlwaysLast
+        pnlAdditionalSettings:
+            Dock: Fill
+            Controls:
+                Row0: [grpDocuments, grpDates]
         ucoPartnerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
-            Dock: Fill
+            Height: 150
+            Dock: Top
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
             
         grpDocuments:
             Label: Select Documents
-            Controls: [grdDocuments]
+            Controls: 
+                Row0: [btnSelectAll, btnUnselectAll]
+                Row1: [clbDocuments]
+            Stretch: vertically
         grpDates:
             Label: Dates
             Controls:[chkUseDates, dtpFromDate, dtpToDate]
-        grdDocuments:
-            Height: 200
-            Width: 300
+
+        btnSelectAll:
+            Action: actSelectAllDocuments
+        btnUnselectAll:
+            Action: actUnselectAllDocuments
+        clbDocuments:
+            Stretch: fully
+            NoLabel: true
+            ColSpan: 2
+            #Height: 200
+            Width: 375
         chkUseDates:
             Label: Use Expiry Dates
             CheckBoxAttachedLabel: right

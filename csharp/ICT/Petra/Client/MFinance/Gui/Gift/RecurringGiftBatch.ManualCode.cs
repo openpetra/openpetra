@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using System.Collections.Generic;
+
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -32,6 +33,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
+
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -417,30 +419,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private int GetChangedRecordCountManual(out string AMessage)
         {
-            // For Gift Batch we will
-            //  either get a change to N Batches
-            //  or get changes to M transactions in N Batches
+            //For Gift Batch we will get a mix of some batches, gifts and gift details.
+            // Only check relevant tables.
+            List <string>TablesToCheck = new List <string>();
+            TablesToCheck.Add(FMainDS.ARecurringGiftBatch.TableName);
+            TablesToCheck.Add(FMainDS.ARecurringGift.TableName);
+            TablesToCheck.Add(FMainDS.ARecurringGiftDetail.TableName);
+
             List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
-            int allChangesCount = 0;
+            int AllChangesCount = 0;
 
-            foreach (DataTable dt in FMainDS.Tables)
+            if (FMainDS.HasChanges())
             {
-                if (dt != null)
+                foreach (DataTable dt in FMainDS.GetChanges().Tables)
                 {
-                    int tableChangesCount = 0;
+                    string currentTableName = dt.TableName;
 
-                    foreach (DataRow dr in dt.Rows)
+                    if ((dt != null)
+                        && TablesToCheck.Contains(currentTableName)
+                        && (dt.Rows.Count > 0))
                     {
-                        if (dr.RowState != DataRowState.Unchanged)
+                        int tableChangesCount = 0;
+
+                        DataTable dtChanges = dt.GetChanges();
+
+                        foreach (DataRow dr in dtChanges.Rows)
                         {
-                            tableChangesCount++;
-                            allChangesCount++;
+                            if (DataUtilities.DataRowColumnsHaveChanged(dr))
+                            {
+                                tableChangesCount++;
+                                AllChangesCount++;
+                            }
                         }
-                    }
 
-                    if (tableChangesCount > 0)
-                    {
-                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
+                        if (tableChangesCount > 0)
+                        {
+                            TableAndCountList.Add(new Tuple <string, int>(currentTableName, tableChangesCount));
+                        }
                     }
                 }
             }
@@ -452,19 +467,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (TableAndCountList.Count == 1)
                 {
-                    // Only saving changes to batches
                     Tuple <string, int>TableAndCount = TableAndCountList[0];
 
-                    AMessage = String.Format(Catalog.GetString("    You have made changes to the details of {0} {1}.{2}"),
-                        TableAndCount.Item2,
-                        Catalog.GetPluralString("batch", "batches", TableAndCount.Item2),
-                        Environment.NewLine);
+                    string tableName = TableAndCount.Item1;
+
+                    if (TableAndCount.Item1.Equals(ARecurringGiftBatchTable.GetTableName()))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} recurring {1}.{2}"),
+                            TableAndCount.Item2,
+                            Catalog.GetPluralString("batch", "batches", TableAndCount.Item2),
+                            Environment.NewLine);
+                    }
+                    else if (TableAndCount.Item1.Equals(ARecurringGiftTable.GetTableName()))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            TableAndCount.Item2,
+                            Catalog.GetPluralString("gift", "gifts", TableAndCount.Item2),
+                            Environment.NewLine);
+                    }
+                    else //if (TableAndCount.Item1.Equals(ARecurringGiftDetailTable.GetTableName()))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            TableAndCount.Item2,
+                            Catalog.GetPluralString("gift detail", "gift details", TableAndCount.Item2),
+                            Environment.NewLine);
+                    }
                 }
                 else
                 {
-                    // Saving changes to transactions as well
                     int nBatches = 0;
-                    int nTransactions = 0;
+                    int nGifts = 0;
+                    int nGiftDetails = 0;
 
                     foreach (Tuple <string, int>TableAndCount in TableAndCountList)
                     {
@@ -472,70 +505,83 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         {
                             nBatches = TableAndCount.Item2;
                         }
-                        else if (TableAndCount.Item2 > nTransactions)
+                        else if (TableAndCount.Item1.Equals(ARecurringGiftTable.GetTableName()))
                         {
-                            nTransactions = TableAndCount.Item2;
+                            nGifts = TableAndCount.Item2;
+                        }
+                        else //if (TableAndCount.Item1.Equals(ARecurringGiftDetailTable.GetTableName()))
+                        {
+                            nGiftDetails = TableAndCount.Item2;
                         }
                     }
 
-                    if (nBatches == 0)
+                    if ((nBatches > 0) && (nGifts > 0) && (nGiftDetails > 0))
                     {
-                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
-                            nTransactions,
-                            Catalog.GetPluralString("transaction", "transactions", nTransactions),
-                            Environment.NewLine);
-                    }
-                    else
-                    {
-                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1} and {2} {3}.{4}"),
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} recurring {1}, {2} {3} and {4} {5}.{6}"),
                             nBatches,
                             Catalog.GetPluralString("batch", "batches", nBatches),
-                            nTransactions,
-                            Catalog.GetPluralString("transaction", "transactions", nTransactions),
+                            nGifts,
+                            Catalog.GetPluralString("gift", "gifts", nGifts),
+                            nGiftDetails,
+                            Catalog.GetPluralString("gift detail", "gift details", nGiftDetails),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches > 0) && (nGifts > 0) && (nGiftDetails == 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} recurring {1} and {2} {3}.{4}"),
+                            nBatches,
+                            Catalog.GetPluralString("batch", "batches", nBatches),
+                            nGifts,
+                            Catalog.GetPluralString("gift", "gifts", nGifts),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches > 0) && (nGifts == 0) && (nGiftDetails > 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} recurring {1} and {2} {3}.{4}"),
+                            nBatches,
+                            Catalog.GetPluralString("batch", "batches", nBatches),
+                            nGiftDetails,
+                            Catalog.GetPluralString("gift detail", "gift details", nGiftDetails),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches > 0) && (nGifts == 0) && (nGiftDetails == 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} recurring {1}.{2}"),
+                            nBatches,
+                            Catalog.GetPluralString("batch", "batches", nBatches),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches == 0) && (nGifts > 0) && (nGiftDetails > 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1} and {2} {3}.{4}"),
+                            nGifts,
+                            Catalog.GetPluralString("gift", "gifts", nGifts),
+                            nGiftDetails,
+                            Catalog.GetPluralString("gift detail", "gift details", nGiftDetails),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches == 0) && (nGifts > 0) && (nGiftDetails == 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            nGifts,
+                            Catalog.GetPluralString("gift", "gifts", nGiftDetails),
+                            Environment.NewLine);
+                    }
+                    else if ((nBatches == 0) && (nGifts == 0) && (nGiftDetails > 0))
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            nGiftDetails,
+                            Catalog.GetPluralString("gift detail", "gift details", nGiftDetails),
                             Environment.NewLine);
                     }
                 }
 
+                AMessage += Catalog.GetString("(some of the changes may include related background items)");
+                AMessage += Environment.NewLine;
                 AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
             }
 
-            return allChangesCount;
-        }
-
-        /// <summary>
-        /// Check if batch columns have actually changed
-        /// </summary>
-        /// <param name="ARecurringBatchRow"></param>
-        /// <returns></returns>
-        public bool BatchColumnsHaveChanged(ARecurringGiftBatchRow ARecurringBatchRow)
-        {
-            bool RetVal = false;
-
-            if (ARecurringBatchRow.RowState != DataRowState.Unchanged)
-            {
-                bool columnValueChanged = false;
-
-                for (int i = 0; i < FMainDS.ARecurringGiftBatch.Columns.Count; i++)
-                {
-                    string originalValue = ARecurringBatchRow[i, DataRowVersion.Original].ToString();
-                    string currentValue = ARecurringBatchRow[i, DataRowVersion.Current].ToString();
-
-                    if (originalValue != currentValue)
-                    {
-                        columnValueChanged = true;
-                        break;
-                    }
-                }
-
-                if (!columnValueChanged)
-                {
-                    ARecurringBatchRow.RejectChanges();
-                }
-
-                RetVal = columnValueChanged;
-            }
-
-            return RetVal;
+            return AllChangesCount;
         }
 
         #region Forms Messaging Interface Implementation

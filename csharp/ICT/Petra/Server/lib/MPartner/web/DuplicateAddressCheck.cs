@@ -131,12 +131,13 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                         for (int i = 0; i < LocationCountry.Rows.Count; i++)
                         {
                             string AAddress = null;
-                            string[] AAdressArray = null;
+                            string[] AAddressArray = null;
 
                             for (int j = i + 1; j < LocationCountry.Rows.Count; j++)
                             {
                                 // check if two rows are a possible duplicate
-                                if (PossibleMatch(LocationCountry.Rows[i], ref AAddress, ref AAdressArray, LocationCountry.Rows[j], AExactMatchNumber))
+                                if (PossibleMatch(LocationCountry.Rows[i], ref AAddress, ref AAddressArray, LocationCountry.Rows[j],
+                                        AExactMatchNumber))
                                 {
                                     ReturnTable.Rows.Add(new object[] {
                                             LocationCountry.Rows[i][PLocationTable.GetSiteKeyDBName()],
@@ -170,7 +171,7 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                                 // compare with locations with invalid country codes
                                 for (int j = 0; j < BlankCountryLocations.Rows.Count; j++)
                                 {
-                                    if (PossibleMatch(LocationCountry.Rows[i], ref AAddress, ref AAdressArray, BlankCountryLocations.Rows[j],
+                                    if (PossibleMatch(LocationCountry.Rows[i], ref AAddress, ref AAddressArray, BlankCountryLocations.Rows[j],
                                             AExactMatchNumber))
                                     {
                                         ReturnTable.Rows.Add(new object[] {

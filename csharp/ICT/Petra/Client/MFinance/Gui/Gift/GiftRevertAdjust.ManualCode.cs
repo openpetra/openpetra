@@ -23,15 +23,19 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -42,13 +46,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Hashtable requestParams = new Hashtable();
-        private GiftBatchTDS giftMainDS = new GiftBatchTDS();
-        private AGiftDetailRow giftDetailRow = null;
+        private GiftBatchTDS FGiftMainDS = new GiftBatchTDS();
+        private AGiftDetailRow FGiftDetailRow = null;
         private string FCurrencyCode = null;
         private Boolean ok = false;
-        private Boolean FNoReceipt = false;
-        private DateTime StartDateCurrentPeriod;
-        private DateTime EndDateLastForwardingPeriod;
+        private DateTime FStartDateCurrentPeriod;
+        private DateTime FEndDateLastForwardingPeriod;
+        private int FAdjustmentBatchNumber = -1;
+        private bool FAutoCompleteComments = false;
+        private bool FCheckTaxDeductPctChange = false;
+        private bool FCheckGiftDestinationChange = false;
 
         /// <summary>
         /// Return if the revert/adjust action was Ok (then a refresh is needed; otherwise rollback was done)
@@ -67,7 +74,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             set
             {
-                FNoReceipt = value;
+                chkNoReceipt.Checked = value;
             }
         }
 
@@ -77,7 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public GiftBatchTDS GiftMainDS {
             set
             {
-                giftMainDS = value;
+                FGiftMainDS = value;
             }
         }
 
@@ -98,30 +105,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public AGiftDetailRow GiftDetailRow {
             set
             {
-                giftDetailRow = value;
+                FGiftDetailRow = value;
 
-                if ((giftDetailRow.GiftCommentOne != null) && (giftDetailRow.GiftCommentOne.Length > 0))
+                if ((FGiftDetailRow.GiftCommentOne != null) && (FGiftDetailRow.GiftCommentOne.Length > 0))
                 {
-                    txtReversalCommentOne.Text = giftDetailRow.GiftCommentOne;
-                    cmbReversalCommentOneType.Text = giftDetailRow.CommentOneType;
+                    txtReversalCommentOne.Text = FGiftDetailRow.GiftCommentOne;
+                    cmbReversalCommentOneType.Text = FGiftDetailRow.CommentOneType;
                 }
 
-                if ((giftDetailRow.GiftCommentTwo != null) && (giftDetailRow.GiftCommentTwo.Length > 0))
+                if ((FGiftDetailRow.GiftCommentTwo != null) && (FGiftDetailRow.GiftCommentTwo.Length > 0))
                 {
-                    txtReversalCommentTwo.Text = giftDetailRow.GiftCommentTwo;
-                    cmbReversalCommentTwoType.Text = giftDetailRow.CommentTwoType;
+                    txtReversalCommentTwo.Text = FGiftDetailRow.GiftCommentTwo;
+                    cmbReversalCommentTwoType.Text = FGiftDetailRow.CommentTwoType;
                 }
 
-                if ((giftDetailRow.GiftCommentThree != null) && (giftDetailRow.GiftCommentThree.Length > 0))
+                if ((FGiftDetailRow.GiftCommentThree != null) && (FGiftDetailRow.GiftCommentThree.Length > 0))
                 {
-                    txtReversalCommentThree.Text = giftDetailRow.GiftCommentThree;
-                    cmbReversalCommentThreeType.Text = giftDetailRow.CommentThreeType;
+                    txtReversalCommentThree.Text = FGiftDetailRow.GiftCommentThree;
+                    cmbReversalCommentThreeType.Text = FGiftDetailRow.CommentThreeType;
                 }
 
-                AddParam("BatchNumber", giftDetailRow.BatchNumber);
-                AddParam("GiftNumber", giftDetailRow.GiftTransactionNumber);
-                AddParam("GiftDetailNumber", giftDetailRow.DetailNumber);
-                AddParam("CostCentre", giftDetailRow.CostCentreCode);
+                AddParam("BatchNumber", FGiftDetailRow.BatchNumber);
+                AddParam("GiftNumber", FGiftDetailRow.GiftTransactionNumber);
+                AddParam("GiftDetailNumber", FGiftDetailRow.DetailNumber);
+                AddParam("CostCentre", FGiftDetailRow.CostCentreCode);
 
                 if (((GiftAdjustmentFunctionEnum)requestParams["Function"] != GiftAdjustmentFunctionEnum.FieldAdjust)
                     && ((GiftAdjustmentFunctionEnum)requestParams["Function"] != GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust))
@@ -156,25 +163,60 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 DateTime DefaultDate;
                 TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
-                    out StartDateCurrentPeriod,
-                    out EndDateLastForwardingPeriod,
+                    out FStartDateCurrentPeriod,
+                    out FEndDateLastForwardingPeriod,
                     out DefaultDate);
                 lblValidDateRange.Text = String.Format(Catalog.GetString("(Must be between {0} and {1}.)"),
-                    StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
+                    FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
 
                 // set default date for a new batch
-                if (DateTime.Today > EndDateLastForwardingPeriod)
+                if (DateTime.Today > FEndDateLastForwardingPeriod)
                 {
-                    dtpEffectiveDate.Date = EndDateLastForwardingPeriod;
+                    dtpEffectiveDate.Date = FEndDateLastForwardingPeriod;
                 }
-                else if (DateTime.Today < StartDateCurrentPeriod)
+                else if (DateTime.Today < FStartDateCurrentPeriod)
                 {
-                    dtpEffectiveDate.Date = StartDateCurrentPeriod;
+                    dtpEffectiveDate.Date = FStartDateCurrentPeriod;
                 }
                 else
                 {
                     dtpEffectiveDate.Date = DateTime.Today;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Check if the tax deductable percentage has changed since the original gift and the new gift.
+        /// If it has changed, ask the user which one they want to use.
+        /// </summary>
+        public bool CheckTaxDeductPctChange
+        {
+            set
+            {
+                FCheckTaxDeductPctChange = true;
+            }
+        }
+
+        /// <summary>
+        /// Check if the gift destination has changed since the original gift and the new gift.
+        /// If it has changed, ask the user which one they want to use.
+        /// </summary>
+        public bool CheckGiftDestinationChange
+        {
+            set
+            {
+                FCheckGiftDestinationChange = true;
+            }
+        }
+
+        /// <summary>
+        /// Gets the batch number containg the adjusted gifts
+        /// </summary>
+        public int AdjustmentBatchNumber
+        {
+            get
+            {
+                return FAdjustmentBatchNumber;
             }
         }
 
@@ -189,9 +231,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             SelectBatchChanged(null, null);
 
-            // validation is not done automatically on this form
-            dtpEffectiveDate.ShowWarningOnLostFocus = true;
-
             rbtNewBatch.Checked = true;
         }
 
@@ -199,6 +238,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             grdDetails.Enabled = false;
             grdDetails.DataSource = null;
+
+            chkNoReceipt.Enabled = ((GiftAdjustmentFunctionEnum)requestParams["Function"] == GiftAdjustmentFunctionEnum.AdjustGift);
         }
 
         private void GetGiftsForReverseAdjust()
@@ -210,7 +251,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                ok = TRemote.MFinance.Gift.WebConnectors.GetGiftsForReverseAdjust(requestParams, ref giftMainDS, out Messages);
+                ok = TRemote.MFinance.Gift.WebConnectors.GetGiftsForReverseAdjust(requestParams, ref FGiftMainDS, out Messages);
             }
             finally
             {
@@ -246,8 +287,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             requestParams.Add(paramName, param);
         }
 
+        /// <summary>
+        /// Comments will be automatically completed and not user definied. Comments 1 and 2 will be a direct copy from original.
+        /// Comment 3 will contain date of original gift. Currently only used for tax deductible pct adjustments.
+        /// </summary>
+        public void AutoCompleteComments()
+        {
+            txtReversalCommentOne.Enabled = false;
+            cmbReversalCommentOneType.Enabled = false;
+            txtReversalCommentTwo.Enabled = false;
+            cmbReversalCommentTwoType.Enabled = false;
+            txtReversalCommentThree.Enabled = false;
+            cmbReversalCommentThreeType.Enabled = false;
+
+            FAutoCompleteComments = true;
+        }
+
+        /// <summary>
+        /// Shows batch details for the batch needed to place adjusted gifts.
+        /// Used for adjustments where gifts come from different batches: field change and tax deduct pct.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACurrencyCode"></param>
+        /// <param name="ABankCostCentre"></param>
+        /// <param name="ABankAccountCode"></param>
+        /// <param name="AGiftType"></param>
+        public void AddBatchDetailsToScreen(int ALedgerNumber, string ACurrencyCode, string ABankCostCentre,
+            string ABankAccountCode, string AGiftType)
+        {
+            lblBatchDetailsLabel.Text = Catalog.GetString("Ledger") + ": " + ALedgerNumber + ",  " +
+                                        Catalog.GetString("Currency") + ": " + ACurrencyCode + ",  " +
+                                        Catalog.GetString("Bank Cost Centre") + ": " + ABankCostCentre + ",  " +
+                                        Catalog.GetString("Bank Account") + ": " + ABankAccountCode + ",  " +
+                                        Catalog.GetString("Gift Type") + ": " + AGiftType;
+
+            grpBatchDetails.Visible = true;
+            lblBatchDetailsLabel.Visible = true;
+        }
+
         private void BtnOk_Click(System.Object sender, System.EventArgs e)
         {
+            # region Validation
+
             if (rbtExistingBatch.Checked && (GetSelectedDetailRow() == null))
             {
                 // nothing seleted
@@ -257,7 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (rbtNewBatch.Checked)
             {
-                // if date is empty (if not empty the date is validated elsewhere)
+                // if date is empty
                 if (string.IsNullOrEmpty(dtpEffectiveDate.Text))
                 {
                     MessageBox.Show(Catalog.GetString("Please enter a date for the new Gift Batch."));
@@ -265,7 +346,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     dtpEffectiveDate.Focus();
                     return;
                 }
+
+                // if date is invalid
+                if (!((TtxtPetraDate)dtpEffectiveDate).ValidDate(false))
+                {
+                    MessageBox.Show(Catalog.GetString("Please enter a valid date for the new Gift Batch."));
+
+                    dtpEffectiveDate.Focus();
+                    return;
+                }
             }
+
+            #endregion
 
             AddParam("NewBatchSelected", rbtExistingBatch.Checked);
 
@@ -276,8 +368,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 //check the gift batch date to use
-                if ((dtpEffectiveDate.Date < StartDateCurrentPeriod)
-                    || (dtpEffectiveDate.Date > EndDateLastForwardingPeriod)
+                if ((dtpEffectiveDate.Date < FStartDateCurrentPeriod)
+                    || (dtpEffectiveDate.Date > FEndDateLastForwardingPeriod)
                     )
                 {
                     MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
@@ -291,55 +383,65 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            if (((txtReversalCommentOne.Text.Trim().Length == 0) && (cmbReversalCommentOneType.SelectedIndex != -1))
-                || ((txtReversalCommentOne.Text.Trim().Length > 0) && (cmbReversalCommentOneType.SelectedIndex == -1))
-                )
+            if (!FAutoCompleteComments)
             {
-                MessageBox.Show(Catalog.GetString("Comment 1 and Comment Type 1 must both be empty or both contain a value!"));
-                txtReversalCommentOne.Focus();
-                return;
+                if (((txtReversalCommentOne.Text.Trim().Length == 0) && (cmbReversalCommentOneType.SelectedIndex != -1))
+                    || ((txtReversalCommentOne.Text.Trim().Length > 0) && (cmbReversalCommentOneType.SelectedIndex == -1))
+                    )
+                {
+                    MessageBox.Show(Catalog.GetString("Comment 1 and Comment Type 1 must both be empty or both contain a value!"));
+                    txtReversalCommentOne.Focus();
+                    return;
+                }
+
+                if (((txtReversalCommentTwo.Text.Trim().Length == 0) && (cmbReversalCommentTwoType.SelectedIndex != -1))
+                    || ((txtReversalCommentTwo.Text.Trim().Length > 0) && (cmbReversalCommentTwoType.SelectedIndex == -1))
+                    )
+                {
+                    MessageBox.Show(Catalog.GetString("Comment 2 and Comment Type 2 must both be empty or both contain a value!"));
+                    txtReversalCommentTwo.Focus();
+                    return;
+                }
+
+                if (((txtReversalCommentThree.Text.Trim().Length == 0) && (cmbReversalCommentThreeType.SelectedIndex != -1))
+                    || ((txtReversalCommentThree.Text.Trim().Length > 0) && (cmbReversalCommentThreeType.SelectedIndex == -1))
+                    )
+                {
+                    MessageBox.Show(Catalog.GetString("Comment 3 and Comment Type 3 must both be empty or both contain a value!"));
+                    txtReversalCommentThree.Focus();
+                    return;
+                }
+
+                AddParam("ReversalCommentOne", txtReversalCommentOne.Text);
+                AddParam("ReversalCommentTwo", txtReversalCommentTwo.Text);
+                AddParam("ReversalCommentThree", txtReversalCommentThree.Text);
+                AddParam("ReversalCommentOneType", cmbReversalCommentOneType.Text);
+                AddParam("ReversalCommentTwoType", cmbReversalCommentTwoType.Text);
+                AddParam("ReversalCommentThreeType", cmbReversalCommentThreeType.Text);
             }
 
-            if (((txtReversalCommentTwo.Text.Trim().Length == 0) && (cmbReversalCommentTwoType.SelectedIndex != -1))
-                || ((txtReversalCommentTwo.Text.Trim().Length > 0) && (cmbReversalCommentTwoType.SelectedIndex == -1))
-                )
+            AddParam("AutoCompleteComments", FAutoCompleteComments);
+
+            AddParam("NoReceipt", chkNoReceipt.Checked);
+
+            if (FCheckTaxDeductPctChange || FCheckGiftDestinationChange)
             {
-                MessageBox.Show(Catalog.GetString("Comment 2 and Comment Type 2 must both be empty or both contain a value!"));
-                txtReversalCommentTwo.Focus();
-                return;
+                CheckIfFieldsHaveChanged();
             }
 
-            if (((txtReversalCommentThree.Text.Trim().Length == 0) && (cmbReversalCommentThreeType.SelectedIndex != -1))
-                || ((txtReversalCommentThree.Text.Trim().Length > 0) && (cmbReversalCommentThreeType.SelectedIndex == -1))
-                )
-            {
-                MessageBox.Show(Catalog.GetString("Comment 3 and Comment Type 3 must both be empty or both contain a value!"));
-                txtReversalCommentThree.Focus();
-                return;
-            }
-
-            AddParam("ReversalCommentOne", txtReversalCommentOne.Text);
-            AddParam("ReversalCommentTwo", txtReversalCommentTwo.Text);
-            AddParam("ReversalCommentThree", txtReversalCommentThree.Text);
-            AddParam("ReversalCommentOneType", cmbReversalCommentOneType.Text);
-            AddParam("ReversalCommentTwoType", cmbReversalCommentTwoType.Text);
-            AddParam("ReversalCommentThreeType", cmbReversalCommentThreeType.Text);
-            AddParam("NoReceipt", FNoReceipt);
-
-            ReverseAdjust();
+            ReverseAdjust(out FAdjustmentBatchNumber);
         }
 
         // do the actual reversal / adjustment
-        private void ReverseAdjust()
+        private void ReverseAdjust(out int AAdjustmentBatchNumber)
         {
-            int AdjustmentBatchNumber;
             Boolean ok;
 
             try
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AdjustmentBatchNumber, giftMainDS);
+                ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AAdjustmentBatchNumber, FGiftMainDS);
             }
             finally
             {
@@ -354,29 +456,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     case GiftAdjustmentFunctionEnum.ReverseGiftBatch :
                         MessageBox.Show(Catalog.GetString("Reversed gift batch has been successfully created with Batch Number " +
-                            AdjustmentBatchNumber + "."),
+                            AAdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift Batch"));
                         break;
 
                     case GiftAdjustmentFunctionEnum.ReverseGiftDetail:
-                        MessageBox.Show(Catalog.GetString("Reversed gift detail has been successfully added to Batch " + AdjustmentBatchNumber + "."),
+                        MessageBox.Show(Catalog.GetString("Reversed gift detail has been successfully added to Batch " + AAdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift Detail"));
                         break;
 
                     case GiftAdjustmentFunctionEnum.ReverseGift:
-                        MessageBox.Show(Catalog.GetString("Reversed gift has been successfully added to Batch " + AdjustmentBatchNumber + "."),
+                        MessageBox.Show(Catalog.GetString("Reversed gift has been successfully added to Batch " + AAdjustmentBatchNumber + "."),
                         Catalog.GetString("Reverse Gift"));
                         break;
 
                     case GiftAdjustmentFunctionEnum.AdjustGift:
-                        MessageBox.Show(Catalog.GetString("Adjustment transactions have been successfully added to Batch " + AdjustmentBatchNumber +
+                        MessageBox.Show(Catalog.GetString("Adjustment transactions have been successfully added to Batch " + AAdjustmentBatchNumber +
                             "."),
                         Catalog.GetString("Adjust Gift"));
                         break;
 
                     case GiftAdjustmentFunctionEnum.FieldAdjust:
                         MessageBox.Show(Catalog.GetString("Gift Field Adjustment transactions have been successfully added to Batch " +
-                            AdjustmentBatchNumber +
+                            AAdjustmentBatchNumber +
                             "."),
                         Catalog.GetString("Adjust Gift"));
                         break;
@@ -384,7 +486,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     case GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust:
                         MessageBox.Show(Catalog.GetString("Tax Deductible Percentage Adjustment transactions have been successfully added to Batch "
                             +
-                            AdjustmentBatchNumber +
+                            AAdjustmentBatchNumber +
                             "."),
                         Catalog.GetString("Adjust Gift"));
                         break;
@@ -397,6 +499,143 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 DialogResult = System.Windows.Forms.DialogResult.Abort;
                 Close();
+            }
+        }
+
+        /// <summary>
+        /// If applicable, check if the tax deductable percentage and/or gift destination has changed since the original gift and the new gift.
+        /// If it has changed, ask the user which one they want to use.
+        /// </summary>
+        private void CheckIfFieldsHaveChanged()
+        {
+            // these will contain recipient keys that either need their tax deduct pct updated or that need to use their original gift destination
+            List <string[]>UpdateTaxDeductiblePctRecipeints = new List <string[]>();
+            List <string>FixedGiftDestinationRecipeints = new List <string>();
+
+            List <string>Recipients = new List <string>();
+
+            // if we don't sort then they are processed in reverse order
+            FGiftMainDS.AGiftDetail.DefaultView.Sort = AGiftDetailTable.GetLedgerNumberDBName() + ", " +
+                                                       AGiftDetailTable.GetBatchNumberDBName() + ", " +
+                                                       AGiftDetailTable.GetGiftTransactionNumberDBName() + ", " +
+                                                       AGiftDetailTable.GetDetailNumberDBName();
+
+            foreach (DataRowView RowView in FGiftMainDS.AGiftDetail.DefaultView)
+            {
+                AGiftDetailRow GiftDetailRow = (AGiftDetailRow)RowView.Row;
+
+                // only want to do once for each recipient
+                if (Recipients.Contains(GiftDetailRow.RecipientKey.ToString()))
+                {
+                    continue;
+                }
+
+                Recipients.Add(GiftDetailRow.RecipientKey.ToString());
+
+                string RecipientName;
+                TPartnerClass PartnerClass;
+                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
+                    GiftDetailRow.RecipientKey, out RecipientName, out PartnerClass);
+
+                // Check the tax deductable percentage
+                if (FCheckTaxDeductPctChange && !GiftDetailRow.IsTaxDeductibleNull() && GiftDetailRow.TaxDeductible)
+                {
+                    // 100% default if tax deductibility is not limited
+                    decimal DefaultTaxDeductiblePct = 100;
+
+                    // get the default tax deductible percentage for a new gift made today to the same recipient
+                    PPartnerTaxDeductiblePctTable PartnerTaxDeductiblePctTable =
+                        TRemote.MFinance.Gift.WebConnectors.LoadPartnerTaxDeductiblePct(GiftDetailRow.RecipientKey);
+
+                    if ((PartnerTaxDeductiblePctTable != null) && (PartnerTaxDeductiblePctTable.Rows.Count > 0))
+                    {
+                        foreach (PPartnerTaxDeductiblePctRow Row in PartnerTaxDeductiblePctTable.Rows)
+                        {
+                            // if no valid records exist then the recipient has not limited tax deductible by default
+                            if ((Row.PartnerKey == GiftDetailRow.RecipientKey) && (Row.DateValidFrom <= dtpEffectiveDate.Date.Value))
+                            {
+                                DefaultTaxDeductiblePct = Row.PercentageTaxDeductible;
+                            }
+                        }
+                    }
+
+                    // if different from current paercentage ask the user which one they want to use
+                    if ((GiftDetailRow.TaxDeductiblePct != DefaultTaxDeductiblePct)
+                        && (MessageBox.Show(string.Format(Catalog.GetString(
+                                        "The default tax deductible percentage for the recipient {0} ({1}) for {2} ({3}%) is different from the tax deductible "
+                                        +
+                                        "percentage recorded for the gift detail to be adjusted ({4}%).{5}Do you want to continue to use the original percentage "
+                                        +
+                                        "of {4}% for the adjusted gift?"),
+                                    RecipientName, GiftDetailRow.RecipientKey.ToString("0000000000"),
+                                    dtpEffectiveDate.Date.Value.ToString("dd-MMM-yyyy"), DefaultTaxDeductiblePct, GiftDetailRow.TaxDeductiblePct,
+                                    "\r\n\r\n"),
+                                Catalog.GetString("Adjust Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)
+                            == DialogResult.No))
+                    {
+                        UpdateTaxDeductiblePctRecipeints.Add(
+                            new string[] { GiftDetailRow.RecipientKey.ToString(), DefaultTaxDeductiblePct.ToString() });
+                    }
+                }
+
+                // Check the gift destination
+                if (FCheckGiftDestinationChange)
+                {
+                    Int64 RecipientLedgerNumber = 0;
+
+                    // get the recipient ledger number
+                    if (GiftDetailRow.RecipientKey > 0)
+                    {
+                        RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(GiftDetailRow.RecipientKey,
+                            dtpEffectiveDate.Date.Value);
+                    }
+
+                    TVerificationResultCollection VerificationResults;
+
+                    // if recipient ledger number belongs to a different ledger then check that it is set up for inter-ledger transfers
+                    if ((RecipientLedgerNumber != 0) && (((int)RecipientLedgerNumber / 1000000 == GiftDetailRow.LedgerNumber)
+                                                         || TRemote.MFinance.Gift.WebConnectors.IsRecipientLedgerNumberSetupForILT(
+                                                             GiftDetailRow.LedgerNumber, GiftDetailRow.RecipientKey, RecipientLedgerNumber,
+                                                             out VerificationResults)))
+                    {
+                        if (RecipientLedgerNumber != GiftDetailRow.RecipientLedgerNumber)
+                        {
+                            string NewFieldShortName;
+                            string OldFieldShortName;
+                            TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
+                                RecipientLedgerNumber, out NewFieldShortName, out PartnerClass);
+                            TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
+                                GiftDetailRow.RecipientLedgerNumber, out OldFieldShortName, out PartnerClass);
+
+                            if (MessageBox.Show(string.Format(Catalog.GetString(
+                                            "The default gift destination for the recipient {0} ({1}) for {2} ({3} ({4})) is different from the gift destination "
+                                            +
+                                            "recorded for the gift detail to be adjusted ({5} ({6})).{7}Do you want to continue to use the original "
+                                            +
+                                            "gift destination of {5} ({6}) for the adjusted gift?"),
+                                        RecipientName, GiftDetailRow.RecipientKey.ToString("0000000000"),
+                                        dtpEffectiveDate.Date.Value.ToString("dd-MMM-yyyy"), NewFieldShortName, RecipientLedgerNumber,
+                                        OldFieldShortName, GiftDetailRow.RecipientLedgerNumber, "\r\n\r\n"),
+                                    Catalog.GetString("Adjust Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                                    MessageBoxDefaultButton.Button2)
+                                == DialogResult.Yes)
+                            {
+                                // the gift destination for this gift detail will not be changeable
+                                FixedGiftDestinationRecipeints.Add(GiftDetailRow.RecipientKey.ToString());
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (UpdateTaxDeductiblePctRecipeints.Count > 0)
+            {
+                AddParam("UpdateTaxDeductiblePct", UpdateTaxDeductiblePctRecipeints);
+            }
+
+            if (FixedGiftDestinationRecipeints.Count > 0)
+            {
+                AddParam("FixedGiftDestination", FixedGiftDestinationRecipeints);
             }
         }
 

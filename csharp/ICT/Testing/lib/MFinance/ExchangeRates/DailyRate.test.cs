@@ -373,7 +373,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Check that the controls are disabled.  But the exchange rate itself can be edited because the rows are unused.
             Assert.IsFalse(cmbFromCurrency.Enabled);
             Assert.IsFalse(cmbToCurrency.Enabled);
-            Assert.IsFalse(dtpEffectiveDate.Enabled);
+            Assert.IsTrue(dtpEffectiveDate.ReadOnly);
             Assert.IsTrue(txtExchangeRate.Enabled);
             Assert.IsFalse(btnSave.Enabled, "The Save button should be disabled when the screen is loaded");
 
@@ -732,7 +732,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             Assert.IsFalse(cmbFromCurrency.Enabled);
             Assert.IsFalse(cmbToCurrency.Enabled);
-            Assert.IsFalse(txtDateEffective.Enabled);
+            Assert.IsTrue(txtDateEffective.ReadOnly);
             Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
 
             Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());

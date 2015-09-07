@@ -55,6 +55,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ACalc.AddParameter("param_quarter", false);
             ACalc.AddParameter("param_start_period_i", 1);
+            //TODO: Calendar vs Financial Date Handling - Confirm that below is correct, i.e. has a 12 period financial year been assumed
             ACalc.AddParameter("param_end_period_i", 12);
             ACalc.AddParameter("param_ytd", true);
             ACalc.AddParameter("param_multiperiod", true);

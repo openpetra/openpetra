@@ -413,29 +413,16 @@ namespace Ict.Petra.Client.MCommon
         }
 
         /// <summary>
-        /// Gets the AdressOrder (p_address_order_i DB field) of a certain Country.
+        /// Gets the AddressOrder (p_address_order_i DB field) of a certain Country.
         /// </summary>
         /// <param name="ACountryCode">CountryCode (ISO Code) of a Country</param>
         /// <returns>AddressOrder for that Country (0 if Country cannot be found).</returns>
         public static Int32 GetAddressOrder(String ACountryCode)
         {
-            Int32 ReturnValue;
-            PCountryTable DataCacheCountryDT;
-            PCountryRow CountryDR;
+            PCountryTable DataCacheCountryDT = (PCountryTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
+            PCountryRow CountryDR = (PCountryRow)DataCacheCountryDT.Rows.Find(ACountryCode);
 
-            DataCacheCountryDT = (PCountryTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
-            CountryDR = (PCountryRow)DataCacheCountryDT.Rows.Find(ACountryCode);
-
-            if (CountryDR != null)
-            {
-                ReturnValue = CountryDR.AddressOrder;
-            }
-            else
-            {
-                ReturnValue = 0;
-            }
-
-            return ReturnValue;
+            return (CountryDR != null) ? CountryDR.AddressOrder : 0;
         }
 
         #endregion

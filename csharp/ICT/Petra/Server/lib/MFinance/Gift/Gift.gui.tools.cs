@@ -27,12 +27,14 @@ using System.Data;
 
 using Ict.Common.DB;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -60,17 +62,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         ///    shall be changed to KEY-MIN.
         /// 8. If p_unit.p_partner_class_c does not hold the value "KEYMIN" the routine is done.
         /// </summary>
-        /// <param name="APartnerKey">Input: not used
-        ///                               Output: True if the partnerKey is a valid number of an
-        ///                                       existing partner and false if not.</param>
-        /// <param name="AMotivationGroup">Input: Common default value for the motivation group.
-        ///                               Output: Default value depending of the actual
-        ///                                       values of APartnerKey. </param>
-        /// <param name="AMotivationDetail">Input: Common default value for the motivation detail.
-        ///                               Output: Default value depending of the actual
-        ///                                       values of APartnerKey. </param>
-        /// <returns>The result of is boolean and the value true tells that there exists an entry
-        /// in the database which is represented by the parther key</returns>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AMotivationGroup">Output: Always set to GIFT</param>
+        /// <param name="AMotivationDetail">Input: default value; unlikely to be used!
+        ///                               Output: value depending on APartnerKey. </param>
+        /// <returns>true if parther key is valid</returns>
         [RequireModulePermission("FINANCE-1")]
         public static Boolean GetMotivationGroupAndDetail(Int64 APartnerKey,
             ref String AMotivationGroup,
@@ -80,8 +76,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (APartnerKey != 0)
             {
-                AMotivationGroup = MFinanceConstants.MOTIVATION_GROUP_GIFT;
-
+                string MotivationGroup = MFinanceConstants.MOTIVATION_GROUP_GIFT;
                 string MotivationDetail = AMotivationDetail;
 
                 TDBTransaction readTransaction = null;
@@ -103,27 +98,52 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (partnerRow.PartnerClass.Equals(MPartnerConstants.PARTNERCLASS_UNIT))
                             {
                                 // AND KEY-MIN
-                                PUnitTable pUnitTable =
-                                    PUnitAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
 
-                                if (pUnitTable.Rows.Count == 1)
+                                bool KeyMinFound = false;
+
+                                // first check if a motivation detail is linked to this potential key min
+                                AMotivationDetailTable MotivationDetailTable = AMotivationDetailAccess.LoadViaPPartner(APartnerKey, readTransaction);
+
+                                if ((MotivationDetailTable != null) && (MotivationDetailTable.Rows.Count > 0))
                                 {
-                                    PUnitRow unitRow = (PUnitRow)pUnitTable.Rows[0];
-
-                                    if (unitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+                                    foreach (AMotivationDetailRow Row in MotivationDetailTable.Rows)
                                     {
-                                        MotivationDetail = MFinanceConstants.GROUP_DETAIL_KEY_MIN;
-                                    }
-                                    else
-                                    {
-                                        MotivationDetail =
-                                            TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_DEFAULTFIELDMOTIVATION,
-                                                MFinanceConstants.GROUP_DETAIL_FIELD);
-
-                                        // if system default is empty then set to FIELD
-                                        if (string.IsNullOrEmpty(MotivationDetail))
+                                        if (Row.MotivationStatus)
                                         {
-                                            MotivationDetail = MFinanceConstants.GROUP_DETAIL_FIELD;
+                                            MotivationGroup = MotivationDetailTable[0].MotivationGroupCode;
+                                            MotivationDetail = MotivationDetailTable[0].MotivationDetailCode;
+
+                                            KeyMinFound = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                // second check to see if this is a key min
+                                if (!KeyMinFound)
+                                {
+                                    PUnitTable pUnitTable =
+                                        PUnitAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
+
+                                    if (pUnitTable.Rows.Count == 1)
+                                    {
+                                        PUnitRow unitRow = (PUnitRow)pUnitTable.Rows[0];
+
+                                        if (unitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+                                        {
+                                            MotivationDetail = MFinanceConstants.GROUP_DETAIL_KEY_MIN;
+                                        }
+                                        else
+                                        {
+                                            MotivationDetail =
+                                                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_DEFAULTFIELDMOTIVATION,
+                                                    MFinanceConstants.GROUP_DETAIL_FIELD);
+
+                                            // if system default is empty then set to FIELD
+                                            if (string.IsNullOrEmpty(MotivationDetail))
+                                            {
+                                                MotivationDetail = MFinanceConstants.GROUP_DETAIL_FIELD;
+                                            }
                                         }
                                     }
                                 }
@@ -135,6 +155,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                     });
 
+                AMotivationGroup = MotivationGroup;
                 AMotivationDetail = MotivationDetail;
             }
 

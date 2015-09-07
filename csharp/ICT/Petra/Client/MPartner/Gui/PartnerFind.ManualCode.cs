@@ -772,8 +772,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     ucoFindByBankDetails.PartnerFindCriteria.FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords();
 
-                    Thread NewThread = new Thread(ucoFindByBankDetails.PartnerFindCriteria.PopulateBankComboBoxes);
-                    NewThread.Start();
+                    ucoFindByBankDetails.PartnerFindCriteria.PopulateBankComboBoxes();
                 }
 
                 Cursor.Current = Cursors.Default;

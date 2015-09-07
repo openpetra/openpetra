@@ -59,7 +59,7 @@ namespace Ict.Common.Remoting.Server
 
             if (TLogging.DL >= 10)
             {
-                Console.WriteLine("{0} TPollClientTasks created", DateTime.Now);
+                TLogging.Log("TPollClientTasks created");
             }
         }
 

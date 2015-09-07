@@ -101,11 +101,11 @@ RootNode:
 
 # Footer (Gift Information)
         pnlAdditionalInfo: {ControlsOrientation=horizontal}
-            Controls: [txtLastGiftDetailsDate, txtLastGiftDetails]
+            Controls: [dtpLastGiftDetailsDate, txtLastGiftDetails]
             ColWidths: [0=Fixed:80]
             Margin: 0
 
-        txtLastGiftDetailsDate:
+        dtpLastGiftDetailsDate:
             Label: Last Gift
             LabelWidth: 80
             DataField: MiscellaneousData.LastGiftDate

@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -66,110 +67,142 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Method to cancel a specified batch
         /// </summary>
-        /// <param name="ACurrentBatchRow">The row to cancel</param>
-        /// <param name="ABatchDescriptionTextBox">Pass a reference to a TextBox that is used to display the batch description text.  This is required
-        /// to ensure that validation passes when the cancelled batch is saved.</param>
+        /// <param name="ABatchRowToCancel">The row to cancel</param>
         /// <returns></returns>
-        public bool CancelBatch(ABatchRow ACurrentBatchRow, TextBox ABatchDescriptionTextBox)
+        public bool CancelBatch(ABatchRow ABatchRowToCancel)
         {
-            if ((ACurrentBatchRow == null) || !FMyForm.SaveChanges())
+            //Assign default value(s)
+            bool CancellationSuccessful = false;
+
+            if ((ABatchRowToCancel == null))
             {
-                return false;
+                return CancellationSuccessful;
             }
 
-            int CurrentBatchNumber = ACurrentBatchRow.BatchNumber;
+            int CurrentBatchNumber = ABatchRowToCancel.BatchNumber;
 
             if ((MessageBox.Show(String.Format(Catalog.GetString("You have chosen to cancel this batch ({0}).\n\nDo you really want to cancel it?"),
                          CurrentBatchNumber),
                      Catalog.GetString("Confirm Cancel"),
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question,
-                     MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
+                     MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
             {
-                try
+                return CancellationSuccessful;
+            }
+
+            //Backup the Dataset for reversion purposes
+            GLBatchTDS BackupMainDS = (GLBatchTDS)FMainDS.Copy();
+            BackupMainDS.Merge(FMainDS);
+
+            bool RowToDeleteIsNew = (ABatchRowToCancel.RowState == DataRowState.Added);
+
+            if (!RowToDeleteIsNew)
+            {
+                //Remove any changes, which may cause validation issues, before cancelling
+                FMyForm.GetBatchControl().UndoModifiedBatchRow(ABatchRowToCancel, true);
+
+                if (!(FMyForm.SaveChanges()))
                 {
-                    //clear any transactions currently being editied in the Transaction Tab
-                    FMyForm.GetTransactionsControl().ClearCurrentSelection();
-                    //clear any journals currently being editied in the Journals Tab
-                    FMyForm.GetJournalsControl().ClearCurrentSelection();
+                    MessageBox.Show(Catalog.GetString("Error in trying to save prior to cancelling current Batch!"),
+                        Catalog.GetString("Cancellation Error"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
 
-                    //Clear Journals etc for current Batch
-                    FMainDS.ATransAnalAttrib.Clear();
-                    FMainDS.ATransaction.Clear();
-                    FMainDS.AJournal.Clear();
-
-                    //Load tables afresh
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, CurrentBatchNumber));
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionForBatch(FLedgerNumber, CurrentBatchNumber));
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttribForBatch(FLedgerNumber, CurrentBatchNumber));
-
-                    //Delete transactions
-                    for (int i = FMainDS.ATransAnalAttrib.Count - 1; i >= 0; i--)
-                    {
-                        FMainDS.ATransAnalAttrib[i].Delete();
-                    }
-
-                    for (int i = FMainDS.ATransaction.Count - 1; i >= 0; i--)
-                    {
-                        FMainDS.ATransaction[i].Delete();
-                    }
-
-                    //Update Journal totals and status
-                    foreach (AJournalRow journal in FMainDS.AJournal.Rows)
-                    {
-                        if (journal.BatchNumber == CurrentBatchNumber)
-                        {
-                            journal.BeginEdit();
-                            journal.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
-                            journal.JournalCreditTotal = 0;
-                            journal.JournalDebitTotal = 0;
-                            journal.EndEdit();
-                        }
-                    }
-
-                    // Edit the batch row
-                    ACurrentBatchRow.BeginEdit();
-
-                    //Ensure validation passes
-                    if (ACurrentBatchRow.BatchDescription.Length == 0)
-                    {
-                        ABatchDescriptionTextBox.Text = " ";
-                    }
-
-                    ACurrentBatchRow.BatchCreditTotal = 0;
-                    ACurrentBatchRow.BatchDebitTotal = 0;
-                    ACurrentBatchRow.BatchControlTotal = 0;
-                    ACurrentBatchRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-
-                    ACurrentBatchRow.EndEdit();
-
-                    FPetraUtilsObject.SetChangedFlag();
-
-                    //Need to call save
-                    if (FMyForm.SaveChanges())
-                    {
-                        MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
-                            Catalog.GetString("Success"),
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        return true;
-                    }
-                    else
-                    {
-                        // saving failed, therefore do not try to post
-                        MessageBox.Show(Catalog.GetString(
-                                "The batch has been cancelled but there were problems during saving; ") + Environment.NewLine +
-                            Catalog.GetString("Please try and save the cancellation immediately."),
-                            Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
+                    return CancellationSuccessful;
                 }
             }
 
-            return false;
+            try
+            {
+                FMyForm.Cursor = Cursors.WaitCursor;
+
+                //clear any transactions currently being editied in the Transaction Tab
+                FMyForm.GetTransactionsControl().ClearCurrentSelection();
+                //clear any journals currently being editied in the Journals Tab
+                FMyForm.GetJournalsControl().ClearCurrentSelection();
+
+                //Clear Journals etc for current Batch
+                FMainDS.ATransAnalAttrib.Clear();
+                FMainDS.ATransaction.Clear();
+                FMainDS.AJournal.Clear();
+
+                //Load tables afresh
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, CurrentBatchNumber));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(FLedgerNumber, CurrentBatchNumber));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttribForBatch(FLedgerNumber, CurrentBatchNumber));
+                FMainDS.AcceptChanges();
+
+                //Delete transactions and analysis attributes
+                for (int i = FMainDS.ATransAnalAttrib.Count - 1; i >= 0; i--)
+                {
+                    FMainDS.ATransAnalAttrib[i].Delete();
+                }
+
+                for (int i = FMainDS.ATransaction.Count - 1; i >= 0; i--)
+                {
+                    FMainDS.ATransaction[i].Delete();
+                }
+
+                //Update Journal totals and status
+                foreach (AJournalRow journal in FMainDS.AJournal.Rows)
+                {
+                    if (journal.BatchNumber == CurrentBatchNumber)
+                    {
+                        journal.BeginEdit();
+                        journal.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
+                        journal.JournalCreditTotal = 0;
+                        journal.JournalDebitTotal = 0;
+                        journal.LastTransactionNumber = 0;
+                        journal.EndEdit();
+                    }
+                }
+
+                // Edit the batch row
+                ABatchRowToCancel.BeginEdit();
+
+                ABatchRowToCancel.BatchCreditTotal = 0;
+                ABatchRowToCancel.BatchDebitTotal = 0;
+                ABatchRowToCancel.BatchControlTotal = 0;
+                ABatchRowToCancel.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+
+                ABatchRowToCancel.EndEdit();
+
+                FPetraUtilsObject.SetChangedFlag();
+
+                //Need to call save
+                if (FMyForm.SaveChanges())
+                {
+                    MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    FMyForm.DisableTransactions();
+                    FMyForm.DisableJournals();
+                }
+                else
+                {
+                    throw new Exception(Catalog.GetString("The batch failed to save after being cancelled! Reopen the form and retry."));
+                }
+
+                CancellationSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message,
+                    "Cancellation Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                //Revert to previous state
+                FMainDS.Merge(BackupMainDS);
+            }
+            finally
+            {
+                FMyForm.Cursor = Cursors.Default;
+            }
+
+            return CancellationSuccessful;
         }
 
         #endregion

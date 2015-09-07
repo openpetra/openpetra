@@ -12,13 +12,12 @@ RootNode:
         Load: {class=System.EventHandler, method=TFrmGiftBatch_Load}
     Actions:
         actNewDonorWarning: {ActionClick=mniNewDonorWarning_Click}
-        actPrintGiftBatchDetail: {ActionClick=PrintGiftBatchDetail}
 
     Controls:
         pnlContent:
             Controls: [tabGiftBatch]
             Dock: Fill
-        tabGiftBatch: {Dock=Fill, DragTabPageEnabled=false}        
+        tabGiftBatch: {Dock=Fill, DragTabPageEnabled=false}
         tpgBatches: 
             Label: Batches
             Controls: [ucoBatches]
@@ -34,9 +33,9 @@ RootNode:
 
     Menu:
         mniFile:
+            mniFilePrint:
+                ActionClick:FilePrint
             mniSeparator: {Label=-, Visible=false}
-            mniPrintGiftBatchDetail: {Label=Print &Gift Batch Detail Report}
-                Action: actPrintGiftBatchDetail
             mniNewDonorWarning: {Label=&New Donor Warning}
                 Action: actNewDonorWarning
             mniSeparator: {Label=-}

@@ -178,9 +178,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " LEFT JOIN PUB_p_partner_gift_destination" +
                                    " ON Recipient.p_partner_class_c = 'FAMILY'" +
                                    " AND PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n" +
-                                   " AND PUB_p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate + "'" +
+                                   " AND PUB_p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate.ToString("yyyy-MM-dd") + "'" +
                                    " AND (PUB_p_partner_gift_destination.p_date_expires_d IS NULL" +
-                                   " OR (PUB_p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate + "'" +
+                                   " OR (PUB_p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate.ToString(
+                        "yyyy-MM-dd") + "'" +
                                    " AND PUB_p_partner_gift_destination.p_date_effective_d <> PUB_p_partner_gift_destination.p_date_expires_d))" +
 
                                    " LEFT JOIN um_unit_structure" +
@@ -270,6 +271,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
+                    //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end in all places below
                     string Query = "SELECT " +
                                    " GiftDetail.p_recipient_key_n AS RecipientKey," +
 
@@ -578,6 +580,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
+                    //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end in all places below
                     string Query = "SELECT DISTINCT" +
                                    " gift.p_donor_key_n AS DonorKey," +
                                    " DonorPartner.p_partner_short_name_c AS DonorName," +

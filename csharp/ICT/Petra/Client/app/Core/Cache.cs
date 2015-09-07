@@ -1475,8 +1475,9 @@ namespace Ict.Petra.Client.App.Core
                     {
                         throw;
                     }
-                }
-            }
+                } // else (Table NOT up to date)
+
+            } // if IsTableCached
 
             if (CacheableDataTableReloadNecessary)
             {

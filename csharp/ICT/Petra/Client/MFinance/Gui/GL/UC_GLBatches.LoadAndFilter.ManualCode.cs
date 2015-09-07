@@ -294,13 +294,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 newYear = FCurrentLedgerYear;
 
-                workingFilter = String.Format("{0} = {1}", ABatchTable.GetBatchYearDBName(), newYear);
+                workingFilter = String.Format("{0}={1}", ABatchTable.GetBatchYearDBName(), newYear);
                 showingAllPeriods = true;
             }
             else
             {
                 workingFilter = String.Format(
-                    "{0} = {1}",
+                    "{0}={1}",
                     ABatchTable.GetBatchYearDBName(), newYear);
 
                 if (newPeriod == 0)  //All periods for year
@@ -314,7 +314,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
                 else if (newPeriod > 0)
                 {
-                    workingFilter += String.Format(" AND {0} = {1}", ABatchTable.GetBatchPeriodDBName(), newPeriod);
+                    workingFilter += String.Format(" AND {0}={1}", ABatchTable.GetBatchPeriodDBName(), newPeriod);
                 }
             }
 
@@ -329,7 +329,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FrbtEditing.Checked)
             {
-                StringHelper.JoinAndAppend(ref workingFilter, String.Format("{0} = '{1}'",
+                StringHelper.JoinAndAppend(ref workingFilter, String.Format("{0}='{1}'",
                         ABatchTable.GetBatchStatusDBName(),
                         MFinanceConstants.BATCH_UNPOSTED),
                     CommonJoinString.JOIN_STRING_SQL_AND);
@@ -337,7 +337,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else if (FrbtPosting.Checked)
             {
                 StringHelper.JoinAndAppend(ref workingFilter,
-                    String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2}))",
+                    String.Format("({0}='{1}') AND ({2}={3}) AND ({2}<>0) AND (({4}=0) OR ({4}={2}))",
                         ABatchTable.GetBatchStatusDBName(),
                         MFinanceConstants.BATCH_UNPOSTED,
                         ABatchTable.GetBatchCreditTotalDBName(),

@@ -138,20 +138,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                      * The new SQL retrieves all units with u_unit_type_code_c is "A", "D", or "F" (Area, Special Fund, or Field).
                      *                                                        Tim Ingham, April 2015
                      *
-                     *
-                     * String sql = "SELECT DISTINCT p_partner.p_partner_key_n, " +
-                     *              "p_partner.p_partner_short_name_c AS FieldName" +
-                     *              " FROM p_partner, p_partner_type" +
-                     *              " WHERE p_partner_type.p_partner_key_n = p_partner.p_partner_key_n " +
-                     *              " AND p_partner_type.p_type_code_c IN ('LEDGER','COSTCENTRE')" +
-                     *              " ORDER BY p_partner.p_partner_short_name_c";
+                     * Actually, the original SQL is right so I've reverted it. Confirmed by OM Swiss and Rob. July 2015
                      */
 
-                    String sql = "SELECT DISTINCT p_unit.p_partner_key_n," +
-                                 " p_unit.p_unit_name_c AS FieldName" +
-                                 " FROM p_unit" +
-                                 " WHERE p_unit.u_unit_type_code_c IN ('A', 'D', 'F')" +
-                                 " ORDER BY p_unit.p_unit_name_c";
+                    String sql = "SELECT DISTINCT p_partner.p_partner_key_n, " +
+                                 "p_partner.p_partner_short_name_c AS FieldName" +
+                                 " FROM p_partner, p_partner_type" +
+                                 " WHERE p_partner_type.p_partner_key_n = p_partner.p_partner_key_n " +
+                                 " AND p_partner_type.p_type_code_c IN ('LEDGER','COSTCENTRE')" +
+                                 " ORDER BY p_partner.p_partner_short_name_c";
 
                     ReturnTable = DBAccess.GDBAccessObj.SelectDT(sql, "receivingFields", ReadTransaction);
                 });
@@ -423,12 +418,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 AStartPeriod -= 1; // I want the closing balance of the previous period.
             }
 
-            String BalanceField = ASelectedCurrency.StartsWith("Int") ? "glmp.a_actual_intl_n" :
-                                  ASelectedCurrency.StartsWith("Trans") ? "glmp.a_actual_foreign_n" : "glmp.a_actual_base_n";
-
-            String StartBalanceField = ASelectedCurrency.StartsWith("Int") ? "glm.a_start_balance_intl_n" :
-                                       ASelectedCurrency.StartsWith("Trans") ? "glm.a_start_balance_foreign_n" : "glm.a_start_balance_base_n";
-
             String CurrencyCodeField = ASelectedCurrency.StartsWith("Int") ? "a_ledger.a_intl_currency_c" :
                                        ASelectedCurrency == "Base" ? "a_ledger.a_base_currency_c" :
                                        "CASE WHEN a_account.a_foreign_currency_flag_l=TRUE THEN a_account.a_foreign_currency_code_c ELSE a_ledger.a_base_currency_c END";
@@ -450,9 +439,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             String Query = "SELECT glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i, " +
                            "a_account.a_debit_credit_indicator_l AS Debit, " +
-                           StartBalanceField + " AS start_balance, " +
-                           BalanceField + " AS balance, " +
-                           CurrencyCodeField + " AS Currency " +
+                           "glm.a_start_balance_base_n AS StartBalanceBase, " +
+                           "glm.a_start_balance_foreign_n AS StartBalanceForeign, " +
+                           "glm.a_start_balance_intl_n AS StartBalanceIntl, " +
+                           "glmp.a_actual_base_n AS BalanceBase, " +
+                           "glmp.a_actual_foreign_n AS BalanceForeign, " +
+                           "glmp.a_actual_intl_n AS BalanceIntl," +
+                           CurrencyCodeField + " AS Currency, " +
+                           " a_ledger.a_base_currency_c AS BaseCurrency " +
                            " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre, a_ledger" +
                            " WHERE glm." + ALedgerFilter +
                            " AND a_account." + ALedgerFilter +
@@ -516,17 +510,68 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 Int32 ThisPeriod = Convert.ToInt32(row["a_period_number_i"]);
 
+                String BalanceField = "BalanceBase";
+
+                if (ASelectedCurrency.StartsWith("Int"))
+                {
+                    BalanceField = "BalanceIntl";
+                }
+                else
+                {
+                    if (ASelectedCurrency.StartsWith("Trans") && (row["Currency"].ToString() != row["BaseCurrency"].ToString()))
+                    {
+                        BalanceField = "BalanceForeign";
+                    }
+                }
+
                 if (ThisPeriod < MinPeriod)
                 {
                     MinPeriod = ThisPeriod;
-                    Decimal OpeningBalance = (FromStartOfYear) ? Convert.ToDecimal(row["start_balance"]) : Convert.ToDecimal(row["balance"]);
+
+                    Decimal OpeningBalance = 0;
+
+                    if (FromStartOfYear)
+                    {
+                        String StartBalanceField = "StartBalanceBase";
+
+                        if (ASelectedCurrency.StartsWith("Int"))
+                        {
+                            StartBalanceField = "StartBalanceIntl";
+                        }
+                        else
+                        {
+                            if (ASelectedCurrency.StartsWith("Trans") && (row["Currency"].ToString() != row["BaseCurrency"].ToString()))
+                            {
+                                StartBalanceField = "StartBalanceForeign";
+                            }
+                        }
+
+                        if (row[StartBalanceField].GetType() != typeof(DBNull))
+                        {
+                            OpeningBalance = Convert.ToDecimal(row[StartBalanceField]);
+                        }
+                    }
+                    else
+                    {
+                        if (row[BalanceField].GetType() != typeof(DBNull))
+                        {
+                            OpeningBalance = Convert.ToDecimal(row[BalanceField]);
+                        }
+                    }
+
                     NewRow["OpeningBalance"] = MakeItDebit * OpeningBalance;
                 }
 
                 if (ThisPeriod > MaxPeriod)
                 {
                     MaxPeriod = ThisPeriod;
-                    Decimal ClosingBalance = Convert.ToDecimal(row["balance"]);
+                    Decimal ClosingBalance = 0;
+
+                    if (row[BalanceField].GetType() != typeof(DBNull))
+                    {
+                        ClosingBalance = Convert.ToDecimal(row[BalanceField]);
+                    }
+
                     NewRow["ClosingBalance"] = MakeItDebit * ClosingBalance;
                 }
             } // foreach
@@ -852,7 +897,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
             DataTable resultTable = null;
             TDBTransaction ReadTrans = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTrans,
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTrans,
                 delegate
                 {
                     ACostCentreTable AllCostCentres = ACostCentreAccess.LoadViaALedger(LedgerNumber, ReadTrans);
@@ -1317,7 +1364,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String isThisYear = " Year=" + AccountingYear;
                     String isLastYear = " Year=" + (AccountingYear - 1);
 
-                    String PeriodFilter = " AND glmp.a_period_number_i<=" + ReportPeriodEnd;         // Last month's rows are needed to calculate a single month's delta.
+                    String PeriodFilter = " AND glmp.a_period_number_i<=" + NumberOfAccountingPeriods; // I need the whole year to see "whole year budget".
                     String isEndPeriod = "Period=" + ReportPeriodEnd;
                     String isPrevPeriod = "Period=" + (ReportPeriodStart - 1);
 
@@ -1344,10 +1391,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         "0.0 AS P1, 0.0 AS P2, 0.0 AS P3, 0.0 AS P4, 0.0 AS P5, 0.0 AS P6 , 0.0 AS P7, 0.0 AS P8, 0.0 AS P9, 0.0 AS P10, 0.0 AS P11, 0.0 AS P12 ";
 
                     String NoZeroesFilter =
-                        "WHERE (LastMonthYtd != 0 OR ActualYtd != 0 OR Budget != 0 OR BudgetYTD != 0 OR WholeYearBudget != 0 OR LastYearBudget != 0)";
+                        "WHERE (LastMonthYtd != 0 OR ActualYtd != 0 OR Budget != 0 OR BudgetYTD != 0 OR WholeYearBudget != 0 OR LastYearBudget != 0 OR LastYearLastMonthYtd != 0 OR LastYearActualYtd != 0)";
 
                     if (WholeYearPeriodsBreakdown)
                     {
+                        //TODO: Calendar vs Financial Date Handling - Check if this should use financial num periods and not assume 12
                         CostCentreBreakdown = false;                            // Hopefully the client will have ensured this is false anyway - I'm just asserting it!
                         MonthlyBreakdownQuery =
                             "SUM (CASE WHEN Period=1 THEN ActualYTD ELSE 0 END) AS P1, " +
@@ -2247,21 +2295,51 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String[] SelectedFees = AParameters["param_fee_codes"].ToString().Split(',');
                     Int32 FeeCols = SelectedFees.Length;
 
+                    // Full report lists every gift transaction for all cost centres
+                    // Summary report groups and summarises gifts with a common Foreign cost centre
+                    bool FullReport = AParameters["param_rgrFees"].ToString() == "ByGiftDetail";
+
                     //
                     // This constant is copied from the client - it represents a reasonable maximum
                     // number of columns in the report, and hopefully it is as many as any field needs.
                     Int32 MAX_FEE_COUNT = 11;
 
-                    String Query =
-                        "Select feestbl.*, giftstbl.* FROM " +
-                        "(SELECT a_processed_fee.a_cost_centre_code_c AS CostCentreCode, " +
-                        "a_cost_centre.a_cost_centre_name_c AS CostCentreName";
+                    String Query = "SELECT ";
+
+                    if (!FullReport)
+                    {
+                        Query += "a_cost_centre.a_cost_centre_code_c AS CostCentreCode, " +
+                                 "a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
+                                 "0 AS BatchNumber, " +
+                                 "0 AS TransactionNumber, " +
+                                 "0 AS DetailNumber, " +
+                                 "0 AS Field, " +
+
+                                 "(SELECT SUM(GiftDetail2.a_gift_amount_n) FROM a_gift_detail AS GiftDetail2, a_gift_batch AS GiftBatch2" +
+                                 " WHERE GiftDetail2.a_ledger_number_i = " + LedgerNumber +
+                                 " AND GiftDetail2.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c" +
+                                 " AND GiftBatch2.a_ledger_number_i = GiftDetail2.a_ledger_number_i" +
+                                 " AND GiftBatch2.a_batch_number_i = GiftDetail2.a_batch_number_i" +
+                                 " AND GiftBatch2.a_batch_year_i = " + YearNumber + " AND GiftBatch2.a_batch_period_i = " + period +
+                                 ") AS GiftAmount";
+                    }
+                    else
+                    {
+                        Query += "a_gift_detail.a_gift_amount_n AS GiftAmount, " +
+                                 "a_gift_detail.a_batch_number_i AS BatchNumber, " +
+                                 "a_gift_detail.a_gift_transaction_number_i AS TransactionNumber, " +
+                                 "a_gift_detail.a_detail_number_i AS DetailNumber, " +
+                                 "a_gift_detail.a_recipient_ledger_number_n AS Field, " +
+                                 "0 AS CostCentreCode, " +
+                                 "0 AS CostCentreName";
+                    }
 
                     for (Int32 Idx = 0; Idx < MAX_FEE_COUNT; Idx++)
                     {
                         if (Idx < FeeCols)
                         {
-                            Query += ", SUM( case when (a_fee_code_c  = '" + SelectedFees[Idx] + "') then a_periodic_amount_n else 0 end )as F" + Idx;
+                            Query += ", SUM(CASE WHEN (a_processed_fee.a_fee_code_c  = '" + SelectedFees[Idx] +
+                                     "') THEN a_processed_fee.a_periodic_amount_n ELSE 0 END)as F" + Idx;
                         }
                         else // I'm always providing {MAX_FEE_COUNT} columns - some may be blank at RHS.
                         {
@@ -2269,26 +2347,39 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         }
                     }
 
-                    Query += " FROM a_processed_fee, a_cost_centre " +
-                             "WHERE a_processed_fee.a_ledger_number_i=" + LedgerNumber + " AND a_period_number_i=" + period + " " +
-                             "AND a_cost_centre.a_ledger_number_i = a_processed_fee.a_ledger_number_i " +
-                             "AND a_cost_centre.a_cost_centre_type_c='Foreign' " +
-                             "AND a_cost_centre.a_cost_centre_code_c = a_processed_fee.a_cost_centre_code_c " +
-                             "GROUP BY a_processed_fee.a_cost_centre_code_c, a_cost_centre.a_cost_centre_name_c" +
-                             ") feestbl, " +
+                    Query += " FROM a_gift_batch, a_gift_detail " +
 
-                             "(SELECT a_gift_detail.a_cost_centre_code_c AS CostCentreCode, SUM(a_gift_detail.a_gift_amount_n) AS Gifts " +
-                             "FROM a_gift_batch, a_gift_detail " +
-                             "WHERE " +
-                             "a_gift_batch.a_ledger_number_i = " + LedgerNumber + " " +
-                             "AND a_gift_batch.a_batch_year_i = " + YearNumber + " AND a_gift_batch.a_batch_period_i = " + period + " " +
-                             "AND a_gift_detail.a_ledger_number_i = " + LedgerNumber + " " +
-                             "AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i " +
-                             "GROUP BY a_gift_detail.a_cost_centre_code_c" +
-                             ") giftstbl " +
+                             "LEFT JOIN a_processed_fee " +
+                             "ON a_processed_fee.a_ledger_number_i = " + LedgerNumber +
+                             " AND a_processed_fee.a_period_number_i = " + period +
+                             " AND a_processed_fee.a_batch_number_i = a_gift_detail.a_batch_number_i" +
+                             " AND a_processed_fee.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
+                             " AND a_processed_fee.a_detail_number_i = a_gift_detail.a_detail_number_i ";
 
-                             "WHERE feestbl.CostCentreCode = giftstbl.CostCentreCode " +
-                             "ORDER BY giftstbl.CostCentreCode ";
+                    if (!FullReport)
+                    {
+                        Query += "JOIN a_cost_centre " +
+                                 "ON a_cost_centre.a_ledger_number_i = a_processed_fee.a_ledger_number_i " +
+                                 "AND a_cost_centre.a_cost_centre_code_c = a_processed_fee.a_cost_centre_code_c " +
+                                 "AND a_cost_centre.a_cost_centre_type_c = 'Foreign' ";
+                    }
+
+                    Query += "WHERE " +
+                             "a_gift_batch.a_ledger_number_i = " + LedgerNumber +
+                             " AND a_gift_batch.a_batch_year_i = " + YearNumber + " AND a_gift_batch.a_batch_period_i = " + period +
+                             " AND a_gift_detail.a_ledger_number_i = " + LedgerNumber +
+                             " AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i ";
+
+                    if (!FullReport)
+                    {
+                        Query += "GROUP BY CostCentreCode, CostCentreName " +
+                                 "ORDER BY CostCentreCode";
+                    }
+                    else
+                    {
+                        Query += "GROUP BY GiftAmount, BatchNumber, TransactionNumber, DetailNumber, Field " +
+                                 "ORDER BY BatchNumber, TransactionNumber, DetailNumber";
+                    }
 
                     TLogging.Log(Catalog.GetString(""), TLoggingType.ToStatusBar);
                     resultsTable = DbAdapter.RunQuery(Query, "Fees", Transaction);
@@ -2781,6 +2872,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 FirstDate = PeriodStart;
             }
 
+            //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
             String TotalDateRange = "BETWEEN '" + FirstDate.ToString("yyyy-MM-dd") + "' AND '" + new DateTime(DateTime.Today.Year, 12, 31).ToString(
                 "yyyy-MM-dd") + "'";
 
@@ -2920,6 +3012,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             for (Int32 Year = endDate.Year; Year >= startDate.Year; Year--)
             {
+                //TODO: Calendar vs Financial Date Handling - Check if this should use financial num periods and not assume 12
                 for (Int32 Month = 1; Month <= 12; Month++)
                 {
                     string monthStart = String.Format("#{0:0000}-{1:00}-01#", Year, Month);
@@ -3145,6 +3238,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
             Int32 ReportPeriodEnd = AParameters["param_end_period_i"].ToInt32();
+            bool YTDBalance = AParameters["param_chkYTD"].ToBool();
 
             //
             // Read different DB fields according to currency setting
@@ -3174,29 +3268,50 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " glm.a_cost_centre_code_c AS CostCentreCode," +
                                    " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
                                    " a_cost_centre.a_cost_centre_type_c AS CostCentreType," +
-                                   " a_account.a_debit_credit_indicator_l AS IsDebit," +
-                                   " glmp." + ActualFieldName + " AS Balance," +
-                                   " 0.0 as Debit, " +
-                                   " 0.0 as Credit, " +
-                                   " glm.a_account_code_c AS AccountCode," +
-                                   " a_account.a_account_code_short_desc_c AS AccountName" +
+                                   " a_account.a_debit_credit_indicator_l AS IsDebit,";
 
-                                   " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
-                                   " WHERE glm.a_ledger_number_i=" + LedgerNumber +
-                                   " AND glm.a_year_i=" + AccountingYear +
-                                   " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
-                                   " AND glmp.a_period_number_i=" + ReportPeriodEnd +
-                                   " AND glmp." + ActualFieldName + " <> 0" +
+                    if (YTDBalance)
+                    {
+                        Query += " glmp." + ActualFieldName + " AS Balance,";
+                    }
+                    else
+                    {
+                        Query += " (glmp." + ActualFieldName + " - glmpPrevious." + ActualFieldName + ") AS Balance,";
+                    }
 
-                                   " AND a_account.a_account_code_c = glm.a_account_code_c" +
-                                   " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
-                                   " AND a_account.a_posting_status_l = true" +
-                                   " AND a_cost_centre.a_ledger_number_i = glm.a_ledger_number_i" +
-                                   " AND a_cost_centre.a_cost_centre_code_c = glm.a_cost_centre_code_c" +
-                                   " AND a_cost_centre.a_posting_cost_centre_flag_l = true" +
-                                   CostCentreFilter +
-                                   AccountCodeFilter +
-                                   OrderBy;
+                    Query += " 0.0 as Debit, " +
+                             " 0.0 as Credit, " +
+                             " glm.a_account_code_c AS AccountCode," +
+                             " a_account.a_account_code_short_desc_c AS AccountName" +
+
+                             " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre";
+
+                    if (!YTDBalance)
+                    {
+                        Query += ", a_general_ledger_master_period AS glmpPrevious";
+                    }
+
+                    Query += " WHERE glm.a_ledger_number_i=" + LedgerNumber +
+                             " AND glm.a_year_i=" + AccountingYear +
+                             " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
+                             " AND glmp.a_period_number_i=" + ReportPeriodEnd +
+                             " AND glmp." + ActualFieldName + " <> 0";
+
+                    if (!YTDBalance)
+                    {
+                        Query += " AND glm.a_glm_sequence_i = glmpPrevious.a_glm_sequence_i" +
+                                 " AND glmpPrevious.a_period_number_i = " + (ReportPeriodEnd - 1);
+                    }
+
+                    Query += " AND a_account.a_account_code_c = glm.a_account_code_c" +
+                             " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
+                             " AND a_account.a_posting_status_l = true" +
+                             " AND a_cost_centre.a_ledger_number_i = glm.a_ledger_number_i" +
+                             " AND a_cost_centre.a_cost_centre_code_c = glm.a_cost_centre_code_c" +
+                             " AND a_cost_centre.a_posting_cost_centre_flag_l = true" +
+                             CostCentreFilter +
+                             AccountCodeFilter +
+                             OrderBy;
                     TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
                     resultTable = DbAdapter.RunQuery(Query, "TrialBalance", ReadTrans);
 

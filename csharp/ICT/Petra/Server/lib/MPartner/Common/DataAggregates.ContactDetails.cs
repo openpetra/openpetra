@@ -147,6 +147,21 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         }
 
         /// <summary>
+        /// Return the 'within organisation' email, or if that's blank, return the primary email.
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AEmailAddress"></param>
+        /// <returns></returns>
+        public static bool GetWithinOrganisationOrPrimaryEmailAddress(Int64 APartnerKey, out string AEmailAddress)
+        {
+            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(APartnerKey,
+                Calculations.TOverallContSettingKind.ocskPrimaryEmailAddress | Calculations.TOverallContSettingKind.ocskEmailAddressWithinOrg);
+            return Calculations.GetWithinOrganisationEmailAddress(PrimaryContactAttributes, out AEmailAddress)
+                   ||
+                   Calculations.GetPrimaryEmailAddress(PrimaryContactAttributes, out AEmailAddress);
+        }
+
+        /// <summary>
         /// Determines the 'Primary' and/or 'Within Organisation' setting(s) for a Partner.
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of the Partner.</param>

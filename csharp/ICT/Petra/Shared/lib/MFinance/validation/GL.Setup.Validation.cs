@@ -297,19 +297,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
             {
                 VerificationResult = null;
 
-                if (AAlternativeFirstDayOfPeriod == 1)
+                if (AAlternativeFirstDayOfPeriod != 0)
                 {
-                    // Standard first of month validation
+                    // day must be either 1 or AAlternativeFirstDayOfPeriod
                     VerificationResult = TDateChecks.IsNotCorporateDateTime(ARow.DateEffectiveFrom,
                         ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                }
-                else if (AAlternativeFirstDayOfPeriod != 0)
-                {
-                    // In this case we validate against either 1 or the alternative
-                    VerificationResult = new TScreenVerificationResult(AContext, ValidationColumn,
-                        String.Format(Catalog.GetString("The first day of the period should be either 1 or {0}."), AAlternativeFirstDayOfPeriod),
-                        ValidationControlsData.ValidationControl, TResultSeverity.Resv_Critical);
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl, AAlternativeFirstDayOfPeriod);
                 }
                 else
                 {

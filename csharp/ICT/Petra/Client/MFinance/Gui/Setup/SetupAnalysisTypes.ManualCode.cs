@@ -50,8 +50,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FLedgerNumber = value;
 
+                this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
+
                 Ict.Common.Data.TTypedDataTable TypedTable;
-                TRemote.MCommon.DataReader.WebConnectors.GetData(AAnalysisTypeTable.GetTableDBName(), null, out TypedTable);
+                TRemote.MCommon.DataReader.WebConnectors.GetData(AAnalysisTypeTable.GetTableDBName(),
+                    new TSearchCriteria[] { new TSearchCriteria(AAnalysisTypeTable.GetLedgerNumberDBName(), FLedgerNumber) }, out TypedTable);
                 FMainDS.AAnalysisType.Merge(TypedTable);
                 FMainDS.AAnalysisType.DefaultView.Sort = AAnalysisTypeTable.GetAnalysisTypeCodeDBName();
 
@@ -78,9 +81,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string newName = Catalog.GetString("NEWTYPE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.AAnalysisType.Rows.Find(new object[] { newName }) != null)
+            if (FMainDS.AAnalysisType.Rows.Find(new object[] { FLedgerNumber, newName }) != null)
             {
-                while (FMainDS.AAnalysisType.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.AAnalysisType.Rows.Find(new object[] { FLedgerNumber, newName + countNewDetail.ToString() }) != null)
                 {
                     countNewDetail++;
                 }
@@ -89,6 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ARow.AnalysisTypeCode = newName;
+            ARow.LedgerNumber = FLedgerNumber;
         }
 
         private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitTDS, out TVerificationResultCollection AVerificationResult)

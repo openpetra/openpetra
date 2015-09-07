@@ -22,27 +22,21 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Xml;
-using System.IO;
-using System.Windows.Forms;
-using System.Globalization;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Collections.Generic;
-using GNU.Gettext;
+using System.Data;
+using System.Globalization;
+using System.Windows.Forms;
+
 using Ict.Common;
-using Ict.Common.IO;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Client.MCommon;
-using Ict.Petra.Client.MFinance.Logic;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
-using Ict.Common.Verification;
+using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 
 
@@ -108,6 +102,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void InitializeManualCode()
         {
+            // load the data
+            Ict.Common.Data.TTypedDataTable TypedTable;
+            TRemote.MCommon.DataReader.WebConnectors.GetData(ACorporateExchangeRateTable.GetTableDBName(), null, out TypedTable);
+            FMainDS.ACorporateExchangeRate.Merge(TypedTable);
+
             FUseCurrencyFormatForDecimal = TUserDefaults.GetBooleanDefault(Ict.Common.StringHelper.FINANCE_DECIMAL_FORMAT_AS_CURRENCY, true);
         }
 
@@ -329,7 +328,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             // Check if corporate exchange rate can be deleted.
             // Cannot be deleted if it is effective for a period in the current year which has at least one batch.
-            if (!TRemote.MFinance.Common.ServerLookups.WebConnectors.CanDeleteCorporateExchangeRate(
+            if (!TRemote.MFinance.Setup.WebConnectors.CanDeleteCorporateExchangeRate(
                     ARowToDelete.DateEffectiveFrom, ARowToDelete.ToCurrencyCode, ARowToDelete.FromCurrencyCode))
             {
                 MessageBox.Show(Catalog.GetString("Corporate Exchange Rate cannot be deleted because there are still accounts with balances."),
@@ -598,7 +597,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void SetEnabledStates(bool RowCanBeChanged)
         {
-            bool bEnable = (RowCanBeChanged && cmbDetailFromCurrencyCode.GetSelectedString() != cmbDetailToCurrencyCode.GetSelectedString());
+            bool bEnable = (cmbDetailFromCurrencyCode.GetSelectedString() != cmbDetailToCurrencyCode.GetSelectedString());
 
             txtDetailRateOfExchange.Enabled = bEnable;
             btnInvertExchangeRate.Enabled = bEnable;
@@ -715,6 +714,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             return false;
+        }
+
+        private TSubmitChangesResult StoreManualCode(ref CorporateExchangeSetupTDS ASubmitChanges,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = null;
+            int TransactionsChanged;
+
+            TSubmitChangesResult Result = TRemote.MFinance.Setup.WebConnectors.SaveCorporateExchangeSetupTDS(
+                ref ASubmitChanges, out TransactionsChanged, out AVerificationResult);
+
+            if ((Result == TSubmitChangesResult.scrOK) && (TransactionsChanged != -1))
+            {
+                MessageBox.Show(string.Format(Catalog.GetPluralString(
+                            "{0} GL Transaction was automatically updated with the new corporate exchange rate.",
+                            "{0} GL Transactions were automatically updated with the new corporate exchange rate.",
+                            TransactionsChanged, true), TransactionsChanged),
+                    Catalog.GetString("Save Corporate Exchange Rates"), MessageBoxButtons.OK);
+            }
+
+            return Result;
         }
     }
 }

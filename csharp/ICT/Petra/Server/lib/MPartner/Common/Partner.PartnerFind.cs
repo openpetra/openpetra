@@ -667,6 +667,9 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 OdbcParameter miParam = new OdbcParameter("", OdbcType.Decimal, 10);
                 miParam.Value = (object)CriteriaRow["LocationKey"];
                 InternalParameters.Add(miParam);
+
+                // if search is restricted then add this to the search criteria
+                AddRestrictedClassesToCriteria(CriteriaRow, ref InternalParameters, ref CustomWhereCriteria);
             }
 
             // if AFindCriteria.Contains('Partner Key') then
@@ -709,8 +712,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 {
                     // EXACT PARTNER KEY SEARCH
 
-
                     // DISREGARD ALL OTHER SEARCH CRITERIA!!!
+
                     CustomWhereCriteria = "";
                     InternalParameters.Clear();
 
@@ -723,6 +726,9 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     OdbcParameter miParam = new OdbcParameter("", OdbcType.Decimal, 10);
                     miParam.Value = (object)CriteriaRow["PartnerKey"];
                     InternalParameters.Add(miParam);
+
+                    // if search is restricted then add this to the search criteria
+                    AddRestrictedClassesToCriteria(CriteriaRow, ref InternalParameters, ref CustomWhereCriteria);
                 }
             }
 
@@ -799,6 +805,52 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             InternalParameters = null;             // ensure this is GC'd
 
             return CustomWhereCriteria;
+        }
+
+        private static void AddRestrictedClassesToCriteria(DataRow ACriteriaRow, ref ArrayList AInternalParameters, ref string ACustomWhereCriteria)
+        {
+            if ((ACriteriaRow["RestrictedParterClasses"] != null) && (ACriteriaRow["RestrictedParterClasses"].ToString().Length > 0))
+            {
+                // Split String into String Array is Restricted Partner Classes are being used
+                string[] Classes = ACriteriaRow["RestrictedParterClasses"].ToString().Split(new Char[] { (',') });
+
+                String Criteria = null;
+
+                foreach (string Class in Classes)
+                {
+                    if (Criteria == null)
+                    {
+                        Criteria = " AND (";
+                    }
+                    else
+                    {
+                        Criteria += " OR ";
+                    }
+
+                    if (Class == "WORKER-FAM")
+                    {
+                        // A custom subquery seems to only speedy way of doing this!
+                        Criteria = String.Format(
+                            "{0}EXISTS (select * FROM PUB.p_partner_gift_destination " +
+                            "WHERE PUB.p_partner.p_partner_key_n = PUB.p_partner_gift_destination.p_partner_key_n " +
+                            "AND (PUB.p_partner_gift_destination.p_date_expires_d IS NULL OR PUB.p_partner_gift_destination.p_date_effective_d <> PUB.p_partner_gift_destination.p_date_expires_d))",
+                            Criteria);
+                    }
+                    else
+                    {
+                        // Searched DB Field: 'p_partner_class_c': done manually!
+                        Criteria = String.Format("{0} PUB.{1}.{2} = ?", Criteria,
+                            PPartnerTable.GetTableDBName(),
+                            PPartnerTable.GetPartnerClassDBName());
+                        OdbcParameter miParam = TTypedDataTable.CreateOdbcParameter(PPartnerTable.TableId, PPartnerTable.ColumnPartnerClassId);
+                        miParam.Value = (object)Class;
+
+                        AInternalParameters.Add(miParam);
+                    }
+                }
+
+                ACustomWhereCriteria += Criteria + ")";
+            }
         }
 
         /// <summary>

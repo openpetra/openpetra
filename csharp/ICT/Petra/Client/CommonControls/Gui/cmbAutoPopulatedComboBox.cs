@@ -94,13 +94,16 @@ namespace Ict.Petra.Client.CommonControls
             AddresseeTypeList,
 
             /// <summary>todoComment</summary>
+            AddressBlockElementList,
+
+            /// <summary>todoComment</summary>
             AddressDisplayOrderList,
 
             /// <summary>todoComment</summary>
             AddressLayoutList,
 
-            /// <summary>for Finance module, Analysis Attributes</summary>
-            AnalysisTypeList,
+            /// <summary>todoComment</summary>
+            AddressLayoutCodeList,
 
             /// <summary>todoComment</summary>
             ApplicantStatusList,
@@ -560,13 +563,26 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
-                case TListTableEnum.AnalysisTypeList:
+                case TListTableEnum.AddressLayoutCodeList:
+
+                    SortedCacheableDataTable = TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.AddressLayoutCodeList);
+                    SortedCacheableDataTable.DefaultView.Sort = PAddressLayoutCodeTable.GetDisplayIndexDBName() + " ASC";
+
+                    InitialiseUserControl(SortedCacheableDataTable,
+                    PAddressLayoutCodeTable.GetCodeDBName(),
+                    PAddressLayoutCodeTable.GetDescriptionDBName(),
+                    null
+                    );
+                    break;
+
+                case TListTableEnum.AddressBlockElementList:
 
                     InitialiseUserControl(
-                    TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AnalysisTypeList),
-                    AAnalysisTypeTable.GetAnalysisTypeCodeDBName(),
-                    AAnalysisTypeTable.GetAnalysisTypeDescriptionDBName(),
-                    null);
+                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.AddressBlockElementList),
+                    PAddressBlockElementTable.GetAddressElementCodeDBName(),
+                    PAddressBlockElementTable.GetAddressElementDescriptionDBName(),
+                    null
+                    );
                     break;
 
                 case TListTableEnum.ApplicantStatusList:

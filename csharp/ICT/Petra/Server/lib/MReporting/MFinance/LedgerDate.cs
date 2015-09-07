@@ -501,6 +501,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             diffyear = diffyear + parameters.Get("param_year_i").ToInt();
             endDate = GetEndDateOfYear(ledgernr, currentYear);
 
+            //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
             if ((endDate.Month == 12) && (endDate.Day == 31))
             {
                 ReturnValue = Convert.ToString(endDate.Year + diffyear - currentYear);
@@ -573,6 +574,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <returns></returns>
         public int GetMonthDiff(DateTime startDate, DateTime endDate)
         {
+            //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
             return (endDate.Year) * 12 + endDate.Month - (startDate.Month * 12 + startDate.Month) + 1;
         }
 

@@ -42,6 +42,8 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 {
@@ -151,6 +153,32 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>Is this the key of a valid Gift Recipient?</summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns>True if this is a valid key to a partner that's linked to a Cost Centre (in any ledger)
+        /// or if this is a local site key.</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean PartnerIsLinkedToCC(Int64 APartnerKey)
+        {
+            TDBTransaction ReadTransaction = null;
+            Boolean Ret = false;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
+                delegate
+                {
+                    string Query = "SELECT COUNT(*) FROM a_ledger, a_valid_ledger_number " +
+                                   "WHERE a_ledger.p_partner_key_n = " + APartnerKey +
+                                   " OR a_valid_ledger_number.p_partner_key_n = " + APartnerKey;
+
+                    if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(Query, ReadTransaction)) > 0)
+                    {
+                        Ret = true;
+                    }
+                });
+            return Ret;
         }
 
         /// <summary>

@@ -149,6 +149,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private Int32 FLedgerNumber;
         private string FSelectedHierarchy = "STANDARD";
 
+        private bool FSuspenseAccountsAllowed = true;
+
         /// <summary>This prevents the updates causing cascading functions</summary>
         public Int32 FIAmUpdating = 0;
 
@@ -164,6 +166,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         // list of accounts that need their foreign currency balances put to zero (i.e. they are no longer foreign currency accounts)
         private List <string>FZeroForeignCurrencyBalances = new List <string>();
+
+        /// <summary>
+        /// Gets a value indicating whether suspense accounts allowed for this ledger.
+        /// </summary>
+        public bool SuspenseAccountsAllowed
+        {
+            get
+            {
+                return FSuspenseAccountsAllowed;
+            }
+        }
 
         /// <summary>
         /// Called from the user controls when the user selects a row,
@@ -327,8 +340,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 tbrMain.Items.Remove(tbbImportHierarchy);
                 tbrMain.Items.Remove(tbbExportHierarchy);
-                mnuMain.Items.Remove(mniImportHierarchy);
-                mnuMain.Items.Remove(mniExportHierarchy);
+
+                // remove all items except the onces we want
+                mniAccounts.DropDownItems.Clear();
+                mniAccounts.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                        mniAddNewAccount,
+                        mniDeleteAccount
+                    });
             }
 
             this.Text += String.Format(" for Ledger {0}", FLedgerNumber);
@@ -509,6 +527,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoAccountAnalysisAttributes.ShowStatus = ShowStatus;
                 FMainDS.Clear();
                 FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
+
+                if (!(bool)TDataCache.TMFinance.GetCacheableFinanceTable(
+                        TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber).Rows[0][ALedgerTable.GetSuspenseAccountFlagDBName()])
+                {
+                    // hide if suspense accounts are not allowed
+                    chkDetailSuspenseAccountFlag.Enabled = false;
+                    chkDetailSuspenseAccountFlag.Visible = false;
+                    lblDetailSuspenseAccountFlag.Visible = false;
+                    FSuspenseAccountsAllowed = false;
+                }
+
                 ucoAccountsTree.RunOnceOnActivationManual(this);
                 ucoAccountsTree.PopulateTreeView(FMainDS, FLedgerNumber, FSelectedHierarchy);
 
@@ -646,6 +675,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void AddNewAccount(Object sender, EventArgs e)
         {
+            ValidateAllData(true, TErrorProcessingMode.Epm_None);
+
             if (FCurrentAccount == null)
             {
                 MessageBox.Show(Catalog.GetString("You can only add a new account after selecting a parent account"));
@@ -658,7 +689,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            ValidateAllData(true, TErrorProcessingMode.Epm_None);
+            if (FCurrentAccount.AccountRow.PostingStatus)
+            {
+                if (MessageBox.Show(String.Format(Catalog.GetString("Do you want to promote {0} to a summary Account?"),
+                            FCurrentAccount.AccountRow.AccountCode), Catalog.GetString("New Account"), MessageBoxButtons.YesNo)
+                    == System.Windows.Forms.DialogResult.No)
+                {
+                    return;
+                }
+            }
+
             string newName = FNameForNewAccounts;
             Int32 countNewAccount = 0;
 

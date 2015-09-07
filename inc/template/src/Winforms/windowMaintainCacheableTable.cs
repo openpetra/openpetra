@@ -124,6 +124,7 @@ namespace {#NAMESPACE}
 {#IFDEF FILTERANDFIND}
       FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, this, pnlFilterAndFind, chkToggleFilter, lblRecordCounter);
       FFilterAndFindObject.SetupFilterAndFindControls();
+      {#FILTERBUTTON}
 {#ENDIF FILTERANDFIND}
       SelectRowInGrid(1);
     }
@@ -1077,21 +1078,10 @@ namespace {#NAMESPACE}
     {
         bool ReturnValue = false;
 
-        // Find the currently active control
-        Control CurrentActiveControl;
-        ContainerControl ParentControl = this;
-
-        do
-        {
-            CurrentActiveControl = ParentControl.ActiveControl;
-            ParentControl = CurrentActiveControl as ContainerControl;
-        }
-        while (ParentControl != null);
-
-        // Momentarily remove focus from active control. This ensures OnLeave event is fired for control.
-        this.ActiveControl = null;
-		this.ActiveControl = CurrentActiveControl;
-
+        // Be sure to fire the OnLeave event on the active control of any user control
+        FPetraUtilsObject.ForceOnLeaveForActiveControl();
+        
+		// Fire the OnDataSavingStart event that may be implemented in manual code
 		FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
 		// Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.

@@ -313,6 +313,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                         FeesReceivable = StringHelper.AddCSV(FeesReceivable, detailFeeRow.FeeCode);
                     }
                 }
+
+                if (ARow.AccountCode == String.Empty)
+                {
+                    cmbDetailAccountCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_ACCOUNT;
+                }
+
+                if (ARow.CostCentreCode == String.Empty)
+                {
+                    cmbDetailCostCentreCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_COST_CENTRE;
+                }
             }
 
             // set the ORDER column to true if row is checked
@@ -335,7 +345,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 }
                 else
                 {
-                    cmbDeductibleAccountCode.SetSelectedString(ARow.TaxDeductibleAccountCode);
+                    cmbDeductibleAccountCode.SetSelectedString(ARow.TaxDeductibleAccountCode, -1);
                 }
             }
         }

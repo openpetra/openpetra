@@ -254,9 +254,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
                 if (TSharedSysManValidation.CheckPasswordQuality(password, out VerificationResult))
                 {
-                    if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, true))
+                    if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, true, true))
                     {
                         MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
+
+                        // this has already been saved on during the server call to change the password
+                        GetSelectedDetailRow().Retired = false;
                     }
                     else
                     {

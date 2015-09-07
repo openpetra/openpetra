@@ -188,6 +188,7 @@ namespace Ict.Common.Testing
             DateTime d1;
             DateTime d2;
 
+            //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
             d = new DateTime(2004, 1, 1);
             d1 = new DateTime(d.Year, d.Month, 1).AddMonths(-1);
             d2 = new DateTime(d.Year, d.Month, 1).AddDays(-1);

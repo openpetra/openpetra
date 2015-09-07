@@ -66,6 +66,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 ucoExtractMaintain.ExtractName = value;
             }
         }
+
+        /// <summary>
+        /// True if extract is frozen and cannot be modifid.
+        /// </summary>
+        public bool Frozen
+        {
+            set
+            {
+                ucoExtractMaintain.Frozen = value;
+            }
+        }
         #endregion
 
         #region Public Methods
@@ -118,6 +129,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         private void InitializeManualCode()
         {
+            this.mniSetLastWorkedWith.ShortcutKeys = Keys.L | Keys.Control;
         }
 
         private void RunOnceOnActivationManual()
@@ -180,6 +192,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
 
                 return true;
+            }
+            else if (keyData == (Keys.Control | Keys.C))
+            {
+                if (ucoExtractMaintain.ActiveControl.Name == "grdDetails")
+                {
+                    CopyPartnerKeyToClipboard(this, null);
+                    return true;
+                }
             }
 
             if (ucoExtractMaintain.ProcessParentCmdKey(ref msg, keyData))

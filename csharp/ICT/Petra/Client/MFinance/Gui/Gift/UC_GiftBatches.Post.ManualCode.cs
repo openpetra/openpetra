@@ -101,8 +101,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                FMyForm.Cursor = Cursors.WaitCursor;
-
                 FMyForm.EnsureGiftDataPresent(FLedgerNumber, FSelectedBatchNumber);
 
                 GiftBatchTDSAGiftDetailTable BatchGiftDetails = new GiftBatchTDSAGiftDetailTable();
@@ -145,10 +143,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 throw ex;
             }
-            finally
-            {
-                FMyForm.Cursor = Cursors.Default;
-            }
 
             //Check for missing international exchange rate
             bool IsTransactionInIntlCurrency = false;
@@ -164,12 +158,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (TRemote.MFinance.Gift.WebConnectors.InactiveKeyMinistriesFoundInBatch(FLedgerNumber, FSelectedBatchNumber,
                     out GiftsWithInactiveKeyMinistries))
             {
-                string listOfRow = "Gift   Detail   Recipient        KeyMinistry" + Environment.NewLine;
-                listOfRow += "------------------------------------------------";
+                string listOfOffendingRows = "Gift   Detail   Recipient        KeyMinistry" + Environment.NewLine;
+                listOfOffendingRows += "------------------------------------------------";
 
                 foreach (DataRow dr in GiftsWithInactiveKeyMinistries.Rows)
                 {
-                    listOfRow += String.Format("{0}{1:0000}    {2:00}    {3:00000000000}    {4}",
+                    listOfOffendingRows += String.Format("{0}{1:0000}    {2:00}    {3:00000000000}    {4}",
                         Environment.NewLine,
                         dr[0],
                         dr[1],
@@ -180,7 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 string msg = String.Format(Catalog.GetString("Cannot post Batch {0} as inactive Key Ministries found in gifts:{1}{1}{2}"),
                     FSelectedBatchNumber,
                     Environment.NewLine,
-                    listOfRow);
+                    listOfOffendingRows);
 
                 MessageBox.Show(msg, Catalog.GetString("Inactive Key Ministries Found"));
 

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\\\EsrInpaymentSlip.xml" />
+  <Parameter id="currentReport" value="eString:ESR Inpayment Slip" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:0" />
+  <Parameter id="param_txtExtract" value="eString:" />
+  <Parameter id="param_txtCopies" value="eInteger:1" />
+  <Parameter id="param_txtMailingCode" value="eInteger:8888" />
+  <Parameter id="param_today" value="eDateTime:&quot;2015-08-06T00:00:00&quot;" />
+</Parameters>

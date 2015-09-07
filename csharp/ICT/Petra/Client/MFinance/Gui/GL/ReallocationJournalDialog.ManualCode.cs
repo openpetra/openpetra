@@ -135,6 +135,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // Stop changes from ever being detected. We do not want to save the data on this screen.
             FPetraUtilsObject.DisableSaveButton();
             FPetraUtilsObject.UnhookControl(this, true);
+
+            cmbDetailCostCentreCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_COST_CENTRE;
+            cmbDetailAccountCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_ACCOUNT;
         }
 
         private void SetupGrdAccounts()

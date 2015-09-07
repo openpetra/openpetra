@@ -1,0 +1,63 @@
+RootNode:
+    BaseYaml: ../ReportingForm.yaml
+    FormType: report
+    FormTitle: ESR Inpayment Slip
+    Template: reportwindow
+    UtilObjectClass: TFrmPetraReportingUtils
+    InterfaceName: IFrmReporting
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    WindowWidth: 550
+
+    TemplateParameters:
+        XMLFILES: [Finance\\\\EsrInpaymentSlip.xml]
+        REPORTNAME: ESR Inpayment Slip
+        CURRENTREPORT: ESR Inpayment Slip
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        READCONTROLS: ACalc.AddParameter("param_today", DateTime.Today);
+        SETCONTROLSLOCALVARS: BLANK
+        SETAVAILABLEFUNCTIONS: BLANK
+        REPORTSETTINGSDIRECTORY: Partner
+    Security:
+        ModulePermissionRequired: [FINANCE1]
+    Actions:
+        actSelectAll: {ActionClick=SelectAll}
+        actDeselectAll: {ActionClick=DeselectAll}
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [grpDonorSelection,grpRecipientSelection,grpReportDetails]
+        grpDonorSelection:
+            Label: Donor
+            Width:500
+            Controls:
+                Row0: [rbtOneDonor, txtDonorKey]
+                Row1: [rbtExtract, txtExtract]
+        rbtOneDonor: {Label=Single Donor, OnChange=rbtSelectionChange}
+            Width:150
+
+        txtDonorKey: {NoLabel=true, Type=PartnerKey}
+        rbtExtract: {Label=Extract, OnChange=rbtSelectionChange}
+        txtExtract: {NoLabel=true, Type=Extract, Width=400}
+
+        grpRecipientSelection:
+            Label: Recipient
+            Width:500
+            Controls:
+                Row0: [lblBlank, txtRecipientKey]
+        lblBlank:
+            Width:110
+            Label:""
+            Visible: false
+        txtRecipientKey: {NoLabel=true, Type=PartnerKey}
+
+        grpReportDetails:
+            Label: Details
+            Width:500
+            Controls: [txtCopies, txtMailingCode]
+        txtCopies:
+            Width:50
+        txtMailingCode:
+            Width:50

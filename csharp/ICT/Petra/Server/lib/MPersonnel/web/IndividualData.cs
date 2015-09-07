@@ -272,7 +272,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             IndividualDataDS.Merge(AIndividualDataDS);
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
-                Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                Ict.Petra.Shared.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate

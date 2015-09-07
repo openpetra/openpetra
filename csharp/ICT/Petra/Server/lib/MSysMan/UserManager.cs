@@ -38,6 +38,7 @@ using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
 using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
 using Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors;
@@ -221,10 +222,13 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                     throw new EUserRetiredException(StrInvalidUserIDPassword);
                 }
 
+                int FailedLoginsUntilRetire = Convert.ToInt32(
+                    TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_FAILEDLOGINS_UNTIL_RETIRE, "10"));
+
                 // Console.WriteLine('PetraPrincipal.PetraIdentity.FailedLogins: ' + PetraPrincipal.PetraIdentity.FailedLogins.ToString +
                 // '; PetraPrincipal.PetraIdentity.Retired: ' + PetraPrincipal.PetraIdentity.Retired.ToString);
                 // Check if user should be autoretired
-                if ((PetraPrincipal.PetraIdentity.FailedLogins >= 5) && ((!PetraPrincipal.PetraIdentity.Retired)))
+                if ((PetraPrincipal.PetraIdentity.FailedLogins >= FailedLoginsUntilRetire) && ((!PetraPrincipal.PetraIdentity.Retired)))
                 {
                     UserDR.Retired = true;
                     UserDR.FailedLogins = 0;

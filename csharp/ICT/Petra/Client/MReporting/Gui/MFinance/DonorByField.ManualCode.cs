@@ -23,6 +23,8 @@
 //
 using System;
 using System.Data;
+using System.Windows.Forms;
+
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
@@ -41,6 +43,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
     public partial class TFrmDonorByField
     {
+        private DataTable FFieldTable;
+
         private void InitializeManualCode()
         {
             // enable autofind in list for first character (so the user can press character to find list entry)
@@ -55,55 +59,80 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                                                 SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
 
             // populate list with data to be loaded
-            this.LoadListData("");
+            this.LoadListData();
 
             // allow 'any' selection for receipt frequency
             DataRow emptyRow = cmbReceiptLetterFrequency.Table.NewRow();
             emptyRow[0] = string.Empty;
             emptyRow[1] = Catalog.GetString("Any Frequency");
             cmbReceiptLetterFrequency.Table.Rows.Add(emptyRow);
+
+            // catch enter key when using text box
+            txtFilterFields.KeyDown += txtFilterFields_KeyDown;
+
+            // manually fix tab order
+            pnlMiddle.TabIndex = 1;
+            pnlFilter.TabIndex = 0;
         }
 
-        private void LoadListData(string AFilter)
+        private void LoadListData()
         {
             string CheckedMember = "CHECKED";
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
             string DisplayMember = PUnitTable.GetUnitNameDBName();
-            PUnitTable Table;
 
             // retrieve data from server
-            Table = TRemote.MPartner.Partner.WebConnectors.GetLedgerUnits(AFilter);
+            PUnitTable UnitTable = TRemote.MPartner.Partner.WebConnectors.GetLedgerUnits();
 
-            DataView view = new DataView(Table);
+            DataView view = new DataView(UnitTable);
 
-            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
-            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+            FFieldTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+            FFieldTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
             clbLedger.Columns.Clear();
-            clbLedger.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            clbLedger.AddTextColumn(Catalog.GetString("Ledger Name"), NewTable.Columns[DisplayMember], 240);
-            clbLedger.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 100);
+            clbLedger.AddCheckBoxColumn("", FFieldTable.Columns[CheckedMember], 17, false);
+            clbLedger.AddTextColumn(Catalog.GetString("Ledger Name"), FFieldTable.Columns[DisplayMember]);
+            clbLedger.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), FFieldTable.Columns[ValueMember]);
 
-            clbLedger.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
+            clbLedger.DataBindGrid(FFieldTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
 
             clbLedger.SetCheckedStringList("");
         }
 
-        private void FilterList(System.Object sender, EventArgs e)
+        private void txtFilterFields_KeyDown(object sender, KeyEventArgs e)
         {
-            LoadListData(txtFilter.Text);
+            if (e.KeyCode == Keys.Enter)
+            {
+                FilterList(sender, null);
+            }
         }
 
-        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        private void FilterList(System.Object sender, EventArgs e)
+        {
+            DataView view = new DataView(FFieldTable);
+
+            view.RowFilter = PUnitTable.GetUnitNameDBName() + " LIKE '" + txtFilterFields.Text + "%'";
+
+            clbLedger.DataBindGrid(view.ToTable(), PUnitTable.GetUnitNameDBName(), "CHECKED", PUnitTable.GetPartnerKeyDBName(), false, true, false);
+        }
+
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbLedger.GetCheckedStringList().Length == 0)
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("Select at least one Field"),
-                    Catalog.GetString("Please select at least one Field, to avoid listing the whole database!"),
+                    Catalog.GetString("Generate Extract"),
+                    Catalog.GetString("Please select at least one Field!"),
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
+        }
+
+        private void ChkAllLedgersChanged(System.Object sender, EventArgs e)
+        {
+            clbLedger.Enabled = !chkAllLedgers.Checked;
+            txtFilterFields.Enabled = !chkAllLedgers.Checked;
+            btnApplyFilter.Enabled = !chkAllLedgers.Checked;
         }
     }
 }

@@ -5,22 +5,13 @@
   <Parameter id="currentReport" value="eString:Income Expense Statement" />
   <Parameter id="MaxDisplayColumns" value="eInteger:0" />
   <Parameter id="param_diff_period_i" value="eInteger:0" />
-  <Parameter id="param_start_period_i" value="eInteger:1" />
-  <Parameter id="param_end_period_i" value="eInteger:1" />
-  <Parameter id="param_current_period" value="eInteger:1" />
   <Parameter id="param_account_hierarchy_c" value="eString:STANDARD" />
   <Parameter id="param_currency" value="eString:Base" />
-  <Parameter id="param_currency_name" value="eString:ZAR" />
   <Parameter id="param_period" value="eBoolean:true" />
   <Parameter id="param_period_breakdown" value="eBoolean:false" />
   <Parameter id="param_period_checked" value="eBoolean:true" />
   <Parameter id="param_date_checked" value="eBoolean:false" />
   <Parameter id="param_quarter_checked" value="eBoolean:false" />
-  <Parameter id="param_year_i" value="eInteger:13" />
-  <Parameter id="param_real_year" value="eInteger:2012" />
-  <Parameter id="param_real_year_ending" value="eString:31-Dec-2012" />
-  <Parameter id="param_start_date" value="eDateTime:&quot;2012-01-01T00:00:00&quot;" />
-  <Parameter id="param_end_date" value="eDateTime:&quot;2012-01-31T00:00:00&quot;" />
   <Parameter id="param_current_financial_year" value="eBoolean:true" />
   <Parameter id="param_costcentreoptions" value="eString:AllActiveCostCentres" />
   <Parameter id="param_paginate" value="eBoolean:false" />

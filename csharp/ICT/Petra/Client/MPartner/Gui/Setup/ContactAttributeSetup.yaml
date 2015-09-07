@@ -36,6 +36,7 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
+            FilterButton: ;Click to show or hide the Contact Attributes filter panel
             FilterControls: [txtDetailContactAttributeCode, txtDetailContactAttributeDescr, chkDetailActive]
             FindControls: [txtDetailContactAttributeCode, txtDetailContactAttributeDescr]
         pnlButtons:
@@ -68,7 +69,7 @@ RootNode:
                 Row1: [txtDetailContactAttributeDescr]
                 Row2: [chkDetailActive]
         txtDetailContactAttributeCode: {Label=&Attribute Code, CharacterCasing=Upper}
-        txtDetailContactAttributeDescr: {Label=De&scription, Width=465}
+        txtDetailContactAttributeDescr: {Label=Descri&ption, Width=465}
         chkDetailActive: {Label=A&ctive, Validation=true}
         pnlExtraDetails:
             Controls: [ucoContactDetail]

@@ -27,14 +27,16 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
-using Ict.Petra.Server.MCommon;
+using Ict.Common.Exceptions;
+
 using Ict.Petra.Shared;
-//using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MSysMan;
+
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
 
@@ -59,8 +61,20 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             out DateTime AStartDateCurrentPeriod,
             out DateTime AEndDateLastForwardingPeriod)
         {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
             DateTime StartDateCurrentPeriod = new DateTime();
             DateTime EndDateLastForwardingPeriod = new DateTime();
+
             TDBTransaction Transaction = null;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -68,31 +82,72 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                    ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
-                    int FirstPostingPeriod = -1;
+                    #region Validate Data
+
+                    if ((ledgerTable == null) || (ledgerTable.Count == 0))
+                    {
+                        throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                    "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                Utilities.GetMethodName(true),
+                                ALedgerNumber));
+                    }
+
+                    #endregion Validate Data
+
+                    int firstPostingPeriod = -1;
+                    int lastPostingPeriod = -1;
 
                     // If final month end has been run but year end has not yet been run
                     // then we cannot post to the current period as it is actually closed.
-                    if (LedgerTable[0].ProvisionalYearEndFlag)
+                    if (ledgerTable[0].ProvisionalYearEndFlag)
                     {
-                        FirstPostingPeriod = LedgerTable[0].CurrentPeriod + 1;
+                        firstPostingPeriod = ledgerTable[0].CurrentPeriod + 1;
                     }
                     else
                     {
-                        FirstPostingPeriod = LedgerTable[0].CurrentPeriod;
+                        firstPostingPeriod = ledgerTable[0].CurrentPeriod;
                     }
 
-                    AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                        FirstPostingPeriod,
+                    AAccountingPeriodTable accountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                        firstPostingPeriod,
                         Transaction);
 
-                    StartDateCurrentPeriod = AccountingPeriodTable[0].PeriodStartDate;
+                    #region Validate Data 2
 
-                    AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                        LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods,
+                    if ((accountingPeriodTable == null) || (accountingPeriodTable.Count == 0))
+                    {
+                        throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                    "Function:{0} - Accounting Period data for Ledger number {1} and posting period {2} does not exist or could not be accessed!"),
+                                Utilities.GetMethodName(true),
+                                ALedgerNumber,
+                                firstPostingPeriod));
+                    }
+
+                    #endregion Validate Data 2
+
+                    StartDateCurrentPeriod = accountingPeriodTable[0].PeriodStartDate;
+
+                    lastPostingPeriod = ledgerTable[0].CurrentPeriod + ledgerTable[0].NumberFwdPostingPeriods;
+                    accountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                        lastPostingPeriod,
                         Transaction);
-                    EndDateLastForwardingPeriod = AccountingPeriodTable[0].PeriodEndDate;
+
+                    #region Validate Data 3
+
+                    if ((accountingPeriodTable == null) || (accountingPeriodTable.Count == 0))
+                    {
+                        throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                    "Function:{0} - Accounting Period data for Ledger number {1} and posting period {2} does not exist or could not be accessed!"),
+                                Utilities.GetMethodName(true),
+                                ALedgerNumber,
+                                lastPostingPeriod));
+                    }
+
+                    #endregion Validate Data 3
+
+                    EndDateLastForwardingPeriod = accountingPeriodTable[0].PeriodEndDate;
                 });
 
             AStartDateCurrentPeriod = StartDateCurrentPeriod;
@@ -269,69 +324,6 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                     if ((CurrencyLanguageTable != null) && (CurrencyLanguageTable.Rows.Count > 0))
                     {
                         ReturnValue = CurrencyLanguageTable[0];
-                    }
-                });
-
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// Returns true if a Corporate Exchange Rate can be deleted.
-        /// Cannot be deleted if it is effective for a period in the current year which has at least one batch.
-        /// </summary>
-        /// <param name="ADateEffectiveFrom">Corporate Exchange Rate's Date Effective From</param>
-        /// <param name="AIntlCurrency"></param>
-        /// <param name="ATransactionCurrency"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static bool CanDeleteCorporateExchangeRate(DateTime ADateEffectiveFrom, string AIntlCurrency, string ATransactionCurrency)
-        {
-            bool ReturnValue = true;
-            TDBTransaction ReadTransaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction,
-                delegate
-                {
-                    // get accounting period for when the exchange rate is effective (if it exists)
-                    string Query = "SELECT * FROM a_accounting_period" +
-                                   " WHERE a_accounting_period.a_period_end_date_d >= '" + ADateEffectiveFrom + "'" +
-                                   " AND a_accounting_period.a_period_start_date_d <= '" + ADateEffectiveFrom + "'";
-
-                    AAccountingPeriodTable AccountingPeriodTable = new AAccountingPeriodTable();
-                    DBAccess.GDBAccessObj.SelectDT(AccountingPeriodTable, Query, ReadTransaction);
-
-                    // no accounting period if effective in a year other that the current year
-                    if ((AccountingPeriodTable == null) || (AccountingPeriodTable.Rows.Count == 0))
-                    {
-                        return;
-                    }
-
-                    AAccountingPeriodRow AccountingPeriodRow = AccountingPeriodTable[0];
-
-                    // search for batches for the found accounting period
-                    string Query2 = "SELECT CASE WHEN EXISTS (" +
-                                    "SELECT * FROM a_batch, a_journal, a_ledger" +
-                                    " WHERE a_batch.a_date_effective_d <= '" + AccountingPeriodRow.PeriodEndDate + "'" +
-                                    " AND a_batch.a_date_effective_d >= '" + AccountingPeriodRow.PeriodStartDate + "'" +
-                                    " AND a_journal.a_ledger_number_i = a_batch.a_ledger_number_i" +
-                                    " AND a_journal.a_batch_number_i = a_batch.a_batch_number_i" +
-                                    " AND a_ledger.a_ledger_number_i = a_batch.a_ledger_number_i" +
-                                    " AND ((a_journal.a_transaction_currency_c = '" + ATransactionCurrency + "'" +
-                                    " AND a_ledger.a_intl_currency_c = '" + AIntlCurrency + "')" +
-                                    " OR (a_journal.a_transaction_currency_c = '" + AIntlCurrency + "'" +
-                                    " AND a_ledger.a_intl_currency_c = '" + ATransactionCurrency + "'))" +
-                                    ") THEN 'TRUE'" +
-                                    " ELSE 'FALSE' END";
-
-                    DataTable DT = DBAccess.GDBAccessObj.SelectDT(Query2, "temp", ReadTransaction);
-
-                    // a batch has been found
-                    if ((DT != null) && (DT.Rows.Count > 0) && (DT.Rows[0][0].ToString() == "TRUE"))
-                    {
-                        ReturnValue = false;
-                        return;
                     }
                 });
 

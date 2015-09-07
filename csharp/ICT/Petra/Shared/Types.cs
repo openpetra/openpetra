@@ -386,6 +386,23 @@ namespace Ict.Petra.Shared
             return "##UNCONVERTABLE##";
         }
 
+        /*
+         * It turns out that there's no demand for this method as yet.
+         * A single letter is used in the Gift Batch Detail tab,
+         * but in that case the SQL SUBSTRING function is used.
+         *
+         * /// <summary>
+         * /// Get a single-letter representation of a Partner Class
+         * /// </summary>
+         * /// <remarks>In this version, just return the first letter</remarks>
+         * /// <param name="APartnerClass"></param>
+         * /// <returns></returns>
+         * public static String PartnerClassAbrev(String APartnerClass)
+         * {
+         *  return APartnerClass.Substring(0, 1);
+         * }
+         */
+
         /// <summary>
         /// convert addressee type from string to enum
         /// </summary>

@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
     FormType: dialog
     Template: window
-    WindowWidth: 550
+    WindowWidth: 620
     WindowHeight: 570
     Actions:
         actExportBatches: {Label=&Start, ActionClick=ExportBatches}
@@ -69,7 +69,7 @@ RootNode:
         chkDontSummarize: {Label=Don't summarize with}
             Width:200
         cmbDontSummarizeAccount:
-            Width:200
+            Width:280
             List: UserDefinedList
             Label: Account
         dtpDateSummary:

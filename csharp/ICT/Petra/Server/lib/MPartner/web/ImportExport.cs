@@ -41,6 +41,7 @@ using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
@@ -1623,10 +1624,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
             else
             {
-                AddVerificationResult(ref ReferenceResults, String.Format("Import of {0} {1}\r\n {2}",
+                AddVerificationResult(ref ReferenceResults, String.Format("Import of {0} {1} was {2}.",
                         ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass,
                         ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerShortName,
-                        Res == TSubmitChangesResult.scrOK ? "Successful" : "Error"
+                        Res == TSubmitChangesResult.scrOK ? "successful" : "unsuccessful"
                         ),
                     TResultSeverity.Resv_Status);
             }
@@ -1666,7 +1667,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static string GetExtFileFooter()
         {
-            return "0  \"FINISH\"\n";
+            return "0  \"FINISH\"" + Environment.NewLine;
         }
 
         /// <summary>
@@ -1737,9 +1738,39 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         }
 
         /// <summary>
-        ///
+        /// Checks to see if an extract contains at least one family partner
         /// </summary>
-        /// <returns>Export all partners of an extract into an EXT file.</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool CheckExtractContainsFamily(int AExtractId)
+        {
+            TDBTransaction ReadTransaction = null;
+            bool ReturnValue = false;
+            string Result = string.Empty;
+
+            string Query = "SELECT CASE WHEN EXISTS (SELECT * FROM m_extract, p_partner" +
+                           " WHERE m_extract.m_extract_id_i = " + AExtractId +
+                           " AND p_partner.p_partner_key_n = m_extract.p_partner_key_n" +
+                           " AND p_partner.p_partner_class_c = '" + MPartnerConstants.PARTNERCLASS_FAMILY + "')" +
+                           " THEN 'true' ELSE 'false' END";
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    Result = DBAccess.GDBAccessObj.ExecuteScalar(Query, ReadTransaction).ToString();
+                });
+
+            if (Result == "true")
+            {
+                ReturnValue = true;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Export all partners of an extract into an EXT file.
+        /// </summary>
+        /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
         public static String ExportExtractPartnersExt(int AExtractId, Boolean AIncludeFamilyMembers)
         {
@@ -1747,25 +1778,152 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             String ExtText = GetExtFileHeader();
             TPartnerFileExport Exporter = new TPartnerFileExport();
             PartnerImportExportTDS MainDS;
-            MExtractTable ExtractPartners = new MExtractTable();
+            DataTable ExtractPartners = new MExtractTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction,
+            ExtractPartners.Columns.Add("p_partner_class_c", typeof(string));
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Exporting Extract"));
+
+            string Query = "SELECT m_extract.*, p_partner.p_partner_class_c" +
+                           " FROM m_extract, p_partner" +
+                           " WHERE m_extract.m_extract_id_i = " + AExtractId +
+                           " AND p_partner.p_partner_key_n = m_extract.p_partner_key_n";
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
                 delegate
                 {
-                    ExtractPartners = MExtractAccess.LoadViaMExtractMaster(AExtractId, ReadTransaction);
+                    ExtractPartners = DBAccess.GDBAccessObj.SelectDT(Query, ExtractPartners.TableName, ReadTransaction);
+                    int i = 0;
+                    int Total = ExtractPartners.Rows.Count;
+                    decimal PercentCompleted = 0;
+
+                    foreach (DataRow ExtractPartner in ExtractPartners.Rows)
+                    {
+                        // stop if user cancels operation
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        {
+                            ExtText = null;
+                            break;
+                        }
+
+                        if (i > 0)
+                        {
+                            PercentCompleted = decimal.Divide(i, Total) * 100;
+                        }
+
+                        i++;
+
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            string.Format(Catalog.GetString("Exporting partner {0} out of {1}."), i, Total),
+                            PercentCompleted);
+
+                        // get keys
+                        Int64 PartnerKey = (Int64)ExtractPartner[MExtractTable.GetPartnerKeyDBName()];
+                        Int64 SiteKey = (Int64)ExtractPartner[MExtractTable.GetSiteKeyDBName()];
+                        int LocationKey = 0;
+
+                        if ((ExtractPartner[MExtractTable.GetLocationKeyDBName()] != System.DBNull.Value)
+                            && (ExtractPartner[MExtractTable.GetLocationKeyDBName()] != null))
+                        {
+                            LocationKey = (Int32)ExtractPartner[MExtractTable.GetLocationKeyDBName()];
+                        }
+
+                        if (PartnerKey != 0)
+                        {
+                            // if row is a family partner and the user wants to also export the family's person members
+                            if (AIncludeFamilyMembers && (ExtractPartner["p_partner_class_c"].ToString() == MPartnerConstants.PARTNERCLASS_FAMILY))
+                            {
+                                // export the family partner in the extract
+                                MainDS = TExportAllPartnerData.ExportPartner(PartnerKey, TPartnerClass.FAMILY);
+                                ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+
+                                PPersonTable Persons = PPersonAccess.LoadViaPFamily(PartnerKey, ReadTransaction);
+
+                                foreach (PPersonRow Row in Persons.Rows)
+                                {
+                                    // do not export if already in extract
+                                    if (ExtractPartners.Select(MExtractTable.GetPartnerKeyDBName() + " = " + Row.PartnerKey).Length > 0)
+                                    {
+                                        continue;
+                                    }
+
+                                    MainDS = TExportAllPartnerData.ExportPartner(Row.PartnerKey, TPartnerClass.PERSON);
+
+                                    // if member has same address as family
+                                    if (PPartnerLocationAccess.Exists(Row.PartnerKey, SiteKey, LocationKey, ReadTransaction))
+                                    {
+                                        // export the person member with the same address as family partner
+                                        ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                                    }
+                                    else
+                                    {
+                                        PLocationTable LocationTable;
+                                        string CountryName;
+
+                                        TAddressTools.GetBestAddress(Row.PartnerKey, out LocationTable, out CountryName, ReadTransaction);
+
+                                        if ((LocationTable != null) && (LocationTable.Rows.Count > 0))
+                                        {
+                                            // export the person member with the person partner's best address
+                                            ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (ExtractPartner["p_partner_class_c"].ToString() == MPartnerConstants.PARTNERCLASS_PERSON) // if person partner
+                            {
+                                PPersonRow PersonRecord = PPersonAccess.LoadByPrimaryKey(PartnerKey, ReadTransaction)[0];
+
+                                // do not export family if already in extract
+                                if (ExtractPartners.Select(MExtractTable.GetPartnerKeyDBName() + " = " + PersonRecord.FamilyKey).Length == 0)
+                                {
+                                    // export the family record first.
+                                    MainDS = TExportAllPartnerData.ExportPartner(PersonRecord.FamilyKey, TPartnerClass.FAMILY);
+
+                                    // if family has same address as person member
+                                    if (PPartnerLocationAccess.Exists(PersonRecord.FamilyKey, SiteKey, LocationKey, ReadTransaction))
+                                    {
+                                        // export the family member with the same address as person member
+                                        ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                                    }
+                                    else
+                                    {
+                                        PLocationTable LocationTable;
+                                        string CountryName;
+
+                                        TAddressTools.GetBestAddress(PersonRecord.FamilyKey, out LocationTable, out CountryName, ReadTransaction);
+
+                                        if ((LocationTable != null) && (LocationTable.Rows.Count > 0))
+                                        {
+                                            // export the family with the family partner's best address
+                                            ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                                        }
+                                    }
+                                }
+
+                                // export the person partner in the extract
+                                MainDS = TExportAllPartnerData.ExportPartner(PartnerKey, TPartnerClass.PERSON);
+                                ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                            }
+                            else
+                            {
+                                // export the partner in the extract
+                                MainDS =
+                                    TExportAllPartnerData.ExportPartner(PartnerKey,
+                                        SharedTypes.PartnerClassStringToEnum(ExtractPartner["p_partner_class_c"].ToString()));
+                                ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                            }
+                        }
+                    }
                 });
 
-            foreach (MExtractRow ExtractPartner in ExtractPartners.Rows)
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
+            if (ExtText != null) // if operation has been cancelled
             {
-                if (ExtractPartner.PartnerKey != 0)
-                {
-                    MainDS = TExportAllPartnerData.ExportPartner(ExtractPartner.PartnerKey);
-                    ExtText += Exporter.ExportPartnerExt(MainDS, /*ASiteKey*/ 0, /*ALocationKey*/ 0, null);
-                }
+                ExtText += GetExtFileFooter();
             }
 
-            ExtText += GetExtFileFooter();
             return ExtText;
         }
 
@@ -1800,26 +1958,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             ExtText += GetExtFileFooter();
             return ExtText;
-        }
-
-        /// <summary>
-        /// Unpack this (ext formatted) string into the database
-        /// </summary>
-        /// <param name="ALinesToImport"></param>
-        /// <param name="ALimitToOption"></param>
-        /// <param name="ADoNotOverwrite"></param>
-        /// <param name="AResultList"></param>
-        [RequireModulePermission("PTNRUSER")]
-        public static Boolean ImportDataExt(string[] ALinesToImport,
-            string ALimitToOption,
-            bool ADoNotOverwrite,
-            out TVerificationResultCollection AResultList)
-        {
-            TPartnerFileImport Importer = new TPartnerFileImport();
-
-            Importer.ImportAllData(ALinesToImport,
-                ALimitToOption, ADoNotOverwrite, out AResultList);
-            return true;
         }
     }
 }

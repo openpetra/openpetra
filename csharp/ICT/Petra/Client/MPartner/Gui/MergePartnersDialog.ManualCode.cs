@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Windows.Forms;
@@ -54,6 +55,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TPartnerClass FToPartnerClass;
         private static long[] FSiteKeys;
         private static int[] FLocationKeys;
+        private static List <string[]>FContactDetails;
         private static int FMainBankingDetailsKey;
 
         /// Selected Addresses' SiteKeys
@@ -71,6 +73,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FLocationKeys = value;
+            }
+        }
+
+        /// Selected Contact Details
+        public static List <string[]>ContactDetails
+        {
+            set
+            {
+                FContactDetails = value;
             }
         }
 
@@ -110,8 +121,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtMergeFrom.ShowLabel = true;
             txtMergeTo.ShowLabel = true;
 
-            txtMergeFrom.TextBoxPartEnabled = false;
-            txtMergeTo.TextBoxPartEnabled = false;
+            //txtMergeFrom.TextBoxPartEnabled = false;
+            //txtMergeTo.TextBoxPartEnabled = false;
 
             btnOK.Enabled = false;
         }
@@ -138,6 +149,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     btnOK.Enabled = false;
                 }
             }
+            else
+            {
+                txtMergeTo.PartnerClass = "";
+            }
         }
 
         // partner to merge to is changed in txtMergeTo
@@ -161,6 +176,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     btnOK.Enabled = false;
                 }
+            }
+            else
+            {
+                txtMergeFrom.PartnerClass = "";
             }
         }
 
@@ -234,20 +253,28 @@ namespace Ict.Petra.Client.MPartner.Gui
                             "accessible after the Partner Merge operation!") + "\n\n" + Catalog.GetString("Are you sure you want to continue?"),
                         Catalog.GetString("Merge Partners"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes))
             {
-                bool[] Categories = new bool[20];
+                bool[] Categories = new bool[25];
 
-                for (int i = 1; i < 20; i++)
+                for (int i = 1; i < 25; i++)
                 {
                     Categories[i] = true;
                 }
 
                 FSiteKeys = null;
                 FLocationKeys = null;
+                FContactDetails = null;
                 FMainBankingDetailsKey = -1;
                 bool DifferentFamilies = false;
 
-                // open a dialog to select which To Partner's addresses should be merged
+                // open a dialog to select which From Partner's addresses should be merged
                 if (GetSelectedAddresses() == false)
+                {
+                    MessageBox.Show(Catalog.GetString("Merge cancelled."));
+                    return;
+                }
+
+                // open a dialog to select which From Partner's contact details should be merged
+                if (GetSelectedContactDetails() == false)
                 {
                     MessageBox.Show(Catalog.GetString("Merge cancelled."));
                     return;
@@ -281,7 +308,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                     else if (!WebConnectorResult)   // if merge is unsuccessful
                     {
-                        MessageBox.Show(Catalog.GetString("Merge failed. Please check the Server.log file on the server"));
+                        MessageBox.Show(Catalog.GetString("Merge failed. Please check the Server.log file on the server."));
                         dialog.Close();
                         return;
                     }
@@ -295,7 +322,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         Catalog.GetString("Merge Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
-                MessageBox.Show(String.Format(Catalog.GetString("Merge of Partner {0} into {1} complete."), FFromPartnerKey, FToPartnerKey) +
+                MessageBox.Show(String.Format(Catalog.GetString("Merge of Partner {0} ({1}) into {2} ({3}) complete."),
+                        txtMergeFrom.LabelText, FFromPartnerKey, txtMergeTo.LabelText, FToPartnerKey) +
                     "\n\n" + Catalog.GetString("If necessary, edit the merged Partner to correct any information that may not have been " +
                         "merged and correct information that may have been overwritten.") + "\n\n" +
                     Catalog.GetString("Tip: You can use the 'Work with Last Partner' command in the Partner module and the " +
@@ -307,7 +335,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        // open a dialog to select which To Partner's addresses should be merged
+        // open a dialog to select which From Partner's addresses should be merged
         private bool GetSelectedAddresses()
         {
             Form MainWindow = FPetraUtilsObject.GetCallerForm();
@@ -318,8 +346,35 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // delegate IS defined
                 try
                 {
-                    string DataType = "ADDRESS";
-                    return TCommonScreensForwarding.OpenGetMergeDataDialog.Invoke(FFromPartnerKey, FToPartnerKey, DataType, MainWindow);
+                    return TCommonScreensForwarding.OpenGetMergeDataDialog.Invoke(FFromPartnerKey,
+                        FToPartnerKey,
+                        TMergeActionEnum.ADDRESS,
+                        MainWindow);
+                }
+                catch (Exception exp)
+                {
+                    throw new EOPAppException("Exception occured while calling OpenGetMergeDataDialog Delegate!", exp);
+                }
+            }
+
+            return false;
+        }
+
+        // open a dialog to select which From Partner's contact details should be merged
+        private bool GetSelectedContactDetails()
+        {
+            Form MainWindow = FPetraUtilsObject.GetCallerForm();
+
+            // If the delegate is defined, the host form will launch a Modal screen for us
+            if (TCommonScreensForwarding.OpenGetMergeDataDialog != null)
+            {
+                // delegate IS defined
+                try
+                {
+                    return TCommonScreensForwarding.OpenGetMergeDataDialog.Invoke(FFromPartnerKey,
+                        FToPartnerKey,
+                        TMergeActionEnum.CONTACTDETAIL,
+                        MainWindow);
                 }
                 catch (Exception exp)
                 {
@@ -347,8 +402,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // delegate IS defined
                 try
                 {
-                    string DataType = "BANKACCOUNT";
-                    return TCommonScreensForwarding.OpenGetMergeDataDialog.Invoke(FFromPartnerKey, FToPartnerKey, DataType, MainWindow);
+                    return TCommonScreensForwarding.OpenGetMergeDataDialog.Invoke(FFromPartnerKey,
+                        FToPartnerKey,
+                        TMergeActionEnum.BANKACCOUNT,
+                        MainWindow);
                 }
                 catch (Exception exp)
                 {
@@ -421,7 +478,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void MergeTwoPartners(bool[] ACategories, ref bool ADifferentFamilies)
         {
             WebConnectorResult = TRemote.MPartner.Partner.WebConnectors.MergeTwoPartners(FFromPartnerKey, FToPartnerKey, FFromPartnerClass,
-                FToPartnerClass, FSiteKeys, FLocationKeys, FMainBankingDetailsKey, ACategories, ref ADifferentFamilies);
+                FToPartnerClass, FSiteKeys, FLocationKeys, FContactDetails, FMainBankingDetailsKey, ACategories, ref ADifferentFamilies);
         }
 
         // check if the two partners can be merged and display any error/warning messages

@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Windows.Forms;
@@ -57,7 +58,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void OnCheckboxChange(Object sender, EventArgs e)
         {
-            btnOK.Text = "OK (" + clbAddress.CheckedItemsCount + ")";
+            btnOK.Text = "OK (" + clbRecords.CheckedItemsCount + ")";
         }
 
         /// <summary>
@@ -91,17 +92,67 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FDataTable.Rows[Counter][LocationType] = FMainDS.PPartnerLocation.Rows[Counter][LocationType];
             }
 
-            clbAddress.Columns.Clear();
-            clbAddress.AddCheckBoxColumn("Select", FDataTable.Columns[CheckedMember], 17, false);
-            clbAddress.AddTextColumn("Address-1", FDataTable.Columns[Address1]);
-            clbAddress.AddTextColumn("Street-2", FDataTable.Columns[Street2]);
-            clbAddress.AddTextColumn("Address-3", FDataTable.Columns[Address3]);
-            clbAddress.AddTextColumn("City", FDataTable.Columns[City]);
-            clbAddress.AddTextColumn("Location Type", FDataTable.Columns[LocationType]);
-            clbAddress.ValueChanged += new EventHandler(OnCheckboxChange);
+            clbRecords.Columns.Clear();
+            clbRecords.AddCheckBoxColumn("", FDataTable.Columns[CheckedMember], 17, false);
+            clbRecords.AddTextColumn("Address-1", FDataTable.Columns[Address1]);
+            clbRecords.AddTextColumn("Street-2", FDataTable.Columns[Street2]);
+            clbRecords.AddTextColumn("Address-3", FDataTable.Columns[Address3]);
+            clbRecords.AddTextColumn("City", FDataTable.Columns[City]);
+            clbRecords.AddTextColumn("Location Type", FDataTable.Columns[LocationType]);
+            clbRecords.ValueChanged += new EventHandler(OnCheckboxChange);
 
-            clbAddress.DataBindGrid(FDataTable, Address1, CheckedMember, Address1, false, true, false);
-            clbAddress.SetCheckedStringList("");
+            clbRecords.DataBindGrid(FDataTable, Address1, CheckedMember, Address1, false, true, false);
+            clbRecords.SetCheckedStringList("");
+
+            clbRecords.AutoResizeGrid();
+        }
+
+        /// <summary>
+        /// Populates the grid for the dialog for selecting Addresses to be merged.
+        /// </summary>
+        public void InitializeContactDetailGrid(long AFromPartnerKey, long AToPartnerKey)
+        {
+            // set text for label
+            lblInfo.Text = Catalog.GetString(
+                "The following contact details exist for the Partner being merged. Select the contact details to be transferred.") +
+                           "\n\n" + Catalog.GetString("Any contact details which are not selected will be deleted!");
+
+            string CheckedMember = "CHECKED";
+            string ContactCategory = PartnerEditTDSPPartnerAttributeTable.GetCategoryCodeDBName();
+            string ContactType = PPartnerAttributeTable.GetAttributeTypeDBName();
+            string Sequence = PPartnerAttributeTable.GetSequenceDBName();
+            string Value = PPartnerAttributeTable.GetValueDBName();
+            string Primary = PPartnerAttributeTable.GetPrimaryDBName();
+            string Business = PPartnerAttributeTable.GetSpecialisedDBName();
+            string Current = PPartnerAttributeTable.GetCurrentDBName();
+            string NoLongerCurrentFrom = PPartnerAttributeTable.GetNoLongerCurrentFromDBName();
+            string Comment = PPartnerAttributeTable.GetCommentDBName();
+
+
+            PartnerEditTDSPPartnerAttributeTable ContactDetails =
+                TRemote.MPartner.Partner.WebConnectors.GetPartnerContactDetails(AFromPartnerKey, AToPartnerKey);
+            DataView MyDataView = ContactDetails.DefaultView;
+
+            FDataTable = MyDataView.ToTable(true, new string[]
+                { ContactCategory, ContactType, Sequence, Value, Primary, Business, Current, NoLongerCurrentFrom, Comment });
+            FDataTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            clbRecords.Columns.Clear();
+            clbRecords.AddCheckBoxColumn("", FDataTable.Columns[CheckedMember], 17, false);
+            clbRecords.AddTextColumn("Category", FDataTable.Columns[ContactCategory]);
+            clbRecords.AddTextColumn("Type", FDataTable.Columns[ContactType]);
+            clbRecords.AddTextColumn("Value", FDataTable.Columns[Value]);
+            clbRecords.AddCheckBoxColumn("Primary", FDataTable.Columns[Primary], true);
+            clbRecords.AddCheckBoxColumn("Business", FDataTable.Columns[Business], true);
+            clbRecords.AddCheckBoxColumn("Current", FDataTable.Columns[Current], true);
+            clbRecords.AddDateColumn("No Longer Current From", FDataTable.Columns[NoLongerCurrentFrom]);
+            clbRecords.AddTextColumn("Comment", FDataTable.Columns[Comment]);
+            clbRecords.ValueChanged += new EventHandler(OnCheckboxChange);
+
+            clbRecords.DataBindGrid(FDataTable, ContactCategory + ", " + ContactType + ", " + Value, CheckedMember, Value, false, true, false);
+            clbRecords.SetCheckedStringList("");
+
+            clbRecords.AutoResizeGrid();
         }
 
         /// <summary>
@@ -115,14 +166,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             PBankingDetailsTable BankingDetailsTable = TRemote.MPartner.Partner.WebConnectors.GetPartnerBankingDetails(
                 AFromPartnerKey, AToPartnerKey);
 
-            clbAddress.Columns.Clear();
-            clbAddress.AddTextColumn("Account Name", BankingDetailsTable.ColumnAccountName);
-            clbAddress.AddTextColumn("Account Number", BankingDetailsTable.ColumnBankAccountNumber);
-            clbAddress.AddTextColumn("IBAN", BankingDetailsTable.ColumnBankingDetailsKey);
+            clbRecords.Columns.Clear();
+            clbRecords.AddTextColumn("Account Name", BankingDetailsTable.ColumnAccountName);
+            clbRecords.AddTextColumn("Account Number", BankingDetailsTable.ColumnBankAccountNumber);
+            clbRecords.AddTextColumn("IBAN", BankingDetailsTable.ColumnBankingDetailsKey);
 
             DataView MyDataView = BankingDetailsTable.DefaultView;
             MyDataView.AllowNew = false;
-            clbAddress.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+            clbRecords.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+
+            clbRecords.AutoResizeGrid();
         }
 
         /// <summary>
@@ -130,7 +183,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public int[] GetSelectedLocationKeys()
         {
-            int[] LocationKeys = new int[clbAddress.CheckedItemsCount];
+            int[] LocationKeys = new int[clbRecords.CheckedItemsCount];
             int i = 0;
 
             foreach (DataRow Row in FDataTable.Rows)
@@ -150,7 +203,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public long[] GetSelectedSiteKeys()
         {
-            long[] SiteKeys = new long[clbAddress.CheckedItemsCount];
+            long[] SiteKeys = new long[clbRecords.CheckedItemsCount];
             int i = 0;
 
             foreach (DataRow Row in FDataTable.Rows)
@@ -166,11 +219,32 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Returns the attribute types and sequences for all the contact details selected in the grid.
+        /// </summary>
+        public List <string[]>GetContactDetails()
+        {
+            List <string[]>ContactDetails = new List <string[]>();
+            int i = 0;
+
+            foreach (DataRow Row in FDataTable.Rows)
+            {
+                if (Convert.ToBoolean(Row["Checked"]) == true)
+                {
+                    ContactDetails.Add(new string[] { Row[PPartnerAttributeTable.GetAttributeTypeDBName()].ToString(),
+                                                      Row[PPartnerAttributeTable.GetSequenceDBName()].ToString() });
+                    i++;
+                }
+            }
+
+            return ContactDetails;
+        }
+
+        /// <summary>
         /// Returns the BankingDetailsKey for the selected row in the grid.
         /// </summary>
         public int GetSelectedBankAccount()
         {
-            DataRowView[] SelectedRow = clbAddress.SelectedDataRowsAsDataRowView;
+            DataRowView[] SelectedRow = clbRecords.SelectedDataRowsAsDataRowView;
             PBankingDetailsRow Row = (PBankingDetailsRow)SelectedRow[0].Row;
 
             return Row.BankingDetailsKey;
@@ -187,20 +261,24 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <param name="AFromPartnerKey">Pass in the From Partner's Key.</param>
         /// <param name="AToPartnerKey">Pass in the To Partner's Key.</param>
-        /// <param name="ADataType">Determines the type of data the dialog will display.</param>
+        /// <param name="AMergeAction">Determines the type of data the dialog will display.</param>
         /// <param name="AParentForm"></param>
         /// <returns>True if Addresses were found and accepted by the user, otherwise false.</returns>
-        public static bool OpenModalForm(long AFromPartnerKey, long AToPartnerKey, string ADataType, Form AParentForm)
+        public static bool OpenModalForm(long AFromPartnerKey, long AToPartnerKey, TMergeActionEnum AMergeAction, Form AParentForm)
         {
             DialogResult dlgResult;
 
             TFrmGetMergeDataDialog SelectDialog = new TFrmGetMergeDataDialog(AParentForm);
 
-            if (ADataType == "ADDRESS")
+            if (AMergeAction == TMergeActionEnum.ADDRESS)
             {
                 SelectDialog.InitializeAddressGrid(AFromPartnerKey);
             }
-            else if (ADataType == "BANKACCOUNT")
+            else if (AMergeAction == TMergeActionEnum.CONTACTDETAIL)
+            {
+                SelectDialog.InitializeContactDetailGrid(AFromPartnerKey, AToPartnerKey);
+            }
+            else if (AMergeAction == TMergeActionEnum.BANKACCOUNT)
             {
                 SelectDialog.InitializeBankAccountGrid(AFromPartnerKey, AToPartnerKey);
             }
@@ -209,12 +287,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (dlgResult == DialogResult.OK)
             {
-                if (ADataType == "ADDRESS")
+                if (AMergeAction == TMergeActionEnum.ADDRESS)
                 {
                     TFrmMergePartnersDialog.LocationKeys = SelectDialog.GetSelectedLocationKeys();
                     TFrmMergePartnersDialog.SiteKeys = SelectDialog.GetSelectedSiteKeys();
                 }
-                else if (ADataType == "BANKACCOUNT")
+
+                if (AMergeAction == TMergeActionEnum.CONTACTDETAIL)
+                {
+                    TFrmMergePartnersDialog.ContactDetails = SelectDialog.GetContactDetails();
+                }
+                else if (AMergeAction == TMergeActionEnum.BANKACCOUNT)
                 {
                     TFrmMergePartnersDialog.MainBankingDetailsKey = SelectDialog.GetSelectedBankAccount();
                 }

@@ -870,6 +870,28 @@ namespace Ict.Petra.Client.CommonForms
 
             FtipForm.SetToolTip(AControl, AToolTipText);
         }
+
+        /// <summary>
+        /// Method that momentarily removes the focus from the active control, so ensuring that the OnLeave event is fired.
+        /// The method is used before saving data.
+        /// </summary>
+        public void ForceOnLeaveForActiveControl()
+        {
+            // Find the currently active control
+            Form theForm = GetForm();
+            Control CurrentActiveControl;
+            ContainerControl ParentControl = theForm;
+
+            do
+            {
+                CurrentActiveControl = ParentControl.ActiveControl;
+                ParentControl = CurrentActiveControl as ContainerControl;
+            } while (ParentControl != null);
+
+            // Momentarily remove focus from active control. This ensures OnLeave event is fired for control.
+            theForm.ActiveControl = null;
+            theForm.ActiveControl = CurrentActiveControl;
+        }
     }
 
     /// <summary>todoComment</summary>

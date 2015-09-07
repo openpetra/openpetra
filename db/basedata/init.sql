@@ -49,6 +49,8 @@ COPY pt_skill_category FROM '{#ABSOLUTEBASEDATAPATH}/pt_skill_category.csv' WITH
 COPY pt_skill_level FROM '{#ABSOLUTEBASEDATAPATH}/pt_skill_level.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pm_document_category FROM '{#ABSOLUTEBASEDATAPATH}/pm_document_category.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pm_document_type FROM '{#ABSOLUTEBASEDATAPATH}/pm_document_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_address_layout_code FROM '{#ABSOLUTEBASEDATAPATH}/p_address_layout_code.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_address_block_element FROM '{#ABSOLUTEBASEDATAPATH}/p_address_block_element.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 
 INSERT INTO s_system_status(s_user_id_c,s_system_login_status_l) VALUES('SYSADMIN', true);
 INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c, p_status_code_c) VALUES(0, 'INVALID PARTNER', 'INACTIVE');

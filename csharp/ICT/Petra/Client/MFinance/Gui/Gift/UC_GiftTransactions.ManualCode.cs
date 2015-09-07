@@ -30,6 +30,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core;
@@ -188,7 +189,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailRecipientKey.PartnerClassChanged += RecipientPartnerClassChanged;
 
                 //Set initial width of this textbox
-                cmbKeyMinistries.ComboBoxWidth = 250;
+                cmbKeyMinistries.ComboBoxWidth = 300;
                 cmbKeyMinistries.AttachedLabel.Visible = false;
 
                 //Setup hidden text boxes used to speed up reading transactions
@@ -197,6 +198,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Make TextBox look like a label
                 txtDonorInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
                 txtDonorInfo.Font = TAppSettingsManager.GetDefaultBoldFont();
+
+                // Move the print receipt check box and label
+                chkNoReceiptOnAdjustment.Top = dtpDateEntered.Top + 4;
+                chkNoReceiptOnAdjustment.Left = dtpDateEntered.Right + 40;
+                chkNoReceiptOnAdjustment.Visible = false;
 
                 if (FTaxDeductiblePercentageEnabled)
                 {
@@ -220,6 +226,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             List <Tuple <string, EventHandler>>ItemList = new List <Tuple <string, EventHandler>>();
 
             ItemList.Add(new Tuple <string, EventHandler>(Catalog.GetString("Open Donor History"), OpenDonorHistory));
+            ItemList.Add(new Tuple <string, EventHandler>(Catalog.GetString("Open Donor Finance Details"), OpenDonorFinanceDetails));
             txtDetailDonorKey.AddCustomContextMenuItems(ItemList);
 
             ItemList.Clear();
@@ -310,7 +317,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //On populating key ministry
-            if (DisableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).DataRowColumnsHaveChanged(FBatchRow))
+            if (DisableSave && FPetraUtilsObject.HasChanges && !DataUtilities.DataRowColumnsHaveChanged(FBatchRow))
             {
                 FPetraUtilsObject.DisableSaveButton();
             }
@@ -361,7 +368,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus) && !AForceLoadFromServer);
 
             //Read key fields
-            FBatchRow = GetCurrentBatchRow();
+            FBatchRow = GetBatchRow();
 
             if ((FBatchRow == null) && (GetAnyBatchRow(ABatchNumber) == null))
             {
@@ -497,7 +504,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
 
-                if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).DataRowColumnsHaveChanged(FBatchRow))
+                if (disableSave && FPetraUtilsObject.HasChanges && !DataUtilities.DataRowColumnsHaveChanged(FBatchRow))
                 {
                     FPetraUtilsObject.DisableSaveButton();
                 }
@@ -530,6 +537,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool DoValidateGiftDestination;
             bool DoTaxUpdate;
+
+            if (!AValidSelection)
+            {
+                // if partner is not valid then we treat this change as if the partner key is 0
+                APartnerKey = 0;
+            }
 
             FRecipientKey = APartnerKey;
 
@@ -956,12 +969,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
 
-            if ((GetCurrentBatchRow() == null) || (txn.NumberValueDecimal == null))
+            if ((GetBatchRow() == null) || (txn.NumberValueDecimal == null))
             {
                 return;
             }
 
-            if ((FPreviouslySelectedDetailRow != null) && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            if ((FPreviouslySelectedDetailRow != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
                 FPreviouslySelectedDetailRow.GiftTransactionAmount = (decimal)txn.NumberValueDecimal;
                 UpdateBaseAmount(true);
@@ -1090,7 +1103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// get the details of the current batch
         /// </summary>
         /// <returns></returns>
-        private AGiftBatchRow GetCurrentBatchRow()
+        private AGiftBatchRow GetBatchRow()
         {
             return ((TFrmGiftBatch)ParentForm).GetBatchControl().GetCurrentBatchRow();
         }
@@ -1186,7 +1199,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactionsForBatch(FLedgerNumber, ABatchNumber));
-
                 FMainDS.AcceptChanges();
 
                 RetVal = true;
@@ -1571,14 +1583,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailReference.Text = ACurrentGiftRow.Reference;
             }
 
-            if (ACurrentGiftRow.IsReceiptLetterCodeNull())
-            {
-                cmbDetailReceiptLetterCode.SelectedIndex = -1;
-            }
-            else
-            {
-                cmbDetailReceiptLetterCode.SetSelectedString(ACurrentGiftRow.ReceiptLetterCode);
-            }
+            cmbDetailReceiptLetterCode.SetSelectedString(ACurrentGiftRow.ReceiptLetterCode, -1);
+            chkNoReceiptOnAdjustment.Checked = !ACurrentGiftRow.PrintReceipt;
         }
 
         /// <summary>
@@ -1620,7 +1626,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            FBatchRow = GetCurrentBatchRow();
+            FBatchRow = GetBatchRow();
 
             if (FBatchRow == null)
             {
@@ -1691,7 +1697,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FBatchRow == null)
             {
-                FBatchRow = GetCurrentBatchRow();
+                FBatchRow = GetBatchRow();
             }
 
             if (ARow == null)
@@ -1715,6 +1721,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             btnDeleteAll.Enabled = btnDelete.Enabled;
             btnNewDetail.Enabled = !PnlDetailsProtected;
             btnNewGift.Enabled = !PnlDetailsProtected;
+
+            mniDonorFinanceDetails.Enabled = (ARow != null);
+
+            // Only show the NoReceipt check box under special circumstances
+            chkNoReceiptOnAdjustment.Visible = IsUnpostedReversedDetailAdjustment(ARow);
+            chkNoReceiptOnAdjustment.Enabled = firstIsEnabled;
+        }
+
+        private Boolean IsUnpostedReversedDetailAdjustment(AGiftDetailRow ARow)
+        {
+            // This method returns true if the gift detail row is an unposted adjustement to a reversed gift detail
+            // We use the LinkToPreviousGift property to discover if this gift is associated with the previous gift row.
+            // Then we check if that row has a modifiedDetail flag sets for its first detail.
+            if ((ARow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return false;
+            }
+
+            AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+
+            if ((giftRow != null) && (giftRow.LinkToPreviousGift == true))
+            {
+                if (ARow.GiftTransactionNumber > 1)
+                {
+                    AGiftDetailRow prevDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
+                        new object[] { ARow.LedgerNumber, ARow.BatchNumber, ARow.GiftTransactionNumber - 1, 1 });
+                    return prevDetailRow.ModifiedDetail == true;
+                }
+            }
+
+            return false;
         }
 
         private Boolean BatchHasMethodOfPayment()
@@ -1844,18 +1881,56 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 GetTaxDeductibleDataFromControlsManual(ref ARow);
             }
+
+            if (chkNoReceiptOnAdjustment.Visible)
+            {
+                GetGiftRow(ARow.GiftTransactionNumber).PrintReceipt = (chkNoReceiptOnAdjustment.Checked == false);
+            }
         }
 
         private void ValidateDataDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            if ((ARow == null) || (ARow.RowState == DataRowState.Deleted) || (GetCurrentBatchRow() == null)
-                || (GetCurrentBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-                || (GetCurrentBatchRow().BatchNumber != ARow.BatchNumber))
+            //Ensure FBatchRow is correct, as this gets called from the batch tab validation
+            FBatchRow = GetBatchRow();
+
+            if ((ARow == null) || (ARow.RowState == DataRowState.Deleted) || (FBatchRow == null)
+                || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                || (FBatchRow.BatchNumber != ARow.BatchNumber))
             {
                 return;
             }
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            if ((ARow.RecipientField != 0)
+                && (ARow.RecipientKey != 0)
+                && ((int)ARow.RecipientField / 1000000 != ARow.LedgerNumber))
+            {
+                TVerificationResultCollection TempVerificationResultCollection;
+
+                if (!TRemote.MFinance.Gift.WebConnectors.IsRecipientLedgerNumberSetupForILT(FLedgerNumber, FPreviouslySelectedDetailRow.RecipientKey,
+                        Convert.ToInt64(txtDetailRecipientLedgerNumber.Text), out TempVerificationResultCollection))
+                {
+                    DataColumn ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnRecipientLedgerNumberId];
+                    object ValidationContext = String.Format("Batch Number {0} (transaction:{1} detail:{2})",
+                        ARow.BatchNumber,
+                        ARow.GiftTransactionNumber,
+                        ARow.DetailNumber);
+
+                    TValidationControlsData ValidationControlsData;
+
+                    if (FValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        TVerificationResult VerificationResult = new TVerificationResult(this,
+                            ValidationContext.ToString() + ": " + TempVerificationResultCollection[0].ResultText,
+                            PetraErrorCodes.ERR_RECIPIENTFIELD_NOT_ILT, TResultSeverity.Resv_Critical);
+
+                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this,
+                            new TScreenVerificationResult(VerificationResult, ValidationColumn, ValidationControlsData.ValidationControl),
+                            ValidationColumn, true);
+                    }
+                }
+            }
 
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict, txtDetailRecipientKey.CurrentPartnerClass, null, null, null);
@@ -1879,12 +1954,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateRecipientLedgerNumber()
         {
+            if (!FInEditMode || (FPreviouslySelectedDetailRow.RecipientKey == 0))
+            {
+                return;
+            }
             // if no gift destination exists for Family parter then give the user the option to open Gift Destination maintenance screen
-            if (FInEditMode
-                && (FPreviouslySelectedDetailRow != null)
-                && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
-                && (FPreviouslySelectedDetailRow.RecipientKey != 0)
-                && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT))
+            else if ((FPreviouslySelectedDetailRow != null)
+                     && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
+                     && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT))
             {
                 if ((txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
                     && (MessageBox.Show(Catalog.GetString("No valid Gift Destination exists for ") +
@@ -1917,6 +1994,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     frm.Show();
                 }
             }
+            // if recipient ledger number belongs to a different ledger then check that it is set up for inter-ledger transfers
+            else if ((FPreviouslySelectedDetailRow != null)
+                     && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) != 0)
+                     && ((int)Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) / 1000000 != FLedgerNumber))
+            {
+                TVerificationResultCollection VerificationResults;
+
+                if (!TRemote.MFinance.Gift.WebConnectors.IsRecipientLedgerNumberSetupForILT(
+                        FLedgerNumber, FPreviouslySelectedDetailRow.RecipientKey, Convert.ToInt64(txtDetailRecipientLedgerNumber.Text),
+                        out VerificationResults))
+                {
+                    MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Invalid Data Entered"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         /// <summary>
@@ -1945,7 +2037,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             // Get the current batch row from the batch tab
-            FBatchRow = GetCurrentBatchRow();
+            FBatchRow = GetBatchRow();
 
             if (FBatchRow != null)
             {
@@ -1977,14 +2069,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFunctionName">Which function shall be called on the server</param>
         public void ShowRevertAdjustForm(GiftAdjustmentFunctionEnum AFunctionName)
         {
-            bool reverseWholeBatch = (AFunctionName == GiftAdjustmentFunctionEnum.ReverseGiftBatch);
+            TFrmGiftBatch ParentGiftBatchForm = (TFrmGiftBatch)ParentForm;
+            bool ReverseWholeBatch = (AFunctionName == GiftAdjustmentFunctionEnum.ReverseGiftBatch);
+            bool AdjustGift = (AFunctionName == GiftAdjustmentFunctionEnum.AdjustGift);
 
-            if (!((TFrmGiftBatch)ParentForm).SaveChangesManual())
+            if (!ParentGiftBatchForm.SaveChangesManual())
             {
                 return;
             }
 
-            ((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
+            ParentGiftBatchForm.Cursor = Cursors.WaitCursor;
 
             AGiftBatchRow giftBatch = ((TFrmGiftBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
             int BatchNumber = giftBatch.BatchNumber;
@@ -1992,44 +2086,51 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (giftBatch == null)
             {
                 MessageBox.Show(Catalog.GetString("Please select a Gift Batch to Reverse."));
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
+                ParentGiftBatchForm.Cursor = Cursors.Default;
                 return;
             }
 
             if (!giftBatch.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED))
             {
                 MessageBox.Show(Catalog.GetString("This function is only possible when the selected batch is already posted."));
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
+                ParentGiftBatchForm.Cursor = Cursors.Default;
                 return;
             }
 
             if (FPetraUtilsObject.HasChanges)
             {
                 MessageBox.Show(Catalog.GetString("Please save first and than try again!"));
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
+                ParentGiftBatchForm.Cursor = Cursors.Default;
                 return;
             }
 
-            if (reverseWholeBatch && (FBatchNumber != BatchNumber))
+            if (ReverseWholeBatch && (FBatchNumber != BatchNumber))
             {
-                ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, true);
-                ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Batches);
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
+                ParentGiftBatchForm.SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, true);
+                ParentGiftBatchForm.SelectTab(TFrmGiftBatch.eGiftTabs.Batches);
+                ParentGiftBatchForm.Cursor = Cursors.WaitCursor;
             }
 
             if (FPreviouslySelectedDetailRow == null)
             {
                 MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
+                ParentGiftBatchForm.Cursor = Cursors.Default;
                 return;
             }
+
+            TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
 
             int workingLedgerNumber = FPreviouslySelectedDetailRow.LedgerNumber;
             int workingBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             int workingTransactionNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
             int workingDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
 
-            TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
+            if (FTaxDeductiblePercentageEnabled)
+            {
+                revertForm.CheckTaxDeductPctChange = true;
+            }
+
+            revertForm.CheckGiftDestinationChange = true;
 
             try
             {
@@ -2048,16 +2149,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!revertForm.IsDisposed && (revertForm.ShowDialog() == DialogResult.OK))
                 {
-                    ((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
-                    ((TFrmGiftBatch)ParentForm).RefreshAll();
+                    ParentGiftBatchForm.Cursor = Cursors.WaitCursor;
+
+                    if ((revertForm.AdjustmentBatchNumber > 0) && (revertForm.AdjustmentBatchNumber != workingBatchNumber))
+                    {
+                        // select the relevant batch
+                        ParentGiftBatchForm.InitialBatchNumber = revertForm.AdjustmentBatchNumber;
+                    }
+
+                    ParentGiftBatchForm.RefreshAll();
                 }
             }
             finally
             {
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.WaitCursor;
+                ParentGiftBatchForm.Cursor = Cursors.WaitCursor;
                 revertForm.Dispose();
                 ParentForm.ShowInTaskbar = true;
-                ((TFrmGiftBatch)ParentForm).Cursor = Cursors.Default;
+                ParentGiftBatchForm.Cursor = Cursors.Default;
+            }
+
+            if (AdjustGift && (ParentGiftBatchForm.ActiveTab() == TFrmGiftBatch.eGiftTabs.Transactions))
+            {
+                //Select first row for adjusting, i.e. first +ve amount
+                foreach (DataRowView drv in FMainDS.AGiftDetail.DefaultView)
+                {
+                    AGiftDetailRow gdr = (AGiftDetailRow)drv.Row;
+
+                    if (gdr.GiftTransactionAmount > 0)
+                    {
+                        grdDetails.SelectRowInGrid(grdDetails.Rows.DataSourceRowToIndex(drv) + 1);
+                    }
+                }
             }
         }
 
@@ -2152,7 +2274,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             bool TransactionsFromCurrentBatch = false;
 
-            AGiftBatchRow CurrentBatchRow = GetCurrentBatchRow();
+            AGiftBatchRow CurrentBatchRow = GetBatchRow();
 
             if (!(((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
                 || (CurrentBatchRow == null)
@@ -2372,7 +2494,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     // if the donor does not have another gift in this gift batch then search the database for
                     // the last gift from this donor
-                    GiftDetailTable = TRemote.MFinance.Gift.WebConnectors.LoadDonorLastGift(ADonorKey);
+                    GiftDetailTable = TRemote.MFinance.Gift.WebConnectors.LoadDonorLastGift(ADonorKey, FLedgerNumber);
                 }
 
                 // if this is the donor's first ever gift
@@ -2413,7 +2535,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             Message +=
                                 string.Format(Catalog.GetString("Recipient: {0} ({1});  Motivation Group: {2};  Motivation Detail: {3};  Amount: {4}"),
                                     Row.RecipientDescription, Row.RecipientKey, Row.MotivationGroupCode, Row.MotivationDetailCode,
-                                    StringHelper.FormatUsingCurrencyCode(Row.GiftTransactionAmount, GetCurrentBatchRow().CurrencyCode) +
+                                    StringHelper.FormatUsingCurrencyCode(Row.GiftTransactionAmount, GetBatchRow().CurrencyCode) +
                                     " " + FBatchRow.CurrencyCode) +
                                 "\n";
                         }
@@ -2487,6 +2609,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPetraUtilsObject.GetForm());
         }
 
+        private void OpenDonorFinanceDetails(System.Object sender, EventArgs e)
+        {
+            TFrmPartnerEdit frmPartner = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+
+            frmPartner.SetParameters(TScreenMode.smEdit,
+                FPreviouslySelectedDetailRow.DonorKey,
+                Shared.MPartner.TPartnerEditTabPageEnum.petpFinanceDetails);
+            frmPartner.Show();
+        }
+
         private void OpenRecipientHistory(System.Object sender, EventArgs e)
         {
             TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(false,
@@ -2513,7 +2645,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        // modifies menu items depending on the Recipeint's Partner class
+        // modifies menu items depending on the Recipient's Partner class
         private void RecipientPartnerClassChanged(TPartnerClass ? APartnerClass)
         {
             bool? DoEnableRecipientGiftDestination;
@@ -2580,9 +2712,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (DetailRow.RecipientKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
                 {
-                    // only make changes if gift is unposted.
-                    if (((AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(
-                             new object[] { DetailRow.LedgerNumber, DetailRow.BatchNumber })).BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                    // only make changes if gift is unposted, not a reversal and doesn't have a fixed gift destination
+                    if ((!DetailRow.IsFixedGiftDestinationNull() && DetailRow.FixedGiftDestination)
+                        || (((AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(
+                                 new object[] { DetailRow.LedgerNumber, DetailRow.BatchNumber })).BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                        || (!DetailRow.IsModifiedDetailNull() && DetailRow.ModifiedDetail))
                     {
                         continue;
                     }

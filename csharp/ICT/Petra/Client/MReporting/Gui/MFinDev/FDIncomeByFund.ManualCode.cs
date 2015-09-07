@@ -51,6 +51,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
                 rbtPeriodRange.Checked = true;
+                //TODO: Calendar vs Financial Date Handling - Check if 12 periods have been incorrectly assumed
                 txtEndPeriod.Text = "12";
                 txtQuarter.Text = "1";
                 cmbPeriodYear.SelectedIndex = 0;

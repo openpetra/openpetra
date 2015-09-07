@@ -267,5 +267,36 @@ namespace Ict.Petra.Client.MPartner
             "Cannot Send E-Mail to This Partner");
 
         #endregion
+
+        #region Standard Label Sorting text used in Method Selection
+
+        /// <summary>No sorting</summary>
+        public static readonly string StrSortNoSort = Catalog.GetString("No Sort");
+
+        /// <summary>Last name and then first name</summary>
+        public static readonly string StrSortLastNameFirstName = Catalog.GetString("Last Name then First Name");
+
+        /// <summary>First name and then last name</summary>
+        public static readonly string StrSortFirstNameLastName = Catalog.GetString("First Name then Last Name");
+
+        /// <summary>Postcode</summary>
+        public static readonly string StrSortPostalCode = Catalog.GetString("Postal Code");
+
+        /// <summary>Postcode region</summary>
+        public static readonly string StrSortPostCodeRegion = Catalog.GetString("Post Code Region");
+
+        /// <summary>County</summary>
+        public static readonly string StrSortCounty = Catalog.GetString("County");
+
+        /// <summary>Country name</summary>
+        public static readonly string StrSortCountryName = Catalog.GetString("Country Name");
+
+        /// <summary>Country name</summary>
+        public static readonly string StrSortCountryCodePostCode = Catalog.GetString("Country Code then Postal Code");
+
+        /// <summary>Custom</summary>
+        public static readonly string StrSortCustom = Catalog.GetString("Custom");
+
+        #endregion
     }
 }

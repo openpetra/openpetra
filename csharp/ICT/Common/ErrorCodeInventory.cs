@@ -102,7 +102,24 @@ namespace Ict.Common
                     do
                     {
                         Counter2++;
-                        CheckedType = new System.Diagnostics.StackTrace(false).GetFrame(Counter2).GetMethod().DeclaringType;
+                        MethodBase method = new System.Diagnostics.StackTrace(false).GetFrame(Counter2).GetMethod();
+
+                        if (method.DeclaringType.Name.StartsWith("<"))
+                        {
+                            // Note by AP: 17.08.2015
+                            // This indicates that we were called by an anonymous delegate inside a method
+                            //  - the Name property will be something like <>c as opposed to a sensible name
+                            // So we need to use the DeclaringType property twice
+                            // This is what happens in our TestErrorCodes Ict.Testing.lib.Common test
+                            // This seems to be a new feature that has come with a recent .NET update (?) or Visual Studio 2015
+                            //   because we never needed to do this before and tests always passed.
+                            CheckedType = method.DeclaringType.DeclaringType;
+                        }
+                        else
+                        {
+                            // Just a normal type
+                            CheckedType = method.DeclaringType;
+                        }
                     } while (CheckedType.FullName == "Ict.Common.ErrorCodes");
 
                     if (!AreTypesErrorCodesCatalogued(CheckedType.Name))

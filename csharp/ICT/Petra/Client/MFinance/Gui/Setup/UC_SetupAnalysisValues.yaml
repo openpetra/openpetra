@@ -12,13 +12,14 @@ RootNode:
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
     Controls:
         pnlContent:
-            Controls: [pnlDetailTop, pnlGrid, pnlDetails]
+            Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
+            FilterButton: F&ilter;Click to show or hide the Analysis Values filter panel
             FilterControls: [txtDetailAnalysisValue, chkDetailActive]
             FindControls: [txtDetailAnalysisValue]
         pnlButtons:
@@ -49,7 +50,3 @@ RootNode:
                 Row1: [chkDetailActive]
         txtDetailAnalysisValue: {Label=&Value, Width=400}
         chkDetailActive: {Label=A&ctive}
-        pnlDetailTop:
-            Dock: Top
-            Controls: [txtHeaderLedgerNumber]
-        txtHeaderLedgerNumber: {Label=Values for this Type and Ledger Number,ReadOnly=true}

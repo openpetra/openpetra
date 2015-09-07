@@ -14,14 +14,14 @@
     <reportheader/>
     <pageheader>
       <field whichfield="title1">
-        <value text="Total Giving for selected recipients" />
+        <value text="Total Giving For Selected Recipients" />
       </field>
 
       <field whichfield="title2">
         <value function="getLedgerName({{param_ledger_number_i}})"/>
       </field>
       <field whichfield="descr1">
-        <value text="Ledger "/>
+        <value text="Ledger: "/>
         <value variable="param_ledger_number_i"/>
         <value text="   "/>
         <value function="getLedgerName({{param_ledger_number_i}})"/>
@@ -32,11 +32,11 @@
         </fielddetail>
         <fielddetail condition="eq({param_recipient}, One Recipient)">
           <value text="One Recipient: "/>
-          <value variable="{param_recipient_key}"/>
+          <value variable="param_recipient_key"/>
         </fielddetail>
         <fielddetail condition="eq({param_recipient}, Extract)">
           <value text="Recipients from Extract: "/>
-          <value variable="{param_extract_name}"/>
+          <value variable="param_extract_name"/>
         </fielddetail>
       </field>
       <field whichfield="period1">

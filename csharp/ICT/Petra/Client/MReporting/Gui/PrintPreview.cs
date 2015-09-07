@@ -42,6 +42,8 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.Interfaces.MPartner;
 
 
 namespace Ict.Petra.Client.MReporting.Gui
@@ -110,7 +112,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbpText.Text = Catalog.GetString("Text Preview");
             this.txtOutput.Text = Catalog.GetString("Text Output");
             this.tbpPreview.Text = Catalog.GetString("Print Preview");
-            this.lblNoPrinter.Text = Catalog.GetString("Unfortunately this function is disabled. Please" + " install a printer to use this page.");
+            this.lblNoPrinter.Text = Catalog.GetString("Unfortunately this function is disabled. Please install a printer to use this page.");
             this.CbB_Zoom.Text = Catalog.GetString("Select Zoom");
             this.Btn_PreviousPage.Text = Catalog.GetString("Previous Page");
             this.Btn_NextPage.Text = Catalog.GetString("Next Page");
@@ -120,14 +122,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbtExportCSV.Text = Catalog.GetString("Export to CSV");
             this.tbtExportCSV.ToolTipText = Catalog.GetString("Export to CSV text file");
             this.tbtExportExcelFile.Text = Catalog.GetString("Export to Excel");
-            this.tbtExportExcelFile.ToolTipText = Catalog.GetString("Export to Excel xlsx file or directly into Excel, if" + " it is available");
+            this.tbtExportExcelFile.ToolTipText = Catalog.GetString("Export to Excel xlsx file or directly into Excel, if it is available");
             this.tbtExportText.Text = Catalog.GetString("Save as Text file");
             this.tbtExportText.ToolTipText = Catalog.GetString("Save as a text file (e.g. for email)");
             this.tbtSendEmail.Text = Catalog.GetString("Send Email");
             this.tbtSendEmail.ToolTipText = Catalog.GetString("Send the Report as an Email with Excel attachment");
             this.tbtGenerateChart.Text = Catalog.GetString("Generate Chart");
             this.tbtGenerateChart.ToolTipText = Catalog.GetString(
-                "Generates a chart in Excel (only ava" + "ilable yet for few reports at the moment)");
+                "Generates a chart in Excel (not available for all reports)");
             this.Text = Catalog.GetString("Print Preview");
             #endregion
 
@@ -321,6 +323,115 @@ namespace Ict.Petra.Client.MReporting.Gui
             if (!OpenInExcel())
             {
                 ExportToExcelFile();
+            }
+        }
+
+        private String SelectColumnNameForExract(XmlNode node)
+        {
+            String Res = "";
+
+            TFrmSelectExtractColumn SelectForm = new TFrmSelectExtractColumn();
+            Boolean FoundInt64Field = false;
+
+            foreach (XmlAttribute Attr in node.Attributes)
+            {
+                Int64 NumericField;
+
+                if (Int64.TryParse(Attr.Value, out NumericField))
+                {
+                    FoundInt64Field = true;
+                    SelectForm.AddOption(Attr.Name);
+                }
+            }
+
+            if (FoundInt64Field && (SelectForm.ShowDialog() == System.Windows.Forms.DialogResult.OK))
+            {
+                Res = SelectForm.SelectedOption;
+            }
+
+            return Res;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void tbtCreateExtractClick(System.Object sender, System.EventArgs e)
+        {
+            XmlDocument doc = Results.WriteXmlDocument(Parameters, true);
+            DataTable Tbl = new DataTable();
+
+            Tbl.Columns.Add("PartnerKey", typeof(Int64));
+            XmlNodeList Rows = doc.SelectNodes("*/Element");
+            XmlNode FirstRow = Rows[0];
+            String ColumnName = SelectColumnNameForExract(FirstRow);
+            this.UseWaitCursor = true;
+
+            foreach (XmlNode node in Rows)
+            {
+                XmlAttribute Attr = node.Attributes[ColumnName];
+
+                if (Attr != null)
+                {
+                    Int64 intPartnerKey;
+
+                    if (Int64.TryParse(Attr.Value, out intPartnerKey))
+                    {
+                        DataRow Row = Tbl.NewRow();
+                        Row["PartnerKey"] = intPartnerKey;
+                        Tbl.Rows.Add(Row);
+                    }
+                }
+            }
+
+            this.UseWaitCursor = false;
+
+            if (Tbl.Rows.Count < 1)
+            {
+                MessageBox.Show(Catalog.GetString("Error - no Partner keys found"), Catalog.GetString("Generate Extract"));
+                return;
+            }
+
+            TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this);
+            string ExtractName;
+            string ExtractDescription;
+
+            ExtractNameDialog.ShowDialog();
+
+            if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                /* Get values from the Dialog */
+                ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+            }
+            else
+            {
+                // dialog was cancelled, do not continue with extract generation
+                return;
+            }
+
+            ExtractNameDialog.Dispose();
+
+            this.UseWaitCursor = true;
+
+            // Create extract with given name and description and store it
+            int ExtractId = 0;
+            IPartnerUIConnectorsPartnerNewExtract PartnerExtractObject = TRemote.MPartner.Extracts.UIConnectors.PartnerNewExtract();
+            Boolean CreateOk = PartnerExtractObject.CreateExtractFromListOfPartnerKeys(ExtractName, ExtractDescription, out ExtractId, Tbl, 0, false);
+            this.UseWaitCursor = false;
+
+            if (CreateOk)
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("Extract Created with {0} Partners."),
+                        Tbl.Rows.Count),
+                    Catalog.GetString("Generate Extract"));
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("Creation of extract failed"),
+                    Catalog.GetString("Generate Extract"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
             }
         }
 

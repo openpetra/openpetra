@@ -20,7 +20,7 @@
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [uco_GeneralSettings, rgrSorting]
+            Controls: [uco_GeneralSettings, rgrSorting, grpBalance]
             Dock: Fill
         uco_GeneralSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
@@ -48,3 +48,8 @@
         uco_AccountCostCentreSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_AccountCostCentreSettings
             Dock: Fill
+
+        grpBalance:
+            Dock: Top
+            Controls: [chkYTD]
+        chkYTD:

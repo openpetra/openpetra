@@ -45,6 +45,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
     public partial class TFrmPartnerByEventRole
     {
+        private DataTable FEventTable;
         private bool FCalledForConferences;
 
         /// helper object for the whole screen
@@ -70,7 +71,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         /// <returns>void</returns>
         private void EventFilterChanged(System.Object sender, System.EventArgs e)
         {
-            LoadEventListData();
+            DataView view = new DataView(FEventTable);
+
+            view.AllowNew = false;
+            view.RowFilter = ucoFilter.GetFilterCriteria();
+
+            clbEvent.DataBindGrid(
+                view.ToTable(), PPartnerTable.GetPartnerShortNameDBName(), "CHECKED", PPartnerTable.GetPartnerKeyDBName(), false, true, false);
+            clbEvent.SetCheckedStringList("");
+
+            clbEvent.AutoStretchColumnsToFitWidth = true;
+            clbEvent.AutoResizeGrid();
         }
 
         /// <summary>
@@ -127,32 +138,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             string ValueMember = PPartnerTable.GetPartnerKeyDBName();
             string DisplayMember = PPartnerTable.GetPartnerShortNameDBName();
             string EventCodeMember = PUnitTable.GetOutreachCodeDBName();
-            DataTable Table;
 
-            Table = TRemote.MPartner.Partner.WebConnectors.GetEventUnits
-                        (ucoFilter.IncludeConferenceUnits, ucoFilter.IncludeOutreachUnits,
-                        ucoFilter.NameFilter, false, ucoFilter.CurrentAndFutureEventsOnly);
-
-            DataView view = new DataView(Table);
-
-            DataTable NewTable = view.ToTable(true, new string[] { DisplayMember, ValueMember, EventCodeMember });
-            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+            FEventTable = TRemote.MPartner.Partner.WebConnectors.GetEventUnits();
+            FEventTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
             clbEvent.Columns.Clear();
-            clbEvent.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            clbEvent.AddTextColumn(Catalog.GetString("Event Name"), NewTable.Columns[DisplayMember], 240);
-            clbEvent.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 100);
+            clbEvent.AddCheckBoxColumn("", FEventTable.Columns[CheckedMember], 17, false);
+            clbEvent.AddTextColumn(Catalog.GetString("Event Name"), FEventTable.Columns[DisplayMember]);
+            clbEvent.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), FEventTable.Columns[ValueMember]);
 
             // outreach/event code column only needed in case of displaying Outreaches
             if (ucoFilter.IncludeOutreachUnits)
             {
-                clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 110);
+                clbEvent.AddTextColumn(Catalog.GetString("Event Code"), FEventTable.Columns[EventCodeMember]);
             }
 
-            clbEvent.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
-
-            //TODO: only temporarily until settings file exists
-            clbEvent.SetCheckedStringList("");
+            EventFilterChanged(this, null);
         }
 
         private void LoadEventRoleListData()
@@ -171,10 +172,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             clbEventRole.Columns.Clear();
             clbEventRole.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            clbEventRole.AddTextColumn(Catalog.GetString("Event Role"), NewTable.Columns[ValueMember], 100);
-            clbEventRole.AddTextColumn(Catalog.GetString("Description"), NewTable.Columns[DisplayMember], 240);
+            clbEventRole.AddTextColumn(Catalog.GetString("Event Role"), NewTable.Columns[ValueMember]);
+            clbEventRole.AddTextColumn(Catalog.GetString("Description"), NewTable.Columns[DisplayMember]);
 
             clbEventRole.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
+
+            clbEventRole.AutoResizeGrid();
 
             //TODO: only temporarily until settings file exists
             clbEventRole.SetCheckedStringList("");

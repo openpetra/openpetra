@@ -50,6 +50,16 @@ namespace Ict.Petra.Client.MFinance.Logic
     /// </summary>
     public class TFinanceControls
     {
+        #region Predefined strings
+
+        /// <summary> International text for 'Select a valid Cost Centre' </summary>
+        public static readonly string SELECT_VALID_COST_CENTRE = Catalog.GetString("Select a valid Cost Centre");
+
+        /// <summary> International text for 'Select a valid Account' </summary>
+        public static readonly string SELECT_VALID_ACCOUNT = Catalog.GetString("Select a valid Account");
+
+        #endregion
+
         /// <summary>
         /// Check if a given account is active
         /// </summary>
@@ -431,15 +441,6 @@ namespace Ict.Petra.Client.MFinance.Logic
                 Table = AACostCentreListDataSource.Copy();
             }
 
-            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
-            DataRow emptyRow = Table.NewRow();
-
-            emptyRow[ACostCentreTable.ColumnLedgerNumberId] = ALedgerNumber;
-            emptyRow[ACostCentreTable.ColumnCostCentreCodeId] = string.Empty;
-            emptyRow[ACostCentreTable.ColumnCostCentreNameId] = Catalog.GetString("Select a valid cost centre");
-
-            Table.Rows.Add(emptyRow);
-
             //Highlight inactive Cost Centres
             if (!AActiveOnly && AIndicateInactive)
             {
@@ -461,6 +462,48 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
 
             AControl.Filter = PrepareCostCentreFilter(APostingOnly, AExcludePosting, AActiveOnly, ALocalOnly);
+
+            // We set the initial index to -1 because we always want to force the user to make a positive choice
+            AControl.SelectedIndex = -1;
+        }
+
+        /// <summary>
+        /// fill combobox values with cost centre list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AReportsTo"></param>
+        /// <param name="AACostCentreListDataSource">If a reference to the ACostCentreList is available, pass it here.  Otherwise the method
+        /// will get it from the data cache.</param>
+        public static void InitialiseLocalCostCentreList(ref TCmbAutoPopulated AControl,
+            Int32 ALedgerNumber,
+            Boolean AReportsTo = false,
+            DataTable AACostCentreListDataSource = null)
+        {
+            DataTable Table;
+
+            if (AACostCentreListDataSource == null)
+            {
+                Table = TRemote.MFinance.Setup.WebConnectors.LoadLocalCostCentres(ALedgerNumber);
+            }
+            else
+            {
+                Table = AACostCentreListDataSource.Copy();
+            }
+
+            AControl.InitialiseUserControl(Table,
+                "CostCentreCode",
+                "CostCentreName",
+                null);
+            AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
+
+            if (AReportsTo)
+            {
+                AControl.Filter = "Posting = false";
+            }
+
+            // We set the initial index to -1 because we always want to force the user to make a positive choice
+            AControl.SelectedIndex = -1;
         }
 
         /// Adapter for the modules which have been developed before multi-currency support
@@ -513,14 +556,6 @@ namespace Ict.Petra.Client.MFinance.Logic
                 Table = AAAccountListDataSource.Copy();
             }
 
-            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first account etc)
-            DataRow emptyRow = Table.NewRow();
-
-            emptyRow[AAccountTable.ColumnLedgerNumberId] = ALedgerNumber;
-            emptyRow[AAccountTable.ColumnAccountCodeId] = string.Empty;
-            emptyRow[AAccountTable.ColumnAccountCodeShortDescId] = Catalog.GetString("Select a valid account");
-            Table.Rows.Add(emptyRow);
-
             //Highlight inactive Accounts
             if (!AActiveOnly && AIndicateInactive)
             {
@@ -542,6 +577,9 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             AControl.Filter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly,
                 ABankAccountOnly, AForeignCurrencyName);
+
+            // We set the initial index to -1 because we always want to force the user to make a positive choice
+            AControl.SelectedIndex = -1;
         }
 
         private static Boolean AccountIsDescendantOf(DataView View, String ParentAccount, AAccountHierarchyDetailRow Row)
@@ -1010,7 +1048,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                     DisplayMember,
                     DisplayMember,
                     null);
-                ACmbKeyMinistry.AppearanceSetup(new int[] { 250 }, -1);
+                ACmbKeyMinistry.AppearanceSetup(new int[] { 500 }, -1);
 
                 if (!FindAndSelect(ref ACmbKeyMinistry, APartnerKey))
                 {
@@ -1117,17 +1155,36 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <summary>
         /// This function fills the available financial years of a given ledger into a TCmbAutoPopulated combobox
         /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AIncludeNextYear"></param>
+        /// <param name="AShowYearEnds"></param>
         public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoPopulated AControl,
-            System.Int32 ALedgerNr,
-            bool AIncludeNextYear = false)
+            System.Int32 ALedgerNumber,
+            bool AIncludeNextYear = false,
+            bool AShowYearEnds = false)
         {
             string DisplayMember;
             string ValueMember;
-            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNr,
-                0,
-                AIncludeNextYear,
-                out DisplayMember,
-                out ValueMember);
+
+            DataTable Table = null;
+
+            if (AShowYearEnds)
+            {
+                Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYearEnds(ALedgerNumber,
+                    0,
+                    AIncludeNextYear,
+                    out DisplayMember,
+                    out ValueMember);
+            }
+            else
+            {
+                Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNumber,
+                    0,
+                    AIncludeNextYear,
+                    out DisplayMember,
+                    out ValueMember);
+            }
 
             Table.DefaultView.Sort = ValueMember + " DESC";
 
@@ -1146,14 +1203,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// This function fills the available financial years of a given ledger into a TCmbAutoPopulated combobox
         /// </summary>
         public static void InitialiseAvailableFinancialYearsListHOSA(ref TCmbAutoPopulated AControl,
-            System.Int32 ALedgerNr,
-            bool AIncludeNextYear = false)
+            Int32 ALedgerNumber,
+            Boolean AIncludeNextYear = false)
         {
             string DisplayMember;
             string ValueMember;
             string DescriptionMember;
 
-            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYearsHOSA(ALedgerNr,
+            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYearsHOSA(ALedgerNumber,
                 out DisplayMember,
                 out ValueMember,
                 out DescriptionMember);
@@ -1179,7 +1236,8 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoComplete AControl,
             System.Int32 ALedgerNr,
-            bool AIncludeNextYear = false, bool AShowYearEndings = false)
+            bool AIncludeNextYear = false,
+            bool AShowYearEndings = false)
         {
             string DisplayMember;
             string ValueMember;
