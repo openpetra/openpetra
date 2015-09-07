@@ -404,7 +404,7 @@ namespace Tests.MainNavigationScreens
                 notOpened.Count + Environment.NewLine + "      " + notOpenedString + Environment.NewLine);
 
             //Now the loop is finished so fail if there were exceptions
-            Assert.GreaterOrEqual(TotalWindowsOpened, 190, "Expected to open at least 190 windows");
+            Assert.GreaterOrEqual(TotalWindowsOpened, 220, "Expected to open at least 220 windows");
             Assert.GreaterOrEqual(sysManPermissions.Count, 3, "Expected to fail to open at least 3 windows requiring SYSMAN permissions");
             Assert.AreEqual(notOpened.Count, 0, "Failed to open at least one window for unexplained reasons");
             Assert.AreEqual(otherPermissions.Count,

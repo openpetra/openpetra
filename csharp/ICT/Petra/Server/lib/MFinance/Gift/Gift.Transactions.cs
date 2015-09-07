@@ -2834,7 +2834,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 // load all donor shortnames in one go
                 string getDonorSQL =
-                    "SELECT DISTINCT SUBSTRING(dp.p_partner_class_c, 1, 1) AS p_partner_class_c, dp.p_partner_key_n, dp.p_partner_short_name_c, dp.p_status_code_c," +
+                    "SELECT DISTINCT SUBSTRING(dp.p_partner_class_c, 1, 1) AS p_partner_class_c, dp.p_partner_key_n, dp.p_partner_short_name_c, dp.p_status_code_c,"
+                    +
                     " dp.p_receipt_letter_frequency_c, dp.p_receipt_each_gift_l, dp.p_anonymous_donor_l" +
                     " FROM PUB_p_partner dp, PUB_a_gift g "
                     +                                                                                                                                                                                      //, dp.p_receipt_each_gift_l
@@ -2863,7 +2864,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (TaxDeductiblePercentageEnabled && !ARecurring)
                 {
                     getRecipientSQL += " LEFT JOIN p_partner_tax_deductible_pct" +
-                        " ON p_partner_tax_deductible_pct.p_partner_key_n = rp.p_partner_key_n";
+                                       " ON p_partner_tax_deductible_pct.p_partner_key_n = rp.p_partner_key_n";
                 }
 
                 getRecipientSQL += " WHERE gd.a_ledger_number_i = ? AND gd.a_batch_number_i = ? AND gd.p_recipient_key_n = rp.p_partner_key_n";

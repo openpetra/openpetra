@@ -553,12 +553,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            if (FBankDataset == null)
-            {
-                // populate the comboboxes for Bank Name and Bank Code if not done already (this should never actually happen!)
-                PopulateComboBoxes();
-            }
-
             FCurrentBankRow = GetCurrentRow(APartnerKey);
 
             // change the BankName combo (if it was not the control used to change the bank)
@@ -719,8 +713,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 txtBankKey.DataSet = FBankDataset;
 
                 // populate the comboboxes for Bank Name and Bank Code
-                Thread NewThread = new Thread(PopulateComboBoxes);
-                NewThread.Start();
+                PopulateComboBoxes();
 
                 Cursor.Current = Cursors.Default;
             }
@@ -1018,8 +1011,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 txtBankKey.DataSet = FBankDataset;
 
                 // populate the comboboxes for Bank Name and Bank Code
-                Thread NewThread = new Thread(PopulateComboBoxes);
-                NewThread.Start();
+                PopulateComboBoxes();
 
                 Cursor.Current = Cursors.Default;
             }
