@@ -675,7 +675,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void MethodOfPaymentChanged(object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            if (FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
             {
                 return;
             }

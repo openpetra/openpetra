@@ -1352,51 +1352,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, true);
 
-            TDBTransaction Transaction = null;
-
-            try
-            {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref Transaction,
-                    delegate
-                    {
-                        // find PPartnerRows for all donors (needed for receipt frequency info)
-                        foreach (AGiftRow giftRow in MainDS.AGift.Rows)
-                        {
-                            PPartnerTable partnerTable = null;
-                            partnerTable = PPartnerAccess.LoadByPrimaryKey(giftRow.DonorKey, Transaction);
-
-                            #region Validate Data
-
-                            if ((partnerTable == null) || (partnerTable.Count == 0))
-                            {
-                                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                            "Function:{0} - Partner data for Donor number {1} (as used in Ledger {2}, Batch {3} and Gift {4}) does not exist or could not be accessed!"),
-                                        Utilities.GetMethodName(true),
-                                        giftRow.DonorKey,
-                                        ALedgerNumber,
-                                        ABatchNumber,
-                                        giftRow.GiftTransactionNumber));
-                            }
-
-                            #endregion Validate Data
-
-                            MainDS.DonorPartners.Merge(partnerTable);
-                        }
-                    });
-
-                MainDS.AcceptChanges();
-            }
-            catch (Exception ex)
-            {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
-            }
-
             return MainDS;
         }
 
@@ -1434,7 +1389,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ref SubmissionOK,
                     delegate
                     {
-                        // find PPartnerRows for all donors (needed for receipt frequency info)
                         foreach (string ModifiedDetailKey in AModifiedDetailKeys)
                         {
                             string[] GiftDetailFields = ModifiedDetailKey.Split('|');
@@ -1621,22 +1575,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             #endregion Validate Arguments
 
             string CostCentreCode = string.Empty;
-
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ATransaction);
-
-            #region Validate Data 1
-
-            if ((LedgerTable == null) || (LedgerTable.Count == 0))
-            {
-                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                            "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
-                        Utilities.GetMethodName(true),
-                        ALedgerNumber));
-            }
-
-            #endregion Validate Data 1
-
-            Int64 LedgerPartnerKey = LedgerTable[0].PartnerKey;
 
             //bool KeyMinIsActive = false;
             //bool KeyMinExists = KeyMinistryExists(ARecipientPartnerKey, out KeyMinIsActive);
@@ -2878,6 +2816,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             try
             {
+                bool TaxDeductiblePercentageEnabled = false;
+
+                if (!ARecurring)
+                {
+                    TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                        TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+                }
+
                 List <OdbcParameter>parameters = new List <OdbcParameter>();
                 OdbcParameter param = new OdbcParameter("ledger", OdbcType.Int);
                 param.Value = ALedgerNumber;
@@ -2888,7 +2834,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 // load all donor shortnames in one go
                 string getDonorSQL =
-                    "SELECT DISTINCT SUBSTRING(dp.p_partner_class_c, 1, 1) AS p_partner_class_c, dp.p_partner_key_n, dp.p_partner_short_name_c, dp.p_status_code_c FROM PUB_p_partner dp, PUB_a_gift g "
+                    "SELECT DISTINCT SUBSTRING(dp.p_partner_class_c, 1, 1) AS p_partner_class_c, dp.p_partner_key_n, dp.p_partner_short_name_c, dp.p_status_code_c," +
+                    " dp.p_receipt_letter_frequency_c, dp.p_receipt_each_gift_l, dp.p_anonymous_donor_l" +
+                    " FROM PUB_p_partner dp, PUB_a_gift g "
                     +                                                                                                                                                                                      //, dp.p_receipt_each_gift_l
                     "WHERE g.a_ledger_number_i = ? AND g.a_batch_number_i = ? AND g.p_donor_key_n = dp.p_partner_key_n";
 
@@ -2903,8 +2851,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 // load all recipient partners and fields related to this gift batch in one go
                 string getRecipientSQL =
-                    "SELECT DISTINCT rp.* FROM PUB_p_partner rp, PUB_a_gift_detail gd " +
-                    "WHERE gd.a_ledger_number_i = ? AND gd.a_batch_number_i = ? AND gd.p_recipient_key_n = rp.p_partner_key_n";
+                    "SELECT DISTINCT rp.*";
+
+                if (TaxDeductiblePercentageEnabled && !ARecurring)
+                {
+                    getRecipientSQL += ", p_partner_tax_deductible_pct.*";
+                }
+
+                getRecipientSQL += " FROM PUB_a_gift_detail gd, PUB_p_partner rp";
+
+                if (TaxDeductiblePercentageEnabled && !ARecurring)
+                {
+                    getRecipientSQL += " LEFT JOIN p_partner_tax_deductible_pct" +
+                        " ON p_partner_tax_deductible_pct.p_partner_key_n = rp.p_partner_key_n";
+                }
+
+                getRecipientSQL += " WHERE gd.a_ledger_number_i = ? AND gd.a_batch_number_i = ? AND gd.p_recipient_key_n = rp.p_partner_key_n";
 
                 if (ARecurring)
                 {
@@ -3249,9 +3211,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             AChangesToCommit = false;
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
-
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ATransaction);
             AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, ATransaction);
             AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, ATransaction);
@@ -3422,12 +3381,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     else
                     {
                         giftDetail.SetRecipientKeyMinistryNull();
-                    }
-
-                    if (TaxDeductiblePercentageEnabled)
-                    {
-                        MainDS.PPartnerTaxDeductiblePct.Merge(
-                            PPartnerTaxDeductiblePctAccess.LoadViaPPartner(giftDetail.RecipientKey, ATransaction));
                     }
                 }
                 else

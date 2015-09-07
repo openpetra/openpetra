@@ -646,6 +646,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void MethodOfPaymentChanged(object sender, EventArgs e)
         {
+            if (FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null)
+                || (GetCurrentBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+
             FSelectedBatchMethodOfPayment = cmbDetailMethodOfPaymentCode.GetSelectedString();
 
             if ((FSelectedBatchMethodOfPayment != null) && (FSelectedBatchMethodOfPayment.Length > 0))
