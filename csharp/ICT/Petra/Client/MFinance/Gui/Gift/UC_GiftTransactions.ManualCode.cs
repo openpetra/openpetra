@@ -226,6 +226,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             List <Tuple <string, EventHandler>>ItemList = new List <Tuple <string, EventHandler>>();
 
             ItemList.Add(new Tuple <string, EventHandler>(Catalog.GetString("Open Donor History"), OpenDonorHistory));
+            ItemList.Add(new Tuple <string, EventHandler>(Catalog.GetString("Open Donor Finance Details"), OpenDonorFinanceDetails));
             txtDetailDonorKey.AddCustomContextMenuItems(ItemList);
 
             ItemList.Clear();
@@ -1722,6 +1723,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             btnNewDetail.Enabled = !PnlDetailsProtected;
             btnNewGift.Enabled = !PnlDetailsProtected;
 
+            mniDonorFinanceDetails.Enabled = (ARow != null);
+
             // Only show the NoReceipt check box under special circumstances
             chkNoReceiptOnAdjustment.Visible = IsUnpostedReversedDetailAdjustment(ARow);
             chkNoReceiptOnAdjustment.Enabled = firstIsEnabled;
@@ -2590,6 +2593,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(true,
                 Convert.ToInt64(txtDetailDonorKey.Text),
                 FPetraUtilsObject.GetForm());
+        }
+
+        private void OpenDonorFinanceDetails(System.Object sender, EventArgs e)
+        {
+            TFrmPartnerEdit frmPartner = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+
+            frmPartner.SetParameters(TScreenMode.smEdit,
+                FPreviouslySelectedDetailRow.DonorKey,
+                Shared.MPartner.TPartnerEditTabPageEnum.petpFinanceDetails);
+            frmPartner.Show();
         }
 
         private void OpenRecipientHistory(System.Object sender, EventArgs e)

@@ -77,14 +77,17 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// export all the Data of the batches matching the parameters to a String
         /// </summary>
         /// <param name="ARequestParams">Hashtable containing the given params </param>
-        /// <param name="AEportString">Big parts of the export file as a simple String</param>
-        /// <param name="AMessages">Additional messages to display in a messagebox</param>
-        /// <returns>number of exported batches</returns>
+        /// <param name="AExportString">Big parts of the export file as a simple String</param>
+        /// <param name="AVerificationMessages">Additional messages to display in a messagebox</param>
+        /// <returns>number of exported batches, -1 if cancelled, -2 if error</returns>
         public Int32 ExportAllGiftBatchData(
             Hashtable ARequestParams,
-            out String AEportString,
-            out TVerificationResultCollection AMessages)
+            out String AExportString,
+            out TVerificationResultCollection AVerificationMessages)
         {
+            //Return number of exported batches, -1 if cancelled, -2 if error
+            int ReturnGiftBatchCount = 0;
+
             FStringWriter = new StringWriter();
             FMainDS = new GiftBatchTDS();
             FDelimiter = (String)ARequestParams["Delimiter"];
@@ -99,240 +102,317 @@ namespace Ict.Petra.Server.MFinance.Gift
             FTransactionsOnly = (bool)ARequestParams["TransactionsOnly"];
             FExtraColumns = (bool)ARequestParams["ExtraColumns"];
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
-                ref FTransaction,
-                delegate
-                {
-                    try
-                    {
-                        ALedgerAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, FTransaction);
-
-                        List <OdbcParameter>parameters = new List <OdbcParameter>();
-
-                        SortedList <String, String>SQLCommandDefines = new SortedList <string, string>();
-
-                        if ((bool)ARequestParams["IncludeUnposted"])
-                        {
-                            SQLCommandDefines.Add("INCLUDEUNPOSTED", string.Empty);
-                        }
-
-                        OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
-                        param.Value = FLedgerNumber;
-                        parameters.Add(param);
-
-                        Int64 recipientNumber = (Int64)ARequestParams["RecipientNumber"];
-                        Int64 fieldNumber = (Int64)ARequestParams["FieldNumber"];
-
-                        if (recipientNumber != 0)
-                        {
-                            SQLCommandDefines.Add("BYRECIPIENT", string.Empty);
-                            param = new OdbcParameter("RecipientNumber", OdbcType.Int);
-                            param.Value = recipientNumber;
-                            parameters.Add(param);
-                        }
-
-                        if (fieldNumber != 0)
-                        {
-                            SQLCommandDefines.Add("BYFIELD", string.Empty);
-                            param = new OdbcParameter("fieldNumber", OdbcType.Int);
-                            param.Value = fieldNumber;
-                            parameters.Add(param);
-                        }
-
-                        if (ARequestParams.ContainsKey("BatchNumberStart"))
-                        {
-                            SQLCommandDefines.Add("BYBATCHNUMBER", string.Empty);
-                            param = new OdbcParameter("BatchNumberStart", OdbcType.Int);
-                            param.Value = (Int32)ARequestParams["BatchNumberStart"];
-                            parameters.Add(param);
-                            param = new OdbcParameter("BatchNumberEnd", OdbcType.Int);
-                            param.Value = (Int32)ARequestParams["BatchNumberEnd"];
-                            parameters.Add(param);
-                        }
-                        else
-                        {
-                            SQLCommandDefines.Add("BYDATERANGE", string.Empty);
-                            param = new OdbcParameter("BatchDateFrom", OdbcType.DateTime);
-                            param.Value = (DateTime)ARequestParams["BatchDateFrom"];
-                            parameters.Add(param);
-                            param = new OdbcParameter("BatchDateTo", OdbcType.DateTime);
-                            param.Value = (DateTime)ARequestParams["BatchDateTo"];
-                            parameters.Add(param);
-                        }
-
-                        string sqlStatement = TDataBase.ReadSqlFile("Gift.GetGiftsToExport.sql", SQLCommandDefines);
-
-                        DBAccess.GDBAccessObj.Select(FMainDS,
-                            "SELECT DISTINCT PUB_a_gift_batch.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName(),
-                            FMainDS.AGiftBatch.TableName,
-                            FTransaction,
-                            parameters.ToArray());
-
-                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                            Catalog.GetString("Retrieving gift records"),
-                            10);
-
-                        DBAccess.GDBAccessObj.Select(FMainDS,
-                            "SELECT DISTINCT PUB_a_gift.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName() + ", " +
-                            AGiftTable.GetGiftTransactionNumberDBName(),
-                            FMainDS.AGift.TableName,
-                            FTransaction,
-                            parameters.ToArray());
-
-                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                            Catalog.GetString("Retrieving gift detail records"),
-                            15);
-
-                        DBAccess.GDBAccessObj.Select(FMainDS,
-                            "SELECT DISTINCT PUB_a_gift_detail.* " + sqlStatement,
-                            FMainDS.AGiftDetail.TableName,
-                            FTransaction,
-                            parameters.ToArray());
-                    }
-                    catch (Exception e)
-                    {
-                        TLogging.Log("Error in ExportAllGiftBatchData: " + e.Message);
-                        throw e;
-                    }
-                });
-
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Exporting Gift Batches"), 100);
-
-            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Retrieving records"),
-                5);
-
-            string BaseCurrency = FMainDS.ALedger[0].BaseCurrency;
-            FCurrencyCode = BaseCurrency; // Depending on FUseBaseCurrency, this will be overwritten for each gift.
-
-            SortedDictionary <String, AGiftSummaryRow>sdSummary = new SortedDictionary <String, AGiftSummaryRow>();
-
-            UInt32 counter = 0;
-
-            // TProgressTracker Variables
-            UInt32 GiftCounter = 0;
-
-            AGiftSummaryRow giftSummary = null;
-
-            FMainDS.AGiftDetail.DefaultView.Sort =
-                AGiftDetailTable.GetLedgerNumberDBName() + "," +
-                AGiftDetailTable.GetBatchNumberDBName() + "," +
-                AGiftDetailTable.GetGiftTransactionNumberDBName();
-
-            foreach (AGiftBatchRow giftBatch in FMainDS.AGiftBatch.Rows)
+            try
             {
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    string.Format(Catalog.GetString("Batch {0}"), giftBatch.BatchNumber),
-                    20);
-                GiftCounter = 0;
-
-                if (!FTransactionsOnly & !Summary)
-                {
-                    WriteGiftBatchLine(giftBatch);
-                }
-
-                foreach (AGiftRow gift in FMainDS.AGift.Rows)
-                {
-                    if (gift.BatchNumber.Equals(giftBatch.BatchNumber) && gift.LedgerNumber.Equals(giftBatch.LedgerNumber))
+                DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    ref FTransaction,
+                    delegate
                     {
-                        // Update progress tracker every 25 records
-                        if (++GiftCounter % 25 == 0)
+                        try
                         {
+                            ALedgerAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, FTransaction);
+
+                            List <OdbcParameter>parameters = new List <OdbcParameter>();
+
+                            SortedList <String, String>SQLCommandDefines = new SortedList <string, string>();
+
+                            if ((bool)ARequestParams["IncludeUnposted"])
+                            {
+                                SQLCommandDefines.Add("INCLUDEUNPOSTED", string.Empty);
+                            }
+
+                            OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                            param.Value = FLedgerNumber;
+                            parameters.Add(param);
+
+                            Int64 recipientNumber = (Int64)ARequestParams["RecipientNumber"];
+                            Int64 fieldNumber = (Int64)ARequestParams["FieldNumber"];
+
+                            if (recipientNumber != 0)
+                            {
+                                SQLCommandDefines.Add("BYRECIPIENT", string.Empty);
+                                param = new OdbcParameter("RecipientNumber", OdbcType.Int);
+                                param.Value = recipientNumber;
+                                parameters.Add(param);
+                            }
+
+                            if (fieldNumber != 0)
+                            {
+                                SQLCommandDefines.Add("BYFIELD", string.Empty);
+                                param = new OdbcParameter("fieldNumber", OdbcType.Int);
+                                param.Value = fieldNumber;
+                                parameters.Add(param);
+                            }
+
+                            if (ARequestParams.ContainsKey("BatchNumberStart"))
+                            {
+                                SQLCommandDefines.Add("BYBATCHNUMBER", string.Empty);
+                                param = new OdbcParameter("BatchNumberStart", OdbcType.Int);
+                                param.Value = (Int32)ARequestParams["BatchNumberStart"];
+                                parameters.Add(param);
+                                param = new OdbcParameter("BatchNumberEnd", OdbcType.Int);
+                                param.Value = (Int32)ARequestParams["BatchNumberEnd"];
+                                parameters.Add(param);
+                            }
+                            else
+                            {
+                                SQLCommandDefines.Add("BYDATERANGE", string.Empty);
+                                param = new OdbcParameter("BatchDateFrom", OdbcType.DateTime);
+                                param.Value = (DateTime)ARequestParams["BatchDateFrom"];
+                                parameters.Add(param);
+                                param = new OdbcParameter("BatchDateTo", OdbcType.DateTime);
+                                param.Value = (DateTime)ARequestParams["BatchDateTo"];
+                                parameters.Add(param);
+                            }
+
+                            string sqlStatement = TDataBase.ReadSqlFile("Gift.GetGiftsToExport.sql", SQLCommandDefines);
+
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                string.Format(Catalog.GetString("Batch {0} - Exporting gifts"), giftBatch.BatchNumber),
-                                (GiftCounter / 25 + 4) * 5 > 90 ? 90 : (GiftCounter / 25 + 4) * 5);
+                                Catalog.GetString("Retrieving gift batch records"),
+                                5);
+
+                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                            {
+                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                                throw new ApplicationException(Catalog.GetString("Export of Batches was cancelled by user"));
+                            }
+
+                            DBAccess.GDBAccessObj.Select(FMainDS,
+                                "SELECT DISTINCT PUB_a_gift_batch.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName(),
+                                FMainDS.AGiftBatch.TableName,
+                                FTransaction,
+                                parameters.ToArray());
+
+
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                Catalog.GetString("Retrieving gift records"),
+                                10);
+
+                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                            {
+                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                                throw new ApplicationException(Catalog.GetString("Export of Batches was cancelled by user"));
+                            }
+
+                            DBAccess.GDBAccessObj.Select(FMainDS,
+                                "SELECT DISTINCT PUB_a_gift.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName() + ", " +
+                                AGiftTable.GetGiftTransactionNumberDBName(),
+                                FMainDS.AGift.TableName,
+                                FTransaction,
+                                parameters.ToArray());
+
+
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                Catalog.GetString("Retrieving gift detail records"),
+                                15);
+
+                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                            {
+                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                                throw new ApplicationException(Catalog.GetString("Export of Batches was cancelled by user"));
+                            }
+
+                            DBAccess.GDBAccessObj.Select(FMainDS,
+                                "SELECT DISTINCT PUB_a_gift_detail.* " + sqlStatement,
+                                FMainDS.AGiftDetail.TableName,
+                                FTransaction,
+                                parameters.ToArray());
                         }
-
-                        DataRowView[] selectedRowViews = FMainDS.AGiftDetail.DefaultView.FindRows(
-                            new object[] { gift.LedgerNumber, gift.BatchNumber, gift.GiftTransactionNumber });
-
-                        foreach (DataRowView rv in selectedRowViews)
+                        catch (ApplicationException ex)
                         {
-                            AGiftDetailRow giftDetail = (AGiftDetailRow)rv.Row;
+                            throw ex;
+                        }
+                        catch (Exception ex)
+                        {
+                            TLogging.Log("Error in ExportAllGiftBatchData: " + ex.Message);
+                            throw ex;
+                        }
+                    });
 
-                            if (Summary)
+                TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Exporting Gift Batches"), 100);
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Retrieving records"),
+                    5);
+
+                string BaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+                FCurrencyCode = BaseCurrency; // Depending on FUseBaseCurrency, this will be overwritten for each gift.
+
+                SortedDictionary <String, AGiftSummaryRow>sdSummary = new SortedDictionary <String, AGiftSummaryRow>();
+
+                UInt32 counter = 0;
+
+                // TProgressTracker Variables
+                UInt32 GiftCounter = 0;
+
+                AGiftSummaryRow giftSummary = null;
+
+                FMainDS.AGiftDetail.DefaultView.Sort =
+                    AGiftDetailTable.GetLedgerNumberDBName() + "," +
+                    AGiftDetailTable.GetBatchNumberDBName() + "," +
+                    AGiftDetailTable.GetGiftTransactionNumberDBName();
+
+                foreach (AGiftBatchRow giftBatch in FMainDS.AGiftBatch.Rows)
+                {
+                    if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                    {
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                        throw new ApplicationException(Catalog.GetString("Export of Batches was cancelled by user"));
+                    }
+
+                    ReturnGiftBatchCount++;
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        string.Format(Catalog.GetString("Batch {0}"), giftBatch.BatchNumber),
+                        20);
+                    GiftCounter = 0;
+
+                    if (!FTransactionsOnly & !Summary)
+                    {
+                        WriteGiftBatchLine(giftBatch);
+                    }
+
+                    foreach (AGiftRow gift in FMainDS.AGift.Rows)
+                    {
+                        if (gift.BatchNumber.Equals(giftBatch.BatchNumber) && gift.LedgerNumber.Equals(giftBatch.LedgerNumber))
+                        {
+                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                             {
-                                FCurrencyCode = FUseBaseCurrency ? BaseCurrency : giftBatch.CurrencyCode;
-                                decimal mapExchangeRateToBase = FUseBaseCurrency ? 1 : giftBatch.ExchangeRateToBase;
-
-
-                                counter++;
-                                String DictionaryKey = FCurrencyCode + ";" + giftBatch.BankCostCentre + ";" + giftBatch.BankAccountCode + ";" +
-                                                       giftDetail.RecipientKey + ";" + giftDetail.MotivationGroupCode + ";" +
-                                                       giftDetail.MotivationDetailCode;
-
-                                if (sdSummary.TryGetValue(DictionaryKey, out giftSummary))
-                                {
-                                    giftSummary.GiftTransactionAmount += giftDetail.GiftTransactionAmount;
-                                    giftSummary.GiftAmount += giftDetail.GiftAmount;
-                                }
-                                else
-                                {
-                                    giftSummary = new AGiftSummaryRow();
-
-                                    /*
-                                     * summary_data.a_transaction_currency_c = lv_stored_currency_c
-                                     * summary_data.a_bank_cost_centre_c = a_gift_batch.a_bank_cost_centre_c
-                                     * summary_data.a_bank_account_code_c = a_gift_batch.a_bank_account_code_c
-                                     * summary_data.a_recipient_key_n = a_gift_detail.p_recipient_key_n
-                                     * summary_data.a_motivation_group_code_c = a_gift_detail.a_motivation_group_code_c
-                                     * summary_data.a_motivation_detail_code_c = a_gift_detail.a_motivation_detail_code_c
-                                     * summary_data.a_exchange_rate_to_base_n = lv_exchange_rate_n
-                                     * summary_data.a_gift_type_c = a_gift_batch.a_gift_type_c */
-                                    giftSummary.CurrencyCode = FCurrencyCode;
-                                    giftSummary.BankCostCentre = giftBatch.BankCostCentre;
-                                    giftSummary.BankAccountCode = giftBatch.BankAccountCode;
-                                    giftSummary.RecipientKey = giftDetail.RecipientKey;
-                                    giftSummary.MotivationGroupCode = giftDetail.MotivationGroupCode;
-                                    giftSummary.MotivationDetailCode = giftDetail.MotivationDetailCode;
-                                    giftSummary.GiftTransactionAmount = giftDetail.GiftTransactionAmount;
-                                    giftSummary.GiftAmount = giftDetail.GiftAmount;
-
-                                    sdSummary.Add(DictionaryKey, giftSummary);
-                                }
-
-                                //overwrite always because we want to have the last
-                                giftSummary.ExchangeRateToBase = mapExchangeRateToBase;
+                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                                throw new ApplicationException(Catalog.GetString("Export of Batches was cancelled by user"));
                             }
-                            else  // not summary
+
+                            // Update progress tracker every 25 records
+                            if (++GiftCounter % 25 == 0)
                             {
-                                WriteGiftLine(gift, giftDetail);
+                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                    string.Format(Catalog.GetString("Batch {0} - Exporting gifts"), giftBatch.BatchNumber),
+                                    (GiftCounter / 25 + 4) * 5 > 90 ? 90 : (GiftCounter / 25 + 4) * 5);
+                            }
+
+                            DataRowView[] selectedRowViews = FMainDS.AGiftDetail.DefaultView.FindRows(
+                                new object[] { gift.LedgerNumber, gift.BatchNumber, gift.GiftTransactionNumber });
+
+                            foreach (DataRowView rv in selectedRowViews)
+                            {
+                                AGiftDetailRow giftDetail = (AGiftDetailRow)rv.Row;
+
+                                if (Summary)
+                                {
+                                    FCurrencyCode = FUseBaseCurrency ? BaseCurrency : giftBatch.CurrencyCode;
+                                    decimal mapExchangeRateToBase = FUseBaseCurrency ? 1 : giftBatch.ExchangeRateToBase;
+
+
+                                    counter++;
+                                    String DictionaryKey = FCurrencyCode + ";" + giftBatch.BankCostCentre + ";" + giftBatch.BankAccountCode + ";" +
+                                                           giftDetail.RecipientKey + ";" + giftDetail.MotivationGroupCode + ";" +
+                                                           giftDetail.MotivationDetailCode;
+
+                                    if (sdSummary.TryGetValue(DictionaryKey, out giftSummary))
+                                    {
+                                        giftSummary.GiftTransactionAmount += giftDetail.GiftTransactionAmount;
+                                        giftSummary.GiftAmount += giftDetail.GiftAmount;
+                                    }
+                                    else
+                                    {
+                                        giftSummary = new AGiftSummaryRow();
+
+                                        /*
+                                         * summary_data.a_transaction_currency_c = lv_stored_currency_c
+                                         * summary_data.a_bank_cost_centre_c = a_gift_batch.a_bank_cost_centre_c
+                                         * summary_data.a_bank_account_code_c = a_gift_batch.a_bank_account_code_c
+                                         * summary_data.a_recipient_key_n = a_gift_detail.p_recipient_key_n
+                                         * summary_data.a_motivation_group_code_c = a_gift_detail.a_motivation_group_code_c
+                                         * summary_data.a_motivation_detail_code_c = a_gift_detail.a_motivation_detail_code_c
+                                         * summary_data.a_exchange_rate_to_base_n = lv_exchange_rate_n
+                                         * summary_data.a_gift_type_c = a_gift_batch.a_gift_type_c */
+                                        giftSummary.CurrencyCode = FCurrencyCode;
+                                        giftSummary.BankCostCentre = giftBatch.BankCostCentre;
+                                        giftSummary.BankAccountCode = giftBatch.BankAccountCode;
+                                        giftSummary.RecipientKey = giftDetail.RecipientKey;
+                                        giftSummary.MotivationGroupCode = giftDetail.MotivationGroupCode;
+                                        giftSummary.MotivationDetailCode = giftDetail.MotivationDetailCode;
+                                        giftSummary.GiftTransactionAmount = giftDetail.GiftTransactionAmount;
+                                        giftSummary.GiftAmount = giftDetail.GiftAmount;
+
+                                        sdSummary.Add(DictionaryKey, giftSummary);
+                                    }
+
+                                    //overwrite always because we want to have the last
+                                    giftSummary.ExchangeRateToBase = mapExchangeRateToBase;
+                                }
+                                else  // not summary
+                                {
+                                    WriteGiftLine(gift, giftDetail);
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (Summary)
-            {
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    Catalog.GetString("Export Summary"),
-                    95);
-
-                bool first = true;
-
-                foreach (KeyValuePair <string, AGiftSummaryRow>kvp in sdSummary)
+                if (Summary)
                 {
-                    if (!FTransactionsOnly && first)
-                    {
-                        WriteGiftBatchSummaryLine(kvp.Value);
-                        first = false;
-                    }
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Export Summary"),
+                        95);
 
-                    WriteGiftSummaryLine(kvp.Value);
+                    bool first = true;
+
+                    foreach (KeyValuePair <string, AGiftSummaryRow>kvp in sdSummary)
+                    {
+                        if (!FTransactionsOnly && first)
+                        {
+                            WriteGiftBatchSummaryLine(kvp.Value);
+                            first = false;
+                        }
+
+                        WriteGiftSummaryLine(kvp.Value);
+                    }
                 }
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Gift batch export successful"),
+                    100);
+
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            }
+            catch (ApplicationException)
+            {
+                //Show cancel condition
+                ReturnGiftBatchCount = -1;
+                TProgressTracker.CancelJob(DomainManager.GClientID.ToString());
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.ToString());
+
+                //Show error condition
+                ReturnGiftBatchCount = -2;
+
+                FMessages.Add(new TVerificationResult(
+                        "Exporting Gift Batches Terminated Unexpectedly",
+                        ex.Message,
+                        "An unexpected error occurred during the export of gift batches",
+                        string.Empty,
+                        TResultSeverity.Resv_Critical,
+                        Guid.Empty));
+
+                TProgressTracker.CancelJob(DomainManager.GClientID.ToString());
             }
 
-            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Gift batch export successful"),
-                100);
+            if (ReturnGiftBatchCount > 0)
+            {
+                AExportString = FStringWriter.ToString();
+            }
+            else
+            {
+                AExportString = string.Empty;
+            }
 
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            AVerificationMessages = FMessages;
 
-            AEportString = FStringWriter.ToString();
-            AMessages = FMessages;
-            return FMainDS.AGiftBatch.Count;
+            return ReturnGiftBatchCount;
         }
 
         private String PartnerShortName(Int64 partnerKey)

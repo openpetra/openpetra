@@ -149,12 +149,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //FBatchNumber and FJournalNumber may have already been set outside
             //  so need to reset to previous value
-            if (txtBatchNumber.Text.Length > 0)
+            if ((txtBatchNumber.Text.Length > 0) && (FBatchNumber.ToString() != txtBatchNumber.Text))
             {
                 FBatchNumber = Int32.Parse(txtBatchNumber.Text);
             }
 
-            if (txtJournalNumber.Text.Length > 0)
+            if ((txtJournalNumber.Text.Length > 0) && (FJournalNumber.ToString() != txtJournalNumber.Text))
             {
                 FJournalNumber = Int32.Parse(txtJournalNumber.Text);
             }
@@ -179,7 +179,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     && (FBatchStatus == ABatchStatus)
                     && (FJournalStatus == AJournalStatus))
                 {
-                    //Same as previously selected
+                    //Same as previously selected batch
+
+                    //Need to reconnect  FPrev in some circumstances
+                    if (FPreviouslySelectedDetailRow == null)
+                    {
+                        DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(FPrevRowChangedRow);
+
+                        if (rowView != null)
+                        {
+                            FPreviouslySelectedDetailRow = (GLBatchTDSATransactionRow)(rowView.Row);
+                        }
+                    }
+
                     if (FIsUnposted && (GetSelectedRowIndex() > 0))
                     {
                         if (AFromBatchTab)
@@ -188,7 +200,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         }
                         else
                         {
-                            GetDetailsFromControls(GetSelectedDetailRow());
+                            GetDetailsFromControls(FPreviouslySelectedDetailRow);
                         }
                     }
 

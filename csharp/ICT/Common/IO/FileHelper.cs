@@ -363,8 +363,7 @@ namespace Ict.Common.IO
         /// <returns>Full path to the file for the specified code, name and langauge</returns>
         public static String GetDefaultTemporaryTemplatePath(string AUniqueTemplateName, string ATemplateFileExtension)
         {
-            string s = Path.Combine(Environment.GetFolderPath(
-                    Environment.SpecialFolder.LocalApplicationData), "OpenPetraOrg", "Templates", "Client", AUniqueTemplateName);
+            string s = Path.Combine(TAppSettingsManager.GetLocalAppDataPath(), "OpenPetraOrg", "Templates", "Client", AUniqueTemplateName);
 
             if (ATemplateFileExtension.Length > 0)
             {

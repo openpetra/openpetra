@@ -60,9 +60,38 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void rbtSelectionChange(object sender, EventArgs e)
         {
+            txtDonorKey.Enabled = rbtOneDonor.Checked;
+            txtExtract.Enabled = rbtExtract.Checked;
         }
 
-        private void AddRowToTable(DataTable ReportTable, Int64 DonorKey, Int64 RecipientKey, Int32 MailingCode, Int32 Copies)
+        private char Module10CheckDigit(String ANumericString)
+        {
+            Int32[] modulo =
+            {
+                0, 9, 4, 6, 8, 2, 7, 1, 3, 5, 0, 9, 4, 6, 8, 2, 7, 1, 3, 5
+            };
+            char[] checkDigit =
+            {
+                '0', '9', '8', '7', '6', '5', '4', '3', '2', '1'
+            };
+            Int32 Carry = 0;
+
+            foreach (char digit in ANumericString)
+            {
+                Int32 val;
+
+                if (!Int32.TryParse(digit.ToString(), out val))
+                {
+                    return '!';
+                }
+
+                Carry = modulo[Carry + val];
+            }
+
+            return checkDigit[Carry];
+        }
+
+        private void AddRowToTable(DataTable ReportTable, Int64 DonorKey, Int64 RecipientKey, String MailingCodeString, Int32 Copies)
         {
             DataRow Row = ReportTable.NewRow();
 
@@ -74,13 +103,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
                 DonorKey, out PartnerShortName, out PartnerClass);
             String[] PartnerNamePart = PartnerShortName.Split(new Char[] { ',' });
-            Row["DonorShortName"] = PartnerNamePart[0] + " " + PartnerNamePart[1];
+            Row["DonorShortName"] =
+                PartnerNamePart.Length > 1 ?
+                PartnerNamePart[0] + " " + PartnerNamePart[1] :
+                PartnerNamePart[0];
+
 
             TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
                 RecipientKey, out PartnerShortName, out PartnerClass);
 
             PartnerNamePart = PartnerShortName.Split(new Char[] { ',' });
-            Row["RecipientShortName"] = PartnerNamePart[0] + " " + PartnerNamePart[1];
+            Row["RecipientShortName"] =
+                PartnerNamePart.Length > 1 ?
+                PartnerNamePart[0] + " " + PartnerNamePart[1] :
+                PartnerNamePart[0];
 
             PLocationTable LocationTbl;
             String CountryName;
@@ -109,10 +145,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     );
             }
 
-            String MailingCodeString = MailingCode.ToString();
-            MailingCodeString = (MailingCodeString + "8888888").Substring(0, 7);
-
             String LongCode = DonorKey.ToString("D10") + RecipientKey.ToString("D10") + MailingCodeString;
+            LongCode += Module10CheckDigit(LongCode);
+
             Row["CodeWithSpaces"] = String.Format("{0} {1} {2} {3} {4} {5}",
                 LongCode.Substring(0, 2),
                 LongCode.Substring(2, 5),
@@ -161,14 +196,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ReportTable.Columns.Add("CodeWithSpaces", typeof(String));
             ReportTable.Columns.Add("CodeForOcr", typeof(String));
 
-            Int64 DonorKey;
-            Int64 RecipientKey;
-
             Int32 Copies;
             Boolean numbersOk = true;
 
-            numbersOk &= Int64.TryParse(txtDonorKey.Text, out DonorKey);
-            numbersOk &= Int64.TryParse(txtRecipientKey.Text, out RecipientKey);
+            if (txtDonorKey.Enabled)
+            {
+                numbersOk &= txtDonorKey.FValueIsValid;
+            }
+
+            if (txtExtract.Enabled)
+            {
+                numbersOk &= txtExtract.FValueIsValid;
+            }
+
+            numbersOk &= txtRecipientKey.FValueIsValid;
             numbersOk &= Int32.TryParse(txtCopies.Text, out Copies);
 
             if (!numbersOk)
@@ -179,6 +220,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     );
                 return false;
             }
+
+            Int64 RecipientKey = Convert.ToInt64(txtRecipientKey.Text);
 
             Int32 MailingCode = 8; // If the mailing code box is left empty, I'll accept that.
 
@@ -196,7 +239,35 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            AddRowToTable(ReportTable, DonorKey, RecipientKey, MailingCode, Copies);
+            String MailingCodeString = MailingCode.ToString();
+            MailingCodeString = (MailingCodeString + "8888888").Substring(0, 6);
+
+            if (rbtExtract.Checked)
+            {
+                Int32 ExtractId = TRemote.MPartner.Partner.WebConnectors.GetExtractId(txtExtract.Text);
+
+                if (ExtractId < 0)
+                {
+                    MessageBox.Show(
+                        Catalog.GetString("Extract with this name does not exist."),
+                        Catalog.GetString("ESR Inpayment Slip"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+
+                ExtractTDSMExtractTable ExtractDT = TRemote.MPartner.Partner.WebConnectors.GetExtractRowsWithPartnerData(ExtractId);
+
+                foreach (ExtractTDSMExtractRow Row in ExtractDT.Rows)
+                {
+                    AddRowToTable(ReportTable, Row.PartnerKey, RecipientKey, MailingCodeString, Copies);
+                }
+            }
+            else // Otherwise just a single donor was selected:
+            {
+                Int64 DonorKey = Convert.ToInt64(txtDonorKey.Text);
+                AddRowToTable(ReportTable, DonorKey, RecipientKey, MailingCodeString, Copies);
+            }
+
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "EsrInpaymentSlip");
             return true;
         }

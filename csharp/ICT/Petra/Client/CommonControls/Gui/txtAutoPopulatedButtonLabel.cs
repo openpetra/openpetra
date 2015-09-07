@@ -228,6 +228,11 @@ namespace Ict.Petra.Client.CommonControls
         protected TVerificationResultCollection FVerificationResultCollection;
 
         /// <summary>
+        /// Find out whether this control appears to have a good value in it:
+        /// </summary>
+        public Boolean FValueIsValid;
+
+        /// <summary>
         /// Special property to determine whether our code is running in the WinForms Designer.
         /// The result of this property is correct even if InitializeComponent() wasn't run yet
         /// (.NET's DesignMode property returns false in that case)!
@@ -1076,6 +1081,7 @@ namespace Ict.Petra.Client.CommonControls
                 this.txtAutoPopulated.RelocateLabel();
                 this.timerGetKey.Interval = 2000;                 // TWO SECONDS
                 this.txtAutoPopulated.txtTextBox.TextChanged += new EventHandler(this.TextHasChanged);
+                FValueIsValid = false;
             }
         }
 
@@ -1768,6 +1774,7 @@ namespace Ict.Petra.Client.CommonControls
 
                         case TListTableEnum.PartnerKey:
                             #region TListTableEnum.PartnerKey
+                            FValueIsValid = false;
 
                             // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
                             if (TCommonScreensForwarding.OpenPartnerFindScreen != null)
@@ -1788,6 +1795,7 @@ namespace Ict.Petra.Client.CommonControls
                                     {
                                         TextBoxStringOut = StringHelper.PartnerKeyToStr(mResultIntTxt);
                                         LabelStringOut = mResultStringLbl;
+                                        FValueIsValid = true;
 
                                         if (mPartnerClass2.HasValue)
                                         {
@@ -1808,8 +1816,7 @@ namespace Ict.Petra.Client.CommonControls
 
                                         if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
                                         {
-                                            bool ValidResult = true;
-                                            ValueChanged(mResultIntTxt, mResultStringLbl, ValidResult);
+                                            ValueChanged(mResultIntTxt, mResultStringLbl, FValueIsValid);
                                         }
                                     }
                                     else
@@ -1841,6 +1848,7 @@ namespace Ict.Petra.Client.CommonControls
 
                         case TListTableEnum.Extract:
                             #region TListTableEnum.Extract
+                            FValueIsValid = false;
 
                             /* If the delegate is defined, the host form will launch a Event Find dialog for us */
                             if (TCommonScreensForwarding.OpenExtractFindScreen != null)
@@ -1858,11 +1866,11 @@ namespace Ict.Petra.Client.CommonControls
                                     {
                                         TextBoxStringOut = mResultStringName;
                                         LabelStringOut = mResultStringLbl;
+                                        FValueIsValid = true;
 
                                         if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
                                         {
-                                            bool ValidResult = true;
-                                            ValueChanged(mResultShortIntTxt, mResultStringName, ValidResult);
+                                            ValueChanged(mResultShortIntTxt, mResultStringName, FValueIsValid);
                                         }
                                     }
                                     else
@@ -1894,6 +1902,7 @@ namespace Ict.Petra.Client.CommonControls
 
                         case TListTableEnum.Conference:
                             #region TListTableEnum.Conference
+                            FValueIsValid = false;
 
                             /* If the delegate is defined, the host form will launch a Conference Find dialog for us */
                             if (TCommonScreensForwarding.OpenConferenceFindScreen != null)
@@ -1911,11 +1920,11 @@ namespace Ict.Petra.Client.CommonControls
                                     {
                                         TextBoxStringOut = StringHelper.PartnerKeyToStr(mResultIntTxt);
                                         LabelStringOut = mResultStringLbl;
+                                        FValueIsValid = true;
 
                                         if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
                                         {
-                                            bool ValidResult = true;
-                                            ValueChanged(mResultIntTxt, mResultStringLbl, ValidResult);
+                                            ValueChanged(mResultIntTxt, mResultStringLbl, FValueIsValid);
                                         }
                                     }
                                     else
@@ -1946,6 +1955,7 @@ namespace Ict.Petra.Client.CommonControls
 
                         case TListTableEnum.Event:
                             #region TListTableEnum.Event
+                            FValueIsValid = false;
 
                             /* If the delegate is defined, the host form will launch a Event Find dialog for us */
                             if (TCommonScreensForwarding.OpenEventFindScreen != null)
@@ -1964,11 +1974,11 @@ namespace Ict.Petra.Client.CommonControls
                                     {
                                         TextBoxStringOut = StringHelper.PartnerKeyToStr(mResultIntTxt);
                                         LabelStringOut = mResultStringLbl;
+                                        FValueIsValid = true;
 
                                         if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
                                         {
-                                            bool ValidResult = true;
-                                            ValueChanged(mResultIntTxt, mResultStringLbl, ValidResult);
+                                            ValueChanged(mResultIntTxt, mResultStringLbl, FValueIsValid);
                                         }
                                     }
                                     else
@@ -1999,6 +2009,7 @@ namespace Ict.Petra.Client.CommonControls
 
                         case TListTableEnum.Bank:
                             #region TListTableEnum.Bank
+                            FValueIsValid = false;
 
                             // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
                             if (TCommonScreensForwarding.OpenPartnerFindScreen != null)
@@ -2025,11 +2036,11 @@ namespace Ict.Petra.Client.CommonControls
                                     if ((mResultIntTxt != -1) && (mResultIntTxt != 0))
                                     {
                                         TextBoxStringOut = StringHelper.PartnerKeyToStr(mResultIntTxt);
+                                        FValueIsValid = true;
 
                                         if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
                                         {
-                                            bool ValidResult = true;
-                                            ValueChanged(mResultIntTxt, "", ValidResult);
+                                            ValueChanged(mResultIntTxt, "", FValueIsValid);
                                         }
                                     }
                                 }
@@ -2103,7 +2114,7 @@ namespace Ict.Petra.Client.CommonControls
             ALabelText = "";
 
             bool ServerResult;
-            bool ValidResult = false;
+            FValueIsValid = false;
             System.Int64 mPartnerKey;
             String mPartnerShortName;
             String ExtractDescription;
@@ -2143,16 +2154,12 @@ namespace Ict.Petra.Client.CommonControls
                         mPartnerKey = StringHelper.StrToPartnerKey(ALookUpText);
 
                         // now call server lookup class
-                        ServerResult = TServerLookup.TMPartner.GetPartnerShortName(Convert.ToInt64(
+                        FValueIsValid = TServerLookup.TMPartner.GetPartnerShortName(Convert.ToInt64(
                                 mPartnerKey), out mPartnerShortName, out mPartnerClass, true);
 
-                        if (ServerResult == false)
+                        if (!FValueIsValid)
                         {
                             mPartnerShortName = StrShortnameNotRetrieved;
-                        }
-                        else
-                        {
-                            ValidResult = true;
                         }
 
                         if ((PartnerClassChanged != null) && (FCurrentPartnerClass != mPartnerClass))
@@ -2178,7 +2185,7 @@ namespace Ict.Petra.Client.CommonControls
 
                     if ((ValueChanged != null) && (OldLabelText != mPartnerShortName))
                     {
-                        ValueChanged(mPartnerKey, mPartnerShortName, ValidResult);
+                        ValueChanged(mPartnerKey, mPartnerShortName, FValueIsValid);
                     }
 
                     ALabelText = mPartnerShortName;
@@ -2189,6 +2196,7 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.Extract:
                     #region TListTableEnum.Extract
+                    FValueIsValid = false;
 
                     // TLogging.Log('Hello from TListTableEnum.Extract', [TLoggingType.ToLogfile]);
                     // TLogging.Log('  Verified String: >' + this.FVerifiedString + '<', [TLoggingType.ToLogfile]);
@@ -2196,9 +2204,9 @@ namespace Ict.Petra.Client.CommonControls
                     if ((ALookUpText != ""))
                     {
                         // now call server lookup class
-                        ServerResult = TServerLookup.TMPartner.GetExtractDescription(ALookUpText, out ExtractDescription);
+                        FValueIsValid = TServerLookup.TMPartner.GetExtractDescription(ALookUpText, out ExtractDescription);
 
-                        if (ServerResult == false)
+                        if (!FValueIsValid)
                         {
                             ExtractDescription = Catalog.GetString("### Extract description not retrieved ###");
                         }
@@ -2206,6 +2214,11 @@ namespace Ict.Petra.Client.CommonControls
                     else
                     {
                         ExtractDescription = "";
+                    }
+
+                    if ((ValueChanged != null) && (OldLabelText != ExtractDescription))
+                    {
+                        ValueChanged(0, ExtractDescription, FValueIsValid);
                     }
 
                     ALabelText = ExtractDescription;
@@ -2216,6 +2229,7 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.Conference:
                     #region TListTableEnum.Conference
+                    FValueIsValid = false;
 
                     mPartnerKey = StringHelper.StrToPartnerKey(ALookUpText);
 
@@ -2237,7 +2251,7 @@ namespace Ict.Petra.Client.CommonControls
                         }
                         else
                         {
-                            ValidResult = true;
+                            FValueIsValid = true;
                         }
 
                         APartnerClass = SharedTypes.PartnerClassEnumToString(mPartnerClass);
@@ -2249,7 +2263,7 @@ namespace Ict.Petra.Client.CommonControls
 
                     if ((ValueChanged != null) && (OldLabelText != mPartnerShortName))
                     {
-                        ValueChanged(mPartnerKey, mPartnerShortName, ValidResult);
+                        ValueChanged(mPartnerKey, mPartnerShortName, FValueIsValid);
                     }
 
                     ALabelText = mPartnerShortName;
@@ -2260,7 +2274,7 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.Event:
                     #region TListTableEnum.Event
-
+                    FValueIsValid = false;
                     mPartnerKey = StringHelper.StrToPartnerKey(ALookUpText);
 
                     /* TLogging.Log('  Verified String: >' + this.FVerifiedString + '<', [TLoggingType.ToLogfile]); */
@@ -2281,7 +2295,7 @@ namespace Ict.Petra.Client.CommonControls
                         }
                         else
                         {
-                            ValidResult = true;
+                            FValueIsValid = true;
                         }
                     }
                     else
@@ -2291,7 +2305,7 @@ namespace Ict.Petra.Client.CommonControls
 
                     if ((ValueChanged != null) && (OldLabelText != mPartnerShortName))
                     {
-                        ValueChanged(mPartnerKey, mPartnerShortName, ValidResult);
+                        ValueChanged(mPartnerKey, mPartnerShortName, FValueIsValid);
                     }
 
                     ALabelText = mPartnerShortName;
@@ -2303,6 +2317,7 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.Bank:
                     #region TListTableEnum.Bank
+                    FValueIsValid = false;
 
                     // TLogging.Log('  Verified String: >' + this.FVerifiedString + '<', [TLoggingType.ToLogfile]);
                     if ((ALookUpText != "") && (ALookUpText != "0000000000"))
@@ -2319,7 +2334,7 @@ namespace Ict.Petra.Client.CommonControls
                         }
                         else
                         {
-                            ValidResult = true;
+                            FValueIsValid = true;
                         }
 
                         APartnerClass = SharedTypes.PartnerClassEnumToString(mPartnerClass);
@@ -2332,7 +2347,7 @@ namespace Ict.Petra.Client.CommonControls
 
                     if ((ValueChanged != null) && (OldLabelText != mPartnerShortName))
                     {
-                        ValueChanged(mPartnerKey, mPartnerShortName, ValidResult);
+                        ValueChanged(mPartnerKey, mPartnerShortName, FValueIsValid);
                     }
 
                     ALabelText = mPartnerShortName;

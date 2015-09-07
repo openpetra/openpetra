@@ -534,6 +534,16 @@ namespace Ict.Common
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Gets the Local AppData path, which is normally in (for GB) c:\users\{username}\AppData\Local.
+        /// On 2X systems this does not persist (it is deleted at the end of a session) - so we need to store local settings somewhere else.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetLocalAppDataPath()
+        {
+            return GetValue("OpenPetra.Path.LocalAppData", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), false);
+        }
+
         #endregion
 
         #region FontSettingsI18N

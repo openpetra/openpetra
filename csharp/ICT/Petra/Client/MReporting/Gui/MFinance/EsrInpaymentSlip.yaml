@@ -40,7 +40,7 @@ RootNode:
 
         txtDonorKey: {NoLabel=true, Type=PartnerKey}
         rbtExtract: {Label=Extract, OnChange=rbtSelectionChange}
-        txtExtract: {NoLabel=true}
+        txtExtract: {NoLabel=true, Type=Extract, Width=400}
 
         grpRecipientSelection:
             Label: Recipient

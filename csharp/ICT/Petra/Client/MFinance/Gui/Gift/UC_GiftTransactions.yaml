@@ -9,6 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actDonorHistory: {ActionClick=OpenDonorHistory}
+        actDonorFinanceDetails: {ActionClick=OpenDonorFinanceDetails}
         actRecipientHistory: {ActionClick=OpenRecipientHistory}
         actRecipientGiftDestination: {ActionClick=OpenGiftDestination}
         actNewGift: {Label=&New Gift, ActionClick=NewGift}
@@ -181,6 +182,7 @@ RootNode:
             mniReverseGiftDetail: {Label=Re&verse Gift Detail, Action=actReverseGiftDetail}
             mniSeparator: {Label=-}
             mniDonorHistory: {Label=&Donor History, Action: actDonorHistory, Enabled=false}
+            mniDonorFinanceDetails: {Label=Donor &Finance Details, Action: actDonorFinanceDetails, Enabled=false}
             mniRecipientHistory: {Label=Recipient &History, Action: actRecipientHistory, Enabled=false}
             mniRecipientGiftDestination: {Label=Recipient Gift D&estination, Action: actRecipientGiftDestination, Enabled=false}
             mniSeparator: {Label=-}

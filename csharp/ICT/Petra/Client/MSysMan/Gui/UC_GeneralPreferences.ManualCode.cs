@@ -134,7 +134,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 // The user wants to start saving the window positions etc.
                 // If we have some information about this that we stored previously, we can offer to use it again...
                 string localAppDataPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    TAppSettingsManager.GetLocalAppDataPath(),
                     CommonFormsResourcestrings.StrFolderOrganisationName,
                     System.Diagnostics.FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
                 string settingsFileName = String.Format(CommonFormsResourcestrings.StrScreenPositionsFileName, UserInfo.GUserInfo.UserID);
