@@ -506,8 +506,8 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         /// <summary>
         /// Gets the range of years for which events exist with accepted applications.
         /// </summary>
-        /// <param name="AMinYear">First year</param>
-        /// <param name="AMaxYear">Last year</param>
+        /// <param name="AMinYear">First year. Will be 0 if there are no events</param>
+        /// <param name="AMaxYear">Last year. Will be -1 if there are no events</param>
         [RequireModulePermission("PERSONNEL")]
         public static void GetRangeOfYearsWithEvents(out int AMinYear, out int AMaxYear)
         {
@@ -530,10 +530,21 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                     MinAndMax = DBAccess.GDBAccessObj.SelectDT(Query, "MinAndMax", Transaction);
                 });
 
-            DataRow row = MinAndMax.Rows[0];
+            AMinYear = 0;
+            AMaxYear = -1;
 
-            AMinYear = Convert.ToDateTime(MinAndMax.Rows[0]["Min"]).Year;
-            AMaxYear = Convert.ToDateTime(MinAndMax.Rows[0]["Max"]).Year;
+            if (MinAndMax.Rows.Count == 1)
+            {
+                // Even if we get a row returned one or both of min and max can be DbNull
+                object dtMin = MinAndMax.Rows[0]["Min"];
+                object dtMax = MinAndMax.Rows[0]["Max"];
+
+                if ((dtMin != DBNull.Value) && (dtMax != DBNull.Value))
+                {
+                    AMinYear = Convert.ToDateTime(dtMin).Year;
+                    AMaxYear = Convert.ToDateTime(dtMax).Year;
+                }
+            }
         }
 
         #region Data Validation
