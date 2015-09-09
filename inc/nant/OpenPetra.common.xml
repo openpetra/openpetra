@@ -401,16 +401,16 @@
 
     <!-- this is the location of NUnit on mono-openpetra rpm -->
     <property name="search.NUnitConsole" value="/opt/mono-openpetra/lib/mono/4.5/nunit-console.exe"/>
-    <if test="${file::exists(search.NUnitConsole)}">
-        <property name="external.NUnitConsole" value="${search.NUnitConsole}" overwrite="false"/>
-    </if>
     <if test="${not file::exists(search.NUnitConsole)}">
         <!-- this is the location of NUnit on the Jenkins build server -->
-        <property name="external.NUnitConsole" value="/opt/NUnit-2.6.1/bin/nunit-console.exe" overwrite="false"/>
+        <property name="search.NUnitConsole" value="/opt/NUnit-2.6.1/bin/nunit-console.exe"/>
     </if>
     <if test="${not file::exists(search.NUnitConsole)}">
         <!-- this is the location of NUnit from the Xamarin packages -->
-        <property name="external.NUnitConsole" value="/usr/lib/nunit/nunit-console.exe" overwrite="false"/>
+        <property name="search.NUnitConsole" value="/usr/lib/nunit/nunit-console.exe"/>
+    </if>
+    <if test="${file::exists(search.NUnitConsole)}">
+        <property name="external.NUnitConsole" value="${search.NUnitConsole}" overwrite="false"/>
     </if>
   </if>
   <if test="${'unix'!=platform::get-name()}">

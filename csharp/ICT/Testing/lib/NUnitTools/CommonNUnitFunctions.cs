@@ -273,7 +273,7 @@ namespace Ict.Testing.NUnitTools
         /// </summary>
         public static void StartOpenPetraServer(string AParameters = "")
         {
-            CommonNUnitFunctions.nant("startServer " + AParameters, false);
+            CommonNUnitFunctions.nant("startServerBackground " + AParameters, false);
             // wait a few seconds, otherwise the client will not connect
             Thread.Sleep(Convert.ToInt32(TimeSpan.FromSeconds(5.0).TotalMilliseconds));
         }
