@@ -124,14 +124,14 @@ namespace Ict.Common.Remoting.Server
         {
             get
             {
-                // Result := 'PETRAServer x.x.x Build xxxxxx/xx/xxxx  (OS: ' + ExecutingOSEnumToString(TSrvSetting.ExecutingOS) + ')';
+                string DLLPath = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar +
+                       "Ict.Common.Remoting.Server.dll";
+
                 return String.Format(
                     Catalog.GetString("PETRAServer {0} Build {1}  (OS: {2})"),
                     TSrvSetting.ApplicationVersion.ToString(),
-                    System.IO.File.GetLastWriteTime(Process.GetCurrentProcess().MainModule.FileName).ToString(),
+                    System.IO.File.GetLastWriteTime(DLLPath).ToString(),
                     CommonTypes.ExecutingOSEnumToString(TSrvSetting.ExecutingOS));
-
-                // System.Reflection.Assembly.GetEntryAssembly.FullName does not return the file path
             }
         }
 
