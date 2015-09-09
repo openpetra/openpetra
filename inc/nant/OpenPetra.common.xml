@@ -408,6 +408,10 @@
         <!-- this is the location of NUnit on the Jenkins build server -->
         <property name="external.NUnitConsole" value="/opt/NUnit-2.6.1/bin/nunit-console.exe" overwrite="false"/>
     </if>
+    <if test="${not file::exists(search.NUnitConsole)}">
+        <!-- this is the location of NUnit from the Xamarin packages -->
+        <property name="external.NUnitConsole" value="/usr/lib/nunit/nunit-console.exe" overwrite="false"/>
+    </if>
   </if>
   <if test="${'unix'!=platform::get-name()}">
     <echo>Unknown platform!</echo>
