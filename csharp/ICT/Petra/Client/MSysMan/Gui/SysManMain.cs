@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -127,16 +127,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             string username = Ict.Petra.Shared.UserInfo.GUserInfo.UserID;
 
-            // TODO: use old password as well, to make sure the password is changed by its owner
-            PetraInputBox input = new PetraInputBox(
-                Catalog.GetString("Change your password"),
-                Catalog.GetString("Please enter the old password:"),
-                "", true);
-
-            if (input.ShowDialog() == DialogResult.OK)
-            {
-                TLoginForm.CreateNewPassword(username, input.GetAnswer(), false);
-            }
+            TLoginForm.CreateNewPassword(AParentForm, username, string.Empty, false);
         }
     }
 }

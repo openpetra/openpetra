@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -300,14 +300,22 @@ namespace Ict.Petra.Client.CommonDialogs
             if (ConnectToPetraServer(FSelUserName, FSelPassWord, out ConnectionError))
             {
                 prbLogin.Value = 90;
+                bool MustChangePassword = false;
 
                 // Show any message that is returned after successful login (eg. 'Petra is currently disabled due to xxx. Proceed with caution.')
                 if (UserInfo.GUserInfo.LoginMessage != null)
                 {
-                    MessageBox.Show(UserInfo.GUserInfo.LoginMessage,
-                        StrPetraLoginFormTitle,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                    // If the user is required to change their password before using OpenPetra.
+                    // (This LoginMessage is set in Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors.TUserManagerWebConnector)
+                    MustChangePassword = (UserInfo.GUserInfo.LoginMessage == Catalog.GetString("You need to change your password immediately."));
+
+                    if (!MustChangePassword)
+                    {
+                        MessageBox.Show(UserInfo.GUserInfo.LoginMessage,
+                            StrPetraLoginFormTitle,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
                 }
 
                 TUserDefaults.InitUserDefaults();
@@ -319,11 +327,9 @@ namespace Ict.Petra.Client.CommonDialogs
 
                 UpdateUI(false);
 
-                // If the user is required to change their password before using OpenPetra.
-                // (This LoginMessage is set in Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors.TUserManagerWebConnector)
-                if (UserInfo.GUserInfo.LoginMessage == Catalog.GetString("You need to change your password immediately."))
+                if (MustChangePassword)
                 {
-                    if (!CreateNewPassword(FSelUserName, FSelPassWord, false))
+                    if (!CreateNewPassword(this, FSelUserName, FSelPassWord, true))
                     {
                         // do nothing if password has not been successfully changed
                         return;
@@ -612,80 +618,14 @@ namespace Ict.Petra.Client.CommonDialogs
         /// <summary>
         /// create a new password for the current user
         /// </summary>
-        public static bool CreateNewPassword(string AUserName, string AOldPassword, bool APasswordNeedsChanged)
+        public static bool CreateNewPassword(Form AParentForm, string AUserName, string AOldPassword, bool APasswordNeedsChanged)
         {
-            // repeat if an invalid password is entered
-            while (true)
-            {
-                PetraInputBox input = new PetraInputBox(
-                    Catalog.GetString("Change your password"),
-                    Catalog.GetString("Please enter the new password:"),
-                    "", true);
-
-                if (input.ShowDialog() == DialogResult.OK)
-                {
-                    string password = input.GetAnswer();
-
-                    TVerificationResultCollection VerificationResultCollection;
-                    TVerificationResult VerificationResult;
-
-                    if (TSharedSysManValidation.CheckPasswordQuality(password, out VerificationResult))
-                    {
-                        // if first password is valid then ask user to enter it again
-                        input = new PetraInputBox(
-                            Catalog.GetString("Change your password"),
-                            Catalog.GetString("Please enter the new password once more:"),
-                            "", true);
-
-                        if (input.ShowDialog() == DialogResult.OK)
-                        {
-                            // if both passwords are the same then save
-                            if (password == input.GetAnswer())
-                            {
-                                if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(AUserName, password, AOldPassword,
-                                        APasswordNeedsChanged,
-                                        out VerificationResultCollection))
-                                {
-                                    MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), AUserName));
-                                    return true;
-                                }
-                                else
-                                {
-                                    MessageBox.Show(String.Format(Catalog.GetString(
-                                                "There was a problem setting the password for user {0}."), AUserName) +
-                                        Environment.NewLine + VerificationResultCollection.BuildVerificationResultString());
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                MessageBox.Show("Passwords do not match! Please try again...");
-                            }
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    else if (password == AOldPassword)
-                    {
-                        MessageBox.Show(String.Format(Catalog.GetString(
-                                    "Password not changed as the old password was entered. Please enter a new password."), AUserName));
-                    }
-                    else
-                    {
-                        MessageBox.Show(String.Format(Catalog.GetString(
-                                    "There was a problem setting the password for user {0}."), AUserName) +
-                            Environment.NewLine + VerificationResult.ResultText);
-                    }
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return false;
+            TFrmChangePassword chgPwd = new TFrmChangePassword(AParentForm);
+            chgPwd.UserName = AUserName;
+            chgPwd.OldPassword = AOldPassword;
+            chgPwd.PasswordNeedsChanged = APasswordNeedsChanged;
+            
+            return (chgPwd.ShowDialog() == DialogResult.OK);
         }
 
         private void SetFocusToCredentials()
