@@ -94,19 +94,24 @@ ALTER TABLE a_cost_centre ADD COLUMN a_clearing_account_c varchar(24) DEFAULT '8
 ALTER TABLE a_cost_centre ADD COLUMN a_ret_earnings_account_code_c varchar(24) DEFAULT '9700';
 ALTER TABLE a_cost_centre ADD COLUMN a_rollup_style_c varchar(24) DEFAULT 'Always';
 ALTER TABLE a_analysis_type ADD COLUMN a_ledger_number_i integer DEFAULT 0 NOT NULL;
+-- ALTER TABLE a_analysis_type
+--  DROP CONSTRAINT a_analysis_type_pk;
+ALTER TABLE a_analysis_type
+  ADD CONSTRAINT a_analysis_type_pk2
+    UNIQUE (a_ledger_number_i,a_analysis_type_code_c);
 
 ALTER TABLE a_analysis_type
   ADD CONSTRAINT a_analysis_type_fk1
     FOREIGN KEY (a_ledger_number_i)
-    REFERENCES a_ledger(a_ledger_number_i)
-);
-ALTER TABLE a_analysis_attribute DROP CONSTRAINT a_analysis_attribute_fk2
+    REFERENCES a_ledger(a_ledger_number_i);
+
+ALTER TABLE a_analysis_attribute DROP CONSTRAINT a_analysis_attribute_fk2;
 
 ALTER TABLE a_analysis_attribute
   ADD CONSTRAINT a_analysis_attribute_fk2
     FOREIGN KEY (a_ledger_number_i,a_analysis_type_code_c)
-    REFERENCES a_analysis_type(a_ledger_number_i,a_analysis_type_code_c)
-);
+    REFERENCES a_analysis_type(a_ledger_number_i,a_analysis_type_code_c);
+
 ALTER TABLE a_form ADD COLUMN a_form_file_name_c varchar(2000);
                     
 ALTER TABLE a_freeform_analysis DROP CONSTRAINT a_freeform_analysis_fk2;
@@ -114,10 +119,12 @@ ALTER TABLE a_freeform_analysis DROP CONSTRAINT a_freeform_analysis_fk2;
 ALTER TABLE a_freeform_analysis
   ADD CONSTRAINT a_freeform_analysis_fk2
     FOREIGN KEY (a_ledger_number_i,a_analysis_type_code_c)
-    REFERENCES a_analysis_type(a_ledger_number_i,a_analysis_type_code_c)
-);
+    REFERENCES a_analysis_type(a_ledger_number_i,a_analysis_type_code_c);
+
+UPDATE a_recurring_transaction SET a_reference_c = 'EMPTY' WHERE a_reference_c IS NULL;
+UPDATE a_transaction SET a_reference_c = 'EMPTY' WHERE a_reference_c IS NULL;
 ALTER TABLE a_recurring_transaction ALTER COLUMN a_reference_c SET NOT NULL;
-ALTER TABLE _transaction ALTER COLUMN a_reference_c SET NOT NULL;
+ALTER TABLE a_transaction ALTER COLUMN a_reference_c SET NOT NULL;
 ALTER TABLE a_gift ADD COLUMN a_link_to_previous_gift_l boolean DEFAULT '0' NOT NULL;
 ALTER TABLE a_gift ADD COLUMN a_print_receipt_l boolean DEFAULT '1' NOT NULL;
 ALTER TABLE a_gift_detail ADD COLUMN a_fixed_gift_destination_l boolean DEFAULT '0';
