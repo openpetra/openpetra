@@ -581,6 +581,8 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
           <include name="*.sql" />
           <include name="*.yml" />
       </fileset>
+    </copy>
+    <copy todir="${dir.setup}/sql30">
       <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/lib/MSysMan/DBUpgrades/">
           <include name="*.sql" />
       </fileset>
