@@ -2722,21 +2722,12 @@ namespace Ict.Common.DB
         #endregion
 
         /// <summary>
-        /// Reads a SQL statement from file and remove the comments.
-        /// </summary>
-        /// <returns>SQL statement.</returns>
-        public static string ReadSqlFile(string ASqlFilename)
-        {
-            return ReadSqlFile(ASqlFilename, null);
-        }
-
-        /// <summary>
         /// Reads a SQL statement from file and removes the comments.
         /// </summary>
         /// <param name="ASqlFilename">.</param>
         /// <param name="ADefines">Defines to be set in the SQL statement.</param>
         /// <returns>SQL statement.</returns>
-        public static string ReadSqlFile(string ASqlFilename, SortedList <string, string>ADefines)
+        public static string ReadSqlFile(string ASqlFilename, SortedList <string, string>ADefines = null)
         {
             string line = null;
             string stmt = "";
