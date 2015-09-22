@@ -938,7 +938,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerKey.BackColor = System.Drawing.SystemColors.Info;
             this.txtPartnerKey.DelegateFallbackLabel = true;
             this.txtPartnerKey.Font = new System.Drawing.Font("Courier New", 9.25F, System.Drawing.FontStyle.Bold);
-            this.txtPartnerKey.LabelText = "Markus\' World";
             this.txtPartnerKey.Location = new System.Drawing.Point(427, 0);
             this.txtPartnerKey.MaxLength = 10;
             this.txtPartnerKey.Name = "txtPartnerKey";

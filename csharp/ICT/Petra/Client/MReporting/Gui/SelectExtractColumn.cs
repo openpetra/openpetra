@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -43,6 +43,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         public TFrmSelectExtractColumn()
         {
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.btnOK.Text = Catalog.GetString("OK");
+            this.button1.Text = Catalog.GetString("Cancel");
+            this.label1.Text = Catalog.GetString("Select the column containing a partner key, which will be used for the extract.");
+            this.Text = Catalog.GetString("Select Extract Column");
+            #endregion
         }
 
         /// <summary>
