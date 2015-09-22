@@ -2389,7 +2389,7 @@ namespace Ict.Common.Data
             TVerificationResultCollection ReturnValue = new TVerificationResultCollection(VerificationRunGuid);
             string MessageHeaderPart1 = Catalog.GetString(String.Format("The '{0}' record", AThisTableLabel));
             string MessageHeaderPart2 = Catalog.GetString("{0}\r\n    cannot be deleted because\r\n");
-            string MessageFooter = Catalog.GetString("\r\n    {0} from the '{1}' Table:\r\n{2}");
+            string MessageFooter = Environment.NewLine + Catalog.GetString("    {0} from the '{1}' Table:\r\n{2}");
 
             string[] MessageDetails = null;
             string CompleteMessageDetails = String.Empty;
