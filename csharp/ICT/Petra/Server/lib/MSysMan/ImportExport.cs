@@ -477,6 +477,34 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     }
                 }
 
+                if (ATableName == "a_gift")
+                {
+                    if (!RowDetails.ContainsKey("LinkToPreviousGift") || RowDetails["LinkToPreviousGift"] == string.Empty)
+                    {
+                        RowDetails["LinkToPreviousGift"] = "false";
+                    }
+                    if (!RowDetails.ContainsKey("PrintReceipt") || RowDetails["PrintReceipt"] == string.Empty)
+                    {
+                        RowDetails["PrintReceipt"] = "true";
+                    }
+                }
+
+                if (ATableName == "a_recurring_transaction")
+                {
+                    if (!RowDetails.ContainsKey("Reference") || RowDetails["Reference"] == string.Empty)
+                    {
+                        RowDetails["Reference"] = "EMPTY";
+                    }
+                }
+
+                if (ATableName == "a_transaction")
+                {
+                    if (!RowDetails.ContainsKey("Reference") || RowDetails["Reference"] == string.Empty)
+                    {
+                        RowDetails["Reference"] = "EMPTY";
+                    }
+                }
+
                 bool firstColumn = true;
 
                 foreach (DataColumn col in table.Columns)
