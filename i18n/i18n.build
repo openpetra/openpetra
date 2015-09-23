@@ -172,6 +172,11 @@ ENDLOCAL
   <echo>arguments: -do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;</echo>
   <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" commandline="-do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;"/>
 
+  <!-- now update the po files with the new template -->
+  <if test="${'unix'!=platform::get-name()}" >
+    <fail message="this has only been tested on Linux"/>
+  </if>
+  <exec program="bash" commandline="-c 'for f in ${dir.root}/i18n/*-*.po; do echo $f; msgmerge $f ${template.pot.file} | msgattrib --no-obsolete > new.po; mv new.po $f; done'" workingdir="${tempdir}"/>
 </target>
 
 <target name="createI18NYamlFiles" depends="translation">
