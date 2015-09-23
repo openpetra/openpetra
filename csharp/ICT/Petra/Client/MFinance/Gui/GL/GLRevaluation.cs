@@ -45,9 +45,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             InitializeComponent();
             #region CATALOGI18N
 
-            this.btnRevaluate.Text = Catalog.GetString("Revalue");
-            this.btnCancel.Text = Catalog.GetString("Cancel");
-            this.Text = Catalog.GetString("Revaluation");
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            btnRevaluate.Text = Catalog.GetString("Revalue");
+            btnCancel.Text = Catalog.GetString("Cancel");
+            Text = Catalog.GetString("Revaluation ...");
             #endregion
 
             // Initialise our PetraForm object so we can use it to remember window positions

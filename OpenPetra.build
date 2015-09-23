@@ -558,6 +558,7 @@ useful parameters
 
     <call target="quickClean"/>
     <call target="generateSolution"/>
+    <call target="translation"/>
     <call target="recreateDatabase"/>
     <call target="resetDatabase"/>
 

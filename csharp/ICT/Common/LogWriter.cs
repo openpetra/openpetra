@@ -100,8 +100,6 @@ namespace Ict.Common
                 LogfileName = Path.GetFullPath(LogfileName);
             }
 
-            ULogFileName = LogfileName;
-
             // Test whether I can write to this file.
             FileStream temp = null;
             try
@@ -110,16 +108,18 @@ namespace Ict.Common
                 FLogFileErrorMsg = "Log file is " + ULogFileName;
 
                 // Test whether there was a write access today, if not rotate filenames
-                if (NeedToRotateFiles(ULogFileName))
+                if (NeedToRotateFiles(LogfileName))
                 {
-                    RotateFiles(ULogFileName, LogfileName);
+                    RotateFiles(LogfileName);
                 }
 
-                temp = new FileStream(ULogFileName, FileMode.OpenOrCreate, FileAccess.Write);
+                temp = new FileStream(LogfileName, FileMode.OpenOrCreate, FileAccess.Write);
+
+                ULogFileName = LogfileName;
             }
             catch (Exception e)
             {
-                FLogFileErrorMsg = "Error opening log file " + ULogFileName + ": " + e.Message;
+                FLogFileErrorMsg = "Error opening log file " + LogfileName + ": " + e.Message;
                 FCanWriteLogFile = false;
             }
             finally
@@ -139,11 +139,10 @@ namespace Ict.Common
         ///
         /// When it comes to rotate the logfiles, the number of each logfile is increased
         /// </summary>
-        /// <param name="ULogFileName">Full Path including filename</param>
-        /// <param name="LogFileName"> The name of the Logfile</param>
-        private void RotateFiles(string ULogFileName, string LogFileName)
+        /// <param name="LogFileName">Full Path including filename</param>
+        private void RotateFiles(string LogFileName)
         {
-            string LogfilePath = Path.GetDirectoryName(ULogFileName);
+            string LogfilePath = Path.GetDirectoryName(LogFileName);
             string Extension = Path.GetExtension(LogFileName);
             string LogFileNameWithoutExtension = Path.GetFileNameWithoutExtension(LogFileName);
 
@@ -172,7 +171,7 @@ namespace Ict.Common
             string Name = LogFileNameWithoutExtension + "-01" + Extension;
             string NewFile = Path.Combine(LogfilePath, Name);
 
-            File.Move(ULogFileName, NewFile);
+            File.Move(LogFileName, NewFile);
         }
 
         /// <summary>

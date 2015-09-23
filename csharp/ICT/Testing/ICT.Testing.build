@@ -4,7 +4,7 @@
 <include buildfile="../../../inc/nant/OpenPetra.csharp.xml"/> 
 
 <target name="cleanup">
-    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}" failonerror="false"/>
 </target>
 
 <target name="test-client">
@@ -16,8 +16,8 @@
     <echo message="Target test-client started at: ${datetime::now()}" /> 
     
     <!-- stop old server that might still be running from earlier (failed) builds -->
-    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
-    <nant inheritall="false" target="startServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}" failonerror="false"/>
+    <nant inheritall="false" target="startServerBackground" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
     <!-- If we were called by 'test-all' we have done a database reset already and the property 'combinedTest' will have been set.
          Otherwise, by simply calling test-client we need to do a resetDatabase now so as to get Corporate Exchange Rates set correctly... -->
     <if test="${not property::exists('combinedTest')}">
@@ -123,8 +123,8 @@
     <property name="nant.onfailure" value="cleanup" />
 
     <!-- stop old server that might still be running from earlier (failed) builds -->
-    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
-    <nant inheritall="false" target="startServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}" failonerror="false"/>
+    <nant inheritall="false" target="startServerBackground" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
     
     <call target="test-main-navigation-screens-core" />
     

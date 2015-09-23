@@ -1,10 +1,10 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       >>>> Put your full name or just a shortname here <<<<
+//       Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -21,6 +21,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+using Ict.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -43,6 +44,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         public TFrmSelectExtractColumn()
         {
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.btnOK.Text = Catalog.GetString("OK");
+            this.button1.Text = Catalog.GetString("Cancel");
+            this.label1.Text = Catalog.GetString("Select the column containing a partner key, which will be used for the extract.");
+            this.Text = Catalog.GetString("Select Extract Column");
+            #endregion
         }
 
         /// <summary>

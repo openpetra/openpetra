@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -466,6 +466,43 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 if (ATableName == "a_ledger")
                 {
                     FCurrencyPerLedger.Add(Convert.ToInt32(RowDetails["LedgerNumber"]), RowDetails["BaseCurrency"]);
+                }
+
+                // workaround for 2015.09: a_account_hierarchy_detail.a_report_order_i must not be NULL
+                if (ATableName == "a_account_hierarchy_detail")
+                {
+                    if (!RowDetails.ContainsKey("ReportOrder") || RowDetails["ReportOrder"] == string.Empty)
+                    {
+                        RowDetails["ReportOrder"] = "-1";
+                    }
+                }
+
+                if (ATableName == "a_gift")
+                {
+                    if (!RowDetails.ContainsKey("LinkToPreviousGift") || RowDetails["LinkToPreviousGift"] == string.Empty)
+                    {
+                        RowDetails["LinkToPreviousGift"] = "false";
+                    }
+                    if (!RowDetails.ContainsKey("PrintReceipt") || RowDetails["PrintReceipt"] == string.Empty)
+                    {
+                        RowDetails["PrintReceipt"] = "true";
+                    }
+                }
+
+                if (ATableName == "a_recurring_transaction")
+                {
+                    if (!RowDetails.ContainsKey("Reference") || RowDetails["Reference"] == string.Empty)
+                    {
+                        RowDetails["Reference"] = "EMPTY";
+                    }
+                }
+
+                if (ATableName == "a_transaction")
+                {
+                    if (!RowDetails.ContainsKey("Reference") || RowDetails["Reference"] == string.Empty)
+                    {
+                        RowDetails["Reference"] = "EMPTY";
+                    }
                 }
 
                 bool firstColumn = true;

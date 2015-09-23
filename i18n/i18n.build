@@ -34,9 +34,11 @@ ENDLOCAL
   <property name="OpenBuildService" value="false" overwrite="false"/>
   <!-- on open build service, we cannot download any files. use the translation files from the git, or add to download _services -->
   <if test="${OpenBuildService == 'false'}">
-    <exec program="bzr" commandline="checkout lp:~jomammele/openpetraorg/translationfiles" workingdir="${tempdir}"/>
+   <if test="${'unix'==platform::get-name()}" >
+    <exec program="wget" commandline="https://github.com/openpetra/openpetra-i18n/archive/master.tar.gz -O i18n.tar.gz" workingdir="${tempdir}"/>
+    <exec program="bash" commandline="-c 'tar xzf i18n.tar.gz'" workingdir="${tempdir}"/>
     <move todir="${dir.root}/i18n/">
-      <fileset basedir="${tempdir}/translationfiles/i18n">
+      <fileset basedir="${tempdir}/openpetra-i18n-master/i18n">
         <include name="*.po" />
       </fileset>
     </move>
@@ -44,6 +46,10 @@ ENDLOCAL
     <move file="${dir.root}/i18n/de.po" tofile="${dir.root}/i18n/de-DE.po"/>
     <move file="${dir.root}/i18n/da.po" tofile="${dir.root}/i18n/da-DK.po"/>
     <move file="${dir.root}/i18n/es.po" tofile="${dir.root}/i18n/es-ES.po"/>
+   </if>
+   <if test="${'unix'!=platform::get-name()}" >
+     <fail message="not implemented for Windows"/>
+   </if>
   </if>
 </target>
 
@@ -123,11 +129,15 @@ ENDLOCAL
    <arg value="${tempdir}/i18n/empty.cs" />
   </exec>
   <!-- Repair brocken charset -->
-  <copy file="${tempdir}/i18n/template.pot" tofile="${template.pot.file}" overwrite="true">
+  <copy file="${tempdir}/i18n/template.pot" tofile="${template.pot.file}" overwrite="true" outputencoding="utf-8">
     <filterchain>
       <replacestring from="Content-Type: text/plain; charset=CHARSET\n" to="Content-Type: text/plain; charset=UTF-8\n" />
     </filterchain>
   </copy>
+  <if test="${'unix'==platform::get-name()}" >
+    <!-- remove the BOM -->
+    <exec program="bash" commandline="-c 'tail --bytes=+4 ${template.pot.file} > ${template.pot.file}.new &amp;&amp; mv ${template.pot.file}.new ${template.pot.file}'" workingdir="${tempdir}"/>
+  </if>
 </target>
 
 <target name="extractMsgs" depends="resetTemplatePot">
@@ -162,6 +172,11 @@ ENDLOCAL
   <echo>arguments: -do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;</echo>
   <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" commandline="-do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;"/>
 
+  <!-- now update the po files with the new template -->
+  <if test="${'unix'!=platform::get-name()}" >
+    <fail message="this has only been tested on Linux"/>
+  </if>
+  <exec program="bash" commandline="-c 'for f in ${dir.root}/i18n/*-*.po; do echo $f; msgmerge $f ${template.pot.file} | msgattrib --no-obsolete > new.po; mv new.po $f; done'" workingdir="${tempdir}"/>
 </target>
 
 <target name="createI18NYamlFiles" depends="translation">

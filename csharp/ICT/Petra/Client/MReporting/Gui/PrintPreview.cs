@@ -127,6 +127,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbtExportText.ToolTipText = Catalog.GetString("Save as a text file (e.g. for email)");
             this.tbtSendEmail.Text = Catalog.GetString("Send Email");
             this.tbtSendEmail.ToolTipText = Catalog.GetString("Send the Report as an Email with Excel attachment");
+            this.tbtCreateExtract.Text = Catalog.GetString("Create Extract");
+            this.tbtCreateExtract.ToolTipText = Catalog.GetString("Create an Extract from this result set");
             this.tbtGenerateChart.Text = Catalog.GetString("Generate Chart");
             this.tbtGenerateChart.ToolTipText = Catalog.GetString(
                 "Generates a chart in Excel (not available for all reports)");
