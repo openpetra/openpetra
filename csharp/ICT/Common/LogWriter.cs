@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, simonj
+//       christiank, simonj, timop
 //
 // Copyright 2004-2015 by OM International
 //
@@ -105,7 +105,7 @@ namespace Ict.Common
             try
             {
                 FCanWriteLogFile = true;
-                FLogFileErrorMsg = "Log file is " + ULogFileName;
+                FLogFileErrorMsg = "Log file is " + LogfileName;
 
                 // Test whether there was a write access today, if not rotate filenames
                 if (NeedToRotateFiles(LogfileName))
@@ -148,52 +148,46 @@ namespace Ict.Common
 
             for (int i = 6; i > 0; i--)
             {
-                string NameToRotate = LogFileNameWithoutExtension + "-0" + i + Extension;
-                string UOldFile = Path.Combine(LogfilePath, NameToRotate);
+                string NameToRotate = LogFileNameWithoutExtension + "-" + i.ToString("00") + Extension;
+                string OldFile = Path.Combine(LogfilePath, NameToRotate);
 
-                if (File.Exists(UOldFile))
+                if (File.Exists(OldFile))
                 {
                     if (6 == i)
                     {
-                        File.Delete(UOldFile);
+                        File.Delete(OldFile);
                     }
                     else
                     {
-                        string NewName = LogFileNameWithoutExtension + "-0" + (i + 1) + Extension;
-                        string UNewFile = Path.Combine(LogfilePath, NewName);
+                        string NewName = LogFileNameWithoutExtension + "-" + (i + 1).ToString("00") + Extension;
 
-                        File.Move(UOldFile, UNewFile);
+                        File.Move(OldFile, Path.Combine(LogfilePath, NewName));
                     }
                 }
             }
 
             // change the newest logfile to -01.log
             string Name = LogFileNameWithoutExtension + "-01" + Extension;
-            string NewFile = Path.Combine(LogfilePath, Name);
 
-            File.Move(LogFileName, NewFile);
+            File.Move(LogFileName, Path.Combine(LogfilePath, Name));
         }
 
         /// <summary>
         /// Checks if there was a Write Access to the file today.
         /// </summary>
         /// <returns><c>true</c>, if rotation of the files was needed (no write access today), <c>false</c> otherwise.</returns>
-        /// <param name="ULogFileName">name of the log file</param>
-        private bool NeedToRotateFiles(string ULogFileName)
+        /// <param name="ALogFileName">name of the log file</param>
+        private bool NeedToRotateFiles(string ALogFileName)
         {
-            if (!File.Exists(ULogFileName))
+            if (!File.Exists(ALogFileName))
             {
                 return false;
             }
 
-            FileInfo fileInfo = new FileInfo(ULogFileName);
-            DateTime LastWriteTime = fileInfo.LastWriteTime;
-            LastWriteTime = LastWriteTime.Date;
+            FileInfo fileInfo = new FileInfo(ALogFileName);
+            DateTime LastWriteTime = fileInfo.LastWriteTime.Date;
 
-            DateTime NowDate = DateTime.Now;
-            NowDate = NowDate.Date;
-
-            return !LastWriteTime.Equals(NowDate);
+            return !LastWriteTime.Equals(DateTime.Today);
         }
 
         /// <summary>
