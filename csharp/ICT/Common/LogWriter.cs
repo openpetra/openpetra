@@ -147,14 +147,16 @@ namespace Ict.Common
             string Extension = Path.GetExtension(LogFileName);
             string LogFileNameWithoutExtension = Path.GetFileNameWithoutExtension(LogFileName);
 
-            for (int i = 6; i > 0; i--)
+            int NumberOfLogFilesToKeep = TAppSettingsManager.GetInt16("NumberOfLogFilesToKeep", 6);
+
+            for (int i = NumberOfLogFilesToKeep; i > 0; i--)
             {
                 string NameToRotate = LogFileNameWithoutExtension + "-" + i.ToString("00") + Extension;
                 string OldFile = Path.Combine(LogfilePath, NameToRotate);
 
                 if (File.Exists(OldFile))
                 {
-                    if (6 == i)
+                    if (NumberOfLogFilesToKeep == i)
                     {
                         File.Delete(OldFile);
                     }
