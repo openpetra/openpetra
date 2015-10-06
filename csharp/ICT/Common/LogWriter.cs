@@ -147,7 +147,13 @@ namespace Ict.Common
             string Extension = Path.GetExtension(LogFileName);
             string LogFileNameWithoutExtension = Path.GetFileNameWithoutExtension(LogFileName);
 
-            int NumberOfLogFilesToKeep = TAppSettingsManager.GetInt16("NumberOfLogFilesToKeep", 6);
+            int NumberOfLogFilesToKeep = TAppSettingsManager.GetInt16("NumberOfLogFilesToKeep", -1);
+
+            if (NumberOfLogFilesToKeep == -1)
+            {
+                // rotation is disabled
+                return;
+            }
 
             for (int i = NumberOfLogFilesToKeep; i > 0; i--)
             {
