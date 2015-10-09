@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -123,6 +123,15 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 return false;
             }
 
+            if (APasswordNeedsChanged && APassword != AOldPassword) {
+                AVerification = new TVerificationResultCollection();
+                AVerification.Add(new TVerificationResult("\nPassword check.",
+                            Catalog.GetString(
+                                "Password not changed as the old password was reused. Please use a new password."),
+                        TResultSeverity.Resv_Critical));
+                return false;
+            }
+
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
                 TPetraPrincipal tempPrincipal;
@@ -144,7 +153,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
                 UserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
                         UserDR.PasswordSalt));
-                UserDR.PasswordNeedsChange = APasswordNeedsChanged;
+                UserDR.PasswordNeedsChange = false;
 
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
