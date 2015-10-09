@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -355,7 +355,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 if (UserDR.PasswordNeedsChange)
                 {
                     // The user needs to change their password before they can use OpenPetra
-                    PetraPrincipal.LoginMessage = Catalog.GetString("You need to change your password immediately.");
+                    PetraPrincipal.LoginMessage = SharedConstants.LOGINMUSTCHANGEPASSWORD;
                 }
             }
             finally

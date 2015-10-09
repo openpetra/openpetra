@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -222,6 +222,9 @@ namespace Ict.Petra.Shared
 
         /// <summary>temporary column name for info if available site is listed in PPartnerLedger</summary>
         public const String SYSMAN_AVAILABLE_SITES_COLUMN_IS_PARTNER_LEDGER = "IsPartnerLedger";
+
+        /// <summary>this message is returned by the server after successful login, if the user is required to change the password</summary>
+        public const String LOGINMUSTCHANGEPASSWORD = "LOGINMUSTCHANGEPASSWORD";
 
         #region readonly Fields   (Used for 'constants' whose value can be translated so that they are meaningful to the users in their language)
 
