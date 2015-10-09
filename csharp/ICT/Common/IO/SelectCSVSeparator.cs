@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,6 +41,8 @@ namespace Ict.Common.IO
         /// <summary>european number format: decimal comma, point for thousands separator</summary>
         public static string NUMBERFORMAT_EUROPEAN = "European";
 
+        private int MAXLINESPARSE = 50;
+        private int MAXLINESDISPLAY = 5;
         private string FSeparator;
         private bool FFileHasCaption;
         private List <String>FCSVRows = null;
@@ -193,7 +195,7 @@ namespace Ict.Common.IO
 
                 FCSVRows = new List <string>();
 
-                while (!reader.EndOfStream && FCSVRows.Count < 6)
+                while (!reader.EndOfStream && FCSVRows.Count < MAXLINESPARSE)
                 {
                     FCSVRows.Add(reader.ReadLine());
                 }
@@ -214,7 +216,7 @@ namespace Ict.Common.IO
                 FCSVRows = new List <string>();
                 string[] lines = value.Split(new char[] { '\n' });
 
-                while (FCSVRows.Count < 6 && FCSVRows.Count < lines.Length)
+                while (FCSVRows.Count < MAXLINESPARSE && FCSVRows.Count < lines.Length)
                 {
                     FCSVRows.Add(lines[FCSVRows.Count].Trim());
                 }
@@ -243,7 +245,7 @@ namespace Ict.Common.IO
 
             FCSVRows = new List <string>();
 
-            while (!reader.EndOfStream && FCSVRows.Count < 6)
+            while (!reader.EndOfStream && FCSVRows.Count < MAXLINESPARSE)
             {
                 FCSVRows.Add(reader.ReadLine());
             }
@@ -305,19 +307,33 @@ namespace Ict.Common.IO
                     DataRow row = table.NewRow();
                     int countColumns = 0;
 
-                    while (line.Length > 0)
+                    try
                     {
-                        if (countColumns + 1 > table.Columns.Count)
+                        while (line.Length > 0)
                         {
-                            table.Columns.Add(columnCounter.ToString());
-                            columnCounter++;
+                            if (countColumns + 1 > table.Columns.Count)
+                            {
+                                table.Columns.Add(columnCounter.ToString());
+                                columnCounter++;
+                            }
+
+                            // cope with cells containing new line (quoted)
+                            row[countColumns] = StringHelper.GetNextCSV(ref line, FCSVRows, ref counter, FSeparator);
+                            countColumns++;
                         }
 
-                        row[countColumns] = StringHelper.GetNextCSV(ref line, FSeparator);
-                        countColumns++;
-                    }
+                        table.Rows.Add(row);
 
-                    table.Rows.Add(row);
+                        if (table.Rows.Count == MAXLINESDISPLAY)
+                        {
+                            break;
+                        }
+                    }
+                    catch (System.IndexOutOfRangeException)
+                    {
+                        // ignore this exception, it can happen because we only parse the first lines, and a cell might spread across several lines
+                        break;
+                    }
                 }
 
                 table.DefaultView.AllowNew = false;

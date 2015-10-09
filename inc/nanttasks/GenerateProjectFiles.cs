@@ -211,6 +211,11 @@ namespace Ict.Tools.NAntTasks
         /// </summary>
         protected override void ExecuteTask()
         {
+            if (FCodeRootDir.Contains(".cs"))
+            {
+                throw new Exception("the root directory (" + FCodeRootDir + ") must not contain .cs in the path!");
+            }
+
             ReadMap(FDependencyMapFilename, out FProjectDependencies, out FMapOutputNameToPath);
             FProjectGUIDs = ReadProjectGUIDs(FGUIDMapFilename);
 

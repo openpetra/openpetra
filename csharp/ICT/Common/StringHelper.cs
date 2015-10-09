@@ -25,10 +25,12 @@ using System;
 using System.Data;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 
+using System.Threading;
 using Ict.Common;
 using Ict.Common.Exceptions;
 
@@ -506,6 +508,47 @@ namespace Ict.Common
             }
 
             return InputSeparator;
+        }
+
+        /// <summary>
+        /// parse csv values that spread across multiple lines
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="ALines"></param>
+        /// <param name="ALineCounter"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static string GetNextCSV(ref string line, List <String>ALines, ref int ALineCounter,
+            string separator)
+        {
+            // support maximum 20 linebreaks inside a csv cell
+            int attempts = 20;
+            string value = String.Empty;
+
+            while (attempts > 0)
+            {
+                try
+                {
+                    value = GetNextCSV(ref line, separator);
+                    attempts = 0;
+                }
+                catch (System.IndexOutOfRangeException)
+                {
+                    // perhaps a problem to find the matching quote?
+
+                    // do we have more lines available?
+                    if (ALineCounter >= ALines.Count - 1)
+                    {
+                        throw;
+                    }
+
+                    ALineCounter++;
+                    line += " <br/> " + ALines[ALineCounter];
+                    attempts--;
+                }
+            }
+
+            return value;
         }
 
         /// <summary>

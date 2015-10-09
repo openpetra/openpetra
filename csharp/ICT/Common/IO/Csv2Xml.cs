@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -464,6 +464,32 @@ namespace Ict.Common.IO
         /// the first line is expected to contain the column names/captions, in quotes.
         /// from the header line, the separator can be determined, if the parameter ASeparator is empty
         /// </summary>
+        public static XmlDocument ParseCSV2Xml(TextReader AReader, string ASeparator = null)
+        {
+            List <string>CSVRows = new List <string>();
+
+            while (true)
+            {
+                string line = AReader.ReadLine();
+
+                if (line == null)
+                {
+                    break;
+                }
+
+                CSVRows.Add(line);
+            }
+
+            AReader.Close();
+
+            return ParseCSV2Xml(CSVRows, ASeparator);
+        }
+
+        /// <summary>
+        /// convert a CSV file to an XmlDocument.
+        /// the first line is expected to contain the column names/captions, in quotes.
+        /// from the header line, the separator can be determined, if the parameter ASeparator is empty
+        /// </summary>
         public static XmlDocument ParseCSV2Xml(List <string>ALines, string ASeparator = null)
         {
             XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
@@ -472,7 +498,7 @@ namespace Ict.Common.IO
             string headerLine = ALines[0];
             string separator = ASeparator;
 
-            if ((ASeparator == null) || (ASeparator == string.Empty))
+            if (string.IsNullOrEmpty(ASeparator))
             {
                 if (!headerLine.StartsWith("\""))
                 {
@@ -526,9 +552,11 @@ namespace Ict.Common.IO
                 AllAttributes.Add(attrName);
             }
 
+            LineCounter = 1;
+
             while (LineCounter < ALines.Count)
             {
-                string line = ALines[LineCounter++];
+                string line = ALines[LineCounter];
 
                 if (line.Trim().Length > 0)
                 {
@@ -536,7 +564,8 @@ namespace Ict.Common.IO
 
                     foreach (string attrName in AllAttributes)
                     {
-                        AttributePairs.Add(attrName, StringHelper.GetNextCSV(ref line, separator));
+                        // support csv values that contain line breaks
+                        AttributePairs.Add(attrName, StringHelper.GetNextCSV(ref line, ALines, ref LineCounter, separator));
                     }
 
                     string rowName = "Element";
@@ -574,6 +603,8 @@ namespace Ict.Common.IO
                         }
                     }
                 }
+
+                LineCounter++;
             }
 
             return myDoc;
