@@ -2976,19 +2976,27 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             XmlDocument XMLDoc = new XmlDocument();
 
-            try
+            if (AYmlAccountHierarchy.StartsWith("<?xml version="))
             {
-                TYml2Xml ymlParser = new TYml2Xml(AYmlAccountHierarchy.Split(new char[] { '\n' }));
-                XMLDoc = ymlParser.ParseYML2XML();
+                XMLDoc.LoadXml(AYmlAccountHierarchy);
             }
-            catch (XmlException exp)
+            else
             {
-                throw new Exception(
-                    Catalog.GetString("There was a problem with the syntax of the file.") +
-                    Environment.NewLine +
-                    exp.Message +
-                    Environment.NewLine +
-                    AYmlAccountHierarchy);
+                try
+                {
+                    TYml2Xml ymlParser = new TYml2Xml(AYmlAccountHierarchy.Split(new char[] { '\n' }));
+                    XMLDoc = ymlParser.ParseYML2XML();
+                }
+                catch (XmlException exp)
+                {
+                    TLogging.Log(exp.ToString());
+                    throw new Exception(
+                        Catalog.GetString("There was a problem with the syntax of the file.") +
+                        Environment.NewLine +
+                        exp.Message +
+                        Environment.NewLine +
+                        AYmlAccountHierarchy);
+                }
             }
 
             GLSetupTDS MainDS = LoadAccountHierarchies(ALedgerNumber);

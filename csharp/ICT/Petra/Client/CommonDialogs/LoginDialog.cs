@@ -307,7 +307,7 @@ namespace Ict.Petra.Client.CommonDialogs
                 {
                     // If the user is required to change their password before using OpenPetra.
                     // (This LoginMessage is set in Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors.TUserManagerWebConnector)
-                    MustChangePassword = (UserInfo.GUserInfo.LoginMessage == Catalog.GetString("You need to change your password immediately."));
+                    MustChangePassword = (UserInfo.GUserInfo.LoginMessage == SharedConstants.LOGINMUSTCHANGEPASSWORD);
 
                     if (!MustChangePassword)
                     {

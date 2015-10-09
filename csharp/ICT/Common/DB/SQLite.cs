@@ -175,6 +175,7 @@ namespace Ict.Common.DB
 
 
             ReturnValue = ReturnValue.Replace("NOW()", "datetime('now')");
+            ReturnValue = ReturnValue.Replace("SUBSTRING(", "SUBSTR(");
 
             ReturnValue = ReturnValue.Replace("= false", "= 0");
             ReturnValue = ReturnValue.Replace("= true", "= 1");
