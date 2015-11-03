@@ -252,7 +252,7 @@ namespace PetraServerAdminConsole
 
             if (!File.Exists(restoreFile) || !restoreFile.EndsWith(".yml.gz"))
             {
-                Console.WriteLine("invalid filename, please try again");
+                Console.WriteLine("invalid filename or no read permission for " + restoreFile + ", please try again");
                 return false;
             }
 

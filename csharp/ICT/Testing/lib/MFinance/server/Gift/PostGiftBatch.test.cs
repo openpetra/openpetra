@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, peters
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,8 +43,10 @@ using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared;
 using Ict.Testing.NUnitPetraServer;
 using Ict.Testing.NUnitTools;
 
@@ -122,6 +124,98 @@ namespace Tests.MFinance.Server.Gift
             {
                 Assert.Fail("Gift Batch was not posted: " + VerificationResult.BuildVerificationResultString());
             }
+        }
+
+        /// <summary>
+        /// This will import a test gift batch, and check if the cost centre will be fixed according to the motivation detail
+        /// </summary>
+        [Test]
+        public void TestPostGiftBatchWithMotivationDetailCostCentre()
+        {
+            // import a gift batch, that we will modify later
+            TGiftImporting importer = new TGiftImporting();
+
+            string testFile = TAppSettingsManager.GetValue("GiftBatch.file", "../../csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
+            StreamReader sr = new StreamReader(testFile);
+            string FileContent = sr.ReadToEnd();
+
+            FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
+            FileContent = FileContent.Replace("{thisyear}", DateTime.Today.Year.ToString());
+
+            sr.Close();
+
+            Hashtable parameters = new Hashtable();
+            parameters.Add("Delimiter", ",");
+            parameters.Add("ALedgerNumber", FLedgerNumber);
+            parameters.Add("DateFormatString", "yyyy-MM-dd");
+            parameters.Add("NumberFormat", "American");
+            parameters.Add("NewLine", Environment.NewLine);
+
+            TVerificationResultCollection VerificationResult = null;
+            GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
+
+            if (!importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult))
+            {
+                Assert.Fail("Gift Batch was not imported: " + VerificationResult.BuildVerificationResultString());
+            }
+
+            int BatchNumber = importer.GetLastGiftBatchNumber();
+
+            Assert.AreNotEqual(-1, BatchNumber, "Should have imported the gift batch and returned a valid batch number");
+
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            // create a new costcentre
+            const string newCostCentre = "100001";
+            if (!ACostCentreAccess.Exists(FLedgerNumber, newCostCentre, Transaction))
+            {
+                ACostCentreTable cc = new ACostCentreTable();
+                ACostCentreRow ccrow = cc.NewRowTyped();
+                ccrow.LedgerNumber = FLedgerNumber;
+                ccrow.CostCentreCode = newCostCentre;
+                ccrow.CostCentreName = newCostCentre;
+                ccrow.PostingCostCentreFlag = true;
+                ccrow.CostCentreToReportTo = (FLedgerNumber*100).ToString("0000");
+                ccrow.CostCentreType = MFinanceConstants.LOCAL_CC_TYPE;
+                cc.Rows.Add(ccrow);
+                ACostCentreAccess.SubmitChanges(cc, Transaction, UserInfo.GUserInfo.UserID);
+            }
+
+            // create a new motivation detail
+            if (!AMotivationDetailAccess.Exists(FLedgerNumber, MFinanceConstants.MOTIVATION_GROUP_GIFT, newCostCentre, Transaction))
+            {
+                AMotivationDetailTable mot = new AMotivationDetailTable();
+                AMotivationDetailRow motrow = mot.NewRowTyped();
+                motrow.LedgerNumber = FLedgerNumber;
+                motrow.MotivationGroupCode = MFinanceConstants.MOTIVATION_GROUP_GIFT;
+                motrow.MotivationDetailCode = newCostCentre;
+                motrow.AccountCode = "0100";
+                motrow.CostCentreCode = newCostCentre;
+                motrow.MotivationDetailDesc = newCostCentre;
+                mot.Rows.Add(motrow);
+                AMotivationDetailAccess.SubmitChanges(mot, Transaction, UserInfo.GUserInfo.UserID);
+            }
+
+            // modify the gift batch with that motivation detail, but with wrong costcentre
+            AGiftDetailTable giftdetails = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, BatchNumber, 1, 1, null, Transaction);
+            giftdetails[0].MotivationDetailCode = newCostCentre;
+            giftdetails[0].RecipientKey = 0;
+            Assert.AreNotEqual(newCostCentre, giftdetails[0].CostCentreCode, "cost centre code should not match the one defined by the motivation detail");
+            AGiftDetailAccess.SubmitChanges(giftdetails, Transaction);
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+
+            if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
+            {
+                Assert.Fail("Gift Batch was not posted: " + VerificationResult.BuildVerificationResultString());
+            }
+
+            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            giftdetails = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, BatchNumber, 1, 1, null, Transaction);
+            Assert.AreEqual(newCostCentre, giftdetails[0].CostCentreCode, "cost centre code should have been adjusted because of the motivation detail");
+            DBAccess.GDBAccessObj.CommitTransaction();
         }
 
         /// <summary>

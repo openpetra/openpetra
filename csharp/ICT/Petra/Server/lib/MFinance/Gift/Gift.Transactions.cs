@@ -3386,6 +3386,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
                 else
                 {
+                    if (motivationDetailRow.CostCentreCode != giftDetail.CostCentreCode)
+                    {
+                        giftDetail.CostCentreCode = motivationDetailRow.CostCentreCode;
+                        AChangesToCommit = true;
+                    }
+
                     giftDetail.RecipientDescription = "INVALID";
                     giftDetail.SetRecipientFieldNull();
                     giftDetail.SetRecipientKeyMinistryNull();
@@ -3651,6 +3657,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
                 else
                 {
+                    if (motivationDetailRow.CostCentreCode != giftDetail.CostCentreCode)
+                    {
+                        giftDetail.CostCentreCode = motivationDetailRow.CostCentreCode;
+                        AChangesToCommit = true;
+                    }
+
                     giftDetail.RecipientDescription = "INVALID";
                     giftDetail.SetRecipientFieldNull();
                     giftDetail.SetRecipientKeyMinistryNull();

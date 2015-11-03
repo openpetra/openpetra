@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -270,6 +270,8 @@ namespace Ict.Common.IO
             }
             catch (System.Net.WebException ex)
             {
+                TLogging.LogAtLevel(1, "WebClientUploadValues WebException: " + ex.ToString());
+
                 HttpWebResponse httpWebResponse = (HttpWebResponse)ex.Response;
 
                 if (httpWebResponse != null)
