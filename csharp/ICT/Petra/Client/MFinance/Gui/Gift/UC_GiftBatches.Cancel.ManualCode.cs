@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert, alanP
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -143,6 +143,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Batch is only cancelled and never deleted
                 ACurrentBatchRow.BatchTotal = 0;
                 ACurrentBatchRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+
+                // FMyForm.SaveChanges only saves if there have been changes
+                FPetraUtilsObject.HasChanges = true;
 
                 // save first
                 if (FMyForm.SaveChanges())
