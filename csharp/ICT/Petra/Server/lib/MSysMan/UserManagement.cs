@@ -123,7 +123,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 return false;
             }
 
-            if (APasswordNeedsChanged && APassword != AOldPassword) {
+            if (APasswordNeedsChanged && APassword == AOldPassword) {
                 AVerification = new TVerificationResultCollection();
                 AVerification.Add(new TVerificationResult("\nPassword check.",
                             Catalog.GetString(
