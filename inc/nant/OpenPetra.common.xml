@@ -409,8 +409,15 @@
         <!-- this is the location of NUnit from the Xamarin packages -->
         <property name="search.NUnitConsole" value="/usr/lib/nunit/nunit-console.exe"/>
     </if>
+    <if test="${not file::exists(search.NUnitConsole)}">
+        <!-- this is the location of NUnit with the Fedora/CentOS packages -->
+        <property name="search.NUnitConsole" value="/usr/lib/mono/nunit/nunit-console.exe"/>
+    </if>
     <if test="${file::exists(search.NUnitConsole)}">
         <property name="external.NUnitConsole" value="${search.NUnitConsole}" overwrite="false"/>
+    </if>
+    <if test="${not file::exists(search.NUnitConsole)}">
+        <fail>Cannot find nunit-console.exe! Please add the path in inc/nant/OpenPetra.common.xml</fail>
     </if>
   </if>
   <if test="${'unix'!=platform::get-name()}">
