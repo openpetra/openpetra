@@ -71,13 +71,14 @@
 
 <target name="initPlugins">
     <!--
-    <exec program="${git}" commandline="submodule add https://github.com/SolidCharity/OpenPetraPlugin_SEPA.git SEPA"/>
-    <exec program="${git}" commandline="submodule add https://github.com/SolidCharity/OpenPetraPlugin_ConferenceRegistrationFees ConferenceRegistrationFees"/>
-    <exec program="${git}" commandline="submodule add https://github.com/SolidCharity/OpenPetraPlugin_TreasurerNotification.git TreasurerNotification"/>
+    <exec program="${git}" workingdir="${dir.root}" commandline="submodule add -f https://github.com/SolidCharity/OpenPetraPlugin_SEPA.git csharp/ICT/Petra/Plugins/SEPA"/>
+    <exec program="${git}" workingdir="${dir.root}" commandline="submodule add -f https://github.com/SolidCharity/OpenPetraPlugin_ConferenceRegistrationFees csharp/ICT/Petra/Plugins/ConferenceRegistrationFees"/>
+    <exec program="${git}" workingdir="${dir.root}" commandline="submodule add -f https://github.com/SolidCharity/OpenPetraPlugin_TreasurerNotification.git csharp/ICT/Petra/Plugins/TreasurerNotification"/>
     -->
-    <exec program="${git}" commandline="submodule add https://github.com/SolidCharity/OpenPetraPlugin_Bankimport.git Bankimport"/>
-    <exec program="${git}" commandline="submodule add https://github.com/SolidCharity/OpenPetraPlugin_BankimportCSV.git BankimportCSV"/>
-    <exec program="${git}" commandline="submodule add https://github.com/SolidCharity/OpenPetraPlugin_BankimportMT940.git BankimportMT940"/>
+    <exec program="${git}" workingdir="${dir.root}" commandline="submodule add -f https://github.com/SolidCharity/OpenPetraPlugin_Bankimport.git csharp/ICT/Petra/Plugins/Bankimport"/>
+    <exec program="${git}" workingdir="${dir.root}" commandline="submodule add -f https://github.com/SolidCharity/OpenPetraPlugin_BankimportCSV.git csharp/ICT/Petra/Plugins/BankimportCSV"/>
+    <exec program="${git}" workingdir="${dir.root}" commandline="submodule add -f https://github.com/SolidCharity/OpenPetraPlugin_BankimportMT940.git csharp/ICT/Petra/Plugins/BankimportMT940"/>
+    <exec program="${git}" workingdir="${dir.root}" commandline="submodule add -f https://github.com/SolidCharity/OpenPetraPlugin_BankimportCAMT.git csharp/ICT/Petra/Plugins/BankimportCAMT"/>
 </target>
 
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 

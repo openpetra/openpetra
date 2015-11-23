@@ -400,7 +400,7 @@
     <property name="external.sql2dia" value="/usr/bin/sql2dia" overwrite="false"/>
 
     <!-- this is the location of NUnit on mono-openpetra rpm -->
-    <property name="search.NUnitConsole" value="/opt/mono-openpetra/lib/mono/4.5/nunit-console.exe"/>
+    <property name="search.NUnitConsole" value="/opt/mono/lib/mono/4.5/nunit-console.exe"/>
     <if test="${not file::exists(search.NUnitConsole)}">
         <!-- this is the location of NUnit on the Jenkins build server -->
         <property name="search.NUnitConsole" value="/opt/NUnit-2.6.1/bin/nunit-console.exe"/>
@@ -409,8 +409,13 @@
         <!-- this is the location of NUnit from the Xamarin packages -->
         <property name="search.NUnitConsole" value="/usr/lib/nunit/nunit-console.exe"/>
     </if>
-    <if test="${file::exists(search.NUnitConsole)}">
-        <property name="external.NUnitConsole" value="${search.NUnitConsole}" overwrite="false"/>
+    <if test="${not file::exists(search.NUnitConsole)}">
+        <!-- this is the location of NUnit with the Fedora/CentOS packages -->
+        <property name="search.NUnitConsole" value="/usr/lib/mono/nunit/nunit-console.exe"/>
+    </if>
+    <property name="external.NUnitConsole" value="${search.NUnitConsole}" overwrite="false"/>
+    <if test="${not file::exists(external.NUnitConsole)}">
+        <fail>Cannot find nunit-console.exe! Please add the path in inc/nant/OpenPetra.common.xml</fail>
     </if>
   </if>
   <if test="${'unix'!=platform::get-name()}">
