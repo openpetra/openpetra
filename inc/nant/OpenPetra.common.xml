@@ -415,7 +415,7 @@
     </if>
     <property name="external.NUnitConsole" value="${search.NUnitConsole}" overwrite="false"/>
     <if test="${not file::exists(external.NUnitConsole)}">
-        <fail>Cannot find nunit-console.exe! Please add the path in inc/nant/OpenPetra.common.xml</fail>
+        <echo>Cannot find nunit-console.exe! Please add the path in inc/nant/OpenPetra.common.xml</echo>
     </if>
   </if>
   <if test="${'unix'!=platform::get-name()}">

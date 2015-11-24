@@ -83,20 +83,25 @@ namespace Ict.Tools.NAntTasks
             process = new System.Diagnostics.Process();
             process.EnableRaisingEvents = false;
 
+            string exeName = Project.Properties["external.NUnitConsole"];
+
+            if (!Environment.Is64BitOperatingSystem)
+            {
+                exeName = exeName.Replace("nunit-console-x86.exe", "nunit-console.exe");
+            }
+
+            if (!File.Exists(exeName))
+            {
+                throw new Exception("You need to define a valid location for nunit-console.exe in the variable external.NUnitConsole");
+            }
+
             if (!PlatformHelper.IsWindows)
             {
                 process.StartInfo.FileName = "mono";
-                process.StartInfo.Arguments = Project.Properties["external.NUnitConsole"] + " \"" + FAssemblyName + "\"";
+                process.StartInfo.Arguments = exeName + " \"" + FAssemblyName + "\"";
             }
             else
             {
-                string exeName = Project.Properties["external.NUnitConsole"];
-
-                if (!Environment.Is64BitOperatingSystem)
-                {
-                    exeName = exeName.Replace("nunit-console-x86.exe", "nunit-console.exe");
-                }
-
                 process.StartInfo.FileName = exeName;
 
                 process.StartInfo.Arguments = "\"" + FAssemblyName + "\" /result=../../log/TestResult.xml";
