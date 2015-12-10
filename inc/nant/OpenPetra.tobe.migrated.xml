@@ -146,6 +146,10 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   <property name="Innosetup.ISCC" value="${OP::GetFileInProgramDirectory('/Inno Setup 5/ISCC.exe')}" overwrite="false"/>
   <property name="makensis.exe" value="${OP::GetFileInProgramDirectory('/NSIS/makensis.exe')}" overwrite="false"/>
   <property name="git" value="${environment::get-variable('AppData')}\..\Local\Programs\Git\bin\git" overwrite="false"/>
+  <if test="${not file::exists(git) and not file::exists(git + '.exe')}">
+     <!-- hopefully git exists somewhere on the path. eg C:\Program Files (x86)\Git\cmd -->
+     <property name="git" value="git" overwrite="true"/>
+  </if>
 
   <!-- For Windows, we do not need the XSP server anymore, but use the SimpleASPHost -->
   <property name="MonoBinPath" value="" overwrite="false"/>
