@@ -5,7 +5,7 @@
 //      timop, wolfgangu
 //      Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -777,10 +777,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if (!TRemote.MFinance.Setup.WebConnectors.ImportAccountHierarchy(FLedgerNumber, FSelectedHierarchy, TXMLParser.XmlToString(doc)))
+            TVerificationResultCollection VerificationResult;
+
+            if (!TRemote.MFinance.Setup.WebConnectors.ImportAccountHierarchy(FLedgerNumber, FSelectedHierarchy, TXMLParser.XmlToString(doc), out VerificationResult))
             {
                 MessageBox.Show(Catalog.GetString(
-                        "Import of new Account Hierarchy failed; perhaps there were already balances? Try with a new ledger!"),
+                        "Import of new Account Hierarchy failed. Try to resolve the issues, or create a new ledger!") +
+                        Environment.NewLine +
+                        VerificationResult.BuildVerificationResultString(),
                     Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else

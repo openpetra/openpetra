@@ -40,6 +40,7 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
 
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
@@ -53,6 +54,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MCommon.Data.Cascading;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MFinance.Cacheable;
@@ -977,6 +979,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     delegate
                     {
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                        ACurrencyAccess.LoadAll(MainDS, Transaction);
                         AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
@@ -984,6 +987,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         AAnalysisTypeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AAnalysisAttributeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                        AFeesReceivableAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                        AFeesPayableAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AGeneralLedgerMasterAccess.LoadUsingTemplate(MainDS, template, Transaction);
                         ASuspenseAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                     });
@@ -2811,7 +2816,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ALedgerNumber,
             ref StringCollection AImportedAccountNames,
             XmlNode ACurrentNode,
-            string AParentAccountCode)
+            string AParentAccountCode,
+            ref TVerificationResultCollection AVerificationResult)
         {
             #region Validate Arguments
 
@@ -2920,6 +2926,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 if (currency != AMainDS.ALedger[0].BaseCurrency)
                 {
+                    AMainDS.ACurrency.DefaultView.Sort = ACurrencyTable.GetCurrencyCodeDBName();
+                    if (AMainDS.ACurrency.DefaultView.Find(currency) == -1)
+                    {
+                        AVerificationResult.Add(new TVerificationResult(
+                            Catalog.GetString("Import hierarchy"),
+                            "cannot find currency " + currency,
+                            TResultSeverity.Resv_Critical));
+                    }
+
                     NewAccount.ForeignCurrencyCode = currency;
                     NewAccount.ForeignCurrencyFlag = true;
                 }
@@ -2939,20 +2954,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             foreach (XmlNode child in ACurrentNode.ChildNodes)
             {
-                CreateAccountHierarchyRecursively(ref AMainDS, ALedgerNumber, ref AImportedAccountNames, child, NewAccount.AccountCode);
+                CreateAccountHierarchyRecursively(ref AMainDS, ALedgerNumber, ref AImportedAccountNames, child, NewAccount.AccountCode, ref AVerificationResult);
             }
         }
 
         /// <summary>
         /// only works if there are no balances/transactions yet for the accounts that are deleted
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AHierarchyName"></param>
-        /// <param name="AYmlAccountHierarchy"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
-        public static bool ImportAccountHierarchy(Int32 ALedgerNumber, string AHierarchyName, string AYmlAccountHierarchy)
+        public static bool ImportAccountHierarchy(Int32 ALedgerNumber, string AHierarchyName, string AYmlAccountHierarchy, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
             #region Validate Arguments
 
             if (ALedgerNumber <= 0)
@@ -3015,7 +3028,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
             }
 
-            CreateAccountHierarchyRecursively(ref MainDS, ALedgerNumber, ref ImportedAccountNames, Root, ALedgerNumber.ToString());
+            CreateAccountHierarchyRecursively(ref MainDS, ALedgerNumber, ref ImportedAccountNames, Root, ALedgerNumber.ToString(), ref AVerificationResult);
 
             foreach (AAccountRow accountRow in MainDS.AAccount.Rows)
             {
@@ -3047,14 +3060,40 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             }
                         }
 
+                        // remove fees receivable if they reference the account
+                        foreach (AFeesReceivableRow Row in MainDS.AFeesReceivable.Rows)
+                        {
+                            if ((Row.RowState != DataRowState.Deleted) && (Row.LedgerNumber == ALedgerNumber) && (Row.AccountCode == accountRow.AccountCode))
+                            {
+                                Row.Delete();
+                            }
+                        }
+
+                        // remove fees payable if they reference the account
+                        foreach (AFeesPayableRow Row in MainDS.AFeesPayable.Rows)
+                        {
+                            if ((Row.RowState != DataRowState.Deleted) && (Row.LedgerNumber == ALedgerNumber) && (Row.AccountCode == accountRow.AccountCode))
+                            {
+                                Row.Delete();
+                            }
+                        }
+
                         accountRow.Delete();
+                    }
+                    else
+                    {
+                        string ErrorMsg = String.Format(Catalog.GetString("There is a balance on account {0}"), accountRow.AccountCode);
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
                     }
                 }
             }
 
-            TVerificationResultCollection VerificationResult;
+            if (AVerificationResult.HasCriticalErrors)
+            {
+                return false;
+            }
 
-            return SaveGLSetupTDS(ALedgerNumber, ref MainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
+            return SaveGLSetupTDS(ALedgerNumber, ref MainDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
         }
 
         private static void CreateCostCentresRecursively(ref GLSetupTDS AMainDS,
@@ -3192,7 +3231,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// import a new Account hierarchy into an empty new ledger
-        private static void ImportDefaultAccountHierarchy(ref GLSetupTDS AMainDS, Int32 ALedgerNumber)
+        private static void ImportDefaultAccountHierarchy(ref GLSetupTDS AMainDS, Int32 ALedgerNumber, ref TVerificationResultCollection AVerificationResult)
         {
             XmlDocument doc;
             TYml2Xml ymlFile;
@@ -3232,7 +3271,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             StringCollection ImportedAccountNames = new StringCollection();
 
-            CreateAccountHierarchyRecursively(ref AMainDS, ALedgerNumber, ref ImportedAccountNames, root, ALedgerNumber.ToString());
+            CreateAccountHierarchyRecursively(ref AMainDS, ALedgerNumber, ref ImportedAccountNames, root, ALedgerNumber.ToString(), ref AVerificationResult);
         }
 
         private static void ImportDefaultCostCentreHierarchy(ref GLSetupTDS AMainDS, Int32 ALedgerNumber, string ALedgerName)
@@ -3927,8 +3966,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 costCentreTypesRow.Deletable = false;
                 MainDS.ACostCentreTypes.Rows.Add(costCentreTypesRow);
 
-
-                ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber);
+                ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber, ref AVerificationResult);
                 ImportDefaultCostCentreHierarchy(ref MainDS, ANewLedgerNumber, ALedgerName);
                 ImportDefaultMotivations(ref MainDS, ANewLedgerNumber);
                 ImportDefaultAdminGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
