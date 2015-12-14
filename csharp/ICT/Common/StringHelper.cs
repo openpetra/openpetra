@@ -527,23 +527,25 @@ namespace Ict.Common
 
             while (attempts > 0)
             {
-                try
+                string oldLine = line;
+                value = GetNextCSV(ref line, separator);
+
+                if (value != CSV_STRING_FORMAT_ERROR)
                 {
-                    value = GetNextCSV(ref line, separator);
                     attempts = 0;
                 }
-                catch (System.IndexOutOfRangeException)
+                else
                 {
                     // perhaps a problem to find the matching quote?
 
                     // do we have more lines available?
                     if (ALineCounter >= ALines.Count - 1)
                     {
-                        throw;
+                        return value;
                     }
 
                     ALineCounter++;
-                    line += " <br/> " + ALines[ALineCounter];
+                    line = oldLine + " <br/> " + ALines[ALineCounter];
                     attempts--;
                 }
             }
