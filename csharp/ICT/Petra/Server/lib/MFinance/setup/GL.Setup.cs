@@ -3182,7 +3182,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         out CanDelete,
                         out ErrorMsg);
 
-                    if (!CanDelete)
+                    // TODO check if we can overrule and delete eg. ILT cost centres.
+                    // see https://github.com/openpetra/openpetra/issues/120
+                    if (false && !CanDelete)
                     {
                         ErrorMsg = String.Format(Catalog.GetString("Unable to delete Cost Centre {0}"), costCentreRow.CostCentreCode) +
                                    "\r\n" +
@@ -3191,7 +3193,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         return false;
                     }
 
-                    costCentreRow.Delete();
+                    if (!CanDelete)
+                    {
+                        costCentreRow.CostCentreActiveFlag = false;
+                    }
+                    else
+                    {
+                        // TODO: need to delete "a_valid_ledger_number" as well if it exists
+                        costCentreRow.Delete();
+                    }
                 }
             }
 
