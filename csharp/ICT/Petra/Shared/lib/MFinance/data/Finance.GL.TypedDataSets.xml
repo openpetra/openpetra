@@ -1,6 +1,7 @@
 <PetraDataSets>
   <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MFinance.Gift.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MSysMan.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
   
@@ -69,6 +70,7 @@
         <Table sqltable="a_accounting_system_parameter"/>
         <Table sqltable="a_accounting_period"/>
         <Table sqltable="a_system_interface"/>
+        <Table sqltable="a_currency"/>
 
         <Table sqltable="a_account">
             <CustomField name="BankAccountFlag" type="bool"/>

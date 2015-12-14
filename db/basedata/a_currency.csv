@@ -7,6 +7,7 @@ BDT,Bangladeshi Taka,BDT,BD,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 BEF,Belgian Franc,BEF,BE,"->>,>>>,>>>,>>>,>>9",true,?,?,?,?,?
 BGL,Bulgarian Lev,BGL,BG,"->>,>>>,>>>,>>>,>>9",false,?,?,?,?,?
 BRL,Brazilian Real,BRL,BR,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
+BTC,Bitcoin,BTC,99,"->>>,>>>,>>>,>>9.99999999",false,?,?,?,?,?
 CAD,Canadian Dollar,CA$,CA,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 CHF,Swiss Franc,CHF,CH,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 CLP,Chilean Peso,CLP,CL,"->>,>>>,>>>,>>>,>>9",false,?,?,?,?,?
