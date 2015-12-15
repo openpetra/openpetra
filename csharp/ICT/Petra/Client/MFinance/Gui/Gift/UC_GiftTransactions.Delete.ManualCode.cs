@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 
@@ -94,7 +95,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool OnDeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
             bool DeletionSuccessful = false;
-            string OriginatingDetailRef = string.Empty;
+
+            List <string>OriginatingDetailRef = new List <string>();
 
             ACompletionMessage = string.Empty;
 
@@ -154,9 +156,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Speeds up deletion of larger gift sets
                 FMainDS.EnforceConstraints = false;
 
-                if (ARowToDelete.ModifiedDetailKey != null)
+                if ((ARowToDelete.ModifiedDetailKey != null) && (ARowToDelete.ModifiedDetailKey.Length > 0))
                 {
-                    OriginatingDetailRef = ARowToDelete.ModifiedDetailKey;
+                    OriginatingDetailRef.Add(ARowToDelete.ModifiedDetailKey);
                 }
 
                 //Delete current detail row
@@ -165,6 +167,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //If there existed (before the delete row above) more than one detail row, then no need to delete gift header row
                 if (DetailRowCount > 1)
                 {
+                    ACompletionMessage = Catalog.GetString("Gift Detail row deleted successfully!");
+
                     FGiftSelectedForDeletion = false;
 
                     foreach (DataRowView rv in FGiftDetailView)
@@ -183,6 +187,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
+                    ACompletionMessage = Catalog.GetString("Gift deleted successfully!");
+
                     GiftToDeleteTransNo = FGift.GiftTransactionNumber;
 
                     // Reduce all Gift Detail row Transaction numbers by 1 if they are greater then gift to be deleted
@@ -262,20 +268,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FBatchRow.LastGiftNumber--;
                 }
 
-                //Check if deleting a reversed gift detail
-                if (OriginatingDetailRef.StartsWith("|"))
-                {
-                    bool ok = TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, OriginatingDetailRef);
-
-                    if (!ok)
-                    {
-                        throw new Exception("Error in trying to reset Modified Detail field of the originating gift detail.");
-                    }
-                }
-
                 //Try to save changes
                 if (((TFrmGiftBatch) this.ParentForm).SaveChangesManual())
                 {
+                    //Check if have deleted a reversing gift detail
+                    if (OriginatingDetailRef.Count > 0)
+                    {
+                        TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, OriginatingDetailRef);
+                    }
+
                     //Clear current batch's gift data and reload from server
                     RefreshCurrentBatchGiftData(FBatchNumber);
                 }
@@ -283,8 +284,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     throw new Exception("Unable to save after deleting a gift!");
                 }
-
-                ACompletionMessage = Catalog.GetString("Gift row deleted successfully!");
 
                 DeletionSuccessful = true;
             }
@@ -358,8 +357,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void DeleteAllGifts(System.Object sender, EventArgs e)
         {
-            string completionMessage = string.Empty;
+            string CompletionMessage = string.Empty;
             int BatchNumberToClear = FBatchNumber;
+
+            List <string>OriginatingDetailRef = new List <string>();
 
             if ((FPreviouslySelectedDetailRow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
@@ -373,6 +374,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            //Backup the Dataset for reversion purposes
+            GiftBatchTDS BackupMainDS = (GiftBatchTDS)FMainDS.Copy();
+            BackupMainDS.Merge(FMainDS);
+
             if (MessageBox.Show(String.Format(Catalog.GetString(
                             "You have chosen to delete all gifts from batch ({0}).{1}{1}Are you sure you want to delete all?"),
                         BatchNumberToClear,
@@ -384,8 +389,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 try
                 {
+                    this.Cursor = Cursors.WaitCursor;
+
                     //Normally need to set the message parameters before the delete is performed if requiring any of the row values
-                    completionMessage = String.Format(Catalog.GetString("All gifts and details deleted successfully."),
+                    CompletionMessage = String.Format(Catalog.GetString("All gifts and details deleted successfully."),
                         FPreviouslySelectedDetailRow.BatchNumber);
 
                     //clear any transactions currently being editied in the Transaction Tab
@@ -396,7 +403,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     RefreshCurrentBatchGiftData(BatchNumberToClear);
 
                     //Now delete all gift data for current batch
-                    DeleteCurrentBatchGiftData(BatchNumberToClear);
+                    DeleteCurrentBatchGiftData(BatchNumberToClear, ref OriginatingDetailRef);
 
                     FBatchRow.BatchTotal = 0;
 
@@ -406,31 +413,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPetraUtilsObject.SetChangedFlag();
 
                     // save first, then post
-                    if (!((TFrmGiftBatch)ParentForm).SaveChangesManual())
+                    if (((TFrmGiftBatch)ParentForm).SaveChangesManual())
                     {
-                        SelectRowInGrid(1);
+                        //Check if have deleted a reversing gift detail
+                        if (OriginatingDetailRef.Count > 0)
+                        {
+                            TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, OriginatingDetailRef);
+                        }
 
-                        // saving failed, therefore do not try to cancel
-                        MessageBox.Show(Catalog.GetString("The emptied batch failed to save!"));
-                    }
-                    else
-                    {
-                        MessageBox.Show(completionMessage,
+                        MessageBox.Show(CompletionMessage,
                             "All Gifts Deleted.",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
                     }
+                    else
+                    {
+                        throw new Exception("Unable to save after deleting all gifts!");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    completionMessage = ex.Message;
                     MessageBox.Show(ex.Message,
                         "Deletion Error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
 
-                    //Return FMainDS to original state
-                    FMainDS.RejectChanges();
+                    //Revert to previous state
+                    FMainDS.Merge(BackupMainDS);
+                }
+                finally
+                {
+                    SetGiftDetailDefaultView();
+                    FFilterAndFindObject.ApplyFilter();
+                    this.Cursor = Cursors.Default;
                 }
             }
 
@@ -443,7 +458,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateRecordNumberDisplay();
         }
 
-        private void DeleteCurrentBatchGiftData(Int32 ABatchNumber)
+        private void DeleteCurrentBatchGiftData(Int32 ABatchNumber, ref List <string>AModifiedDetailKeyRows)
         {
             DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
 
@@ -457,6 +472,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             foreach (DataRowView dr in giftDetailView)
             {
+                AGiftDetailRow gdr = (AGiftDetailRow)dr.Row;
+
+                if ((gdr.ModifiedDetailKey != null) && (gdr.ModifiedDetailKey.Length > 0))
+                {
+                    AModifiedDetailKeyRows.Add(gdr.ModifiedDetailKey);
+                }
+
                 dr.Delete();
             }
 

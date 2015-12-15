@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -84,6 +85,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return CancellationSuccessful;
             }
 
+            int CurrentBatchNo = ACurrentBatchRow.BatchNumber;
+
             CancelMessage = String.Format(Catalog.GetString("Are you sure you want to cancel gift batch number: {0}?"),
                 ACurrentBatchRow.BatchNumber);
 
@@ -114,43 +117,59 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //clear any transactions currently being editied in the Transaction Tab
                 FMyForm.GetTransactionsControl().ClearCurrentSelection();
 
-                //Clear gifts and details etc for current and any other loaded batches
-                FMainDS.AGiftDetail.Clear();
-                FMainDS.AGift.Clear();
+                //Delete transactions
+                DataView GiftDV = new DataView(FMainDS.AGift);
+                DataView GiftDetailDV = new DataView(FMainDS.AGiftDetail);
 
-                //Load tables afresh
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactionsForBatch(FLedgerNumber, ACurrentBatchRow.BatchNumber));
-                FMainDS.AcceptChanges();
+                GiftDV.AllowDelete = true;
+                GiftDetailDV.AllowDelete = true;
 
-                //Delete gift details
-                for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
+                GiftDV.RowFilter = String.Format("{0}={1}",
+                    AGiftTable.GetBatchNumberDBName(),
+                    CurrentBatchNo);
+
+                GiftDV.Sort = AGiftTable.GetGiftTransactionNumberDBName() + " DESC";
+
+                GiftDetailDV.RowFilter = String.Format("{0}={1}",
+                    AGiftDetailTable.GetBatchNumberDBName(),
+                    CurrentBatchNo);
+
+                GiftDetailDV.Sort = String.Format("{0} DESC, {1} DESC",
+                    AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                    AGiftDetailTable.GetDetailNumberDBName());
+
+                foreach (DataRowView drv in GiftDetailDV)
                 {
+                    AGiftDetailRow gdr = (AGiftDetailRow)drv.Row;
+
                     // if the gift detail being cancelled is a reversed gift
-                    if (FMainDS.AGiftDetail[i].ModifiedDetail && !string.IsNullOrEmpty(FMainDS.AGiftDetail[i].ModifiedDetailKey))
+                    if (gdr.ModifiedDetail && !string.IsNullOrEmpty(gdr.ModifiedDetailKey))
                     {
-                        ModifiedDetailKeys.Add(FMainDS.AGiftDetail[i].ModifiedDetailKey);
+                        ModifiedDetailKeys.Add(gdr.ModifiedDetailKey);
                     }
 
-                    FMainDS.AGiftDetail[i].Delete();
+                    gdr.Delete();
                 }
 
-                //Delete gifts
-                for (int i = FMainDS.AGift.Count - 1; i >= 0; i--)
+                for (int i = 0; i < GiftDV.Count; i++)
                 {
-                    FMainDS.AGift[i].Delete();
+                    GiftDV.Delete(i);
                 }
 
                 //Batch is only cancelled and never deleted
                 ACurrentBatchRow.BatchTotal = 0;
+                ACurrentBatchRow.LastGiftNumber = 0;
                 ACurrentBatchRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
 
-                // FMyForm.SaveChanges only saves if there have been changes
-                FPetraUtilsObject.HasChanges = true;
+                FPetraUtilsObject.SetChangedFlag();
 
                 // save first
                 if (FMyForm.SaveChanges())
                 {
-                    TRemote.MFinance.Gift.WebConnectors.RemoveModifiedDetailOnCancel(FLedgerNumber, ModifiedDetailKeys);
+                    if (ModifiedDetailKeys.Count > 0)
+                    {
+                        TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, ModifiedDetailKeys);
+                    }
 
                     MessageBox.Show(CompletionMessage,
                         "Batch Cancelled",

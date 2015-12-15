@@ -1331,16 +1331,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if ((ARow != null) && FActiveOnly)
             {
+                bool isReversal = ((ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0));
+
                 // if selected gift has changed to being a reversal gift
-                if ((ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0)
-                    && !string.IsNullOrEmpty(cmbDetailMotivationGroupCode.Filter))
+                if (isReversal && !string.IsNullOrEmpty(cmbDetailMotivationGroupCode.Filter))
                 {
                     TFinanceControls.ChangeFilterMotivationGroupList(ref cmbDetailMotivationGroupCode, false);
                     cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode, -1);
                 }
                 // if selected gift has changed to being a non reversal gift
-                else if (!((ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0))
-                         && string.IsNullOrEmpty(cmbDetailMotivationGroupCode.Filter))
+                else if (!isReversal && string.IsNullOrEmpty(cmbDetailMotivationGroupCode.Filter))
                 {
                     TFinanceControls.ChangeFilterMotivationGroupList(ref cmbDetailMotivationGroupCode, true);
                     cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode, -1);
@@ -1421,7 +1421,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (ARow != null)
             {
-                if (!FActiveOnly || (ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0))
+                if (!FActiveOnly || ((ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0)))
                 {
                     return false;
                 }
@@ -1684,8 +1684,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void UpdateControlsProtection(AGiftDetailRow ARow)
         {
-            bool firstIsEnabled = (ARow != null) && (ARow.DetailNumber == 1) && !ViewMode;
+            bool firstIsEnabled = ((ARow != null) && (ARow.DetailNumber == 1) && !ViewMode);
             bool pnlDetailsEnabledState = false;
+
+            bool GiftIsReversalAdjustment = false;
 
             dtpDateEntered.Enabled = firstIsEnabled;
             txtDetailDonorKey.Enabled = firstIsEnabled;
@@ -1703,22 +1705,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (ARow == null)
             {
                 PnlDetailsProtected = (ViewMode
-                                       || !FBatchUnposted
-                                       );
+                                       || !FBatchUnposted);
             }
             else
             {
+                GiftIsReversalAdjustment = ((ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0));
+
                 PnlDetailsProtected = (ViewMode
                                        || !FBatchUnposted
-                                       || (ARow.GiftTransactionAmount < 0 && GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0)
-                                       );    // taken from old petra
+                                       || GiftIsReversalAdjustment);    // taken from old petra
             }
 
             pnlDetailsEnabledState = (!PnlDetailsProtected && grdDetails.Rows.Count > 1);
             pnlDetails.Enabled = pnlDetailsEnabledState;
 
-            btnDelete.Enabled = pnlDetailsEnabledState;
+            //Allow deletion of unposted reversal gift even if details panel is disabled
+            btnDelete.Enabled = (GiftIsReversalAdjustment && FBatchUnposted) ? true : pnlDetailsEnabledState;
             btnDeleteAll.Enabled = btnDelete.Enabled;
+
             btnNewDetail.Enabled = !PnlDetailsProtected;
             btnNewGift.Enabled = !PnlDetailsProtected;
 
@@ -1747,6 +1751,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     AGiftDetailRow prevDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
                         new object[] { ARow.LedgerNumber, ARow.BatchNumber, ARow.GiftTransactionNumber - 1, 1 });
+
                     return prevDetailRow.ModifiedDetail == true;
                 }
             }
@@ -1902,7 +1907,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            if ((ARow.RecipientField != 0)
+            if ((ARow[GiftBatchTDSAGiftDetailTable.GetRecipientFieldDBName()] != DBNull.Value)
+                && (ARow.RecipientField != 0)
                 && (ARow.RecipientKey != 0)
                 && ((int)ARow.RecipientField / 1000000 != ARow.LedgerNumber))
             {

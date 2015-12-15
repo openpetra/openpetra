@@ -147,7 +147,7 @@ namespace Ict.Tools.NAntTasks
         /// </summary>
         protected override void ExecuteTask()
         {
-			Console.WriteLine("     [echo] Starting GenerateNamespaceMap at {0}", DateTime.Now.ToLongTimeString());
+            Console.WriteLine("     [echo] Starting GenerateNamespaceMap at {0}", DateTime.Now.ToLongTimeString());
             Dictionary <string, string>NamespaceMap = new Dictionary <string, string>();
             Dictionary <string, TDetailsOfDll>UsingMap = new Dictionary <string, TDetailsOfDll>();
 
@@ -162,8 +162,8 @@ namespace Ict.Tools.NAntTasks
 
                 ParseCSFile(NamespaceMap, UsingMap, csfile);
             }
-			
-			Console.WriteLine("     [echo] Completed parsing {0} files at {1}", csfiles.Length, DateTime.Now.ToLongTimeString());
+
+            Console.WriteLine("     [echo] Completed parsing {0} files at {1}", csfiles.Length, DateTime.Now.ToLongTimeString());
 
             // fix all namespaces where the dll/exe is called differently than the namespace calculated from the directory
             bool change = true;
@@ -187,13 +187,13 @@ namespace Ict.Tools.NAntTasks
 
             Dictionary <string, string>ThirdPartyMap = ReadMap(FNamespaceMap3rdParty);
             Dictionary <string, TDetailsOfDll>dllMap = UsingNamespaceMapToDll(NamespaceMap, ThirdPartyMap, UsingMap, FShowWarnings);
-			Console.WriteLine("     [echo] Completed NamespaceMap ({0} items) and DllMap ({1} items) at {2}",
-				NamespaceMap.Count, dllMap.Count, DateTime.Now.ToLongTimeString());
+            Console.WriteLine("     [echo] Completed NamespaceMap ({0} items) and DllMap ({1} items) at {2}",
+                NamespaceMap.Count, dllMap.Count, DateTime.Now.ToLongTimeString());
 
             WriteNamespaceMap(FNamespaceMapFilename, NamespaceMap);
 
             WriteProjectMap(FDependencyMapFilename, dllMap);
-			Console.WriteLine("     [echo] Finished GenerateNamespaceMap at {0}", DateTime.Now.ToLongTimeString());
+            Console.WriteLine("     [echo] Finished GenerateNamespaceMap at {0}", DateTime.Now.ToLongTimeString());
         }
 
         private bool IgnoreNamespace(string ANamespace)
