@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             TVerificationResultCollection Messages = new TVerificationResultCollection();
 
-            int NumBudgetsToImport = 0;
+            int NumBudgetsImported = 0;
             int NumRecsUpdated = 0;
             int NumRowsFailed = 0;
 
@@ -139,7 +139,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         string ImportString = File.ReadAllText(OFDialog.FileName);
 
                         //TODO return the budget from the year, and -99 for fail
-                        NumBudgetsToImport = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
+                        NumBudgetsImported = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
                             ASelectedBudgetYear,
                             ImportString,
                             OFDialog.FileName,
@@ -149,12 +149,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             out NumRowsFailed,
                             out Messages);
 
-                        ShowMessages(Messages, NumBudgetsToImport, NumRecsUpdated, NumRowsFailed);
+                        ShowMessages(Messages, NumBudgetsImported, NumRecsUpdated, NumRowsFailed);
                     }
                 }
                 catch (Exception ex)
                 {
-                    NumBudgetsToImport = -1;
+                    NumBudgetsImported = -1;
                     MessageBox.Show(ex.Message, Catalog.GetString("Budget Import"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally
@@ -167,21 +167,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
 
                 // update grid
-                if (NumBudgetsToImport > 0)
+                if ((NumBudgetsImported - NumRowsFailed) > 0)
                 {
-                    FParentForm.UseWaitCursor = true;
-                    UpdateABudgetPeriodAmounts(AMainDS, ASelectedBudgetYear);
-                    FUserControl.SetBudgetDefaultView();
-                    FParentForm.UseWaitCursor = false;
+                    try
+                    {
+                        FParentForm.UseWaitCursor = true;
 
-                    FUserControl.SelectRowInGrid(1);
+                        UpdateABudgetPeriodAmounts(AMainDS, ASelectedBudgetYear);
+                        FUserControl.SetBudgetDefaultView();
+                    }
+                    finally
+                    {
+                        FParentForm.UseWaitCursor = false;
+                    }
 
                     FPetraUtilsObject.SetChangedFlag();
                 }
-                else if (NumBudgetsToImport <= 0)
-                {
-                    FUserControl.SelectRowInGrid(1);
-                }
+
+                FUserControl.SelectRowInGrid(1);
             }
         }
 

@@ -451,7 +451,6 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             decimal[] BudgetPeriods = new decimal[NumPeriods];
 
             int RowNumber = 0;
-            AFailedRows = 0;
 
             ABudgetTable BudgetTableExistingAndImported = new ABudgetTable();
 

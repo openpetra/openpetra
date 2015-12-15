@@ -150,19 +150,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private void GenerateBudget(Object sender, EventArgs e)
         {
             //Test
-            decimal baseBudgetAmountFromFunction = TRemote.MFinance.Budget.WebConnectors.GetBudgetPeriodAmount(145, 10);
+            decimal BaseBudgetAmountFromFunction = TRemote.MFinance.Budget.WebConnectors.GetBudgetPeriodAmount(145, 10);
 
-            MessageBox.Show("baseBudgetAmountFromFunction: " + baseBudgetAmountFromFunction.ToString());
-            //Test
+            string Msg = string.Empty;
 
-            string msg = string.Empty;
+            Msg = "You can either consolidate all of your budgets";
+            Msg += " or just those that have changed since the last consolidation." + "\n\r\n\r";
+            Msg += "Do you want to consolidate all of your budgets?";
 
-            msg = "You can either consolidate all of your budgets";
-            msg += " or just those that have changed since the last consolidation." + "\n\r\n\r";
-            msg += "Do you want to consolidate all of your budgets?";
-
-            bool consolidateAll =
-                (MessageBox.Show(msg, "Consolidate Budgets", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2,
+            bool ConsolidateAll =
+                (MessageBox.Show(Msg, "Consolidate Budgets", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2,
                      MessageBoxOptions.DefaultDesktopOnly, false) == DialogResult.Yes);
 
             //TODO: call code on the server. To be completed with Timo.
@@ -173,7 +170,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(FLedgerNumber);
 
-                TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, consolidateAll);
+                TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll);
 
                 string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
 
@@ -181,7 +178,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 string ForecastType = rbtThisYearsBudgets.Checked ? MFinanceConstants.FORECAST_TYPE_BUDGET : MFinanceConstants.FORECAST_TYPE_ACTUALS;
 
-                if (rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0)
+                if ((rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0))
                     || (rbtAllBudgets.Checked == true))
                 {
                     foreach (string BudgetItem in CheckedItems)
@@ -269,17 +266,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             ABudgetRow BudgetRow;
             string CheckedList = string.Empty;
 
-            for (int i = 0; i < BudgetTable.Count; i++)
+            try
             {
-                BudgetRow = (ABudgetRow)BudgetTable.Rows[i];
-                CheckedList += BudgetRow.BudgetSequence.ToString() + ",";
-            }
+                this.Cursor = Cursors.WaitCursor;
 
-            if (CheckedList.Length > 0)
+                for (int i = 0; i < BudgetTable.Count; i++)
+                {
+                    BudgetRow = (ABudgetRow)BudgetTable.Rows[i];
+                    CheckedList += BudgetRow.BudgetSequence.ToString() + ",";
+                }
+
+                if (CheckedList.Length > 0)
+                {
+                    CheckedList = CheckedList.Substring(0, CheckedList.Length - 1);
+                    clbCostCentreAccountCodes.SetCheckedStringList(CheckedList);
+                    clbCostCentreAccountCodes.SelectRowInGrid(1);
+                }
+            }
+            finally
             {
-                CheckedList = CheckedList.Substring(0, CheckedList.Length - 1);
-                clbCostCentreAccountCodes.SetCheckedStringList(CheckedList);
-                clbCostCentreAccountCodes.SelectRowInGrid(1);
+                this.Cursor = Cursors.Default;
             }
         }
     }
