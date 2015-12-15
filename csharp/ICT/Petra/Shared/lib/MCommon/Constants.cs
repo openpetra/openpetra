@@ -82,6 +82,9 @@ namespace Ict.Petra.Shared.MCommon
         /// <summary>date</summary>
         public const String OFFICESPECIFIC_DATATYPE_DATE = "date";
 
+        /// <summary>time</summary>
+        public const String OFFICESPECIFIC_DATATYPE_TIME = "time";
+
         /// <summary>integer</summary>
         public const String OFFICESPECIFIC_DATATYPE_INTEGER = "integer";
 
