@@ -27,10 +27,12 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 
+//using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using GNU.Gettext;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -40,6 +42,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private string FAccountCode;
         DataView FAnalysisTypesForCombo;
         Boolean FIamUpdating = false;
+        Boolean FUserWarnedOfAffects = false;
 
         /// <summary>Add this in the Status Box</summary>
         public delegate void UpdateParentStatus (String Message);
@@ -240,6 +243,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
+            if (ADeletionPerformed)
+            {
+                //Warn the user that if either GL Batch or Recurring GL Batch forms are open
+                // they must be closed and reopened for the changes to apply.
+                WarnUserAboutAffects();
+            }
         }
 
         private void OnDetailAnalysisTypeCodeChange(System.Object sender, EventArgs e)
@@ -277,6 +286,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // so now I need to re-select the item, wherever it's gone!
                 Int32 RowIdx = FMainDS.AAnalysisAttribute.DefaultView.Find(cmbDetailAnalTypeCode.Text);
                 grdDetails.SelectRowInGrid(RowIdx + 1);
+
+                //Warn the user that if either GL Batch or Recurring GL Batch forms are open
+                // they must be closed and reopened for the changes to apply.
+                WarnUserAboutAffects();
+            }
+        }
+
+        private void WarnUserAboutAffects()
+        {
+            if (!FUserWarnedOfAffects)
+            {
+                FUserWarnedOfAffects = true;
+
+                string userWarning = String.Format(Catalog.GetString(
+                        "Changes made to the Analysis Attributes of an account may affect" +
+                        " unposted GL Batches or existing recurring GL Batches!{0}{0}" +
+                        "Please make sure that no users have GL Batch or Recurring GL Batch" +
+                        " forms open currently before saving these Analysis Attributes changes."),
+                    Environment.NewLine);
+
+                MessageBox.Show(userWarning, "Analysis Attributes Changed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
