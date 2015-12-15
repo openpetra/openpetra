@@ -2047,11 +2047,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 // TODO                ViewUpperScreenPartExpanded(this, null);
             }
 
-            // Disable 'Local Partner Data' MenuItem if there are no Office Specific Data Labels available
-            if (!FMainDS.MiscellaneousData[0].OfficeSpecificDataLabelsAvailable)
-            {
-                mniMaintainLocalPartnerData.Enabled = false;
-            }
+            // Hide 'Local Partner Data' MenuItem if there are no Office Specific Data Labels available
+            mniMaintainLocalPartnerData.Visible = FMainDS.MiscellaneousData[0].OfficeSpecificDataLabelsAvailable;
 
             FPetraUtilsObject.SubmitChangesContinue = false;
             ApplySecurity();
