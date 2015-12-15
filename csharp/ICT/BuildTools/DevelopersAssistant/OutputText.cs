@@ -123,25 +123,24 @@ namespace Ict.Tools.DevelopersAssistant
         /// The main call to read and parse a log file, given its path.
         /// </summary>
         /// <param name="path">Path to the logfile to parse and append the result to the output streams</param>
-        /// <param name="NumFailures">Return the number of failed builds</param>
-        /// <param name="NumWarnings">Return the number of warnings and/or errors</param>
-        static public void AddLogFileOutput(string path, ref int NumFailures, ref int NumWarnings)
+        /// <param name="task">The task that is associated with the log</param>
+        static public void AddLogFileOutput(string path, NantTask task)
         {
             string result = ReadStreamFile(path);
 
             if (result == String.Empty)
             {
                 AppendText(OutputStream.Both, "\r\n~~~~ Warning!!! No output log file was found for this action.");
-                NumWarnings++;
+                task.NumWarnings++;
             }
             else
             {
-                int NumSucceeded;
-                ParseOutput(result, out NumSucceeded, ref NumFailures, ref NumWarnings);
+                ParseOutput(result, task);
 
                 AppendText(OutputStream.Verbose, result + "\r\n");
                 AppendText(OutputStream.Both,
-                    String.Format("~~~~~~~ {0} succeeded, {1} failed, {2} warning(s) or error(s)\r\n\r\n", NumSucceeded, NumFailures, NumWarnings));
+                    String.Format("~~~~~~~ {0} succeeded, {1} failed, {2} warning(s) or error(s)\r\n\r\n", task.NumSucceeded, task.NumFailures,
+                        task.NumWarnings));
 
                 try
                 {
@@ -257,9 +256,9 @@ namespace Ict.Tools.DevelopersAssistant
         }
 
         // Parse the text, looking for specific strings that indicate success, failure, errors, exceptions or warnings
-        static private void ParseOutput(string TextToParse, out int NumSucceeded, ref int NumFailures, ref int NumWarnings)
+        static private void ParseOutput(string TextToParse, NantTask Task)
         {
-            NumSucceeded = 0;
+            Task.NumSucceeded = 0;
 
             // We note the number of successes
             int p = 0;
@@ -270,7 +269,7 @@ namespace Ict.Tools.DevelopersAssistant
 
                 if (p > 0)
                 {
-                    NumSucceeded++;
+                    Task.NumSucceeded++;
                     p++;
                 }
             }
@@ -284,7 +283,7 @@ namespace Ict.Tools.DevelopersAssistant
 
                 if (p > 0)
                 {
-                    NumFailures++;
+                    Task.NumFailures++;
                     p++;
                 }
             }
@@ -318,7 +317,7 @@ namespace Ict.Tools.DevelopersAssistant
                                 && (TextToParse.Substring(p - 1, 14).CompareTo("\\ErrorCodes.cs") != 0)
                                 && (TextToParse.Substring(p, 15).CompareTo("ErrorCodeDoc.cs") != 0))
                             {
-                                NumWarnings++;
+                                Task.NumWarnings++;
                             }
                         }
                         else if (itemID == 2)
@@ -328,12 +327,12 @@ namespace Ict.Tools.DevelopersAssistant
                                 && (TextToParse.IndexOf("DetailsDialog", p, 24) == -1)
                                 && (TextToParse.IndexOf("LogFileDialog", p, 24) == -1))
                             {
-                                NumWarnings++;
+                                Task.NumWarnings++;
                             }
                         }
                         else
                         {
-                            NumWarnings++;
+                            Task.NumWarnings++;
                         }
 
                         p++;

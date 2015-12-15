@@ -45,6 +45,7 @@
 </patternset>
 
 <target name="compile" description="Copy Thirdparty DLLs to bin directory">
+  <echo message="Target ThirdParty compile started at: ${datetime::now()}" />         
   <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
     <copy todir="${dir.bin}">
       <fileset basedir="${foldername}">
@@ -53,6 +54,7 @@
       </fileset>
     </copy>
   </foreach>
+  <echo message="Target ThirdParty compile finished at: ${datetime::now()}" />         
 </target>
 
 <target name="prepareProjects"/>
