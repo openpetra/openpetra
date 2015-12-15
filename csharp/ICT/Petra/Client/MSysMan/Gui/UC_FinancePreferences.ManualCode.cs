@@ -33,7 +33,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
     /// manual methods for the generated window
     public partial class TUC_FinancePreferences
     {
-        private int FCurrentLedger;
+        //private int FCurrentLedger;
+        private int FInitiallySelectedLedger;
         private bool FNewDonorWarning = true;
         private bool FAutoSave = false;
         private bool FShowMoneyAsCurrency = true;
@@ -42,18 +43,21 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         private void InitializeManualCode()
         {
-            int DefaultLedger = TUserDefaults.GetInt32Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER);
+            //int DefaultLedger = TUserDefaults.GetInt32Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER);
 
-            FCurrentLedger = TLstTasks.CurrentLedger;
+            //FCurrentLedger = TLstTasks.CurrentLedger;
+            FInitiallySelectedLedger = TLstTasks.InitiallySelectedLedger;
 
-            if (DefaultLedger > 0)
-            {
-                cmbDefaultLedger.SetSelectedInt32(DefaultLedger);
-            }
-            else
-            {
-                cmbDefaultLedger.SetSelectedInt32(FCurrentLedger);
-            }
+            cmbDefaultLedger.SetSelectedInt32(FInitiallySelectedLedger);
+
+            /*if (DefaultLedger > 0)
+             * {
+             *  cmbDefaultLedger.SetSelectedInt32(DefaultLedger);
+             * }
+             * else
+             * {
+             *  cmbDefaultLedger.SetSelectedInt32(FCurrentLedger);
+             * }*/
 
             FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
             chkNewDonorWarning.Checked = FNewDonorWarning;
@@ -97,7 +101,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             int NewLedger = cmbDefaultLedger.GetSelectedInt32();
 
-            if (FCurrentLedger != NewLedger)
+            //if (FCurrentLedger != NewLedger)
+            if (FInitiallySelectedLedger != NewLedger)
             {
                 TUserDefaults.SetDefault(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER, NewLedger);
 

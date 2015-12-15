@@ -103,6 +103,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 return FFromPartnerKey;
             }
+            set
+            {
+                txtMergeFrom.Text = value.ToString();
+            }
         }
 
         /// <summary>

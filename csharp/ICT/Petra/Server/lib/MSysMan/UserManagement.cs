@@ -183,6 +183,43 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// <summary>
+        /// Authenticates a users password
+        /// </summary>
+        /// <param name="AUserID"></param>
+        /// <param name="APassword"></param>
+        /// <returns></returns>
+        [RequireModulePermission("NONE")]
+        public static bool PasswordAuthentication(String AUserID, String APassword)
+        {
+            TPetraPrincipal PetraPrincipal = null;
+
+            SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUserID, out PetraPrincipal);
+            string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+
+            if (UserAuthenticationMethod == "OpenPetraDBSUser")
+            {
+                if (TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
+                            UserDR.PasswordSalt)) != UserDR.PasswordHash)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                IUserAuthentication auth = TUserManagerWebConnector.LoadAuthAssembly(UserAuthenticationMethod);
+
+                string ErrorMessage;
+
+                if (!auth.AuthenticateUser(AUserID, APassword, out ErrorMessage))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// creates a user, either using the default authentication with the database or with the optional authentication plugin dll
         /// </summary>
         [RequireModulePermission("SYSMAN")]

@@ -361,6 +361,9 @@ namespace Ict.Common.Controls
             this.FIgnoreNewValues = false;
             this.FAllowBlankValue = false;
 
+            // standard font for combo boxes in OpenPetra
+            this.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, (Byte)0);
+
             // Set up our 'sticky' timer
             this.FStickySelectedValueChangedTimer.Enabled = false;
             this.FStickySelectedValueChangedTimer.Interval = 1000;

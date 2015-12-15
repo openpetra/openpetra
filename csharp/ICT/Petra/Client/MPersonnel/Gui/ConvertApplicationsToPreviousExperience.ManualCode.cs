@@ -171,65 +171,75 @@ namespace Ict.Petra.Client.MPersonnel.Gui
 
         private void ConvertApplications(System.Object sender, EventArgs e)
         {
-            // make sure there is data in the dataset (this should never be a problem anyway)
-            if ((FMainDS == null) || (FMainDS.PmShortTermApplication.Rows.Count == 0))
+            try
             {
-                MessageBox.Show(Catalog.GetString("There are no applications that meet the required criteria."),
-                    Catalog.GetString("No Applications"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Cursor = Cursors.WaitCursor;
 
-                return;
+                // make sure there is data in the dataset (this should never be a problem anyway)
+                if ((FMainDS == null) || (FMainDS.PmShortTermApplication.Rows.Count == 0))
+                {
+                    MessageBox.Show(Catalog.GetString("There are no applications that meet the required criteria."),
+                        Catalog.GetString("No Applications"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    return;
+                }
+
+                // converting to past experience
+                if (rbtConvert.Checked
+                    && (MessageBox.Show(string.Format(Catalog.GetString(
+                                    "This will create a Previous Experience record for every application in the grid.{0}{0}Do you want to continue?"),
+                                "\r\n"),
+                            Catalog.GetString("Convert Applications To Past Experience"),
+                            MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
+                {
+                    if (TRemote.MPersonnel.WebConnectors.ConvertApplicationsToPreviousExperience(FMainDS))
+                    {
+                        MessageBox.Show(string.Format(Catalog.GetPluralString(
+                                    "1 application has been successfully converted into a Previous Experience record.",
+                                    "All {0} applications have been successfully converted into Previous Experience records.",
+                                    FRecordCount), FRecordCount),
+                            Catalog.GetString("Convert Applications To Past Experience"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        LoadDataGrid(true);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Conversion failed! No new Past Experience records were created."),
+                            Catalog.GetString("Convert Applications To Past Experience"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                // removing from past experience
+                else if (MessageBox.Show(string.Format(Catalog.GetString(
+                                     "This will delete all Previous Experience records that were created from the applications in the grid.{0}{0}Do you want to continue?"),
+                                 "\r\n"),
+                             Catalog.GetString("Remove Applications From Past Experience"),
+                             MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    if (TRemote.MPersonnel.WebConnectors.RemoveApplicationsFromPreviousExperience(FMainDS))
+                    {
+                        MessageBox.Show(string.Format(Catalog.GetPluralString(
+                                    "Previous Experience records have successfully been removed from 1 application.",
+                                    "Previous Experience records have successfully been removed from all {0} applications.",
+                                    FRecordCount), FRecordCount),
+                            Catalog.GetString("Remove Applications From Past Experience"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        LoadDataGrid(true);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Operation failed! No Past Experience records were removed."),
+                            Catalog.GetString("Remove Applications From Past Experience"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
             }
-
-            // converting to past experience
-            if (rbtConvert.Checked
-                && (MessageBox.Show(string.Format(Catalog.GetString(
-                                "This will create a Previous Experience record for every application in the grid.{0}{0}Do you want to continue?"),
-                            "\r\n"),
-                        Catalog.GetString("Convert Applications To Past Experience"),
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
+            finally
             {
-                if (TRemote.MPersonnel.WebConnectors.ConvertApplicationsToPreviousExperience(FMainDS))
-                {
-                    MessageBox.Show(string.Format(Catalog.GetPluralString(
-                                "1 application has been successfully converted into a Previous Experience record.",
-                                "All {0} applications have been successfully converted into Previous Experience records.",
-                                FRecordCount), FRecordCount),
-                        Catalog.GetString("Convert Applications To Past Experience"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                    LoadDataGrid(true);
-                }
-                else
-                {
-                    MessageBox.Show(Catalog.GetString("Conversion failed! No new Past Experience records were created."),
-                        Catalog.GetString("Convert Applications To Past Experience"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            // removing from past experience
-            else if (MessageBox.Show(string.Format(Catalog.GetString(
-                                 "This will delete all Previous Experience records that were created from the applications in the grid.{0}{0}Do you want to continue?"),
-                             "\r\n"),
-                         Catalog.GetString("Remove Applications From Past Experience"),
-                         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-            {
-                if (TRemote.MPersonnel.WebConnectors.RemoveApplicationsFromPreviousExperience(FMainDS))
-                {
-                    MessageBox.Show(string.Format(Catalog.GetPluralString(
-                                "Previous Experience records have successfully been removed from 1 application.",
-                                "Previous Experience records have successfully been removed from all {0} applications.", FRecordCount), FRecordCount),
-                        Catalog.GetString("Remove Applications From Past Experience"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                    LoadDataGrid(true);
-                }
-                else
-                {
-                    MessageBox.Show(Catalog.GetString("Operation failed! No Past Experience records were removed."),
-                        Catalog.GetString("Remove Applications From Past Experience"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                this.Cursor = Cursors.Default;
             }
         }
 
@@ -245,7 +255,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
 
         private void EditApplication(System.Object sender, EventArgs e)
         {
-            ApplicationTDSPmShortTermApplicationRow SelectedRow = GetSelectedApplication();
+            PmShortTermApplicationRow SelectedRow = GetSelectedApplication();
 
             // Open the selected partner's Partner Edit screen at Personnel Applications
             TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
@@ -255,9 +265,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             frm.SelectApplication(SelectedRow.ApplicationKey, SelectedRow.RegistrationOffice);
         }
 
-        private ApplicationTDSPmShortTermApplicationRow GetSelectedApplication()
+        private PmShortTermApplicationRow GetSelectedApplication()
         {
-            return (ApplicationTDSPmShortTermApplicationRow)((DataRowView)grdApplications.SelectedDataRows[0]).Row;
+            return (PmShortTermApplicationRow)((DataRowView)grdApplications.SelectedDataRows[0]).Row;
         }
 
         private void FinishButtonPanelSetup()

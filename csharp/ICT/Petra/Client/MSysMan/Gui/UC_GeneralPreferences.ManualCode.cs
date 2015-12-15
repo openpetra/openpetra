@@ -142,23 +142,30 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
                 if (File.Exists(settingsPath))
                 {
-                    string msg = String.Format("{0}{1}{2}{3}{4}",
+                    string msg = String.Format("{0}{1}{1}{2}",
                         CommonFormsResourcestrings.StrReuseScreenPositionsMessage1,
-                        CommonFormsResourcestrings.StrReuseScreenPositionsMessage2,
                         Environment.NewLine,
-                        Environment.NewLine,
-                        CommonFormsResourcestrings.StrReuseScreenPositionsMessage3);
-                    DialogResult result = MessageBox.Show(msg,
+                        CommonFormsResourcestrings.StrReuseScreenPositionsMessage2);
+
+                    bool DoNotShowMessageBoxEverytime = false;
+
+                    TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
+
+                    // customise button text
+                    extendedMessageBox.YesButtonText = Catalog.GetString("Keep");
+                    extendedMessageBox.NoButtonText = Catalog.GetString("Discard");
+
+                    extendedMessageBox.ShowDialog(msg,
                         CommonFormsResourcestrings.StrReuseScreenPositionsTitle,
-                        MessageBoxButtons.YesNoCancel,
-                        MessageBoxIcon.Question);
+                        string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbYesNoCancel, TFrmExtendedMessageBox.TIcon.embiQuestion);
+                    TFrmExtendedMessageBox.TResult result = extendedMessageBox.GetResult(out DoNotShowMessageBoxEverytime);
 
-                    if (result == DialogResult.Cancel)
+                    if (result == TFrmExtendedMessageBox.TResult.embrCancel)
                     {
-                        return result;
+                        return DialogResult.Cancel;
                     }
-
-                    if (result == DialogResult.No)
+                    else if (result == TFrmExtendedMessageBox.TResult.embrNo)
                     {
                         try
                         {
@@ -172,8 +179,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
                                     ex.Message), TLoggingType.ToLogfile);
                         }
                     }
-
-                    if (result == DialogResult.Yes)
+                    else if (result == TFrmExtendedMessageBox.TResult.embrYes)
                     {
                         // Load the information we have already
                         PetraUtilsObject.LoadWindowPositionsFromFile();

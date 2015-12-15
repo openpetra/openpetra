@@ -1765,7 +1765,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     // Maybe use this rate, if its newer, or we don't have one yet
                     ADailyExchangeRateRow row = (ADailyExchangeRateRow)dv[0].Row;
 
-                    if ((SuggestedRate == 0.0m) || (row.DateEffectiveFrom > suggestedRateDate))
+                    if ((row.RateOfExchange != 0) && ((SuggestedRate == 0.0m) || (row.DateEffectiveFrom > suggestedRateDate)))
                     {
                         SuggestedRate = Math.Round(1 / row.RateOfExchange, 10);
                     }

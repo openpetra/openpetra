@@ -1933,7 +1933,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict, txtDetailRecipientKey.CurrentPartnerClass, null, null, null);
+                FValidationControlsDict, null, null, null);
 
             //It is necessary to validate the unbound control for date entered. This requires us to pass the control.
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
@@ -1966,11 +1966,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if ((txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
                     && (MessageBox.Show(Catalog.GetString("No valid Gift Destination exists for ") +
                             FPreviouslySelectedDetailRow.RecipientDescription +
-                            " (" + FPreviouslySelectedDetailRow.RecipientKey + ").\n\n" +
+                            " (" + FPreviouslySelectedDetailRow.RecipientKey.ToString("0000000000") + ").\n\n" +
                             string.Format(Catalog.GetString("A Gift Destination will need to be assigned to this Partner before" +
                                     " this gift can be saved with the Motivation Group '{0}'." +
                                     " Would you like to do this now?"), MFinanceConstants.MOTIVATION_GROUP_GIFT),
-                            Catalog.GetString("No valid Gift Destination"),
+                            Catalog.GetString("No Valid Gift Destination"),
                             MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes))
                 {
                     OpenGiftDestination(this, null);
@@ -1981,7 +1981,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                          "The Unit Partner {0} has not been allocated a Parent Field that can receive gifts. " +
                                          "This will need to be changed before this gift can be saved with the Motivation Group '{1}'.\n\n" +
                                          "Would you like to do this now?"),
-                                     "'" + FPreviouslySelectedDetailRow.RecipientDescription + "' (" + FPreviouslySelectedDetailRow.RecipientKey +
+                                     "'" + FPreviouslySelectedDetailRow.RecipientDescription + "' (" +
+                                     FPreviouslySelectedDetailRow.RecipientKey.ToString("0000000000") +
                                      ")",
                                      MFinanceConstants.MOTIVATION_GROUP_GIFT),
                                  Catalog.GetString("Problem with Unit's Parent Field"),

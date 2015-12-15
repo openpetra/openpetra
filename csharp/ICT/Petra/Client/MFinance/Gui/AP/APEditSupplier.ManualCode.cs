@@ -82,6 +82,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 TFinanceControls.InitialiseAccountList(ref cmbDefaultBankAccount, FLedgerNumber, true, false, false, true);
                 TFinanceControls.InitialiseAccountList(ref cmbExpenseAccount, FLedgerNumber, true, false, false, false);
                 TFinanceControls.InitialiseCostCentreList(ref cmbCostCentre, FLedgerNumber, true, false, false, false);
+
+                cmbAPAccount.ColumnWidthCol2 = 280;
+                cmbDefaultBankAccount.ColumnWidthCol2 = 280;
+                cmbCostCentre.ColumnWidthCol2 = 280;
+                cmbExpenseAccount.ColumnWidthCol2 = 280;
             }
         }
 

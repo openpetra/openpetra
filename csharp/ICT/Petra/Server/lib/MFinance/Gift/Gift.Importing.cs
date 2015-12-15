@@ -457,10 +457,13 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                                         int messageCountBeforeValidate = preParseMessageCount;
 
+                                        // get recipient class
                                         TPartnerClass RecipientClass;
                                         string RecipientDescription;
                                         TPartnerServerLookups.GetPartnerShortName(giftDetails.RecipientKey, out RecipientDescription,
                                             out RecipientClass);
+                                        GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)giftDetails;
+                                        Row.RecipientClass = RecipientClass.ToString();
 
                                         // Do our standard validation on this gift
                                         AGiftValidation.Validate(this, gift, ref Messages, EmptyControlsDict);
@@ -470,8 +473,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                                         ImportMessage = Catalog.GetString("Validating the gift details data");
 
                                         AGiftDetailValidation.Validate(this, giftDetails, ref Messages, EmptyControlsDict);
-                                        TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, (GiftBatchTDSAGiftDetailRow)giftDetails,
-                                            ref Messages, EmptyControlsDict, RecipientClass, null, CostCentreTable, AccountTable,
+                                        TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, Row,
+                                            ref Messages, EmptyControlsDict, null, CostCentreTable, AccountTable,
                                             MotivationGroupTable, MotivationDetailTable, MailingTable, giftDetails.RecipientKey);
 
                                         // Fix up the messages
@@ -950,6 +953,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     TPartnerClass RecipientClass;
                                     string RecipientDescription;
                                     TPartnerServerLookups.GetPartnerShortName(giftDetails.RecipientKey, out RecipientDescription, out RecipientClass);
+                                    GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)giftDetails;
+                                    Row.RecipientClass = RecipientClass.ToString();
 
                                     // Do our standard validation on this gift
                                     AGiftValidation.Validate(this, gift, ref Messages, EmptyControlsDict);
@@ -959,8 +964,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     ImportMessage = Catalog.GetString("Validating the gift details data");
 
                                     AGiftDetailValidation.Validate(this, giftDetails, ref Messages, EmptyControlsDict);
-                                    TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, (GiftBatchTDSAGiftDetailRow)giftDetails,
-                                        ref Messages, EmptyControlsDict, RecipientClass, null, CostCentreTable, AccountTable,
+                                    TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, Row,
+                                        ref Messages, EmptyControlsDict, null, CostCentreTable, AccountTable,
                                         MotivationGroupTable, MotivationDetailTable, MailingTable, giftDetails.RecipientKey);
 
                                     // Fix up the messages

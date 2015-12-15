@@ -386,6 +386,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 ACurrentDetailRow.RecipientKey = APartnerKey;
                 ACurrentDetailRow.RecipientDescription = APartnerShortName;
+                ACurrentDetailRow.RecipientClass = ATxtDetailRecipientKey.CurrentPartnerClass.ToString();
 
                 APetraUtilsObject.SuppressChangeDetection = true;
 

@@ -113,7 +113,7 @@ RootNode:
         cmbDetailAttributeTypeValueKind: 
             Label: &Value Is
             Tooltip: Describes the kind (type) of Value that the Partner Contact Detail records hold that are linked to this Contact Type.
-            Width: 150
+            Width: 160
             OptionalValues: [=Plain Text, E-Mail Address, Hyperlink (Fixed), Hyperlink With Value, Skype ID]
             OnChange: EnableDisableDetailHyperlinkFormatTextBox
         txtDetailHyperlinkFormat:

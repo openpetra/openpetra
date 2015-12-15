@@ -404,6 +404,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// <param name="APartnerKeysTable"></param>
         /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
         /// <param name="AAddressFilterAdded">true if location key fields exist in APartnerKeysTable</param>
+        /// <param name="AIgnoreDuplicates"></param>
         /// <returns>True if the new Extract was created, otherwise false.</returns>
         public static bool CreateExtractFromListOfPartnerKeys(
             String AExtractName,
@@ -411,19 +412,20 @@ namespace Ict.Petra.Server.MPartner.Extracts
             out Int32 ANewExtractId,
             DataTable APartnerKeysTable,
             Int32 APartnerKeyColumn,
-            bool AAddressFilterAdded)
+            bool AAddressFilterAdded,
+            bool AIgnoreDuplicates = true)
         {
             if (AAddressFilterAdded)
             {
                 // if address filter was added then site key is in third and location in fourth column
                 return CreateExtractFromListOfPartnerKeys(AExtractName, AExtractDescription, out ANewExtractId,
-                    APartnerKeysTable, APartnerKeyColumn, 2, 3);
+                    APartnerKeysTable, APartnerKeyColumn, 2, 3, AIgnoreDuplicates);
             }
             else
             {
                 // if no address filter was added (no location keys were added): set location and site key to -1
                 return CreateExtractFromListOfPartnerKeys(AExtractName, AExtractDescription, out ANewExtractId,
-                    APartnerKeysTable, APartnerKeyColumn, -1, -1);
+                    APartnerKeysTable, APartnerKeyColumn, -1, -1, AIgnoreDuplicates);
             }
         }
 
@@ -438,6 +440,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
         /// <param name="ASiteKeyColumn">number of the column that contains the site keys</param>
         /// <param name="ALocationKeyColumn">number of the column that contains the location keys</param>
+        /// <param name="AIgnoreDuplicates"></param>
         /// <returns>True if the new Extract was created, otherwise false.</returns>
         public static bool CreateExtractFromListOfPartnerKeys(
             String AExtractName,
@@ -446,7 +449,8 @@ namespace Ict.Petra.Server.MPartner.Extracts
             DataTable APartnerKeysTable,
             Int32 APartnerKeyColumn,
             Int32 ASiteKeyColumn,
-            Int32 ALocationKeyColumn)
+            Int32 ALocationKeyColumn,
+            bool AIgnoreDuplicates = true)
         {
             bool ReturnValue = false;
             bool ExtractAlreadyExists;
@@ -462,7 +466,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             if (ReturnValue)
             {
                 ExtendExtractFromListOfPartnerKeys(ANewExtractId, APartnerKeysTable, APartnerKeyColumn,
-                    ASiteKeyColumn, ALocationKeyColumn, true);
+                    ASiteKeyColumn, ALocationKeyColumn, AIgnoreDuplicates);
             }
 
             return ReturnValue;

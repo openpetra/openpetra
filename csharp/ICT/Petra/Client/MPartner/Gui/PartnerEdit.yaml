@@ -86,12 +86,12 @@ RootNode:
     Menu:
         mniFile: 
             mniFileNewPartner: {Label=&New Partner..., ShortcutKeys=Keys.N | Keys.Control, Action=actNewPartner, Order=AlwaysFirst}
-            mniFileNewPartnerWithShepherd: {Label: N&ew Partner (Shepherd), Action=actFileNewPartnerWithShepherd, Order=AlwaysFirst, Image: NewPartner.ico}
-                mniFileNewPartnerWithShepherdPerson:
-                mniFileNewPartnerWithShepherdFamily:
-                mniFileNewPartnerWithShepherdChurch:
-                mniFileNewPartnerWithShepherdOrganisation:
-                mniFileNewPartnerWithShepherdUnit:
+#            mniFileNewPartnerWithShepherd: {Label: N&ew Partner (Shepherd), Action=actFileNewPartnerWithShepherd, Order=AlwaysFirst, Image: NewPartner.ico}
+#                mniFileNewPartnerWithShepherdPerson:
+#                mniFileNewPartnerWithShepherdFamily:
+#                mniFileNewPartnerWithShepherdChurch:
+#                mniFileNewPartnerWithShepherdOrganisation:
+#                mniFileNewPartnerWithShepherdUnit:
             mniFileDeactivatePartner:
             mniFileDeletePartner:
             mniSeparator:

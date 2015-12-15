@@ -3367,10 +3367,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if (RecipientRow != null)
                     {
                         giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
+                        giftDetail.RecipientClass = RecipientRow.PartnerClass;
                     }
                     else
                     {
                         giftDetail.RecipientDescription = "INVALID";
+                        giftDetail.RecipientClass = string.Empty;
                     }
 
                     PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
@@ -3638,10 +3640,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if (RecipientRow != null)
                     {
                         giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
+                        giftDetail.RecipientClass = RecipientRow.PartnerClass;
                     }
                     else
                     {
                         giftDetail.RecipientDescription = "INVALID";
+                        giftDetail.RecipientClass = string.Empty;
                     }
 
                     PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
@@ -4094,7 +4098,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (giftDetail.GiftTransactionAmount >= 0)
                 {
                     // The recipient ledger number must not be 0 if the motivation group is 'GIFT'
-                    if ((giftDetail.IsRecipientLedgerNumberNull() || (giftDetail.RecipientLedgerNumber == 0))
+                    if ((giftDetail.RecipientClass == TPartnerClass.FAMILY.ToString())
+                        && (giftDetail.IsRecipientLedgerNumberNull() || (giftDetail.RecipientLedgerNumber == 0))
                         && (giftDetail.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT))
                     {
                         AVerifications.Add(

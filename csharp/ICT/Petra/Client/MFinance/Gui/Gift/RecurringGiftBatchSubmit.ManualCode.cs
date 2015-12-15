@@ -34,6 +34,7 @@ using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.Setup;
 
@@ -243,6 +244,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 Catalog.GetString("Success"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
+
+            // refresh gift batch screen
+            TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcRefreshGiftBatches, this.ToString());
+            TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
 
             Close();
         }

@@ -226,11 +226,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             SetupDataGridVisualAppearance();
         }
 
-        private void GrdPartnerTypes_Click(System.Object Sender, System.EventArgs e)
-        {
-            FLogic.ChangeCheckedStateForRow(grdPartnerTypes.MouseCellPosition.Row - 1);
-        }
-
         private void GrdPartnerTypes_EnterKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
             FLogic.ChangeCheckedStateForRow(e.Row);
@@ -239,6 +234,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void GrdPartnerTypes_SpaceKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
             FLogic.ChangeCheckedStateForRow(e.Row);
+
+            // I'm not entirely sure why...
+            // but without this line a checkbox is not updated when it is first clicked with the mouse and then the spacebar is pressed
+            grdPartnerTypes.Refresh();
         }
 
         /// <summary>

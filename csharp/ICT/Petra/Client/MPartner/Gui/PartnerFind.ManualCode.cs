@@ -213,11 +213,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 mniClose.Enabled = true;
                 mniFileRecentPartners.Enabled = true;
                 mniFileNewPartner.Enabled = true;
-                mniFileNewPartnerWithShepherd.Enabled = true;
-                mniFileNewPartnerWithShepherdFamily.Enabled = true;
-                mniFileNewPartnerWithShepherdChurch.Enabled = true;
-                mniFileNewPartnerWithShepherdOrganisation.Enabled = true;
-                mniFileNewPartnerWithShepherdUnit.Enabled = true;
+                //mniFileNewPartnerWithShepherd.Enabled = true;
+                //mniFileNewPartnerWithShepherdFamily.Enabled = true;
+                //mniFileNewPartnerWithShepherdChurch.Enabled = true;
+                //mniFileNewPartnerWithShepherdOrganisation.Enabled = true;
+                //mniFileNewPartnerWithShepherdUnit.Enabled = true;
                 mniFileImportPartner.Enabled = true;
                 mniFileMergePartners.Enabled = true;
             }

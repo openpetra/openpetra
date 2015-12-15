@@ -144,6 +144,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
             "and reopen.");
         private static readonly string StrCannotPrintPartnerTitle = Catalog.GetString("Cannot print a Partner with unsaved changes");
+
+        /// <summary> Inform user that this will display the gift destination for the partner's family. </summary>
+        public static readonly string StrGiftDestinationForPerson = Catalog.GetString(
+            "Gift Destination records are held for Family partners only.{0}" +
+            "This screen will display all Gift Destination records for the Family of {1}.");
+
 // TODO        private static readonly string StrDownloadVideoTutorialTitle = Catalog.GetString("Download Video Tutorial");
 // TODO        private static readonly string StrDownloadVideoTutoriaManuallTitle = Catalog.GetString("Manual Download of Video Tutorial");
 // TODO        private static readonly string StrVideoTutorialTitle = Catalog.GetString("Video Tutorial for Partner Edit Screen");
@@ -2472,8 +2478,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(
                     FPetraUtilsObject.GetForm(), ((PPersonRow)FMainDS.PPerson.Rows[0]).FamilyKey);
 
-                MessageBox.Show(string.Format(Catalog.GetString("Gift Destination records are held for Family partners only.{0}" +
-                            "This screen will display all Gift Destination records for the Family of {1}."),
+                MessageBox.Show(string.Format(StrGiftDestinationForPerson,
                         "\n\n", ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerShortName),
                     Catalog.GetString("Gift Destination"),
                     MessageBoxButtons.OK, MessageBoxIcon.Information);

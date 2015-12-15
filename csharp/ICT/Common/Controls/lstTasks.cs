@@ -43,6 +43,7 @@ namespace Ict.Common.Controls
         private static string FUserId;
         private static TLstFolderNavigation.CheckAccessPermissionDelegate FHasAccessPermission;
         private static int FCurrentLedger = -1;
+        private static int FInitiallySelectedLedger = -1;
         private static TOpenNewOrExistingForm FOpenNewOrExistingForm;
         private static bool FTaxDeductiblePercentageEnabled = false;
 
@@ -378,6 +379,21 @@ namespace Ict.Common.Controls
             set
             {
                 FCurrentLedger = value;
+            }
+        }
+
+        /// <summary>
+        /// The initially selected ledger (either a user default or the first ledger in the list)
+        /// </summary>
+        public static int InitiallySelectedLedger
+        {
+            get
+            {
+                return FInitiallySelectedLedger;
+            }
+            set
+            {
+                FInitiallySelectedLedger = value;
             }
         }
 

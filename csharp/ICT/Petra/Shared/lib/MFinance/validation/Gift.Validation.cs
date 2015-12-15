@@ -402,7 +402,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
-        /// <param name="ARecipientPartnerClass">Recipient's Partner Class (used for Motivation Detail validation).</param>
         /// <param name="ASetupForILT">Optional - Is the recipient set up for inter-ledger transfers.</param>
         /// <param name="ACostCentres">Optional - a CostCentres table.  Is required for import validation. </param>
         /// <param name="AAccounts">Optional - a Accounts table.  Is required for import validation. </param>
@@ -415,7 +414,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
             GiftBatchTDSAGiftDetailRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection,
             TValidationControlsDict AValidationControlsDict,
-            TPartnerClass? ARecipientPartnerClass,
             bool? ASetupForILT = null,
             ACostCentreTable ACostCentres = null,
             AAccountTable AAccounts = null,
@@ -599,29 +597,51 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
-            // Motivation Detail must not be 'Field' or 'Keymin' if the recipient is a Family partner
+            // Motivation Detail must not be 'Support' if the recipient is a Unit partner or blank.
+            // Motivation Detail must not be 'Field' or 'Keymin' if the recipient is a Family partner.
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMotivationDetailCodeId];
             ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (!ARow.IsMotivationDetailCodeNull()
-                && (ARow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT) && (ARecipientPartnerClass != null)
-                && ((ARow.MotivationDetailCode == MFinanceConstants.GROUP_DETAIL_FIELD)
-                    || (ARow.MotivationDetailCode == MFinanceConstants.GROUP_DETAIL_KEY_MIN))
-                && (ARecipientPartnerClass == TPartnerClass.FAMILY))
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                if (!ARow.IsMotivationDetailCodeNull()
+                    && (ARow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                    // blank and units cannot have SUPPORT detail
+                    && ((((ARow.RecipientKey == 0) || (ARow.RecipientClass == TPartnerClass.UNIT.ToString()))
+                         && (ARow.MotivationDetailCode == MFinanceConstants.GROUP_DETAIL_SUPPORT))
+                        // families cannot have FIELD or KEYMIN detail
+                        || ((ARow.RecipientClass == TPartnerClass.FAMILY.ToString())
+                            && ((ARow.MotivationDetailCode == MFinanceConstants.GROUP_DETAIL_FIELD)
+                                || (ARow.MotivationDetailCode == MFinanceConstants.GROUP_DETAIL_KEY_MIN)))))
                 {
-                    VerificationResult = new TVerificationResult(AContext,
-                        String.Format(Catalog.GetString("Motivation Detail code '{0}' is not allowed for Family recipients."),
-                            ARow.MotivationDetailCode),
-                        TResultSeverity.Resv_Critical);
+                    string Message = string.Empty;;
 
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext,
-                            new TScreenVerificationResult(VerificationResult, ValidationColumn, ValidationControlsData.ValidationControl),
-                            ValidationColumn, true))
+                    if (ARow.RecipientKey == 0)
+                    {
+                        Message = Catalog.GetString("The Motivation Detail 'SUPPORT' is not allowed for gifts with an unspecified recipient.");
+                    }
+                    else if (ARow.RecipientClass == TPartnerClass.UNIT.ToString())
+                    {
+                        Message = Catalog.GetString("The Motivation Detail 'SUPPORT' is not allowed for gifts with a UNIT recipient.");
+                    }
+                    else if (ARow.RecipientClass == TPartnerClass.FAMILY.ToString())
+                    {
+                        Message = string.Format(Catalog.GetString(
+                                "The Motivation Detail '{0}' is not allowed for gifts with a FAMILY recipient."),
+                            ARow.MotivationDetailCode);
+                    }
+
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                            ValidationContext,
+                            new TScreenVerificationResult(AContext,
+                                ValidationColumn,
+                                Message,
+                                ValidationControlsData.ValidationControl,
+                                TResultSeverity.Resv_Critical),
+                            ValidationColumn))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -1231,7 +1251,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ARecipientField">Optional</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateRecurringGiftDetailManual(object AContext,
-            ARecurringGiftDetailRow ARow,
+            GiftBatchTDSARecurringGiftDetailRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection,
             TValidationControlsDict AValidationControlsDict,
             Int64 ARecipientField = -1)
@@ -1327,6 +1347,57 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
                     // Handle addition/removal to/from TVerificationResultCollection
                     if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
+            }
+
+            // Motivation Detail must not be 'Support' if the recipient is a Unit partner or blank.
+            // Motivation Detail must not be 'Field' or 'Keymin' if the recipient is a Family partner.
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMotivationDetailCodeId];
+            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (!ARow.IsMotivationDetailCodeNull()
+                    && (ARow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                    // blank and units cannot have SUPPORT detail
+                    && ((((ARow.RecipientKey == 0) || (ARow.RecipientClass == TPartnerClass.UNIT.ToString()))
+                         && (ARow.MotivationDetailCode == MFinanceConstants.GROUP_DETAIL_SUPPORT))
+                        // families cannot have FIELD or KEYMIN detail
+                        || ((ARow.RecipientClass == TPartnerClass.FAMILY.ToString())
+                            && ((ARow.MotivationDetailCode == MFinanceConstants.GROUP_DETAIL_FIELD)
+                                || (ARow.MotivationDetailCode == MFinanceConstants.GROUP_DETAIL_KEY_MIN)))))
+                {
+                    string Message = string.Empty;;
+
+                    if (ARow.RecipientKey == 0)
+                    {
+                        Message = Catalog.GetString("The Motivation Detail 'SUPPORT' is not allowed for gifts with an unspecified recipient.");
+                    }
+                    else if (ARow.RecipientClass == TPartnerClass.UNIT.ToString())
+                    {
+                        Message = Catalog.GetString("The Motivation Detail 'SUPPORT' is not allowed for gifts with a UNIT recipient.");
+                    }
+                    else if (ARow.RecipientClass == TPartnerClass.FAMILY.ToString())
+                    {
+                        Message = string.Format(Catalog.GetString(
+                                "The Motivation Detail '{0}' is not allowed for gifts with a FAMILY recipient."),
+                            ARow.MotivationDetailCode);
+                    }
+
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                            ValidationContext,
+                            new TScreenVerificationResult(AContext,
+                                ValidationColumn,
+                                Message,
+                                ValidationControlsData.ValidationControl,
+                                TResultSeverity.Resv_Critical),
+                            ValidationColumn))
                     {
                         VerifResultCollAddedCount++;
                     }

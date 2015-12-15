@@ -15,6 +15,7 @@
             <CustomField name="RecipientDescription" type="String"/>
             <CustomField name="RecipientField" type="Int64"/>
             <CustomField name="RecipientKeyMinistry" type="String"/>
+            <CustomField name="RecipientClass" type="String"/>
             <CustomField name="ReceiptNumber" type="Int32"/>
             <CustomField name="ReceiptPrinted" type="Boolean"/>
             <CustomField name="MethodOfGivingCode" type="String"/>
@@ -32,6 +33,7 @@
             <CustomField name="RecipientDescription" type="String"/>
             <CustomField name="RecipientField" type="Int64"/>
             <CustomField name="RecipientKeyMinistry" type="String"/>
+            <CustomField name="RecipientClass" type="String"/>
             <CustomField name="ReceiptNumber" type="Int32"/>
             <CustomField name="ReceiptPrinted" type="Boolean"/>
             <CustomField name="MethodOfGivingCode" type="String"/>

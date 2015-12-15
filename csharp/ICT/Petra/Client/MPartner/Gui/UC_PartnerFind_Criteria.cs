@@ -508,6 +508,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // create new datatable without any partnerkey duplicates (same bank with different locations)
             PBankTable ComboboxTable = new PBankTable();
+            bool CreateInactiveCode = false;
 
             foreach (BankTDSPBankRow Row in FBankDataset.PBank.Rows)
             {
@@ -518,6 +519,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     AddRow.BranchName = Row.BranchName;
                     AddRow.BranchCode = Row.BranchCode;
                     ComboboxTable.Rows.Add(AddRow);
+
+                    if (Row.BranchCode == SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ")
+                    {
+                        CreateInactiveCode = true;
+                    }
                 }
             }
 
@@ -528,12 +534,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("");
             ComboboxTable.Rows.Add(emptyRow);
 
-            // add inactive row
-            emptyRow = ComboboxTable.NewRow();
-            emptyRow[PBankTable.ColumnPartnerKeyId] = -2;
-            emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
-            emptyRow[PBankTable.ColumnBranchCodeId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ";
-            ComboboxTable.Rows.Add(emptyRow);
+            if (CreateInactiveCode)
+            {
+                // add inactive row
+                emptyRow = ComboboxTable.NewRow();
+                emptyRow[PBankTable.ColumnPartnerKeyId] = -2;
+                emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
+                emptyRow[PBankTable.ColumnBranchCodeId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ";
+                ComboboxTable.Rows.Add(emptyRow);
+            }
 
             // populate the bank name combo box
             cmbBankName.InitialiseUserControl(ComboboxTable,

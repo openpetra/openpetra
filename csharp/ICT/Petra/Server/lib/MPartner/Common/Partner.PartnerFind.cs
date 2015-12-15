@@ -36,6 +36,7 @@ using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner.Extracts;
@@ -1108,13 +1109,22 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
             int i = 0;
 
+            // false when doing a seatch from bank details tab
+            bool LocationInfoProvided = FullFindResultDT.Columns.Contains("p_site_key_n")
+                                        && FullFindResultDT.Columns.Contains("p_location_key_i");
+
             foreach (DataRow Row in FullFindResultDT.Rows)
             {
                 DataRow NewRow = PartnerKeysTable.NewRow();
                 NewRow[0] = i;
                 NewRow[1] = Row["p_partner_key_n"];
-                NewRow[2] = Row["p_site_key_n"];
-                NewRow[3] = Row["p_location_key_i"];
+
+                if (LocationInfoProvided)
+                {
+                    NewRow[2] = Row["p_site_key_n"];
+                    NewRow[3] = Row["p_location_key_i"];
+                }
+
                 PartnerKeysTable.Rows.Add(NewRow);
 
                 i++;
@@ -1142,7 +1152,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                         out AExtractID,
                         PartnerKeysTable,
                         1,
-                        true);
+                        LocationInfoProvided,
+                        false);
 
 //                  TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Added " + AddedPartners.ToString() + " Partners to the desired Extract!");
 

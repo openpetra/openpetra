@@ -344,6 +344,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui
                     Filters.Add("SUBSTRING(" + PmGeneralApplicationTable.GetGenApplicationStatusDBName() + ",1,1) <> 'R'");
                 }
 
+                Filters.Add("SUBSTRING(" + PmGeneralApplicationTable.GetGenApplicationStatusDBName() + ",1,1) <> 'P'");
+
                 for (int i = 0; i < Filters.Count; i++)
                 {
                     if ((i != 0) || (FiltersString.Length > 0))
@@ -356,7 +358,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
                     }
                 }
             }
-            else if (rbtDetailed.Checked)
+            else if (rbtDetailed.Checked && !string.IsNullOrEmpty(FDetailedStatuses))
             {
                 string[] DetailedStatuses = FDetailedStatuses.Split(',');
 

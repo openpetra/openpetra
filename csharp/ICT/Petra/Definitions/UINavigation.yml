@@ -167,7 +167,6 @@ OpenPetra:
                     General:
                         LedgerInfo: {Description: View general information about this ledger, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmGLInfo}
                         ForeignCurrencyAccountBalances: {Description:Display Foreign Currency Account Balances, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmForeignCurrencyAccountBalance}
-                        ForeignCurrencyRevaluation: {Description:Runs a Foreign Currency Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
                         #EnterTransactions:
                         #ImportTransactions:
                         #EditExistingTransactions:
@@ -180,6 +179,7 @@ OpenPetra:
                     PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
                         MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonth}
                         YearEnd: {Description:Close a year, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndYear}
+                        ForeignCurrencyRevaluation: {Description:Runs a Foreign Currency Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
 #                       AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}

@@ -45,6 +45,7 @@ namespace Ict.Common.Controls
     {
         private Ict.Common.Controls.TPnlCollapsible FCollapsibleNavigation = new TPnlCollapsible();
         private int FCurrentLedger = -1;
+        private int FInitiallySelectedLedger = -1;
         private bool FIsLedgerBasedModule = false;
         private bool FSuppressLedgerChangedEvent = false;
         private bool FIsConferenceBasedModule = false;
@@ -153,6 +154,21 @@ namespace Ict.Common.Controls
                 {
                     FCurrentLedger = value;
                 }
+            }
+        }
+
+        /// <summary>
+        /// The initially selected ledger (either a user default or the first ledger in the list)
+        /// </summary>
+        public int InitiallySelectedLedger
+        {
+            get
+            {
+                return FInitiallySelectedLedger;
+            }
+            set
+            {
+                FInitiallySelectedLedger = value;
             }
         }
 
@@ -355,6 +371,7 @@ namespace Ict.Common.Controls
             FCurrentTaskList.Statusbar = FStatusbar;
             FCurrentTaskList.Dock = DockStyle.Fill;
             TLstTasks.CurrentLedger = FCurrentLedger;
+            TLstTasks.InitiallySelectedLedger = FInitiallySelectedLedger;
 
             FDashboard.ShowTaskList(FCurrentTaskList);
 //            Invalidate();
