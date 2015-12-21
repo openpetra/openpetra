@@ -2848,7 +2848,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             AAccountRow NewAccount = null;
 
-            string AccountCode = TYml2Xml.GetElementName(ACurrentNode);
+            string AccountCode = TYml2Xml.GetElementName(ACurrentNode).ToUpper();
 
             AImportedAccountNames.Add(AccountCode);
 
@@ -3104,7 +3104,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             ACostCentreRow newCostCentre = null;
 
-            string CostCentreCode = TYml2Xml.GetElementName(ACurrentNode);
+            string CostCentreCode = TYml2Xml.GetElementName(ACurrentNode).ToUpper();
 
             AImportedCostCentreCodes.Add(CostCentreCode);
 
@@ -3325,7 +3325,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             AMotivationDetailFeeRow newMotivationDetailFee = null;
 
-            string MotivationDetailFeeCode = TYml2Xml.GetElementName(ACurrentNode);
+            string MotivationDetailFeeCode = TYml2Xml.GetElementName(ACurrentNode).ToUpper();
 
             // does this motivation detail fee already exist?
             DataRow existingMotivationDetailFee =
@@ -3350,7 +3350,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             AMotivationDetailRow newMotivationDetail = null;
 
-            string MotivationDetailCode = TYml2Xml.GetElementName(ACurrentNode);
+            string MotivationDetailCode = TYml2Xml.GetElementName(ACurrentNode).ToUpper();
 
             // does this motivation already exist?
             bool newRow = false;
@@ -3402,7 +3402,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             AMotivationGroupRow newMotivationGroup = null;
 
-            string MotivationGroupCode = TYml2Xml.GetElementName(ACurrentNode);
+            string MotivationGroupCode = TYml2Xml.GetElementName(ACurrentNode).ToUpper();
 
             // does this motivation already exist?
             bool newRow = false;
@@ -3515,7 +3515,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             foreach (XmlNode child in root)
             {
-                FeeCode = TYml2Xml.GetElementName(child);
+                FeeCode = TYml2Xml.GetElementName(child).ToUpper();
 
                 IsFeesPayable = (TYml2Xml.GetAttribute(child, "feespayable") == "yes"
                                  || TYml2Xml.GetAttribute(child, "feespayable") == "true");
