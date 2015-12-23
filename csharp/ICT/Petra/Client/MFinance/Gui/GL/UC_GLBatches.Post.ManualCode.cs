@@ -172,7 +172,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                       Utilities.GetMethodSignature(),
                                       Environment.NewLine,
                                       ex.Message,
-                                      ex.InnerException.Message));
+                                      ex.InnerException!=null?ex.InnerException.Message:String.Empty));
 
                     TLogging.Log(msg);
                     MessageBox.Show(msg, "Post GL Batch Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

@@ -350,6 +350,12 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         [RequireModulePermission("none")]
         public static Int32 GenerateReportOnClient(String ReportName, String Params)
         {
+            // Standalone does not support ClientTasks yet
+            if (DomainManager.CurrentClient == null)
+            {
+                return -1;
+            }
+
             return DomainManager.CurrentClient.FTasksManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_REPORT, ReportName, Params,
                 null, null, null, 1);
         }
