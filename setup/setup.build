@@ -622,7 +622,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
             </items>
         </in>
         <do>
-            <copy file="${filename}" tofile="${dir.setup}/sql30/${filename}"/>
+            <copy file="${filename}" tofile="${dir.setup}/sql30/${path::get-file-name(filename)}"/>
         </do>
     </foreach>
   </if>
