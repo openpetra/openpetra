@@ -105,11 +105,14 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\csharp\ThirdParty\OrientedTextControls\CustomControl.OrientedTextControls.dll
   File ..\..\..\delivery\bin\Ict.Common*dll
   File ..\..\..\delivery\bin\Ict.Petra.Client*dll
+  File ..\..\..\delivery\bin\Ict.Petra.Plugins.*.dll
   File ..\..\..\delivery\bin\Ict.Petra.Shared*dll
   File ..\..\..\delivery\bin\PetraClient.exe
   File ..\..\..\delivery\bin\Ict.Petra.Server*.dll
   File ..\..\..\delivery\bin\Ict.Petra.ServerAdmin*.dll
   File ..\..\..\tmp\UINavigation.yml
+  SetOutPath "$INSTDIR\bin30\Plugins"
+  File {#SETUP.DIR}\bin30\Plugins\*UINavigation.yml
   SetOutPath "$INSTDIR\bin30\de-DE"
   File ..\..\..\delivery\bin\de-DE\OpenPetra.resources.dll
   SetOutPath "$INSTDIR\bin30\es-ES"
