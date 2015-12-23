@@ -468,7 +468,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     </delete>
   </if>
 
-  <if test="${BuildArchive == 'client' || BuildArchive == 'standalone'}">
+  <if test="${BuildArchive == 'client' or BuildArchive == 'standalone'}">
     <foreach item="File" property="filename">
         <in>
             <items>
@@ -520,7 +520,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   </copy>
   <copy file="${dir.root}/LICENSE" tofile="${dir.setup}/LICENSE"/>
   
-  <if test="${BuildArchive != 'client' && BuildArchive != 'standalone'}">
+  <if test="${BuildArchive != 'client' and BuildArchive != 'standalone'}">
     <mkdir dir="${dir.setup}/asmx"/>
     <copy todir="${dir.setup}/asmx">
       <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/app/WebService">
@@ -608,7 +608,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/INSTALL"
                 tofile="${dir.setup}/INSTALL"/>
   </if>
-  <if test="${BuildArchive == 'server' || BuildArchive == 'standalone'}">
+  <if test="${BuildArchive == 'server' or BuildArchive == 'standalone'}">
     <copy todir="${dir.setup}/sql30">
       <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/sql/">
           <include name="*.sql" />
