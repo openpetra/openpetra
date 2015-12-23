@@ -98,6 +98,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <property name="CreateDBForPublicInstaller" value="true"/>
   <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
   <call target="translation" unless="${target::has-executed('translation')}"/>
+  <!-- make sure that the UINavigation and the sql files of the plugins are copied -->
+  <property name="BuildArchive" value="standalone" overwrite="true"/>
+  <call target="prepareSetupDirForTarFile"/>
   <call target="setupStandalone"/>
 </target> 
   
@@ -463,6 +466,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <include name="${dir.setup}/INSTALL" />
       </fileset>
     </delete>
+  </if>
+
+  <if test="${BuildArchive == 'client' || BuildArchive == 'standalone'}">
     <foreach item="File" property="filename">
         <in>
             <items>
@@ -474,9 +480,6 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
             <copy file="${filename}" tofile="${dir.setup}/bin30/Plugins/${pluginname}.UINavigation.yml"/>
         </do>
     </foreach>
-  </if>
-
-  <if test="${BuildArchive != 'server'}">
     <property name="UINavigation.file" value="${dir.root}/csharp/ICT/Petra/Definitions/UINavigation.yml.my"/>
     <if test="${file::exists(UINavigation.file)}">
       <copy file="${UINavigation.file}" tofile="${dir.setup}/bin30/UINavigation.yml" overwrite="true"/>
@@ -517,7 +520,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   </copy>
   <copy file="${dir.root}/LICENSE" tofile="${dir.setup}/LICENSE"/>
   
-  <if test="${BuildArchive != 'client'}">
+  <if test="${BuildArchive != 'client' && BuildArchive != 'standalone'}">
     <mkdir dir="${dir.setup}/asmx"/>
     <copy todir="${dir.setup}/asmx">
       <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/app/WebService">
@@ -576,17 +579,6 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       </fileset>
     </copy>
 
-    <copy todir="${dir.setup}/sql30">
-      <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/sql/">
-          <include name="*.sql" />
-          <include name="*.yml" />
-      </fileset>
-    </copy>
-    <copy todir="${dir.setup}/sql30">
-      <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/lib/MSysMan/DBUpgrades/">
-          <include name="*.sql" />
-      </fileset>
-    </copy>
 
     <copy todir="${dir.setup}/formletters30">
       <fileset basedir="${dir.root}/demodata/formletters/">
@@ -615,6 +607,31 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     </if>
     <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/INSTALL"
                 tofile="${dir.setup}/INSTALL"/>
+  </if>
+  <if test="${BuildArchive == 'server' || BuildArchive == 'standalone'}">
+    <copy todir="${dir.setup}/sql30">
+      <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/sql/">
+          <include name="*.sql" />
+          <include name="*.yml" />
+      </fileset>
+    </copy>
+    <foreach item="File" property="filename">
+        <in>
+            <items>
+                <include name="${dir.root}/csharp/ICT/Petra/Plugins/**/sql/*.sql" />
+            </items>
+        </in>
+        <do>
+            <copy file="${filename}" tofile="${dir.setup}/sql30/${filename}"/>
+        </do>
+    </foreach>
+  </if>
+  <if test="${BuildArchive == 'server'}">
+    <copy todir="${dir.setup}/sql30">
+      <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/lib/MSysMan/DBUpgrades/">
+          <include name="*.sql" />
+      </fileset>
+    </copy>
   </if>
 </target> 
 

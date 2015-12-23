@@ -105,7 +105,9 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\csharp\ThirdParty\OrientedTextControls\CustomControl.OrientedTextControls.dll
   File ..\..\..\delivery\bin\Ict.Common*dll
   File ..\..\..\delivery\bin\Ict.Petra.Client*dll
-  File ..\..\..\delivery\bin\Ict.Petra.Plugins.*.dll
+  File ..\..\..\delivery\bin\Ict.Petra.Plugins.*.Client.dll
+  File ..\..\..\delivery\bin\Ict.Petra.Plugins.*.Server.dll
+  File ..\..\..\delivery\bin\Ict.Petra.Plugins.*.data.dll
   File ..\..\..\delivery\bin\Ict.Petra.Shared*dll
   File ..\..\..\delivery\bin\PetraClient.exe
   File ..\..\..\delivery\bin\Ict.Petra.Server*.dll
