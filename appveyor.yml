@@ -11,6 +11,7 @@ platform: x86
 build_script:
 - NAnt.Portable.0.92\NAnt generateSolution
 test_script:
-- NAnt.Portable.0.92\NAnt recreateDatabase resetDatabase test
+- NAnt.Portable.0.92\NAnt recreateDatabase resetDatabase
+# commented out the nant task: test
 before_deploy:
 - nant buildWindowsStandalone
