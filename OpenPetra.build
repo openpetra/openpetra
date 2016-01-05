@@ -459,7 +459,7 @@ useful parameters
   <echo message="Target previewWinform (outer) finished at: ${datetime::now()}" />
 </target>
 
-<target name="test" depends="initConfigFiles, set-server-port-for-jenkins">
+<target name="test" depends="initConfigFiles, set-server-port-for-jenkins, copySQLFiles">
   <echo message="Target test started at: ${datetime::now()}" />
   
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
@@ -468,7 +468,7 @@ useful parameters
   <echo message="Target test finished at: ${datetime::now()}" />
 </target>
 
-<target name="test-without-display" depends="initConfigFiles, set-server-port-for-jenkins">
+<target name="test-without-display" depends="initConfigFiles, set-server-port-for-jenkins, copySQLFiles">
   <echo message="Target test-without-display (outer) started at: ${datetime::now()}" />
   
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
@@ -477,7 +477,7 @@ useful parameters
   <echo message="Target test-without-display (outer) finished at: ${datetime::now()}" />
 </target>
 
-<target name="test-client" depends="initConfigFiles, set-server-port-for-jenkins">
+<target name="test-client" depends="initConfigFiles, set-server-port-for-jenkins, copySQLFiles">
   <echo message="Target test-client (outer) started at: ${datetime::now()}" />
   
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
@@ -486,7 +486,7 @@ useful parameters
   <echo message="Target test-client (outer) finished at: ${datetime::now()}" />
 </target>
 
-<target name="test-main-navigation-screens-core" depends="initConfigFiles, set-server-port-for-jenkins">
+<target name="test-main-navigation-screens-core" depends="initConfigFiles, set-server-port-for-jenkins, copySQLFiles">
   <echo message="Target test-main-navigation-screens-core (outer) started at: ${datetime::now()}" />
   
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
@@ -495,7 +495,7 @@ useful parameters
   <echo message="Target test-main-navigation-screens-core (outer) finished at: ${datetime::now()}" />
 </target>
 
-<target name="test-main-navigation-screens" depends="initConfigFiles, set-server-port-for-jenkins">
+<target name="test-main-navigation-screens" depends="initConfigFiles, set-server-port-for-jenkins, copySQLFiles">
   <echo message="Target test-main-navigation-screens (outer) started at: ${datetime::now()}" />
   
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
