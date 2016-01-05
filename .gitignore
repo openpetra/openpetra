@@ -11,6 +11,7 @@ setup/petra0300/Output
 setup/petra0300/*.sql
 setup/petra0300/*.db
 db/basedb_progress
+db/basedata/clean.sql
 *.ico.gif
 *.local
 *.local.ben.xml
@@ -33,16 +34,6 @@ obj
 *.pdb
 *.pidb
 *.orig
-webserver/qooxdoo-sdk
-webserver/OpenPetraOrg/cache
-webserver/bin
-webserver/Server.log
-webserver/server.asmx
-webserver/web.config
-csharp/ICT/experimenting/DonorHistoryReports/bin
-csharp/ICT/experimenting/DonorHistoryReports/obj
-csharp/ICT/experimenting/treasurerEmails/bin
-csharp/ICT/experimenting/treasurerEmails/obj
 /setup/petra0300/remoteclientWin/version.txt
 /setup/petra0300/standalone/version.txt
 /setup/petra0300/standalone/Output

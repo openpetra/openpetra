@@ -101,7 +101,7 @@
   <call target="startServer"/>
 </target>
 
-<target name="startServer-internal" depends="initConfigFiles-server" description="Starts a local Petra Server">
+<target name="startServer-internal" depends="initConfigFiles-server, copySQLFiles" description="Starts a local Petra Server">
   <copy todir="${dir.delivery}" overwrite="true">
     <fileset basedir="${dir.csharp}/ICT/Petra/Server/app/WebService/">
       <include name="*.asmx" />
@@ -212,6 +212,26 @@
   </if>
 </target>
 
+<target name="copySQLFiles" description="copy the sql files from server and from plugins">
+    <mkdir dir="${dir.bin}/sql30" failonerror="false"/>
+    <copy todir="${dir.bin}/sql30">
+      <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/sql/">
+          <include name="*.sql" />
+          <include name="*.yml" />
+      </fileset>
+    </copy>
+    <foreach item="File" property="filename">
+        <in>
+            <items>
+                <include name="${dir.root}/csharp/ICT/Petra/Plugins/**/sql/*.sql" />
+            </items>
+        </in>
+        <do>
+            <copy file="${filename}" tofile="${dir.bin}/sql30/${path::get-file-name(filename)}"/>
+        </do>
+    </foreach>
+</target>
+
 <target name="startPetraClient" description="start the OpenPetra Client">
     <call target="startClient"/>
 </target>
@@ -219,6 +239,9 @@
   <if test="${platform::is-windows()}">
     <if test="${compileForStandalone == 'false'}">
         <call target="startServer-internal" />
+    </if>
+    <if test="${compileForStandalone != 'false'}">
+        <call target="copySQLFiles" />
     </if>
     <exec program="cmd.exe" 
           workingdir="${dir.bin}"

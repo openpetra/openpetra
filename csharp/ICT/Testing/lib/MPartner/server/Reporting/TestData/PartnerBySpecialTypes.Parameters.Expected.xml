@@ -59,7 +59,7 @@
   <Parameter id="param_mailingAddressesOnly" value="eBoolean:true" />
   <Parameter id="param_familiesOnly" value="eBoolean:false" />
   <Parameter id="param_excludeNoSolicitations" value="eBoolean:true" />
-  <Parameter id="param_address_date_valid_on" value="eDateTime:&quot;2015-01-01T00:00:00&quot;" />
+  <Parameter id="param_address_date_valid_on" value="eDateTime:&quot;{ThisYear}-01-01T00:00:00&quot;" />
   <Parameter id="param_explicit_specialtypes" value="eString:LEDGER" />
   <Parameter id="ColumnFormat" column="0" value="eString:partnerkey" />
   <Parameter id="ColumnFormat" column="1" value="eString:text" />

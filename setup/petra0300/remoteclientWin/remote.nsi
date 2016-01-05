@@ -89,6 +89,7 @@ Section "Main Section" SecInstallFiles
   Call CheckDotNETVersion
 
   CreateDirectory "$INSTDIR\tmp30"
+  CreateDirectory "$INSTDIR\log30"
   CreateDirectory "$INSTDIR\patches30"
   CreateDirectory "$INSTDIR\bin30"
   SetOutPath "$INSTDIR\bin30"
@@ -206,6 +207,7 @@ Section "Uninstall"
   RMDir "$INSTDIR\etc30"
   RMDir "$INSTDIR\manuals30"
   RMDir "$INSTDIR\tmp30"
+  RMDir "$INSTDIR\log30"
   RMDir "$INSTDIR\patches30"
   
   Delete "$INSTDIR\Uninstall.exe"
