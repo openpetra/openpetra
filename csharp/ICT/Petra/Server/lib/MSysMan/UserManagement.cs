@@ -341,10 +341,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, SubmitChangesTransaction);
 
                         // TODO: table permissions should be set by the module list
+                        // TODO: add p_data_label... tables here so user can generally have access
                         string[] tables = new string[] {
                             "p_bank", "p_church", "p_family", "p_location",
                             "p_organisation", "p_partner", "p_partner_location",
-                            "p_partner_type", "p_person", "p_unit", "p_venue"
+                            "p_partner_type", "p_person", "p_unit", "p_venue",
+                            "p_data_label", "p_data_label_lookup", "p_data_label_lookup_category", "p_data_label_use", "p_data_label_value_partner",
                         };
 
                         SUserTableAccessPermissionTable tableAccessPermissionTable = new SUserTableAccessPermissionTable();
