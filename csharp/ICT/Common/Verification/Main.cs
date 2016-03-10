@@ -765,7 +765,7 @@ namespace Ict.Common.Verification
             {
                 Int32 count = 0;
 
-                foreach (TVerificationResult v in List)
+                foreach (TVerificationResult v in FList)
                 {
                     if (v.ResultSeverity == TResultSeverity.Resv_Critical)
                     {
