@@ -306,6 +306,9 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Title</summary>
         public const String PARTNERIMPORT_TITLE = "Title";
 
+        /// <summary>Date of birth</summary>
+        public const String PARTNERIMPORT_DATEOFBIRTH = "DateOfBirth";
+
         /// <summary>SpecialTypes</summary>
         public const String PARTNERIMPORT_SPECIALTYPES = "SpecialTypes";
 
