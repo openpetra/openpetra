@@ -4551,6 +4551,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Return the ESR defaults table (creating if necessary) for use in importing, or for client side editing.
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-2")]
+        public static DataTable GetEsrDefaults()
+        {
+            return TGiftImporting.GetEsrDefaults();
+        }
+
+        /// <summary>
+        /// Commit the ESR defaults table after client side editing.
+        /// </summary>
+        /// <param name="AEsrDefaults"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-2")]
+        public static Boolean CommitEsrDefaults(DataTable AEsrDefaults)
+        {
+            return TGiftImporting.CommitEsrDefaults(AEsrDefaults);
+        }
+
+        /// <summary>
         /// Check if the partner key is valid
         /// </summary>
         /// <returns>If exists</returns>

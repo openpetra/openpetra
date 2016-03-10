@@ -153,6 +153,11 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.TotalGiftsThroughField(AParameters, FDbAdapter);
                     break;
 
+
+                case "DonorGiftsToField":
+                    ResultTbl = TFinanceReportingWebConnector.DonorGiftsToField(AParameters, FDbAdapter);
+                    break;
+
                 default:
                     TLogging.Log("GetDatatableThread unknown ReportType: " + AReportType);
                     break;

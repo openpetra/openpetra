@@ -26,10 +26,13 @@ RootNode:
             Label: Ledger
         grpSelection:
             Label: Selection
-            Controls: [cmbCurrency, txtYears]
+            Controls: [cmbCurrency, txtYearsDetail, txtYearsSummary]
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [=Base, International]
-        txtYears:
-            Label: For last years (1-8)
+        txtYearsDetail:
+            Label: Details for years (0-99)
+            Format: Integer
+        txtYearsSummary:
+            Label: Summay for years (0-99)
             Format: Integer

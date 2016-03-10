@@ -1043,12 +1043,21 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                     if (!PostingWorkedOk)
                     {
-                        TVerificationResultCollection MoreResults;
+                        TVerificationResultCollection MoreResults = new TVerificationResultCollection();
 
-                        TGLPosting.DeleteGLBatch(
-                            ALedgerNumber,
-                            GLDataset.ABatch[0].BatchNumber,
-                            out MoreResults);
+                        //
+                        // If it didn't work, there's a good chance the batch can't be deleted.
+                        try
+                        {
+                            TGLPosting.DeleteGLBatch(
+                                ALedgerNumber,
+                                GLDataset.ABatch[0].BatchNumber,
+                                out MoreResults);
+                        }
+                        catch (Exception)
+                        {
+                        }
+
                         ResultsCollection.AddCollection(MoreResults);
 
                         return;

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,12 +32,22 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MReporting;
 using GNU.Gettext;
 using Ict.Common;
+using System.Collections;
+using System.Collections.Generic;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
     public partial class TFrmDonorGiftsToFieldsReport
     {
         private Int32 FLedgerNumber;
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+        }
 
         /// <summary>
         /// the report should be run for this ledger
@@ -73,6 +83,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
+            //
+            // Verify Min and Max amounts:
             if (txtMinAmount.NumberValueInt > txtMaxAmount.NumberValueInt)
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
@@ -86,28 +98,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_donorkey", txtDonor.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);
 
-            //TODO: Calendar vs Financial Date Handling - Confirm that these should not be ledger dates, i.e. allowing for >12 periods and non-calendar period boundaries
-            DateTime FromDateThisYear = new DateTime(DateTime.Today.Year, 1, 1);
-            DateTime ToDatePreviousYear = new DateTime(DateTime.Today.Year - 1, 12, 31);
-            DateTime FromDatePreviousYear = new DateTime(DateTime.Today.Year - 1, 1, 1);
-
-            ACalc.AddParameter("param_to_date_this_year", DateTime.Today);
-            ACalc.AddParameter("param_from_date_this_year", FromDateThisYear);
-            ACalc.AddParameter("param_to_date_previous_year", ToDatePreviousYear);
-            ACalc.AddParameter("param_from_date_previous_year", FromDatePreviousYear);
-
-            ACalc.AddParameter("DonorAddress", "");
-
-            int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
-
-            for (int Counter = 0; Counter <= MaxColumns; ++Counter)
+            //
+            // Verify date fields
+            if (dtpFromDate.ValidDate(true))
             {
-                String ColumnName = ACalc.GetParameters().Get("param_calculation", Counter, 0).ToString();
+                ACalc.AddParameter("param_StartDate", this.dtpFromDate.Date);
+            }
 
-                if (ColumnName == "Gift Amount")
-                {
-                    ACalc.AddParameter("param_gift_amount_column", Counter);
-                }
+            if (dtpToDate.ValidDate(true))
+            {
+                ACalc.AddParameter("param_EndDate", this.dtpToDate.Date);
             }
         }
 
@@ -115,6 +115,48 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             txtDonor.Text = AParameters.Get("param_donorkey").ToString();
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();
+        }
+
+        //
+        // This will be called if the Fast Reports Wrapper loaded OK.
+        // Returns True if the data apparently loaded OK and the report should be printed.
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            Shared.MReporting.TParameterList pm = ACalc.GetParameters();
+
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param")
+                    && (p.name != "param_calculation")
+                    && !paramsDictionary.ContainsKey(p.name)
+                    )
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("DonorGiftsToField", paramsDictionary);
+
+            if (ReportTable == null)
+            {
+                return false;
+            }
+
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "DonorGiftsToField");
+            //
+            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
+            ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
+            ALedgerRow Row = LedgerDetailsTable[0];
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            String CurrencyName = (cmbCurrency.SelectedItem.ToString() == "Base") ? Row.BaseCurrency : Row.IntlCurrency;
+            ACalc.AddStringParameter("param_currency_name", CurrencyName);
+
+            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+            return true;
         }
     }
 }

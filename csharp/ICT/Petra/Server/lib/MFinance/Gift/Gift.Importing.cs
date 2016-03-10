@@ -75,6 +75,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
         private String FImportLine;
         private String FNewLine;
+        private DataTable FesrDefaultTable = null;
 
         private bool UpdateDailyExchangeRateTable(ADailyExchangeRateTable DailyExchangeTable, string AFromCurrencyCode, string AToCurrencyCode,
             decimal AExchangeRate, DateTime AEffectiveDate)
@@ -757,6 +758,90 @@ namespace Ict.Petra.Server.MFinance.Gift
         }
 
         /// <summary>
+        /// Return the a_esr_defaults table (creating if necessary) for use in importing, or for client side editing.
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable GetEsrDefaults()
+        {
+            String InitQuery =
+                "CREATE OR REPLACE FUNCTION execute(TEXT) RETURNS VOID AS " +
+                "$$ BEGIN EXECUTE $1; END; $$ LANGUAGE plpgsql; " +
+                "SELECT execute($$ " +
+                "CREATE TABLE a_esr_default (" +
+                " a_partner_key_n bigint NOT NULL," +
+                "  a_new_partner_key_n bigint," +
+                "  a_motiv_group_s character varying(16)," +
+                "  a_motiv_detail_s character varying(16)," +
+                "  CONSTRAINT a_esr_default_PK PRIMARY KEY (a_partner_key_n)" +
+                ") $$) WHERE NOT EXISTS (" +
+                " SELECT * " +
+                "    FROM information_schema.tables " +
+                "    WHERE table_name = 'a_esr_default')";
+            TDBTransaction Transaction = null;
+            Boolean shouldCommit = true;
+            DataTable Res = new DataTable();
+
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                ref shouldCommit,
+                delegate
+                {
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(InitQuery, Transaction);
+                    Res = DBAccess.GDBAccessObj.SelectDT("SELECT * FROM a_esr_default ORDER BY a_partner_key_n", "EsrDefault", Transaction);
+                });
+            return Res;
+        }
+
+        /// <summary>
+        /// Commit the ESR defaults table after client side editing.
+        /// </summary>
+        /// <param name="AEsrDefaults"></param>
+        /// <returns></returns>
+        public static Boolean CommitEsrDefaults(DataTable AEsrDefaults)
+        {
+            TDBTransaction Transaction = null;
+            Boolean shouldCommit = true;
+
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                ref shouldCommit,
+                delegate
+                {
+                    foreach (DataRow Row in AEsrDefaults.Rows)
+                    {
+                        switch (Row.RowState)
+                        {
+                            case DataRowState.Deleted:
+                                DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM a_esr_default WHERE a_partner_key_n = " +
+                                Convert.ToInt64(Row["a_partner_key_n", DataRowVersion.Original]), Transaction);
+                                break;
+
+                            case DataRowState.Added:
+                                DBAccess.GDBAccessObj.ExecuteNonQuery("INSERT INTO a_esr_default " +
+                                "(a_partner_key_n, a_new_partner_key_n, a_motiv_group_s, a_motiv_detail_s) " +
+                                "VALUES (" +
+                                Convert.ToInt64(Row["a_partner_key_n"]) + "," +
+                                Convert.ToInt64(Row["a_new_partner_key_n"]) + ", '" +
+                                Row["a_motiv_group_s"].ToString() + "', '" +
+                                Row["a_motiv_detail_s"].ToString() + "')",
+                                Transaction);
+                                break;
+
+                            case DataRowState.Modified:
+                                DBAccess.GDBAccessObj.ExecuteNonQuery("UPDATE a_esr_default SET " +
+                                "a_new_partner_key_n = " + Convert.ToInt64(Row["a_new_partner_key_n"]) +
+                                ", a_motiv_group_s='" + Row["a_motiv_group_s"].ToString() +
+                                "', a_motiv_detail_s='" + Row["a_motiv_detail_s"].ToString() +
+                                "' WHERE a_partner_key_n=" + Convert.ToInt64(Row["a_partner_key_n"]),
+                                Transaction);
+                                break;
+                        }
+                    }
+                });
+            return true;
+        }
+
+        /// <summary>
         /// Import Gift Transactions from a file
         /// </summary>
         /// <param name="ARequestParams"></param>
@@ -782,7 +867,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                 5);
 
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
+            ANeedRecipientLedgerNumber = NeedRecipientLedgerNumber;
+
             TVerificationResultCollection Messages = new TVerificationResultCollection();
+            AMessages = Messages;
 
             // fix for Mono issue with out parameter: https://bugzilla.xamarin.com/show_bug.cgi?id=28196
             AMessages = Messages;
@@ -911,7 +999,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                                 // Parse the line into a new row
                                 ImportMessage = Catalog.GetString("Parsing transaction line");
-                                Int32 preParseMessageCount = Messages.Count;
+                                Int32 preParseMessageCount = Messages.CountCriticalErrors;
                                 AGiftRow gift = FMainDS.AGift.NewRowTyped(true);
                                 AGiftDetailRow giftDetails = FMainDS.AGiftDetail.NewRowTyped(true);
 
@@ -944,8 +1032,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                                         giftDetails);
                                 }
 
-                                if (Messages.Count == preParseMessageCount)     // No parsing errors so we can validate
-                                {                                               // (parsing errors will have assumed, probably invalid, values)
+                                if (Messages.CountCriticalErrors == preParseMessageCount)   // No parsing errors so we can validate
+                                {                                                           // (parsing errors will have assumed, probably invalid, values)
                                     ImportMessage = Catalog.GetString("Validating the gift data");
 
                                     int messageCountBeforeValidate = preParseMessageCount;
@@ -1057,7 +1145,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             // Do the 'finally' actions and return false
                             return;
-                        }
+                        } // "Batch has critical errors"
 
                         // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination then the import will fail
                         if (NeedRecipientLedgerNumber.Rows.Count > 0)
@@ -1161,12 +1249,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
 
                         TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-                    } // end of 'finally'
-                });
-
-            // Set our 'out' parameters
-            ANeedRecipientLedgerNumber = NeedRecipientLedgerNumber;
-            AMessages = Messages;
+                    } // finally
+                }); // BeginAutoTransaction
 
             return SubmissionOK;
         }
@@ -1328,7 +1412,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 FMainDS.AGift.ColumnDonorKey, ARowNumber, AMessages, null);
 
             TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString(
-                    "short name of donor (unused)"), null, ARowNumber, AMessages, null);                                                                   // unused
+                    "short name of donor (unused)"), null, ARowNumber, AMessages, null);                     // unused
 
             // This group is optional and database NULL's are allowed
             AGift.MethodOfGivingCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Method of giving Code"),
@@ -1520,16 +1604,37 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
         } // Parse TransactionLine
 
-        private void ExchangeFieldsInEsrTransaction(ref Int64 DonorKey,
-            ref Int64 RecipientKey,
-            TVerificationResultCollection AMessages,
-            Int32 AGiftNumber)
+        /// <summary>
+        /// This "Einzahlungsschein mit Referenznummer" (ESR) input format is only used in Switzerland.
+        /// This method could be pulled out of here, but sits here quite nicely.
+        /// </summary>
+        ///
+        private void ExchangeFieldsInEsrTransaction(ref Int64 AdonorKey,
+            ref Int64 ArecipientKey,
+            ref String AmotivGroup, ref String AmotivDetail,
+            TVerificationResultCollection Amessages,
+            Int32 AgiftNumber)
         {
-            if (RecipientKey == 0)  // This is temporarily hard coded to fulfil the requirement at OM Switzerland,
-            {                       // but needs to move to a table with a UI if there's more complex requirements.
-                RecipientKey = 35353002;
-                AMessages.Add(new TVerificationResult("ESR Import", "RecipientKey 0 changed to 0035353002 at gift# " + AGiftNumber,
-                        TResultSeverity.Resv_Info));
+            if (FesrDefaultTable == null)
+            {
+                FesrDefaultTable = GetEsrDefaults();
+                FesrDefaultTable.DefaultView.Sort = "a_partner_key_n";
+            }
+
+            Int32 Idx = FesrDefaultTable.DefaultView.Find(AdonorKey);
+
+            if (Idx >= 0)
+            {
+                Int64.TryParse(FesrDefaultTable.DefaultView[Idx].Row["a_new_partner_key_n"].ToString(), out AdonorKey);
+            }
+
+            Idx = FesrDefaultTable.DefaultView.Find(ArecipientKey);
+
+            if (Idx >= 0)
+            {
+                Int64.TryParse(FesrDefaultTable.DefaultView[Idx].Row["a_new_partner_key_n"].ToString(), out ArecipientKey);
+                AmotivGroup = FesrDefaultTable.DefaultView[Idx].Row["a_motiv_group_s"].ToString();
+                AmotivDetail = FesrDefaultTable.DefaultView[Idx].Row["a_motiv_detail_s"].ToString();
             }
         }
 
@@ -1557,35 +1662,31 @@ namespace Ict.Petra.Server.MFinance.Gift
             TVerificationResultCollection AMessages
             )
         {
-            Boolean NonNumericError = false;
             String Field = AImportLine.Substring(0, 3);
 
             Int32 FunctionType = 0;
 
-            NonNumericError &= !Int32.TryParse(Field, out FunctionType);
+            Boolean isNumeric = Int32.TryParse(Field, out FunctionType);
 
-            Int64 DonorKey = 0;
+            Int64 DonorKey;
+
             Field = AImportLine.Substring(12, 10);
-            NonNumericError &= !Int64.TryParse(Field, out DonorKey);
+            isNumeric &= Int64.TryParse(Field, out DonorKey);
 
-            Int64 RecipientKey = 0;
+            Int64 RecipientKey;
             Field = AImportLine.Substring(22, 10);
-            NonNumericError &= !Int64.TryParse(Field, out RecipientKey);
+            isNumeric &= Int64.TryParse(Field, out RecipientKey);
 
-            Int64 intAmount = 0;
+            Int64 intAmount;
             Field = AImportLine.Substring(39, 10);
-            NonNumericError &= !Int64.TryParse(Field, out intAmount);
+            isNumeric &= Int64.TryParse(Field, out intAmount);
 
-            Decimal Amount = intAmount / 100;
+            Decimal Amount = ((Decimal)intAmount) / 100;
 
-            if (NonNumericError)
+            if (!isNumeric)
             {
                 return false;
             }
-
-            String MotivGroup = "GIFT";
-            String MotivDetail = "UNDESIG";
-            TGuiTools.GetMotivationGroupAndDetail(RecipientKey, ref MotivGroup, ref MotivDetail);
 
             Agift.LedgerNumber = AgiftBatch.LedgerNumber;
             Agift.BatchNumber = AgiftBatch.BatchNumber;
@@ -1594,7 +1695,14 @@ namespace Ict.Petra.Server.MFinance.Gift
             AgiftBatch.BatchTotal += Amount;
             Agift.LastDetailNumber = 1;
 
-            ExchangeFieldsInEsrTransaction(ref DonorKey, ref RecipientKey, AMessages, Agift.GiftTransactionNumber);
+            String MotivGroup = "GIFT";
+            String MotivDetail = "UNDESIG";
+            TGuiTools.GetMotivationGroupAndDetail(RecipientKey, ref MotivGroup, ref MotivDetail);
+
+            ExchangeFieldsInEsrTransaction(ref DonorKey, ref RecipientKey,
+                ref MotivGroup, ref MotivDetail,
+                AMessages, Agift.GiftTransactionNumber);
+
 
             Agift.DonorKey = DonorKey;
             Agift.MethodOfGivingCode = "DEFAULT";

@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       christophert
+//       Tim Ingham
 //
 // Copyright 2004-2012 by OM International
 //
@@ -116,7 +117,14 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
                 MessageBox.Show(Messages.BuildMessageFromVerificationResult(ResultMsg, VerificationResult));
 
-                btnCancel.Text = "Close";
+                if (retVal)
+                {
+                    Close();
+                }
+                else
+                {
+                    btnCancel.Text = "Close";
+                }
             }
             finally
             {

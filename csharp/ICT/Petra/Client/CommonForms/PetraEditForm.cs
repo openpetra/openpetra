@@ -956,7 +956,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// Disanables the 'Save' ToolBarButton and the 'File->Save' MenuItem and sets the Form in a state where it doesn't contains changes
+        /// Disables the 'Save' ToolBarButton and the 'File->Save' MenuItem and sets the Form in a state where it doesn't contains changes
         /// (<see cref="HasChanges" />).
         /// </summary>
         /// <remarks>Useful when manual code needs to do these actions (that are normally automatically handled in a Form).</remarks>

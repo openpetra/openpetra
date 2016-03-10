@@ -16,6 +16,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+{#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
 {

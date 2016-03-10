@@ -207,7 +207,7 @@
 								 OR  gift.a_method_of_giving_code_c = 'DW'
 								 OR  gift.a_method_of_giving_code_c = 'BACS'
 								 OR  gift.a_method_of_giving_code_c = 'SO'
-								 OR  gift.a_method_of_giving_code_c = 'DD' )    
+								 OR  gift.a_method_of_giving_code_c = 'DD' ) 
 						</value>
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, Base)">
@@ -518,105 +518,105 @@
 				<caption><value text="Donor Key"/></caption>
 				<query>
 					<queryDetail><value variable="DonorKey"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Donor Name" returnsFormat="text" returns="text">
 				<caption><value text="Donor Name"/></caption>
 				<query>
 					<queryDetail><value variable="DonorName"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Donor Class" returnsFormat="text" returns="text">
 				<caption><value text="Donor Class"/></caption>
 				<query>
 					<queryDetail><value variable="DonorClass"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Recipient Key" returnsFormat="partnerkey" returns="text">
 				<caption><value text="Recipient Key"/></caption>
 				<query>
 					<queryDetail><value variable="RecipientKey"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Recipient Name" returnsFormat="text" returns="text">
 				<caption><value text="Recipient Name"/></caption>
 				<query>
 					<queryDetail><value variable="RecipientName"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Recipient Class" returnsFormat="text" returns="text">
 				<caption><value text="Recipient Class"/></caption>
 				<query>
 					<queryDetail><value variable="RecipientClass"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Recipient Type" returnsFormat="text" returns="text">
 				<caption><value text="Recpt  Type"/></caption>
 				<query>
 					<queryDetail><value variable="RecipientType"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Confidential" returnsFormat="text" returns="text">
 				<caption><value text="Confidential"/></caption>
 				<query>
 					<queryDetail><value variable="Confidential"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Field" returnsFormat="partnerkey" returns="text">
 				<caption><value text="Field"/></caption>
 				<query>
 					<queryDetail><value variable="FieldKey"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Field Name" returnsFormat="text" returns="text">
 				<caption><value text="Field Name"/></caption>
 				<query>
 					<queryDetail><value variable="FieldName"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Gift Date" returnsFormat="date" returns="text">
 				<caption><value text="Gift Date"/></caption>
 				<query>
 					<queryDetail><value variable="GiftDate"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Gift Amount" returnsFormat="currency" returns="amount">
 				<caption><value text="Gift Amount"/></caption>
 				<query>
 					<queryDetail><value variable="GiftAmount"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Gift Type" returnsFormat="text" returns="text">
 				<caption><value text="Gift Type"/></caption>
 				<query>
 					<queryDetail><value variable="GiftType"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Receipt" returnsFormat="text" returns="text">
 				<caption><value text="Receipt"/></caption>
 				<query>
 					<queryDetail><value variable="Receipt"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Method" returnsFormat="text" returns="text">
 				<caption><value text="Method"/></caption>
 				<query>
 					<queryDetail><value variable="Method"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Motivation Detail" returnsFormat="text" returns="text">
@@ -626,19 +626,19 @@
 						<value variable="a_motivation_detail_desc_c"/>
 						<value text=", "/>
 						<value variable="a_motivation_group_description_c"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Donor Address" returnsFormat="text" returns="text">
 				<caption><value text="Donor Address"/></caption>
 				<query>
 					<queryDetail><value variable="DonorAddress"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 		</calculations>
 
-		<levels>		
+		<levels>
 			<level name="main">
 				<detail>
 					<switch>
@@ -654,13 +654,7 @@
 					</switch>
 				</detail>
 			</level>
-			
-			<level name="ToatlPreviousYear">
-				<detail>
-					<lowerLevelReport level="DonorLevel"></lowerLevelReport>
-				</detail>
-			</level>
-			
+
 			<level name="DonorLevel1">
 				<detail>
 					<lowerLevelReport level="DonorLevel2" calculation="SelectDonors"></lowerLevelReport>
@@ -674,7 +668,7 @@
 					</field>
 				</footer>
 			</level>
-			
+
 			<level name="DonorLevel2">
 				<header>
 					<field whichfield="header 0" pos="0cm" width="19.0cm"  calculation="MakeDonorAddress">
@@ -698,7 +692,7 @@
 					</field>
 				</footer>
 			</level>
-			
+
 			<level name="SummaryDonorLevel1">
 				<detail>
 					<lowerLevelReport level="SummaryDonorLevel2" calculation="SelectDonors"></lowerLevelReport>
@@ -758,7 +752,7 @@
 				</footer>
 			</level>
 			
-			<level name="RecipientLevel" identification="DonortKey">
+			<level name="RecipientLevel" identification="DonorKey">
 				<detail>
 					<field whichfield="columns"/>
 				</detail>

@@ -215,28 +215,28 @@ namespace Ict.Common.Controls
 
         private DataRowView FindRow(DataTable ATable, List <String>AColumns, List <String>ANeedles)
         {
-            DataRowView ReturnValue;
-            DataView View;
             String Filter = "";
-            int Counter = 0;
+            DataRowView ReturnValue = null;
+            DataView View = new DataView(ATable);
 
-            ReturnValue = null;
-            View = new DataView(ATable);
-
-            for (Counter = 0; Counter < AColumns.Count; Counter++)
+            for (Int32 Counter = 0; Counter < AColumns.Count; Counter++)
             {
                 if (Counter > 0)
                 {
-                    Filter = Filter + " AND ";
+                    Filter += " AND ";
                 }
+
+                String needle = ANeedles[Counter]; // If I've been given quoted strings, I'll remove those quotes.
+                needle = needle.TrimStart(new char[] { '\'' });
+                needle = needle.TrimEnd(new char[] { '\'' });
 
                 if (ATable.Columns[AColumns[Counter]].DataType == typeof(String))
                 {
-                    Filter = Filter + AColumns[Counter] + " = '" + ANeedles[Counter] + "'";
+                    Filter = Filter + AColumns[Counter] + " = '" + needle + "'";
                 }
                 else
                 {
-                    Filter = Filter + AColumns[Counter] + " = " + ANeedles[Counter];
+                    Filter = Filter + AColumns[Counter] + " = " + needle;
                 }
             }
 
@@ -380,13 +380,11 @@ namespace Ict.Common.Controls
         /// </returns>
         public bool SetCheckedStringList(String AStringsToCheck)
         {
-            bool ReturnValue;
+            bool ReturnValue = true;
 
             List <String>ItemStringList = new List <String>();;
             DataRowView RowView;
             int Counter;
-
-            ReturnValue = true;
 
             // clear checked state for all items
             ClearSelected();
@@ -395,8 +393,7 @@ namespace Ict.Common.Controls
             {
                 ReturnValue = false;
             }
-
-            if (ReturnValue != false)
+            else
             {
                 while (AStringsToCheck.Length > 0)
                 {
