@@ -148,6 +148,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             sr.Close();
 
             string AllLetters = TRemote.MFinance.Gift.WebConnectors.CreateAnnualGiftReceipts(FLedgerNumber,
+                "ANNUAL",
                 dtpStartDate.Date.Value,
                 dtpEndDate.Date.Value,
                 htmlTemplate,

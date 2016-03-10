@@ -70,6 +70,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static string CreateAnnualGiftReceipts(Int32 ALedgerNumber,
+            string AFrequency,
             DateTime AStartDate,
             DateTime AEndDate,
             string AHTMLTemplate,
@@ -130,15 +131,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             // first get all donors in the given date range
                             SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql", Defines);
 
-                            OdbcParameter[] parameters = new OdbcParameter[4];
+                            OdbcParameter[] parameters = new OdbcParameter[5];
                             parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
                             parameters[0].Value = ALedgerNumber;
                             parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
                             parameters[1].Value = AStartDate;
                             parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
                             parameters[2].Value = AEndDate;
-                            parameters[3] = new OdbcParameter("Extract", OdbcType.VarChar);
-                            parameters[3].Value = AExtract;
+                            parameters[3] = new OdbcParameter("Frequency", OdbcType.VarChar);
+                            parameters[3].Value = AFrequency;
+                            parameters[4] = new OdbcParameter("Extract", OdbcType.VarChar);
+                            parameters[4].Value = AExtract;
 
                             donorkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
 

@@ -174,7 +174,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
             TVerificationResult VerificationResult;
 
             if ((AReportAction == TReportActionEnum.raGenerate)
-                && (!rbtAllEvents.Checked)
                 && (txtEventCode.Text.Length == 0))
             {
                 // Error: an event must be selected when we generate the report
@@ -208,7 +207,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
         {
             rbtThisEventOnly.Checked = (AParameters.Get("param_event_selection").ToString() == "this");
             rbtRelatedOptions.Checked = (AParameters.Get("param_event_selection").ToString() == "related");
-            rbtAllEvents.Checked = (AParameters.Get("param_event_selection").ToString() == "all");
 
             rbtAllParticipants.Checked = (AParameters.Get("param_source").ToString() == "Event");
             rbtFromExtract.Checked = (AParameters.Get("param_source").ToString() == "Extract");
@@ -281,9 +279,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
         /// <param name="e"></param>
         private void rbtEventSelectionChanged(object sender, EventArgs e)
         {
-            txtEventCode.Enabled = !rbtAllEvents.Checked;
-            btnEvent.Enabled = !rbtAllEvents.Checked;
-            lblEventName.Visible = !rbtAllEvents.Checked;
         }
 
         private void rbtParticipantsSelectionChanged(object sender, EventArgs e)

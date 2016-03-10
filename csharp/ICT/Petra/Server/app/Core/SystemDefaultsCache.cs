@@ -98,12 +98,12 @@ namespace Ict.Petra.Server.App.Core
         {
             SSystemDefaultsTable ReturnValue;
 
-            // FIXME Inquiring FTableCached (and potentially updating) isn't done in a thread-safe manner - it needs to be 
+            // FIXME Inquiring FTableCached (and potentially updating) isn't done in a thread-safe manner - it needs to be
             // made thread-safe by using a lock!
             if (!FTableCached)
             {
                 LoadSystemDefaultsTable();
-                
+
                 FTableCached = true;
             }
 
@@ -143,12 +143,12 @@ namespace Ict.Petra.Server.App.Core
             String ReturnValue;
             SSystemDefaultsRow FoundSystemDefaultsRow;
 
-            // FIXME Inquiring FTableCached (and potentially updating) isn't done in a thread-safe manner - it needs to be 
+            // FIXME Inquiring FTableCached (and potentially updating) isn't done in a thread-safe manner - it needs to be
             // made thread-safe by using a lock!
             if (!FTableCached)
             {
                 LoadSystemDefaultsTable();
-                
+
                 FTableCached = true;
             }
 

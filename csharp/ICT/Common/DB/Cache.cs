@@ -35,7 +35,7 @@ namespace Ict.Common.DB.DBCaching
     /// <summary>
     /// This class allows to cache common SQL queries.
     /// <para>
-    /// FIXME This class does not operate in a thread-safe manner - it needs to be 
+    /// FIXME This class does not operate in a thread-safe manner - it needs to be
     /// made thread-safe by using locks anywhere where the two internally-held ArrayLists are accessed!!!
     /// </para>
     /// </summary>

@@ -18,7 +18,6 @@ RootNode:
                 Row1: [pnlEventSelection]
                 Row2: [rbtThisEventOnly]
                 Row3: [rbtRelatedOptions]
-                Row4: [rbtAllEvents]
         grpParticipants:
             Label: Participants at Event
             Dock: Top
@@ -45,9 +44,6 @@ RootNode:
             OnChange: rbtEventSelectionChanged
         rbtRelatedOptions:
             Label: Consider this event and related options
-            OnChange: rbtEventSelectionChanged
-        rbtAllEvents:
-            Label: Consider all events
             OnChange: rbtEventSelectionChanged
         rbtAllParticipants:
             Label: List all participants
