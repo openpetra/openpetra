@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -311,6 +311,12 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         {
             ACurrencyLanguageRow ReturnValue = null;
             string Language = TUserDefaults.GetStringDefault(MSysManConstants.USERDEFAULT_UILANGUAGE);
+
+            if (Language.Length > 2)
+            {
+                // need to get the two digit language code of p_language: de-DE => DE, en-EN => EN
+                Language = Language.Substring(Language.Length - 2).ToUpper();
+            }
 
             TDBTransaction Transaction = null;
 
