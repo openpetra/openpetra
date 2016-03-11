@@ -79,9 +79,9 @@ namespace Ict.Petra.Client.CommonDialogs
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
             string MessageTitle = Catalog.GetString("Set Password");
-            string ErrorMessage = String.Format(Catalog.GetString("There was a problem setting the password for user {0}."), AUserName);
+            string ErrorMessage = String.Format(Catalog.GetString("There was a problem setting the password for user {0}."), UserName);
 
-            if (txtOldPassword.Visible && !TRemote.MSysMan.Maintenance.WebConnectors.PasswordAuthentication(AUserName, this.txtOldPassword.Text))
+            if (txtOldPassword.Visible && !TRemote.MSysMan.Maintenance.WebConnectors.PasswordAuthentication(UserName, this.txtOldPassword.Text))
             {
                 MessageBox.Show(Catalog.GetString("Incorrect password entered."),
                     MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -97,7 +97,7 @@ namespace Ict.Petra.Client.CommonDialogs
             if (txtNewPassword.Text == this.txtOldPassword.Text && this.PasswordNeedsChanged)
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
-                        "This password is the same as your old password! Please enter a new password."), AUserName),
+                        "This password is the same as your old password! Please enter a new password."), UserName),
                     MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }

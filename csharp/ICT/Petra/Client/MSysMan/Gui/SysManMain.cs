@@ -127,7 +127,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             string Username = Ict.Petra.Shared.UserInfo.GUserInfo.UserID;
 
-            TLoginForm.CreateNewPassword(AParentForm, username, string.Empty, false);
+            TLoginForm.CreateNewPassword(AParentForm, Username, string.Empty, false);
         }
     }
 }
